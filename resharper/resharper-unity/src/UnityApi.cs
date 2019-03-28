@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.JavaScript.Tree.JsDoc;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
@@ -190,6 +192,25 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             return null;
+        }
+
+        public bool IsDescendantOf([NotNull] IClrTypeName unityTypeClrName, [CanBeNull] ITypeElement type)
+        {
+            if (type == null)
+                return false;
+            var mb = TypeFactory.CreateTypeByCLRName(unityTypeClrName, type.Module);
+            return type.IsDescendantOf(mb.GetTypeElement());
+        }
+        
+        public bool IsDescendantOfMonoBehaviour([CanBeNull] ITypeElement type)
+        {
+            return IsDescendantOf(KnownTypes.MonoBehaviour, type);
+        }
+        
+        
+        public bool IsDescendantOfScriptableObject([CanBeNull] ITypeElement type)
+        {
+            return IsDescendantOf(KnownTypes.ScriptableObject, type);
         }
 
         public Version GetNormalisedActualVersion(IProject project)

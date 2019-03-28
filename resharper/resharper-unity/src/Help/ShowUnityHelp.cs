@@ -11,13 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
     public class ShowUnityHelp : IShowHelp
     {
         private readonly OpensUri myUriOpener;
-        private readonly UnityInstallationFinder myInstallationFinder;
         private readonly SolutionsManager mySolutionsManager;
 
-        public ShowUnityHelp(OpensUri uriOpener, UnityInstallationFinder installationFinder, SolutionsManager solutionsManager)
+        public ShowUnityHelp(OpensUri uriOpener, SolutionsManager solutionsManager)
         {
             myUriOpener = uriOpener;
-            myInstallationFinder = installationFinder;
             mySolutionsManager = solutionsManager;
         }
 
@@ -61,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
         private FileSystemPath GetDocumentationRoot()
         {
             var version = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualVersionForSolution();
-            var contentsPath = myInstallationFinder.GetApplicationContentsPath(version);
+            var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(version);
             return contentsPath == null ? FileSystemPath.Empty : contentsPath.Combine(@"Documentation/en");
         
         }

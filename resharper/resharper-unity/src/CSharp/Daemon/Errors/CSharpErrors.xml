@@ -494,6 +494,15 @@
     <Range>Declaration.GetNameDocumentRange()</Range>
   </Info>
 
+  <Info name="UnityHotGutterMark" staticGroup="UnityGutterMarks">
+    <Parameter type="IDeclaration" name="declaration" />
+    <Parameter type="string" name="text" />
+    <Message value="{0}">
+      <Argument>Text</Argument>
+    </Message>
+    <Range>Declaration.GetNameDocumentRange()</Range>
+  </Info>
+  
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
     <Parameter type="INullCoalescingExpression" name="expression" />
     <Message value="'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />

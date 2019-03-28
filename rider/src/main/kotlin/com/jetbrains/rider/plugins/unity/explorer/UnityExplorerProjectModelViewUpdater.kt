@@ -11,7 +11,10 @@ import com.jetbrains.rider.projectView.nodes.ProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
 
 class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewUpdater(project) {
-    private val pane get() = UnityExplorer.tryGetInstance(project)
+    private var cachePane : UnityExplorer? = null
+    private val pane get() = cachePane ?: UnityExplorer.tryGetInstance(project).apply {
+        cachePane = this
+    }
 
     override fun update(node: ProjectModelNode?) {
         updateAssetsRoot(node)
@@ -42,7 +45,7 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
         if (node?.descriptor is RdSolutionDescriptor || node?.descriptor is RdProjectDescriptor) {
             pane?.refresh(object : SolutionViewVisitor() {
                 override fun visit(node: AbstractTreeNode<*>): TreeVisitor.Action {
-                    if (node is UnityExplorerNode.AssetsRoot) {
+                    if (node is AssetsRoot) {
                         return TreeVisitor.Action.INTERRUPT
                     }
 

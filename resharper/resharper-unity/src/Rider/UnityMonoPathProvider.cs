@@ -10,17 +10,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityMonoPathProvider : IMonoPathProvider
     {
         private readonly ILogger myLogger;
-        private readonly UnityInstallationFinder myInstallationFinder;
 
-        public UnityMonoPathProvider(ILogger logger, UnityInstallationFinder installationFinder)
+        public UnityMonoPathProvider(ILogger logger)
         {
             myLogger = logger;
-            myInstallationFinder = installationFinder;
         }
 
         public List<FileSystemPath> GetPossibleMonoPaths()
         {
-            var possibleApplicationPaths = myInstallationFinder.GetPossibleApplicationPaths();
+            var possibleApplicationPaths = UnityInstallationFinder.GetPossibleApplicationPaths();
             switch (PlatformUtil.RuntimePlatform)
             {
                 case PlatformUtil.Platform.MacOsX:

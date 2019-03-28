@@ -14,6 +14,7 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
+using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -103,25 +104,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 return Task.FromResult(false);
             }
 
-            var hostId = run.HostController.HostId;
-            if (hostId == WellKnownHostProvidersIds.DebugProviderId)
-            {
-                run.Launch.Output.Error(
-                    "Starting Unity tests from 'Debug' is currently unsupported. Please attach to editor and use 'Run'.");
-                return Task.FromResult(false);
-            }
-
-            if (hostId != WellKnownHostProvidersIds.RunProviderId)
-            {
-                run.Launch.Output.Error(
-                    $"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
-                return Task.FromResult(false);
-            }
-
             var tcs = new TaskCompletionSource<bool>();
             run.Launch.PutData(ourLaunchedInUnityKey, "smth");
             run.PutData(ourCompletionSourceKey, tcs);
 
+            var hostId = run.HostController.HostId;
+            switch (hostId)
+            {
+                case WellKnownHostProvidersIds.DebugProviderId:
+                    mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "AttachDebuggerToUnityEditor", () =>
+                    {
+                        var task = myUnityHost.GetValue(model =>
+                            model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
+                        task.Result.AdviseNotNull(run.Lifetime, result =>
+                        {
+                            if (!result.Result)
+                                tcs.SetException(new Exception("Unable to attach debugger."));
+                            else
+                                RefreshAndRunTask(run, tcs);
+                        });
+                    });
+                    break;
+                case WellKnownHostProvidersIds.RunProviderId:
+                    RefreshAndRunTask(run, tcs);
+                    break;
+                default:
+                    run.Launch.Output.Error(
+                        $"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
+                    return Task.FromResult(false);
+            }
+
+            return tcs.Task;
+        }
+
+        private void RefreshAndRunTask(IUnitTestRun run, TaskCompletionSource<bool> tcs)
+        {
             myLogger.Verbose("Before calling Refresh.");
             Refresh(mySolution.Locks, run.Lifetime).GetAwaiter().OnCompleted(() =>
             {
@@ -140,12 +157,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         if (!result.Result)
                         {
                             tcs.SetException(new Exception("There are errors during compilation in Unity."));
-                            
-                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RunViaUnityEditorStrategy compilation failed", () =>
-                            {
-                                var notification = new NotificationModel("Compilation failed", "Script compilation in Unity failed, so tests were not started.", true, RdNotificationEntryType.INFO);
-                                myNotificationsModel.Notification(notification);
-                            });
+
+                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "RunViaUnityEditorStrategy compilation failed",
+                                () =>
+                                {
+                                    var notification = new NotificationModel("Compilation failed",
+                                        "Script compilation in Unity failed, so tests were not started.", true,
+                                        RdNotificationEntryType.INFO);
+                                    myNotificationsModel.Notification(notification);
+                                });
                             myUnityHost.PerformModelAction(model => model.ActivateUnityLogView());
                         }
                         else
@@ -170,10 +190,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             });
                         }
                     });
-                });    
+                });
             });
-
-            return tcs.Task;
         }
 
         private async Task Refresh(IShellLocks locks, Lifetime lifetime)
@@ -198,19 +216,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     "Periodic wait EditorState != UnityEditorState.Refresh",
                     TimeSpan.FromSeconds(1), () =>
                     {
-                        if (myEditorProtocol.UnityModel.Value != null)
+                        if (myEditorProtocol.UnityModel.Value == null) return;
+                        var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
+                        rdTask?.Result.Advise(lifetime, result =>
                         {
-                            var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
-                            rdTask?.Result.Advise(lifetime, result =>
+                            // [TODO] Backend ConnectionTracker has IsConnectionEstablished method which has same logic
+                            if (result.Result != UnityEditorState.Refresh && result.Result != UnityEditorState.Disconnected)
                             {
-                                // [TODO] Backend ConnectionTracker has IsConnectionEstablished method which has same logic
-                                if (result.Result != UnityEditorState.Refresh && result.Result != UnityEditorState.Disconnected)
-                                {
-                                    lifetimeDefinition.Terminate();
-                                    myLogger.Verbose("lifetimeDefinition.Terminate();");
-                                }
-                            });
-                        }
+                                lifetimeDefinition.Terminate();
+                                myLogger.Verbose("lifetimeDefinition.Terminate();");
+                            }
+                        });
                     });
             }, locks.Tasks.UnguardedMainThreadScheduler);
                 
@@ -265,7 +281,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var targetFrameworkId = parent.Id.TargetFrameworkId;
                     
                     var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
-                    unitTestElement = new NUnitDynamicRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
+                    unitTestElement = new NUnitRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
                     firstRun.AddDynamicElement(unitTestElement);
                     myElements.Add(myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId), unitTestElement);
                 }
@@ -353,12 +369,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public void Cancel(IUnitTestRun run)
         {
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "CancellingUnitTests", () =>
-                        {
-                            var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
-                            if (launchProperty != null && launchProperty.HasValue())
-                                launchProperty.Value?.Abort.Start(Unit.Instance);
-                             run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
-                        });
+            {
+                var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+                if (launchProperty != null && launchProperty.HasValue())
+                    launchProperty.Value?.Abort.Start(Unit.Instance);
+                run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
+            });
         }
 
         public void Abort(IUnitTestRun run)

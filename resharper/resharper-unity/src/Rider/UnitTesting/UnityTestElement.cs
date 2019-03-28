@@ -172,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             }
         }
 
-        public UnitTestElementState State { get; set; }
+        public UnitTestElementOrigin Origin { get; set; }
         
         private class StubRemoteTask : RemoteTask
         {

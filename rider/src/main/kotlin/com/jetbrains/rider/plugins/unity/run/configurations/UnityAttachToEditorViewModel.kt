@@ -16,7 +16,7 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
     val editorInstanceJsonStatus: EditorInstanceJsonStatus
     val editorProcesses: ViewableList<EditorProcessInfo> = ViewableList()
     val pid: IProperty<Int?> = Property(null)
-
+    val isUserSelectedPid : Property<Boolean> = Property(false)
     data class EditorProcessInfo(val name: String, val pid: Int?)
 
     init {

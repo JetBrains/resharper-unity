@@ -14,10 +14,7 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
-import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
-import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
+import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
@@ -25,9 +22,9 @@ import org.jdom.Element
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
-        RunConfigurationWithSuppressedDefaultRunAction,
-        RemoteConfiguration,
-        WithoutOwnBeforeRunSteps {
+    RunConfigurationWithSuppressedDefaultRunAction,
+    RemoteConfiguration,
+    WithoutOwnBeforeRunSteps {
 
     // TEMP, will be removed in 19.2
     companion object {
@@ -38,10 +35,12 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     override var port: Int = -1
     override var address: String = "127.0.0.1"
     var pid: Int? = null
+    var isUserSelectedPid = false
 
     override fun clone(): RunConfiguration {
         val configuration = super.clone() as UnityAttachToEditorRunConfiguration
         configuration.pid = pid
+        configuration.isUserSelectedPid = isUserSelectedPid
         return configuration
     }
 
@@ -56,12 +55,10 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
 
         for (ext in EP_NAME.getExtensions(project)) {
             if (ext.canExecute(executorId)) {
-                UpdatePidAndPort()
                 val finder = UnityInstallationFinder.getInstance(project)
-                val args = mutableListOf("-projectPath", project.basePath.toString())
+                val args = getUnityWithProjectArgs(project)
                 if (play) {
-                    args.add("-executeMethod")
-                    args.add("JetBrains.Rider.Unity.Editor.StartUpMethodExecutor.EnterPlayMode")
+                    addPlayModeArguments(args)
                 }
 
                 return ext.executor(UnityAttachConfigurationParametersImpl(pid, finder.getApplicationPath(), args), environment)
@@ -70,8 +67,6 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
 
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID)
             return UnityAttachToEditorProfileState(this, environment)
-
-
 
         return null
     }
@@ -82,21 +77,40 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         // We could do this in getState, but if we throw an error there, it just shows a balloon
         // If we throw an error here (at least, RuntimeConfigurationError), it will cause the
         // Edit Run Configurations dialog to be shown
-        if (!UpdatePidAndPort())
+        if (!updatePidAndPort() && UnityInstallationFinder.getInstance(project).getApplicationPath() == null)
             throw RuntimeConfigurationError("Cannot find Unity Editor instance")
     }
 
-    private fun UpdatePidAndPort() : Boolean {
-
+    private fun updatePidAndPort() : Boolean {
         val processList = OSProcessUtil.getProcessList()
 
         // We might have a pid from a previous run, but the editor might have died
-        pid = checkValidEditorInstance(pid, processList)
-            ?: findUnityEditorInstance(processList)
-            ?: return false
+        pid = if (isUserSelectedPid) {
+            checkValidEditorInstance(pid, processList) ?: findUnityEditorInstance(processList)
+        } else {
+            findUnityEditorInstance(processList)
+        }
+
+        if (pid == null)
+            return false
 
         port = convertPidToDebuggerPort(pid!!)
         return true
+    }
+
+    private fun findUnityEditorInstance(processList: Array<ProcessInfo>): Int? {
+        isUserSelectedPid = false
+        return findUnityEditorInstanceFromEditorInstanceJson(processList)
+            ?: findUnityEditorInstanceFromProcesses(processList)
+    }
+
+    private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
+        val (status, editorInstanceJson) = EditorInstanceJson.load(project)
+        if (status == EditorInstanceJsonStatus.Valid && editorInstanceJson != null) {
+            return checkValidEditorInstance(editorInstanceJson.process_id, processList)
+        }
+
+        return null
     }
 
     private fun checkValidEditorInstance(pid: Int?, processList: Array<ProcessInfo>): Int? {
@@ -109,27 +123,13 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         return null
     }
 
-    private fun findUnityEditorInstance(processList: Array<ProcessInfo>): Int? {
-        return findUnityEditorInstanceFromEditorInstanceJson(processList)
-                ?: findUnityEditorInstanceFromProcesses(processList)
-    }
-
-    private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
-        val (status, editorInstanceJson) = EditorInstanceJson.load(project)
-        if (status == EditorInstanceJsonStatus.Valid && editorInstanceJson != null) {
-            return checkValidEditorInstance(editorInstanceJson.process_id, processList)
-        }
-
-        return null
-    }
-
-    private fun findUnityEditorInstanceFromProcesses(processList: Array<ProcessInfo>): Int {
+    private fun findUnityEditorInstanceFromProcesses(processList: Array<ProcessInfo>): Int? {
 
         val pids = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
-                .map { it.pid }
+            .map { it.pid }
 
         if (pids.isEmpty()) {
-            throw RuntimeConfigurationError("No Unity Editor instances found")
+            return null
         } else if (pids.size > 1) {
             throw RuntimeConfigurationError("Multiple Unity Editor instances found")
         }

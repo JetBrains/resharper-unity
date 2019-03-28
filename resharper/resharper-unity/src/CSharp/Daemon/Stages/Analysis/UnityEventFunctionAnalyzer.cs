@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
+using JetBrains.Collections;
+using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-#if RIDER
-using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
-#endif
+using JetBrains.Util;
 using JetBrains.Util.dataStructures;
 using JetBrains.Util.DataStructures;
 
@@ -23,21 +21,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
             typeof(InvalidParametersWarning),
-            typeof(InvalidTypeParametersWarning),
-            #if RIDER
-            typeof(UnityCodeInsightsHighlighting)
-            #else
-            typeof(UnityGutterMarkInfo),
-            #endif
+            typeof(InvalidTypeParametersWarning)
         })]
     public class UnityEventFunctionAnalyzer : MethodSignatureProblemAnalyzerBase<IMemberOwnerDeclaration>
     {
-        private readonly UnityImplicitUsageHighlightingContributor myImplicitUsageHighlightingContributor;
+        public static readonly Key<ISet<IMethod>> UnityEventFunctionNodeKey = new Key<ISet<IMethod>>("UnityEventFunctionNodeKey");
+        private readonly object mySyncObject = new object();
 
-        public UnityEventFunctionAnalyzer(UnityApi unityApi, UnityImplicitUsageHighlightingContributor implicitUsageHighlightingContributor)
+        public UnityEventFunctionAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
-            myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
         }
 
         protected override void Analyze(IMemberOwnerDeclaration element, ElementProblemAnalyzerData data,
@@ -64,16 +57,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     map.AddValue(unityEventFunction, new Candidate(instance.Member, match));
             }
 
-            foreach (var pair in map)
+            foreach (var (function, candidates) in map)
             {
-                var function = pair.Key;
-                var candidates = pair.Value;
                 if (candidates.Count == 1)
                 {
                     // Only one function, mark it as a unity function, even if it's not an exact match
                     // We'll let other inspections handle invalid signatures
                     var method = candidates[0].Method;
-                    myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(consumer, method, function);
+                    PutEventToCustomData( method, data);
                     AddMethodSignatureInspections(consumer, method, function, candidates[0].Match);
                 }
                 else
@@ -89,8 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                             hasExactMatch = true;
                             if (Equals(candidate.Method.GetContainingType(), typeElement))
                             {
-                                myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(
-                                    consumer, candidate.Method, function);
+                                PutEventToCustomData(candidate.Method, data);
                                 duplicates.Add(candidate.Method);
                             }
                         }
@@ -118,13 +108,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                             if (Equals(candidate.Method.GetContainingType(), typeElement))
                             {
                                 var method = candidate.Method;
-                                myImplicitUsageHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(
-                                    consumer, method, function);
+                                PutEventToCustomData(method, data);
                                 AddMethodSignatureInspections(consumer, method, function, candidate.Match);
                             }
                         }
                     }
                 }
+            }
+        }
+
+        private void PutEventToCustomData(IMethod method, ElementProblemAnalyzerData data)
+        {
+            lock (mySyncObject)
+            {
+                var daemon = data.TryGetDaemonProcess();
+                if (daemon == null)
+                    return;
+
+                var customData = daemon.CustomData.GetOrCreateDataNoLock(UnityEventFunctionNodeKey, () => new HashSet<IMethod>());
+                customData.Add(method);
             }
         }
 

@@ -2,24 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using JetBrains.Application;
+using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Util;
 using JetBrains.Util.Interop;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
-    [ShellComponent]
-    public class UnityInstallationFinder
+    public static class UnityInstallationFinder
     {
-        private readonly ILogger myLogger;
+        private static readonly ILogger ourLogger = Logger.GetLogger(typeof(UnityInstallationFinder));
 
-        public UnityInstallationFinder(ILogger logger)
-        {
-            myLogger = logger;
-        }
-
-        public UnityInstallationInfo GetApplicationInfo(Version version)
+        [CanBeNull]
+        public static UnityInstallationInfo GetApplicationInfo(Version version)
         {
             var possible = GetPossibleInstallationInfos().ToArray();
             var possibleWithVersion = possible.Where(a => a.Version != null).ToArray();
@@ -52,9 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return worstChoice;
         }
         
-        public FileSystemPath GetApplicationContentsPath(Version version)
+        public static FileSystemPath GetApplicationContentsPath(Version version)
         {
-            var applicationPath = GetApplicationInfo(version).Path;
+            var applicationPath = GetApplicationInfo(version)?.Path;
             if (applicationPath == null)
                 return null;
             switch (PlatformUtil.RuntimePlatform)
@@ -65,11 +61,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     case PlatformUtil.Platform.Windows:
                         return applicationPath.Directory.Combine("Data");
             }
-            myLogger.Error("Unknown runtime platform");
+            ourLogger.Error("Unknown runtime platform");
             return null;
         }
 
-        public List<UnityInstallationInfo> GetPossibleInstallationInfos()
+        public static List<UnityInstallationInfo> GetPossibleInstallationInfos()
         {
             var installations = GetPossibleApplicationPaths();
             return installations.Select(path =>
@@ -93,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }).ToList();
         }
 
-        public List<FileSystemPath> GetPossibleApplicationPaths()
+        public static List<FileSystemPath> GetPossibleApplicationPaths()
         {
             switch (PlatformUtil.RuntimePlatform)
             {
@@ -182,13 +178,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
                     foreach (var fileSystemPath in unityApps)
                     {
-                        myLogger.Log(LoggingLevel.VERBOSE, "Possible unity path: " + fileSystemPath);
+                        ourLogger.Log(LoggingLevel.VERBOSE, "Possible unity path: " + fileSystemPath);
                     }
                     return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
                     
                 }
             }
-            myLogger.Error("Unknown runtime platform");
+            ourLogger.Error("Unknown runtime platform");
             return new List<FileSystemPath>();
         }
 

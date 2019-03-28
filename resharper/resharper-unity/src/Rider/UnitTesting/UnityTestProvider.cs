@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return String.CompareOrdinal(x.ShortName, y.ShortName);
         }
 
-        public bool SupportsResultEventsFor(IUnitTestElement element)
+        public bool SupportsResultEventsForParentOf(IUnitTestElement element)
         {
             return false;
         }

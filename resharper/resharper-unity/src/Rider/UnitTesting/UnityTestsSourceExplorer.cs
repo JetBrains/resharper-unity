@@ -70,7 +70,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var fileExplorer = new UnityTestFileExplorer(psiFile, factory, myUnitTestAttributeCache, observer, interrupted, projectFile.GetProject());
 
             psiFile.ProcessDescendants(fileExplorer);
-            observer.OnCompleted();
         }
     }
 }

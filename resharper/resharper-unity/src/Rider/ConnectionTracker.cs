@@ -3,7 +3,6 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -18,21 +17,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private UnityEditorState myLastCheckResult = UnityEditorState.Disconnected;
 
-        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol, IShellLocks locks, UnitySolutionTracker unitySolutionTracker)
+        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol,
+            IShellLocks locks, UnitySolutionTracker unitySolutionTracker)
         {
-            unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
+            editorProtocol.UnityModel.View(lifetime, (lt, model) =>
             {
+                if (!unitySolutionTracker.IsUnityProjectFolder.HasTrueValue()) // avoid recurring checks for non-unity projects
+                    return;
+
                 //check connection between backend and unity editor
-                locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
+                locks.QueueRecurring(lt, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
                 {
-                    if (editorProtocol.UnityModel.Value == null)
-                    {
+                    if (model == null)
                         myLastCheckResult = UnityEditorState.Disconnected;
-                    }
                     else
                     {
-                        var rdTask = editorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
-                        rdTask?.Result.Advise(lifetime, result =>
+                        var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
+                        rdTask?.Result.Advise(lt, result =>
                         {
                             myLastCheckResult = result.Result;
                             logger.Trace($"myIsConnected = {myLastCheckResult}");

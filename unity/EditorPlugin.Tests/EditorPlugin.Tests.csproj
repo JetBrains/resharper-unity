@@ -5,6 +5,7 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor.Tests</RootNamespace>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Platform.RdCore35">

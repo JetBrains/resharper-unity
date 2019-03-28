@@ -145,6 +145,9 @@ namespace JetBrains.Rider.Unity.Editor
 
       // "/Applications/*Rider*.app"
       var folder = new DirectoryInfo("/Applications");
+      if (!folder.Exists)
+        return new RiderInfo[0];
+
       var results = folder.GetDirectories("*Rider*.app")
         .Select(a=> new RiderInfo(GetBuildNumber(Path.Combine(a.FullName, pathToBuildTxt)), a.FullName, false))
         .ToList();
@@ -300,10 +303,13 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static string[] GetExecutablePaths(string dirName, string searchPattern, bool isMac, string buildDir)
     {
-      var folder = Path.Combine(buildDir, dirName);
+      var folder = new DirectoryInfo(Path.Combine(buildDir, dirName));
+      if (!folder.Exists)
+        return new string[0];
+
       if (!isMac)
-        return new[] {Path.Combine(folder, searchPattern)}.Where(File.Exists).ToArray();
-      return new DirectoryInfo(folder).GetDirectories(searchPattern).Select(f => f.FullName)
+        return new[] {Path.Combine(folder.FullName, searchPattern)}.Where(File.Exists).ToArray();
+      return folder.GetDirectories(searchPattern).Select(f => f.FullName)
         .Where(Directory.Exists).ToArray();
     }
 

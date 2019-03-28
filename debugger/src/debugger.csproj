@@ -1,10 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net461</TargetFramework>
         <AssemblyName>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger</AssemblyName>
         <RootNamespace>JetBrains.ReSharper.Plugins.Unity.Rider.Debugger</RootNamespace>
         <LangVersion>7.2</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Rider.SDK" Version="$(RiderSDKVersion)" />

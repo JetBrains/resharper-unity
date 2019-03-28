@@ -20,32 +20,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     // This class describes the UI of a highlight (gutter icon), while an IHighlighting
     // is an instance of a highlight at a specific location in a document. The IHighlighting
     // instance refers to this highlighter's attribute ID to wire up the UI
-    public class UnityGutterMark : IconGutterMark
+    public class UnityGutterMark : AbstractUnityGutterMark
     {
         public UnityGutterMark()
             : base(UnityGutterIcons.UnityLogo.Id)
         {
-        }
-
-        public override IAnchor Anchor => BulbMenuAnchors.PermanentBackgroundItems;
-
-        public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
-        {
-            var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
-            if (solution == null)
-                return EmptyList<BulbMenuItem>.InstanceList;
-
-            var unityImplicitUsageHighlightingContributor = solution.GetComponent<UnityImplicitUsageHighlightingContributor>();
-
-            var daemon = solution.GetComponent<IDaemon>();
-            if (daemon.GetHighlighting(highlighter) is UnityGutterMarkInfo highlighting)
-            {
-                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                    return unityImplicitUsageHighlightingContributor.CreateBulbItemsForUnityDeclaration(highlighting
-                        .Declaration);
-            }
-
-            return EmptyList<BulbMenuItem>.InstanceList;
         }
     }
 }
