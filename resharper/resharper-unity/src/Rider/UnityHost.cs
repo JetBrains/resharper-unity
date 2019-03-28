@@ -9,9 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityHost
     {
-        // TODO: frontend isn't up in backend tests
         private readonly bool myIsInTests;
-
         private readonly RdUnityModel myModel;
 
         public UnityHost(ISolution solution, bool isInTests = false)
