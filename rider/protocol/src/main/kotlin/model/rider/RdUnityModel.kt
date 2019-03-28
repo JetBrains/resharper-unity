@@ -25,12 +25,12 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"StopPlayingAndRecompile"
     }
 
-    val FindUsageResult = structdef {
+    private val FindUsageResult = structdef {
         field("target", string)
         field("elements", array(FindUsageResultElement))
     }
 
-    val FindUsageResultElement = structdef {
+    private val FindUsageResultElement = structdef {
         field("isPrefab", bool)
         field("expandInTreeView", bool)
         field("filePath", string)
