@@ -34,8 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
 
-            if (!solution.SolutionDirectory.IsAbsolute) return; // DEXP-439021
-
             var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
             fileSystemTracker.AdviseFileChanges(lifetime,
                 projectVersionTxtPath,
