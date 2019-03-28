@@ -24,6 +24,11 @@
     <EmbeddedResource Remove="ShaderLab\Host\**" />
     <None Remove="ShaderLab\Host\**" />
   </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="**\Rider\**" />
+        <EmbeddedResource Remove="**\Rider\**" />
+        <None Remove="**\Rider\**" />
+    </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity.csproj" />
   </ItemGroup>
