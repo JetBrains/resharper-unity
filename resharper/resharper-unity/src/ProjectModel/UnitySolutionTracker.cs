@@ -31,6 +31,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 IsUnityProjectFolder.Value = false;
                 return;
             }
+            
+            if (!solution.SolutionDirectory.IsAbsolute) return; // RIDER-26122
 
             SetValues();
 
