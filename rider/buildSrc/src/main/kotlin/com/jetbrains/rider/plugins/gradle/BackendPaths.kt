@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.gradle
 
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.jetbrains.intellij.IntelliJPluginExtension
@@ -23,7 +24,9 @@ class BackendPaths(private val project: Project, logger: Logger, val repositoryR
         unityRoot = File(repositoryRoot, "unity")
         unityPluginSolution = File(unityRoot, "JetBrains.Rider.Unity.Editor.sln")
 
-        resharperHostPluginSolution = File(backendRoot, "resharper-unity.sln")
+        // Temporary workaround - the R# SDK contains yFile assembly that is obfuscated, and kills msbuild on mac
+        val sln = if (!Os.isFamily(Os.FAMILY_WINDOWS)) "rider-unity.sln" else "resharper-unity.sln"
+        resharperHostPluginSolution = File(backendRoot, sln)
         assert(resharperHostPluginSolution.isFile)
 
         bundledRiderSdkPath = File(repositoryRoot, "rider/dependencies")

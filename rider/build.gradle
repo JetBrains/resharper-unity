@@ -103,6 +103,8 @@ task publishCiBuildData {
     dependsOn publishCiBuildNumber, publishCiBackendArtifacts
 }
 
-if (buildServer.automatedBuild) {
+// Temporary workaround - we don't have full build data on any other platform than Windows, because the
+// ReSharper solution causes msbuild to crash on non-Windows platforms thanks to obfuscated assemblies
+if (buildServer.automatedBuild && ext.isWindows) {
     buildPlugin.finalizedBy publishCiBuildData
 }
