@@ -1,6 +1,4 @@
-using System.Drawing;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.TextControl.DocumentMarkup;
 
@@ -29,19 +27,19 @@ using JetBrains.TextControl.DocumentMarkup;
         EffectType = EffectType.SOLID_UNDERLINE,
         EffectColor = "#ff7526",
         NotRecyclable = true,
-        Layer = HighlighterLayer.SYNTAX + 1),
+        Layer = HighlighterLayer.SYNTAX),
 
     RegisterHighlighter(PerformanceHighlightingAttributeIds.NULL_COMPARISON,
         GroupId = UnityHighlightingGroupIds.Unity,
         EffectType = EffectType.SOLID_UNDERLINE,
         EffectColor = "#ff7526",
         NotRecyclable = true,
-        Layer = HighlighterLayer.SYNTAX + 1),
+        Layer = HighlighterLayer.SYNTAX),
 
     RegisterHighlighter(PerformanceHighlightingAttributeIds.CAMERA_MAIN,
         GroupId = UnityHighlightingGroupIds.Unity,
         EffectColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
-        Layer = HighlighterLayer.SYNTAX + 1),
+        Layer = HighlighterLayer.SYNTAX),
 ]

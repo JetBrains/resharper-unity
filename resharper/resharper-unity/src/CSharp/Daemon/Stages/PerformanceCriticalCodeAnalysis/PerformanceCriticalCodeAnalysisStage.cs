@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
@@ -92,10 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
-            var highlightingConsumer = new FilteringHighlightingConsumer(new PerformanceHighlightingConsumer(DaemonProcess.SourceFile, File)
-                ,DaemonProcess.SourceFile, File, DaemonProcess.ContextBoundSettingsStore);
-            AnalyzeFile(File, highlightingConsumer);
-            committer(new DaemonStageResult(highlightingConsumer.Highlightings));
+            HighlightInFile(AnalyzeFile, committer, DaemonProcess.ContextBoundSettingsStore);
         }
 
         private void AnalyzeFile(ICSharpFile file, IHighlightingConsumer consumer)
