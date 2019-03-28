@@ -167,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return version;
         }
 
-        public static string VersionToString(Version version)
+        public static string VersionToString([NotNull] Version version)
         {
             var type = string.Empty;
             var rev = string.Empty;
