@@ -13,7 +13,7 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
 [assembly:
     RegisterConfigurableSeverity(
         PerformanceInvocationHighlighting.SEVERITY_ID,
-        null,
+        UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
         UnityHighlightingGroupIds.Unity,
         PerformanceInvocationHighlighting.TITLE,
         PerformanceInvocationHighlighting.DESCRIPTION,
@@ -25,7 +25,7 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
         UnityHighlightingGroupIds.Unity,
         PerformanceNullComparisonHighlighting.TITLE,
         PerformanceNullComparisonHighlighting.DESCRIPTION,
-        Severity.INFO
+        Severity.HINT
     ),
     RegisterConfigurableSeverity(
         PerformanceCameraMainHighlighting.SEVERITY_ID,
@@ -33,7 +33,7 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
         UnityHighlightingGroupIds.Unity,
         PerformanceCameraMainHighlighting.TITLE,
         PerformanceCameraMainHighlighting.DESCRIPTION,
-        Severity.INFO
+        Severity.HINT
     )
 ]
 
