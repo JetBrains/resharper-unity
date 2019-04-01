@@ -215,6 +215,7 @@
   <li>Rider: Add support for git packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1028">#1028</a>)</li>
   <li>Rider: Add Unity toolbar button for class libraries (<a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
   <li>Rider: Tell Unity to refresh assets after VCS pull completes (<a href="https://github.com/JetBrains/resharper-unity/issues/947">#947</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1085">#1085</a>)</li>
+  <li>Rider: Add project name to list of debuggable players (Unity 2019.2 only) (<a href="https://github.com/JetBrains/resharper-unity/pull/1114">#1114</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
@@ -252,6 +253,7 @@
   <li>Rider: Improve error handling while looking for Toolbox installs (<a href="https://github.com/JetBrains/resharper-unity/issues/1089">#1089</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-25706">RIDER-25706</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1090">#1090</a>)</li>
   <li>Rider: Fix exception with Code Vision highlights (<a href="https://youtrack.jetbrains.com/issue/RIDER-26108">RIDER-26108</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-26156">RIDER-26156</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1109">#1109</a>)</li>
   <li>Rider: Fix exception reading `EditorInstance.json` (<a href="https://youtrack.jetbrains.com/issue/RIDER-26124">RIDER-26124</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1111">#1111</a>)</li>
+  <li>Rider: Minor UI annoyances in "Attach to Unity process" dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/1114">#1114</a>)</li>
   <li>Unity Editor: Use unique name for log file (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
   <li>Unity Editor: Don't call Unity API in batch mode (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
   <li>Unity Editor: Fix exception during Unity shutdown (<a href="https://youtrack.jetbrains.com/issue/RIDER-19688">RIDER-19688</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/979">#979</a>)</li>

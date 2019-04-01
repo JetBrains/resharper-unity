@@ -26,6 +26,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Add dialog to prompt Mac users to install mono for new scripting runtime projects ([RIDER-24005](https://youtrack.jetbrains.com/issue/RIDER-24005), [#1080](https://github.com/JetBrains/resharper-unity/pull/1080))
 - Rider: Add Unity toolbar button for class libraries ([#1109](https://github.com/JetBrains/resharper-unity/pull/1109))
 - Rider: Tell Unity to refresh assets after VCS pull completes ([#947](https://github.com/JetBrains/resharper-unity/issues/947), [#1085](https://github.com/JetBrains/resharper-unity/pull/1085))
+- Rider: Add project name to list of debuggable players (Unity 2019.2 only) ([#1114](https://github.com/JetBrains/resharper-unity/pull/1114))
 
 ### Changed
 - Performance critical context now works cross files ([#1037](https://github.com/JetBrains/resharper-unity/pull/1037))
@@ -61,6 +62,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Improve error handling while looking for Toolbox installs ([#1089](https://github.com/JetBrains/resharper-unity/issues/1089), [RIDER-25706](https://youtrack.jetbrains.com/issue/RIDER-25706), [#1090](https://github.com/JetBrains/resharper-unity/pull/1090))
 - Rider: Fix exception with Code Vision highlights ([RIDER-26108](https://youtrack.jetbrains.com/issue/RIDER-26108), [RIDER-26156](https://youtrack.jetbrains.com/issue/RIDER-26156), [#1109](https://github.com/JetBrains/resharper-unity/issues/1109))
 - Rider: Fix exception reading `EditorInstance.json` ([RIDER-26124](https://youtrack.jetbrains.com/issue/RIDER-26124), [#1111](https://github.com/JetBrains/resharper-unity/pull/1111))
+- Rider: Minor UI annoyances in "Attach to Unity process" dialog ([#1114](https://github.com/JetBrains/resharper-unity/pull/1114))
 - Unity Editor: Use unique name for log file ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Don't call Unity API in batch mode ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Fix exception during Unity shutdown ([RIDER-19688](https://youtrack.jetbrains.com/issue/RIDER-19688), [#979](https://github.com/JetBrains/resharper-unity/pull/979))
