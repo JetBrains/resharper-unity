@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -57,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (knownCostlyMethods != null && knownCostlyMethods.Contains(shortName))
                 return true;
 
-            return clrTypeName.Equals(KnownTypes.GameObject) && shortName.Equals("AddComponent") && invocationExpression.TypeArguments.Count == 1;
+            return clrTypeName.Equals(KnownTypes.GameObject) && shortName.Equals("AddComponent");
         }
 
         public static bool IsCameraMainUsage(IReferenceExpression referenceExpression)

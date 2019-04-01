@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
-using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -30,13 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
-            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
-            IShellLocks locks)
+            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, bool inTests = false)
         {
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
 
-            if (locks.Dispatcher.IsAsyncBehaviorProhibited) // for tests
+            if (inTests)
                 return;
 
             var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
@@ -170,7 +168,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return version;
         }
 
-        public static string VersionToString(Version version)
+        public static string VersionToString([NotNull] Version version)
         {
             var type = string.Empty;
             var rev = string.Empty;

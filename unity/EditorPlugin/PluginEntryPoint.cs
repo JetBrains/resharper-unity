@@ -106,8 +106,11 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static void Init()
+    public static void Init()
     {
+      if (ourInitialized)
+        return;
+
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
 
       var projectName = Path.GetFileName(projectDirectory);
@@ -520,9 +523,9 @@ namespace JetBrains.Rider.Unity.Editor
     [OnOpenAsset]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (!Enabled || UnityUtils.UnityVersion >= new Version(2019, 2))
+      if (!Enabled) // || UnityUtils.UnityVersion >= new Version(2019, 2)
         return false;
-      return OnOpenedAssetInternal(instanceID, line, 0);
+      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
     }
     
     /// <summary>
@@ -533,18 +536,6 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!Enabled || UnityUtils.UnityVersion < new Version(2019, 2))
         return false;
-      return OnOpenedAssetInternal(instanceID, line, column);
-    }
-
-    private static bool OnOpenedAssetInternal(int instanceID, int line, int column)
-    {
-      if (!ourInitialized)
-      {
-        // make sure the plugin was initialized first.
-        // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-        Init();
-      }
-
       return ourOpenAssetHandler.OnOpenedAsset(instanceID, line, column);
     }
 

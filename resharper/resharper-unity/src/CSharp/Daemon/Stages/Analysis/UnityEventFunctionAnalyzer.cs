@@ -125,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (daemon == null)
                     return;
 
-                var customData = daemon.CustomData.GetOrCreateDataNoLock(UnityEventFunctionNodeKey, () => new HashSet<IMethod>());
+                var customData = daemon.CustomData.GetOrCreateDataNoLock(UnityEventFunctionNodeKey, () => new JetHashSet<IMethod>());
                 customData.Add(method);
             }
         }

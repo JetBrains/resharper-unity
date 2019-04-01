@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rider.isLikeUnityGeneratedProject
+import com.jetbrains.rider.isUnityGeneratedProject
 import com.jetbrains.rd.util.reactive.Property
 
 class SwitchUIMode : AnAction() {
@@ -32,7 +32,7 @@ class SwitchUIMode : AnAction() {
         // Only enable UI switching for generated Unity projects. Sidecar projects
         // (class library in the main Unity folder) are fairly advanced anyway, so
         // leave things enabled. It also means these projects can access nuget
-        if(!project.isLikeUnityGeneratedProject()) {
+        if(!project.isUnityGeneratedProject()) {
             e.presentation.isEnabled = false
             return
         }

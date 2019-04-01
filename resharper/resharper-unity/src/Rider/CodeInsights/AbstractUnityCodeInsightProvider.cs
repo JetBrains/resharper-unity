@@ -6,11 +6,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Host.Features.TextControls;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl.TextControlsManagement;
-using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
@@ -50,7 +48,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
            }
         }
 
-        public bool IsAvailableIn(ISolution solution) => myUnitySolutionTracker.IsUnityProject.HasTrueValue();
+        // TODO: Fix sdk and add correct check
+        // We could not check that our provider is available while solution is loading, because user could add Unity Engine
+        // reference later. wait sdk update
+        public bool IsAvailableIn(ISolution solution) => true;
 
 
         public abstract string ProviderId { get; }

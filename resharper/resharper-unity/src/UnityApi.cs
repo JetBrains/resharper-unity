@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -164,6 +165,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public UnityEventFunction GetUnityEventFunction([NotNull] IMethod method, out MethodSignatureMatch match)
         {
+            Assertion.Assert(method.IsValid(), "DeclaredElement is not valid");
             match = MethodSignatureMatch.NoMatch;
 
             if (!(method.Module is IProjectPsiModule projectPsiModule))

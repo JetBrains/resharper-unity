@@ -32,16 +32,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (info == null)
                 return;
 
-            var contentPath = UnityInstallationFinder.GetApplicationContentsPath(version);
-
             host.PerformModelAction(rd =>
             {
                 // ApplicationPath may be already set via UnityEditorProtocol, which is more accurate
                 if (!rd.ApplicationPath.HasValue())
                     rd.ApplicationPath.SetValue(info.Path.FullPath);
                 if (!rd.ApplicationContentsPath.HasValue())
-                    rd.ApplicationContentsPath.SetValue(contentPath.FullPath);
-                if (!rd.ApplicationVersion.HasValue())
+                {
+                    var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(version);
+                    if (contentsPath != null)
+                        rd.ApplicationContentsPath.SetValue(contentsPath.FullPath);
+                }
+                if (!rd.ApplicationVersion.HasValue() && info.Version != null)
                     rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(info.Version));
             });
         }

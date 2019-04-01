@@ -60,7 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             myProcessKind = processKind;
 
             myEventFunctions = DaemonProcess.CustomData.GetData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey)
-                ?.ToJetHashSet();
+                ?.Where(t => t.IsValid()).ToJetHashSet();
+            
+            // TODO : VisibleDaemonDocument do not clean custom data for document, fix it in sdk
+            DaemonProcess.CustomData.PutData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey, new JetHashSet<IMethod>());
+                
         }
 
         public override void Execute(Action<DaemonStageResult> committer)

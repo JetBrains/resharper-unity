@@ -2,7 +2,7 @@
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.Explanatory;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
 {

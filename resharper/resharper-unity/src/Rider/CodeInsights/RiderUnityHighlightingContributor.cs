@@ -1,35 +1,33 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
+using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.Application.UI.Tooltips;
+using JetBrains.Collections.Viewable;
+using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
-using JetBrains.ReSharper.Host.Features.CodeInsights;
-using JetBrains.ReSharper.Host.Features.Icons;
 using JetBrains.ReSharper.Host.Platform.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl;
-using JetBrains.UI.Icons;
+using JetBrains.Threading;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
@@ -40,18 +38,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly ConnectionTracker myConnectionTracker;
+        private readonly UnitySolutionTracker mySolutionTracker;
         private readonly IconHost myIconHost;
 
-        public RiderUnityHighlightingContributor(ISolution solution, ITextControlManager textControlManager,
+        public RiderUnityHighlightingContributor(Lifetime lifetime, ISolution solution, ITextControlManager textControlManager,
             UnityCodeInsightFieldUsageProvider fieldUsageProvider, UnityCodeInsightProvider codeInsightProvider,
-            ISettingsStore settingsStore, ConnectionTracker connectionTracker, SolutionAnalysisService swa,
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer, IconHost iconHost = null)
+            ISettingsStore settingsStore, ConnectionTracker connectionTracker, SolutionAnalysisService swa, IShellLocks locks,
+            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnitySolutionTracker solutionTracker, IconHost iconHost = null)
             : base(solution, settingsStore, textControlManager, swa, analyzer)
         {
             myFieldUsageProvider = fieldUsageProvider;
             myCodeInsightProvider = codeInsightProvider;
             myConnectionTracker = connectionTracker;
+            mySolutionTracker = solutionTracker;
             myIconHost = iconHost;
+            var invalidateDaemonResultGroupingEvent = locks.GroupingEvents.CreateEvent(lifetime,
+                "UnityHiglightingContributor::InvalidateDaemonResults", TimeSpan.FromSeconds(5), Rgc.Guarded,
+                () =>
+                {
+                    solution.GetComponent<IDaemon>().Invalidate();
+                });
+            myConnectionTracker.State.Change.Advise_HasNew(lifetime, value =>
+            {
+                var old = value.HasOld ? value.Old : UnityEditorState.Disconnected;
+                var @new = value.New;
+                
+                // disconnect -> ??? -> disconnect is rarely case, we do not check it
+                // connected -> ??? -> connected is the most important case
+                if (old != UnityEditorState.Disconnected &&  @new != UnityEditorState.Disconnected)
+                {
+                    invalidateDaemonResultGroupingEvent.CancelIncoming();
+                }
+                else if (old == UnityEditorState.Disconnected && @new != UnityEditorState.Disconnected ||
+                         @new == UnityEditorState.Disconnected && old != UnityEditorState.Disconnected)
+                {
+                    invalidateDaemonResultGroupingEvent.FireIncoming();
+                }
+            });
         }
 
         public override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string tooltip,
@@ -88,18 +111,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (declaredElement == null || !declaredElement.IsValid())
                 return;
 
-
             var extraActions = new List<CodeLensEntryExtraActionModel>();
-            if (!myConnectionTracker.IsConnectionEstablished())
+            if (mySolutionTracker.IsUnityProject.HasTrueValue() && !myConnectionTracker.IsConnectionEstablished())
             {
-                extraActions.Add(new CodeLensEntryExtraActionModel("Unity is off", null));
-                extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity",
+                extraActions.Add(new CodeLensEntryExtraActionModel("Unity is not running", null));
+                extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity Editor",
                     AbstractUnityCodeInsightProvider.StartUnityActionId));
             }
             
             var iconId = isIconHot ? InsightUnityIcons.InsightHot.Id : InsightUnityIcons.InsightUnity.Id;
             consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                displayName, tooltip, codeInsightsProvider, declaredElement,
+                // TODO pass tooltip correctly (waiting sdk update)
+                displayName, displayName, codeInsightsProvider, declaredElement,
                 myIconHost.Transform(iconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
         }
 
@@ -128,7 +151,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             return EmptyList<BulbMenuItem>.Instance;
         }
-
-
     }
 }
