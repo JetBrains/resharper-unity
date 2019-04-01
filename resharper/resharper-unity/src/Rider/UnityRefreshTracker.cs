@@ -6,6 +6,7 @@ using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
+using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
@@ -63,7 +64,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force}");
             var task = myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
-            CurrentTask = task;
+
+            var tcs = new TaskCompletionSource<Unit>();
+            myLifetime.Bracket(() => { }, () => { tcs.SetCanceled(); });
 
             var lifetimeDef = Lifetime.Define(myLifetime);
             var solution = mySolution.GetProtocolSolution();
@@ -74,21 +77,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             task.ContinueWith(_ =>
             {
+                var list = new List<string> {solFolder.FullPath};
                 mySolution.Locks.ExecuteOrQueueEx(lifetimeDef.Lifetime, "RefreshPaths", () =>
                 {
-                    try
+                    var res = solution.GetFileSystemModel().RefreshPaths.StartAsTask(new RdRefreshRequest(list, true));
+                    res.ContinueWith(__ =>
                     {
-                        var list = new List<string> {solFolder.FullPath};
-                        solution.GetFileSystemModel().RefreshPaths.Start(new RdRefreshRequest(list, true));
-                    }
-                    finally
-                    {
-                        CurrentTask = null;
-                        lifetimeDef.Terminate();
-                    }
+                        mySolution.Locks.ExecuteOrQueueEx(lifetimeDef.Lifetime, "RefreshPaths", () =>
+                        {
+                            CurrentTask = null;
+                            lifetimeDef.Terminate();
+                            tcs.SetResult(Unit.Instance);
+                        });
+                    });
                 });
             });
-            return task;
+
+            CurrentTask = tcs.Task;
+            return tcs.Task;
         }
     }
 
