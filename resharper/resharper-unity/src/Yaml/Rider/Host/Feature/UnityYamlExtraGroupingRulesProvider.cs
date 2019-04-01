@@ -90,11 +90,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
         {
-            if (occurrence is ReferenceOccurrence referenceOccurrence &&
-                referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
+            using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                return CreateModel(UnityObjectPsiUtil.GetGameObjectPathFromComponent(mySceneProcessor, reference.ComponentDocument));
+                if (occurrence is ReferenceOccurrence referenceOccurrence &&
+                    referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
+                {
+                    return CreateModel(
+                        UnityObjectPsiUtil.GetGameObjectPathFromComponent(mySceneProcessor,
+                            reference.ComponentDocument));
+                }
             }
+
             return EmptyModel();
         }
 
@@ -115,10 +121,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
         {
-            if (occurrence is ReferenceOccurrence referenceOccurrence &&
-                referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
+            using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                return CreateModel(UnityObjectPsiUtil.GetComponentName(reference.ComponentDocument));
+                if (occurrence is ReferenceOccurrence referenceOccurrence &&
+                    referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
+                {
+                    return CreateModel(UnityObjectPsiUtil.GetComponentName(reference.ComponentDocument));
+                }
             }
 
             return EmptyModel();
