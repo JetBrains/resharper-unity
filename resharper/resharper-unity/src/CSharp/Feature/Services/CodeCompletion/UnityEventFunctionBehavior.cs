@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
@@ -46,8 +47,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var psiServices = solution.GetPsiServices();
 
             // Get the node at the caret. This will be the identifier
-            var identifierNode = TextControlToPsi.GetElement<ITreeNode>(solution, textControl);
+            var identifierNode = TextControlToPsi.GetElement<ITreeNode>(solution, textControl) as IIdentifier;
             if (identifierNode == null)
+                return;
+
+            var methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
+            if (UpdateExistingMethod(methodDeclaration, psiServices))
                 return;
 
             // Delete the half completed identifier node. Also delete any explicitly entered return type, as our
@@ -81,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             psiServices.Files.CommitAllDocuments();
 
-            var methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
+            methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
             if (methodDeclaration == null) return;
 
             var attributeList = methodDeclaration.FirstChild as IAttributeSectionList;
@@ -124,6 +129,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     transactionCookie.Commit();
                 }
             }
+        }
+
+        private bool UpdateExistingMethod([CanBeNull] IMethodDeclaration methodDeclaration, IPsiServices psiServices)
+        {
+            if (methodDeclaration?.Body == null)
+                return false;
+
+            var classLikeDeclaration = methodDeclaration.GetContainingTypeDeclaration() as IClassLikeDeclaration;
+            if (classLikeDeclaration == null)
+                return false;
+
+            using (var cookie = new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "UpdateExistingMethod"))
+            using (WriteLockCookie.Create())
+            {
+                methodDeclaration.SetName(myEventFunction.Name);
+                // TODO: We should also update return type and parameters
+                // This doesn't work - it doesn't shorten the references and we end up "global::System.Void". Don't know
+                // why and don't have time to look into right now.
+                // At least the method signature inspections will help fix up if necessary
+                // When this comes back, remember to try to match the existing parameters - they might be correct but
+                // renamed. We don't want to set the names back and break code
+//                methodDeclaration.SetTypeUsage(newDeclaration.TypeUsage);
+//                methodDeclaration.SetParams(newDeclaration.Params);
+
+                cookie.Commit();
+            }
+
+            return true;
         }
     }
 }

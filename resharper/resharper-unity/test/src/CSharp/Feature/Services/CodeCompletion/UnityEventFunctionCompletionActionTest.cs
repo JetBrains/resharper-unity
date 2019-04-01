@@ -19,5 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
         [Test] public void MonoBehaviour08() { DoNamedTest(); }
         [Test] public void MonoBehaviour09() { DoNamedTest(); }
         [Test] public void GeneratedCodeResolvesNamespaceGlobally() { DoNamedTest(); }
+        [Test] public void RetypeNameOnExistingMethod() { DoNamedTest(); }
+        [Test] public void RetypeNameOnExistingMethodWithDifferentArgs() { DoNamedTest(); }
     }
 }

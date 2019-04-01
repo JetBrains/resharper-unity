@@ -153,6 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return item;
         }
 
+        // ReSharper disable once UnusedParameter.Local
         private ILookupItem SetLexicographicalSortPriority(ILookupItem item, UnityEventFunction function)
         {
             // When items are sorted lexicographically, first sort key is Location, then Rank, then OrderString.
@@ -294,19 +295,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 // Don't complete if there is a preceding [SerializeField] attribute
                 if (HasSerializedFieldAttribute(methodDeclaration)) return false;
 
-                // Check the whole text of the declaration - if it ends (or even starts)
-                // with "__" (which is the completion marker) then we have an incomplete
-                // method declaration and we're good to complete at this position
+                // Check the whole text of the declaration - if it ends (or even starts) with "__" (which is the
+                // completion marker) then we have an incomplete method declaration and we're good to complete at this
+                // position
                 var declarationText = methodDeclaration.GetText();
                 if (declarationText.StartsWith("__") || declarationText.EndsWith("__"))
                     return true;
 
-                // E.g. `OnAni{caret} [SerializeField]` causes the parser to treat
-                // the next construct's attribute as an array specifier to the type
-                // usage we're typing. (If there's already a type, then the parser
-                // thinks it's a property). So, if we have an array rank, check to
-                // see if the token following the `[` is an identifier. If so, it's
-                // likely it should be an attribute instead, so allow completion.
+                if (identifier == methodDeclaration.NameIdentifier)
+                    return true;
+
+                // E.g. `OnAni{caret} [SerializeField]` causes the parser to treat the next construct's attribute as an
+                // array specifier to the type usage we're typing. (If there's already a type, then the parser thinks
+                // it's a property). So, if we have an array rank, check to see if the token following the `[` is an
+                // identifier. If so, it's likely it should be an attribute instead, so allow completion.
                 var typeUsage = identifier.GetContainingNode<ITypeUsage>();
                 if (typeUsage != null)
                 {
