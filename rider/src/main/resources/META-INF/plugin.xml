@@ -197,16 +197,28 @@
   <li>Add inspection and quick fix to avoid inefficient order of multiplication operations (<a href="https://github.com/JetBrains/resharper-unity/issues/1031">#1031</a>)</li>
   <li>Add warning for string literal use in <tt>Animator.ResetTrigger</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-24421">RIDER-24421</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1035">#1035</a>)</li>
   <li>Add support for marking ECS types and fields as "in use" (<a href="https://github.com/JetBrains/resharper-unity/issues/1010">#1010</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1036">#1036</a>)</li>
-  <li>Rider: Support for git packages in Unity Explorer</li>
+  <li>Add gutter icon indicator for event function that "hides" a private event function in a base class (<a href="https://youtrack.jetbrains.com/issue/RIDER-14698">RIDER-14698</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
+  <li>Rider: Add support for git packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/1028">#1028</a>)</li>
   <li>Rider: Add notification if there isn't a player log to show (<a href="https://github.com/JetBrains/resharper-unity/issues/820">#820</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1006">#1006</a> - thanks @ajon542!)</li>
+  <li>Rider: Add dialog to prompt Mac users to install mono for new scripting runtime projects (<a href="https://youtrack.jetbrains.com/issue/RIDER-24005">RIDER-24005</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Performance critical context now works cross files (<a href="https://github.com/JetBrains/resharper-unity/pull/1037">#1037</a>)</li>
+  <li>Event functions can be grouped by base classes in Generate dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/810">#810</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
   <li>Rider: Graceful handling of out of sync Unity Editor plugin versions (<a href="https://github.com/JetBrains/resharper-unity/pull/963">#963</a>)</li>
   <li>Unity Editor: Allow opening assets imported by <tt>ScriptedImporters</tt> (<a href="https://github.com/JetBrains/resharper-unity/issues/981">#981</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/995">#995</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
+  <li>Event handler completion no longer matches on parameter types, only method names (<a href="https://youtrack.jetbrains.com/issue/RIDER-22944">RIDER-22944</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
+  <li>No longer shows code completion after <tt>[SerializeField]</tt> attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
+  <li>Correctly resolves generated code when there is a namespace called <tt>System</tt> in the current context (<a href="https://youtrack.jetbrains.com/issue/RIDER-22605">RIDER-22605</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">1081</a>)</li>
+  <li>Correctly handle code generation of event functions that are implemented as virtual methods (<a href="https://youtrack.jetbrains.com/issue/RIDER-17104">RIDER-17104</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/603">603</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/879">879</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">1081</a>)</li>
+  <li>Correctly update name of existing method declaration with code completion (<a href="https://youtrack.jetbrains.com/issue/RIDER-9555">RIDER-9555</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-14037">RIDER-14037</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">1081</a>)</li>
+  <li>Only show event function completion in classes, not structs or interfaces (<a href="https://youtrack.jetbrains.com/issue/RIDER-14147">RIDER-14147</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/420">420</a>, <a href="https://github.com/JetBrains/resharper-uniyt/pull/1081">1081</a>)</li>
+  <li>Respect existing access modifier in code completion (<a href="https://youtrack.jetbrains.com/issue/RIDER-15290">RIDER-15290</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">1081</a>)</li>
+  <li>Remove incorrect method signature warning if method is implementing a virtual method (<a href="https://github.com/JetBrains/resharper-unity/issues/876">876</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">1081</a>)</li>
   <li>Rider: Show packages from correct per-project cache in Unity Explorer</li>
   <li>Rider: Fix creation of Unity class library project if can't find Unity install (<a href="https://github.com/JetBrains/resharper-unity/issue/1013">#1013</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1014">#1014</a>)</li>
   <li>Unity Editor: Use unique name for log file (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
