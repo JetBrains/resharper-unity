@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Feature.Services.Daemon
                 descriptors.Add(secondDescriptorPair.First, secondDescriptorPair.Second);
             }
 
-            return new TestSolutionConfiguration(FileSystemPath.Parse(SolutionFileName), descriptors);
+            return new TestSolutionConfiguration(FileSystemPath.Empty, descriptors);
         }
     }
 }
