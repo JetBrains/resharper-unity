@@ -5,6 +5,7 @@ using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
@@ -75,23 +76,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime,
                 RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...").AsIndeterminate().AsNonCancelable());
 
-            task.ContinueWith(_ =>
-            {
-                var list = new List<string> {solFolder.FullPath};
-                mySolution.Locks.ExecuteOrQueueEx(lifetimeDef.Lifetime, "RefreshPaths", () =>
+            var list = new List<string> {solFolder.FullPath};
+            task.ContinueWithTask(lifetimeDef.Lifetime, solution.GetFileSystemModel().RefreshPaths.StartAsTask(new RdRefreshRequest(list, true)))
+                .ContinueWithTask(lifetimeDef.Lifetime, myLocks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainDispatcher, () =>
                 {
-                    var res = solution.GetFileSystemModel().RefreshPaths.StartAsTask(new RdRefreshRequest(list, true));
-                    res.ContinueWith(__ =>
-                    {
-                        mySolution.Locks.ExecuteOrQueueEx(lifetimeDef.Lifetime, "RefreshPaths", () =>
-                        {
-                            CurrentTask = null;
-                            lifetimeDef.Terminate();
-                            tcs.SetResult(Unit.Instance);
-                        });
-                    });
-                });
-            });
+                    CurrentTask = null;
+                    lifetimeDef.Terminate();
+                    tcs.SetResult(Unit.Instance);
+                }));
 
             CurrentTask = tcs.Task;
             return tcs.Task;
