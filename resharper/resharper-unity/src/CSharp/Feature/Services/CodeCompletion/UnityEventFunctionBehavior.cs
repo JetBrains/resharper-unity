@@ -38,11 +38,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             LookupItemInsertType lookupItemInsertType, Suffix suffix,
             ISolution solution, bool keepCaretStill)
         {
-            var rangeMarker = nameRange.CreateRangeMarkerWithMappingToDocument();
-            Accept(textControl, rangeMarker, solution);
+            Accept(textControl, nameRange, solution);
         }
 
-        private void Accept(ITextControl textControl, IRangeMarker rangeMarker, ISolution solution)
+        private void Accept(ITextControl textControl, DocumentRange nameRange, ISolution solution)
         {
             var psiServices = solution.GetPsiServices();
 
@@ -64,6 +63,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 typeUsage = fieldDeclaration?.GetPreviousMeaningfulSibling() as ITypeUsage;
             }
 
+            var parameterListStart = methodDeclaration?.LPar;
+            var parameterListEnd = methodDeclaration?.RPar;
+
             using (var cookie = new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "RemoveIdentifier"))
             using (new DisableCodeFormatter())
             {
@@ -71,7 +73,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 {
                     ModificationUtil.DeleteChild(identifierNode);
                     if (typeUsage != null)
+                    {
+                        nameRange = nameRange.Shift(-typeUsage.GetTextLength());
                         ModificationUtil.DeleteChild(typeUsage);
+
+                        // Also delete the parameter list, if there is one. If there was an existing method declaration,
+                        // with parameter list and body, we would have fixed it by simply replacing the name. Deleting
+                        // an existing parameter list allows rewriting the return type, method name, parameter list and
+                        // body
+                        if (parameterListStart != null && parameterListEnd != null)
+                            ModificationUtil.DeleteChildRange(parameterListStart, parameterListEnd);
+                        else if (parameterListStart != null)
+                            ModificationUtil.DeleteChild(parameterListStart);
+                        else if (parameterListEnd != null)
+                            ModificationUtil.DeleteChild(parameterListEnd);
+                    }
                 }
 
                 cookie.Commit();
@@ -82,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // them once the declared element has expanded. This also fixes up the case where the type usage picks up
             // the attribute of the next code construct as an array specifier. E.g. `OnAni{caret} [SerializeField]`
             using (WriteLockCookie.Create())
-                textControl.Document.InsertText(rangeMarker.DocumentRange.StartOffset, "void Foo(){}");
+                textControl.Document.InsertText(nameRange.StartOffset, "void Foo(){}");
 
             psiServices.Files.CommitAllDocuments();
 
@@ -144,6 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             using (WriteLockCookie.Create())
             {
                 methodDeclaration.SetName(myEventFunction.Name);
+
                 // TODO: We should also update return type and parameters
                 // This doesn't work - it doesn't shorten the references and we end up "global::System.Void". Don't know
                 // why and don't have time to look into right now.
