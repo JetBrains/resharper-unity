@@ -194,19 +194,36 @@
 <strong>New in 2019.1</strong>
 <em>Added:</em>
 <ul>
+  <li>Add performance profiling for Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1073">#1073</a>)</li>
   <li>Add inspection and quick fix to avoid inefficient order of multiplication operations (<a href="https://github.com/JetBrains/resharper-unity/issues/1031">#1031</a>)</li>
   <li>Add warning for string literal use in <tt>Animator.ResetTrigger</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-24421">RIDER-24421</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1035">#1035</a>)</li>
   <li>Add support for marking ECS types and fields as "in use" (<a href="https://github.com/JetBrains/resharper-unity/issues/1010">#1010</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1036">#1036</a>)</li>
   <li>Add gutter icon indicator for event function that "hides" a private event function in a base class (<a href="https://youtrack.jetbrains.com/issue/RIDER-14698">RIDER-14698</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
+  <li>Add Unity version to error report environment details (<a href="https://github.com/JetBrains/resharper-unity/pull/1103">#1103</a>)</li>
+  <li>Add ability to find similar issues for performance indicators (<a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
   <li>Rider: Add support for git packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/1028">#1028</a>)</li>
   <li>Rider: Add notification if there isn't a player log to show (<a href="https://github.com/JetBrains/resharper-unity/issues/820">#820</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1006">#1006</a> - thanks @ajon542!)</li>
   <li>Rider: Add dialog to prompt Mac users to install mono for new scripting runtime projects (<a href="https://youtrack.jetbrains.com/issue/RIDER-24005">RIDER-24005</a>)</li>
+  <li>Rider: Debug unit tests using the Debug toolbar button (<a href="https://github.com/JetBrains/resharper-unity/pull/1094">#1094</a>)</li>
+  <li>Rider: Add notification to update plugin if plugin is out of date and automatic update is disabled (<a href="https://youtrack.jetbrains.com/issue/RIDER-22662">RIDER-22662</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/963">#963</a>)</li>
+  <li>Rider: Add notification when "Show Usages in Unity" is clicked and asset serialisation is not set to "force text" (<a href="https://github.com/JetBrains/resharper-unity/pull/1087">#1087</a>)</li>
+  <li>Rider: Add support for git packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1028">#1028</a>)</li>
+  <li>Rider: Add Unity toolbar button for class libraries (<a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
+  <li>Rider: Tell Unity to refresh assets after VCS pull completes (<a href="https://github.com/JetBrains/resharper-unity/issues/947">#947</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1085">#1085</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
   <li>Performance critical context now works cross files (<a href="https://github.com/JetBrains/resharper-unity/pull/1037">#1037</a>)</li>
   <li>Event functions can be grouped by base classes in Generate dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/810">#810</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
-  <li>Rider: Graceful handling of out of sync Unity Editor plugin versions (<a href="https://github.com/JetBrains/resharper-unity/pull/963">#963</a>)</li>
+  <li>No longer creates a <tt>.sln.DotSettings.user</tt> file when YAML size heuristic is applied (<a href="https://github.com/JetBrains/resharper-unity/pull/1087">#1087</a>)</li>
+  <li>Treat <tt>AddComponent(Type)</tt> as an expensive operation (<a href="https://github.com/JetBrains/resharper-unity/issues/1044">#1044</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
+  <li>Rider: Refresh assets before running unit tests (<a href="https://github.com/JetBrains/resharper-unity/issues/1070">#1070</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1078">#1078</a>)</li>
+  <li>Rider: Run configuration will start Unity if not already running (<a href="https://github.com/JetBrains/resharper-unity/pull/1086">#1086</a>)</li>
+  <li>Rider: Improve navigation from log viewer to code (<a href="https://github.com/JetBrains/resharper-unity/issues/367">#367</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1071">#1071</a>)</li>
+  <li>Rider: Improve running unit tests which only differ by assembly name (<a href="https://youtrack.jetbrains.com/issue/RIDER-24636">RIDER-24636</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1058">#1058</a>)</li>
+  <li>Rider: Show Usages in Unity is run on a background thread and can be cancelled (<a href="https://github.com/JetBrains/resharper-unity/pull/1087">#1087</a>)</li>
+  <li>Rider: Improve wording for Code Vision highlights of serialised fields and types (<a href="https://github.com/JetBrains/resharper-unity/pull/1087">#1087</a>)</li>
+  <li>Rider: Code Vision tooltips update when Unity is/is not running (<a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
   <li>Unity Editor: Allow opening assets imported by <tt>ScriptedImporters</tt> (<a href="https://github.com/JetBrains/resharper-unity/issues/981">#981</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/995">#995</a>)</li>
 </ul>
 <em>Fixed:</em>
@@ -219,11 +236,21 @@
   <li>Only show event function completion in classes, not structs or interfaces (<a href="https://youtrack.jetbrains.com/issue/RIDER-14147">RIDER-14147</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/420">420</a>, <a href="https://github.com/JetBrains/resharper-uniyt/pull/1081">1081</a>)</li>
   <li>Respect existing access modifier in code completion (<a href="https://youtrack.jetbrains.com/issue/RIDER-15290">RIDER-15290</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">1081</a>)</li>
   <li>Remove incorrect method signature warning if method is implementing a virtual method (<a href="https://github.com/JetBrains/resharper-unity/issues/876">876</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">1081</a>)</li>
+  <li>Fix spelling mistake in issue suppression comment (<a href="https://github.com/JetBrains/resharper-unity/issues/1083">#1083</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
+  <li>Fix validation exceptions (<a href="https://youtrack.jetbrains.com/issue/RIDER-26102">RIDER-26102</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-26109">RIDER-26109</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-26103">RIDER-26103</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1108">#1108</a>)</li>
   <li>Rider: Show packages from correct per-project cache in Unity Explorer</li>
+  <li>Rider: Correctly handle file/git based packages in Unity Explorer (<a href="https://youtrack.jetbrains.com/issue/RIDER-25971">RIDER-25971</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1099">#1099</a>)</li>
+  <li>Rider: Fix exception causing Unity Explorer to disappear (<a href="https://youtrack.jetbrains.com/issue/RIDER-25760">RIDER-25760</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1096">#1096</a>)</li>
+  <li>Rider: Fix exception showing auto-save notification (<a href="https://youtrack.jetbrains.com/issue/RIDER-25830">RIDER-25830</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1092">#1092</a>)</li>
+  <li>Rider: Fix exception grouping Find Usages results (<a href="https://youtrack.jetbrains.com/issue/RIDER-26119">RIDER-26119</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1115">#1115</a>)</li>
   <li>Rider: Fix creation of Unity class library project if can't find Unity install (<a href="https://github.com/JetBrains/resharper-unity/issue/1013">#1013</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1014">#1014</a>)</li>
+  <li>Rider: Improve error handling while looking for Toolbox installs (<a href="https://github.com/JetBrains/resharper-unity/issues/1089">#1089</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-25706">RIDER-25706</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1090">#1090</a>)</li>
+  <li>Rider: Fix exception with Code Vision highlights (<a href="https://youtrack.jetbrains.com/issue/RIDER-26108">RIDER-26108</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-26156">RIDER-26156</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1109">#1109</a>)</li>
+  <li>Rider: Fix exception reading `EditorInstance.json` (<a href="https://youtrack.jetbrains.com/issue/RIDER-26124">RIDER-26124</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1111">#1111</a>)</li>
   <li>Unity Editor: Use unique name for log file (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
   <li>Unity Editor: Don't call Unity API in batch mode (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
   <li>Unity Editor: Fix exception during Unity shutdown (<a href="https://youtrack.jetbrains.com/issue/RIDER-19688">RIDER-19688</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/979">#979</a>)</li>
+  <li>Unity Editor: Fix issue connecting to editor when Rider was not default editor at startup (<a href="https://youtrack.jetbrains.com/issue/RIDER-26142">RIDER-26142</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1111">#1111</a>)</li>
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/191/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>

@@ -40,11 +40,15 @@ Added:
 - Add warning for string literal use in Animator.ResetTrigger (RIDER-24421, #1035)
 - Add support for marking ECS types and fields as "in use" (#1010, #1036)
 - Add gutter icon indicator for event function that "hides" a private event function in a base class (RIDER-14698, #1081)
+- Add Unity version to error report environment details (#1103)
+- Add ability to find similar issues for performance indicators (#1109)
 
 Changed:
 
 - Performance critical context now works cross files (#1037)
 - Event functions can be grouped by base classes in Generate dialog (#810, #1081)
+- No longer creates a .sln.DotSettings.user file when YAML size heuristic is applied (#1087)
+- Treat AddComponent(Type) as an expensive operation (#1044, #1109)
 
 Fixed:
 
@@ -56,6 +60,8 @@ Fixed:
 - Only show event function completion in classes, not structs or interfaces (RIDER-14147, #420, #1081)
 - Respect existing access modifier in code completion (RIDER-15290, #1081)
 - Remove incorrect method signature warning if method is implementing a virtual method (#876, #1081)
+- Fix spelling mistake in issue suppression comment (#1083, #1109)
+- Fix validation exceptions (RIDER-26102, RIDER-26109, RIDER-26103, #1108)
 
 
 
