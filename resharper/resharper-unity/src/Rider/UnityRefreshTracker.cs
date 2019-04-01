@@ -66,9 +66,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force}");
             var task = myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
 
-            var tcs = new TaskCompletionSource<Unit>();
-            myLifetime.Bracket(() => { }, () => { tcs.SetCanceled(); });
-
             var lifetimeDef = Lifetime.Define(myLifetime);
             var solution = mySolution.GetProtocolSolution();
             var solFolder = mySolution.SolutionFilePath.Directory;
@@ -77,16 +74,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...").AsIndeterminate().AsNonCancelable());
 
             var list = new List<string> {solFolder.FullPath};
-            task.ContinueWithTask(lifetimeDef.Lifetime, solution.GetFileSystemModel().RefreshPaths.StartAsTask(new RdRefreshRequest(list, true)))
+            var outerTask = task.ContinueWithTask(lifetimeDef.Lifetime, solution.GetFileSystemModel().RefreshPaths.StartAsTask(new RdRefreshRequest(list, true)))
                 .ContinueWithTask(lifetimeDef.Lifetime, myLocks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainDispatcher, () =>
                 {
                     CurrentTask = null;
                     lifetimeDef.Terminate();
-                    tcs.SetResult(Unit.Instance);
                 }));
 
-            CurrentTask = tcs.Task;
-            return tcs.Task;
+            CurrentTask = outerTask;
+            return outerTask;
         }
     }
 
