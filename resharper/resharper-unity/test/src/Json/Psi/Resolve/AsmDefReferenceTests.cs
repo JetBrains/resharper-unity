@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Json.Psi.Resolve
                 descriptors.Add(secondDescriptorPair.First, secondDescriptorPair.Second);
             }
 
-            return new TestSolutionConfiguration(SolutionFileName, descriptors);
+            return new TestSolutionConfiguration(FileSystemPath.Parse(SolutionFileName), descriptors);
         }
     }
 }
