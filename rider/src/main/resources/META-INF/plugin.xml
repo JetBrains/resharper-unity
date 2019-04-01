@@ -202,18 +202,22 @@
   <li>Add inspection and quick fix to avoid inefficient order of multiplication operations (<a href="https://github.com/JetBrains/resharper-unity/issues/1031">#1031</a>)</li>
   <li>Add warning for string literal use in <tt>Animator.ResetTrigger</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-24421">RIDER-24421</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1035">#1035</a>)</li>
   <li>Add support for marking ECS types and fields as "in use" (<a href="https://github.com/JetBrains/resharper-unity/issues/1010">#1010</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1036">#1036</a>)</li>
-  <li>Rider: Support for git packages in Unity Explorer</li>
-  <li>Rider: Add notification if there isn't a player log to show (<a href="https://github.com/JetBrains/resharper-unity/issues/820">#820</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1006">#1006</a> - thanks @ajon542!)</li>
+  <li>Add support for git packages in Unity Explorer</li>
+  <li>Add notification if there isn't a player log to show (<a href="https://github.com/JetBrains/resharper-unity/issues/820">#820</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1006">#1006</a> - thanks @ajon542!)</li>
+  <li>Add dialog to prompt to install mono for Unity project with new Scripting runtime (<a href="https://youtrack.jetbrains.com/issue/RIDER-24005">RIDER-24005</a>)</li>
+  <li>Add project name to list of debuggable players (Unity 2019.2 only) (<a href="https://github.com/JetBrains/resharper-unity/pull/1114">#1114</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
-  <li>Rider: Graceful handling of out of sync Unity Editor plugin versions (<a href="https://github.com/JetBrains/resharper-unity/pull/963">#963</a>)</li>
+  <li>Performance critical context now works cross files (<a href="https://github.com/JetBrains/resharper-unity/pull/1037">#1037</a>)</li>
+  <li>Graceful handling of out of sync Unity Editor plugin versions (<a href="https://github.com/JetBrains/resharper-unity/pull/963">#963</a>)</li>
   <li>Unity Editor: Allow opening assets imported by <tt>ScriptedImporters</tt> (<a href="https://github.com/JetBrains/resharper-unity/issues/981">#981</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/995">#995</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
-  <li>Rider: Show packages from correct per-project cache in Unity Explorer</li>
-  <li>Rider: Fix creation of Unity class library project if can't find Unity install (<a href="https://github.com/JetBrains/resharper-unity/issue/1013">#1013</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1014">#1014</a>)</li>
+  <li>Show packages from correct per-project cache in Unity Explorer</li>
+  <li>Fix creation of Unity class library project if can't find Unity install (<a href="https://github.com/JetBrains/resharper-unity/issue/1013">#1013</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1014">#1014</a>)</li>
+  <li>Minor UI annoyances in "Attach to Unity process" dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/1114">#1114</a>)</li>
   <li>Unity Editor: Use unique name for log file (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
   <li>Unity Editor: Don't call Unity API in batch mode (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
   <li>Unity Editor: Fix exception during Unity shutdown (<a href="https://youtrack.jetbrains.com/issue/RIDER-19688">RIDER-19688</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/979">#979</a>)</li>

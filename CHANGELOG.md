@@ -16,7 +16,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add support for marking ECS types and fields as "in use" ([#1010](https://github.com/JetBrains/resharper-unity/issues/1010), [#1036](https://github.com/JetBrains/resharper-unity/pull/1036))
 - Rider: Add support for git packages in Unity Explorer ([#1028](https://github.com/JetBrains/resharper-unity/issues/1028))
 - Rider: Add notification if there isn't a player log to show ([#820](https://github.com/JetBrains/resharper-unity/issues/820), [#1006](https://github.com/JetBrains/resharper-unity/pull/1006) - thanks @ajon542!)
-- Add dialog with proposition to install mono for Unity project with new Scripting runtime ([RIDER-24005](https://youtrack.jetbrains.com/issue/RIDER-24005)
+- Rider: Add dialog to prompt to install mono for Unity project with new Scripting runtime ([RIDER-24005](https://youtrack.jetbrains.com/issue/RIDER-24005))
+- Rider: Add project name to list of debuggable players (Unity 2019.2 only) ([#1114](https://github.com/JetBrains/resharper-unity/pull/1114))
 
 ### Changed
 - Performance critical context now works cross files ([#1037](https://github.com/JetBrains/resharper-unity/pull/1037))
@@ -26,6 +27,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 ### Fixed
 - Rider: Show packages from correct per-project cache in Unity Explorer
 - Rider: Fix creation of Unity class library project if can't find Unity install ([#1013](https://github.com/JetBrains/resharper-unity/issue/1013), [#1014](https://github.com/JetBrains/resharper-unity/pull/1014))
+- Rider: Minor UI annoyances in "Attach to Unity process" dialog ([#1114](https://github.com/JetBrains/resharper-unity/pull/1114))
 - Unity Editor: Use unique name for log file ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Don't call Unity API in batch mode ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Fix exception during Unity shutdown ([RIDER-19688](https://youtrack.jetbrains.com/issue/RIDER-19688), [#979](https://github.com/JetBrains/resharper-unity/pull/979))

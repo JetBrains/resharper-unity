@@ -44,14 +44,20 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
         }.installOn(list)
 
+        cancelAction.putValue(FOCUSED_ACTION, true)
         init()
         setResizable(false)
+    }
+
+    // DialogWrapper only lets the Mac set the preferred component via FOCUSED_ACTION because reasons
+    override fun getPreferredFocusedComponent(): JComponent? {
+        return myPreferredFocusedComponent
     }
 
     override fun createCenterPanel(): JComponent? {
         peerPanel.layout = BoxLayout(peerPanel, BoxLayout.PAGE_AXIS)
         val pane = ScrollPaneFactory.createScrollPane(list)
-        pane.preferredSize = Dimension(400, 200)
+        pane.preferredSize = Dimension(600, 200)
         val customProcessButton = JButton()
         customProcessButton.text = "Enter address of remote process"
         customProcessButton.addActionListener {
@@ -115,6 +121,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 project = project,
                 parent = peerPanel) {
             val hostAddress = hostField.text
+            portField.commitEdit()
             val port = portField.number
             val validationResult = mutableListOf<ValidationInfo>()
 
@@ -123,7 +130,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             if (validationResult.count() > 0) return@dialog validationResult
 
-            val player = UnityPlayer(hostAddress, port, port, 0, port.toLong(), port.toLong(), 0, hostAddress, true, false)
+            val player = UnityPlayer.createRemotePlayer(hostAddress, port)
             synchronized(listModelLock) {
                 listModel.addElement(player)
                 list.selectedIndex = listModel.size() - 1
@@ -138,12 +145,18 @@ class UnityProcessCellRenderer : ColoredListCellRenderer<UnityPlayer>() {
     override fun customizeCellRenderer(list: JList<out UnityPlayer>, player: UnityPlayer?, index: Int, selected: Boolean, hasFocus: Boolean) {
         player ?: return
         if (!player.allowDebugging) {
-            append(player.id, SimpleTextAttributes.GRAYED_ATTRIBUTES)
+            append(player.id, SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES)
+            if (player.projectName != null) {
+                append(" - ${player.projectName}", SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES)
+            }
             append(" (Debugging disabled)", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES)
             append(" ${player.host}:${player.debuggerPort}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
         else {
             append(player.id, SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
+            if (player.projectName != null) {
+                append(" - ${player.projectName}", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES)
+            }
             append(" ${player.host}:${player.debuggerPort}")
         }
     }
