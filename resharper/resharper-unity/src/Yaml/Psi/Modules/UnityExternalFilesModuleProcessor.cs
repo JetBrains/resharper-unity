@@ -16,6 +16,7 @@ using JetBrains.ProjectModel.Transaction;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.GeneratedCode;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
@@ -46,6 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityYamlDisableStrategy myUnityYamlDisableStrategy;
         private readonly BinaryUnityFileCache myBinaryUnityFileCache;
+        private readonly DaemonExcludedFilesManager myDaemonExcludedFilesManager;
         private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
@@ -60,6 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityYamlDisableStrategy unityYamlDisableStrategy,
                                                  BinaryUnityFileCache binaryUnityFileCache,
+                                                 DaemonExcludedFilesManager daemonExcludedFilesManager,
                                                  AssetSerializationMode assetSerializationMode)
         {
             myLifetime = lifetime;
@@ -73,6 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myModuleFactory = moduleFactory;
             myUnityYamlDisableStrategy = unityYamlDisableStrategy;
             myBinaryUnityFileCache = binaryUnityFileCache;
+            myDaemonExcludedFilesManager = daemonExcludedFilesManager;
             myAssetSerializationMode = assetSerializationMode;
 
             changeManager.RegisterChangeProvider(lifetime, this);
@@ -262,7 +266,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
             var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
                 new MiscFilesProjectProperties());
-            projectImpl.DoCreateFile(path, properties);
+            var projectFile = projectImpl.DoCreateFile(path, properties);
+            myDaemonExcludedFilesManager.AddFileToForceEnable(projectFile);
         }
 
         private void UpdateStatistics(ExternalFiles externalFiles)
