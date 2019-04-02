@@ -40,6 +40,10 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
         pane?.updateFromRoot()
     }
 
+    override fun updateAllPresentations() {
+        pane?.updatePresentationsFromRoot()
+    }
+
     private fun updateAssetsRoot(node: ProjectModelNode?) {
         // If the solution node or a project node is modified, update the Assets root to display correct additional text
         if (node?.descriptor is RdSolutionDescriptor || node?.descriptor is RdProjectDescriptor) {
