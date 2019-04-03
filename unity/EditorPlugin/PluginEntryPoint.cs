@@ -82,7 +82,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool CallRider(string args)
     {
-      return ourOpenAssetHandler.CallRider(args);
+      return OpenAssetHandler.CallRider(args);
     }
 
     private static bool ourInitialized;
@@ -153,7 +153,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      ourOpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
+      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
       File.WriteAllText(protocolInstanceJsonPath, ProtocolInstance.ToJson(list));
@@ -482,7 +482,7 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), $"{DateTime.Now:yyyy-MM-ddT-HH-mm-ss}.log");
-    private static OnOpenAssetHandler ourOpenAssetHandler;
+    internal static OnOpenAssetHandler OpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
     // file itself. We'll always overwrite, just to be sure it's up to date. The file contents are exactly the same
@@ -527,7 +527,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!Enabled) // || UnityUtils.UnityVersion >= new Version(2019, 2)
         return false;
-      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
+      return OpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
     }
     
     /// <summary>
@@ -538,7 +538,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!Enabled || UnityUtils.UnityVersion < new Version(2019, 2))
         return false;
-      return ourOpenAssetHandler.OnOpenedAsset(instanceID, line, column);
+      return OpenAssetHandler.OnOpenedAsset(instanceID, line, column);
     }
 
     public static bool IsLoadedFromAssets()

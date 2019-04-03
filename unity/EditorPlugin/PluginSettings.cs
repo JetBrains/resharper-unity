@@ -270,7 +270,11 @@ namespace JetBrains.Rider.Unity.Editor
         (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg),
           SelectedLoggingLevel);
       if (SelectedLoggingLevel != LoggingLevel.OFF && GUILayout.Button("Open file"))
-        UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
+      {
+        //UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
+        // works much faster than the commented code, when Rider is already started
+        PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(PluginEntryPoint.LogPath, 0, 0);
+      }
       
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
       
