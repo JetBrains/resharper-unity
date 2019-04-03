@@ -6,7 +6,7 @@ import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.actions.isUnityProject
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import icons.UnityIcons
 
 class UnityImportantActions : DefaultActionGroup(), DumbAware {
     override fun update(e: AnActionEvent) {

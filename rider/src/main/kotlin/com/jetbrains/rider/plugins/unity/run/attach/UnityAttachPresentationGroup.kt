@@ -4,7 +4,7 @@ import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.xdebugger.attach.XAttachProcessPresentationGroup
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import icons.UnityIcons
 
 object UnityAttachPresentationGroup : XAttachProcessPresentationGroup {
     override fun getOrder(): Int = 3

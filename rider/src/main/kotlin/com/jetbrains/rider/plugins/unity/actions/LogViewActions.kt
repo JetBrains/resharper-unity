@@ -7,7 +7,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import icons.UnityIcons
 import com.jetbrains.rider.projectView.solution
 import java.io.File
 
