@@ -89,13 +89,10 @@ class UnityIcons {
             val ReferencedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageReferenced.svg")
             val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageEmbedded.svg")
             val LocalPackage: Icon = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg")
+            val GitPackage: Icon = IconLoader.getIcon("/Icons/Explorer/FolderGit.svg")
             val UnknownPackage = IconLoader.getIcon("/Icons/Explorer/UnityPackageUnresolved.svg")
             val PackageDependency = IconLoader.getIcon("/Icons/Explorer/UnityPackageDependency.svg")
             val Reference = ReSharperProjectModelIcons.Assembly
-
-
-            // Not yet supported by Unity, but we're ready! Except it could probably do with it's own icon...
-            val GitPackage = LocalPackage
 
             val AsmdefFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
             val AssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
