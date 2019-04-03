@@ -11,25 +11,28 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import com.jetbrains.rider.projectView.nodes.ProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
+import com.jetbrains.rider.util.idea.application
 
 class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewUpdater(project) {
 
     private val pane: UnityExplorer? by lazy { UnityExplorer.tryGetInstance(project) }
 
     init {
-        val packageManager = PackageManager.getInstance(project)
-        packageManager.addListener(object : PackageManagerListener {
-            override fun onRefresh(all: Boolean) {
-                // If the pane has a PackagesRoot node, but there's no Packages folder, or vice versa, update the entire
-                // model, to make sure the Packages node is added/removed. Else, just update the PackagesRoot node
-                if (all) {
-                    updateAll()
+        // Invoke later so that we avoid a circular dependency between PackageManager, ProjectModelViewHost and any
+        // project model view updaters (us)
+        application.invokeLater {
+            val packageManager = PackageManager.getInstance(project)
+            packageManager.addListener(object : PackageManagerListener {
+                override fun onRefresh(all: Boolean) {
+                    // Update all if the PackagesRoot node needs to be added/removed
+                    if (all) {
+                        updateAll()
+                    } else {
+                        updatePackagesRoot()
+                    }
                 }
-                else {
-                    updatePackagesRoot()
-                }
-            }
-        })
+            })
+        }
     }
 
     override fun update(node: ProjectModelNode?) {

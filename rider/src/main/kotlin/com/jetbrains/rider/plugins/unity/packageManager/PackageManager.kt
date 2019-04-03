@@ -8,7 +8,7 @@ import com.intellij.openapi.vfs.*
 import com.intellij.util.EventDispatcher
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.*
 import com.jetbrains.rider.plugins.unity.explorer.LockDetails
 import com.jetbrains.rider.plugins.unity.explorer.ManifestJson
 import com.jetbrains.rider.plugins.unity.util.SemVer
@@ -16,6 +16,8 @@ import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.refreshAndFindFile
 import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.ProjectModelViewHost
+import com.jetbrains.rider.projectView.nodes.ProjectModelNode
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.lifetime
 import java.nio.file.Path
@@ -46,8 +48,17 @@ class PackageManager(private val project: Project) {
         val listener = FileListener(project)
         VirtualFileManager.getInstance().addVirtualFileListener(listener, project)
 
+        val lifetime = project.lifetime
+
         // The application path affects the module packages
-        project.solution.rdUnityModel.applicationPath.advise(project.lifetime) { refresh() }
+        project.solution.rdUnityModel.applicationPath.advise(lifetime) { refresh() }
+
+        // Unity will rewrite solution/projects after resolving packages. If we don't listen for it, we might resolve to
+        // an incorrect cache folder, or mark packages as unknown
+        val projectModelViewHost = ProjectModelViewHost.getInstance(project)
+        projectModelViewHost.addSignal.advise(lifetime) { onProjectModelChanged(it) }
+        projectModelViewHost.updateSignal.advise(lifetime) { onProjectModelChanged(it) }
+        projectModelViewHost.removeSignal.advise(lifetime) { onProjectModelChanged(it) }
     }
 
     val packagesFolder: VirtualFile
@@ -55,6 +66,9 @@ class PackageManager(private val project: Project) {
 
     val hasPackages: Boolean
         get() = packagesByCanonicalName.isNotEmpty()
+
+    val allPackages: List<PackageData>
+        get() = packagesByCanonicalName.values.toList()
 
     val localPackages: List<PackageData>
         get() = filterPackagesBySource(PackageSource.Local).toList()
@@ -311,6 +325,17 @@ class PackageManager(private val project: Project) {
 
     private fun filterPackagesBySource(source: PackageSource): List<PackageData> {
         return packagesByCanonicalName.filterValues { it.source == source }.values.toList()
+    }
+
+    private fun onProjectModelChanged(node: ProjectModelNode) {
+
+        val descriptor = node.descriptor
+        if (descriptor is RdSolutionDescriptor && descriptor.state == RdSolutionState.Ready) {
+            refresh()
+        }
+        else if (descriptor is RdProjectDescriptor && descriptor.state == RdProjectState.Ready) {
+            refresh()
+        }
     }
 
     private inner class FileListener(private val project: Project) : VirtualFileListener {
