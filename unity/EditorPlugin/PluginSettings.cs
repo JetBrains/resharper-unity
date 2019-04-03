@@ -203,6 +203,8 @@ namespace JetBrains.Rider.Unity.Editor
           EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
         }
       }
+      
+      GUI.enabled = PluginEntryPoint.Enabled;
 
       GUILayout.BeginVertical();
 
