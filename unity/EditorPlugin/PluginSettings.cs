@@ -177,7 +177,6 @@ namespace JetBrains.Rider.Unity.Editor
     private static void RiderPreferencesItem()
     {
       EditorGUILayout.BeginVertical();
-      EditorGUI.BeginChangeCheck();
 
       var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
       var paths = alternatives.Select(a => a.Path).ToArray();
@@ -248,10 +247,6 @@ namespace JetBrains.Rider.Unity.Editor
 
       GUILayout.EndVertical();
 
-      EditorGUI.EndChangeCheck();
-
-      EditorGUI.BeginChangeCheck();
-
       OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion"), OverrideLangVersion);
       if (OverrideLangVersion)
       {
@@ -267,24 +262,22 @@ namespace JetBrains.Rider.Unity.Editor
         EditorGUILayout.HelpBox(helpLangVersion, MessageType.None);
       }
 
-
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
       SelectedLoggingLevel =
         (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg),
           SelectedLoggingLevel);
-      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
-
-      EditorGUI.EndChangeCheck();
-      LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider"), LogEventsCollectorEnabled);
-      EditorGUI.BeginChangeCheck();
+      if (SelectedLoggingLevel != LoggingLevel.OFF && GUILayout.Button("Open file"))
+        UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
       
-      EditorGUI.EndChangeCheck();
+      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
+      
+      LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider"), LogEventsCollectorEnabled);
 
       if (UnityUtils.UnityVersion < new Version(2018, 2))
       {
         EditorGUI.BeginChangeCheck();
-        AssemblyReloadSettings= (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes While Playing", AssemblyReloadSettings);
+        AssemblyReloadSettings = (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes While Playing", AssemblyReloadSettings);
 
         if (EditorGUI.EndChangeCheck())
         {
