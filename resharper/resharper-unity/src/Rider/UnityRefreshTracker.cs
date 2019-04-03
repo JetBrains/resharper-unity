@@ -99,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Finished");
 
                 var solution = mySolution.GetProtocolSolution();
-                var solFolder = mySolution.SolutionFilePath.Directory;
+                var solFolder = mySolution.SolutionDirectory;
 
                 mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime,
                     RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...")
