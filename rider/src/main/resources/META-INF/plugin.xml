@@ -83,7 +83,7 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnitTest.UnitTestLauncherState</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.ContentModelUpdater</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OutOfSyncEditorNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>

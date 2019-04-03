@@ -1,16 +1,18 @@
-package com.jetbrains.rider
+package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.*
+import com.jetbrains.rider.UnityProjectDiscoverer
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.indexing.contentModel.ContentModelUserStore
 import com.jetbrains.rider.projectView.indexing.contentModel.tryExclude
 import com.jetbrains.rider.projectView.indexing.contentModel.tryInclude
 import java.io.File
 
-class UnityConfigurationImpl(private val project: Project,
-                             private val unityProjectDiscoverer: UnityProjectDiscoverer,
-                             private val contentModel: ContentModelUserStore)
+class ContentModelUpdater(private val project: Project,
+                          private val unityProjectDiscoverer: UnityProjectDiscoverer,
+                          private val contentModel: ContentModelUserStore)
     : ProjectComponent {
 
     override fun projectOpened() {
