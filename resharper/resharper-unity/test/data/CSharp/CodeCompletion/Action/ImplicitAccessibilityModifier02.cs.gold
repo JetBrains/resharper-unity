@@ -1,10 +1,12 @@
 ﻿// ${COMPLETE_ITEM:OnAnimatorIK(int) { ... }}
+
+using System;
 using UnityEngine;
 
 public class A : MonoBehaviour
 {
-  private void OnAnimatorIK(int layerIndex)
+  void OnAnimatorIK(int layerIndex)
   {
-    throw new System.NotImplementedException();{caret}
+    throw new NotImplementedException();{caret}
   }
 }
