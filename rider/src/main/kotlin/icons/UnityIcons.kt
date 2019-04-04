@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.util
+package icons
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
@@ -11,6 +11,9 @@ import javax.swing.Icon
 // automatically add `_dark` to the basename of the SVG file if in Darcula.
 // Note that IJ has a different palette and colour scheme to ReSharper. This means that the front end svg files might
 // not be the same as the backed C# files...
+
+// We need to be in the icons root package so we can use this class from plugin.xml. We also need to use @JvmField so
+// that the kotlin value is visible as a JVM field via reflection
 
 class UnityIcons {
     class Icons {
@@ -89,13 +92,10 @@ class UnityIcons {
             val ReferencedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageReferenced.svg")
             val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageEmbedded.svg")
             val LocalPackage: Icon = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg")
+            val GitPackage: Icon = IconLoader.getIcon("/Icons/Explorer/FolderGit.svg")
             val UnknownPackage = IconLoader.getIcon("/Icons/Explorer/UnityPackageUnresolved.svg")
             val PackageDependency = IconLoader.getIcon("/Icons/Explorer/UnityPackageDependency.svg")
             val Reference = ReSharperProjectModelIcons.Assembly
-
-
-            // Not yet supported by Unity, but we're ready! Except it could probably do with it's own icon...
-            val GitPackage = LocalPackage
 
             val AsmdefFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
             val AssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
@@ -111,18 +111,18 @@ class UnityIcons {
     class Actions {
         companion object {
             val UnityActionsGroup = Icons.UnityLogo
-            val StartUnity = Icons.UnityLogo
+            @JvmField val StartUnity = Icons.UnityLogo
 
-            val Execute = IconLoader.getIcon("/Icons/actions/execute.svg")
-            val Pause = IconLoader.getIcon("/Icons/actions/pause.svg")
-            val Step = IconLoader.getIcon("/Icons/actions/step.svg")
+            @JvmField val Execute = IconLoader.getIcon("/Icons/actions/execute.svg")
+            @JvmField val Pause = IconLoader.getIcon("/Icons/actions/pause.svg")
+            @JvmField val Step = IconLoader.getIcon("/Icons/actions/step.svg")
             val FilterEditModeMessages = Common.UnityEditMode
             val FilterPlayModeMessages = Common.UnityPlayMode
 
             val OpenEditorLog = FilterEditModeMessages
             val OpenPlayerLog = FilterPlayModeMessages
 
-            val AttachToUnity = IconLoader.getIcon("/Icons/actions/attachToUnityProcess.svg")
+            @JvmField val AttachToUnity = IconLoader.getIcon("/Icons/actions/attachToUnityProcess.svg")
         }
     }
 
