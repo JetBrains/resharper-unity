@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Behaviors;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
@@ -24,12 +26,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 {
     public class UnityEventFunctionBehavior : TextualBehavior<DeclaredElementInfo>
     {
+        private readonly IShellLocks myShellLocks;
         private readonly UnityEventFunction myEventFunction;
         private readonly AccessRights myAccessRights;
 
-        public UnityEventFunctionBehavior(DeclaredElementInfo info, UnityEventFunction eventFunction, AccessRights accessRights)
+        public UnityEventFunctionBehavior(IShellLocks shellLocks, DeclaredElementInfo info,
+                                          UnityEventFunction eventFunction, AccessRights accessRights)
             : base(info)
         {
+            myShellLocks = shellLocks;
             myEventFunction = eventFunction;
             myAccessRights = accessRights;
         }
@@ -125,26 +130,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 GeneratorUnityKinds.UnityEventFunctions, solution, textControl, identifierNode.Language,
                 configureContext: context =>
                 {
+                    // Note that the generated code will use the access rights, if specified. However, if they haven't
+                    // been specified (NONE) or they are the default for methods (PRIVATE), the generated code will be
+                    // whatever the current code style setting is - implicit or explicit
                     var declaredElement = myEventFunction.CreateDeclaration(factory, classDeclaration, myAccessRights)
                         .DeclaredElement.NotNull("declaredElement != null");
                     context.InputElements.Clear();
                     context.InputElements.Add(new GeneratorDeclaredElement(declaredElement));
-                });
-
-            methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
-            if (methodDeclaration != null)
-            {
-                using (var transactionCookie =
-                    new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "FinishDeclaration"))
+                },
+                onCompleted: context =>
                 {
-                    // Overwrite access rights. The declared element we give the generator has the correct access rights
-                    // unless we have AccessRights.NONE, in which case we explicitly get the default
-                    methodDeclaration.SetAccessRights(myAccessRights);
-                    if (attributeList != null)
-                        methodDeclaration.SetAttributeSectionList(attributeList);
-                    transactionCookie.Commit();
-                }
-            }
+                    if (attributeList == null)
+                        return;
+
+                    methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
+                    if (methodDeclaration == null)
+                        return;
+
+                    // The Generate workflow adds a helper function to the queue to select the contents of the method.
+                    // Unfortunately, the offsets are calculated before adding the callback to the queue. If we modify
+                    // the PSI directly here, the offsets are incorrect and the selection is wrong. Doing it this way
+                    // loses the selection, but at least everything works.
+                    // Technically, we should probably add the attributes during the generation method, but then we'd
+                    // lose how multiple attributes are split into sections, etc.
+                    myShellLocks.Queue(Lifetime.Eternal, "FinishDeclaration", () =>
+                    {
+                        using (ReadLockCookie.Create())
+                        using (var transactionCookie =
+                            new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "FinishDeclaration"))
+                        {
+                            methodDeclaration.SetAttributeSectionList(attributeList);
+                            transactionCookie.Commit();
+                        }
+                    });
+                });
         }
 
         private bool UpdateExistingMethod([CanBeNull] IMethodDeclaration methodDeclaration, IPsiServices psiServices)

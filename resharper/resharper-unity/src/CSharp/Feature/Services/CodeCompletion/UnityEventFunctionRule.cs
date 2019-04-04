@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
@@ -33,6 +34,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
     [Language(typeof(CSharpLanguage))]
     public class UnityEventFunctionRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
     {
+        private readonly IShellLocks myShellLocks;
+
+        public UnityEventFunctionRule(IShellLocks shellLocks)
+        {
+            myShellLocks = shellLocks;
+        }
+
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
             if (!(context.PsiModule is IProjectPsiModule projectPsiModule)
@@ -168,9 +176,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return item;
         }
 
-        private static ILookupItem CreateMethodItem(CSharpCodeCompletionContext context,
-                                                    UnityEventFunction eventFunction, IClassLikeDeclaration declaration,
-                                                    bool hasReturnType, AccessRights accessRights)
+        private ILookupItem CreateMethodItem(CSharpCodeCompletionContext context,
+                                             UnityEventFunction eventFunction, IClassLikeDeclaration declaration,
+                                             bool hasReturnType, AccessRights accessRights)
         {
             if (CSharpLanguage.Instance == null)
                 return null;
@@ -244,7 +252,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
                     return new SimplePresentation(displayName, image, marker);
                 })
-                .WithBehavior(_ => new UnityEventFunctionBehavior(declaredElementInfo, eventFunction, accessRights))
+                .WithBehavior(_ => new UnityEventFunctionBehavior(myShellLocks, declaredElementInfo, eventFunction, accessRights))
                 .WithMatcher(_ =>
                     new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, declaredElementInfo,
                         context.BasicContext.IdentifierMatchingStyle));
