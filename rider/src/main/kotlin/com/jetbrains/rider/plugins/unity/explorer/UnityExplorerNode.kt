@@ -7,15 +7,16 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import icons.UnityIcons
+import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
+import icons.UnityIcons
 import javax.swing.Icon
 
-class UnityExplorerRootNode(project: Project, private val packagesManager: PackagesManager)
+class UnityExplorerRootNode(project: Project, private val packageManager: PackageManager)
     : SolutionViewRootNodeBase(project) {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
@@ -24,8 +25,8 @@ class UnityExplorerRootNode(project: Project, private val packagesManager: Packa
 
         val nodes = mutableListOf<AbstractTreeNode<*>>(assetsNode)
 
-        if (packagesManager.hasPackages) {
-            nodes.add(PackagesRoot(myProject, packagesManager))
+        if (packageManager.hasPackages) {
+            nodes.add(PackagesRoot(myProject, packageManager))
         }
 
         if (ScratchProjectViewPane.isScratchesMergedIntoProjectTab()) {

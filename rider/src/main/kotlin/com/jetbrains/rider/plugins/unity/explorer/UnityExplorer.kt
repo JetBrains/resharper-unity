@@ -10,15 +10,15 @@ import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
-import com.jetbrains.rdclient.util.idea.defineNestedLifetime
 import com.jetbrains.rider.isUnityProject
-import icons.UnityIcons
+import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
+import icons.UnityIcons
 import org.jdom.Element
 
-class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplorerRootNode(project, PackagesManager.getInstance(project))) {
+class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplorerRootNode(project, PackageManager.getInstance(project))) {
 
     companion object {
         const val ID = "UnityExplorer"
@@ -37,11 +37,6 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         fun tryGetInstance(project: Project): UnityExplorer? {
             return ProjectView.getInstance(project).getProjectViewPaneById(ID) as? UnityExplorer
         }
-    }
-
-    init {
-        val lifetime = this.defineNestedLifetime()
-        UnityExplorerPackagesViewUpdater(lifetime, project, this, PackagesManager.getInstance(project))
     }
 
     var myShowHiddenItems = false

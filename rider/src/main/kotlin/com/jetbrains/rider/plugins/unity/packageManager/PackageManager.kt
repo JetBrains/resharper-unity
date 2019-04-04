@@ -1,80 +1,64 @@
-package com.jetbrains.rider.plugins.unity.explorer
+package com.jetbrains.rider.plugins.unity.packageManager
 
 import com.google.gson.Gson
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.VfsUtil
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.*
+import com.intellij.util.EventDispatcher
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
+import com.jetbrains.rider.model.*
+import com.jetbrains.rider.plugins.unity.explorer.LockDetails
+import com.jetbrains.rider.plugins.unity.explorer.ManifestJson
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.refreshAndFindFile
 import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.ProjectModelViewHost
+import com.jetbrains.rider.projectView.nodes.ProjectModelNode
+import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.util.idea.lifetime
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 
-enum class PackageSource {
-    Unknown,
-    BuiltIn,
-    Registry,
-    Embedded,
-    Local,
-    Git;
-
-    fun isEditable(): Boolean {
-        return this == Embedded || this == Local
-    }
+interface PackageManagerListener : EventListener {
+    fun onRefresh(all: Boolean)
 }
 
-data class PackageData(val name: String, val packageFolder: VirtualFile?, val details: PackageDetails,
-                       val source: PackageSource, val gitDetails: GitDetails? = null) {
-    companion object {
-        fun unknown(name: String, version: String, source: PackageSource = PackageSource.Unknown): PackageData {
-            return PackageData(name, null, PackageDetails(name, "$name@$version", version,
-                    "Cannot resolve package '$name' with version '$version'", "", mapOf()), source)
-        }
-    }
-}
-
-// Canonical name is the name from package.json, or the package's folder name if missing
-// Display name is the display name from package.json, falling back to package.json name and then folder name
-// For unresolved packages, name is the name from manifest.json and display name is name@version from manifest.json
-data class PackageDetails(val canonicalName: String, val displayName: String, val version: String,
-                          val description: String, val author: String, val dependencies: Map<String, String>) {
-    companion object {
-        fun fromPackageJson(packageFolder: VirtualFile, packageJson: PackageJson?): PackageDetails? {
-            if (packageJson == null) return null
-            val name = packageJson.name ?: packageFolder.name
-            return PackageDetails(name, packageJson.displayName ?: name, packageJson.version ?: "",
-                    packageJson.description ?: "", packageJson.author ?: "", packageJson.dependencies ?: mapOf())
-        }
-    }
-}
-
-data class GitDetails(val url: String, val revision: String, val hash: String)
-
-// Other properties are available: category, keywords, unity (supported version)
-data class PackageJson(val name: String?, val displayName: String?, val version: String?, val description: String?,
-                       val author: String?, val dependencies: Map<String, String>?)
-
-class PackagesManager(private val project: Project) {
+class PackageManager(private val project: Project) {
 
     companion object {
-        private val key: Key<PackagesManager> = Key("UnityExplorer::PackagesManager")
-        private val logger = Logger.getInstance(PackagesManager::class.java)
+        private val KEY: Key<PackageManager> = Key("UnityExplorer::PackageManager")
+        private val logger = Logger.getInstance(PackageManager::class.java)
 
-        fun getInstance(project: Project) = project.getOrCreateUserData(key) { PackagesManager(project) }
+        fun getInstance(project: Project) = project.getOrCreateUserData(KEY) { PackageManager(project) }
     }
 
     private val gson = Gson()
     private val packagesByCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
     private val packagesByFolderName: MutableMap<String, PackageData> = mutableMapOf()
+    private val listeners = EventDispatcher.create(PackageManagerListener::class.java)
 
     init {
         refresh()
+
+        val listener = FileListener(project)
+        VirtualFileManager.getInstance().addVirtualFileListener(listener, project)
+
+        val lifetime = project.lifetime
+
+        // The application path affects the module packages
+        project.solution.rdUnityModel.applicationPath.advise(lifetime) { refresh() }
+
+        // Unity will rewrite solution/projects after resolving packages. If we don't listen for it, we might resolve to
+        // an incorrect cache folder, or mark packages as unknown
+        val projectModelViewHost = ProjectModelViewHost.getInstance(project)
+        projectModelViewHost.addSignal.advise(lifetime) { onProjectModelChanged(it) }
+        projectModelViewHost.updateSignal.advise(lifetime) { onProjectModelChanged(it) }
+        projectModelViewHost.removeSignal.advise(lifetime) { onProjectModelChanged(it) }
     }
 
     val packagesFolder: VirtualFile
@@ -82,6 +66,9 @@ class PackagesManager(private val project: Project) {
 
     val hasPackages: Boolean
         get() = packagesByCanonicalName.isNotEmpty()
+
+    val allPackages: List<PackageData>
+        get() = packagesByCanonicalName.values.toList()
 
     val localPackages: List<PackageData>
         get() = filterPackagesBySource(PackageSource.Local).toList()
@@ -103,7 +90,17 @@ class PackagesManager(private val project: Project) {
         return packagesByCanonicalName[canonicalName]
     }
 
-    fun refresh() {
+    fun addListener(listener: PackageManagerListener) {
+        // Automatically scoped to project lifetime
+        listeners.addListener(listener, project)
+    }
+
+    fun refresh(all: Boolean = false) {
+        doRefresh()
+        listeners.multicaster.onRefresh(all)
+    }
+
+    private fun doRefresh() {
         logger.debug("Refreshing packages manager")
 
         packagesByCanonicalName.clear()
@@ -328,5 +325,59 @@ class PackagesManager(private val project: Project) {
 
     private fun filterPackagesBySource(source: PackageSource): List<PackageData> {
         return packagesByCanonicalName.filterValues { it.source == source }.values.toList()
+    }
+
+    private fun onProjectModelChanged(node: ProjectModelNode) {
+
+        val descriptor = node.descriptor
+        if (descriptor is RdSolutionDescriptor && descriptor.state == RdSolutionState.Ready) {
+            refresh()
+        }
+        else if (descriptor is RdProjectDescriptor && descriptor.state == RdProjectState.Ready) {
+            refresh()
+        }
+    }
+
+    private inner class FileListener(private val project: Project) : VirtualFileListener {
+
+        override fun contentsChanged(event: VirtualFileEvent) {
+            // Note that we update if a package.json file changes because it might mean a change of dependencies
+            if (isManifestJson(event.file) || isPackageJson(event.file)) {
+                refresh()
+            }
+        }
+
+        override fun fileCreated(event: VirtualFileEvent) {
+            if (isPackagesFolder(event.file)) {
+                refresh(true)
+            }
+            else if (isManifestJson(event.file)) {
+                refresh()
+            }
+        }
+
+        override fun fileDeleted(event: VirtualFileEvent) {
+            if (isPackagesFolder(event.file)) {
+                refresh(true)
+            }
+            else if (isManifestJson(event.file)) {
+                refresh()
+            }
+        }
+
+        private fun isPackagesFolder(file: VirtualFile?): Boolean {
+            return file != null && file.name == "Packages" && file.parent == project.projectDir
+        }
+
+        private fun isManifestJson(file: VirtualFile?): Boolean {
+            return file != null && file.name == "manifest.json" && isPackagesFolder(file.parent)
+        }
+
+        private fun isPackageJson(file: VirtualFile?): Boolean {
+            // Ideally, this would be package.json that belonged to a package, but we don't have a way of knowing this.
+            // We might be refreshing the packages list based on changes to a project file. This is acceptable because
+            // Unity projects usually won't contain package.json
+            return file != null && file.name == "package.json"
+        }
     }
 }
