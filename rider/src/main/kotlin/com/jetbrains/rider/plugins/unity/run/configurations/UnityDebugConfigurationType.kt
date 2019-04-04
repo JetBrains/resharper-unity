@@ -1,7 +1,7 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.configurations.ConfigurationTypeBase
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import icons.UnityIcons
 
 // We need to keep "UNITY_DEBUG_RUN_CONFIGURATION" for backwards compatibility - a user can run a newer EAP side by side
 // with 2018.1 and still load the standard attach/debug run config. The new attach/debug/play config will still come up

@@ -83,7 +83,7 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnitTest.UnitTestLauncherState</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.UnityConfigurationImpl</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.ContentModelUpdater</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OutOfSyncEditorNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>
@@ -100,52 +100,89 @@
   </project-components>
 
   <actions>
+    <action id="AttachToUnityProcessAction"
+            class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction"
+            text="Attach to Unity Process&#8230;"
+            description="Attach debugger to Unity Editor process"
+            icon="UnityIcons.Actions.AttachToUnity">
+      <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
+    </action>
+
+    <action id="ShowUnitySettingsInRider"
+            class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction"
+            text="Unity Settings&#8230;"
+            description="Show Unity settings"
+            icon="AllIcons.General.Settings" />
 
     <group id="UnityToolbarActions">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
       <separator/>
+
       <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
-        <action class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction" id="StartUnityAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
+        <action id="StartUnityAction"
+                class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction"
+                text="Start Unity"
+                description="Start Unity with current project"
+                icon="UnityIcons.Actions.StartUnity" />
+        <reference ref="AttachToUnityProcessAction" />
+        <reference ref="ShowUnitySettingsInRider" />
+
         <separator/>
-        <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" id="InstallEditorPluginAction" />
+
+        <action id="SwitchUIModeAction"
+                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
+                text="Toggle UI Mode"
+                description="Show or hide unnecessary UI tool windows" />
+        <action id="ShowUnityLogInRiderAction"
+                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
+                text="Show Unity Log Window" />
+        <action id="InstallEditorPluginAction"
+                class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
+                text="Install Unity Editor Plugin" />
       </group>
 
       <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity-related Actions">
-        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessActionDll" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRiderDll" />
+        <reference ref="AttachToUnityProcessAction" />
+        <reference ref="ShowUnitySettingsInRider" />
       </group>
 
-      <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />
-      <action id="TriggerPlayInUnity" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"/>
-      <action id="TriggerPauseInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"  />
-      <action id="TriggerStepInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" />
+      <action id="TriggerRefreshInUnity"
+              class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
+              text="Refresh Unity Assets"
+              description="Trigger refresh assets in Unity Editor"
+              icon="AllIcons.Actions.Refresh" />
+      <action id="TriggerPlayInUnity"
+              class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"
+              text="Play/Edit"
+              description="Toggle play mode in Unity Editor"
+              icon="UnityIcons.Actions.Execute" />
+      <action id="TriggerPauseInUnityEditor"
+              class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"
+              text="Pause/Resume"
+              description="Toggle play/pause in Unity Editor"
+              icon="UnityIcons.Actions.Pause" />
+      <action id="TriggerStepInUnityEditor"
+              class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction"
+              text="Step"
+              description="Step a single frame in Unity Editor"
+              icon="UnityIcons.Actions.Step" />
       <separator/>
     </group>
 
     <group id="Rider.UnitTesting.TopToolbar.MiscOptions.Unity">
       <add-to-group group-id="Rider.UnitTesting.TopToolbar.MiscOptions.Plugin" anchor="last"/>
-      <action id="UnityTestLauncher" class="com.jetbrains.rider.plugins.unity.ui.UnitTest.SwitchUnitTestLauncherComboBoxAction"/>
+      <action id="UnityTestLauncher"
+              class="com.jetbrains.rider.plugins.unity.ui.UnitTest.SwitchUnitTestLauncherComboBoxAction" />
     </group>
 
-    <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction">
-      <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
-    </action>
-
-    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
+    <!-- Note that this doesn't have text, so it doesn't show up in the keymap options page -->
+    <action id="ShowReferencePropertiesAction"
+            class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction"
+            use-shortcut-of="ShowIntentionActions">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
     </action>
   </actions>
-
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- IDEA default schemes -->
-    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
-    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
-  </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- IDEA default schemes -->
@@ -203,6 +240,13 @@
   <li>Add inspection and quick fix to avoid inefficient order of multiplication operations (<a href="https://github.com/JetBrains/resharper-unity/issues/1031">#1031</a>)</li>
   <li>Add warning for string literal use in <tt>Animator.ResetTrigger</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-24421">RIDER-24421</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1035">#1035</a>)</li>
   <li>Add support for marking ECS types and fields as "in use" (<a href="https://github.com/JetBrains/resharper-unity/issues/1010">#1010</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1036">#1036</a>)</li>
+  <li>Add support for git packages in Unity Explorer</li>
+  <li>Add notification if there isn't a player log to show (<a href="https://github.com/JetBrains/resharper-unity/issues/820">#820</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1006">#1006</a> - thanks @ajon542!)</li>
+  <li>Add dialog to prompt to install mono for Unity project with new Scripting runtime (<a href="https://youtrack.jetbrains.com/issue/RIDER-24005">RIDER-24005</a>)</li>
+  <li>Add project name to list of debuggable players (Unity 2019.2 only) (<a href="https://github.com/JetBrains/resharper-unity/pull/1114">#1114</a>)</li>
+  <li>Add all package folders to find in files index (<a href="https://github.com/JetBrains/resharper-unity/pull/1120">#1120</a>)</li>
+  <li>Add icon for marketplace (<a href="https://youtrack.jetbrains.com/issue/RIDER-25040">RIDER-25040</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1122">#1122</a>)</li>
+  <li>Add icon for git based packages (<a href="https://youtrack.jetbrains.com/issue/RIDER-24093">RIDER-24093</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1122">#1122</a>)</li>
   <li>Add gutter icon indicator for event function that "hides" a private event function in a base class (<a href="https://youtrack.jetbrains.com/issue/RIDER-14698">RIDER-14698</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
   <li>Add Unity version to error report environment details (<a href="https://github.com/JetBrains/resharper-unity/pull/1103">#1103</a>)</li>
   <li>Add ability to find similar issues for performance indicators (<a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
@@ -220,9 +264,11 @@
 <em>Changed:</em>
 <ul>
   <li>Performance critical context now works cross files (<a href="https://github.com/JetBrains/resharper-unity/pull/1037">#1037</a>)</li>
-  <li>Event functions can be grouped by base classes in Generate dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/810">#810</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
-  <li>No longer creates a <tt>.sln.DotSettings.user</tt> file when YAML size heuristic is applied (<a href="https://github.com/JetBrains/resharper-unity/pull/1087">#1087</a>)</li>
   <li>Treat <tt>AddComponent(Type)</tt> as an expensive operation (<a href="https://github.com/JetBrains/resharper-unity/issues/1044">#1044</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
+  <li>Improve indexing time when root folder contains non-project folders (<a href="https://github.com/JetBrains/resharper-unity/1120">#1120</a>)</li>
+  <li>Event functions can be grouped by base classes in Generate dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/810">#810</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
+  <li>Graceful handling of out of sync Unity Editor plugin versions (<a href="https://github.com/JetBrains/resharper-unity/pull/963">#963</a>)</li>
+  <li>No longer creates a <tt>.sln.DotSettings.user</tt> file when YAML size heuristic is applied (<a href="https://github.com/JetBrains/resharper-unity/pull/1087">#1087</a>)</li>
   <li>Rider: Refresh assets before running unit tests (<a href="https://github.com/JetBrains/resharper-unity/issues/1070">#1070</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1078">#1078</a>)</li>
   <li>Rider: Run configuration will start Unity if not already running (<a href="https://github.com/JetBrains/resharper-unity/pull/1086">#1086</a>)</li>
   <li>Rider: Improve navigation from log viewer to code (<a href="https://github.com/JetBrains/resharper-unity/issues/367">#367</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1071">#1071</a>)</li>

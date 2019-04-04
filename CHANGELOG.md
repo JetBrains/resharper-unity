@@ -27,6 +27,9 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Add Unity toolbar button for class libraries ([#1109](https://github.com/JetBrains/resharper-unity/pull/1109))
 - Rider: Tell Unity to refresh assets after VCS pull completes ([#947](https://github.com/JetBrains/resharper-unity/issues/947), [#1085](https://github.com/JetBrains/resharper-unity/pull/1085))
 - Rider: Add project name to list of debuggable players (Unity 2019.2 only) ([#1114](https://github.com/JetBrains/resharper-unity/pull/1114))
+- Rider: Add all package folders to find in files index ([#1122](https://github.com/JetBrains/resharper-unity/pull/1120))
+- Rider: Add icon for marketplace ([RIDER-25040](https://youtrack.jetbrains.com/issue/RIDER-25040), [#1122](https://github.com/JetBrains/resharper-unity/pull/1122))
+- Rider: Add icon for git based packages ([RIDER-24093](https://youtrack.jetbrains.com/issue/RIDER-24093), [#1122](https://github.com/JetBrains/resharper-unity/pull/1122))
 
 ### Changed
 - Performance critical context now works cross files ([#1037](https://github.com/JetBrains/resharper-unity/pull/1037))
@@ -40,6 +43,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Show Usages in Unity is run on a background thread and can be cancelled ([#1087](https://github.com/JetBrains/resharper-unity/pull/1087))
 - Rider: Improve wording for Code Vision highlights of serialised fields and types ([#1087](https://github.com/JetBrains/resharper-unity/pull/1087))
 - Rider: Code Vision tooltips update when Unity is/is not running ([#1109](https://github.com/JetBrains/resharper-unity/pull/1109))
+- Rider: Graceful handling of out of sync Unity Editor plugin versions ([#963](https://github.com/JetBrains/resharper-unity/pull/963))
+- Rider: Improve indexing time when root folder contains non-project folders ([#1120](https://github.com/JetBrains/resharper-unity/1120))
 - Unity Editor: Allow opening assets imported by ScriptedImporters ([#981](https://github.com/JetBrains/resharper-unity/issues/981), [#995](https://github.com/JetBrains/resharper-unity/pull/995))
 
 ### Fixed
