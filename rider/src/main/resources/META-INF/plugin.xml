@@ -243,11 +243,15 @@
   <li>Add notification if there isn't a player log to show (<a href="https://github.com/JetBrains/resharper-unity/issues/820">#820</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1006">#1006</a> - thanks @ajon542!)</li>
   <li>Add dialog to prompt to install mono for Unity project with new Scripting runtime (<a href="https://youtrack.jetbrains.com/issue/RIDER-24005">RIDER-24005</a>)</li>
   <li>Add project name to list of debuggable players (Unity 2019.2 only) (<a href="https://github.com/JetBrains/resharper-unity/pull/1114">#1114</a>)</li>
+  <li>Add all package folders to find in files index (<a href="https://github.com/JetBrains/resharper-unity/pull/1120">#1120</a>)</li>
+  <li>Add icon for marketplace (<a href="https://youtrack.jetbrains.com/issue/RIDER-25040">RIDER-25040</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1122">#1122</a>)</li>
+  <li>Add icon for git based packages (<a href="https://youtrack.jetbrains.com/issue/RIDER-24093">RIDER-24093</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1122">#1122</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
   <li>Performance critical context now works cross files (<a href="https://github.com/JetBrains/resharper-unity/pull/1037">#1037</a>)</li>
   <li>Graceful handling of out of sync Unity Editor plugin versions (<a href="https://github.com/JetBrains/resharper-unity/pull/963">#963</a>)</li>
+  <li>Improve indexing time when root folder contains non-project folders (<a href="https://github.com/JetBrains/resharper-unity/1120">#1120</a>)</li>
   <li>Unity Editor: Allow opening assets imported by <tt>ScriptedImporters</tt> (<a href="https://github.com/JetBrains/resharper-unity/issues/981">#981</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/995">#995</a>)</li>
 </ul>
 <em>Fixed:</em>
