@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 return;
             
             var view = psiDocumentRangeView.View<CSharpLanguage>();
-            var node = view.ContainingNodes.FirstOrDefault()?.GetContainingNode<IFunctionDeclaration>();
+            var node = view.GetSelectedTreeNode<IFunctionDeclaration>();
             
             if (node != null)
             {
