@@ -12,6 +12,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Host.Features.FileSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
@@ -28,17 +29,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISolution mySolution;
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly ILogger myLogger;
+        private readonly VfsListener myVfsListener;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
             UnityEditorProtocol editorProtocol, ISettingsStore settingsStore,
-            ILogger logger)
+            ILogger logger, VfsListener vfsListener)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
             myEditorProtocol = editorProtocol;
             myLogger = logger;
+            myVfsListener = vfsListener;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -94,7 +97,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Started");
             try
             {
-                await myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
+                using (myVfsListener.PauseChanges())
+                {
+                    await myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
+                }
                 myLogger.Verbose(
                     $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Finished");
 
