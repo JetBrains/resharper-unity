@@ -259,6 +259,7 @@
   <li>Show packages from correct per-project cache in Unity Explorer</li>
   <li>Fix creation of Unity class library project if can't find Unity install (<a href="https://github.com/JetBrains/resharper-unity/issue/1013">#1013</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1014">#1014</a>)</li>
   <li>Minor UI annoyances in "Attach to Unity process" dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/1114">#1114</a>)</li>
+  <li>Fix exception when project contains empty YAML file (<a href="https://youtrack.jetbrains.com/issue/RIDER-25787">RIDER-25787</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1124">#1124</a>)</li>
   <li>Unity Editor: Use unique name for log file (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
   <li>Unity Editor: Don't call Unity API in batch mode (<a href="https://github.com/JetBrains/resharper-unity/pull/1020">#1020</a>)</li>
   <li>Unity Editor: Fix exception during Unity shutdown (<a href="https://youtrack.jetbrains.com/issue/RIDER-19688">RIDER-19688</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/979">#979</a>)</li>

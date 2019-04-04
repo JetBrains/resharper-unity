@@ -32,6 +32,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Show packages from correct per-project cache in Unity Explorer
 - Rider: Fix creation of Unity class library project if can't find Unity install ([#1013](https://github.com/JetBrains/resharper-unity/issue/1013), [#1014](https://github.com/JetBrains/resharper-unity/pull/1014))
 - Rider: Minor UI annoyances in "Attach to Unity process" dialog ([#1114](https://github.com/JetBrains/resharper-unity/pull/1114))
+- Rider: Fix exception when project contains empty YAML file ([RIDER-25787](https://youtrack.jetbrains.com/issue/RIDER-25787), [#1124](https://github.com/JetBrains/resharper-unity/pull/1124))
 - Unity Editor: Use unique name for log file ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Don't call Unity API in batch mode ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Fix exception during Unity shutdown ([RIDER-19688](https://youtrack.jetbrains.com/issue/RIDER-19688), [#979](https://github.com/JetBrains/resharper-unity/pull/979))
