@@ -8,12 +8,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
+import icons.UnityIcons
 import javax.swing.Icon
 
 class UnityExplorerRootNode(project: Project, private val packageManager: PackageManager)

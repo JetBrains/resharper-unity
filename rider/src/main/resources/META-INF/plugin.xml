@@ -100,52 +100,89 @@
   </project-components>
 
   <actions>
+    <action id="AttachToUnityProcessAction"
+            class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction"
+            text="Attach to Unity Process&#8230;"
+            description="Attach debugger to Unity Editor process"
+            icon="UnityIcons.Actions.AttachToUnity">
+      <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
+    </action>
+
+    <action id="ShowUnitySettingsInRider"
+            class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction"
+            text="Unity Settings&#8230;"
+            description="Show Unity settings"
+            icon="AllIcons.General.Settings" />
 
     <group id="UnityToolbarActions">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
 
       <separator/>
+
       <group id="UnityShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityImportantActions" text="Important Unity-related Actions">
-        <action class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction" id="StartUnityAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRider" />
+        <action id="StartUnityAction"
+                class="com.jetbrains.rider.plugins.unity.actions.StartUnityAction"
+                text="Start Unity"
+                description="Start Unity with current project"
+                icon="UnityIcons.Actions.StartUnity" />
+        <reference ref="AttachToUnityProcessAction" />
+        <reference ref="ShowUnitySettingsInRider" />
+
         <separator/>
-        <action class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode" id="SwitchUIModeAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction" id="ShowUnityLogInRiderAction" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction" id="InstallEditorPluginAction" />
+
+        <action id="SwitchUIModeAction"
+                class="com.jetbrains.rider.plugins.unity.ui.SwitchUIMode"
+                text="Toggle UI Mode"
+                description="Show or hide unnecessary UI tool windows" />
+        <action id="ShowUnityLogInRiderAction"
+                class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
+                text="Show Unity Log Window" />
+        <action id="InstallEditorPluginAction"
+                class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
+                text="Install Unity Editor Plugin" />
       </group>
 
       <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity-related Actions">
-        <action class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction" id="AttachToUnityProcessActionDll" />
-        <action class="com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction" id="ShowUnitySettingsInRiderDll" />
+        <reference ref="AttachToUnityProcessAction" />
+        <reference ref="ShowUnitySettingsInRider" />
       </group>
 
-      <action id="TriggerRefreshInUnity" class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction" text="Trigger Refresh In Unity Editor" />
-      <action id="TriggerPlayInUnity" class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"/>
-      <action id="TriggerPauseInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"  />
-      <action id="TriggerStepInUnityEditor" class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction" />
+      <action id="TriggerRefreshInUnity"
+              class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
+              text="Refresh Unity Assets"
+              description="Trigger refresh assets in Unity Editor"
+              icon="AllIcons.Actions.Refresh" />
+      <action id="TriggerPlayInUnity"
+              class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"
+              text="Play/Edit"
+              description="Toggle play mode in Unity Editor"
+              icon="UnityIcons.Actions.Execute" />
+      <action id="TriggerPauseInUnityEditor"
+              class="com.jetbrains.rider.plugins.unity.actions.PauseInUnityAction"
+              text="Pause/Resume"
+              description="Toggle play/pause in Unity Editor"
+              icon="UnityIcons.Actions.Pause" />
+      <action id="TriggerStepInUnityEditor"
+              class="com.jetbrains.rider.plugins.unity.actions.StepInUnityAction"
+              text="Step"
+              description="Step a single frame in Unity Editor"
+              icon="UnityIcons.Actions.Step" />
       <separator/>
     </group>
 
     <group id="Rider.UnitTesting.TopToolbar.MiscOptions.Unity">
       <add-to-group group-id="Rider.UnitTesting.TopToolbar.MiscOptions.Plugin" anchor="last"/>
-      <action id="UnityTestLauncher" class="com.jetbrains.rider.plugins.unity.ui.UnitTest.SwitchUnitTestLauncherComboBoxAction"/>
+      <action id="UnityTestLauncher"
+              class="com.jetbrains.rider.plugins.unity.ui.UnitTest.SwitchUnitTestLauncherComboBoxAction" />
     </group>
 
-    <action id="AttachToUnityProcess" class="com.jetbrains.rider.plugins.unity.actions.AttachToUnityProcessAction">
-      <add-to-group group-id="XDebugger.AttachGroup" anchor="after" relative-to-action="XDebugger.AttachToLocalProcess" />
-    </action>
-
-    <action id="ShowReferencePropertiesAction" class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction" text="Properties...">
+    <!-- Note that this doesn't have text, so it doesn't show up in the keymap options page -->
+    <action id="ShowReferencePropertiesAction"
+            class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction"
+            use-shortcut-of="ShowIntentionActions">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
     </action>
   </actions>
-
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- IDEA default schemes -->
-    <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
-    <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
-  </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- IDEA default schemes -->

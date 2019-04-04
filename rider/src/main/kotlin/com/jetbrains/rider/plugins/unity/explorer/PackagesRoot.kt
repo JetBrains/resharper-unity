@@ -10,12 +10,12 @@ import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.packageManager.PackageData
 import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerNode
 import com.jetbrains.rider.projectView.views.navigateToSolutionView
+import icons.UnityIcons
 
 // Packages are included in a project by listing in the "dependencies" node of Packages/manifest.json. Packages can
 // contain assets, such as source, resources, and .dlls. They can also include .asmdef files
