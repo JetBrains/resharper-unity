@@ -28,17 +28,17 @@ public class Base : MonoBehaviour
 
 public class Derived : Base
 {
-    // Requires "new"
+    // Requires "new" - inspection comes from R# core
     public void Start()
     {
     }
 
-    // Requires "new"
+    // Requires "new" - inspection comes from R# core
     public void OnEnable()
     {
     }
 
-    // Requires "new" or "override"
+    // Requires "new" or "override" - inspection comes from R# core
     public void OnDestroy()
     {
     }
