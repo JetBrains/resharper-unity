@@ -5,8 +5,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -15,11 +13,20 @@ using JetBrains.ReSharper.TestFramework.Components.Psi;
 using JetBrains.Util;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
 {
     [Category("Daemon"), Category("PerformanceCriticalCode")]
-    public abstract class PerformanceCriticalCodeStageTestBase : BaseTestWithSingleProject
+    public abstract class UnityGlobalHighlightingsStageTestBase : BaseTestWithSingleProject
     {
+        private const string ProductGoldSuffix =
+#if RIDER
+                "rider"
+#else
+                "resharper"
+#endif
+            ;
+        protected sealed override string RelativeTestDataPath=> $@"{RelativeTestDataRoot}\{ProductGoldSuffix}";
+        protected abstract string RelativeTestDataRoot { get; }
         protected override void DoTest(IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);
@@ -36,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
                     foreach (var file in files)
                         swea.AnalyzeInvisibleFile(file);
 
-                    ExecuteWithGold(this.TestMethodName + ".cs", writer =>
+                    ExecuteWithGold(TestMethodName + ".cs", writer =>
                     {
                         foreach (var file in files)
                         {
@@ -45,20 +52,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
                             if (pf == null) continue;
                             if (!pf.Location.Name.EndsWith(".cs")) continue;
 
-                            var process = new TestHighlightingDumper(file, writer,
+                            var process = new TestHighlighterDumperWithOverridenStages(file, writer,
                                 DaemonStageManager.GetInstance(Solution).Stages,
-                                (highlighting, psiSourceFile, settingsStore) =>
-                                {
-                                    return highlighting is PerformanceHighlightingBase;
-                                },
+                                HighlightingPredicate,
                                 CSharpLanguage.Instance);
                             process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
                             process.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);
+                            process.CommitAll();
                             process.Dump();
                         }
                     });
                 });
             }
         }
+
+        protected abstract bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file,
+            IContextBoundSettingsStore settingsStore);
     }
 }
