@@ -1,5 +1,4 @@
-﻿using System.IO;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.FeaturesTestFramework.Completion;
 using NUnit.Framework;
 
@@ -25,7 +24,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
         [Test] public void MonoBehaviour06() { DoNamedTest(); }
         [Test] public void MonoBehaviour07() { DoNamedTest(); }
         [Test] public void MonoBehaviour08() { DoNamedTest(); }
+        [Test] public void NoCompletionInsideStruct() { DoNamedTest(); }
+        [Test] public void NoCompletionInsideInterface() { DoNamedTest(); }
         [Test] public void NoCompletionInsideAttributeSectionList() { DoNamedTest(); }
+        [Test] public void NoCompletionFollowingSerializeFieldAttribute01() { DoNamedTest(); }
+        [Test] public void NoCompletionFollowingSerializeFieldAttribute02() { DoNamedTest(); }
+        [Test] public void NoCompletionFollowingSerializeFieldAttribute03() { DoNamedTest(); }
+        [Test] public void NoCompletionFollowingSerializeFieldAttribute04() { DoNamedTest(); }
+        [Test] public void DoNotMatchParameterTypes() { DoNamedTest(); }
+        [Test] public void DoNotListVirtualFunctions() { DoNamedTest(); }
+        [Test] public void DoNotListFunctionsImplementedInBase01() { DoNamedTest(); }
+        [Test] public void DoNotListFunctionsImplementedInBase02() { DoNamedTest(); }
         [Test] public void UnityEditor01() { DoNamedTest(); }
         [Test] public void EditorWindow01() { DoNamedTest(); }
 

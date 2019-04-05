@@ -6,7 +6,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Resolve;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 {
@@ -32,17 +31,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
         {
             if (!HasUnityBaseType(context)) return;
 
-            var selectedMethods = context.InputElements.OfType<GeneratorDeclaredElement<IMethod>>();
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
-            foreach (var selectedMethod in selectedMethods)
+            var selectedGeneratorElements = context.InputElements.OfType<GeneratorDeclaredElement>();
+            foreach (var generatorElement in selectedGeneratorElements)
             {
-                ISubstitution newSubstitution;
-                var method = (IMethodDeclaration) CSharpGenerateUtil.CreateMemberDeclaration(
-                    context.ClassDeclaration, selectedMethod.Substitution, selectedMethod.DeclaredElement, false, out newSubstitution);
-                method.SetStatic(selectedMethod.DeclaredElement.IsStatic);
-                method.SetBody(factory.CreateBlock("{throw new System.NotImplementedException();}"));
-                method.FormatNode();
-                context.PutMemberDeclaration(method);
+                if (!(generatorElement.DeclaredElement is IMethod selectedMethod)) continue;
+
+                var methodDeclaration = (IMethodDeclaration) CSharpGenerateUtil.CreateMemberDeclaration(
+                    context.ClassDeclaration, generatorElement.Substitution, selectedMethod, false, out _);
+
+                methodDeclaration.SetAccessRights(selectedMethod.GetAccessRights());
+                methodDeclaration.SetStatic(selectedMethod.IsStatic);
+
+                IBlock block;
+                if (selectedMethod.IsVirtual)
+                {
+                    methodDeclaration.SetOverride(true);
+                    var parameters = string.Join(",", selectedMethod.Parameters.Select(p => p.ShortName));
+                    block = factory.CreateBlock("{base.$0($1);}", selectedMethod.ShortName, parameters);
+                }
+                else
+                {
+                    // The C# generator context will recognise an inserted throw statement and select it, ready for
+                    // editing. This doesn't happen when calling base virtual methods
+                    var predefinedType = methodDeclaration.GetPredefinedType();
+                    block = factory.CreateBlock("{throw new $0();}", predefinedType.NotImplementedException);
+                }
+
+                methodDeclaration.SetBody(block);
+                methodDeclaration.FormatNode();
+                context.PutMemberDeclaration(methodDeclaration);
             }
         }
 

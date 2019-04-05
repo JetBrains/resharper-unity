@@ -86,11 +86,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             var element = myEnvoy.GetValidDeclaredElement();
             if (element != null)
             {
-                var docOwner = element as IXmlDocIdOwner;
-                if (docOwner != null)
+                if (element is IXmlDocIdOwner docOwner)
                     return "Unity:" + docOwner.XMLDocId;
-                var parameter = element as IParameter;
-                if (parameter != null)
+                if (element is IParameter parameter)
                 {
                     docOwner = parameter.ContainingParametersOwner as IXmlDocIdOwner;
                     if (docOwner != null)
@@ -102,13 +100,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 
         public IQuickDocPresenter Resolve(string id)
         {
-            // Trying to navigate away. The id is the id of the thing we're
-            // trying to navigate to. For us, we're navigating away from
-            // a Unity event function or parameter, and to a genuine type
-            // or type member. The id will be the XML doc ID of the target
-            // element and QuickDocTypeMemberProvider will handle it. We'll
-            // never get one of our IDs, since we can't navigate to our
-            // type member (maybe via a cref)
+            // Trying to navigate away. The id is the id of the thing we're trying to navigate to. For us, we're
+            // navigating away from a Unity event function or parameter, and to a genuine type or type member. The id
+            // will be the XML doc ID of the target element and QuickDocTypeMemberProvider will handle it. We'll never
+            // get one of our IDs, since we can't navigate to our type member (maybe via a cref)
             var validDeclaredElement = myEnvoy.GetValidDeclaredElement();
             if (validDeclaredElement != null)
             {
@@ -129,14 +124,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
             var element = myEnvoy.GetValidDeclaredElement();
             if (element != null)
             {
-                var parameter = element as IParameter;
-                if (parameter != null)
+                if (element is IParameter parameter)
                     element = parameter.ContainingParametersOwner;
 
                 if (element != null)
                 {
                     // TODO: Is there a nice helper for this?
-                    var unityName = myEventFunction.TypeName + "." + element.ShortName;
+                    var unityName = myEventFunction.TypeName.GetFullNameFast() + "." + element.ShortName;
                     myHelpSystem.ShowHelp(unityName, HelpSystem.HelpKind.Msdn);
                 }
             }

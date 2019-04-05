@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using JetBrains.Diagnostics;
+using JetBrains.Collections;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures;
+using JetBrains.Util.DataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -27,8 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     {
         public static readonly Key<ISet<IMethod>> UnityEventFunctionNodeKey = new Key<ISet<IMethod>>("UnityEventFunctionNodeKey");
         private readonly object mySyncObject = new object();
-        
-        
+
         public UnityEventFunctionAnalyzer(UnityApi unityApi)
             : base(unityApi)
         {
@@ -44,21 +43,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!Api.IsUnityType(typeElement))
                 return;
 
-            var map = new OneToListMap<UnityEventFunction, Candidate>(new UnityEventFunctionKeyComparer());
-            foreach (var member in typeElement.GetMembers())
+            var project = element.GetProject();
+            if (project == null)
+                return;
+
+            var unityVersion = Api.GetNormalisedActualVersion(project);
+
+            var map = new CompactOneToListMap<UnityEventFunction, Candidate>(new UnityEventFunctionKeyComparer());
+            foreach (var instance in typeElement.GetAllClassMembers<IMethod>())
             {
-                if (member is IMethod method)
-                {
-                    var unityEventFunction = Api.GetUnityEventFunction(method, out var match);
-                    if (unityEventFunction != null)
-                        map.Add(unityEventFunction, new Candidate(method, match));
-                }
+                var unityEventFunction = Api.GetUnityEventFunction(instance.Member, unityVersion, out var match);
+                if (unityEventFunction != null)
+                    map.AddValue(unityEventFunction, new Candidate(instance.Member, match));
             }
 
-            foreach (var pair in map)
+            foreach (var (function, candidates) in map)
             {
-                var function = pair.Key;
-                var candidates = pair.Value;
                 if (candidates.Count == 1)
                 {
                     // Only one function, mark it as a unity function, even if it's not an exact match
@@ -77,9 +77,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         if (candidate.Match == MethodSignatureMatch.ExactMatch)
                         {
-                            PutEventToCustomData(candidate.Method, data);
                             hasExactMatch = true;
-                            duplicates.Add(candidate.Method);
+                            if (Equals(candidate.Method.GetContainingType(), typeElement))
+                            {
+                                PutEventToCustomData(candidate.Method, data);
+                                duplicates.Add(candidate.Method);
+                            }
                         }
                     }
 
@@ -102,9 +105,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     {
                         foreach (var candidate in candidates)
                         {
-                            var method = candidate.Method;
-                            PutEventToCustomData(method, data);
-                            AddMethodSignatureInspections(consumer, method, function, candidate.Match);
+                            if (Equals(candidate.Method.GetContainingType(), typeElement))
+                            {
+                                var method = candidate.Method;
+                                PutEventToCustomData(method, data);
+                                AddMethodSignatureInspections(consumer, method, function, candidate.Match);
+                            }
                         }
                     }
                 }
@@ -114,11 +120,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         private void PutEventToCustomData(IMethod method, ElementProblemAnalyzerData data)
         {
             lock (mySyncObject)
-            {   
+            {
                 var daemon = data.TryGetDaemonProcess();
                 if (daemon == null)
                     return;
-                
+
                 var customData = daemon.CustomData.GetOrCreateDataNoLock(UnityEventFunctionNodeKey, () => new JetHashSet<IMethod>());
                 customData.Add(method);
             }
