@@ -70,12 +70,14 @@
 
 // ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnDestroy():System.Void}
+
+using System;
 using UnityEngine;
 
 class A : MonoBehaviour
 {
   private void OnDestroy()
   {
-    {selstart}throw new System.NotImplementedException();{selend}
+    {selstart}throw new NotImplementedException();{selend}
   }
 }

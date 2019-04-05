@@ -5,7 +5,7 @@ import com.intellij.execution.configurations.RemoteRunProfile
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.jetbrains.rider.debugger.IDotNetDebuggable
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import icons.UnityIcons
 
 class UnityAttachRunProfile(private val configurationName: String, private val configuration: UnityAttachConfiguration,
                             private val targetName: String, private val isEditor: Boolean)
