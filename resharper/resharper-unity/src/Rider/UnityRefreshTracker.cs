@@ -171,9 +171,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     logger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
                     myGroupingEvent.FireIncoming();
                 });
+                
+                fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });
-            
-            fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
         }
         
         private void FileSystemChange(FileSystemChange fileSystemChange)
