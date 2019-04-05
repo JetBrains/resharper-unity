@@ -37,8 +37,8 @@ class SwitchUIMode : AnAction() {
             return
         }
 
-        if(uiManager.hasMinimizedUi.hasTrueValue()){
-            e.presentation.text = "Switch to Full UI"}
+        if(uiManager.hasMinimizedUi.hasTrueValue())
+            e.presentation.text = "Switch to Full UI"
         else
             e.presentation.text = "Switch to Minimized UI"
 

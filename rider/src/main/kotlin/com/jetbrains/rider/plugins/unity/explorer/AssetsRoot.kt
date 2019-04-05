@@ -8,7 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rd.util.getOrCreate
 import com.jetbrains.rider.model.*
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import icons.UnityIcons
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.addAdditionalText

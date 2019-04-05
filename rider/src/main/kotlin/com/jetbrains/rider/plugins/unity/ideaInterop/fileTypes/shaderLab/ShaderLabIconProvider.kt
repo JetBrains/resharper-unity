@@ -5,7 +5,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.Iconable
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import icons.UnityIcons
 import javax.swing.Icon
 
 class ShaderLabIconProvider : IconProvider(), DumbAware {

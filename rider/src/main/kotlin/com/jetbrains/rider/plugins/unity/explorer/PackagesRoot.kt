@@ -7,12 +7,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import com.jetbrains.rider.plugins.unity.packageManager.PackageData
+import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
+import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerNode
 import com.jetbrains.rider.projectView.views.navigateToSolutionView
+import icons.UnityIcons
 
 // Packages are included in a project by listing in the "dependencies" node of Packages/manifest.json. Packages can
 // contain assets, such as source, resources, and .dlls. They can also include .asmdef files
@@ -43,8 +46,8 @@ import com.jetbrains.rider.projectView.views.navigateToSolutionView
 //    click action to add to manifest.json
 // b) Right click on a referenced package to convert to embedded - simply copy into the project's Packages folder
 
-class PackagesRoot(project: Project, private val packagesManager: PackagesManager)
-    : UnityExplorerNode(project, packagesManager.packagesFolder, listOf(), false) {
+class PackagesRoot(project: Project, private val packageManager: PackageManager)
+    : UnityExplorerNode(project, packageManager.packagesFolder, listOf(), false) {
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -59,20 +62,20 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
 
         // We want the children to be file system folders and editable packages, which means embedded packages and local
         // packages. We've already added the embedded packages by including file system folders
-        packagesManager.localPackages.forEach { addPackage(children, it) }
-        packagesManager.unknownPackages.forEach { addPackage(children, it) }
+        packageManager.localPackages.forEach { addPackage(children, it) }
+        packageManager.unknownPackages.forEach { addPackage(children, it) }
 
-        if (packagesManager.immutablePackages.any())
-            children.add(0, ReadOnlyPackagesRoot(project!!, packagesManager))
+        if (packageManager.immutablePackages.any())
+            children.add(0, ReadOnlyPackagesRoot(project!!, packageManager))
 
         return children
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
         if (virtualFile.isDirectory) {
-            packagesManager.getPackageData(virtualFile)?.let {
+            packageManager.getPackageData(virtualFile)?.let {
                 val embeddedPackageData = PackageData(it.name, virtualFile, it.details, PackageSource.Embedded)
-                return PackageNode(project!!, packagesManager, virtualFile, embeddedPackageData)
+                return PackageNode(project!!, packageManager, virtualFile, embeddedPackageData)
             }
         }
         return super.createNode(virtualFile, nestedFiles)
@@ -84,7 +87,7 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
 
     private fun addPackage(children: MutableList<AbstractTreeNode<*>>, thePackage: PackageData) {
         if (thePackage.packageFolder != null) {
-            children.add(PackageNode(project!!, packagesManager, thePackage.packageFolder, thePackage))
+            children.add(PackageNode(project!!, packageManager, thePackage.packageFolder, thePackage))
         }
         else {
             children.add(UnknownPackageNode(project!!, thePackage))
@@ -92,7 +95,7 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
     }
 }
 
-class PackageNode(project: Project, private val packagesManager: PackagesManager, packageFolder: VirtualFile, private val packageData: PackageData)
+class PackageNode(project: Project, private val packageManager: PackageManager, packageFolder: VirtualFile, private val packageData: PackageData)
     : UnityExplorerNode(project, packageFolder, listOf(), false), Comparable<AbstractTreeNode<*>> {
 
     init {
@@ -157,7 +160,7 @@ class PackageNode(project: Project, private val packagesManager: PackagesManager
         val children = super.calculateChildren()
 
         if (!packageData.details.dependencies.isEmpty()) {
-            children.add(0, DependenciesRoot(project!!, packagesManager, packageData))
+            children.add(0, DependenciesRoot(project!!, packageManager, packageData))
         }
 
         return children
@@ -169,7 +172,7 @@ class PackageNode(project: Project, private val packagesManager: PackagesManager
     }
 }
 
-class DependenciesRoot(project: Project, private val packagesManager: PackagesManager, private val packageData: PackageData)
+class DependenciesRoot(project: Project, private val packageManager: PackageManager, private val packageData: PackageData)
     : AbstractTreeNode<Any>(project, packageData) {
 
     override fun update(presentation: PresentationData) {
@@ -180,13 +183,13 @@ class DependenciesRoot(project: Project, private val packagesManager: PackagesMa
     override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
         for ((name, version) in packageData.details.dependencies) {
-            children.add(DependencyItemNode(project!!, packagesManager, name, version))
+            children.add(DependencyItemNode(project!!, packageManager, name, version))
         }
         return children
     }
 }
 
-class DependencyItemNode(project: Project, private val packagesManager: PackagesManager, private val packageName: String, version: String)
+class DependencyItemNode(project: Project, private val packageManager: PackageManager, private val packageName: String, version: String)
     : AbstractTreeNode<Any>(project, "$packageName@$version") {
 
     init {
@@ -202,11 +205,11 @@ class DependencyItemNode(project: Project, private val packagesManager: Packages
     }
 
     override fun canNavigate(): Boolean {
-        return packagesManager.getPackageData(packageName) != null
+        return packageManager.getPackageData(packageName) != null
     }
 
     override fun navigate(requestFocus: Boolean) {
-        val packageData = packagesManager.getPackageData(packageName)
+        val packageData = packageManager.getPackageData(packageName)
         if (packageData?.packageFolder == null) return
         project!!.navigateToSolutionView(packageData.packageFolder, requestFocus)
     }
@@ -231,7 +234,7 @@ abstract class CompositeFolderRoot(project: Project, key: Any)
     }
 }
 
-class ReadOnlyPackagesRoot(project: Project, private val packagesManager: PackagesManager)
+class ReadOnlyPackagesRoot(project: Project, private val packageManager: PackageManager)
     : CompositeFolderRoot(project, key) {
 
     companion object {
@@ -246,17 +249,17 @@ class ReadOnlyPackagesRoot(project: Project, private val packagesManager: Packag
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
 
-        if (packagesManager.hasBuiltInPackages)
-            children.add(BuiltinPackagesRoot(project!!, packagesManager))
+        if (packageManager.hasBuiltInPackages)
+            children.add(BuiltinPackagesRoot(project!!, packageManager))
 
-        for (packageData in packagesManager.immutablePackages) {
+        for (packageData in packageManager.immutablePackages) {
             if (packageData.source == PackageSource.BuiltIn) continue
 
             if (packageData.packageFolder == null) {
                 children.add(UnknownPackageNode(project!!, packageData))
             }
             else {
-                children.add(PackageNode(project!!, packagesManager, packageData.packageFolder, packageData))
+                children.add(PackageNode(project!!, packageManager, packageData.packageFolder, packageData))
                 addPackageFolder(packageData.packageFolder)
             }
         }
@@ -264,7 +267,7 @@ class ReadOnlyPackagesRoot(project: Project, private val packagesManager: Packag
     }
 }
 
-class BuiltinPackagesRoot(project: Project, private val packagesManager: PackagesManager)
+class BuiltinPackagesRoot(project: Project, private val packageManager: PackageManager)
     : CompositeFolderRoot(project, key) {
 
     companion object {
@@ -278,7 +281,7 @@ class BuiltinPackagesRoot(project: Project, private val packagesManager: Package
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
-        for (packageData in packagesManager.immutablePackages) {
+        for (packageData in packageManager.immutablePackages) {
             if (packageData.source != PackageSource.BuiltIn) continue
 
             if (packageData.packageFolder == null) {

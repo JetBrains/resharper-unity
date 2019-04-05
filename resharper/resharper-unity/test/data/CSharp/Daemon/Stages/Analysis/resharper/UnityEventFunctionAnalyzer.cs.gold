@@ -66,16 +66,25 @@ public class ||StaticModifier|(20)|(21) : AssetPostprocessor
     }
 }
 
-public class ||TypeParameters|(28)|(29) : MonoBehaviour
+public class ||MyStateMachineBehaviour|(28)|(29) : StateMachineBehaviour
 {
-    public void ||Start|(30)|(31)<T1, T2>()
+    // Do not show incorrect signature warning - the correct signature is implemented in the base class
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
+    {
+        base.OnStateEnter(animator, stateInfo, layerIndex, controller);
+    }
+}
+
+public class ||TypeParameters|(30)|(31) : MonoBehaviour
+{
+    public void ||Start|(32)|(33)<T1, T2>()
     {
     }
 }
 
-public class ||AllWrong|(32)|(33) : AssetPostprocessor
+public class ||AllWrong|(34)|(35) : AssetPostprocessor
 {
-    public int ||OnGeneratedCSProjectFiles|(34)|(35)<T1, T2>(int value)
+    public int ||OnGeneratedCSProjectFiles|(36)|(37)<T1, T2>(int value)
     {
         return 42;
     }
@@ -135,14 +144,16 @@ This callback is used by UnityVS to take over project generation from Unity
 (27): ReSharper Unity Implicitly Used Identifier: 
 (28): Unity Gutter Icon: Unity scripting component
 (29): ReSharper Unity Implicitly Used Identifier: 
-(30): Unity Gutter Icon: Unity event function
+(30): Unity Gutter Icon: Unity scripting component
+(31): ReSharper Unity Implicitly Used Identifier: 
+(32): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
-(31): ReSharper Unity Implicitly Used Identifier: 
-(32): Unity Gutter Icon: Unity scripting component
 (33): ReSharper Unity Implicitly Used Identifier: 
-(34): Unity Gutter Icon: Unity event function
+(34): Unity Gutter Icon: Unity scripting component
+(35): ReSharper Unity Implicitly Used Identifier: 
+(36): Unity Gutter Icon: Unity event function
 
 This is undocumented, and a 'safeguard' for when Visual Studio gets a new release that is incompatible with Unity, so that users can postprocess our csproj files to fix the issue (or just completely replace them). Hopefully we'll never need this.
-(35): ReSharper Unity Implicitly Used Identifier: 
+(37): ReSharper Unity Implicitly Used Identifier: 

@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return false;
         }
-        
+
         public static bool DerivesFrom(this IDeclaredElement candidate, IClrTypeName baseTypeName)
         {
             if (!(candidate is ITypeElement element))
@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var baseType = GetTypeElement(baseTypeName, element.Module);
             return element.IsDescendantOf(baseType);
         }
-        
+
         private static ITypeElement GetTypeElement(IClrTypeName typeName, IPsiModule module)
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 return type.GetTypeElement();
             }
         }
-        
+
         [CanBeNull]
         public static string GetUnityEventFunctionName(this IDeclaredElement element, UnityApi unityApi)
         {
@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (unityEventFunction == null)
                 return null;
 
-            return unityEventFunction.TypeName + "." + element.ShortName;
+            return unityEventFunction.TypeName.GetFullNameFast() + "." + element.ShortName;
         }
     }
 }

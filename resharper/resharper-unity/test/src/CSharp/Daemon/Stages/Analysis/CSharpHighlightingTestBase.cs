@@ -27,6 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
             ;
 
         protected sealed override string RelativeTestDataPath => $@"{RelativeTestDataRoot}\{ProductGoldSuffix}";
+
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {

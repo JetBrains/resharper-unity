@@ -66,6 +66,15 @@ public class StaticModifier : AssetPostprocessor
     }
 }
 
+public class MyStateMachineBehaviour : StateMachineBehaviour
+{
+    // Do not show incorrect signature warning - the correct signature is implemented in the base class
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
+    {
+        base.OnStateEnter(animator, stateInfo, layerIndex, controller);
+    }
+}
+
 public class TypeParameters : MonoBehaviour
 {
     public void Start<T1, T2>()
