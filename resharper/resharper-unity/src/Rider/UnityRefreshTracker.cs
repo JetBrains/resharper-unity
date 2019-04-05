@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Application.changes;
+using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
@@ -129,11 +131,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
+        private readonly ILogger myLogger;
+        private GroupingEvent myGroupingEvent;
+
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
+            IFileSystemTracker fileSystemTracker,
             UnityHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
+            myLogger = logger;
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
@@ -151,7 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (!args) return;
 
                 // Rgc.Guarded - beware RIDER-15577
-                var groupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
+                myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
                     TimeSpan.FromMilliseconds(500),
                     Rgc.Guarded, () =>
                     {
@@ -162,9 +169,57 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
                 {
                     logger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
-                    groupingEvent.FireIncoming();
+                    myGroupingEvent.FireIncoming();
                 });
             });
+            
+            fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
+        }
+        
+        private void FileSystemChange(FileSystemChange fileSystemChange)
+        {
+            var visitor = new Visitor(this);
+            foreach (var fileSystemChangeDelta in fileSystemChange.Deltas)
+                fileSystemChangeDelta.Accept(visitor);
+        }
+
+        private class Visitor : RecursiveFileSystemChangeDeltaVisitor
+        {
+            private readonly UnityRefreshTracker myRefreshTracker;
+
+            public Visitor(UnityRefreshTracker refreshTracker)
+            {
+                myRefreshTracker = refreshTracker;
+            }
+
+            public override void Visit(FileSystemChangeDelta delta)
+            {
+                base.Visit(delta);
+
+                switch (delta.ChangeType)
+                {
+                    case FileSystemChangeType.ADDED:
+                    case FileSystemChangeType.DELETED:
+                        myRefreshTracker.AdviseFileAddedOrDeleted(delta);
+                        break;
+                    case FileSystemChangeType.CHANGED:
+                    case FileSystemChangeType.RENAMED:
+                    case FileSystemChangeType.UNKNOWN:
+                    case FileSystemChangeType.SUBTREE_CHANGED:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private void AdviseFileAddedOrDeleted(FileSystemChangeDelta delta)
+        {
+            if (delta.NewPath.ExtensionNoDot == "cs")
+            {
+                myLogger.Verbose($"fileSystemTracker.AdviseDirectoryChanges {delta.ChangeType}, {delta.NewPath}, {delta.OldPath}");
+                myGroupingEvent.FireIncoming();
+            }
         }
     }
 }
