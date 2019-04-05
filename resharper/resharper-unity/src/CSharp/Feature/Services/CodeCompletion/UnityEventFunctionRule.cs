@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
@@ -15,12 +17,13 @@ using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.PsiGen.Util;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
 using JetBrains.TextControl;
 using JetBrains.UI.RichText;
@@ -31,6 +34,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
     [Language(typeof(CSharpLanguage))]
     public class UnityEventFunctionRule : ItemsProviderOfSpecificContext<CSharpCodeCompletionContext>
     {
+        private readonly IShellLocks myShellLocks;
+
+        public UnityEventFunctionRule(IShellLocks shellLocks)
+        {
+            myShellLocks = shellLocks;
+        }
+
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
             if (!(context.PsiModule is IProjectPsiModule projectPsiModule)
@@ -57,47 +67,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         protected override bool AddLookupItems(CSharpCodeCompletionContext context, IItemsCollector collector)
         {
-            if (!CheckPosition(context, out var classDeclaration, out var hasVisibilityModifier, out var hasReturnType))
-                return false;
-
-            // Only add items in the light pass. This gives us higher relevance, putting us
-            // above types that are in the full pass. Note that we're fast enough to just use
-            // Light mode. The worst we do is a little bit of LINQ and checking inheritance.
-            // This shouldn't fire as the base class says we only support light evaluation.
-            if (context.BasicContext.Parameters.EvaluationMode != EvaluationMode.Light)
-                return false;
-
-            // Don't add anything in double completion - we've already added it. This also
-            // shouldn't fire, as the base class says we only support single completion.
-            if (context.BasicContext.Parameters.Multiplier > 1)
-                return true;
-
-            var typeElement = classDeclaration.DeclaredElement;
-            if (typeElement == null)
-                return false;
+            // Assert base class preconditions. We only add items in the light pass, which gives us higher relevance,
+            // putting us above types that are in the full pass. We need to be super fast in Light mode, and we are -
+            // we're just looking things up
+            Assertion.Assert(context.BasicContext.Parameters.EvaluationMode == EvaluationMode.Light, "evaluationMode == EvaluationMode.Light");
+            Assertion.Assert(context.BasicContext.Parameters.Multiplier == 1, "multiplier == 1");
 
             var unityApi = context.BasicContext.Solution.GetComponent<UnityApi>();
+            if (!CheckPosition(context, unityApi, out var classDeclaration, out var accessRights, out var hasReturnType))
+                return false;
+
+            var typeElement = classDeclaration.DeclaredElement;
+            var baseTypeElement = typeElement?.GetBaseClassType()?.GetTypeElement();
+            if (typeElement == null || baseTypeElement == null)
+                return false;
+
             var unityVersionApi = context.BasicContext.Solution.GetComponent<UnityVersion>();
             var project = context.BasicContext.File.GetProject();
             var actualVersion = unityVersionApi.GetActualVersion(project);
-            var existingMethods = typeElement.Methods.ToList();
-            
+            var thisMethods = typeElement.Methods.ToList();
+            var inheritedMethods = baseTypeElement.GetAllClassMembers<IMethod>().ToList();
+
             var addedFunctions = new HashSet<string>();
-            
+
             foreach (var function in unityApi.GetEventFunctions(typeElement, actualVersion))
             {
-                if (HasAnyPartiallyMatchingExistingMethods(existingMethods, function))
+                if (HasAnyPartiallyMatchingExistingMethods(thisMethods, function))
+                    continue;
+
+                if (HasAnyExactMatchInheritedMethods(inheritedMethods, function))
                     continue;
 
                 if (addedFunctions.Contains(function.Name))
                     continue;
-                
-                // TODO: Decide what to do with e.g. `void OnAnima{caret}`
-                // If we want to insert a visibility modifier, it has to go *before* the `void`,
-                // which means adding a behaviour here that will remove it
-                var addModifier = !hasVisibilityModifier && !hasReturnType;
 
-                var item = CreateMethodItem(context, function, classDeclaration, addModifier);
+                var item = CreateMethodItem(context, function, classDeclaration, hasReturnType, accessRights);
                 if (item == null) continue;
 
                 item = SetRelevanceSortPriority(item, function);
@@ -110,12 +114,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return true;
         }
 
-        private bool HasAnyPartiallyMatchingExistingMethods(List<IMethod> existingMethods, UnityEventFunction function)
+        private bool HasAnyPartiallyMatchingExistingMethods(IEnumerable<IMethod> existingMethods,
+                                                            UnityEventFunction function)
         {
             // Don't use Any() - it's surprisingly expensive when called for each function we're adding to the lookup list
             foreach (var existingMethod in existingMethods)
             {
                 if (function.Match(existingMethod) != MethodSignatureMatch.NoMatch)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool HasAnyExactMatchInheritedMethods(IEnumerable<TypeMemberInstance<IMethod>> inheritedMethods,
+                                                      UnityEventFunction function)
+        {
+            foreach (var existingMethod in inheritedMethods)
+            {
+                if (function.Match(existingMethod.Member) == MethodSignatureMatch.ExactMatch)
                     return true;
             }
 
@@ -144,6 +161,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return item;
         }
 
+        // ReSharper disable once UnusedParameter.Local
         private ILookupItem SetLexicographicalSortPriority(ILookupItem item, UnityEventFunction function)
         {
             // When items are sorted lexicographically, first sort key is Location, then Rank, then OrderString.
@@ -158,20 +176,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return item;
         }
 
-        private static ILookupItem CreateMethodItem(CSharpCodeCompletionContext context,
-            UnityEventFunction eventFunction, IClassLikeDeclaration declaration, bool addModifier)
+        private ILookupItem CreateMethodItem(CSharpCodeCompletionContext context,
+                                             UnityEventFunction eventFunction, IClassLikeDeclaration declaration,
+                                             bool hasReturnType, AccessRights accessRights)
         {
             if (CSharpLanguage.Instance == null)
                 return null;
 
-            var method = eventFunction.CreateDeclaration(CSharpElementFactory.GetInstance(declaration, false), declaration);
-            if (method.DeclaredElement == null)
+            // Only show the modifier in the list text if it's not already specified and there isn't a return type, in
+            // which case we default to `private`. E.g. if someone types `OnAnim`, then show `private void OnAnimate...`
+            // but if they type `void OnAnim`, they don't want a modifier, and if they type `public void OnAnim` then
+            // they want to use `public`
+            var showModifier = false;
+            if (!hasReturnType && accessRights == AccessRights.NONE)
+            {
+                showModifier = true;
+                accessRights = AccessRights.PRIVATE;
+            }
+
+            var factory = CSharpElementFactory.GetInstance(declaration, false);
+            var methodDeclaration = eventFunction.CreateDeclaration(factory, declaration, accessRights);
+            if (methodDeclaration.DeclaredElement == null)
                 return null;
 
-            var instance = new DeclaredElementInstance(method.DeclaredElement);
+            var instance = new DeclaredElementInstance(methodDeclaration.DeclaredElement);
 
-            var declaredElementInfo = new DeclaredElementInfoWithoutParameterInfo(method.DeclaredName, instance, CSharpLanguage.Instance,
-                context.BasicContext.LookupItemsOwner, context)
+            var declaredElementInfo = new DeclaredElementInfoWithoutParameterInfo(methodDeclaration.DeclaredName,
+                instance, CSharpLanguage.Instance, context.BasicContext.LookupItemsOwner, context)
             {
                 Ranges = context.CompletionRanges
             };
@@ -198,41 +229,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
             var text = $"{eventFunction.Name}({parameters})";
             var parameterOffset = eventFunction.Name.Length;
-            var modifier = addModifier ? "private " : string.Empty;
+
+            var modifier = showModifier
+                ? CSharpDeclaredElementPresenter.Instance.Format(accessRights) + " "
+                : string.Empty;
 
             var psiIconManager = context.BasicContext.LookupItemsOwner.Services.PsiIconManager;
 
             return LookupItemFactory.CreateLookupItem(declaredElementInfo)
                 .WithPresentation(item =>
-                    {
-                        var displayName = new RichText($"{modifier}{text} {{ ... }}");
+                {
+                    var displayName = new RichText($"{modifier}{text} {{ ... }}");
 
-                        // GenerateMemberPresentation marks everything as bold, and the parameters + block syntax as not important
-                        var parameterStartOffset = modifier.Length + parameterOffset;
-                        LookupUtil.MarkAsNotImportant(displayName,
-                            TextRange.FromLength(parameterStartOffset, displayName.Length - parameterStartOffset));
-                        LookupUtil.AddEmphasize(displayName, new TextRange(modifier.Length, displayName.Length));
+                    // GenerateMemberPresentation marks everything as bold, and the parameters + block syntax as not important
+                    var parameterStartOffset = modifier.Length + parameterOffset;
+                    LookupUtil.MarkAsNotImportant(displayName,
+                        TextRange.FromLength(parameterStartOffset, displayName.Length - parameterStartOffset));
+                    LookupUtil.AddEmphasize(displayName, new TextRange(modifier.Length, displayName.Length));
 
-                        var image = psiIconManager.GetImage(CLRDeclaredElementType.METHOD, PsiIconExtension.Private);
-                        var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
-                        return new SimplePresentation(displayName, image, marker);
-                    })
-                .WithBehavior(_ => new UnityEventFunctionBehavior(declaredElementInfo, eventFunction))
+                    var image = psiIconManager.GetImage(methodDeclaration.DeclaredElement,
+                        methodDeclaration.DeclaredElement.PresentationLanguage, true);
+                    var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
+                    return new SimplePresentation(displayName, image, marker);
+                })
+                .WithBehavior(_ => new UnityEventFunctionBehavior(myShellLocks, declaredElementInfo, eventFunction, accessRights))
                 .WithMatcher(_ =>
-                new ShiftedDeclaredElementMatcher(text, modifier.Length, declaredElementInfo,
-                    context.BasicContext.IdentifierMatchingStyle));
+                    new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, declaredElementInfo,
+                        context.BasicContext.IdentifierMatchingStyle));
         }
 
         [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
-        private bool CheckPosition(CSharpCodeCompletionContext context, out IClassLikeDeclaration classDeclaration,
-            out bool hasVisibilityModifier, out bool hasReturnType)
+        private bool CheckPosition(CSharpCodeCompletionContext context, UnityApi unityApi,
+                                   out IClassDeclaration classDeclaration,
+                                   out AccessRights accessRights, out bool hasReturnType)
         {
-            classDeclaration = null;
-            hasVisibilityModifier = false;
+            classDeclaration = GetClassDeclaration(context.NodeInFile);
+            accessRights = AccessRights.NONE;
             hasReturnType = false;
+
+            if (classDeclaration == null)
+                return false;
 
             // Make sure we're completing an identifier
             if (!(context.UnterminatedContext.TreeNode is ICSharpIdentifier identifier))
+                return false;
+
+            if (!unityApi.IsUnityType(classDeclaration.DeclaredElement))
                 return false;
 
             // Make sure we're in the correct place for showing Unity event functions.
@@ -242,10 +284,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // We know we're in a place where we can complete, so now configure what we
             // complete and what we display
             hasReturnType = HasExistingReturnType(identifier, out var typeUsage);
-            hasVisibilityModifier = HasExistingVisibilityModifier(typeUsage);
-            classDeclaration = GetClassDeclaration(context.NodeInFile);
+            accessRights = GetAccessRights(typeUsage);
 
-            return classDeclaration != null;
+            return true;
         }
 
         private static bool ShouldComplete(ITreeNode nodeInFile, ICSharpIdentifier identifier)
@@ -254,26 +295,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             if (methodDeclaration != null)
             {
                 // Don't complete in the parameter list
-                if (nodeInFile.GetContainingNode<IFormalParameterList>() != null)
-                    return false;
+                if (nodeInFile.GetContainingNode<IFormalParameterList>() != null) return false;
 
                 // Don't complete in the attribute list
-                if (nodeInFile.GetContainingNode<IAttributeSectionList>() != null)
-                    return false;
+                if (nodeInFile.GetContainingNode<IAttributeSectionList>() != null) return false;
 
-                // Check the whole text of the declaration - if it ends (or even starts)
-                // with "__" (which is the completion marker) then we have an incomplete
-                // method declaration and we're good to complete at this position
+                // Don't complete if there is a preceding [SerializeField] attribute
+                if (HasSerializedFieldAttribute(methodDeclaration)) return false;
+
+                // Check the whole text of the declaration - if it ends (or even starts) with "__" (which is the
+                // completion marker) then we have an incomplete method declaration and we're good to complete at this
+                // position
                 var declarationText = methodDeclaration.GetText();
                 if (declarationText.StartsWith("__") || declarationText.EndsWith("__"))
                     return true;
 
-                // E.g. `OnAni{caret} [SerializeField]` causes the parser to treat
-                // the next construct's attribute as an array specifier to the type
-                // usage we're typing. (If there's already a type, then the parser
-                // thinks it's a property). So, if we have an array rank, check to
-                // see if the token following the `[` is an identifier. If so, it's
-                // likely it should be an attribute instead, so allow completion.
+                if (identifier == methodDeclaration.NameIdentifier)
+                    return true;
+
+                // E.g. `OnAni{caret} [SerializeField]` causes the parser to treat the next construct's attribute as an
+                // array specifier to the type usage we're typing. (If there's already a type, then the parser thinks
+                // it's a property). So, if we have an array rank, check to see if the token following the `[` is an
+                // identifier. If so, it's likely it should be an attribute instead, so allow completion.
                 var typeUsage = identifier.GetContainingNode<ITypeUsage>();
                 if (typeUsage != null)
                 {
@@ -302,7 +345,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 if (fieldDeclaration.FixedBufferSizeExpression == null
                     || !fieldDeclaration.FixedBufferSizeExpression.IsConstantValue())
                 {
+                    if (HasSerializedFieldAttribute(fieldDeclaration))
+                        return false;
+
                     return identifier == fieldDeclaration.NameIdentifier;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasSerializedFieldAttribute(ICSharpTypeMemberDeclaration declaration)
+        {
+            foreach (var attribute in declaration.AttributesEnumerable)
+            {
+                var result = attribute.TypeReference?.Resolve();
+                if (result != null && result.ResolveErrorType.IsAcceptable)
+                {
+                    if (result.DeclaredElement is IClass declaredElement &&
+                        Equals(declaredElement.GetClrName(), KnownTypes.SerializeField))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -328,22 +392,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return false;
         }
 
-        private static bool HasExistingVisibilityModifier([CanBeNull] ITreeNode typeUsage)
+        private static AccessRights GetAccessRights([CanBeNull] ITreeNode typeUsage)
         {
             if (typeUsage == null || !(typeUsage.GetPreviousMeaningfulSibling() is IModifiersList modifiersList))
-                return false;
+                return AccessRights.NONE;
 
-            // TODO: What about virtual or override?
-            return (modifiersList.HasModifier(CSharpTokenType.PUBLIC_KEYWORD) ||
-                    modifiersList.HasModifier(CSharpTokenType.INTERNAL_KEYWORD) ||
-                    modifiersList.HasModifier(CSharpTokenType.PROTECTED_KEYWORD) ||
-                    modifiersList.HasModifier(CSharpTokenType.PRIVATE_KEYWORD));
+            return ModifiersUtil.GetAccessRightsModifiers(modifiersList);
         }
 
         [CanBeNull]
-        private static IClassLikeDeclaration GetClassDeclaration(ITreeNode completionNode)
+        private static IClassDeclaration GetClassDeclaration(ITreeNode completionNode)
         {
-            return completionNode.GetContainingNode<IClassLikeDeclaration>();
+            return completionNode.GetContainingNode<IClassDeclaration>();
         }
 
         // The code completion tooltip tries to show parameter info, if available. We already show this as part of the

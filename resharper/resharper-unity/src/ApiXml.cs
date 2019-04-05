@@ -15,6 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class ApiXml
     {
         private readonly IDictionary<string, IClrTypeName> myTypeNames = new Dictionary<string, IClrTypeName>();
+        private readonly IDictionary<string, Version> myVersions = new Dictionary<string, Version>();
+        private readonly JetHashSet<string> myIdentifiers = new JetHashSet<string>();
 
         public UnityTypes LoadTypes()
         {
@@ -42,11 +44,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 foreach (XmlNode type in nodes)
                     types.Add(CreateUnityType(type, minimumVersion, maximumVersion));
 
-                return new UnityTypes(types, Version.Parse(minimumVersion), Version.Parse(maximumVersion));
+                return new UnityTypes(types, GetInternedVersion(minimumVersion), GetInternedVersion(maximumVersion));
             }
         }
 
-        private IClrTypeName GetClrTypeName(string typeName)
+        private IClrTypeName GetInternedClrTypeName(string typeName)
         {
             if (!myTypeNames.TryGetValue(typeName, out var clrTypeName))
             {
@@ -64,28 +66,48 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var minimumVersion = ParseVersionAttribute(type, "minimumVersion", defaultMinimumVersion);
             var maximumVersion = ParseVersionAttribute(type, "maximumVersion", defaultMaximumVersion);
 
-            var typeName = GetClrTypeName($"{ns}.{name}");
+            var typeName = GetInternedClrTypeName($"{ns}.{name}");
             var messageNodes = type.SelectNodes("message");
             var messages = EmptyArray<UnityEventFunction>.Instance;
             if (messageNodes != null)
             {
-                messages = messageNodes.OfType<XmlNode>().Select(
-                    node => CreateUnityMessage(node, typeName.GetFullNameFast(), defaultMinimumVersion,
-                        defaultMaximumVersion)).OrderBy(m => m.Name).ToArray();
+                messages = messageNodes.OfType<XmlNode>()
+                    .Select(node => CreateUnityMessage(node, typeName, defaultMinimumVersion, defaultMaximumVersion))
+                    .OrderBy(m => m.Name).ToArray();
             }
 
             return new UnityType(typeName, messages, minimumVersion, maximumVersion);
         }
 
-        private static Version ParseVersionAttribute(XmlNode node, string attributeName, string defaultValue)
+        private Version ParseVersionAttribute(XmlNode node, string attributeName, string defaultValue)
         {
             var attributeValue = node.Attributes?[attributeName]?.Value ?? defaultValue;
-            return Version.Parse(attributeValue);
+            return GetInternedVersion(attributeValue);
         }
 
-        private UnityEventFunction CreateUnityMessage(XmlNode node, string typeName, string defaultMinimumVersion, string defaultMaximumVersion)
+        private Version GetInternedVersion(string versionString)
         {
-            var name = node.Attributes?["name"].Value ?? "Invalid";
+            if (!myVersions.TryGetValue(versionString, out var version))
+            {
+                version = Version.Parse(versionString);
+                myVersions.Add(versionString, version);
+            }
+
+            return version;
+        }
+
+        private string GetInternedIdentifier(string identifier)
+        {
+            return myIdentifiers.Intern(identifier);
+        }
+
+        private UnityEventFunction CreateUnityMessage(XmlNode node, IClrTypeName typeName, string defaultMinimumVersion,
+                                                      string defaultMaximumVersion)
+        {
+            var name = node.Attributes?["name"].Value;
+
+            Assertion.AssertNotNull(name, "name != null");
+
             var description = node.Attributes?["description"]?.Value;
             var isStatic = bool.Parse(node.Attributes?["static"]?.Value ?? "false");
             var isCoroutine = bool.Parse(node.Attributes?["coroutine"]?.Value ?? "false");
@@ -109,10 +131,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             {
                 returnsArray = bool.Parse(returns.Attributes?["array"].Value ?? "false");
                 var type = returns.Attributes?["type"]?.Value ?? "System.Void";
-                returnType = GetClrTypeName(type);
+                returnType = GetInternedClrTypeName(type);
             }
 
-            return new UnityEventFunction(name, typeName, returnType, returnsArray, isStatic, isCoroutine, description, isUndocumented, minimumVersion, maximumVersion, parameters);
+            return new UnityEventFunction(GetInternedIdentifier(name), typeName, returnType, returnsArray, isStatic,
+                isCoroutine, description, isUndocumented, minimumVersion, maximumVersion, parameters);
         }
 
         private UnityEventFunctionParameter LoadParameter([NotNull] XmlNode node, int i)
@@ -125,13 +148,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var isOptional = bool.Parse(node.Attributes?["optional"]?.Value ?? "false");
             var justification = node.Attributes?["justification"]?.Value;
 
-            if (type == null || name == null)
-            {
-                return new UnityEventFunctionParameter(name ?? $"arg{i + 1}", PredefinedType.INT_FQN, description, isArray, isByRef, isOptional, justification);
-            }
+            var parameterType = type != null ? GetInternedClrTypeName(type) : PredefinedType.INT_FQN;
+            var parameterName = GetInternedIdentifier(name ?? $"arg{i + 1}");
 
-            var parameterType = GetClrTypeName(type);
-            return new UnityEventFunctionParameter(name, parameterType, description, isArray, isByRef, isOptional, justification);
+            return new UnityEventFunctionParameter(parameterName, parameterType, description, isArray, isByRef,
+                isOptional, justification);
         }
     }
 

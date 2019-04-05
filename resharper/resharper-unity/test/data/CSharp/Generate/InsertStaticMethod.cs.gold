@@ -8,10 +8,13 @@
 
 // ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnStatusUpdated():System.Void}
+
+using System;
+
 class A : UnityEditor.AssetModificationProcessor
 {
   private static void OnStatusUpdated()
   {
-    {selstart}throw new System.NotImplementedException();{selend}
+    {selstart}throw new NotImplementedException();{selend}
   }
 }

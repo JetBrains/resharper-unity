@@ -11,24 +11,43 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
 
     companion object {
         private val logger = Logger.getInstance(UnityProcessListener::class.java)
-    }
 
-    // As far as I can tell:
-    // * IP - where the process is running. On iPhone (and perhaps other devices) this can be the mobile data IP, which
-    //        might be unreachable from this subnet, so be prepared to use the IP address from the UDP packet instead
-    // * port - NOT the debugging port. I think this is the port uses to connect to the player (to e.g. get logs)
-    // * flags - settings for the editor. Don't know what the values are
-    // * guid - random number. Consistent only for the lifetime of the player. If no debugging port is found as part of
-    //          `id`, then the debugging port is `guid % 1000 + 56000` (which belies the part that it's a random number,
-    //          and is more likely that if no debugging port is specified, this must be a PID)
-    // * editorId - random number representing an ID of the editor instance that built this player. Consistent for the
-    //              lifetime of the editor. Will also be used by any other player built by the same editor instance.
-    // * version - static value. Never been changed
-    // * id - a textual identifier, e.g. "OSXPlayer(Matts.MacBookPro.Local)". May also include debugging port, e.g.
-    //        `iPhonePlayer(Matts.iPhone7):56000`
-    // * Debug - 0 or 1 to show if debugging is enabled. Will not be able to attach if this is 0
-    // * [PackageName] .* - optional value. e.g. `iPhonePlayer`. I don't know how this is different to the value in id
-    private val unityPlayerDescriptorRegex = Pattern.compile("""\[IP] (?<ip>.*) \[Port] (?<port>.*) \[Flags] (?<flags>.*) \[Guid] (?<guid>.*) \[EditorId] (?<editorid>.*) \[Version] (?<version>.*) \[Id] (?<id>[^:]+)(:(?<debuggerPort>\d+))? \[Debug] (?<debug>.*)""")
+        // E.g.:
+        // [IP] 10.211.55.4 [Port] 55376 [Flags] 3 [Guid] 1410689715 [EditorId] 1006284310 [Version] 1048832 [Id] WindowsPlayer(PARALLELS) [Debug] 1 [PackageName] WindowsPlayer [ProjectName] GemShader is awesome
+        // As far as I can tell:
+        // * [IP] %s - where the process is running. On iPhone (and perhaps other devices) this can be the mobile data
+        //             IP, which might be unreachable from this subnet, so be prepared to use the IP address from the
+        //             UDP packet instead
+        // * [Port] %u - NOT the debugging port. I think this port connects to the player (to e.g. get logs)
+        // * [Flags] %u - settings for the editor. Don't know what the values are
+        // * [Guid] %u - random number. Consistent only for the lifetime of the player. If no debugging port is found as
+        //               part of `id`, then the debugging port is `guid % 1000 + 56000` (which belies the part that it's
+        //               a random number, and is more likely that if no debugging port is specified, this must be a PID)
+        // * [EditorId] %u - random number representing an ID of the editor instance that built this player. Consistent
+        //                   for the lifetime of the editor. Will also be used by any other player built by the same
+        //                   editor instance
+        // * [Version] %d - static value. Never been changed
+        // * [Id] %s - a textual identifier, e.g. "OSXPlayer(Matts.MacBookPro.Local)". May also include debugging port,
+        //             e.g. `iPhonePlayer(Matts.iPhone7):56000`
+        // * [Debug] %d - 0 or 1 to show if debugging is enabled. Will not be able to attach if this is 0
+        // * [PackageName] %s - the type of the player, e.g. `iPhonePlayer` or `WindowsPlayer`. Could be used as as a
+        //                      "type" field. This is not present in all messages, so I guess it was added in a specific
+        //                      version of Unity, but don't know which
+        // * [ProjectName] %s - same as PlayerSettings.productName. Added in Unity 2019.2
+        @Suppress("RegExpRepeatedSpace")
+        private val unityPlayerDescriptorRegex = Pattern.compile("""\[IP]\s(?<ip>.*)
+\s\[Port]\s(?<port>\d+)
+\s\[Flags]\s(?<flags>\d+)
+\s\[Guid]\s(?<guid>\d+)
+\s\[EditorId]\s(?<editorId>\d+)
+\s\[Version]\s(?<version>\d+)
+\s\[Id]\s(?<id>[^:]+)(:(?<debuggerPort>\d+))?
+\s\[Debug]\s(?<debug>\d+)
+(\s\[PackageName]\s(?<packageName>.*?)
+  (\s\[ProjectName]\s(?<projectName>.*)?)
+)?
+""", Pattern.COMMENTS)
+    }
 
     private val defaultHeartbeat = 30
 
@@ -74,7 +93,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
 
         OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }.map { processInfo ->
             val port = convertPidToDebuggerPort(processInfo.pid)
-            UnityPlayer("127.0.0.1", port, port, 0, port.toLong(), port.toLong(), 0, processInfo.executableName, true, true)
+            UnityPlayer.createEditorPlayer("127.0.0.1", port, "${processInfo.executableName} (pid: ${processInfo.pid})", null)
         }.forEach {
             onPlayerAdded(it)
         }
@@ -88,27 +107,22 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
                 val port = matcher.group("port").toInt()
                 val flags = matcher.group("flags").toLong()
                 val guid = matcher.group("guid").toLong()
-                val editorGuid = matcher.group("editorid").toLong()
+                val editorGuid = matcher.group("editorId").toLong()
                 val version = matcher.group("version").toInt()
                 val id = matcher.group("id")
                 val allowDebugging = matcher.group("debug").startsWith("1")
-                var debuggerPort = 0
-                try {
-                    debuggerPort = matcher.group("debuggerPort").toInt()
-                } catch (e: Exception) {
-                    //ignore errors on debuggerPort matching or parsing
-                }
-                if (debuggerPort == 0) {
-                    // It's not actually a pid, but it's what we have to do
-                    debuggerPort = convertPidToDebuggerPort(guid)
-                }
+                // Guid's not actually a pid, but it's what we have to do
+                val debuggerPort = matcher.group("debuggerPort")?.toIntOrNull() ?: convertPidToDebuggerPort(guid)
+                val packageName: String? = matcher.group("packageName")
+                val projectName: String? = matcher.group("projectName")
 
                 // We use hostAddress instead of ip because this is the address we actually received the mulitcast from.
-                // This is more accurate than what we're told, because the Unity process might be reporting the IP address
-                // of an interface that isn't reachable. For example, the iPhone player can report the local IP address
-                // of the mobile data network, which we can't reach from the current network (if we disable mobile data
-                // it works as expected)
-                return UnityPlayer(hostAddress, port, debuggerPort, flags, guid, editorGuid, version, id, allowDebugging, false)
+                // This is more accurate than what we're told, because the Unity process might be reporting the IP
+                // address of an interface that isn't reachable. For example, the iPhone player can report the local IP
+                // address of the mobile data network, which we can't reach from the current network (if we disable
+                // mobile data it works as expected)
+                return UnityPlayer(hostAddress, port, debuggerPort, flags, guid, editorGuid, version, id,
+                    allowDebugging, packageName, projectName)
             }
         } catch (e: Exception) {
             logger.warn("Failed to parse Unity Player: ${e.message}")
