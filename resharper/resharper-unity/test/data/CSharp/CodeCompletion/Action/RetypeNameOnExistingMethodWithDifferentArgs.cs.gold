@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class A : MonoBehaviour
 {
-  private void OnAnimatorIK(int layerIndex)
+  public void OnAnimatorIK{caret}()
   {
-    throw new System.NotImplementedException();{caret}
   }
 }

@@ -6,6 +6,8 @@
 
 // ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnCollisionStay(UnityEngine.Collision):System.Void}
+
+using System;
 using UnityEngine;
 
 class A : Collider
@@ -20,6 +22,6 @@ class A : Collider
 
   private void OnCollisionStay(Collision other)
   {
-    {selstart}throw new System.NotImplementedException();{selend}
+    {selstart}throw new NotImplementedException();{selend}
   }
 }

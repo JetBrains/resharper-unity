@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
@@ -15,7 +16,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private readonly Version myMinimumVersion;
         private readonly Version myMaximumVersion;
 
-        public UnityEventFunction([NotNull] string name, [NotNull] string typeName, [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic, bool isCoroutine, string description, bool undocumented, Version minimumVersion, Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
+        public UnityEventFunction([NotNull] string name, [NotNull] IClrTypeName typeName,
+                                  [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic,
+                                  bool isCoroutine, string description, bool undocumented, Version minimumVersion,
+                                  Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
         {
             Description = description;
             Undocumented = undocumented;
@@ -30,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             Parameters = parameters.Length > 0 ? parameters : EmptyArray<UnityEventFunctionParameter>.Instance;
         }
 
-        [NotNull] public string TypeName { get; }
+        [NotNull] public IClrTypeName TypeName { get; }
         [NotNull] public string Name { get; }
         [NotNull] public UnityEventFunctionParameter[] Parameters { get; }
         [NotNull] public IClrTypeName ReturnType { get; }
@@ -41,12 +45,24 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public bool Undocumented { get; }
 
         [NotNull]
-        public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory, [NotNull] IClassLikeDeclaration classDeclaration)
+        public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory,
+                                                    [NotNull] IClassLikeDeclaration classDeclaration,
+                                                    AccessRights accessRights,
+                                                    bool makeVirtual = false)
         {
             var builder = new StringBuilder(128);
 
-            builder.Append("private ");
+            if (accessRights != AccessRights.NONE)
+            {
+                builder.Append(CSharpDeclaredElementPresenter.Instance.Format(accessRights));
+                builder.Append(" ");
+            }
+
             if (IsStatic) builder.Append("static ");
+
+            // Consider this declaration a template, and the final generated code implements (or overrides) this API
+            if (makeVirtual) builder.Append("virtual ");
+            builder.Append("global::");
             builder.Append(ReturnType.FullName);
             if (ReturnTypeIsArray) builder.Append("[]");
             builder.Append(" ");
@@ -62,6 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 // From reflection point of view, it's a "ByRef" Type, and that's all we know...
                 // The only place it's currently being used is an out parameter
                 if (parameter.IsByRef) builder.Append("out ");
+                builder.Append("global::");
                 builder.Append(parameter.ClrTypeName.FullName);
                 if (parameter.IsArray) builder.Append("[]");
                 builder.Append(' ');
@@ -70,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             builder.Append(");");
 
-            var declaration = (IMethodDeclaration)factory.CreateTypeMemberDeclaration(builder.ToString());
+            var declaration = (IMethodDeclaration) factory.CreateTypeMemberDeclaration(builder.ToString());
             declaration.SetResolveContextForSandBox(classDeclaration, SandBoxContextType.Child);
             return declaration;
         }

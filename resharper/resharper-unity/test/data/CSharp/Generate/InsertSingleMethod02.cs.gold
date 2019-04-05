@@ -70,12 +70,14 @@
 
 // ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnSerializeNetworkView(UnityEngine.BitStream,UnityEngine.NetworkMessageInfo):System.Void}
+
+using System;
 using UnityEngine;
 
 class A : MonoBehaviour
 {
   private void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
   {
-    {selstart}throw new System.NotImplementedException();{selend}
+    {selstart}throw new NotImplementedException();{selend}
   }
 }

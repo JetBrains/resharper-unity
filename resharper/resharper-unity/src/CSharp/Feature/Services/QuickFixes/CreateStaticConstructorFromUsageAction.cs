@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         public override string Text => $"Create static constructor '{myClassLikeDeclaration.DeclaredName}'";
 
-        public override ICreatedElementConsistencyGroup GetConsistencyGroup() => AlwaysConsintentGroup.Instance;
+        public override ICreatedElementConsistencyGroup GetConsistencyGroup() => AlwaysConsistentGroup.Instance;
 
         protected override bool IsAvailableInternal()
         {
