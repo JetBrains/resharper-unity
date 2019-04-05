@@ -41,7 +41,7 @@ namespace JetBrains.Rider.Unity.Editor
             selected.GetType().ToString() == "UnityEngine.Shader" ||
             selected.GetType().ToString() == "UnityEngine.Experimental.UIElements.VisualTreeAsset" ||
             selected.GetType().ToString() == "UnityEngine.StyleSheets.StyleSheet" ||
-            GetExtensionStrings().Contains(Path.GetExtension(assetFilePath).Substring(1))
+            Path.HasExtension(assetPath) && GetExtensionStrings().Contains(Path.GetExtension(assetFilePath).Substring(1))
             ))
         return false;
 
