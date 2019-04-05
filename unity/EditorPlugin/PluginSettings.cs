@@ -180,6 +180,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
       var paths = alternatives.Select(a => a.Path).ToArray();
+      GUILayout.Label("General", EditorStyles.boldLabel);
       if (alternatives.Any())
       {
         var index = Array.IndexOf(paths, RiderPathInternal);
@@ -203,9 +204,15 @@ namespace JetBrains.Rider.Unity.Editor
           EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
         }
       }
+      else
+      {
+        GUILayout.Label("No Rider Instance was found");
+      }
+      GUILayout.Space(10f);
       
       GUI.enabled = PluginEntryPoint.Enabled;
-
+      GUILayout.Label("Project settings", EditorStyles.boldLabel);
+      
       GUILayout.BeginVertical();
 
       if (UnityUtils.ScriptingRuntime > 0)
@@ -236,6 +243,7 @@ namespace JetBrains.Rider.Unity.Editor
           EditorGUILayout.HelpBox(helpOldMono, MessageType.None);
         }
       }
+      
 
       // Unity 2018.1 doesn't require installed dotnet framework, it references everything from Unity installation
       if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
@@ -263,20 +271,35 @@ namespace JetBrains.Rider.Unity.Editor
         LinkButton(caption: workaroundText, url: workaroundUrl);
         EditorGUILayout.HelpBox(helpLangVersion, MessageType.None);
       }
-
+      GUILayout.Space(10f);
+      GUILayout.Label("Logs", EditorStyles.boldLabel);
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
+      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
+
       SelectedLoggingLevel =
         (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg),
           SelectedLoggingLevel);
-      if (SelectedLoggingLevel != LoggingLevel.OFF && GUILayout.Button("Open file"))
+      
+      var previous = GUI.enabled; // disable button
+      GUI.enabled = GUI.enabled && SelectedLoggingLevel != LoggingLevel.OFF;
+      var openLogsButtonMessage = "Show logs";
+      var openLogButtonStyle = new GUIStyle(GUI.skin.button);
+      var openLogButtonContent = new GUIContent(openLogsButtonMessage);
+      var size = openLogButtonStyle.CalcSize(openLogButtonContent);
+      openLogButtonStyle.fixedWidth = size.x;
+      
+      if (GUILayout.Button(openLogButtonContent, openLogButtonStyle))
       {
         //UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
         // works much faster than the commented code, when Rider is already started
         PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(PluginEntryPoint.LogPath, 0, 0);
       }
+
+      GUI.enabled = previous;
+      GUILayout.Space(10f);
+      GUILayout.Label("Other", EditorStyles.boldLabel);
       
-      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
       
       LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider"), LogEventsCollectorEnabled);
 
@@ -324,8 +347,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void LinkButton(string caption, string url)
     {
-      var style = GUI.skin.label;
-      style.richText = true;
+      var style = new GUIStyle(GUI.skin.label) {richText = true,margin = new RectOffset(5, 0, 0, 0)};
 
       var bClicked = GUILayout.Button(caption, style);
 
