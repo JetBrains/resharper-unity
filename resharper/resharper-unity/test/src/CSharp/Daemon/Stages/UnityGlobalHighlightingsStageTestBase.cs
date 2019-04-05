@@ -40,8 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
                         key.PerformanceHighlightingMode, PerformanceHighlightingMode.Always);
 
                     var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
-                    foreach (var file in files)
-                        swea.AnalyzeInvisibleFile(file);
+                    swea.ReanalyzeAll();
 
                     ExecuteWithGold(TestMethodName + ".cs", writer =>
                     {
