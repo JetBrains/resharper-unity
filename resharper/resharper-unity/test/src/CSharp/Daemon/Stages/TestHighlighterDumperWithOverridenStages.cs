@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Diagnostics;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -68,6 +69,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
         public void CommitAll()
         {
             Highlighters.addAll(myHighlighters.Values.OrderBy(t => t.TimeStamp).Select(t => t.Info));
+        }
+
+        public override void Dump()
+        {
+            base.Dump();
+            Dumper.DumpToNotepad(sw => sw.WriteLine(String.Concat(Highlighters.Select(t => t.Highlighting.ToString() + " " + t.Highlighting.ToolTip + "\r\n"))));
         }
     }
 }
