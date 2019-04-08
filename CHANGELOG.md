@@ -72,9 +72,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Unity Editor: Use unique name for log file ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Don't call Unity API in batch mode ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Fix exception during Unity shutdown ([RIDER-19688](https://youtrack.jetbrains.com/issue/RIDER-19688), [#979](https://github.com/JetBrains/resharper-unity/pull/979))
+- Rider: Fix Rider extra reloading projects on calling Refresh from Rider, applies to Unity pre-2018 ([#1116](https://github.com/JetBrains/resharper-unity/pull/1116) 
 - Unity Editor: Fix issue connecting to editor when Rider was not default editor at startup ([RIDER-26142](https://youtrack.jetbrains.com/issue/RIDER-26142), [#1111](https://github.com/JetBrains/resharper-unity/pull/1111))
-
-
 
 ## 2018.3.3
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap12-rtm...183-eap13-rtm)

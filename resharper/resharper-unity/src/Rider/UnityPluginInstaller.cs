@@ -9,6 +9,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -122,7 +123,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             QueueInstall(installationInfo);
-            myQueue.Enqueue(() => { myRefresher.Refresh(RefreshType.Normal); });
+            myQueue.Enqueue(() =>
+            {
+                mySolution.Locks.Tasks.StartNew(myLifetime, Scheduling.MainDispatcher, () => myRefresher.Refresh(RefreshType.Normal));
+            });
         }
 
         private void QueueInstall(UnityPluginDetector.InstallationInfo installationInfo, bool force = false)
