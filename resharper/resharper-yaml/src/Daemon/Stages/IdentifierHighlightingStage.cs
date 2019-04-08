@@ -1,4 +1,5 @@
 ﻿using JetBrains.Application.Settings;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -16,6 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
     StagesAfter = new[] {typeof(CollectUsagesStage)})]
   public class IdentifierHighlightingStage : YamlDaemonStageBase
   {
+    private const int LargeFileThreshold = 1 * 1024 * 1024;
+
     private readonly ResolveHighlighterRegistrar myRegistrar;
 
     public IdentifierHighlightingStage(ResolveHighlighterRegistrar registrar)
@@ -24,8 +27,20 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
     }
 
     protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
-      DaemonProcessKind processKind, IYamlFile file)
+                                                         DaemonProcessKind processKind, IYamlFile file)
     {
+      // We can't afford to show syntax errors in large files during SWEA - this would mean opening all chameleons,
+      // which is not viable for Unity files. On the plus side, there should be no syntax errors inside a Unity
+      // generated file
+      if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT)
+      {
+        if (file.GetSourceFile().ToProjectFile() is ProjectFileImpl projectFileImpl
+            && projectFileImpl.CachedFileSystemData.FileLength > LargeFileThreshold)
+        {
+          return null;
+        }
+      }
+
       return new IdentifierHighlightingProcess(process, file, myRegistrar);
     }
 
@@ -43,11 +58,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
       private readonly ResolveProblemHighlighter myResolveProblemHighlighter;
       private readonly IReferenceProvider myReferenceProvider;
 
-      public IdentifierHighlightingProcess(IDaemonProcess process, IYamlFile file, ResolveHighlighterRegistrar resolveHighlighterRegistrar)
+      public IdentifierHighlightingProcess(IDaemonProcess process, IYamlFile file,
+                                           ResolveHighlighterRegistrar resolveHighlighterRegistrar)
         : base(process, file)
       {
         myResolveProblemHighlighter = new ResolveProblemHighlighter(resolveHighlighterRegistrar);
-        myReferenceProvider = ((IFileImpl)file).ReferenceProvider;
+        myReferenceProvider = ((IFileImpl) file).ReferenceProvider;
       }
 
       public override void VisitNode(ITreeNode node, IHighlightingConsumer consumer)
@@ -67,10 +83,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
             else if (range.TextRange.StartOffset > 0)
               range = range.ExtendLeft(1);
           }
+
           consumer.AddHighlighting(new YamlSyntaxError(errorElement.ErrorDescription, range));
         }
-
-        base.VisitNode(node, consumer);
       }
     }
   }

@@ -1,5 +1,7 @@
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -14,14 +16,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
 
         public bool InteriorShouldBeProcessed(ITreeNode element, UsageData context)
         {
-            // TODO [Matt Ellis] Do not open chameleon blocks
+            if (element is IYamlDocument document)
+                return UnityYamlReferenceUtil.CanContainReference(document);
+
             return true;
         }
 
-        public bool IsProcessingFinished(UsageData context)
-        {
-            return false;
-        }
+        public bool IsProcessingFinished(UsageData context) => false;
 
         public void ProcessBeforeInterior(ITreeNode element, UsageData context)
         {
@@ -30,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
                 var declaredElement = reference.Resolve().DeclaredElement;
                 if (declaredElement == null)
                     continue;
-                
+
                 context.SetElementState(declaredElement, UsageState.USED_MASK);
                 context.AddUsage(declaredElement, UsageCounterKind.Reference);
             }

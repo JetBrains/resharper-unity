@@ -5,11 +5,18 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Text;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class MonoScriptReferenceFactory : IReferenceFactory
     {
+        // If the document contains "m_Script: {fileID: 11500000, guid:", it's a reference to a class. This is fragile
+        // if Unity starts to format its files differently, but I think this is ok
+        private static readonly StringSearcher ourScriptReferenceStringSearcher =
+            new StringSearcher("m_Script: {fileID: 11500000, guid:", true);
+
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
             if (ResolveUtil.CheckThatAllReferencesBelongToElement<MonoScriptReference>(oldReferences, element))
@@ -47,6 +54,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             var blockMappingEntry = BlockMappingEntryNavigator.GetByValue(flowIDMap);
             return guidEntry?.Key.MatchesPlainScalarText("guid") == true
                    && blockMappingEntry?.Key.MatchesPlainScalarText("m_Script") == true;
+        }
+
+        public static bool CanContainReference(IBuffer bodyBuffer)
+        {
+            return ourScriptReferenceStringSearcher.Find(bodyBuffer) >= 0;
         }
     }
 }

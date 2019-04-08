@@ -1,15 +1,17 @@
 ﻿using JetBrains.Application.Settings;
-using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
 {
-  [DaemonStage(StagesBefore = new[] {typeof(CollectUsagesStage), typeof(GlobalFileStructureCollectorStage)},
-    StagesAfter = new[] {typeof(LanguageSpecificDaemonStage)})]
+  // TODO: How to handle element problem analysers and huge files?
+  // Unregister this for now. We don't have any YAML or Unity YAML element problem analysers, and running it would cause
+  // all chameleons to be opened, which is very bad for Unity YAML files
+
+//  [DaemonStage(StagesBefore = new[] {typeof(CollectUsagesStage), typeof(GlobalFileStructureCollectorStage)},
+//    StagesAfter = new[] {typeof(LanguageSpecificDaemonStage)})]
   public class YamlErrorStage : YamlDaemonStageBase
   {
     private readonly ElementProblemAnalyzerRegistrar myElementProblemAnalyzerRegistrar;
