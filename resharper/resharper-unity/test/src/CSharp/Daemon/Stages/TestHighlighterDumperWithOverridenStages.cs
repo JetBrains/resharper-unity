@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
                     myHighlighters.RemoveKey(id);
                 }
                 
-                foreach (HighlightingInfoWithTimeStamp highlightingInfoWithTimeStamp in myHighlighters.Values)
+                foreach (HighlightingInfoWithTimeStamp highlightingInfoWithTimeStamp in myHighlighters.Values)    
                     Assertion.Assert(highlightingInfoWithTimeStamp.Info != null, "info.Highlighting != null");
             }
         }
@@ -73,6 +73,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
 
         public override void Dump()
         {
+            Dumper.DumpToNotepad(sw =>
+            {
+                for (int i = 0; i < Highlighters.Count; i++)
+                {
+                    var t = Highlighters[i];
+                    sw.WriteLine(i + ": " + t.Range + " " +
+                                 t.Overlapped + " " +
+                                 t.Highlighting.ToolTip + " " +
+                                 t.Highlighting.ToolTip + "\r\n" +
+                                 t.Highlighting.GetType().FullName);
+                }
+
+            });
+
             base.Dump();
             Dumper.DumpToNotepad(sw => sw.WriteLine(String.Concat(Highlighters.Select(t => t.Highlighting.ToString() + " " + t.Highlighting.ToolTip + "\r\n"))));
         }
