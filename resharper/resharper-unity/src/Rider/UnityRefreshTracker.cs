@@ -31,19 +31,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISolution mySolution;
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly ILogger myLogger;
-        private readonly VfsListener myVfsListener;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
             UnityEditorProtocol editorProtocol, ISettingsStore settingsStore,
-            ILogger logger, VfsListener vfsListener)
+            ILogger logger)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
             myEditorProtocol = editorProtocol;
             myLogger = logger;
-            myVfsListener = vfsListener;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -99,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Started");
             try
             {
-                using (myVfsListener.PauseChanges())
+                using (mySolution.GetComponent<VfsListener>().PauseChanges())
                 {
                     await myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
                 }
