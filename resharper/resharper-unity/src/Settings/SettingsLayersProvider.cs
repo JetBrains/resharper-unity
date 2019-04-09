@@ -25,7 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         private readonly InternKeyPathComponent myInternedKeyPaths;
         private readonly ILogger myLogger;
 
-        private SettingsStorageMountPoint mySolutionMountPoint;
         private Dictionary<IProject, SettingsStorageMountPoint> myProjectMountPoints;
 
         public SettingsLayersProvider(Lifetime lifetime, ISolution solution, IShellLocks locks,
@@ -45,30 +44,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             myLogger = logger;
         }
 
-        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        public SettingsStorageMountPoint SolutionMountPoint { get; private set; }
+
+        public void OnHasUnityReference()
         {
-            myLocks.ExecuteOrQueueReadLock("Unity::InitialiseMountPoints", () =>
+            if (SolutionMountPoint == null)
             {
-                if (mySolutionMountPoint == null)
-                {
-                    mySolutionMountPoint = CreateSolutionMountPoint();
-                    foreach (var provider in mySolutionSettingsProviders)
-                        provider.InitialiseSolutionSettings(mySolutionMountPoint);
-                }
+                SolutionMountPoint = CreateSolutionMountPoint();
+                foreach (var provider in mySolutionSettingsProviders)
+                    provider.InitialiseSolutionSettings(SolutionMountPoint);
 
-                if (myProjectMountPoints == null)
-                    myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
-
-                if (!myProjectMountPoints.ContainsKey(project))
-                {
-                    var mountPoint = CreateProjectMountPoint(projectLifetime, project);
-                    myProjectMountPoints.Add(project, mountPoint);
-                    foreach (var provider in myProjectSettingsProviders)
-                        provider.InitialiseProjectSettings(projectLifetime, project, mountPoint);
-                }
-            });
+                myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
+            }
         }
 
+        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        {
+            if (!myProjectMountPoints.ContainsKey(project))
+            {
+                var mountPoint = CreateProjectMountPoint(projectLifetime, project);
+                myProjectMountPoints.Add(project, mountPoint);
+                foreach (var provider in myProjectSettingsProviders)
+                    provider.InitialiseProjectSettings(projectLifetime, project, mountPoint);
+            }
+        }
 
         private SettingsStorageMountPoint CreateProjectMountPoint(Lifetime lifetime, IProject project)
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.changes;
 using JetBrains.Collections;
@@ -15,6 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 {
     public interface IUnityReferenceChangeHandler
     {
+        // This is guaranteed to be called on all handlers before any handler receives OnUnityProjectAdded
+        void OnHasUnityReference();
         void OnUnityProjectAdded(Lifetime projectLifetime, IProject project);
     }
 
@@ -28,10 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ChangeManager myChangeManager;
         private readonly IViewableProjectsCollection myProjects;
         private readonly ICollection<IUnityReferenceChangeHandler> myHandlers;
-        private readonly Dictionary<IProject, Lifetime> myProjectLifetimes;
+        private readonly Dictionary<IProject, Lifetime> myAllProjectLifetimes;
 
-        // If you want to be notified that we're a Unity solution, advise this. If you need a per-project lifetime,
-        // implement IUnityReferenceChangeHandler
+        // If you only want to be notified that we're a Unity solution, advise this.
+        // If all you're interested in is being notified that we're a Unity solution, advise this. If you need to know
+        // we're a Unity solution *and*/or know about Unity projects (and get a per-project lifetime), implement
+        // IUnityReferenceChangeHandler
         public readonly ViewableProperty<bool> HasUnityReference = new ViewableProperty<bool>(false);
 
         public UnityReferencesTracker(
@@ -45,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             IViewableProjectsCollection projects,
             ILogger logger)
         {
-            myProjectLifetimes = new Dictionary<IProject, Lifetime>();
+            myAllProjectLifetimes = new Dictionary<IProject, Lifetime>();
 
             myHandlers = handlers.ToList();
             myLifetime = lifetime;
@@ -70,13 +73,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             // Track the lifetime of all projects, so we can pass it to the handler later
             myProjects.Projects.View(myLifetime,
-                (projectLifetime, project) => myProjectLifetimes.Add(project, projectLifetime));
+                (projectLifetime, project) => myAllProjectLifetimes.Add(project, projectLifetime));
 
-            var unityProjectLifetimes = myProjectLifetimes.Where(pl => pl.Key.IsUnityProject()).ToList();
+            var unityProjectLifetimes = myAllProjectLifetimes.Where(pair => pair.Key.IsUnityProject()).ToList();
+            if (unityProjectLifetimes.Count == 0)
+                return;
 
-            if (unityProjectLifetimes.Any())
+            NotifyHasUnityReference();
+            NotifyOnUnityProjectAdded(unityProjectLifetimes);
+        }
+
+        private void NotifyHasUnityReference()
+        {
+            if (!HasUnityReference.Value)
+            {
                 HasUnityReference.SetValue(true);
+                foreach (var handler in myHandlers) handler.OnHasUnityReference();
+            }
+        }
 
+        private void NotifyOnUnityProjectAdded(List<KeyValuePair<IProject, Lifetime>> unityProjectLifetimes)
+        {
             foreach (var handler in myHandlers)
             {
                 foreach (var (project, lifetime) in unityProjectLifetimes)
@@ -93,49 +110,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange,
                 ProjectExtensions.UnityReferenceNames, myLogger);
 
-            var newUnityProjects = new JetHashSet<IProject>();
+            var newUnityProjects = new List<KeyValuePair<IProject, Lifetime>>();
             foreach (var change in changes)
             {
                 if (change.IsAdded)
                 {
                     var project = change.GetNewProject();
                     if (project.IsUnityProject())
-                         newUnityProjects.Add(project);
+                    {
+                        if (myAllProjectLifetimes.TryGetValue(project, out var projectLifetime))
+                            newUnityProjects.Add(JetKeyValuePair.Of(project, projectLifetime));
+                    }
                 }
             }
 
             myChangeManager.ExecuteAfterChange(() =>
             {
-                foreach (var project in newUnityProjects)
-                    OnUnityProjectAdded(project);
+                NotifyHasUnityReference();
+                NotifyOnUnityProjectAdded(newUnityProjects);
             });
 
             return null;
-        }
-
-        private void OnUnityProjectAdded(IProject project)
-        {
-            if (!myProjectLifetimes.TryGetValue(project, out var projectLifetime))
-                return;
-
-            if (!HasUnityReference.Value)
-                HasUnityReference.SetValue(true);
-
-            var exceptions = new LocalList<Exception>();
-            foreach (var handler in myHandlers)
-            {
-                try
-                {
-                    handler.OnUnityProjectAdded(projectLifetime, project);
-                }
-                catch (Exception e)
-                {
-                    exceptions.Add(e);
-                }
-            }
-
-            if (exceptions.Count > 0)
-                throw new AggregateException("Failed to handle project changes", exceptions.ToArray());
         }
     }
 }
