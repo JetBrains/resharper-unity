@@ -49,6 +49,7 @@ Changed:
 - Event functions can be grouped by base classes in Generate dialog (#810, #1081)
 - No longer creates a .sln.DotSettings.user file when YAML size heuristic is applied (#1087)
 - Treat AddComponent(Type) as an expensive operation (#1044, #1109)
+- Include Unity YAML files in Solution Wide Error Analysis (#1118)
 
 Fixed:
 

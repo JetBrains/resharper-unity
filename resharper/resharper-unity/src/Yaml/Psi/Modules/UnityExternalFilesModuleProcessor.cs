@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
+using JetBrains.Application.Settings;
+using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -14,8 +17,10 @@ using JetBrains.ProjectModel.Properties.Common;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ProjectModel.Transaction;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.GeneratedCode.Settings;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
@@ -46,6 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityYamlDisableStrategy myUnityYamlDisableStrategy;
         private readonly BinaryUnityFileCache myBinaryUnityFileCache;
+        private readonly ISettingsSchema mySettingsSchema;
+        private readonly SettingsLayersProvider mySettingsLayersProvider;
         private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
@@ -60,6 +67,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityYamlDisableStrategy unityYamlDisableStrategy,
                                                  BinaryUnityFileCache binaryUnityFileCache,
+                                                 ISettingsSchema settingsSchema,
+                                                 SettingsLayersProvider settingsLayersProvider,
                                                  AssetSerializationMode assetSerializationMode)
         {
             myLifetime = lifetime;
@@ -73,6 +82,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myModuleFactory = moduleFactory;
             myUnityYamlDisableStrategy = unityYamlDisableStrategy;
             myBinaryUnityFileCache = binaryUnityFileCache;
+            mySettingsSchema = settingsSchema;
+            mySettingsLayersProvider = settingsLayersProvider;
             myAssetSerializationMode = assetSerializationMode;
 
             changeManager.RegisterChangeProvider(lifetime, this);
@@ -87,6 +98,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             scheduler.EnqueueTask(new SolutionLoadTask(GetType().Name + ".Activate",
                 SolutionLoadTaskKinds.PreparePsiModules,
                 () => myChangeManager.AddDependency(myLifetime, mySolution.PsiModules(), this)));
+        }
+
+        public void OnHasUnityReference()
+        {
+            // Do nothing
         }
 
         public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
@@ -227,14 +243,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             if (externalFiles.AssetFiles.Count == 0)
                 return;
 
-            using (new ProjectModelBatchChangeCookie(mySolution, SimpleTaskExecutor.Instance))
-            using (mySolution.Locks.UsingWriteLock())
-            {
-                // Note that we ignore binary and "excluded by name" files. We could include them and set ShouldBuildPsi
-                // to false, but that doesn't give us anything
-                foreach (var directoryEntry in externalFiles.AssetFiles)
-                    AddAssetProjectFile(directoryEntry.GetAbsolutePath());
-            }
+            var files = externalFiles.AssetFiles.Select(e => e.GetAbsolutePath()).ToList();
+            AddAssetProjectFiles(files);
         }
 
         private void AddAssetProjectFiles(List<FileSystemPath> paths)
@@ -242,27 +252,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             if (paths.Count == 0)
                 return;
 
+            var projectFiles = new List<IProjectFile>();
             using (new ProjectModelBatchChangeCookie(mySolution, SimpleTaskExecutor.Instance))
             using (mySolution.Locks.UsingWriteLock())
             {
                 foreach (var path in paths)
-                    AddAssetProjectFile(path);
+                {
+                    var projectFile = AddAssetProjectFile(path);
+                    if (projectFile != null)
+                        projectFiles.Add(projectFile);
+                }
+
             }
+
+            AddProjectFilesToSwea(projectFiles);
         }
 
         // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
         // automatically get an IPsiSourceFile created for it, and attached to our module via
         // UnityMiscFilesProjectPsiModuleProvider
-        private void AddAssetProjectFile(FileSystemPath path)
+        [MustUseReturnValue, CanBeNull]
+        private IProjectFile AddAssetProjectFile(FileSystemPath path)
         {
             if (mySolution.FindProjectItemsByLocation(path).Count > 0)
-                return;
+                return null;
 
             var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
             var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
                 new MiscFilesProjectProperties());
-            projectImpl.DoCreateProjectFile(path, properties);
+            return projectImpl.DoCreateFile(path, properties);
+        }
+
+        private void AddProjectFilesToSwea(List<IProjectFile> projectFiles)
+        {
+            // Note that we don't want to use DaemonExcludedFilesManager.AddFileToForceEnable here, because that will
+            // add the files to .sln.dotSettings.user. We'll do it ourselves, in our hidden solution settings layer
+            using (myLocks.UsingWriteLock())
+            {
+                var filesAndFoldersToSkipEntry = mySettingsSchema.GetIndexedEntry<ExcludedFilesSettingsKey, string, ExcludedFileState>(key => key.FilesAndFoldersToSkip2);
+                var mountPoint = mySettingsLayersProvider.SolutionMountPoint;
+                foreach (var file in projectFiles)
+                {
+                    var id = file.GetPersistentID();
+                    ScalarSettingsStoreAccess.SetIndexedValue(mountPoint, filesAndFoldersToSkipEntry, id, null,
+                        ExcludedFileState.ForceIncluded, null, myLogger);
+                }
+            }
         }
 
         private void UpdateStatistics(ExternalFiles externalFiles)

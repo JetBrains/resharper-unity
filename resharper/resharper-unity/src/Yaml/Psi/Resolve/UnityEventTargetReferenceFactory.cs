@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Text;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
@@ -89,8 +90,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             // Then we search the buffer, potentially twice. We'll limit the tag searcher to the first 100 characters of
             // the buffer
             var buffer = document.Body.GetTextAsBuffer();
-            return ourMonoBehaviourTagSearcher.Find(buffer, 0, Math.Min(100, buffer.Length)) >= 0 &&
-                   ourMethodNameSearcher.Find(buffer) >= 0;
+            return CanContainReference(buffer);
+        }
+
+        public static bool CanContainReference(IBuffer bodyBuffer)
+        {
+            return ourMonoBehaviourTagSearcher.Find(bodyBuffer, 0, Math.Min(100, bodyBuffer.Length)) >= 0 &&
+                   ourMethodNameSearcher.Find(bodyBuffer) >= 0;
         }
 
         public static bool CanHaveReference([CanBeNull] ITreeNode element)

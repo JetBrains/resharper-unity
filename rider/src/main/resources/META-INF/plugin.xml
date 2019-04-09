@@ -262,6 +262,7 @@
   <li>Event functions can be grouped by base classes in Generate dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/810">#810</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1081">#1081</a>)</li>
   <li>No longer creates a <tt>.sln.DotSettings.user</tt> file when YAML size heuristic is applied (<a href="https://github.com/JetBrains/resharper-unity/pull/1087">#1087</a>)</li>
   <li>Treat <tt>AddComponent(Type)</tt> as an expensive operation (<a href="https://github.com/JetBrains/resharper-unity/issues/1044">#1044</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
+  <li>Include Unity YAML files in Solution Wide Error Analysis (<a href="https://github.com/JetBrains/resharper-unity/pull/1118">#1118</a>)</li>
   <li>Refresh assets before running unit tests (<a href="https://github.com/JetBrains/resharper-unity/issues/1070">#1070</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1078">#1078</a>)</li>
   <li>Run configuration will start Unity if not already running (<a href="https://github.com/JetBrains/resharper-unity/pull/1086">#1086</a>)</li>
   <li>Improve navigation from log viewer to code (<a href="https://github.com/JetBrains/resharper-unity/issues/367">#367</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1071">#1071</a>)</li>
@@ -271,6 +272,7 @@
   <li>Code Vision tooltips update when Unity is/is not running (<a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
   <li>Graceful handling of out of sync Unity Editor plugin versions (<a href="https://github.com/JetBrains/resharper-unity/pull/963">#963</a>)</li>
   <li>Improve indexing time when root folder contains non-project folders (<a href="https://github.com/JetBrains/resharper-unity/1120">#1120</a>)</li>
+  <li>Include Unity YAML usages in Code Vision usage counts (<a href="https://github.com/JetBrains/resharper-unity/pull/1118">#1118</a>)</li>
   <li>Unity Editor: Allow opening assets imported by <tt>ScriptedImporters</tt> (<a href="https://github.com/JetBrains/resharper-unity/issues/981">#981</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/995">#995</a>)</li>
 </ul>
 <em>Fixed:</em>

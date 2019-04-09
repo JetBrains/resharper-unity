@@ -24,9 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
     }
 
     protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
-      DaemonProcessKind processKind, IYamlFile file)
+                                                         DaemonProcessKind processKind, IYamlFile file)
     {
-      return new IdentifierHighlightingProcess(process, file, myRegistrar);
+      return new IdentifierHighlightingProcess(process, file, myRegistrar,
+        ShouldAllowOpeningChameleons(file, processKind));
     }
 
     protected override bool IsSupported(IPsiSourceFile sourceFile)
@@ -43,11 +44,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
       private readonly ResolveProblemHighlighter myResolveProblemHighlighter;
       private readonly IReferenceProvider myReferenceProvider;
 
-      public IdentifierHighlightingProcess(IDaemonProcess process, IYamlFile file, ResolveHighlighterRegistrar resolveHighlighterRegistrar)
-        : base(process, file)
+      public IdentifierHighlightingProcess(IDaemonProcess process, IYamlFile file,
+                                           ResolveHighlighterRegistrar resolveHighlighterRegistrar,
+                                           bool allowOpeningChameleons)
+        : base(process, file, allowOpeningChameleons)
       {
         myResolveProblemHighlighter = new ResolveProblemHighlighter(resolveHighlighterRegistrar);
-        myReferenceProvider = ((IFileImpl)file).ReferenceProvider;
+        myReferenceProvider = ((IFileImpl) file).ReferenceProvider;
       }
 
       public override void VisitNode(ITreeNode node, IHighlightingConsumer consumer)
@@ -67,10 +70,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
             else if (range.TextRange.StartOffset > 0)
               range = range.ExtendLeft(1);
           }
+
           consumer.AddHighlighting(new YamlSyntaxError(errorElement.ErrorDescription, range));
         }
-
-        base.VisitNode(node, consumer);
       }
     }
   }
