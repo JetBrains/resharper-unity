@@ -35,26 +35,26 @@ namespace DefaultNamespace
     }
 }
 ---------------------------------------------------------
-(0): Unity Gutter Icon: Unity scripting component
-(1): ReSharper Unity Implicitly Used Identifier: 
+(0): ReSharper Unity Implicitly Used Identifier: 
+(1): Unity Gutter Icon: Unity scripting component
 (2): ReSharper Dead Code: Redundant Unity event function
-(3): Unity Gutter Icon: Unity event function
+(3): ReSharper Unity Implicitly Used Identifier: 
+(4): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
-(4): ReSharper Unity Implicitly Used Identifier: 
 (5): Unity Performance Critical Icon Gutter Icon: Frequently called code
 (6): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(7): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(8): Unity Performance Critical Icon Gutter Icon: Unity event function
+(7): ReSharper Unity Implicitly Used Identifier: 
+(8): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(9): Unity Performance Critical Icon Gutter Icon: Unity event function
 
 Update is called every frame, if the MonoBehaviour is enabled.
-(9): ReSharper Unity Implicitly Used Identifier: 
 (10): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (11): ReSharper Dead Code: Redundant Unity event function
-(12): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(13): Unity Performance Critical Icon Gutter Icon: Unity event function
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(14): Unity Performance Critical Icon Gutter Icon: Unity event function
 
 Sent when another object enters a trigger collider attached to this object (2D physics only).
 This function can be a coroutine.
-(14): ReSharper Unity Implicitly Used Identifier: 
