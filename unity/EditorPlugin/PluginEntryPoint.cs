@@ -342,6 +342,7 @@ namespace JetBrains.Rider.Unity.Editor
       model.Refresh.Set((l, force) =>
       {
         var task = new RdTask<Unit>();
+        ourLogger.Verbose("Refresh: SyncSolution Enqueue");
         MainThreadDispatcher.Instance.Queue(() =>
         {
           if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force != RefreshType.Normal)
@@ -352,8 +353,9 @@ namespace JetBrains.Rider.Unity.Editor
               UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
             }
 
-            ourLogger.Verbose("Refresh: SyncSolution ");
+            ourLogger.Verbose("Refresh: SyncSolution Started");
             UnityUtils.SyncSolution();
+            ourLogger.Verbose("Refresh: SyncSolution Completed");
           }
           else
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");

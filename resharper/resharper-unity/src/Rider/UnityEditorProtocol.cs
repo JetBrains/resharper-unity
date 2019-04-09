@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (!args) return;
 
-                var solFolder = mySolution.SolutionFilePath.Directory;
+                var solFolder = mySolution.SolutionDirectory;
                 AdviseModelData(lifetime);
 
                 // todo: consider non-Unity Solution with Unity-generated projects

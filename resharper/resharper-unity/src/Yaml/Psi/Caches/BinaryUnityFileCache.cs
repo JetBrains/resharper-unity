@@ -88,7 +88,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (!(sourceFile.GetDominantPsiFile<YamlLanguage>() is IYamlFile yamlFile))
                 return null;
 
-            var isBinary = yamlFile.CachingLexer.TokenBuffer[0].Type == YamlTokenType.NON_PRINTABLE;
+            // Handle empty files
+            var tokenBuffer = yamlFile.CachingLexer.TokenBuffer;
+            if (tokenBuffer.CachedTokens.Count == 0)
+                return null;
+
+            var isBinary = tokenBuffer[0].Type == YamlTokenType.NON_PRINTABLE;
             return new BinaryFileCacheItem(isBinary);
         }
 
