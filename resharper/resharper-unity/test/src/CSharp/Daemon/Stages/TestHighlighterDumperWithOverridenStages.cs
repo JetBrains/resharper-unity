@@ -12,12 +12,14 @@ using JetBrains.ReSharper.FeaturesTestFramework.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.PsiGen.Util;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
 {
     // TODO [v.krasnotsvetov] fix test highlighting dumper in sdk
     public class TestHighlighterDumperWithOverridenStages : TestHighlightingDumper
     {
+        private ILogger myLogger = Logger.GetLogger(typeof(TestHighlighterDumperWithOverridenStages));
         private int myVersion = 0;
 
         private class HighlightingInfoWithTimeStamp
@@ -114,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
 
         protected class TestHighlightingComparerFixed : IComparer<HighlightingInfo>
         {
-            [NotNull] public static readonly TestHighlightingComparer Instance = new TestHighlightingComparer();
+            [NotNull] public static readonly TestHighlightingComparerFixed Instance = new TestHighlightingComparerFixed();
 
             public int Compare([NotNull] HighlightingInfo xInfo, [NotNull] HighlightingInfo yInfo)
             {
