@@ -10,15 +10,19 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
     IRecursiveElementProcessor<IHighlightingConsumer>, IDaemonStageProcess
   {
     private readonly IYamlFile myFile;
+    private readonly bool myAllowOpeningChameleons;
 
-    protected YamlDaemonStageProcessBase(IDaemonProcess process, IYamlFile file)
+    protected YamlDaemonStageProcessBase(IDaemonProcess process, IYamlFile file, bool allowOpeningChameleons)
     {
       DaemonProcess = process;
       myFile = file;
+      myAllowOpeningChameleons = allowOpeningChameleons;
     }
 
     public bool InteriorShouldBeProcessed(ITreeNode element, IHighlightingConsumer consumer)
     {
+      if (element is IChameleonNode chameleon && !chameleon.IsOpened && !myAllowOpeningChameleons)
+        return false;
       return !IsProcessingFinished(consumer);
     }
 

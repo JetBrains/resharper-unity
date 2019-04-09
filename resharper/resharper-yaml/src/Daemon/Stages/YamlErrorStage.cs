@@ -24,15 +24,18 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
     protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
       DaemonProcessKind processKind, IYamlFile file)
     {
-      return new YamlErrorStageProcess(process, processKind, myElementProblemAnalyzerRegistrar, settings, file);
+      return new YamlErrorStageProcess(process, processKind, myElementProblemAnalyzerRegistrar, settings, file,
+        ShouldAllowOpeningChameleons(file, processKind));
     }
 
     private class YamlErrorStageProcess : YamlDaemonStageProcessBase
     {
       private readonly IElementAnalyzerDispatcher myElementAnalyzerDispatcher;
 
-      public YamlErrorStageProcess(IDaemonProcess process, DaemonProcessKind processKind, ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar, IContextBoundSettingsStore settings, IYamlFile file)
-        : base(process, file)
+      public YamlErrorStageProcess(IDaemonProcess process, DaemonProcessKind processKind,
+                                   ElementProblemAnalyzerRegistrar elementProblemAnalyzerRegistrar,
+                                   IContextBoundSettingsStore settings, IYamlFile file, bool allowOpeningChameleons)
+        : base(process, file, allowOpeningChameleons)
       {
         var elementProblemAnalyzerData = new ElementProblemAnalyzerData(file, settings, ElementProblemAnalyzerRunKind.FullDaemon);
         elementProblemAnalyzerData.SetDaemonProcess(process, processKind);

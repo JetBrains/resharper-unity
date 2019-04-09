@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application.Settings;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -11,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
 {
   public abstract class YamlDaemonStageBase : IDaemonStage
   {
+    private const int LargeFileThreshold = 1 * 1024 * 1024;
+
     public IEnumerable<IDaemonStageProcess> CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
       DaemonProcessKind processKind)
     {
@@ -36,6 +39,20 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
         return false;
 
       return sourceFile.IsLanguageSupported<YamlLanguage>();
+    }
+
+    protected virtual bool ShouldAllowOpeningChameleons(IYamlFile file, DaemonProcessKind processKind)
+    {
+      // By default, only process already open chameleons for files larger than 1Mb when doing background analysis
+      // (SWEA). Opening chameleons for e.g. large Unity files is too expensive
+      if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT
+          && file.GetSourceFile().ToProjectFile() is ProjectFileImpl projectFileImpl
+          && projectFileImpl.CachedFileSystemData.FileLength > LargeFileThreshold)
+      {
+        return false;
+      }
+
+      return true;
     }
   }
 }
