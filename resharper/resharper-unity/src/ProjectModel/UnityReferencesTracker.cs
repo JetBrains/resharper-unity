@@ -124,11 +124,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 }
             }
 
-            myChangeManager.ExecuteAfterChange(() =>
+            if (newUnityProjects.Count > 0)
             {
-                NotifyHasUnityReference();
-                NotifyOnUnityProjectAdded(newUnityProjects);
-            });
+                myChangeManager.ExecuteAfterChange(() =>
+                {
+                    NotifyHasUnityReference();
+                    NotifyOnUnityProjectAdded(newUnityProjects);
+                });
+            }
 
             return null;
         }
