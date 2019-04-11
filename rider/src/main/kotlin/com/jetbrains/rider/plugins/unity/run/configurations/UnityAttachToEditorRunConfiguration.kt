@@ -64,7 +64,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
                     addPlayModeArguments(args)
                 }
 
-                return ext.executor(UnityAttachConfigurationParametersImpl(pid, finder.getApplicationPath(), args), environment)
+                return ext.executor(UnityAttachConfigurationParametersImpl(pid, finder.getApplicationPath(), args, finder.getApplicationVersion()), environment)
             }
         }
 

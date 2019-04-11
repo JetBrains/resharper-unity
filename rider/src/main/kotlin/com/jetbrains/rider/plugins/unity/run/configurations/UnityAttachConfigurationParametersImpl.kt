@@ -5,5 +5,6 @@ import java.nio.file.Path
 
 class UnityAttachConfigurationParametersImpl(override val unityEditorPid : Int?,
                                              override val unityEditorPathByHeuristic : Path?,
-                                             override val args : List<String>) : UnityAttachConfigurationParameters {
+                                             override val args : List<String>,
+                                             override val unityVersion : String?) : UnityAttachConfigurationParameters {
 }
