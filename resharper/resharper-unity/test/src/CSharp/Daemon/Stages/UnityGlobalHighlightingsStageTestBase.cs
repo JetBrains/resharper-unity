@@ -5,6 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.FeaturesTestFramework.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -51,13 +52,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
                             if (pf == null) continue;
                             if (!pf.Location.Name.EndsWith(".cs")) continue;
 
-                            var process = new TestHighlighterDumperWithOverridenStages(file, writer,
+                            var process = new TestHighlightingDumperWithOverridenStages(file, writer,
                                 DaemonStageManager.GetInstance(Solution).Stages,
                                 HighlightingPredicate,
                                 CSharpLanguage.Instance);
                             process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
                             process.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);
-                            process.CommitAll();
                             process.Dump();
                         }
                     });
