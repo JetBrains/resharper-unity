@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public async void Refresh(RefreshType force)
         {
             myLocks.AssertMainThread();
-            if (myEditorProtocol.UnityModel.Value == null)
+            if (myEditorProtocol.UnityModel.Value == null || !myEditorProtocol.UnityModel.Value.IsBound)
                 return;
 
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&

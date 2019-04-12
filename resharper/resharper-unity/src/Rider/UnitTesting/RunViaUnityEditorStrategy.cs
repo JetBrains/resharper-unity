@@ -143,7 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Check compilation", () =>
                 {
-                    if (myEditorProtocol.UnityModel.Value == null)
+                    if (myEditorProtocol.UnityModel.Value == null || !myEditorProtocol.UnityModel.Value.IsBound)
                     {
                         myLogger.Verbose("Unity Editor connection unavailable.");
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
@@ -172,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             var launch = SetupLaunch(run);
                             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
                             {
-                                if (myEditorProtocol.UnityModel.Value == null)
+                                if (myEditorProtocol.UnityModel.Value == null || !myEditorProtocol.UnityModel.Value.IsBound)
                                 {
                                     tcs.SetException(new Exception("Unity Editor connection unavailable."));
                                     return;
@@ -216,7 +216,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     "Periodic wait EditorState != UnityEditorState.Refresh",
                     TimeSpan.FromSeconds(1), () =>
                     {
-                        if (myEditorProtocol.UnityModel.Value == null) return;
+                        if (myEditorProtocol.UnityModel.Value == null || !myEditorProtocol.UnityModel.Value.IsBound) return;
                         var rdTask = myEditorProtocol.UnityModel.Value.GetUnityEditorState.Start(Unit.Instance);
                         rdTask?.Result.Advise(lifetime, result =>
                         {
