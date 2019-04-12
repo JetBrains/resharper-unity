@@ -46,3 +46,8 @@ fun isNonEditableUnityFile(file: VirtualFile): Boolean {
 fun isNonEditableUnityFileExtension(extension: String?): Boolean {
     return nonEditableExtensions.contains(extension)
 }
+
+fun isGeneratedUnityFile(file: VirtualFile): Boolean {
+    val extension = file.extension
+    return extension.equals("csproj", true) || extension.equals("sln", true)
+}
