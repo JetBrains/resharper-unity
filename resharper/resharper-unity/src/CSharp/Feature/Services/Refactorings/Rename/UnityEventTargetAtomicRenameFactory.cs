@@ -13,12 +13,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
     {
         public bool IsApplicable(IDeclaredElement declaredElement)
         {
+            if (!declaredElement.IsFromUnityProject())
+                return false;
+
             if (declaredElement is IMethod method)
             {
                 var eventHandlerCache = declaredElement.GetSolution().GetComponent<UnityEventHandlerReferenceCache>();
                 return eventHandlerCache.IsEventHandler(method);
             }
-
 
             // TODO: Renaming properties
 
@@ -28,8 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         // Disable rename completely for Unity event handlers
         public RenameAvailabilityCheckResult CheckRenameAvailability(IDeclaredElement element)
         {
-            if (IsApplicable(element))
-                return RenameAvailabilityCheckResult.CanNotBeRenamed;
+            // TODO: Check to see if item is in use in a scene that is dirty
+//            if (IsApplicable(element))
+//                return RenameAvailabilityCheckResult.CanNotBeRenamed;
 
             return RenameAvailabilityCheckResult.CanBeRenamed;
         }
