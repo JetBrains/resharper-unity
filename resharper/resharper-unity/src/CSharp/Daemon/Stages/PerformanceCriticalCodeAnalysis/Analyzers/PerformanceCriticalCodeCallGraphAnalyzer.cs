@@ -24,11 +24,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             "Update", "LateUpdate", "FixedUpdate",
         };
 
-        public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
-            UnitySolutionTracker tracker, ICallGraphAnalyzersProvider provider)
+        public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, 
+            UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker, ICallGraphAnalyzersProvider provider)
             : base(lifetime, provider, MarkId, new CallerToCalleeCallGraphPropagator(solution, MarkId))
         {
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
+            referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
         
         public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)

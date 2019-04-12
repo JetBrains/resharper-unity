@@ -64,7 +64,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
                     addPlayModeArguments(args)
                 }
 
-                return ext.executor(UnityAttachConfigurationParametersImpl(pid, finder.getApplicationPath(), args), environment)
+                return ext.executor(UnityAttachConfigurationParametersImpl(pid, finder.getApplicationPath(), args, finder.getApplicationVersion()), environment)
             }
         }
 
@@ -83,7 +83,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         // Edit Run Configurations dialog to be shown
         if (!updatePidAndPort() && (UnityInstallationFinder.getInstance(project).getApplicationPath() == null ||
                 model.hasUnityReference.hasTrueValue && !UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder))
-            throw RuntimeConfigurationError("Cannot find Unity Editor instance")
+            throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")
     }
 
     private fun updatePidAndPort() : Boolean {
@@ -136,7 +136,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
         if (pids.isEmpty()) {
             return null
         } else if (pids.size > 1) {
-            throw RuntimeConfigurationError("Multiple Unity Editor instances found")
+            throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please select from the list or open the project in Unity.")
         }
 
         return pids[0]

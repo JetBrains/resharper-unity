@@ -25,13 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     public class GenericTokenElement : YamlTokenBase
     {
-      private readonly TokenNodeType myTokenNodeType;
-
       public GenericTokenElement(TokenNodeType tokenNodeType, IBuffer buffer, TreeOffset startOffset,
                                  TreeOffset endOffset)
         : base(tokenNodeType, buffer, startOffset, endOffset)
       {
-        myTokenNodeType = tokenNodeType;
       }
     }
   }

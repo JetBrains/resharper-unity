@@ -1,123 +1,53 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
-using JetBrains.Application.Settings.Storage.DefaultBody;
-using JetBrains.Application.Threading;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.ProjectModel.Properties.CSharp;
-using JetBrains.ProjectModel.Settings.Storages;
-using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
-using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class PerProjectSettings : IUnityReferenceChangeHandler
+    public class LangVersionSetting : IUnityProjectSettingsProvider
     {
+        private readonly ISettingsSchema mySettingsSchema;
+        private readonly ILogger myLogger;
+        private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private static readonly Version ourVersion46 = new Version(4, 6);
 
-        private readonly ISettingsSchema mySettingsSchema;
-        private readonly SettingsStorageProvidersCollection mySettingsStorageProviders;
-        private readonly IShellLocks myLocks;
-        private readonly ILogger myLogger;
-        private readonly InternKeyPathComponent myInterned;
-        private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
-        private readonly Dictionary<IProject, SettingsStorageMountPoint> myProjectMountPoints;
-
-        public PerProjectSettings(ISettingsSchema settingsSchema,
-                                  SettingsStorageProvidersCollection settingsStorageProviders, IShellLocks locks,
-                                  ILogger logger, InternKeyPathComponent interned,
+        public LangVersionSetting(ISettingsSchema settingsSchema, ILogger logger,
                                   UnityProjectFileCacheProvider unityProjectFileCache)
         {
             mySettingsSchema = settingsSchema;
-            mySettingsStorageProviders = settingsStorageProviders;
-            myLocks = locks;
             myLogger = logger;
-            myInterned = interned;
             myUnityProjectFileCache = unityProjectFileCache;
-            myProjectMountPoints = new Dictionary<IProject, SettingsStorageMountPoint>();
         }
 
-        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        public void InitialiseProjectSettings(Lifetime projectLifetime, IProject project,
+                                              ISettingsStorageMountPoint mountPoint)
         {
-            InitialiseProjectSettings(projectLifetime, project);
-        }
+            SetProjectLangVersion(project, mountPoint);
 
-        private void InitialiseProjectSettings(Lifetime projectLifetime, IProject project)
-        {
-            SettingsStorageMountPoint mountPoint;
-            lock(myProjectMountPoints)
-            {
-                // There's already a mount point, we're already initialised
-                if (myProjectMountPoints.TryGetValue(project, out mountPoint))
-                    return;
-
-                mountPoint = CreateMountPoint(projectLifetime, project, mySettingsStorageProviders, myLocks, myLogger,
-                    myInterned);
-                myProjectMountPoints.Add(projectLifetime, project, mountPoint);
-            }
-
-            InitialiseSettingValues(project, mountPoint);
-
-            // Just to make things more interesting, the langversion cache isn't
-            // necessarily updated by the time we get called, so wire up a callback
+            // If the project data cache isn't ready yet, or changes at a later date, reset the overridden lang version
             myUnityProjectFileCache.RegisterDataChangedCallback(projectLifetime, project.ProjectFileLocation,
-                () => InitialiseSettingValues(project, mountPoint));
+                () => SetProjectLangVersion(project, mountPoint));
         }
 
-        private static SettingsStorageMountPoint CreateMountPoint(Lifetime projectLifetime,
-                                                                  IProject project, SettingsStorageProvidersCollection settingsStorageProviders,
-                                                                  IShellLocks locks, ILogger logger,
-                                                                  InternKeyPathComponent interned)
+        private void SetProjectLangVersion(IProject project, ISettingsStorageMountPoint mountPoint)
         {
-            var storageName = $"Project {project.Name} (Unity)";
-            var storage = SettingsStorageFactory.CreateStorage(projectLifetime, storageName, logger, interned);
-            var isAvailable = new IsAvailableByDataConstant<IProject>(projectLifetime,
-                ProjectModelDataConstants.PROJECT, project, locks);
-
-            // Set at a priority less than the .csproj.dotSettings layer, so we can be overridden
-            var priority = ProjectModelSettingsStorageMountPointPriorityClasses.ProjectShared*0.9;
-            var mountPoint = new SettingsStorageMountPoint(storage, SettingsStorageMountPoint.MountPath.Default,
-                MountPointFlags.IsDefaultValues, priority, isAvailable, storageName);
-
-            settingsStorageProviders.MountPoints.Add(projectLifetime, mountPoint);
-            settingsStorageProviders.Storages.Add(projectLifetime, storage);
-
-            return mountPoint;
-        }
-
-        private void InitialiseSettingValues(IProject project, SettingsStorageMountPoint mountPoint)
-        {
-            InitNamespaceProviderSettings(mountPoint);
-            InitLanguageLevelSettings(project, mountPoint);
-        }
-
-        private void InitNamespaceProviderSettings(ISettingsStorageMountPoint mountPoint)
-        {
-            var assetsPathIndex = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse("Assets"));
-            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, assetsPathIndex, true);
-
-            var scriptsPathIndex = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse(@"Assets\Scripts"));
-            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, scriptsPathIndex, true);
-        }
-
-        private void InitLanguageLevelSettings(IProject project, SettingsStorageMountPoint mountPoint)
-        {
+            // Only if it's a generated project. Class libraries can use whatever language version they want
             if (!project.IsUnityGeneratedProject())
-                return; // https://github.com/JetBrains/resharper-unity/issues/150
+                return;
 
-            // Make sure ReSharper doesn't suggest code changes that won't compile in Unity
-            // due to mismatched C# language levels (e.g. C#6 "elvis" operator)
+            #region Explanation
+            // Make sure we don't suggest code changes that won't compile in Unity due to mismatched C# language levels
+            // (e.g. C#6 "elvis" operator)
             //
             // * Unity prior to 5.5 uses an old mono compiler that only supports C# 4
             // * Unity 5.5 and later adds C# 6 support as an option. This is enabled by setting
@@ -167,6 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             //   Order of post-processing is non-deterministic, so Rider's LangVersion might be removed
             // * Unity3dRider can set `TargetFrameworkVersion` to `v4.5` on non-Windows machines to fix
             //   an issue resolving System.Linq
+            #endregion
 
             var languageLevel = ReSharperSettingsCSharpLanguageLevel.Default;
             if (IsLangVersionMissing(project) || IsLangVersionDefault(project))
@@ -184,6 +115,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                         : ReSharperSettingsCSharpLanguageLevel.CSharp40;
                 }
             }
+
+            // Always set a value. It's either the overridden value, or Default, which resets to whatever is in the
+            // project file
             SetValue(mountPoint, (CSharpLanguageProjectSettings s) => s.LanguageLevel, languageLevel);
         }
 
@@ -199,7 +133,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             {
                 if (configuration is ICSharpProjectConfiguration csharpConfiguration)
                 {
-                    // LatestMajor is what "default" means. Latest maps to "latest" and means actual latest
+                    // CSharpLanguageVersion.LatestMajor is the enum value for "default"
+                    // CSharpLanguageVersion.Latest is the enum value for "latest"
                     if (csharpConfiguration.LanguageVersion != CSharpLanguageVersion.LatestMajor)
                         return false;
                 }
@@ -213,21 +148,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         }
 
         private void SetValue<TKeyClass, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
-                                                      [NotNull] Expression<Func<TKeyClass, TEntryValue>> lambdaexpression, [NotNull] TEntryValue value,
+                                                      [NotNull] Expression<Func<TKeyClass, TEntryValue>> entryExpression,
+                                                      [NotNull] TEntryValue value,
                                                       IDictionary<SettingsKey, object> keyIndices = null)
         {
-            ScalarSettingsStoreAccess.SetValue(mount, mySettingsSchema.GetScalarEntry(lambdaexpression), keyIndices, value,
-                false, null, myLogger);
-        }
-
-        private void SetIndexedValue<TKeyClass, TEntryIndex, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
-                                                                          [NotNull] Expression<Func<TKeyClass, IIndexedEntry<TEntryIndex, TEntryValue>>> lambdaexpression,
-                                                                          [NotNull] TEntryIndex index,
-                                                                          [NotNull] TEntryValue value,
-                                                                          IDictionary<SettingsKey, object> keyIndices = null)
-        {
-            ScalarSettingsStoreAccess.SetIndexedValue(mount, mySettingsSchema.GetIndexedEntry(lambdaexpression), index,
-                keyIndices, value, null, myLogger);
+            ScalarSettingsStoreAccess.SetValue(mount, mySettingsSchema.GetScalarEntry(entryExpression), keyIndices,
+                value, false, null, myLogger);
         }
     }
 }

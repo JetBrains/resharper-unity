@@ -15,11 +15,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         public const string MarkId = "Unity.ExpensiveCode";
 
-        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
+        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
             UnitySolutionTracker unitySolutionTracker, ICallGraphAnalyzersProvider provider)
             : base(lifetime, provider, MarkId, new CalleeToCallerCallGraphPropagator(solution, MarkId))
         {
             Enabled.Value = unitySolutionTracker.IsUnityProject.HasTrueValue();
+            referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
         
         public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
