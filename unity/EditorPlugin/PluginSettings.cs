@@ -166,6 +166,7 @@ namespace JetBrains.Rider.Unity.Editor
       }, 
       margin = new RectOffset(4, 4, 4, 4),
     };
+    
 
     /// <summary>
     /// Preferences menu layout
@@ -176,11 +177,11 @@ namespace JetBrains.Rider.Unity.Editor
     [PreferenceItem("Rider")]
     private static void RiderPreferencesItem()
     {
+      EditorGUIUtility.labelWidth = 200f;
       EditorGUILayout.BeginVertical();
 
       var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
       var paths = alternatives.Select(a => a.Path).ToArray();
-      GUILayout.Label("General", EditorStyles.boldLabel);
       if (alternatives.Any())
       {
         var index = Array.IndexOf(paths, RiderPathInternal);
@@ -188,7 +189,7 @@ namespace JetBrains.Rider.Unity.Editor
         RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
         EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
 
-        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
+        if (EditorGUILayout.Toggle(new GUIContent("Make Rider default editor:"), PluginEntryPoint.Enabled))
         {
           EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
 
@@ -196,7 +197,7 @@ namespace JetBrains.Rider.Unity.Editor
           // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
           PluginEntryPoint.Init();
           
-          EditorGUILayout.HelpBox("Unchecking will restore default external editor.", MessageType.None);
+          EditorGUILayout.HelpBox("Unchecking will restore default external editor", MessageType.None);
         }
         else
         {
@@ -204,20 +205,15 @@ namespace JetBrains.Rider.Unity.Editor
           EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
         }
       }
-      else
-      {
-        GUILayout.Label("No Rider Instance was found");
-      }
-      GUILayout.Space(10f);
       
       GUI.enabled = PluginEntryPoint.Enabled;
-      GUILayout.Label("Project settings", EditorStyles.boldLabel);
-      
+
       GUILayout.BeginVertical();
+      LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider:"), LogEventsCollectorEnabled);
 
       if (UnityUtils.ScriptingRuntime > 0)
       {
-        OverrideTargetFrameworkVersion = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion"), OverrideTargetFrameworkVersion);
+        OverrideTargetFrameworkVersion = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion:"), OverrideTargetFrameworkVersion);
         if (OverrideTargetFrameworkVersion)
         {
           var help = @"TargetFramework >= 4.6 is recommended.";
@@ -230,7 +226,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
       else
       {
-        OverrideTargetFrameworkVersionOldMono = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion"), OverrideTargetFrameworkVersionOldMono);
+        OverrideTargetFrameworkVersionOldMono = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion:"), OverrideTargetFrameworkVersionOldMono);
         if (OverrideTargetFrameworkVersionOldMono)
         {
           var helpOldMono = @"TargetFramework = 3.5 is recommended.
@@ -243,7 +239,6 @@ namespace JetBrains.Rider.Unity.Editor
           EditorGUILayout.HelpBox(helpOldMono, MessageType.None);
         }
       }
-      
 
       // Unity 2018.1 doesn't require installed dotnet framework, it references everything from Unity installation
       if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
@@ -257,7 +252,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       GUILayout.EndVertical();
 
-      OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion"), OverrideLangVersion);
+      OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion:"), OverrideLangVersion);
       if (OverrideLangVersion)
       {
         var workaroundUrl = "https://gist.github.com/van800/875ce55eaf88d65b105d010d7b38a8d4";
@@ -271,42 +266,36 @@ namespace JetBrains.Rider.Unity.Editor
         LinkButton(caption: workaroundText, url: workaroundUrl);
         EditorGUILayout.HelpBox(helpLangVersion, MessageType.None);
       }
-      GUILayout.Space(10f);
-      GUILayout.Label("Logs", EditorStyles.boldLabel);
-      var loggingMsg =
-        @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
-      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
-
-      SelectedLoggingLevel =
-        (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg),
-          SelectedLoggingLevel);
+      GUILayout.Label("");
       
-      var previous = GUI.enabled; // disable button
-      GUI.enabled = GUI.enabled && SelectedLoggingLevel != LoggingLevel.OFF;
-      var openLogsButtonMessage = "Show logs";
-      var openLogButtonStyle = new GUIStyle(GUI.skin.button);
-      var openLogButtonContent = new GUIContent(openLogsButtonMessage);
-      var size = openLogButtonStyle.CalcSize(openLogButtonContent);
-      openLogButtonStyle.fixedWidth = size.x;
-      
-      if (GUILayout.Button(openLogButtonContent, openLogButtonStyle))
+      EditorGUILayout.BeginHorizontal();
+      EditorGUILayout.PrefixLabel("Log file:");
+      var previous = GUI.enabled;
+      GUI.enabled = previous && SelectedLoggingLevel != LoggingLevel.OFF;
+      var button = GUILayout.Button(new GUIContent("Open log"));
+      if (button)
       {
         //UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
         // works much faster than the commented code, when Rider is already started
         PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(PluginEntryPoint.LogPath, 0, 0);
       }
-
       GUI.enabled = previous;
-      GUILayout.Space(10f);
-      GUILayout.Label("Other", EditorStyles.boldLabel);
+      GUILayout.EndHorizontal();
       
+      var loggingMsg =
+        @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
+      SelectedLoggingLevel =
+        (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level:", loggingMsg),
+          SelectedLoggingLevel);
+
       
-      LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider"), LogEventsCollectorEnabled);
+      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
+      
 
       if (UnityUtils.UnityVersion < new Version(2018, 2))
       {
         EditorGUI.BeginChangeCheck();
-        AssemblyReloadSettings = (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes While Playing", AssemblyReloadSettings);
+        AssemblyReloadSettings = (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes during Playing:", AssemblyReloadSettings);
 
         if (EditorGUI.EndChangeCheck())
         {
@@ -347,7 +336,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void LinkButton(string caption, string url)
     {
-      var style = new GUIStyle(GUI.skin.label) {richText = true,margin = new RectOffset(5, 0, 0, 0)};
+      var style = GUI.skin.label;
+      style.richText = true;
 
       var bClicked = GUILayout.Button(caption, style);
 
