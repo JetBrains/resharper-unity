@@ -67,6 +67,8 @@
     <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rdclient.editorActions.FrontendTypedHandler"/>
 
+    <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
+
     <!-- Unity Explorer -->
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
     <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerProjectModelViewUpdater"/>
@@ -255,6 +257,7 @@
   <li>Add all package folders to find in files index (<a href="https://github.com/JetBrains/resharper-unity/pull/1120">#1120</a>)</li>
   <li>Add icon for marketplace (<a href="https://youtrack.jetbrains.com/issue/RIDER-25040">RIDER-25040</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1122">#1122</a>)</li>
   <li>Add icon for git based packages (<a href="https://youtrack.jetbrains.com/issue/RIDER-24093">RIDER-24093</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1122">#1122</a>)</li>
+  <li>Show warnings when trying to manually edit Unity asset or project files (<a href="https://youtrack.jetbrains.com/issue/RIDER-23145">RIDER-23145</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1135">#1135</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
