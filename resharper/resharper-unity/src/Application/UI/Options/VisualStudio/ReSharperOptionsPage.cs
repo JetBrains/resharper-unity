@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             // Vision, we'll show the items, or if the user installs Rider, the copied settings will still be useful
             AddBoolOption((UnitySettings s) => s.GutterIconMode,
                 GutterIconMode.CodeInsightDisabled, GutterIconMode.None,
-                "Show gutter icons for implicit script usages:");
+                "Show gutter icons for implicit script usages");
 
             Header("Text based assets");
             CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
