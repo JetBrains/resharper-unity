@@ -1,11 +1,12 @@
-using System;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
@@ -66,8 +67,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override IReference BindTo(IDeclaredElement element)
         {
-            // TODO: Handle rename
-            throw new NotImplementedException();
+            using (WriteLockCookie.Create(myOwner.IsPhysical()))
+            {
+                var text = YamlTokenType.NS_PLAIN_ONE_LINE.Create(element.ShortName);
+                if (myOwner.Text != null)
+                    LowLevelModificationUtil.ReplaceChildRange(myOwner.Text, myOwner.Text, text);
+                else
+                    LowLevelModificationUtil.AddChild(myOwner.Text, text);
+            }
+
+            return this;
         }
 
         private bool IsMonoBehaviourReference()
