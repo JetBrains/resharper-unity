@@ -9,6 +9,7 @@ using JetBrains.Application.FileSystemTracker;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Impl;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
@@ -68,6 +69,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (myVersionFromProjectVersionTxt != null)
                 return myVersionFromProjectVersionTxt;
 
+            if (mySolution.IsVirtualSolution())
+                return new Version(0, 0);
+
             foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
             {
                 if (project.IsUnityProject())
@@ -111,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             // as our main strategy because Unity doesn't write defines for Release configuration (another reason we for
             // us to hide the project configuration selector)
             var unityVersion = new Version(0, 0);
-            foreach (var project in solution.GetTopLevelProjects())
+            foreach (var project in GetTopLevelProjectWithReadLock(solution))
             {
                 foreach (var configuration in project.ProjectProperties.GetActiveConfigurations<IManagedProjectConfiguration>())
                 {
