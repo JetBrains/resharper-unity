@@ -1,7 +1,10 @@
+using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.UI.Options;
+using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions.ViewModel;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
