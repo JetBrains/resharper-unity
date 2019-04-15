@@ -18,7 +18,6 @@ using JetBrains.ReSharper.Host.Features.FileSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
-using JetBrains.Threading;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -62,8 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (myEditorProtocol.UnityModel.Value == null)
                 return;
 
-            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&
-                force == RefreshType.Normal)
+            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && force == RefreshType.Normal)
                 return;
 
             if (myIsRunning)
@@ -129,8 +127,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
+        private readonly UnityRefresher myRefresher;
         private readonly ILogger myLogger;
-        private GroupingEvent myGroupingEvent;
 
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
@@ -138,6 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
+            myRefresher = refresher;
             myLogger = logger;
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -155,19 +154,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (!args) return;
 
-                // Rgc.Guarded - beware RIDER-15577
-                myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
-                    TimeSpan.FromMilliseconds(500),
-                    Rgc.Guarded, () =>
-                    {
-                        refresher.Refresh(RefreshType.Normal);
-                    });
-
                 var protocolSolution = solution.GetProtocolSolution();
                 protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
                 {
                     logger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
-                    myGroupingEvent.FireIncoming();
+                    refresher.Refresh(RefreshType.Normal);
                 });
                 
                 fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
@@ -216,7 +207,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (delta.NewPath.ExtensionNoDot == "cs")
             {
                 myLogger.Verbose($"fileSystemTracker.AdviseDirectoryChanges {delta.ChangeType}, {delta.NewPath}, {delta.OldPath}");
-                myGroupingEvent.FireIncoming();
+                myRefresher.Refresh(RefreshType.Normal);
             }
         }
     }
