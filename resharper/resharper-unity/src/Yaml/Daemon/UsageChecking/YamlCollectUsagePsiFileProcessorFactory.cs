@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
             TaskBarrier fibers, IReadOnlyList<IFile> psiFiles, IScopeProcessorFactory scopeProcessorFactory)
         {
             // TODO: We could return a no-op processor for .meta or boring assets
-            return new YamlCollectUsagesPsiFileProcessor();
+            return new YamlCollectUsagesPsiFileProcessor(daemonProcess);
         }
     }
 }
