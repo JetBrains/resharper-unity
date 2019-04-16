@@ -64,7 +64,8 @@ Fixed:
 - Remove incorrect method signature warning if method is implementing a virtual method (#876, #1081)
 - Fix spelling mistake in issue suppression comment (#1083, #1109)
 - Fix validation exceptions (RIDER-26102, RIDER-26109, RIDER-26103, #1108)
-
+- Fix exception when project contains empty YAML file (RIDER-25787, #1124)
+- Fix parse error in YAML files with multiline text containing single quotes (RIDER-26849, #1145)
 
 
 See CHANGELOG.md in the project repo for more details and history.
