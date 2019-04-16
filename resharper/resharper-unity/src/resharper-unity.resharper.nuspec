@@ -36,6 +36,7 @@
 <releaseNotes>
 Added:
 
+- Add rename of methods and properties used in text base assets (#1140)
 - Add inspection and quick fix to avoid inefficient order of multiplication operations (#1031)
 - Add warning for string literal use in Animator.ResetTrigger (RIDER-24421, #1035)
 - Add support for marking ECS types and fields as "in use" (#1010, #1036)

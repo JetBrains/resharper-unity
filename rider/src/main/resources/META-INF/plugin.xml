@@ -239,6 +239,7 @@
 <em>Added:</em>
 <ul>
   <li>Add performance profiling for Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1073">#1073</a>)</li>
+  <li>Add rename of methods and properties used in text base assets (<a href="https://github.com/JetBrains/resharper-unity/pull/1140">#1140</a>)</li>
   <li>Add inspection and quick fix to avoid inefficient order of multiplication operations (<a href="https://github.com/JetBrains/resharper-unity/issues/1031">#1031</a>)</li>
   <li>Add warning for string literal use in <tt>Animator.ResetTrigger</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-24421">RIDER-24421</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1035">#1035</a>)</li>
   <li>Add support for marking ECS types and fields as "in use" (<a href="https://github.com/JetBrains/resharper-unity/issues/1010">#1010</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1036">#1036</a>)</li>
