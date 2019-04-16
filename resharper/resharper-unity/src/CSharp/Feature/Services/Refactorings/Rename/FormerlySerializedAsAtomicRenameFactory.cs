@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             bool doNotAddBindingConflicts)
         {
             var settingsStore = declaredElement.GetSolution().GetComponent<ISettingsStore>();
-            yield return new FormerlySerializedAsAtomicRename(declaredElement, newName, settingsStore);
+            return new[] {new FormerlySerializedAsAtomicRename(declaredElement, newName, settingsStore)};
         }
     }
 }

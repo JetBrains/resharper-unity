@@ -32,23 +32,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
 
             OptionsSettingsSmartContext.SetBinding(myLifetime, settingsScalarEntry, valueProperty);
 
-            var option = AddBoolOption(setting, caption, tooltip ?? settingsScalarEntry.Description);
-
-            SetIndent(option, myCurrentIndent);
-
-            return option;
+            return AddBoolOption(setting, caption, tooltip ?? settingsScalarEntry.Description);
         }
 
         private int myCurrentIndent;
 
-        protected void WithIndent(IOptionEntity entity)
+        protected IOptionEntity WithIndent(IOptionEntity entity)
         {
             SetIndent(entity, myCurrentIndent);
+            return entity;
         }
 
         protected void Header([NotNull] RichText text)
         {
-            SetIndent(AddHeader(text), myCurrentIndent);
+            WithIndent(AddHeader(text));
         }
 
         protected void BeginSection()
