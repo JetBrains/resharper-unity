@@ -9,4 +9,4 @@ It may be triggered by one of the following reasons:
 2. `cs` file is added or deleted inside the SolutionFolder (implemented using `RecursiveFileSystemChangeDeltaVisitor`)
 3. `solution.GetProtocolSolution().Editors.AfterDocumentInEditorSaved` is fired. (by refactoring)
 
-In case when new Refresh2 is triggered while Refresh1 is being executed, Refresh2 will be executed after Refresh2 has finished.
+In case when new signals Refresh1, Refresh2, RefreshN are triggered, while Refresh0 is being executed, only one Refresh will get started after Refresh0 has finished.
