@@ -2,12 +2,14 @@ package com.jetbrains.rider.plugins.unity.run.attach
 
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.openapi.diagnostic.Logger
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import java.net.*
 import java.util.*
 import java.util.regex.Pattern
 
-class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, private val onPlayerRemoved: (UnityPlayer) -> Unit) {
+class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, private val onPlayerRemoved: (UnityPlayer) -> Unit, lifetime: Lifetime) {
 
     companion object {
         private val logger = Logger.getInstance(UnityProcessListener::class.java)
@@ -97,6 +99,10 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
         }.forEach {
             onPlayerAdded(it)
         }
+
+        lifetime.onTermination {
+            close()
+        }
     }
 
     private fun parseUnityPlayer(unityPlayerDescriptor: String, hostAddress: String): UnityPlayer? {
@@ -170,7 +176,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
         }
     }
 
-    fun close() {
+    private fun close() {
         refreshTimer.cancel()
         synchronized(socketsLock) {
             for (socket in multicastSockets) {

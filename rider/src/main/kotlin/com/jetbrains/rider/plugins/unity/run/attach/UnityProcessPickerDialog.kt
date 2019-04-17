@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
+import com.jetbrains.rdclient.util.idea.defineNestedLifetime
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
@@ -87,9 +88,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     }
 
     override fun show() {
-        var unityProcessListener: UnityProcessListener? = null
+        val lifetimeDefinition = project.defineNestedLifetime()
         try {
-            unityProcessListener = UnityProcessListener({
+            UnityProcessListener({
                 synchronized(listModelLock) {
                     listModel.addElement(it)
                 }
@@ -97,11 +98,11 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 synchronized(listModelLock) {
                     listModel.removeElement(it)
                 }
-            })
+            }, lifetimeDefinition.lifetime)
 
             super.show()
         } finally {
-            unityProcessListener?.close()
+            lifetimeDefinition.terminate()
         }
     }
 
