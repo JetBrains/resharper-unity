@@ -166,7 +166,7 @@ namespace JetBrains.Rider.Unity.Editor
       }, 
       margin = new RectOffset(4, 4, 4, 4),
     };
-    
+
 
     /// <summary>
     /// Preferences menu layout
@@ -182,11 +182,15 @@ namespace JetBrains.Rider.Unity.Editor
 
       var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
       var paths = alternatives.Select(a => a.Path).ToArray();
-      if (alternatives.Any())
+      if (alternatives.Any()) // from known locations
       {
         var index = Array.IndexOf(paths, RiderPathInternal);
         var alts = alternatives.Select(s => s.Presentation).ToArray();
         RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
+      }
+      // may be rider from known location or selected by user from custom location
+      if (RiderPathLocator.RiderPathExist(RiderPathInternal, SystemInfoRiderPlugin.operatingSystemFamily))
+      {
         EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
 
         if (EditorGUILayout.Toggle(new GUIContent("Make Rider default editor:"), PluginEntryPoint.Enabled))
@@ -196,7 +200,7 @@ namespace JetBrains.Rider.Unity.Editor
           // make sure the plugin was initialized first.
           // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
           PluginEntryPoint.Init();
-          
+
           EditorGUILayout.HelpBox("Unchecking will restore default external editor", MessageType.None);
         }
         else
@@ -205,7 +209,7 @@ namespace JetBrains.Rider.Unity.Editor
           EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
         }
       }
-      
+
       GUI.enabled = PluginEntryPoint.Enabled;
 
       GUILayout.BeginVertical();
@@ -353,8 +357,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     string IPluginSettings.RiderPath
     {
-      get { return RiderPathInternal; }
-      set { RiderPathInternal = value; }
+      get => RiderPathInternal;
+      set => RiderPathInternal = value;
     }
 
     internal static class SystemInfoRiderPlugin
@@ -387,6 +391,5 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
     }
-
   }
 }
