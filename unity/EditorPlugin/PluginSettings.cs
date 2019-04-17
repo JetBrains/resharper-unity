@@ -181,33 +181,37 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUILayout.BeginVertical();
 
       var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
-      var paths = alternatives.Select(a => a.Path).ToArray();
       if (alternatives.Any()) // from known locations
       {
+        var paths = alternatives.Select(a => a.Path).ToArray();
         var index = Array.IndexOf(paths, RiderPathInternal);
         var alts = alternatives.Select(s => s.Presentation).ToArray();
         RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
       }
       // may be rider from known location or selected by user from custom location
-      if (RiderPathLocator.RiderPathExist(RiderPathInternal, SystemInfoRiderPlugin.operatingSystemFamily))
-      {
+      if(RiderPathLocator.RiderPathExist(RiderPathInternal, SystemInfoRiderPlugin.operatingSystemFamily))
         EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
+      else if (PluginEntryPoint.Enabled)
+      {
+        EditorGUILayout.HelpBox($"Rider is selected as prefered ExternalEditor, but doesn't exist on disk {EditorPrefsWrapper.ExternalScriptEditor}", MessageType.Warning);
+      }
+      else
+        EditorGUILayout.HelpBox($"Lately used Rider doesn't exist on disk {RiderPathInternal}", MessageType.Warning);
 
-        if (EditorGUILayout.Toggle(new GUIContent("Make Rider default editor:"), PluginEntryPoint.Enabled))
-        {
-          EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
+      if (EditorGUILayout.Toggle(new GUIContent("Make Rider default editor:"), PluginEntryPoint.Enabled))
+      {
+        EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
 
-          // make sure the plugin was initialized first.
-          // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-          PluginEntryPoint.Init();
+        // make sure the plugin was initialized first.
+        // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
+        PluginEntryPoint.Init();
 
-          EditorGUILayout.HelpBox("Unchecking will restore default external editor", MessageType.None);
-        }
-        else
-        {
-          EditorPrefsWrapper.ExternalScriptEditor = string.Empty;
-          EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
-        }
+        EditorGUILayout.HelpBox("Unchecking will restore default external editor", MessageType.None);
+      }
+      else
+      {
+        EditorPrefsWrapper.ExternalScriptEditor = string.Empty;
+        EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
       }
 
       GUI.enabled = PluginEntryPoint.Enabled;
