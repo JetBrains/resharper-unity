@@ -90,8 +90,7 @@ IShaderLabFile
                         Identifier(type:IDENTIFIER, text:_Op)
                     IInvalidVariableReferenceParameters
                       ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-                      IShaderLabIdentifier
-                        ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Something something something)
+                      ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Something something something)
                       ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
                     ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
               NewLine(type:NEW_LINE, text:\n) spaces: "\n"
@@ -107,8 +106,7 @@ IShaderLabFile
                         Identifier(type:IDENTIFIER, text:_Op)
                     IInvalidVariableReferenceParameters
                       ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-                      IShaderLabIdentifier
-                        ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Something something something)
+                      ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Something something something)
                       Whitespace(type:WHITESPACE, text:   ) spaces: "   "
                       ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
                     ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
@@ -125,8 +123,7 @@ IShaderLabFile
                         Identifier(type:IDENTIFIER, text:_Op)
                     IInvalidVariableReferenceParameters
                       ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
-                      IShaderLabIdentifier
-                        ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Something something something)
+                      ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Something something something)
                       Whitespace(type:WHITESPACE, text:   ) spaces: "   "
                       ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
                     Whitespace(type:WHITESPACE, text:   ) spaces: "   "
