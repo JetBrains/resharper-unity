@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 
@@ -41,8 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return;
 
 
-            var (count, hasUnknownType) = CalculateMatrixIntMulCount(expression);
-            if (hasUnknownType)
+            var (count, hasDivOrUnknownType) = CalculateMatrixIntMulCount(expression);
+            if (hasDivOrUnknownType)
                 return;
 
             if (count > GetElementCount(expression.GetExpressionType()))
@@ -57,6 +58,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!(expression is IBinaryExpression binaryExpression))
                 return (0, false);
 
+            if (!(expression is IMultiplicativeExpression mul &&
+                  mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK))
+                return (0, false);
+            
             var left = binaryExpression.LeftOperand.GetOperandThroughParenthesis();
             var right = binaryExpression.RightOperand.GetOperandThroughParenthesis();
             if (left == null || right == null)
@@ -74,8 +79,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var rightMulCount = 0;
             if (IsMatrixType(leftType))
             {
-                var (newCount, hasUnknownType) = CalculateMatrixIntMulCount(left);
-                if (hasUnknownType)
+                var (newCount, hasDivOrUnknownType) = CalculateMatrixIntMulCount(left);
+                if (hasDivOrUnknownType)
                     return (0, true);
 
                 leftMulCount += newCount;
@@ -83,8 +88,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             if (IsMatrixType(rightType))
             {
-                var (newCount, hasUnknownType) = CalculateMatrixIntMulCount(right);
-                if (hasUnknownType)
+                var (newCount, hasDivOrUnknownType) = CalculateMatrixIntMulCount(right);
+                if (hasDivOrUnknownType)
                     return (0, true);
                 rightMulCount += newCount;
             }
