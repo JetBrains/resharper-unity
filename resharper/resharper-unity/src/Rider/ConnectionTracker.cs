@@ -22,7 +22,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             IThreading locks, UnitySolutionTracker unitySolutionTracker)
         {
             State = new Property<UnityEditorState>(lifetime, "UnityEditorPlugin::ConnectionState", UnityEditorState.Disconnected);
-           
+            
+            if (locks.Dispatcher.IsAsyncBehaviorProhibited)
+                return;
+
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 //check connection between backend and unity editor
