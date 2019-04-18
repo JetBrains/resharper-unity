@@ -38,12 +38,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     }
                     else
                     {
-                        var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
-                        rdTask?.Result.Advise(lifetime, result =>
+                        try
                         {
-                            State.SetValue(result.Result);
-                            logger.Trace($"myIsConnected = {State.Value}");
-                        });
+                            var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
+                            rdTask?.Result.Advise(lifetime, result =>
+                            {
+                                State.SetValue(result.Result);
+                                logger.Trace($"myIsConnected = {State.Value}");
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            e.Data.Add("UnityModel", editorProtocol.UnityModel.Value);
+                            throw;
+                        }
                     }
 
                     logger.Trace($"Sending connection state. State: {State.Value}");
