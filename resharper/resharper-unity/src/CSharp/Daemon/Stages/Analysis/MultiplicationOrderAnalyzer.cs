@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             if (!(expression is IMultiplicativeExpression mul &&
                   mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK))
-                return (0, false);
+                return (0, true);
             
             var left = binaryExpression.LeftOperand.GetOperandThroughParenthesis();
             var right = binaryExpression.RightOperand.GetOperandThroughParenthesis();
