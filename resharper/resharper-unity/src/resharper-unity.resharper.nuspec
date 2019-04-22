@@ -51,6 +51,7 @@ Changed:
 - No longer creates a .sln.DotSettings.user file when YAML size heuristic is applied (#1087)
 - Treat AddComponent(Type) as an expensive operation (#1044, #1109)
 - Include Unity YAML files in Solution Wide Error Analysis (#1118)
+- Updated API to 2019.2.0a9 (#1055, #1056)
 
 Fixed:
 
@@ -66,6 +67,9 @@ Fixed:
 - Fix validation exceptions (RIDER-26102, RIDER-26109, RIDER-26103, #1108)
 - Fix exception when project contains empty YAML file (RIDER-25787, #1124)
 - Fix parse error in YAML files with multiline text containing single quotes (RIDER-26849, #1145)
+- Fix parse error in ShaderLab attribute values (RIDER-26909, #857, #1149)
+- Fix invalid references to scripts or event handlers in read only/referenced packages (RIDER-27009, #1153)
+- Fix rename of MonoBehaviour based classes being blocked by reported conflicts (RIDER-27053, #1153)
 
 
 See CHANGELOG.md in the project repo for more details and history.

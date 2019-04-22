@@ -37,7 +37,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (!resolveResultWithInfo.Result.IsEmpty)
                 return resolveResultWithInfo;
 
-            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
+            // TODO: Support references to scripts/event handlers in external packages
+            // Surprisingly, it's possible to have a reference to a script asset defined in a read-only package. We
+            // don't know anything about these assets, because read-only packages are not part of the C# project
+            // structure - they are compiled and added as assembly references. So we don't currently have a way to map
+            // an asset GUID back to a compiled class.
+            // See also UnityEventTargetReference
+//            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
+            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.IGNORABLE);
         }
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
