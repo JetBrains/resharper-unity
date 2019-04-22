@@ -72,7 +72,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override IReference BindTo(IDeclaredElement element)
         {
-            // We don't need to do anything, as a rename doesn't change the guid that we have
+            // We don't need to update any source, as a rename doesn't change the guid that we have. But we do need to
+            // invalidate our cached result, or a rename will fail because we'll still be pointing at an old element
+            CurrentResolveResult = null;
             return this;
         }
 
