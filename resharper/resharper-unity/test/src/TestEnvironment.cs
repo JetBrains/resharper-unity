@@ -8,7 +8,7 @@ using NUnit.Framework;
 using JetBrains.ReSharper.Host.Env;
 #endif
 
-[assembly: RequiresSTA]
+[assembly: RequiresThread(System.Threading.ApartmentState.STA)]
 
 // This attribute is marked obsolete but is still supported. Use is discouraged in preference to convention, but the
 // convention doesn't work for us. That convention is to walk up the tree from the executing assembly and look for a
