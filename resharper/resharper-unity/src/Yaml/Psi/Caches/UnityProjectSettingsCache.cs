@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
@@ -7,17 +8,19 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.Util.Collections;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     [SolutionComponent]
-    public class ProjectSettingsCache : SimpleICache<ProjectSettingsCacheItem>
+    public class UnityProjectSettingsCache : SimpleICache<ProjectSettingsCacheItem>
     {
         private readonly IEnumerable<IProjectSettingsAssetHandler> myProjectSettingsAssetHandlers;
         private readonly ProjectSettingsCacheItem myLocalCache = new ProjectSettingsCacheItem();
+        private readonly CountingSet<string> myShortNameSceneCount = new CountingSet<string>();
 
-
-        public ProjectSettingsCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
+        public UnityProjectSettingsCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
             IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers)
             : base(lifetime, persistentIndexManager, ProjectSettingsCacheItem.Marshaller)
         {
@@ -93,7 +96,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             foreach (var (name, count) in cacheItem.SceneNames)
             {
                 myLocalCache.SceneNames.Add(name, count);
+                myShortNameSceneCount.Add(name.Split('/').Last().RemoveEnd(".unity"));
             }
+        }
+
+        public IEnumerable<string> GetAllScenesFromBuildSettings()
+        {
+            return myLocalCache.SceneNames.GetItems();
+        }
+
+        public int SceneCount => myLocalCache.SceneNames.Count;
+
+        public bool IsScenePresentedAtEditorBuildSettings(string sceneName, out bool ambiguousDefinition)
+        {
+            ambiguousDefinition = false;
+            var shortCount = myShortNameSceneCount.GetCount(sceneName);
+            if (shortCount > 1)
+            {
+                ambiguousDefinition = true;
+                return true;
+            }
+
+            if (shortCount == 1)
+                return true;
+
+            return myLocalCache.SceneNames.GetCount(sceneName) > 0;
         }
     }
 }
