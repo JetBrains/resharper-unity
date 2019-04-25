@@ -6,13 +6,13 @@ import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.icons.AllIcons
-import com.jetbrains.rider.debugger.IDotNetDebuggable
+import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import javax.swing.Icon
 
 class UnityAttachConfiguration(override var address: String, override var port: Int, private val playerId: String,
                                private val isEditor: Boolean)
-    : RemoteConfiguration, RunProfile, IDotNetDebuggable {
+    : RemoteConfiguration, RunProfile, IRiderDebuggable {
 
     override fun getName(): String = playerId
     override fun getIcon(): Icon = AllIcons.Actions.StartDebugger

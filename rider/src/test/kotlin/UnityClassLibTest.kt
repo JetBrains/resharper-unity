@@ -47,9 +47,7 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         closeProjectsWaitForBackendWillBeClosed(60, false)
         val parameters: HashMap<String, String> = hashMapOf()
         parameters["PathToUnityEngine"] = testDirectory.combine("lib", "UnityEngine.dll").absolutePath
-        val newProject = createSolutionFromTemplate(templateId, null, activeSolutionDirectory, sameDirectory, null, parameters) { solutionFile ->
-
-        }!!
+        val newProject = createSolutionFromTemplate(templateId, null, activeSolutionDirectory, sameDirectory, null, parameters) { }!!
 
         newProject.enableBackendAsserts()
         persistAllFilesOnDisk(newProject)
