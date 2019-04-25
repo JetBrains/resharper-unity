@@ -208,6 +208,28 @@
           be found in the current project or referenced assemblies. The call is likely to fail at runtime and return null.
         </Description>
       </Tag>
+
+      <Tag externalName="LoadSceneWrongIndexWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Index is not presented in the build settings</Title>
+        <Description>
+          There is no scene with same index in the Unity build settings.
+        </Description>
+      </Tag>
+
+      <Tag externalName="LoadSceneAmbiguousSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Short scene name is not unique</Title>
+        <Description>
+          There are several scenes with same name in the Unity build settings. 
+          Only scene with smallest index will be used.
+        </Description>  
+      </Tag>
+      
+      <Tag externalName="LoadSceneUnknownSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>There is no scene with same name in the build settings</Title>
+        <Description>
+          Scene is not presented in the Unity build settings.
+        </Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
 
@@ -230,6 +252,27 @@
          to use ERROR mode)
        -->
 
+  <Warning name="LoadSceneUnknownSceneName" configurableSeverity="Unity.LoadSceneUnknownSceneName">
+    <Parameter type="IArgument" name="argument" />
+    <Message value="Scene is not presented in the Unity build settings." />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="LoadSceneAmbiguousSceneName" configurableSeverity="Unity.LoadSceneAmbiguousSceneName">
+    <Parameter type="IArgument" name="argument" />
+    <Message value="There are several scenes with same name in the Unity build settings. Only scene with smallest index will be used." />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="LoadSceneWrongIndex" configurableSeverity="Unity.LoadSceneWrongIndex">
+    <Parameter type="IArgument" name="argument" />
+    <Message value="There is no scene with same index in the Unity build settings." />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
   <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Message value="Event function with the same name is already declared" />
