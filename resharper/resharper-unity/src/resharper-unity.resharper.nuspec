@@ -74,7 +74,7 @@ See CHANGELOG.md in the project repo for more details and history.
     <copyright>Copyright 2019 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[191.0]" />
+      <dependency id="Wave" version="[192.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>
