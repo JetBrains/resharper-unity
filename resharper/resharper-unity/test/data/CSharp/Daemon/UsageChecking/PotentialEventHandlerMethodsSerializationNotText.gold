@@ -2,7 +2,7 @@
 using UnityEngine;
 
 // ReSharper disable ArrangeAccessorOwnerBody
-|// ReSharper disable ConvertToAutoProperty|(0)
+// ReSharper disable ConvertToAutoProperty
 
 // Only applicable when YAML supported is disabled
 public class A : MonoBehaviour
@@ -18,45 +18,42 @@ public class A : MonoBehaviour
   {
   }
 
-  public string |SetterPotentialEventHandler|(1)
+  public string SetterPotentialEventHandler
   {
-      |get|(2) { return myThing; }
+      |get|(0) { return myThing; }
       set { myThing = value; }
   }
 
-  private void |WrongAccessibility|(3)()
+  private void |WrongAccessibility|(1)()
   {
   }
 
-  public string |WrongReturnType|(4)()
+  public string |WrongReturnType|(2)()
   {
       return "Hello";
   }
 
-  public static void |WrongStatic|(5)()
+  public static void |WrongStatic|(3)()
   {
   }
 
-  public static string ||WrongStaticProperty|(6)|(7)
+  public static string |WrongStaticProperty|(4)
   {
       get { return ourThing; }
       set { ourThing = value; }
   }
 
   [Obsolete]
-  public void |ObsoleteNotConsidered|(8)()
+  public void |ObsoleteNotConsidered|(5)()
   {
   }
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: There is no code inspection issue disabled by this comment or attribute
-(1): ReSharper Suggestion: Convert to auto-property
-(2): ReSharper Dead Code: Accessor 'SetterPotentialEventHandler.get' is never used
-(3): ReSharper Dead Code: Method 'WrongAccessibility' is never used
-(4): ReSharper Dead Code: Method 'WrongReturnType' is never used
-(5): ReSharper Dead Code: Method 'WrongStatic' is never used
-(6): ReSharper Suggestion: Convert to auto-property
-(7): ReSharper Dead Code: Property 'WrongStaticProperty' is never used
-(8): ReSharper Dead Code: Method 'ObsoleteNotConsidered' is never used
+(0): ReSharper Dead Code: Accessor 'SetterPotentialEventHandler.get' is never used
+(1): ReSharper Dead Code: Method 'WrongAccessibility' is never used
+(2): ReSharper Dead Code: Method 'WrongReturnType' is never used
+(3): ReSharper Dead Code: Method 'WrongStatic' is never used
+(4): ReSharper Dead Code: Property 'WrongStaticProperty' is never used
+(5): ReSharper Dead Code: Method 'ObsoleteNotConsidered' is never used
 
