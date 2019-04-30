@@ -18,6 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(ReSharperSDKVersion)" />
+    <PackageReference Include="NUnit.Console" Version="3.10.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ShaderLab\Host\**" />

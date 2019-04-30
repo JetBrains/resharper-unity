@@ -18,6 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Rider.SDK.Tests" Version="$(RiderSDKVersion)" />
+    <PackageReference Include="NUnit.Console" Version="3.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\rider-unity.csproj" />
