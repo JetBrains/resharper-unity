@@ -15,13 +15,13 @@ using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.UI.Icons;
+using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
     [Language(typeof(CSharpLanguage))]
     public class UnityProjectSettingsCompletionProvider : CSharpItemsProviderBase<CSharpCodeCompletionContext>
     {
-
         protected override bool IsAvailable(CSharpCodeCompletionContext context)
         {
             return context.BasicContext.CodeCompletionType == CodeCompletionType.BasicCompletion;
@@ -39,11 +39,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     ranges = ranges.WithInsertRange(ranges.InsertRange.SetEndTo(offset)).WithReplaceRange(ranges.ReplaceRange.SetEndTo(offset));
                 }
 
-                var any = false;
+                var any = false;    
                 var cache = context.NodeInFile.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
                 if (cache != null)
                 {
-                    foreach (var sceneName in cache.GetAllScenesFromBuildSettings())
+                    foreach (var sceneName in cache.GetAllPossibleSceneNames())
                     {
                         any = true;
                         var item = new StringLiteralItem($"\"{sceneName}\"");
@@ -72,19 +72,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 
                 var argument = CSharpArgumentNavigator.GetByValue(literalExpression);
                 var argumentList = ArgumentListNavigator.GetByArgument(argument);
+                if (argument == null || argumentList == null)
+                    return false;
 
-                if (argumentList != null && argumentList.Arguments[0] == argument)
+                if (argument.IsNamedArgument && argument.NameIdentifier.Name.Equals("sceneName") || 
+                    !argument.IsNamedArgument && argumentList.Arguments[0] == argument)
                 {
                     stringLiteral = literalExpression;
                     possibleInvocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
-                }
-
+                } 
             }
             
             if (possibleInvocationExpression is IInvocationExpression invocationExpression)
             {
-                var name = (invocationExpression.InvokedExpression as IReferenceExpression)?.NameIdentifier.Name;
-                if (name != null && name.Equals("LoadScene"))
+                if (IsSceneManagerSceneRelatedMethod(invocationExpression.InvocationExpressionReference) ||
+                    IsEditorSceneManagerSceneRelatedMethod(invocationExpression.InvocationExpressionReference))
                 {
                     return true;
                 }
@@ -106,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             public override MatchingResult Match(PrefixMatcher prefixMatcher,ITextControl textControl)
             {
-                MatchingResult matchingResult = prefixMatcher.Matcher(Text);
+                var matchingResult = prefixMatcher.Matcher(Text);
                 if (matchingResult == null)
                     return null;
                 return new MatchingResult(matchingResult.MatchedIndices, matchingResult.MostLikelyContinuation, matchingResult.AdjustedScore - 100, matchingResult.OriginalScore);

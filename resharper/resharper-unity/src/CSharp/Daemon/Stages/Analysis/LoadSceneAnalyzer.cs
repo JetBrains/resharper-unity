@@ -4,10 +4,9 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.CSharp.Util.Literals;
 using JetBrains.ReSharper.Psi.Tree;
+using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -19,71 +18,73 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
         }
 
-        protected override void Analyze(IInvocationExpression invocationExpression, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
+        protected override void Analyze(IInvocationExpression invocationExpression, ElementProblemAnalyzerData data,
+            IHighlightingConsumer consumer)
         {
-            if (IsSceneManagerLoadScene(invocationExpression.InvocationExpressionReference))
+            var argument = GetSceneNameArgument(invocationExpression);
+
+            var literal = argument?.Value as ICSharpLiteralExpression;
+            if (literal == null)
+                return;
+            
+            if (IsSceneManagerSceneRelatedMethod(invocationExpression.InvocationExpressionReference))
             {
-                var firstArgument = invocationExpression.ArgumentList.Arguments.FirstOrDefault();
-                if (firstArgument == null) 
+                var cache = invocationExpression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
+                if (cache == null)
                     return;
-
-                if (firstArgument.Value is ICSharpLiteralExpression literalExpression)
+                
+                var sceneName = GetScenePathFromArgument(literal);
+                if (sceneName != null)
                 {
-                    if (literalExpression.Literal.IsAnyStringLiteral())
+                    // check build settings warnings
+                    if (!cache.IsScenePresentedAtEditorBuildSettings(sceneName,
+                        out var ambiguousDefinition))
                     {
-                        var cache = invocationExpression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
-                        if (cache == null)
-                            return;
-                        if (!cache.IsScenePresentedAtEditorBuildSettings(literalExpression.ConstantValue.Value as string,
-                            out var ambiguousDefention))
+                        if (cache.IsSceneDisabledAtEditorBuildSettings(sceneName))
                         {
-                            consumer.AddHighlighting(new LoadSceneUnknownSceneNameWarning(firstArgument));
+                            consumer.AddHighlighting(new LoadSceneDisabledSceneNameWarning(argument, sceneName));
                         }
+                        else if (cache.IsSceneExists(sceneName))
+                        {
+                            consumer.AddHighlighting(
+                                new LoadSceneUnknownSceneNameWarning(argument, sceneName));
+                        } else
+                        {
+                            consumer.AddHighlighting(new LoadSceneUnexistingSceneNameWarning(argument));
+                        }
+                    }
 
-                        if (ambiguousDefention)
-                        {
-                            consumer.AddHighlighting(new LoadSceneAmbiguousSceneNameWarning(firstArgument));
-                        }
-                    } else if (literalExpression.ConstantValue.IsInteger())
+                    if (ambiguousDefinition)
                     {
-                        var value = (int) literalExpression.ConstantValue.Value;
-                        var cache = invocationExpression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
-                        if (cache == null)
-                            return;
-
-                        if (value >= cache.SceneCount)
-                        {
-                            consumer.AddHighlighting(new LoadSceneWrongIndexWarning(firstArgument));
-                        }
+                        consumer.AddHighlighting(
+                            new LoadSceneAmbiguousSceneNameWarning(argument, sceneName));
+                    } 
+                } else if (literal.ConstantValue.IsInteger())
+                {
+                    var value = (int) literal.ConstantValue.Value;
+                    if (value >= cache.SceneCount)
+                    {
+                        consumer.AddHighlighting(new LoadSceneWrongIndexWarning(argument));
                     }
                 }
             }
-        }
 
-        public static bool IsSceneManagerLoadScene(IInvocationExpressionReference reference)
-        {
-            var result = reference.Resolve();
-            if (IsSceneManagerLoadScene(result.DeclaredElement as IMethod))
-                return true;
-            
-            foreach (var candidate in result.Result.Candidates)
+
+            if (IsEditorSceneManagerSceneRelatedMethod(invocationExpression.InvocationExpressionReference))
             {
-                if (IsSceneManagerLoadScene(candidate as IMethod))
-                    return true;
+                var cache = invocationExpression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
+                if (cache == null)
+                    return;
+                
+                var sceneName = GetScenePathFromArgument(literal);
+                if (sceneName != null)
+                {
+                    if (!cache.IsSceneExists(sceneName))
+                    {
+                        consumer.AddHighlighting(new LoadSceneUnexistingSceneNameWarning(argument));
+                    } 
+                }
             }
-
-            return false;
-        }
-
-        private static bool IsSceneManagerLoadScene(IMethod method)
-        {
-            if (method != null && method.ShortName.Equals("LoadScene") &&
-                method.GetContainingType()?.GetClrName().Equals(KnownTypes.SceneManager) == true)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

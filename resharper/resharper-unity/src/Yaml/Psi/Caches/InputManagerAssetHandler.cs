@@ -11,9 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return sourceFile.Name.Equals("InputManager.asset");
         }
 
-        public ProjectSettingsCacheItem Build(IPsiSourceFile sourceFile)
+        public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
         {
-            return null;
         }
     }
 }

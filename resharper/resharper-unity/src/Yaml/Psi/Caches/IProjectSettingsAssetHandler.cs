@@ -8,6 +8,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     public interface IProjectSettingsAssetHandler
     {
         bool IsApplicable(IPsiSourceFile sourceFile);
-        ProjectSettingsCacheItem Build(IPsiSourceFile sourceFile);
+        void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem);
     }
 }

@@ -31,6 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName Transform = new ClrTypeName("UnityEngine.Transform");
         public static readonly IClrTypeName Debug = new ClrTypeName("UnityEngine.Debug");
         public static readonly IClrTypeName SceneManager = new ClrTypeName("UnityEngine.SceneManagement.SceneManager");
+        public static readonly IClrTypeName EditorSceneManager = new ClrTypeName("UnityEditor.SceneManagement.EditorSceneManager");
 
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");
