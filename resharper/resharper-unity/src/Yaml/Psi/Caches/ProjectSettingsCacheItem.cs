@@ -1,69 +1,104 @@
-using JetBrains.Collections;
+using System.Collections.Generic;
 using JetBrains.Serialization;
-using JetBrains.Util.Collections;
+using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     public class ProjectSettingsCacheItem
     {
-        public readonly CountingSet<string> SceneNames;
-        public readonly CountingSet<string> Inputs;
-        public readonly CountingSet<string> Tags;
-        public readonly CountingSet<string> Layers;
+        public class SceneData
+        {
+            public readonly JetHashSet<string> SceneNamesFromBuildSettings;
+            public readonly JetHashSet<string> DisabledSceneNamesFromBuildSettings;
+            public readonly JetHashSet<string> SceneNames;
+            
+
+            public SceneData(JetHashSet<string> sceneNamesFromBuildSettings = null,
+                JetHashSet<string> disabledSceneNamesFromBuildSettings = null,
+                JetHashSet<string> sceneNames = null)
+            {
+                SceneNamesFromBuildSettings = sceneNamesFromBuildSettings ?? new JetHashSet<string>();
+                DisabledSceneNamesFromBuildSettings = disabledSceneNamesFromBuildSettings ?? new JetHashSet<string>();
+                SceneNames = sceneNames ?? new JetHashSet<string>();
+            }
+
+            public void Write(UnsafeWriter writer)
+            {
+                WriteSet(writer, SceneNamesFromBuildSettings);
+                WriteSet(writer, DisabledSceneNamesFromBuildSettings);
+                WriteSet(writer, SceneNames);
+            }
+            
+            public static SceneData ReadFrom(UnsafeReader reader)
+            {
+                return new SceneData(ReadSet(reader), ReadSet(reader),
+                    ReadSet(reader));
+            }
+
+            public bool IsEmpty()
+            {
+                return SceneNames.IsEmpty() && DisabledSceneNamesFromBuildSettings.IsEmpty() &&
+                       SceneNamesFromBuildSettings.IsEmpty();
+            }
+        }
+
+        public readonly SceneData Scenes;
+        public readonly JetHashSet<string> Inputs;
+        public readonly JetHashSet<string> Tags;
+        public readonly JetHashSet<string> Layers;
 
         public static readonly IUnsafeMarshaller<ProjectSettingsCacheItem> Marshaller =
             new UniversalMarshaller<ProjectSettingsCacheItem>(Read, Write);
 
-        public ProjectSettingsCacheItem(CountingSet<string> sceneNames, CountingSet<string> inputs,
-            CountingSet<string> tags, CountingSet<string> layers)
+        public ProjectSettingsCacheItem(SceneData sceneData = null,
+            JetHashSet<string> inputs = null,JetHashSet<string> tags = null, JetHashSet<string> layers = null)
         {
-            SceneNames = sceneNames;
-            Inputs = inputs;
-            Tags = tags;
-            Layers = layers;
-        }
-
-        public ProjectSettingsCacheItem() : this(new CountingSet<string>(), new CountingSet<string>(),
-            new CountingSet<string>(), new CountingSet<string>() )
-        {
-            
+            Scenes = sceneData ?? new SceneData();
+            Inputs = inputs ?? new JetHashSet<string>();
+            Tags = tags ?? new JetHashSet<string>();
+            Layers = layers ?? new JetHashSet<string>();
         }
 
         private static ProjectSettingsCacheItem Read(UnsafeReader reader)
         {
-            return new ProjectSettingsCacheItem(ReadCountingSet(reader),
-                ReadCountingSet(reader), ReadCountingSet(reader), ReadCountingSet(reader));
+            return new ProjectSettingsCacheItem(SceneData.ReadFrom(reader),
+                ReadSet(reader), ReadSet(reader), ReadSet(reader));
         }
 
         private static void Write(UnsafeWriter writer, ProjectSettingsCacheItem value)
         {
-            WriteCountingSet(writer, value.SceneNames);
-            WriteCountingSet(writer, value.Inputs);
-            WriteCountingSet(writer, value.Tags);
-            WriteCountingSet(writer, value.Layers);
+            value.Scenes.Write(writer);
+            WriteSet(writer, value.Inputs);
+            WriteSet(writer, value.Tags);
+            WriteSet(writer, value.Layers);
         }
 
-        private static void WriteCountingSet(UnsafeWriter writer, CountingSet<string> set)
+        private static void WriteSet(UnsafeWriter writer, JetHashSet<string> list)
         {
-            writer.Write(set.Count);
-            foreach (var (value, count) in set)
+            writer.Write(list.Count);
+            foreach (var value in list)
             {
                 writer.Write(value);
-                writer.Write(count);
             }
         }
 
-        private static CountingSet<string> ReadCountingSet(UnsafeReader reader)
+        private static JetHashSet<string> ReadSet(UnsafeReader reader)
         {
             var count = reader.ReadInt32();
-            var set = new CountingSet<string>();
+            var list = new JetHashSet<string>();
             for (int i = 0; i < count; i++)
             {
-                set.Add(reader.ReadString(), reader.ReadInt32());
+                list.Add(reader.ReadString());
             }
 
-            return set;
+            return list;
+        }
+
+        public bool IsEmpty()
+        {
+            return Scenes.IsEmpty() &&
+                   Tags.IsEmpty() && Inputs.IsEmpty() && Layers.IsEmpty();
         }
     }
 }
