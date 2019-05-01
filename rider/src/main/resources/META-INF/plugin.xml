@@ -239,6 +239,7 @@
 <em>Added:</em>
 <ul>
   <li>Add performance profiling for Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1073">#1073</a>)</li>
+  <li>Add rename of methods and properties used in text base assets (<a href="https://github.com/JetBrains/resharper-unity/pull/1140">#1140</a>)</li>
   <li>Add inspection and quick fix to avoid inefficient order of multiplication operations (<a href="https://github.com/JetBrains/resharper-unity/issues/1031">#1031</a>)</li>
   <li>Add warning for string literal use in <tt>Animator.ResetTrigger</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-24421">RIDER-24421</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1035">#1035</a>)</li>
   <li>Add support for marking ECS types and fields as "in use" (<a href="https://github.com/JetBrains/resharper-unity/issues/1010">#1010</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1036">#1036</a>)</li>
@@ -266,6 +267,7 @@
   <li>No longer creates a <tt>.sln.DotSettings.user</tt> file when YAML size heuristic is applied (<a href="https://github.com/JetBrains/resharper-unity/pull/1087">#1087</a>)</li>
   <li>Treat <tt>AddComponent(Type)</tt> as an expensive operation (<a href="https://github.com/JetBrains/resharper-unity/issues/1044">#1044</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
   <li>Include Unity YAML files in Solution Wide Error Analysis (<a href="https://github.com/JetBrains/resharper-unity/pull/1118">#1118</a>)</li>
+  <li>Updated API to 2019.2.0a9 (<a href="https://github.com/JetBrains/resharper-unity/issues/1055">#1055</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1056">#1056</a>)</li>
   <li>Refresh assets before running unit tests (<a href="https://github.com/JetBrains/resharper-unity/issues/1070">#1070</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1078">#1078</a>)</li>
   <li>Run configuration will start Unity if not already running (<a href="https://github.com/JetBrains/resharper-unity/pull/1086">#1086</a>)</li>
   <li>Improve navigation from log viewer to code (<a href="https://github.com/JetBrains/resharper-unity/issues/367">#367</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1071">#1071</a>)</li>
@@ -294,6 +296,10 @@
   <li>Fix spelling mistake in issue suppression comment (<a href="https://github.com/JetBrains/resharper-unity/issues/1083">#1083</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1109">#1109</a>)</li>
   <li>Fix validation exceptions (<a href="https://youtrack.jetbrains.com/issue/RIDER-26102">RIDER-26102</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-26109">RIDER-26109</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-26103">RIDER-26103</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1108">#1108</a>)</li>
   <li>Fix exception when project contains empty YAML file (<a href="https://youtrack.jetbrains.com/issue/RIDER-25787">RIDER-25787</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1124">#1124</a>)</li>
+  <li>Fix parse error in YAML files with multiline text containing single quotes (<a href="https://youtrack.jetbrains.com./issue/RIDER-26849">RIDER-26849</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1145">#1145</a>)</li>
+  <li>Fix parse error in ShaderLab attribute values (<a href="https://youtrack.jetbains.com/issue/RIDER-26909">RIDER-26909</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/857">#857</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1149">#1149</a>)</li>
+  <li>Fix invalid references to scripts or event handlers in read only/referenced packages (<a href="https://youtrack.jetbrains.com/issue/RIDER-27009">RIDER-27009</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1153">#1153</a>)</li>
+  <li>Fix rename of <tt>MonoBehaviour</tt> based classes being blocked by reported conflicts (<a href="https://youtrack.jetbrains.com/issue/RIDER-27053">RIDER-27053</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1153">#1153</a>)</li>
   <li>Correctly handle file/git based packages in Unity Explorer (<a href="https://youtrack.jetbrains.com/issue/RIDER-25971">RIDER-25971</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1099">#1099</a>)</li>
   <li>Fix exception causing Unity Explorer to disappear (<a href="https://youtrack.jetbrains.com/issue/RIDER-25760">RIDER-25760</a>, <a href="https://github.com/JetBrains/resharper-unity/issue/1095">#1095</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1096">#1096</a>)</li>
   <li>Fix exception showing auto-save notification (<a href="https://youtrack.jetbrains.com/issue/RIDER-25830">RIDER-25830</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1092">#1092</a>)</li>

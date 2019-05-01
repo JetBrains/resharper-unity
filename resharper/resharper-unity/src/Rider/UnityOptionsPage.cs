@@ -4,6 +4,7 @@ using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Options;
+using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions.ViewModel;
 using JetBrains.DataFlow;
 using JetBrains.Diagnostics;
@@ -19,7 +20,6 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
-    // TODO: Create a R# options page, with some of these settings
     [OptionsPage(PID, Name, typeof(LogoThemedIcons.UnityLogo), Sequence = 0.01,
         ParentId = CodeEditingPage.PID)]
     public class UnityOptionsPage : OptionsPageBase
@@ -31,42 +31,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private static readonly Expression<Func<CSharpNamingSettings, IIndexedEntry<Guid, ClrUserDefinedNamingRule>>>
             ourUserRulesAccessor = s => s.UserRules;
 
+        private static readonly Expression<Func<UnitySettings, bool>> ourEnablePerformanceHighlightingAccessor =
+            s => s.EnablePerformanceCriticalCodeHighlighting;
+
         public UnityOptionsPage(Lifetime lifetime, OptionsSettingsSmartContext settingsStore,
                                 RunsProducts.ProductConfigurations productConfigurations)
             : base(lifetime, settingsStore)
         {
             Header("General");
-
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin,
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
-            CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
-                "Parse text based asset files for implicit script usages");
 
-            // TODO: Add to R# options page
             Header("C#");
-            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
+            CheckBox(ourEnablePerformanceHighlightingAccessor,
                 "Enable performance analysis in frequently called code");
-            
+
             BeginSection();
             {
-                AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode, "Show indicator for performance critical code:",
+                var option = WithIndent(AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode,
+                    "Highlight performance critical contexts:",
                     new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
-                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method only"),
                     new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
-                );
-                CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
-                    "Show icons for performance critical code");
+                ));
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
+                    enable => enable);
+                option = WithIndent(CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
+                    "Show icons for frequently called methods"));
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
+                    enable => enable);
             }
             EndSection();
-            
+
             AddComboOption((UnitySettings s) => s.GutterIconMode, "Show gutter icons for implicit script usages:",
                 new RadioOptionPoint(GutterIconMode.Always, "Always"),
-                new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Vision are disabled"),
+                new RadioOptionPoint(GutterIconMode.CodeInsightDisabled, "When Code Vision is disabled"),
                 new RadioOptionPoint(GutterIconMode.None, "Never")
             );
 
             AddNamingSection(lifetime, settingsStore);
+
+            Header("Text based assets");
+            CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
+                "Parse text based asset files for script and event handler usages");
 
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
@@ -76,7 +84,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 Header("Internal");
 
-                // TODO: Add to R# options page
                 CheckBox((UnitySettings s) => s.EnableCgErrorHighlighting,
                     "Parse Cg files for syntax errors (requires internal mode, and re-opening solution)");
             }

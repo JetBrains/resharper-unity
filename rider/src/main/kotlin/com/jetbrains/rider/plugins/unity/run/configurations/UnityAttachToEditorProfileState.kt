@@ -7,6 +7,7 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseOnce
@@ -14,6 +15,7 @@ import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
+import com.jetbrains.rider.plugins.unity.run.attach.UnityProcessListener
 import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
@@ -67,9 +69,18 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 val actualPid = OSProcessUtil.getProcessID(process)
                 remoteConfiguration.pid = actualPid
                 remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
-                application.invokeLater {
-                    super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
-                }
+
+                val listenerLifetimeDefinition = lifetime.createNested()
+
+                UnityProcessListener({
+                    if (it.port == remoteConfiguration.port) {
+                        UIUtil.invokeLaterIfNeeded {
+                            super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
+                            listenerLifetimeDefinition.terminate()
+                        }
+
+                    }
+                }, {}, listenerLifetimeDefinition.lifetime)
             }
             catch (e: Exception) {
                 result.setError(e)

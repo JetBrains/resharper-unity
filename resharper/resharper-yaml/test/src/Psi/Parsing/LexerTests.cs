@@ -131,6 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
     [TestCase("SingleQuotedCharacters")]
     [TestCase("SingleQuotedImplicitKeys")]
     [TestCase("SingleQuotedLines")]
+    [TestCase("SingleQuotedLinesWithSingleQuotedCharacters")]
 
     // 7.3.3 Plain style
     [TestCase("PlainCharacters")]

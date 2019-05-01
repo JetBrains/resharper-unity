@@ -35,7 +35,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
-        if (RiderPathExist(alreadySetPath))
+        if (RiderPathExist(alreadySetPath, myPluginSettings.OperatingSystemFamilyRider))
         {
           if (!allFoundPaths.Any() || allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
           {
@@ -56,7 +56,7 @@ namespace JetBrains.Rider.Unity.Editor
       return myPluginSettings.RiderPath;
     }
 
-    private bool RiderPathExist(string path)
+    internal static bool RiderPathExist(string path, OperatingSystemFamilyRider operatingSystemFamilyRider)
     {
       if (string.IsNullOrEmpty(path))
         return false;
@@ -65,7 +65,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (!fileInfo.Name.ToLower().Contains("rider"))
         return false;
       var directoryInfo = new DirectoryInfo(path);
-      var isMac = myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX;
+      var isMac = operatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX;
       return fileInfo.Exists || (isMac && directoryInfo.Exists);
     }
 

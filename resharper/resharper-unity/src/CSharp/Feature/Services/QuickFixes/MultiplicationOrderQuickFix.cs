@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
@@ -45,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var left = expression.LeftOperand.GetOperandThroughParenthesis();
             var right = expression.RightOperand.GetOperandThroughParenthesis();
 
-            if (left is IMultiplicativeExpression leftM)
+            if (left is IMultiplicativeExpression leftM && leftM.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK)
             {
                 result.AddRange(GetAllOperands(leftM));
             }
@@ -54,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 result.Add(left);
             }
             
-            if (right is IMultiplicativeExpression rightM)
+            if (right is IMultiplicativeExpression rightM && rightM.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK)
             {
                 result.AddRange(GetAllOperands(rightM));
             }

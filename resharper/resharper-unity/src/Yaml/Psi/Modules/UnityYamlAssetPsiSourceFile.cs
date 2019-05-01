@@ -10,7 +10,11 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
-    public class UnityYamlAssetPsiSourceFile : PsiSourceFileFromPath, IExternalPsiSourceFile, IPsiProjectFile
+    // ReSharper doesn't want us to use project files. See UnityExternalFilesModuleProcessor
+    public class UnityYamlAssetPsiSourceFile : PsiSourceFileFromPath, IExternalPsiSourceFile
+#if RIDER
+        , IPsiProjectFile
+#endif
     {
         public UnityYamlAssetPsiSourceFile([NotNull] IProjectFile projectFile,
                                            [NotNull] IProjectFileExtensions projectFileExtensions,
@@ -22,9 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             : base(projectFileExtensions, projectFileTypeCoordinator, module, path, JetFunc<PsiSourceFileFromPath>.True,
                 propertiesFactory, documentManager, resolveContext)
         {
+#if RIDER
             ProjectFile = projectFile;
+#endif
         }
 
+#if RIDER
         public IProjectFile ProjectFile { get; }
+#endif
     }
 }

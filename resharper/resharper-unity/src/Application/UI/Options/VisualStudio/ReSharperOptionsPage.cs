@@ -1,7 +1,10 @@
+using System;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.UI.Options;
+using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions.ViewModel;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
@@ -10,8 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
 {
-    // TODO: Merge with Rider's page?
-    // That would leave us with #ifdef soup...
+    // This is getting very similar to Rider's page
     [OptionsPage(PID, Name, typeof(LogoThemedIcons.UnityLogo), ParentId = CodeEditingPage.PID)]
     public class ReSharperOptionsPage : OptionsPageBase
     {
@@ -19,26 +21,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
         public const string PID = "UnityPluginSettings";
         public const string Name = "Unity Engine";
 
+        private static readonly Expression<Func<UnitySettings, bool>> ourEnablePerformanceHighlightingAccessor =
+            s => s.EnablePerformanceCriticalCodeHighlighting;
+
         public ReSharperOptionsPage(Lifetime lifetime, [NotNull] OptionsSettingsSmartContext settingsStore,
-            RunsProducts.ProductConfigurations productConfigurations)
+                                    RunsProducts.ProductConfigurations productConfigurations)
             : base(lifetime, settingsStore)
         {
-            Header("General");
-
-            CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
-                "Parse text based asset files for implicit script usages");
-
+            Header("C#");
             CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
                 "Enable performance analysis in frequently called code");
-            
+
             BeginSection();
             {
-                AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode, "Show indicator for performance critical code:",
+                var option = WithIndent(AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode,
+                    "Highlight performance critical contexts:",
                     new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method only"),
                     new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
-                );
-                CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
-                    "Show icons for performance critical code");
+                ));
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
+                    enable => enable);
+                option = WithIndent(CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
+                    "Show icons for frequently called methods"));
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
+                    enable => enable);
             }
             EndSection();
 
@@ -46,7 +53,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             // Vision, we'll show the items, or if the user installs Rider, the copied settings will still be useful
             AddBoolOption((UnitySettings s) => s.GutterIconMode,
                 GutterIconMode.CodeInsightDisabled, GutterIconMode.None,
-                "Show gutter icons for implicit script usages:");
+                "Show gutter icons for implicit script usages");
+
+            Header("Text based assets");
+            CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
+                "Parse text based asset files for implicit script usages");
 
             if (productConfigurations.IsInternalMode())
             {

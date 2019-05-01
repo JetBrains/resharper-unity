@@ -209,26 +209,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myRootPaths.Add(directory);
         }
 
+        // We add scenes, assets and prefabs to the Misc Files project in Rider. This is so that:
+        // * The Find Usages results list expects project files and throws if any occurrence is a project file
+        // * Only project files are included in SWEA, and we want that for the usage count Code Vision metric
+        // Unfortunately, ReSharper keeps the Misc Files project in sync with Visual Studio's idea of the Misc Files
+        // project (i.e. files open in the editor that aren't part of a project). This means ReSharper will remove our
+        // files from Misc Files and we end up with invalid PSI source files and loads of exceptions.
+        // Fortunately, ReSharper doesn't require project files for find usages or rename, and doesn't have Code Vision,
+        // so we don't need to worry about a usage count (usage suppression is already handled in the suppressor). So
+        // for ReSharper, we just treat all of our files as PSI source files
         private void AddExternalFiles(ExternalFiles externalFiles)
         {
             var builder = new PsiModuleChangeBuilder();
-            AddExternalMetaFiles(externalFiles, builder);
+            AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
+
+#if RESHARPER
+            AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
+#endif
             FlushChanges(builder);
 
-            AddExternalAssetFiles(externalFiles);
+#if RIDER
+            AddExternalProjectFiles(externalFiles.AssetFiles);
+#endif
 
             // We should only start watching for file system changes after adding the files we know about
             foreach (var directory in externalFiles.Directories)
                 myFileSystemTracker.AdviseDirectoryChanges(myLifetime, directory, true, OnProjectDirectoryChange);
         }
 
-        private void AddExternalMetaFiles(ExternalFiles externalFiles, PsiModuleChangeBuilder builder)
+        private void AddExternalPsiSourceFiles(List<DirectoryEntryData> files, PsiModuleChangeBuilder builder)
         {
-            foreach (var directoryEntry in externalFiles.MetaFiles)
-                AddMetaPsiSourceFile(builder, directoryEntry.GetAbsolutePath());
+            foreach (var directoryEntry in files)
+                AddExternalPsiSourceFile(builder, directoryEntry.GetAbsolutePath());
         }
 
-        private void AddMetaPsiSourceFile(PsiModuleChangeBuilder builder, FileSystemPath path)
+        private void AddExternalPsiSourceFile(PsiModuleChangeBuilder builder, FileSystemPath path)
         {
             Assertion.AssertNotNull(myModuleFactory.PsiModule, "myModuleFactory.PsiModule != null");
             if (myModuleFactory.PsiModule.ContainsPath(path))
@@ -238,16 +253,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
         }
 
-        private void AddExternalAssetFiles(ExternalFiles externalFiles)
+#if RIDER
+        private void AddExternalProjectFiles(List<DirectoryEntryData> files)
         {
-            if (externalFiles.AssetFiles.Count == 0)
+            if (files.Count == 0)
                 return;
 
-            var files = externalFiles.AssetFiles.Select(e => e.GetAbsolutePath()).ToList();
-            AddAssetProjectFiles(files);
+            var paths = files.Select(e => e.GetAbsolutePath()).ToList();
+            AddExternalProjectFiles(paths);
         }
+#endif
 
-        private void AddAssetProjectFiles(List<FileSystemPath> paths)
+        private void AddExternalProjectFiles(List<FileSystemPath> paths)
         {
             if (paths.Count == 0)
                 return;
@@ -258,11 +275,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             {
                 foreach (var path in paths)
                 {
-                    var projectFile = AddAssetProjectFile(path);
+                    var projectFile = AddExternalProjectFile(path);
                     if (projectFile != null)
                         projectFiles.Add(projectFile);
                 }
-
             }
 
             AddProjectFilesToSwea(projectFiles);
@@ -272,7 +288,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         // automatically get an IPsiSourceFile created for it, and attached to our module via
         // UnityMiscFilesProjectPsiModuleProvider
         [MustUseReturnValue, CanBeNull]
-        private IProjectFile AddAssetProjectFile(FileSystemPath path)
+        private IProjectFile AddExternalProjectFile(FileSystemPath path)
         {
             if (mySolution.FindProjectItemsByLocation(path).Count > 0)
                 return null;
@@ -370,7 +386,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     var builder = new PsiModuleChangeBuilder();
                     var projectFilesToAdd = new List<FileSystemPath>();
                     ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
-                    AddAssetProjectFiles(projectFilesToAdd);
+                    AddExternalProjectFiles(projectFilesToAdd);
                     FlushChanges(builder);
                 });
         }
@@ -392,7 +408,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                             projectFilesToAdd.Add(delta.NewPath);
                     }
                     else if (delta.NewPath.IsInterestingMeta())
-                        AddMetaPsiSourceFile(builder, delta.NewPath);
+                        AddExternalPsiSourceFile(builder, delta.NewPath);
                     break;
 
                 case FileSystemChangeType.DELETED:
