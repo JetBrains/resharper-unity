@@ -238,7 +238,7 @@ namespace JetBrains.Rider.Unity.Editor
           catch (Exception e)
           {
             // do not write to Debug.Log, just log it.
-            Log.GetLog("RiderPathLocatorStatic").Warn(e, $"Failed to get RiderPath from {channelDir}");
+            Logger.Warn($"Failed to get RiderPath from {channelDir}", e);
           }
 
           return new string[0];
@@ -282,7 +282,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
         catch (Exception)
         {
-          Log.GetLog("RiderPathLocatorStatic").Warn($"Failed to get latest build from json {json}");
+          Logger.Warn($"Failed to get latest build from json {json}");
         }
         return null;
       }
@@ -323,7 +323,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
         catch (Exception)
         {
-          Log.GetLog("RiderPathLocatorStatic").Warn($"Failed to get latest build from json {json}");
+          Logger.Warn($"Failed to get latest build from json {json}");
         }
         return null;
       }
@@ -358,6 +358,22 @@ namespace JetBrains.Rider.Unity.Editor
           presentation += " (JetBrains Toolbox)";
 
         Presentation = presentation;
+      }
+    }
+
+    private static class Logger
+    {
+      internal static void Warn(string message, Exception e = null)
+      {
+#if RIDER_EDITOR_PLUGIN // can't be used in com.unity.ide.rider
+        Log.GetLog(typeof(RiderPathLocator).Name).Warn(message);
+        if (e != null) 
+          Log.GetLog(typeof(RiderPathLocator).Name).Warn(e);
+#else
+        Debug.LogError(message);
+        if (e != null)
+          Debug.LogException(e);
+#endif
       }
     }
   }
