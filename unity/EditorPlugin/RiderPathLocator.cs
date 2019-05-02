@@ -93,7 +93,7 @@ namespace JetBrains.Rider.Unity.Editor
       var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
         .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true)).ToList();
 
-      // /home/ivan/.local/share/applications/jetbrains-rider.desktop
+      //$Home/.local/share/applications/jetbrains-rider.desktop
       var shortcut = new FileInfo(Path.Combine(home, @".local/share/applications/jetbrains-rider.desktop"));
 
       if (shortcut.Exists)
