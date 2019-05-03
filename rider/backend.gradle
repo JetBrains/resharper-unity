@@ -156,8 +156,7 @@ task packReSharperPlugin(type: nugetPack.class) {
 
 nunit {
     dependsOn buildReSharperHostPlugin
-    nunitVersion "2.6.4"
-    framework "net-4.6.1"
+    nunitVersion "3.9.0"    // 1.14 of this nunit plugin gets the URL for 3.10 wrong
     shadowCopy false
     outputs.upToDateWhen { false } // we should always run unit tests when RunTests are true
 
