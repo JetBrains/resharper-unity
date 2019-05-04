@@ -853,7 +853,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IPreprocessBuild" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IPreprocessBuild.html" minimumVersion="5.6">
     <message name="OnPreprocessBuild" static="False" description="Implement this function to receive a callback before the build is started." path="Documentation/en/ScriptReference/Build.IPreprocessBuild.OnPreprocessBuild.html">
 	  <parameters>
@@ -863,7 +862,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IPostprocessBuild" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IPostprocessBuild.html" minimumVersion="5.6">
     <message name="OnPostprocessBuild" static="False" description="Implement this function to receive a callback after the build is complete." path="Documentation/en/ScriptReference/Build.IPostprocessBuild.OnPostprocessBuild.html">
 	  <parameters>
@@ -873,7 +871,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IProcessScene" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IProcessScene.html" minimumVersion="5.6">
     <message name="OnPostprocessBuild" static="False" description="Implement this function to receive a callback for each Scene during the build." path="Documentation/en/ScriptReference/Build.IProcessScene.OnProcessScene.html">
 	  <parameters>
@@ -882,7 +879,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IProcessSceneWithReport" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IProcessSceneWithReport.html" minimumVersion="5.6">
     <message name="OnPostprocessBuild" static="False" description="Implement this function to receive a callback for each Scene during the build." path="Documentation/en/ScriptReference/Build.IProcessSceneWithReport.OnProcessScene.html">
 	  <parameters>
@@ -892,7 +888,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IActiveBuildTargetChanged" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IActiveBuildTargetChanged.html" minimumVersion="2017.1">
     <message name="OnActiveBuildTargetChanged" static="False" description="Implement this function to receive a callback for each Scene during the build." path="Documentation/en/ScriptReference/Build.IActiveBuildTargetChanged.OnActiveBuildTargetChanged.html">
 	  <parameters>
@@ -902,7 +897,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IFilterBuildAssemblies" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IFilterBuildAssemblies.html" minimumVersion="2018.2">
     <message name="OnFilterAssemblies" static="False" description="Will be called after building script assemblies, but makes it possible to filter away unwanted scripts to be included." path="Documentation/en/ScriptReference/Build.IFilterBuildAssemblies.OnFilterAssemblies.html">
 	  <parameters>
@@ -912,7 +906,6 @@
       <returns type="System.String" array="True" />
     </message>
   </type>
-  
   <type kind="class" name="IPostBuildPlayerScriptDLLs" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IPostBuildPlayerScriptDLLs.html" minimumVersion="2018.2">
     <message name="OnPostprocessBuild" static="False" description="Implement this interface to receive a callback just after the player scripts have been compiled." path="Documentation/en/ScriptReference/Build.IPostBuildPlayerScriptDLLs.OnPostBuildPlayerScriptDLLs.html">
 	  <parameters>
@@ -921,7 +914,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IPostprocessBuildWithReport" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IPostprocessBuildWithReport.html" minimumVersion="2018.1">
     <message name="OnPostprocessBuild" static="False" description="Implement this interface to receive a callback just after the player scripts have been compiled." path="Documentation/en/ScriptReference/Build.IPostprocessBuildWithReport.OnPostprocessBuild.html">
 	  <parameters>
@@ -930,7 +922,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IPreprocessBuildWithReport" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IPreprocessBuildWithReport.html" minimumVersion="2018.21">
     <message name="OnPreprocessBuild" static="False" description="Implement this interface to receive a callback just after the player scripts have been compiled." path="Documentation/en/ScriptReference/Build.IPreprocessBuildWithReport.OnPreprocessBuild.html">
 	  <parameters>
@@ -939,7 +930,6 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  
   <type kind="class" name="IPreprocessShaders" ns="UnityEditor.Build" path="Documentation/en/ScriptReference/Build.IPreprocessShaders.html" minimumVersion="2018.2">
     <message name="OnProcessShader" static="False" description="Implement this interface to receive a callback just after the player scripts have been compiled." path="Documentation/en/ScriptReference/Build.IPreprocessShaders.OnProcessShader.html">
 	  <parameters>
