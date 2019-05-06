@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.Util;
 using JetBrains.Util.Collections;
 using JetBrains.Util.Extension;
 using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
@@ -29,6 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             : base(lifetime, persistentIndexManager, ProjectSettingsCacheItem.Marshaller)
         {
             myProjectSettingsAssetHandlers = projectSettingsAssetHandlers;
+            
+            myLocalCache.Tags.AddItems("Untagged", "Respawn", "Finish", "EditorOnly", "MainCamera", "Player", "GameController");
         }
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)

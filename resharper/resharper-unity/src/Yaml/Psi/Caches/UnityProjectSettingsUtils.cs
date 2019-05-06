@@ -37,24 +37,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         
         public static INode GetSceneCollection([NotNull] IYamlFile file)
         {
+            return GetCollection(file, "EditorBuildSettings", "m_Scenes");
+        }
+        
+        public static INode GetCollection([NotNull] IYamlFile file, string documentName, string name)
+        {
             var blockMappingNode = file.Documents[0].Body.BlockNode as IBlockMappingNode;
             Assertion.Assert(blockMappingNode != null, "blockMappingNode != null");
 
-            return GetSceneCollection(blockMappingNode);
+            return GetCollection(blockMappingNode, documentName, name);
         }
         
         public static INode GetSceneCollection([NotNull] IBlockMappingNode blockMappingNode)
         {
-            var editorBuildSettingEntry = blockMappingNode.Entries.FirstOrDefault(
-                t => t.Key.GetText().Equals("EditorBuildSettings"))?.Value as IBlockMappingNode;
-            Assertion.Assert(editorBuildSettingEntry != null, "editorBuildSettingEntry != null");
-
-            var scenes = editorBuildSettingEntry.Entries.FirstOrDefault(t => t.Key.GetText().Equals("m_Scenes"))?.Value;
-            Assertion.Assert(scenes != null, "scenes != null");
-            
-            return scenes;
+            return GetCollection(blockMappingNode, "EditorBuildSettings", "m_Scenes");
         }
 
+        public static INode GetCollection([NotNull] IBlockMappingNode blockMappingNode, string documentName, string name)
+        {
+            var documentEntry = blockMappingNode.Entries.FirstOrDefault(
+                t => t.Key.GetText().Equals(documentName))?.Value as IBlockMappingNode;
+            Assertion.Assert(documentEntry != null, "documentEntry != null");
+
+            var collection = documentEntry.Entries.FirstOrDefault(t => t.Key.GetText().Equals(name))?.Value;
+            Assertion.Assert(collection != null, "collection != null");
+            
+            return collection;
+        }
+        
         public static string GetUnityScenePathRepresentation(string scenePath)
         {
             return scenePath.RemoveStart("Assets/").RemoveEnd(UnityYamlFileExtensions.SceneFileExtensionWithDot);
