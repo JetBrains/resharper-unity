@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -149,6 +150,48 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public static IPsiSourceFile GetEditorBuildSettings([CanBeNull]UnityExternalFilesPsiModule psiModule)
         {
             return psiModule?.SourceFiles.FirstOrDefault(t => t.Name.Equals("EditorBuildSettings.asset"));
+        }
+        
+        public static bool IsLayerMaskGetMask(IInvocationExpression expr)
+        {
+            return IsSpecificMethod(expr, KnownTypes.LayerMask, "GetMask");
+        }
+
+        public static bool IsLayerMaskNameToLayer(IInvocationExpression expr)
+        {
+            return IsSpecificMethod(expr, KnownTypes.LayerMask, "NameToLayer");
+        }
+
+        public static bool IsCompareTagMethod(IInvocationExpression expr)
+        {
+            return IsSpecificMethod(expr, KnownTypes.Component, "CompareTag");
+        }
+
+        private static readonly string[] ourInputButtonNames = {"GetButtonDown", "GetButtonUp", "GetButton"}; 
+        private static readonly string[] ourInputAxisNames = {"GetAxis", "GetAxisRaw"}; 
+       
+        public static bool IsInputButtonMethod(IInvocationExpression invocationExpression)
+        {
+            return IsSpecificMethod(invocationExpression, KnownTypes.Input, ourInputButtonNames);
+        }
+        
+        public static bool IsInputAxisMethod(IInvocationExpression invocationExpression)
+        {
+            return IsSpecificMethod(invocationExpression, KnownTypes.Input, ourInputAxisNames);
+        }
+        
+        public static bool IsSpecificMethod(IInvocationExpression invocationExpression, IClrTypeName typeName, params string[] methodNames)
+        {
+            var declaredElement = invocationExpression.Reference?.Resolve().DeclaredElement as IMethod;
+            if (declaredElement == null)
+                return false;
+
+
+            if (methodNames.Any(t => t.Equals(declaredElement.ShortName)))
+            {
+                return declaredElement.GetContainingType()?.GetClrName().Equals(typeName) == true;
+            } 
+            return false;
         }
     }
 }

@@ -1,14 +1,18 @@
 ﻿using JetBrains.Annotations;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IEqualityExpression), HighlightingTypes = new[] { typeof(ExplicitTagStringComparisonWarning) })]
+    [ElementProblemAnalyzer(typeof(IEqualityExpression), 
+        HighlightingTypes = new[] { typeof(ExplicitTagStringComparisonWarning), typeof(UnknownTagWarning) })]
     public class CompareTagProblemAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
     {
         public CompareTagProblemAnalyzer(UnityApi unityApi)
@@ -37,9 +41,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var isLeftOperandTagReference = IsTagReference(leftOperand);
             var isRightOperandTagReference = IsTagReference(rightOperand);
             if (isLeftOperandTagReference || isRightOperandTagReference)
+            {
+                if (element.LeftOperand?.ConstantValue.Value is string value)
+                {
+                    CheckTag(value, element.LeftOperand, consumer);
+                } else if (element.RightOperand?.ConstantValue.Value is string rValue)
+                {
+                    CheckTag(rValue, element.RightOperand, consumer);
+                }
+                
                 consumer.AddHighlighting(new ExplicitTagStringComparisonWarning(element, isLeftOperandTagReference));
+            }
+
         }
-        
+
+        private void CheckTag(string value, ICSharpExpression expression, IHighlightingConsumer consumer)
+        {
+            var cache = expression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
+
+            if (cache == null)
+                return;
+
+            if (!cache.HasTag(value))
+            {
+                consumer.AddHighlighting(new UnknownTagWarning(expression));
+            }
+        }
+
         public static bool IsTagReference([CanBeNull] IReferenceExpression expression)
         {
             if (expression?.NameIdentifier?.Name == "tag")

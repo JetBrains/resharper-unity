@@ -244,6 +244,27 @@
           Scene is disabled in the Unity build settings.
         </Description>
       </Tag>
+
+      <Tag externalName="UnknownInputAxesWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Input name is not defined in the Input manager</Title>
+        <Description>
+          The name is not defined in the Input manager. The call is likely to fail at runtime.
+        </Description>
+      </Tag>
+
+      <Tag externalName="UnknownTagWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Tag is not defined in the 'Tags &amp; Layers'</Title>
+        <Description>
+          The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'.
+        </Description>
+      </Tag>
+
+      <Tag externalName="UnknownLayerWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Layer is not defined in the 'Tags &amp; Layers'</Title>
+        <Description>
+          The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime.
+        </Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
 
@@ -265,6 +286,28 @@
          for this highlight. Only used when the file is processed in QUICKFIX mode (default is
          to use ERROR mode)
        -->
+
+  <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
+    <Parameter type="ITreeNode" name="node" />
+    <Message value="The name is not defined in the Input manager. The call is likely to fail at runtime." />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="UnknownTag" configurableSeverity="Unity.UnknownTag">
+    <Parameter type="ITreeNode" name="node" />
+    <Message value="The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'." />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="UnknownLayer" configurableSeverity="Unity.UnknownLayer">
+    <Parameter type="ITreeNode" name="node" />
+    <Message value="The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime." />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
   <Warning name="LoadSceneUnexistingSceneName" configurableSeverity="Unity.LoadSceneUnexistingScene">
     <Parameter type="IArgument" name="argument" />
     <Message value="There is no scene with same name in the project." />

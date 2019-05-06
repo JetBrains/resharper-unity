@@ -10,7 +10,14 @@ using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSetti
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IInvocationExpression))]
+    [ElementProblemAnalyzer(typeof(IInvocationExpression), HighlightingTypes = new []
+    {
+        typeof(LoadSceneDisabledSceneNameWarning),
+        typeof(LoadSceneUnknownSceneNameWarning),
+        typeof(LoadSceneUnexistingSceneNameWarning),
+        typeof(LoadSceneAmbiguousSceneNameWarning),
+        typeof(LoadSceneWrongIndexWarning)
+    })]
     public class LoadSceneAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         public LoadSceneAnalyzer([NotNull] UnityApi unityApi)
