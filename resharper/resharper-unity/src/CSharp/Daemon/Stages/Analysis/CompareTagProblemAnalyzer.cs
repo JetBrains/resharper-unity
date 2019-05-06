@@ -39,8 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (isLeftOperandTagReference || isRightOperandTagReference)
                 consumer.AddHighlighting(new ExplicitTagStringComparisonWarning(element, isLeftOperandTagReference));
         }
-
-        private bool IsTagReference([CanBeNull] IReferenceExpression expression)
+        
+        public static bool IsTagReference([CanBeNull] IReferenceExpression expression)
         {
             if (expression?.NameIdentifier?.Name == "tag")
             {

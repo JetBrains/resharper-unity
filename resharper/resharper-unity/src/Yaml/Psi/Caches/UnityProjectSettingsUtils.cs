@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return scenePath.RemoveStart("Assets/").RemoveEnd(UnityYamlFileExtensions.SceneFileExtensionWithDot);
         }
         
-                public static bool IsEditorSceneManagerSceneRelatedMethod(IInvocationExpressionReference reference)
+        public static bool IsEditorSceneManagerSceneRelatedMethod(IInvocationExpressionReference reference)
         {
             return IsSceneRelatedMethod(reference, IsEditorSceneManagerLoadScene);
         }
