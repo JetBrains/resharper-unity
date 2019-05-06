@@ -270,5 +270,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 yield return value;
             }
         }
+
+        public bool HasInput(string literal)
+        {
+            return myLocalCache.Inputs.Contains(literal);
+        }
+        
+        public bool HasTag(string literal)
+        {
+            return myLocalCache.Tags.Contains(literal);
+        }
+        
+        public bool HasLayer(string literal)
+        {
+            return myLocalCache.Layers.Contains(literal);
+        }
     }
 }
