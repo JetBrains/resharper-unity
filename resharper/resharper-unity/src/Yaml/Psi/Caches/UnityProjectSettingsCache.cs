@@ -197,6 +197,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return result;
         }
 
+        public IEnumerable<string> GetAllTags()
+        {
+            foreach (var value in myLocalCache.Tags)
+            {
+                yield return value;
+            }
+        }
+        
         public int SceneCount => myLocalCache.Scenes.SceneNamesFromBuildSettings.Count;
 
         public bool IsScenePresentedAtEditorBuildSettings(string sceneName, out bool ambiguousDefinition)
@@ -244,6 +252,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 {
                     yield return scene;
                 }
+            }
+        }
+
+        public IEnumerable<string> GetAllLayers()
+        {
+            foreach (var value in myLocalCache.Layers)
+            {
+                yield return value;
+            }
+        }
+
+        public IEnumerable<string> GetAllInput()
+        {
+            foreach (var value in myLocalCache.Inputs)
+            {
+                yield return value;
             }
         }
     }
