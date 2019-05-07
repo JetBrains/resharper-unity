@@ -80,9 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var watcher = new FileSystemWatcher();
                 watcher.Path = protocolInstancePath.Directory.FullPath;
-                watcher.NotifyFilter =
-                    NotifyFilters.LastAccess |
-                    NotifyFilters.LastWrite; //Watch for changes in LastAccess and LastWrite times
+                watcher.NotifyFilter = NotifyFilters.LastWrite; //Watch for changes in LastWrite times
                 watcher.Filter = protocolInstancePath.Name;
 
                 // Add event handlers.
