@@ -292,7 +292,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             var misc = mySolution.FindProjectItemsByLocation(path).FirstOrDefault();
             if (misc != null)
+            {
+                if (!misc.IsMiscProjectItem())
+                    return null;
+                
                 return misc as IProjectFile;
+            }
 
             var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
