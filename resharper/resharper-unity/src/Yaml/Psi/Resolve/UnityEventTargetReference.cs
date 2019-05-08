@@ -14,11 +14,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class UnityEventTargetReference : CheckedReferenceBase<IPlainScalarNode>, IUnityYamlReference
     {
+        private readonly int myMode;
+        private readonly string myType;
         private readonly FileID myFileId;
 
-        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, FileID fileId)
+        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, int mode, string type, FileID fileId)
             : base(owner)
         {
+            myMode = mode;
+            myType = type;
             myFileId = fileId;
         }
 
@@ -55,14 +59,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (targetType == null)
                 return EmptySymbolTable.INSTANCE;
 
-            var symbolTable =
-                ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, myOwner.GetPsiModule());
+            var symbolTable = ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, myOwner.GetPsiModule());
 
             if (useReferenceName)
             {
                 var name = GetName();
                 return symbolTable.Filter(name, IsMethodFilter.INSTANCE, OverriddenFilter.INSTANCE, new ExactNameFilter(name),
-                    new StaticFilter(new NonStaticAccessContext(myOwner)));
+                    new StaticFilter(new NonStaticAccessContext(myOwner)), new EventHandlerSymbolFilter(myMode, myType, targetType.Module));
             }
 
             return symbolTable;
