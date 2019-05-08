@@ -76,10 +76,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 var shortName = element is IMethod ? element.ShortName : (element as IProperty)?.Setter?.ShortName;
                 if (shortName == null)
                     return null;
-
-                var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
-                if (guid == null)
-                    return null;
+                
+                // In previous version we check that file should contain guid which relates to file
+                // where method is located. It is not true, consider an example:
+                // class A : B {} - guid_1
+                // class B : MonoBehaviour - guid_2
+                // { public void Test(){}}
+                // Let's add button, which will use script A and method Test
+                // In previous version we require that yaml file with button should contain guid_2,
+                // but it contains only guid_1
+                // [TODO] We could find derived classes' guids and add them to filter
 
                 // Searching for an event handler method requires matching something like
                 // Event handlers are in the form:
@@ -93,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 // MonoBehaviour:
                 //   ...
                 //   m_Script: {fileID: 11500000, guid: $guid, type: 3}
-                return GetElementId("m_PersistentCalls", "m_MethodName", "11500000", guid, shortName);
+                return GetElementId("m_PersistentCalls", "m_MethodName", "11500000", shortName);
             }
 
             return new UnityYamlSearchGuruId(JetHashSet<IPsiSourceFile>.Empty);
