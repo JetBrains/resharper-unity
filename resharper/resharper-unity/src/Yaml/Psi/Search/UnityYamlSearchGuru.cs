@@ -65,8 +65,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 return GetElementId("m_Script", "11500000", guid);
             }
 
-            if (myUnityApi.IsPotentialEventHandler(element as IMethod)
-                || myUnityApi.IsPotentialEventHandler(element as IProperty))
+            // See RIDER-27684. This allows Unity to use private methods as event handlers
+            if (myUnityApi.IsPotentialEventHandler(element as IMethod, true)
+                || myUnityApi.IsPotentialEventHandler(element as IProperty, true))
             {
                 // Get all files that contain GUID, m_MethodName, short name and 11500000
                 var sourceFile = element.GetSourceFiles().FirstOrDefault();
