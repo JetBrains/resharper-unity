@@ -291,7 +291,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private IProjectFile AddExternalProjectFile(FileSystemPath path)
         {
             if (mySolution.FindProjectItemsByLocation(path).Count > 0)
-                return null;
+                return mySolution.FindProjectItemsByLocation(path).FirstOrDefault() as IProjectFile;
 
             var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");

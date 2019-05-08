@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
@@ -38,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
                 return resolveResultWithInfo;
 
             // TODO: Support references to scripts/event handlers in external packages
-            // Surprisingly, it's possible to have a reference to a script asset defined in a read-only package. We
+            // Surprisingly, it's possible  to have a reference to a script asset defined in a read-only package. We
             // don't know anything about these assets, because read-only packages are not part of the C# project
             // structure - they are compiled and added as assembly references. So we don't currently have a way to map
             // an asset GUID back to a compiled class.
@@ -60,7 +61,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (useReferenceName)
             {
                 var name = GetName();
-                return symbolTable.Filter(name, new ExactNameFilter(name));
+                return symbolTable.Filter(name, IsMethodFilter.INSTANCE, OverriddenFilter.INSTANCE, new ExactNameFilter(name),
+                    new StaticFilter(new NonStaticAccessContext(myOwner)));
             }
 
             return symbolTable;
