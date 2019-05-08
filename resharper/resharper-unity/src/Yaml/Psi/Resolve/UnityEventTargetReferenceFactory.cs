@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -62,7 +63,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
                 var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Value.AsFileID();
                 if (fileID != null && !fileID.IsNullReference && fileID.guid == null)
                 {
-                    var reference = new UnityEventTargetReference(methodNameValue, fileID);
+                    var text = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Mode"))?.Value
+                        .GetPlainScalarText();
+                    if (!int.TryParse(text, out var mode))
+                        return ReferenceCollection.Empty;
+                    
+                    var arguments = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Arguments"))?.Value as IBlockMappingNode;
+                    var typeNameRecord =arguments?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_ObjectArgumentAssemblyTypeName"))?.Value;
+                    var type = typeNameRecord?.GetPlainScalarText()?.Split(',').FirstOrDefault();
+                    if (type.IsNullOrEmpty() && mode == 1)
+                        return ReferenceCollection.Empty;
+
+                    var reference = new UnityEventTargetReference(methodNameValue, mode, type, fileID);
                     return new ReferenceCollection(reference);
                 }
             }
