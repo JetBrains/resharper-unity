@@ -111,8 +111,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
             
             // new Unity is expected to have com.unity.ide.rider package, which loads EditorPlugin directly from Rider installation
-            if(myUnityVersion.GetActualVersionForSolution() >= new Version(2019, 2))
+            if (myUnityVersion.GetActualVersionForSolution() >= new Version(2019, 2))
+            {
+                myLogger.Verbose("Do not copy EditorPlugin from Unity 2019.2+.");
                 return;
+            }
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
