@@ -31,6 +31,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           .ToArray();
         foreach (var asset in toBeConverted)
         {
+          if (!AssemblyValidator.IsAssembly(asset)) 
+            continue;
           var pdb = Path.ChangeExtension(asset, ".pdb");
           if (!IsPortablePdb(pdb))
             ConvertSymbolsForAssembly(asset);
