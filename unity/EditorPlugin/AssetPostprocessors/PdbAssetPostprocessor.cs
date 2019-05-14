@@ -31,13 +31,26 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           .ToArray();
         foreach (var asset in toBeConverted)
         {
-          if (!AssemblyValidator.IsAssembly(asset)) 
-            continue;
-          var pdb = Path.ChangeExtension(asset, ".pdb");
-          if (!IsPortablePdb(pdb))
-            ConvertSymbolsForAssembly(asset);
-          else
-            ourLogger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
+          var dllPath = Path.GetFullPath(asset);
+          if (AppDomain.CurrentDomain.GetAssemblies().Any(a =>
+          {
+            bool result = false;
+            try
+            {
+              result = a.Location == dllPath; // dynamic modules throw on asking Location
+            }
+            catch { 
+              // ignored
+            }
+            return result;
+          })) // managed dll is present here
+          {
+            var pdb = Path.ChangeExtension(dllPath, ".pdb");
+            if (!IsPortablePdb(pdb))
+              ConvertSymbolsForAssembly(dllPath);
+            else
+              ourLogger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
+          }
         }
       }
       catch (Exception e)
@@ -98,7 +111,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         target.Write(buffer, 0, count);
     }
 
-    private static void ConvertSymbolsForAssembly(string asset)
+    private static void ConvertSymbolsForAssembly(string dllPath)
     {
       if (Pdb2MdbDriver == null)
       {
@@ -113,7 +126,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return;
       }
 
-      var strArray = new[] { Path.GetFullPath(asset) };
+      var strArray = new[] { dllPath };
       method.Invoke(null, new object[] { strArray });
     }
     
