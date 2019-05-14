@@ -137,7 +137,10 @@ namespace JetBrains.Rider.Unity.Editor
       });
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+      {
+        var location = Assembly.GetExecutingAssembly().Location;
+        Debug.Log($"Rider plugin initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+      }
 
       var list = new List<ProtocolInstance>();
       CreateProtocolAndAdvise(lifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
