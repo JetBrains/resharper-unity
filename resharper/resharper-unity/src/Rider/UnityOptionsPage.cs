@@ -74,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             Header("Text based assets");
             CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
-                "Parse text based asset files for script and event handler usages");
+                "Parse text based asset files for script and event handler usages (requires re-opening solution)");
 
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
