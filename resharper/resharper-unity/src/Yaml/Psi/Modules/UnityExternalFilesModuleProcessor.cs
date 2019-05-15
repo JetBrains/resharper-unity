@@ -54,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly ISettingsSchema mySettingsSchema;
         private readonly SettingsLayersProvider mySettingsLayersProvider;
         private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly UnityYamlSupport myUnityYamlSupport;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
 
@@ -69,7 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  BinaryUnityFileCache binaryUnityFileCache,
                                                  ISettingsSchema settingsSchema,
                                                  SettingsLayersProvider settingsLayersProvider,
-                                                 AssetSerializationMode assetSerializationMode)
+                                                 AssetSerializationMode assetSerializationMode,
+                                                 UnityYamlSupport unityYamlSupport)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -85,6 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             mySettingsSchema = settingsSchema;
             mySettingsLayersProvider = settingsLayersProvider;
             myAssetSerializationMode = assetSerializationMode;
+            myUnityYamlSupport = unityYamlSupport;
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
@@ -308,6 +311,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private void AddProjectFilesToSwea(List<IProjectFile> projectFiles)
         {
+            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
+                return;
+            
             // Note that we don't want to use DaemonExcludedFilesManager.AddFileToForceEnable here, because that will
             // add the files to .sln.dotSettings.user. We'll do it ourselves, in our hidden solution settings layer
             using (myLocks.UsingWriteLock())
