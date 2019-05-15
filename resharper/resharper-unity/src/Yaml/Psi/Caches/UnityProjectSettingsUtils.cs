@@ -41,27 +41,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return GetCollection(file, "EditorBuildSettings", "m_Scenes");
         }
         
-        public static INode GetCollection([NotNull] IYamlFile file, string documentName, string name)
+        public static INode GetCollection([CanBeNull] IYamlFile file, string documentName, string name)
         {
-            var blockMappingNode = file.Documents[0].Body.BlockNode as IBlockMappingNode;
-            Assertion.Assert(blockMappingNode != null, "blockMappingNode != null");
-
+            var blockMappingNode = file?.Documents[0].Body.BlockNode as IBlockMappingNode;
             return GetCollection(blockMappingNode, documentName, name);
         }
         
-        public static INode GetSceneCollection([NotNull] IBlockMappingNode blockMappingNode)
+        public static INode GetSceneCollection([CanBeNull] IBlockMappingNode blockMappingNode)
         {
             return GetCollection(blockMappingNode, "EditorBuildSettings", "m_Scenes");
         }
 
-        public static INode GetCollection([NotNull] IBlockMappingNode blockMappingNode, string documentName, string name)
+        public static INode GetCollection([CanBeNull] IBlockMappingNode blockMappingNode, string documentName, string name)
         {
-            var documentEntry = blockMappingNode.Entries.FirstOrDefault(
+            var documentEntry = blockMappingNode?.Entries.FirstOrDefault(
                 t => t.Key.GetText().Equals(documentName))?.Value as IBlockMappingNode;
-            Assertion.Assert(documentEntry != null, "documentEntry != null");
 
-            var collection = documentEntry.Entries.FirstOrDefault(t => t.Key.GetText().Equals(name))?.Value;
-            Assertion.Assert(collection != null, "collection != null");
+            var collection = documentEntry?.Entries.FirstOrDefault(t => t.Key.GetText().Equals(name))?.Value;
             
             return collection;
         }
@@ -164,7 +160,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public static bool IsCompareTagMethod(IInvocationExpression expr)
         {
-            return IsSpecificMethod(expr, KnownTypes.Component, "CompareTag");
+            return IsSpecificMethod(expr, KnownTypes.Component, "CompareTag")
+            || IsSpecificMethod(expr, KnownTypes.GameObject, "CompareTag");
         }
 
         private static readonly string[] ourInputButtonNames = {"GetButtonDown", "GetButtonUp", "GetButton"}; 

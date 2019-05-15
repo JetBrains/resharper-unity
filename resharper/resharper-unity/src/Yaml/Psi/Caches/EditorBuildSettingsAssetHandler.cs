@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.Util;
 using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
@@ -11,6 +12,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [SolutionComponent]
     public class EditorBuildSettingsAssetHandler : IProjectSettingsAssetHandler
     {
+        private readonly ILogger myLogger;
+
+        public EditorBuildSettingsAssetHandler(ILogger logger)
+        {
+            myLogger = logger;
+        }
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
             return sourceFile.Name.Equals("EditorBuildSettings.asset");
@@ -20,8 +27,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
             var scenesArray = GetSceneCollection(file);
-            Assertion.Assert(scenesArray != null, "scenesArray != null");
 
+            if (scenesArray == null)
+            {
+                myLogger.Error("scenesArray != null");
+                return;
+            }
+            
             if (scenesArray is IBlockSequenceNode node)
             {
                 foreach (var s in node.Entries)

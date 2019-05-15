@@ -12,6 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [SolutionComponent]
     public class InputManagerAssetHandler : IProjectSettingsAssetHandler
     {
+        private readonly ILogger myLogger;
+
+        public InputManagerAssetHandler(ILogger logger)
+        {
+            myLogger = logger;
+        }
+        
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
             return sourceFile.Name.Equals("InputManager.asset");
@@ -22,8 +29,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
                 var inputs = GetCollection(file, "InputManager", "m_Axes");
-                Assertion.Assert(inputs != null, "inputs != null");
 
+                if (inputs == null)
+                {
+                    myLogger.Error("inputs != null");
+                    return;
+                }
+                
                 if (inputs is IBlockSequenceNode node)
                 {
                     foreach (var s in node.Entries)

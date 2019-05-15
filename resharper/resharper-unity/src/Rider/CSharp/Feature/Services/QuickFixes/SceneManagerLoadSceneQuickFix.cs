@@ -156,12 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             private IBlockSequenceNode CreateBlockSequenceNode(string sceneName, string guid, IPsiModule module)
             {
                 // TODO yaml psi factory?
-                var buffer = new StringBuffer(
-$@"EditorBuildSettings:
-  m_Scenes:
-  - enabled: 1
-    path: Assets/{sceneName}.unity
-    guid: {guid}");
+                var buffer = new StringBuffer($"EditorBuildSettings:\n  m_Scenes:\n  - enabled: 1\n    path: Assets/{sceneName}.unity\n    guid: {guid}");
                 var languageService = YamlLanguage.Instance.LanguageService().NotNull();
                 var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(buffer);
                 var file = (languageService.CreateParser(lexer, module, null) as IYamlParser)

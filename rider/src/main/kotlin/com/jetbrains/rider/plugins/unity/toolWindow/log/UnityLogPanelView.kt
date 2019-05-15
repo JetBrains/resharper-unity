@@ -43,7 +43,7 @@ import javax.swing.event.DocumentEvent
 class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
-        .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME.name, project))
+        .filters(AnalyzeStacktraceUtil.EP_NAME.getExtensions(project))
         .console as ConsoleViewImpl
 
     private val eventList = UnityLogPanelEventList(lifetime).apply {
