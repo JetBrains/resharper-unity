@@ -11,6 +11,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [SolutionComponent]
     public class TagManagerAssetHandler : IProjectSettingsAssetHandler
     {
+        private readonly ILogger myLogger;
+
+        public TagManagerAssetHandler(ILogger logger)
+        {
+            myLogger = logger;
+        }
+        
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
             return sourceFile.Name.Equals("TagManager.asset");
@@ -20,7 +27,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
             var tagsArray = GetCollection(file, "TagManager", "tags");
-            Assertion.Assert(tagsArray != null, "tagsArray != null");
+            if (tagsArray == null)
+            {
+                myLogger.Error("tagsArray != null");
+                return;
+            }
 
             if (tagsArray is IBlockSequenceNode node)
             {
@@ -33,8 +44,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             }
             
             var layersArray = GetCollection(file, "TagManager", "layers");
-            Assertion.Assert(tagsArray != null, "layersArray != null");
-
+            if (layersArray == null)
+            {
+                myLogger.Error("layersArray != null");
+                return;
+            }
+            
             if (layersArray is IBlockSequenceNode layersNode)
             {
                 foreach (var s in layersNode.Entries)

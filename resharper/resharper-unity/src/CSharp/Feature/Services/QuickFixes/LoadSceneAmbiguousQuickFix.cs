@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 return null;
             }
 
-            public override string Text => $"Change scene to '{myNewSceneName}'";
+            public override string Text => $"Change scene name to '{myNewSceneName}'";
         }
     }
 }
