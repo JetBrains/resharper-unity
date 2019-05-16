@@ -75,6 +75,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 UnityProcessListener({
                     if (it.port == remoteConfiguration.port) {
                         UIUtil.invokeLaterIfNeeded {
+                            Thread.sleep(2000)
                             super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
                             listenerLifetimeDefinition.terminate()
                         }
