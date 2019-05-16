@@ -3,12 +3,19 @@ using UnityEditor.Build;
 
 public class A : IPreprocessBuild
 {
-    public int |callbackOrder|(0) { get; }
+    public int callbackOrder { get; }
     public void OnPreprocessBuild(BuildTarget target, string path)
     {
         throw new System.NotImplementedException();
     }
 }
+
+public class B : A, IPostprocessBuild
+{
+    public void OnPostprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+}
 ---------------------------------------------------------
-(0): ReSharper Warning: Get-only auto-property 'callbackOrder' is never assigned
 

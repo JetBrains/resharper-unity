@@ -9,3 +9,11 @@ public class A : IPreprocessBuild
         throw new System.NotImplementedException();
     }
 }
+
+public class B : A, IPostprocessBuild
+{
+    public void OnPostprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+}
