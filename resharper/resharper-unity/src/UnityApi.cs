@@ -129,7 +129,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         // scene. We don't have enough information to do this by name, so we'll mark all potential event handlers as
         // implicitly used by Unity
         // See https://github.com/Unity-Technologies/UnityCsReference/blob/02f8e8ca594f156dd6b2088ad89451143ca1b87e/Editor/Mono/Inspector/UnityEventDrawer.cs#L397
-        public bool IsPotentialEventHandler([CanBeNull] IMethod method, bool isFindUsages = false)
+        //
+        // Unity Editor will only list public methods, but will invoke any method, even if it's private.
+        public bool IsPotentialEventHandler([CanBeNull] IMethod method, bool isFindUsages = true)
         {
             if (method == null || !method.ReturnType.IsVoid())
                 return false;
@@ -142,7 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                    !method.HasAttributeInstance(PredefinedType.OBSOLETE_ATTRIBUTE_CLASS, true);
         }
 
-        public bool IsPotentialEventHandler([CanBeNull] IProperty property, bool isFindUsages = false)
+        public bool IsPotentialEventHandler([CanBeNull] IProperty property, bool isFindUsages = true)
         {
             return IsPotentialEventHandler(property?.Setter, isFindUsages);
         }

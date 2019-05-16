@@ -14,11 +14,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class UnityEventTargetReference : CheckedReferenceBase<IPlainScalarNode>, IUnityYamlReference
     {
-        private readonly int myMode;
+        private readonly EventHandlerArgumentMode myMode;
         private readonly string myType;
         private readonly FileID myFileId;
 
-        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, int mode, string type, FileID fileId)
+        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, EventHandlerArgumentMode mode, string type, FileID fileId)
             : base(owner)
         {
             myMode = mode;
