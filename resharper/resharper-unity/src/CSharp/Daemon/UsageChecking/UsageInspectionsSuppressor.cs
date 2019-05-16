@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
     {
         private readonly ILogger myLogger;
 
-        private readonly List<IClrTypeName> implicitlyUsedInterfaces = new List<IClrTypeName>()
+        private readonly List<IClrTypeName> myImplicitlyUsedInterfaces = new List<IClrTypeName>()
         {
             new ClrTypeName("UnityEditor.Build.IPreprocessBuild"),
             new ClrTypeName("UnityEditor.Build.IPostprocessBuild"),
@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
         private bool IsImplicitlyUsedInterfaceMethod(IMethod method)
         {
-            foreach (var implicitlyUsedTypeName in implicitlyUsedInterfaces)
+            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
             {
                 var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, method.Module).GetTypeElement();
 
@@ -162,7 +162,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
         private bool IsImplicitlyUsedInterfaceProperty(IProperty property)
         {
-            foreach (var implicitlyUsedTypeName in implicitlyUsedInterfaces)
+            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
             {
                 var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, property.Module).GetTypeElement();
 
@@ -187,7 +187,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
         private bool IsImplicitlyUsedInterfaceType(ITypeElement typeElement)
         {
-            foreach (var implicitlyUsedTypeName in implicitlyUsedInterfaces)
+            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
             {
                 var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, typeElement.Module).GetTypeElement();
 
