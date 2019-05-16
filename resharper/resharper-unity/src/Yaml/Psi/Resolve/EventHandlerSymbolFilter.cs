@@ -6,31 +6,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class EventHandlerSymbolFilter : SimpleSymbolFilter
     {
-        private IType myType;
-        public EventHandlerSymbolFilter(int mode, string type, IPsiModule psiModule)
+        private readonly EventHandlerArgumentMode myMode;
+        private readonly IType myType;
+        public EventHandlerSymbolFilter(EventHandlerArgumentMode mode, string type, IPsiModule psiModule)
         {
-            if (mode == 2)
+            myMode = mode;
+            if (mode == EventHandlerArgumentMode.UnityType && type != null)
             {
                 myType = TypeFactory.CreateTypeByCLRName(type, psiModule);
             }
-            else if (mode != 0)
+            else if (mode != EventHandlerArgumentMode.None)
             {
                 var predefinedTypes = psiModule.GetPredefinedType();
-                if (mode == 3)
+                switch (mode)
                 {
-                    myType = predefinedTypes.Int;
-                }
-                else if (mode == 4)
-                {
-                    myType = predefinedTypes.Float;
-                } 
-                else if (mode == 5)
-                {
-                    myType = predefinedTypes.String;
-                }
-                else if (mode == 6)
-                {
-                    myType = predefinedTypes.Bool;
+                    case EventHandlerArgumentMode.Int:
+                        myType = predefinedTypes.Int;
+                        break;
+                    case EventHandlerArgumentMode.Float:
+                        myType = predefinedTypes.Float;
+                        break;
+                    case EventHandlerArgumentMode.String:
+                        myType = predefinedTypes.String;
+                        break;
+                    case EventHandlerArgumentMode.Bool:
+                        myType = predefinedTypes.Bool;
+                        break;
                 }
             }
         }
@@ -39,6 +40,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         
         public override bool Accepts(IDeclaredElement declaredElement, ISubstitution substitution)
         {
+            if (myMode == EventHandlerArgumentMode.Unknown)
+                return false;
+            if (myMode != EventHandlerArgumentMode.None && myType == null)
+                return false;
+            
             if (!(declaredElement is IMethod method))
                 return false;
 

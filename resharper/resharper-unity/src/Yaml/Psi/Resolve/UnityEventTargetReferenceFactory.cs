@@ -65,16 +65,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
                 {
                     var text = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Mode"))?.Value
                         .GetPlainScalarText();
-                    if (!int.TryParse(text, out var mode))
-                        return ReferenceCollection.Empty;
+
+                    var argMode = EventHandlerArgumentMode.Unknown;
+                    if (int.TryParse(text, out var mode))
+                    {
+                        if (1 <= mode && mode <= 6)
+                            argMode = (EventHandlerArgumentMode) mode;
+                    }
                     
                     var arguments = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Arguments"))?.Value as IBlockMappingNode;
-                    var typeNameRecord =arguments?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_ObjectArgumentAssemblyTypeName"))?.Value;
+                    var typeNameRecord = arguments?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_ObjectArgumentAssemblyTypeName"))?.Value;
                     var type = typeNameRecord?.GetPlainScalarText()?.Split(',').FirstOrDefault();
                     if (type.IsNullOrEmpty() && mode == 1)
-                        return ReferenceCollection.Empty;
+                        type = null;
 
-                    var reference = new UnityEventTargetReference(methodNameValue, mode, type, fileID);
+                    var reference = new UnityEventTargetReference(methodNameValue, argMode, type, fileID);
                     return new ReferenceCollection(reference);
                 }
             }
