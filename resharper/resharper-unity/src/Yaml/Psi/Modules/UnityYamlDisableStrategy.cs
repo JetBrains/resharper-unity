@@ -47,9 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             if (myShouldRunHeuristic && myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
             {
-                mySolutionCaches.PersistentProperties[SolutionCachesId] = false.ToString();
                 if (IsAnyFilePreventYamlParsing(directoryEntries) || myTotalSize > TotalFileSizeThreshold)
                 {
+                    mySolutionCaches.PersistentProperties[SolutionCachesId] = false.ToString();
                     myUnityYamlSupport.IsUnityYamlParsingEnabled.Value = false;
                     NotifyYamlParsingDisabled();
                 }
