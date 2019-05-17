@@ -70,8 +70,8 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 remoteConfiguration.pid = actualPid
                 remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
 
+                Thread.sleep(2000)
                 UIUtil.invokeLaterIfNeeded {
-                    Thread.sleep(2000)
                     super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
                 }
             }
