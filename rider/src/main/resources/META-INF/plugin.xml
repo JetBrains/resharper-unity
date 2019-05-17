@@ -139,9 +139,6 @@
         <action id="ShowUnityLogInRiderAction"
                 class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
                 text="Show Unity Log Window" />
-        <action id="InstallEditorPluginAction"
-                class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
-                text="Install Unity Editor Plugin" />
       </group>
 
       <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity-related Actions">
@@ -184,6 +181,10 @@
             use-shortcut-of="ShowIntentionActions">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
     </action>
+
+    <action id="InstallEditorPluginAction"
+            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
+            text="Install Unity Editor Plugin" />
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">

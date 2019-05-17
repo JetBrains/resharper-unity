@@ -88,8 +88,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             if (unityApi == null)
                 return false;
             return unityApi.IsUnityType(element as IClass)
-                || unityApi.IsPotentialEventHandler(element as IMethod)
-                || unityApi.IsPotentialEventHandler(element as IProperty);
+                   || unityApi.IsPotentialEventHandler(element as IMethod)
+                   || unityApi.IsPotentialEventHandler(element as IProperty);
         }
     }
 }
