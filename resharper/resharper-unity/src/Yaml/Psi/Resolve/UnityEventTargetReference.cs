@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             using (WriteLockCookie.Create(myOwner.IsPhysical()))
             {
-                var text = YamlTokenType.NS_PLAIN_ONE_LINE.Create(element.ShortName);
+                var text = YamlTokenType.NS_PLAIN_ONE_LINE_IN.Create(element.ShortName);
                 if (myOwner.Text != null)
                     LowLevelModificationUtil.ReplaceChildRange(myOwner.Text, myOwner.Text, text);
                 else
