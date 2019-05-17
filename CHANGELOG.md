@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). Note that this project does not follow semantic versioning but uses version numbers based on JetBrains [Rider](https://www.jetbrains.com/rider/) and [ReSharper](https://www.jetbrains.com/resharper/) releases.
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
+## 2019.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...192)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/22?closed=1)
+
+### Added
+- Add completion for scenes, tags, layers and inputs ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+- Add inspection for unknown scenes, tags, layers, inputs ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+- Add quickfix which specifies scene name when several scenes with same name are presented in build settings ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+- Rider: Add quickfix for missed scenes in build settings ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+- Rider: Add quickfix for disabled scenes in build settings ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+
+
 
 ## 2019.1.1
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...191)
