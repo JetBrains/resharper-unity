@@ -70,17 +70,10 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 remoteConfiguration.pid = actualPid
                 remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
 
-                val listenerLifetimeDefinition = lifetime.createNested()
-
-                UnityProcessListener({
-                    if (it.port == remoteConfiguration.port) {
-                        UIUtil.invokeLaterIfNeeded {
-                            super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
-                            listenerLifetimeDefinition.terminate()
-                        }
-
-                    }
-                }, {}, listenerLifetimeDefinition.lifetime)
+                Thread.sleep(2000)
+                UIUtil.invokeLaterIfNeeded {
+                    super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
+                }
             }
             catch (e: Exception) {
                 result.setError(e)
