@@ -117,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 var text = manifestJsonFile.ReadAllText2().Text;
                 //"com.unity.ide.rider": "1.0.7"
-                var match = Regex.Match(text, @"^\s+""com\.unity\.ide\.rider""\s*:\s*""(?<version>.*)""\s*,\s*$", RegexOptions.Multiline);
+                var match = Regex.Match(text, @"""com\.unity\.ide\.rider""\s*:\s*""(?<version>.*)""", RegexOptions.Multiline);
                 if (match.Success)
                 {
                     if (Version.TryParse(match.Groups["version"].Value, out var version))
