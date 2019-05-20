@@ -189,7 +189,7 @@ namespace JetBrains.Rider.Unity.Editor
         RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
       }
       // may be rider from known location or selected by user from custom location
-      if(RiderPathLocator.RiderPathExist(RiderPathInternal, SystemInfoRiderPlugin.operatingSystemFamily))
+      if(RiderPathProvider.RiderPathExist(RiderPathInternal, SystemInfoRiderPlugin.operatingSystemFamily))
         EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
       else if (PluginEntryPoint.Enabled)
       {
