@@ -11,9 +11,9 @@ using JetBrains.ReSharper.Psi.Files;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
     [ShellComponent]
-    public class UnityScopeProvider : ScopeProvider
+    public class UnityShaderLabScopeProvider : ScopeProvider
     {
-        public UnityScopeProvider()
+        public UnityShaderLabScopeProvider()
         {
             // Used when creating scope point from settings
             Creators.Add(TryToCreate<InUnityShaderLabFile>);
