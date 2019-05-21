@@ -5,13 +5,13 @@ type: File
 reformat: True
 shortenReferences: True
 categories: unity
-customProperties: Extension=cs, FileName=MyComponentEditor, ValidateFileName=True
+customProperties: Extension=cs, FileName=CustomEditor, ValidateFileName=True
 scopes: InUnityCSharpEditorFolder
-parameterOrder: HEADER, (CLASS), (TYPE), (NAMESPACE)
+parameterOrder: HEADER, (CLASS), (NAMESPACE), TYPE
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension
-TYPE-expression: getAlphaNumericFileNameWithoutSuffix("Editor1.cs")
 NAMESPACE-expression: fileDefaultNamespace()
+TYPE-expression: complete()
 ---
 
 # Custom Editor
@@ -20,13 +20,14 @@ NAMESPACE-expression: fileDefaultNamespace()
 $HEADER$using UnityEditor;
 
 namespace $NAMESPACE$ {
-    [CustomEditor(typeof($TYPE$))]
-    public class $CLASS$ : Editor
+  [CustomEditor(typeof($TYPE$))]
+  public class $CLASS$ : Editor
+  {
+    public override void OnInspectorGUI() 
     {
-        public override void OnInspectorGUI() 
-        {
-            base.OnInspectorGUI();
-        }
+      $END$
+      base.OnInspectorGUI();
     }
+  }
 }
 ```

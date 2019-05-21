@@ -5,35 +5,35 @@ type: File
 reformat: True
 shortenReferences: True
 categories: unity
-customProperties: Extension=cs, FileName=MyEditorWindow, ValidateFileName=True
+customProperties: Extension=cs, FileName=EditorWindow, ValidateFileName=True
 scopes: InUnityCSharpEditorFolder
-parameterOrder: HEADER, (CLASS), (NAMESPACE), (TITLE)
+parameterOrder: HEADER, (CLASS), (NAMESPACE), MENUITEM, TITLE 
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension
 NAMESPACE-expression: fileDefaultNamespace()
-TITLE-expression: getAlphaNumericFileNameWithoutSuffix("Window1")
 ---
 
 # Editor Window
 
 ```
-$HEADER$using UnityEditor;
+$HEADER$using UnityEngine;
+using UnityEditor;
 
 namespace $NAMESPACE$ {
-    public class $CLASS$ : EditorWindow
+  public class $CLASS$ : EditorWindow
+  {
+    [MenuItem("$MENUITEM$")]
+    private static void ShowWindow() 
     {
-        [MenuItem("$TITLE$")]
-        private static void ShowWindow() 
-        {
-            var window = GetWindow<$CLASS$>();
-            window.titleContent = new GUIContent("$TITLE$");
-            window.Show();
-        }
-    
-        private void OnGUI() 
-        {
-            
-        }
+      var window = GetWindow<$CLASS$>();
+      window.titleContent = new GUIContent("$TITLE$");
+      window.Show();
     }
+
+    private void OnGUI() 
+    {
+      $END$
+    }
+  }
 }
 ```

@@ -14,7 +14,7 @@ parameterOrder: NAME
 Create coroutine
 
 ```
-private IEnumerable $NAME$()
+private System.Collections.IEnumerator $NAME$()
 {
   $END$
   yield break;
