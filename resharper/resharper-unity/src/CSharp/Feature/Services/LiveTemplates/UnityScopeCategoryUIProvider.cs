@@ -5,9 +5,6 @@ using JetBrains.ReSharper.Plugins.Unity.Resources;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
-    
-    
-    
     [ScopeCategoryUIProvider(Priority = Priority)]
     public class UnityScopeCategoryUIProvider : ScopeCategoryUIProvider
     {
@@ -34,13 +31,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         public override string Present(ITemplateScopePoint point)
         {
             if (point is IsAvailableForClassAttribute)
-                return "Is available for class attribute";
+                return "In C# file where class attribute is available";
             if (point is InUnityCSharpProject)
                 return "In Unity project";
             if (point is MustBeInUnityType)
                 return "In Unity type where type members are allowed";
             if (point is InUnityShaderLabFile)
-                return "Anywhere in Unity ShaderLab file";
+                return "In Unity ShaderLab file";
             return base.Present(point);
             
         }

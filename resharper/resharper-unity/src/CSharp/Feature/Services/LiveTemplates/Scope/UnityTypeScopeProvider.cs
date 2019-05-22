@@ -17,7 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         {
             Creators.Add(TryToCreate<MustBeInUnityType>);
             Creators.Add(TryToCreate<IsAvailableForClassAttribute>);
-            Creators.Add(TryToCreate<IsAvailableForMethod>);
         }
 
         public override IEnumerable<ITemplateScopePoint> ProvideScopePoints(TemplateAcceptanceContext context)
@@ -53,11 +52,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             var unityApi = context.Solution.GetComponent<UnityApi>();
             if (unityApi.IsUnityType(typeDeclaration.DeclaredElement))
                 yield return new MustBeInUnityType();
-
-            if (element.GetContainingNode<IMethodDeclaration>() == null)
-            {
-                yield return new IsAvailableForMethod();
-            }
         }
     }
 }
