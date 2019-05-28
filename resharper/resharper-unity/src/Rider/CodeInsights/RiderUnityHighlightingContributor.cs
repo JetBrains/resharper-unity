@@ -121,8 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             
             var iconId = isIconHot ? InsightUnityIcons.InsightHot.Id : InsightUnityIcons.InsightUnity.Id;
             consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                // TODO pass tooltip correctly (waiting sdk update)
-                displayName, displayName, codeInsightsProvider, declaredElement,
+                displayName, tooltip, displayName, codeInsightsProvider, declaredElement,
                 myIconHost.Transform(iconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
         }
 
