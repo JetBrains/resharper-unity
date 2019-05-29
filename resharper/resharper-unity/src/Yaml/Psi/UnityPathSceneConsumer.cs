@@ -5,8 +5,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
     public class UnityPathSceneConsumer : IUnitySceneProcessorConsumer
     {
+        private readonly bool myOnlyName;
+
+        public UnityPathSceneConsumer(bool onlyName = false)
+        {
+            myOnlyName = onlyName;
+        }
+        
         public readonly List<string> NameParts = new List<string>();
-        public void ConsumeGameObject(IYamlDocument gameObject, IBlockMappingNode modifications)
+        public bool ConsumeGameObject(IYamlDocument gameObject, IBlockMappingNode modifications)
         {
             string name = null;
             if (modifications != null)
@@ -22,6 +29,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             if (name?.Equals(string.Empty) == true)
                 name = null;
             NameParts.Add(name ?? "Unknown");
+
+
+            return !myOnlyName;
         }
     }
 }

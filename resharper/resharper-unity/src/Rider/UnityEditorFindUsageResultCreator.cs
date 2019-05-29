@@ -170,7 +170,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             public readonly List<int> RootIndices = new List<int>();
             
-            public void ConsumeGameObject(IYamlDocument gameObject, IBlockMappingNode modifications)
+            public bool ConsumeGameObject(IYamlDocument gameObject, IBlockMappingNode modifications)
             {
                 int rootOrder = -1;
                 var transform = UnityObjectPsiUtil.FindTransformComponentForGameObject(gameObject);
@@ -186,6 +186,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         rootOrder = -1;
                 }
                 RootIndices.Add(rootOrder);
+
+                return true;
             }
         }
         
