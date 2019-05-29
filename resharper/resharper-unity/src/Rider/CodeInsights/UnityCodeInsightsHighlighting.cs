@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
     {
         public const string Id = "UnityCodeInsights";
 
-        public UnityCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, [NotNull] string tooltipText, [NotNull] string moreText,
+        public UnityCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, string tooltipText, [NotNull] string moreText,
                                              [NotNull] ICodeInsightsProvider provider, IDeclaredElement element,
                                              [CanBeNull] IconModel icon, IEnumerable<BulbMenuItem> menuItems,
                                              List<CodeLensEntryExtraActionModel> extraActions = null)

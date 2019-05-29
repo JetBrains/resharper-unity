@@ -185,6 +185,11 @@
     <action id="InstallEditorPluginAction"
             class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
             text="Install Unity Editor Plugin" />
+
+    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction" text="Find Unity Usages">
+      <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
+      <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
+    </action>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
