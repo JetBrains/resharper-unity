@@ -17,6 +17,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -35,12 +36,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly ConnectionTracker myConnectionTracker;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly UnityApi myUnityApi;
+        private readonly UnityEventHandlerReferenceCache myHandlerReferenceCache;
         private readonly IconHost myIconHost;
 
         public RiderUnityHighlightingContributor(Lifetime lifetime, ISolution solution, ITextControlManager textControlManager,
             UnityCodeInsightFieldUsageProvider fieldUsageProvider, UnityCodeInsightProvider codeInsightProvider,
             ISettingsStore settingsStore, ConnectionTracker connectionTracker, SolutionAnalysisService swa, IShellLocks locks,
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnitySolutionTracker solutionTracker, UnityApi unityApi, IconHost iconHost = null)
+            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnitySolutionTracker solutionTracker, UnityApi unityApi, 
+            UnityEventHandlerReferenceCache handlerReferenceCache, IconHost iconHost = null)
             : base(solution, settingsStore, textControlManager, swa, analyzer)
         {
             myFieldUsageProvider = fieldUsageProvider;
@@ -48,6 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             myConnectionTracker = connectionTracker;
             mySolutionTracker = solutionTracker;
             myUnityApi = unityApi;
+            myHandlerReferenceCache = handlerReferenceCache;
             myIconHost = iconHost;
             var invalidateDaemonResultGroupingEvent = locks.GroupingEvents.CreateEvent(lifetime,
                 "UnityHiglightingContributor::InvalidateDaemonResults", TimeSpan.FromSeconds(5), Rgc.Guarded,
@@ -110,7 +114,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             // Since 19.2, Rider will show new code vision for scripts which will show 
             // asset usages
-            if (myUnityApi.IsDescendantOfMonoBehaviour(declaredElement as ITypeElement))
+            if (myUnityApi.IsDescendantOfMonoBehaviour(declaredElement as ITypeElement)
+                || declaredElement is IMethod method && !myUnityApi.IsEventFunction(method) && 
+                myHandlerReferenceCache.IsEventHandler(method))
             {
                 return;
             }

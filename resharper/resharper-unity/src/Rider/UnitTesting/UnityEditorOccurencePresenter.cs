@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Linq;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
@@ -39,8 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             IOccurrence occurrence,
             OccurrencePresentationOptions options)
         {
-            descriptor.Text = GetDisplayText(options, occurrence as RangeOccurrence);
             var unityOccurrence = (occurrence as UnityEditorOccurrence).NotNull("occurrence as UnityEditorOccurrence != null");
+
+            var displayText = GetDisplayText(options, unityOccurrence) + OccurrencePresentationUtil.TextContainerDelimiter;
+            descriptor.Text = displayText;
             OccurrencePresentationUtil.AppendRelatedFile(descriptor, unityOccurrence.SourceFile.DisplayName);
             
             descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
