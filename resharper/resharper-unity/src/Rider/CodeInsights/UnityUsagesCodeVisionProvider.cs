@@ -8,7 +8,9 @@ using JetBrains.ReSharper.Host.Features.CodeInsights.Providers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.VB.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
@@ -45,6 +47,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
             if (!elementId.HasValue)
                 return false;
+
+            if (declaredElement is IMethod method)
+            {
+                var cache = method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>();
+                return cache.IsEventHandler(method);
+            }
 
             var unityApi = declaredElement.GetSolution().GetComponent<UnityApi>();
             if (!unityApi.IsDescendantOfMonoBehaviour(declaredElement as ITypeElement))
