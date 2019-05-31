@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public IEnumerable<string> BuzzWordFilter(IDeclaredElement searchFor, IEnumerable<string> containsWords) =>
             containsWords;
 
-        public bool IsAvaliable(SearchPattern pattern) => (pattern & SearchPattern.FIND_USAGES) != 0;
+        public bool IsAvailable(SearchPattern pattern) => (pattern & SearchPattern.FIND_USAGES) != 0;
 
         // Return a context object for the item being searched for, or null if the element isn't interesting.
         // CanContainReferences isn't called if we return null. Do the work once here, then use it multiple times for
