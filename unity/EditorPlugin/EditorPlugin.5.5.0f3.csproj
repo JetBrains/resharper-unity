@@ -17,11 +17,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Platform.RdCore35">
-      <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
+    <Reference Include="JetBrains.Lifetimes">
+      <HintPath>..\lib\JetBrains.Lifetimes.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Platform.RdFramework35">
-      <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
+    <Reference Include="JetBrains.RdFramework">
+      <HintPath>..\lib\JetBrains.RdFramework.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
