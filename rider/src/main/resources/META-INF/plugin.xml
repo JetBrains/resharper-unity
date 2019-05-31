@@ -139,9 +139,6 @@
         <action id="ShowUnityLogInRiderAction"
                 class="com.jetbrains.rider.plugins.unity.actions.ShowUnityLogInRiderAction"
                 text="Show Unity Log Window" />
-        <action id="InstallEditorPluginAction"
-                class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
-                text="Install Unity Editor Plugin" />
       </group>
 
       <group id="UnityDllShowImportantAction" popup="true" class="com.jetbrains.rider.plugins.unity.ui.UnityDllImportantActions" text="Important Unity-related Actions">
@@ -183,6 +180,15 @@
             class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction"
             use-shortcut-of="ShowIntentionActions">
       <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
+    </action>
+
+    <action id="InstallEditorPluginAction"
+            class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
+            text="Install Unity Editor Plugin" />
+
+    <action class="com.jetbrains.rider.plugins.unity.actions.FindUnityUsagesAction" id="RdFindUnityUsagesAction" text="Find Unity Usages">
+      <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
+      <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
     </action>
   </actions>
 

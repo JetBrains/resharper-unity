@@ -4,7 +4,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_5_5</DefineConstants>
+    <DefineConstants>UNITY_5_5;RIDER_EDITOR_PLUGIN</DefineConstants>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>

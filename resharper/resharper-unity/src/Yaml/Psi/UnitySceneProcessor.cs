@@ -151,6 +151,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
     public interface IUnitySceneProcessorConsumer
     {
-        void ConsumeGameObject(IYamlDocument gameObject, IBlockMappingNode modifications);
+        bool ConsumeGameObject(IYamlDocument gameObject, IBlockMappingNode modifications);
     }
 }

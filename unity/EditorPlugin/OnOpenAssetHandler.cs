@@ -16,13 +16,13 @@ namespace JetBrains.Rider.Unity.Editor
   internal class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
-    private readonly RiderPathLocator myRiderPathLocator;
+    private readonly RiderPathProvider myRiderPathProvider;
     private readonly IPluginSettings myPluginSettings;
     private readonly string mySlnFile;
 
-    public OnOpenAssetHandler(RiderPathLocator riderPathLocator, IPluginSettings pluginSettings, string slnFile)
+    public OnOpenAssetHandler(RiderPathProvider riderPathProvider, IPluginSettings pluginSettings, string slnFile)
     {
-      myRiderPathLocator = riderPathLocator;
+      myRiderPathProvider = riderPathProvider;
       myPluginSettings = pluginSettings;
       mySlnFile = slnFile;
     }
@@ -107,7 +107,7 @@ namespace JetBrains.Rider.Unity.Editor
     public bool CallRider(string args)
     {
       var paths = RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider);
-      var defaultApp = myRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor, paths);
+      var defaultApp = myRiderPathProvider.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor, paths);
       if (string.IsNullOrEmpty(defaultApp))
       {
         return false;

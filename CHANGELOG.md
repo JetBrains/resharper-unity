@@ -18,6 +18,9 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 
+## 2019.1.2
+* For Unity with package `com.unity.ide.rider` ver. 1.0.7+ do not copy EditorPlugin to Assets folder. It is loaded directly from Rider installation.
+
 ## 2019.1.1
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...191)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/28?closed=1)

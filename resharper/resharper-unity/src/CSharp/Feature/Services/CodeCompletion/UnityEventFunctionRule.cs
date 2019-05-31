@@ -317,7 +317,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 // array specifier to the type usage we're typing. (If there's already a type, then the parser thinks
                 // it's a property). So, if we have an array rank, check to see if the token following the `[` is an
                 // identifier. If so, it's likely it should be an attribute instead, so allow completion.
-                var typeUsage = identifier.GetContainingNode<ITypeUsage>();
+                var typeUsage = identifier.GetContainingNode<IArrayTypeUsage>();
                 if (typeUsage != null)
                 {
                     var arrayRanks = typeUsage.ArrayRanks;
