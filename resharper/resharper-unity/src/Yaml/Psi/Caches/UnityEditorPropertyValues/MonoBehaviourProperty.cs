@@ -29,10 +29,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return Guid.Equals(mbProperty.Guid) && FieldName.Equals(mbProperty.FieldName);
         }
         
-        public void WriteTo(UnsafeWriter writer)
+        public static void WriteTo(UnsafeWriter writer, MonoBehaviourProperty value)
         {
-            writer.Write(Guid);
-            writer.Write(FieldName);
+            writer.Write(value.Guid);
+            writer.Write(value.FieldName);
         }
 
         public static MonoBehaviourProperty ReadFrom(UnsafeReader reader)

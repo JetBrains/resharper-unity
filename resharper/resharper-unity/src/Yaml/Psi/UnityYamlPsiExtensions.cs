@@ -142,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         [CanBeNull]
-        private static INodeProperties GetDocumentBlockNodeProperties([CanBeNull] INode documentBlockNode)
+        public static INodeProperties GetDocumentBlockNodeProperties([CanBeNull] INode documentBlockNode)
         {
             // Careful. This will open chameleons
             if (documentBlockNode is IBlockSequenceNode sequenceNode)
