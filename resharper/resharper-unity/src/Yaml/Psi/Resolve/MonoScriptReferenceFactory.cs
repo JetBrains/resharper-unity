@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -55,7 +56,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             return guidEntry?.Key.MatchesPlainScalarText("guid") == true
                    && blockMappingEntry?.Key.MatchesPlainScalarText("m_Script") == true;
         }
+        
+        public static bool CanContainReference([NotNull] IYamlDocument document)
+        {
+            var buffer = document.Body.GetTextAsBuffer();
+            return CanContainReference(buffer);
+        }
 
+        
         public static bool CanContainReference(IBuffer bodyBuffer)
         {
             return ourScriptReferenceStringSearcher.Find(bodyBuffer) >= 0;

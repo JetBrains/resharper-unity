@@ -3,6 +3,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Serialization;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
@@ -35,6 +36,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public override string ToString()
         {
             return $"FileID: {fileID}, {guid ?? "<no guid>"}";
+        }
+
+        public void WriteTo(UnsafeWriter writer)
+        {
+            writer.Write(guid);
+            writer.Write(fileID);
+        }
+
+        public static FileID ReadFrom(UnsafeReader reader)
+        {
+            return new FileID(reader.ReadString(), reader.ReadString());
         }
     }
     // ReSharper restore InconsistentNaming
@@ -142,7 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         // This will open the Body chameleon
         [CanBeNull]
-        private static IBlockMappingNode FindRootBlockMapEntries([CanBeNull] this IYamlDocument document)
+        public static IBlockMappingNode FindRootBlockMapEntries([CanBeNull] this IYamlDocument document)
         {
             // A YAML document is a block mapping node with a single entry. The key is usually the type of the object,
             // while the value is another block mapping node. Those entries are the properties of the Unity object
