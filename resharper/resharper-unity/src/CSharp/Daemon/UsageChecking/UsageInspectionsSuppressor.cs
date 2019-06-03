@@ -116,17 +116,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     break;
 
                 case IField field when unityApi.IsSerialisedField(field) || unityApi.IsInjectedField(field):
-                    // comment for serialized field:
-                    // Public fields gets exposed to the Unity Editor and assigned from the UI.
-                    // But it still should be checked if the field is ever accessed from the code.
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
 
-                case IProperty property when IsImplicitlyUsedInterfaceProperty(property):
-                    flags = ImplicitUseKindFlags.Assign;
-                    return true;
-
-                case IProperty property when IsEventHandler(unityApi, property.Setter):
+                case IProperty property when IsEventHandler(unityApi, property.Setter) || IsImplicitlyUsedInterfaceProperty(property):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
             }
@@ -146,13 +139,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                 
                 foreach (var overridableMemberInstance in method.GetRootSuperMembers())
                 {
-                    if (type.DerivesFrom(overridableMemberInstance.DeclaringType.GetClrName()))
+                    if (type.GetClrName().ShortName == overridableMemberInstance.DeclaringType.GetClrName().ShortName)
                     {
-                        foreach (var typeMemberName in type.MemberNames)
-                        {
-                            if (method.ShortName == typeMemberName)
-                                return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -167,17 +156,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                 var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, property.Module).GetTypeElement();
 
                 if (type == null)
-                    return false;
+                    continue;
                 
                 foreach (var overridableMemberInstance in property.GetRootSuperMembers())
                 {
-                    if (type.DerivesFrom(overridableMemberInstance.DeclaringType.GetClrName()))
+                    if (type.GetClrName().ShortName == overridableMemberInstance.DeclaringType.GetClrName().ShortName)
                     {
-                        foreach (var typeMemberName in type.Properties)
-                        {
-                            if (property.ShortName == typeMemberName.ShortName)
-                                return true;
-                        }
+                        return true;
                     }
                 }
             }

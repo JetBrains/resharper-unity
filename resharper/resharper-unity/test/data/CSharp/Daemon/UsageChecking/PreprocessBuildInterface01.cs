@@ -4,7 +4,14 @@ using UnityEditor.Build;
 public class A : IPreprocessBuild
 {
     public int callbackOrder { get; }
-    public void OnPreprocessBuild(BuildTarget target, string path)
+    public int RandomProperty { get; }
+    
+	public virtual void OnPreprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+	
+	public void RandomMethod()
     {
         throw new System.NotImplementedException();
     }
@@ -13,6 +20,14 @@ public class A : IPreprocessBuild
 public class B : A, IPostprocessBuild
 {
     public void OnPostprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class C : A
+{
+    public override void OnPreprocessBuild(BuildTarget target, string path)
     {
         throw new System.NotImplementedException();
     }
