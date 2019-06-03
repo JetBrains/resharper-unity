@@ -248,6 +248,9 @@
   <li>Fix rename of script components not being able to update correctly (<a href="https://github.com/JetBrains/resharper-unity/pull/1196">#1196</a>)</li>
   <li>Rider: Fix usage counter not always correct for methods used in scene files (<a href="https://youtrack.jetbrains.com/issue/RIDER-27684">RIDER-27684</a>, <a href="https://github.com/JetBrains/resharper-unity/1178">#1178</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1174">#1174</a>)</li>
   <li>Rider: Fix high CPU usage on Linux (<a href="https://github.com/JetBrains/resharper-unity/issues/1163">#1163</a>, <a href="https://github.com/JetBrains/resharper-unity/1171">#1171</a>)</li>
+  <li>Rider: Fix issue with switching to play mode when debugging (<a href="https://youtrack.jetbrains.com/issue/RIDER-26857">RIDER-26857</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1202">#1202</a>)</li>
+  <li>Rider: Fix Code Vision flickering when typing inside method (<a href="https://github.com/JetBrains/resharper-unity/pull/1203">#1203</a>)
+  <li>Rider: Ignore "unityhub" Ubuntu process in debug dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/1210">#1210</a>)
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/191/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>

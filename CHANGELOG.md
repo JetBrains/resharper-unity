@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
 ## 2019.1.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...191)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...191-eap10-rtm-2019.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/28?closed=1)
 
 ### Added
@@ -19,6 +19,9 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Fix rename of script components not being able to update correctly ([#1196](https://github.com/JetBrains/resharper-unity/pull/1196))
 - Rider: Fix Code Vision usage counter not always correct for methods used in scene files ([RIDER-27684](https://youtrack.jetbrains.com/issue/RIDER-27684), [#1178](https://github.com/JetBrains/resharper-unity/1178), [#1174](https://github.com/JetBrains/resharper-unity/pull/1174))
 - Rider: Fix high CPU usage on Linux ([#1163](https://github.com/JetBrains/resharper-unity/issues/1163), [#1171](https://github.com/JetBrains/resharper-unity/1171))
+- Rider: Fix issue with switching to play mode when debugging ([RIDER-26857](https://youtrack.jetbrains.com/issue/RIDER-26857), [#1202](https://github.com/JetBrains/resharper-unity/pull/1202))
+- Rider: Fix Code Vision flickering when typing inside method ([#1203](https://github.com/JetBrains/resharper-unity/pull/1203))
+- Rider: Ignore "unityhub" Ubuntu process in debug dialog ([#1210](https://github.com/JetBrains/resharper-unity/pull/1210))
 
 
 
