@@ -281,7 +281,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       // rewind to the end of the ns-plain and let the next lexer advance match the whitespace and colon.
       RewindChar();
       RewindWhitespace();
-      return YamlTokenType.NS_PLAIN_ONE_LINE;
+      return YamlTokenType.NS_PLAIN_ONE_LINE_IN;
     }
 
     private void HandleExplicitKeyIndicator()
