@@ -33,7 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
                     continue;
 
                 context.SetElementState(declaredElement, UsageState.USED_MASK);
-                context.AddUsage(declaredElement, UsageCounterKind.Reference);
+                context.AddUsage(declaredElement, ReferenceCounter.Id);
+                context.AddUsage(declaredElement, UnityEditorUsageCounter.Id);
             }
         }
 
