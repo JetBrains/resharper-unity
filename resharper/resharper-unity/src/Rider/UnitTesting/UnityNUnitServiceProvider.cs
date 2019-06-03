@@ -25,12 +25,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
             IUnitTestElementIdFactory idFactory, IUnitTestElementManager elementManager, NUnitTestProvider provider,
             ISettingsStore settingsStore, ISettingsOptimization settingsOptimization, ISettingsCache settingsCache,
-            UnitTestingCachingService cachingService, IDotNetCoreSdkResolver dotNetCoreSdkResolver,
+            UnitTestingCachingService cachingService, INUnitTestParametersProvider testParametersProvider,
             UnityEditorProtocol editorProtocol,
             RunViaUnityEditorStrategy runViaUnityEditorStrategy,
             NUnitOutOfProcessUnitTestRunStrategy nUnitOutOfProcessUnitTestRunStrategy)
             : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settingsStore,
-                settingsOptimization, settingsCache, cachingService, dotNetCoreSdkResolver, nUnitOutOfProcessUnitTestRunStrategy)
+                settingsOptimization, settingsCache, cachingService, nUnitOutOfProcessUnitTestRunStrategy, testParametersProvider)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;

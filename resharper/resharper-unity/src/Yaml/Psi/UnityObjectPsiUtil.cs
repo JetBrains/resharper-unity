@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -56,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
             if (parts.Count == 0)
                 return "Unknown";
-            
+
             if (parts.Count == 1)
                 return parts[0];
 
@@ -75,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             // Prefab instance has a map of modifications, that stores delta of instance and prefab
             return yamlDocument.GetUnityObjectPropertyValue(UnityYamlConstants.ModificationProperty) as IBlockMappingNode;
         }
-        
+
         public static IYamlDocument GetTransformFromPrefabInstance(IYamlDocument prefabInstanceDocument)
         {
             // Prefab instance stores it's father in modification map
@@ -127,6 +128,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             }
 
             return null;
+        }
+
+        [NotNull]
+        public static IList<ITypeElement> GetTypeElementCandidatesFromScriptAssetGuid(
+            ISolution solution, [CanBeNull] string assetGuid)
+        {
+            if (assetGuid == null)
+                return EmptyList<ITypeElement>.Instance;
+
+            var cache = solution.GetComponent<MetaFileGuidCache>();
+            var assetPaths = cache.GetAssetFilePathsFromGuid(assetGuid);
+            if (assetPaths == null || assetPaths.IsEmpty())
+                return EmptyList<ITypeElement>.Instance;
+
+            // Ideally, there should be only one file, with only one type which matches the filename. But someone could
+            // have copy/pasted a .meta file, or have multiple elements in a file. If there are multiple, Unity will
+            // arbitrarily pick one.
+            var candidates = new List<ITypeElement>();
+            foreach (var assetPath in assetPaths)
+            {
+                var projectItems = solution.FindProjectItemsByLocation(assetPath);
+                var assetFile = projectItems.FirstOrDefault() as IProjectFile;
+                var psiSourceFiles = assetFile?.ToSourceFiles();
+                if (psiSourceFiles == null) continue;
+                var psiServices = solution.GetPsiServices();
+                foreach (var sourceFile in psiSourceFiles)
+                {
+                    var elements = psiServices.Symbols.GetTypesAndNamespacesInFile(sourceFile);
+                    foreach (var element in elements)
+                    {
+                        // We can't use nested types at all
+                        if (element is ITypeElement typeElement && typeElement.GetContainingType() == null)
+                            candidates.Add(typeElement);
+                    }
+                }
+            }
+
+            return candidates;
         }
 
         [CanBeNull]

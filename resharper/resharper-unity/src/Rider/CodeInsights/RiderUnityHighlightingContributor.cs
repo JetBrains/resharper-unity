@@ -2,33 +2,29 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
-using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
-using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Collections.Viewable;
 using JetBrains.DataFlow;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.Intentions;
-using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl;
 using JetBrains.Threading;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
@@ -39,18 +35,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly UnitySolutionTracker mySolutionTracker;
+        private readonly UnityApi myUnityApi;
+        private readonly UnityEventHandlerReferenceCache myHandlerReferenceCache;
         private readonly IconHost myIconHost;
 
         public RiderUnityHighlightingContributor(Lifetime lifetime, ISolution solution, ITextControlManager textControlManager,
             UnityCodeInsightFieldUsageProvider fieldUsageProvider, UnityCodeInsightProvider codeInsightProvider,
             ISettingsStore settingsStore, ConnectionTracker connectionTracker, SolutionAnalysisService swa, IShellLocks locks,
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnitySolutionTracker solutionTracker, IconHost iconHost = null)
+            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnitySolutionTracker solutionTracker, UnityApi unityApi, 
+            UnityEventHandlerReferenceCache handlerReferenceCache, IconHost iconHost = null)
             : base(solution, settingsStore, textControlManager, swa, analyzer)
         {
             myFieldUsageProvider = fieldUsageProvider;
             myCodeInsightProvider = codeInsightProvider;
             myConnectionTracker = connectionTracker;
             mySolutionTracker = solutionTracker;
+            myUnityApi = unityApi;
+            myHandlerReferenceCache = handlerReferenceCache;
             myIconHost = iconHost;
             var invalidateDaemonResultGroupingEvent = locks.GroupingEvents.CreateEvent(lifetime,
                 "UnityHiglightingContributor::InvalidateDaemonResults", TimeSpan.FromSeconds(5), Rgc.Guarded,
@@ -111,6 +112,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (declaredElement == null || !declaredElement.IsValid())
                 return;
 
+            // Since 19.2, Rider will show new code vision for scripts which will show 
+            // asset usages
+            if (myUnityApi.IsDescendantOfMonoBehaviour(declaredElement as ITypeElement)
+                || declaredElement is IMethod method && !myUnityApi.IsEventFunction(method) && 
+                myHandlerReferenceCache.IsEventHandler(method))
+            {
+                return;
+            }
+            
+
             var extraActions = new List<CodeLensEntryExtraActionModel>();
             if (mySolutionTracker.IsUnityProject.HasTrueValue() && !myConnectionTracker.IsConnectionEstablished())
             {
@@ -121,35 +132,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             
             var iconId = isIconHot ? InsightUnityIcons.InsightHot.Id : InsightUnityIcons.InsightUnity.Id;
             consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                // TODO pass tooltip correctly (waiting sdk update)
-                displayName, displayName, codeInsightsProvider, declaredElement,
+                displayName, tooltip, displayName, codeInsightsProvider, declaredElement,
                 myIconHost.Transform(iconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
+
         }
 
         public override string GetMessageForUnityEventFunction(UnityEventFunction eventFunction)
         {
             return eventFunction.Description ?? "Unity event function";
-        }
-
-        public override IEnumerable<BulbMenuItem> CreateAdditionalMenuItem(IDeclaration declaration, UnityApi api, 
-            AssetSerializationMode assetSerializationMode, ITextControl textControl)
-        {
-            var declaredElement = declaration.DeclaredElement;
-            if (ShowUsagesInUnityBulbAction.IsAvailableFor(declaredElement, api))
-            {
-                var action = new ShowUsagesInUnityBulbAction(declaredElement.NotNull("declaredElement != null"), assetSerializationMode,
-                    declaration.GetSolution().GetComponent<UnityEditorFindUsageResultCreator>(), myConnectionTracker);
-                return new[]
-                {
-                    new BulbMenuItem(
-                        new IntentionAction.MyExecutableProxi(action, Solution, textControl),
-                        action.Text, BulbThemedIcons.ContextAction.Id,
-                        BulbMenuAnchors.FirstClassContextItems)
-                };
-            }
-
-
-            return EmptyList<BulbMenuItem>.Instance;
         }
     }
 }

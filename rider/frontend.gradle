@@ -9,6 +9,7 @@ compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
         allWarningsAsErrors = warningsAsErrors.toBoolean()
+        freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
     }
 }
 
@@ -143,8 +144,8 @@ tasks.withType(PrepareSandboxTask).configureEach {
 // It might be better to make it top-level task that is called separately, e.g. gradle buildPlugin nunit
 // (and we could get rid of RunTests then, too)
 if (RunTests.equalsIgnoreCase("true")) {
-    nunit.shouldRunAfter(buildReSharperHostPlugin, buildUnityEditorPlugin)
-    buildReSharperHostPlugin.finalizedBy(nunit)
+    runNunit.shouldRunAfter(buildReSharperHostPlugin, buildUnityEditorPlugin)
+    buildReSharperHostPlugin.finalizedBy(runNunit)
 }
 
 task validatePluginXml {

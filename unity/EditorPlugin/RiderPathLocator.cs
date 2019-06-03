@@ -13,62 +13,40 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public class RiderPathLocator
+  public static class RiderPathLocator
   {
-    private static readonly ILog ourLogger = Log.GetLog<RiderPathLocator>();
-    private readonly IPluginSettings myPluginSettings;
-
-    public RiderPathLocator(IPluginSettings pluginSettings)
+#if !(UNITY_4_7 || UNITY_5_5)
+    [UsedImplicitly] // Used in com.unity.ide.rider
+    public static RiderInfo[] GetAllRiderPaths()
     {
-      myPluginSettings = pluginSettings;
-    }
-
-    /// <summary>
-    /// Returns RiderPath, if it exists
-    /// </summary>
-    /// <param name="externalEditor"></param>
-    /// <param name="allFoundPaths"></param>
-    /// <returns>May return null, if nothing found.</returns>
-    public string GetDefaultRiderApp(string externalEditor, string[] allFoundPaths)
-    {
-      // update previously selected editor, if better one is found
-      if (!string.IsNullOrEmpty(externalEditor))
+      try
       {
-        var alreadySetPath = new FileInfo(externalEditor).FullName;
-        if (RiderPathExist(alreadySetPath, myPluginSettings.OperatingSystemFamilyRider))
+        switch (SystemInfo.operatingSystemFamily)
         {
-          if (!allFoundPaths.Any() || allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
+          case OperatingSystemFamily.Windows:
           {
-            myPluginSettings.RiderPath = alreadySetPath;
-            return alreadySetPath;
+            return CollectRiderInfosWindows();
+          }
+          case OperatingSystemFamily.MacOSX:
+          {
+            return CollectRiderInfosMac();
+          }
+          case OperatingSystemFamily.Linux:
+          {
+            return CollectAllRiderPathsLinux();
           }
         }
       }
-
-      if (!string.IsNullOrEmpty(myPluginSettings.RiderPath) &&
-          allFoundPaths.Contains(new FileInfo(myPluginSettings.RiderPath).FullName))
+      catch (Exception e)
       {
-        // Settings.RiderPath is good enough
+        Debug.LogException(e);
       }
-      else
-        myPluginSettings.RiderPath = allFoundPaths.FirstOrDefault();
 
-      return myPluginSettings.RiderPath;
+      return new RiderInfo[0];
     }
-
-    internal static bool RiderPathExist(string path, OperatingSystemFamilyRider operatingSystemFamilyRider)
-    {
-      if (string.IsNullOrEmpty(path))
-        return false;
-      // windows or mac
-      var fileInfo = new FileInfo(path);
-      if (!fileInfo.Name.ToLower().Contains("rider"))
-        return false;
-      var directoryInfo = new DirectoryInfo(path);
-      var isMac = operatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX;
-      return fileInfo.Exists || (isMac && directoryInfo.Exists);
-    }
-
+#endif
+    
+#if RIDER_EDITOR_PLUGIN // can't be used in com.unity.ide.rider
     internal static RiderInfo[] GetAllFoundInfos(OperatingSystemFamilyRider operatingSystemFamily)
     {
       try
@@ -101,6 +79,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       return GetAllFoundInfos(operatingSystemFamily).Select(a=>a.Path).ToArray();
     }
+#endif
 
     private static RiderInfo[] CollectAllRiderPathsLinux()
     {
@@ -114,8 +93,7 @@ namespace JetBrains.Rider.Unity.Editor
       var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
         .Select(a=>new RiderInfo(GetBuildNumber(Path.Combine(a, pathToBuildTxt)), a, true)).ToList();
 
-
-      // /home/ivan/.local/share/applications/jetbrains-rider.desktop
+      //$Home/.local/share/applications/jetbrains-rider.desktop
       var shortcut = new FileInfo(Path.Combine(home, @".local/share/applications/jetbrains-rider.desktop"));
 
       if (shortcut.Exists)
@@ -214,37 +192,6 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-#if !(UNITY_4_7 || UNITY_5_5)
-    [UsedImplicitly]
-    public static RiderInfo[] GetAllRiderPaths()
-    {
-      try
-      {
-        switch (SystemInfo.operatingSystemFamily)
-        {
-          case OperatingSystemFamily.Windows:
-          {
-            return CollectRiderInfosWindows();
-          }
-          case OperatingSystemFamily.MacOSX:
-          {
-            return CollectRiderInfosMac();
-          }
-          case OperatingSystemFamily.Linux:
-          {
-            return CollectAllRiderPathsLinux();
-          }
-        }
-      }
-      catch (Exception e)
-      {
-        Debug.LogException(e);
-      }
-
-      return new RiderInfo[0];
-    }
-#endif
-
     private static string[] CollectPathsFromToolbox(string toolboxRiderRootPath, string dirName, string searchPattern, bool isMac)
     {
       if (!Directory.Exists(toolboxRiderRootPath))
@@ -291,7 +238,7 @@ namespace JetBrains.Rider.Unity.Editor
           catch (Exception e)
           {
             // do not write to Debug.Log, just log it.
-            ourLogger.Warn(e, $"Failed to get RiderPath from {channelDir}");
+            Logger.Warn($"Failed to get RiderPath from {channelDir}", e);
           }
 
           return new string[0];
@@ -335,7 +282,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
         catch (Exception)
         {
-          ourLogger.Warn($"Failed to get latest build from json {json}");
+          Logger.Warn($"Failed to get latest build from json {json}");
         }
         return null;
       }
@@ -376,7 +323,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
         catch (Exception)
         {
-          ourLogger.Warn($"Failed to get latest build from json {json}");
+          Logger.Warn($"Failed to get latest build from json {json}");
         }
         return null;
       }
@@ -411,6 +358,22 @@ namespace JetBrains.Rider.Unity.Editor
           presentation += " (JetBrains Toolbox)";
 
         Presentation = presentation;
+      }
+    }
+
+    private static class Logger
+    {
+      internal static void Warn(string message, Exception e = null)
+      {
+#if RIDER_EDITOR_PLUGIN // can't be used in com.unity.ide.rider
+        Log.GetLog(typeof(RiderPathLocator).Name).Warn(message);
+        if (e != null) 
+          Log.GetLog(typeof(RiderPathLocator).Name).Warn(e);
+#else
+        Debug.LogError(message);
+        if (e != null)
+          Debug.LogException(e);
+#endif
       }
     }
   }

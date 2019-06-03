@@ -27,7 +27,7 @@ namespace JetBrains.Rider.Unity.Editor
   public static class PluginEntryPoint
   {
     private static readonly IPluginSettings ourPluginSettings;
-    private static readonly RiderPathLocator ourRiderPathLocator;
+    private static readonly RiderPathProvider ourRiderPathProvider;
     public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
     private static readonly UnityEventCollector ourLogEventCollector;
 
@@ -38,8 +38,8 @@ namespace JetBrains.Rider.Unity.Editor
       ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap
 
       ourPluginSettings = new PluginSettings();
-      ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
-      var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
+      ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
+      var riderPath = ourRiderPathProvider.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
         RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
       if (string.IsNullOrEmpty(riderPath))
         return;
@@ -137,7 +137,10 @@ namespace JetBrains.Rider.Unity.Editor
       });
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+      {
+        var location = Assembly.GetExecutingAssembly().Location;
+        Debug.Log($"Rider plugin initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+      }
 
       var list = new List<ProtocolInstance>();
       CreateProtocolAndAdvise(lifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
@@ -153,7 +156,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
+      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
       File.WriteAllText(protocolInstanceJsonPath, ProtocolInstance.ToJson(list));

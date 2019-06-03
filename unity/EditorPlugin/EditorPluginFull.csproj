@@ -5,7 +5,7 @@
     <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_2017_3</DefineConstants>
+    <DefineConstants>UNITY_2017_3;RIDER_EDITOR_PLUGIN</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -14,11 +14,11 @@
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Platform.RdCore35">
-      <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
+    <Reference Include="JetBrains.Lifetimes">
+      <HintPath>..\lib\JetBrains.Lifetimes.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Platform.RdFramework35">
-      <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
+    <Reference Include="JetBrains.RdFramework">
+      <HintPath>..\lib\JetBrains.RdFramework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

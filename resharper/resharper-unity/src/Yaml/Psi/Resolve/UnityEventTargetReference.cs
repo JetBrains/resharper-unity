@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
@@ -13,11 +14,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class UnityEventTargetReference : CheckedReferenceBase<IPlainScalarNode>, IUnityYamlReference
     {
+        private readonly EventHandlerArgumentMode myMode;
+        private readonly string myType;
         private readonly FileID myFileId;
 
-        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, FileID fileId)
+        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, EventHandlerArgumentMode mode, string type, FileID fileId)
             : base(owner)
         {
+            myMode = mode;
+            myType = type;
             myFileId = fileId;
         }
 
@@ -54,13 +59,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (targetType == null)
                 return EmptySymbolTable.INSTANCE;
 
-            var symbolTable =
-                ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, myOwner.GetPsiModule());
+            var symbolTable = ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, myOwner.GetPsiModule());
 
             if (useReferenceName)
             {
                 var name = GetName();
-                return symbolTable.Filter(name, new ExactNameFilter(name));
+                return symbolTable.Filter(name, IsMethodFilter.INSTANCE, OverriddenFilter.INSTANCE, new ExactNameFilter(name),
+                    new StaticFilter(new NonStaticAccessContext(myOwner)), new EventHandlerSymbolFilter(myMode, myType, targetType.Module));
             }
 
             return symbolTable;
@@ -76,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             using (WriteLockCookie.Create(myOwner.IsPhysical()))
             {
-                var text = YamlTokenType.NS_PLAIN_ONE_LINE.Create(element.ShortName);
+                var text = YamlTokenType.NS_PLAIN_ONE_LINE_IN.Create(element.ShortName);
                 if (myOwner.Text != null)
                     LowLevelModificationUtil.ReplaceChildRange(myOwner.Text, myOwner.Text, text);
                 else

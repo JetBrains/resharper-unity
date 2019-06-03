@@ -20,6 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
         public override IEnumerable<ITemplateScopePoint> BuildAllPoints()
         {
+            yield return new IsAvailableForClassAttribute();
+            yield return new InUnityCSharpProject();
             yield return new MustBeInUnityType();
             yield return new InUnityShaderLabFile();
         }
@@ -28,11 +30,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
         public override string Present(ITemplateScopePoint point)
         {
+            if (point is IsAvailableForClassAttribute)
+                return "In C# file where class attribute is available";
+            if (point is InUnityCSharpProject)
+                return "In Unity project";
             if (point is MustBeInUnityType)
                 return "In Unity type where type members are allowed";
             if (point is InUnityShaderLabFile)
-                return "Anywhere in Unity ShaderLab file";
+                return "In Unity ShaderLab file";
             return base.Present(point);
+            
         }
     }
 }

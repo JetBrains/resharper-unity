@@ -216,7 +216,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             // TODO: These two are usually used together. Consider combining in some way
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
-                return unityApi.IsPotentialEventHandler(method);
+                return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
             return method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>().IsEventHandler(method);
         }
