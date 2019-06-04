@@ -128,10 +128,37 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       if (testMethod == null)
       {
         ourLogger.Verbose("{0} is not a TestMethod ", test.FullName);
-        return test.FullName;
+        return GetUniqueName(test);
       }
 
-      return test.FullName;
+      return GetUniqueName(test);
+    }
+
+    // analog of UnityEngine.TestRunner.NUnitExtensions.TestExtensions.GetUniqueName
+    // I believe newer nunit has improved parameters presentation compared to the one used in Unity.
+    // https://github.com/nunit/nunit/blob/d56424858f97e19a5fe64905e42adf798ca655d1/src/NUnitFramework/framework/Internal/TestNameGenerator.cs#L223
+    // so once Unity updates its nunit, this hack would not be needed anymore
+    private static string GetUniqueName(ITest test)
+    {
+      string str = test.FullName;
+      if (HasChildIndex(test))
+      {
+        int childIndex = GetChildIndex(test);
+        if (childIndex >= 0)
+          str += childIndex;
+      }
+      
+      return str;
+    }
+
+    private static int GetChildIndex(ITest test)
+    {
+      return (int) test.Properties["childIndex"][0];
+    }
+
+    private static bool HasChildIndex(ITest test)
+    {
+      return test.Properties["childIndex"].Count > 0;
     }
   }
 }
