@@ -4,7 +4,14 @@ using UnityEditor.Build;
 public class A : IPreprocessBuild
 {
     public int callbackOrder { get; }
-    public void OnPreprocessBuild(BuildTarget target, string path)
+    public int ||RandomProperty|(0)|(1) { get; }
+    
+	public virtual void OnPreprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+	
+	public void |RandomMethod|(2)()
     {
         throw new System.NotImplementedException();
     }
@@ -17,5 +24,16 @@ public class B : A, IPostprocessBuild
         throw new System.NotImplementedException();
     }
 }
+
+public class C : A
+{
+    public override void OnPreprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+}
 ---------------------------------------------------------
+(0): ReSharper Warning: Get-only auto-property 'RandomProperty' is never assigned
+(1): ReSharper Dead Code: Property 'RandomProperty' is never used
+(2): ReSharper Dead Code: Method 'RandomMethod' is never used
 
