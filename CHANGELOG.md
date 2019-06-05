@@ -11,6 +11,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/28?closed=1)
 
 ### Added
+- Methods and properties defined in `UnityEditor.Build.*` are now implicitly used([#686](https://github.com/JetBrains/resharper-unity/issues/686))
 - Rider: Added support for the Rider integration package used by Unity 2019.2+. No longer copies Rider plugin to Assets folder, and is loaded directly from the Rider installation folder ([#1176](https://github.com/JetBrains/resharper-unity/pull/1176))
 
 ### Fixed

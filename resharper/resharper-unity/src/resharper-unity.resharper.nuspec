@@ -34,6 +34,9 @@
 - And much more!
 </description>
 <releaseNotes>
+Added:
+- Methods and properties defined in `UnityEditor.Build.*` are now implicitly used([#686](https://github.com/JetBrains/resharper-unity/issues/686))
+
 Fixed:
 
 - Fix parse errors in YAML for strings that begin with quotes, braces or tildes (#1169, RIDER-27475, #1192)
