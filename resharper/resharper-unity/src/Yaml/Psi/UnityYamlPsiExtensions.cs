@@ -48,6 +48,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             return new FileID(reader.ReadString(), reader.ReadString());
         }
+        
+        protected bool Equals(FileID other)
+        {
+            return string.Equals(guid, other.guid) && string.Equals(fileID, other.fileID);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((FileID) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((guid != null ? guid.GetHashCode() : 0) * 397) ^ (fileID != null ? fileID.GetHashCode() : 0);
+            }
+        }
     }
     // ReSharper restore InconsistentNaming
 
@@ -160,6 +181,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             // while the value is another block mapping node. Those entries are the properties of the Unity object
             var rootBlockMappingNode = document?.Body.BlockNode as IBlockMappingNode;
             return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Value as IBlockMappingNode;
+        }
+
+        public static string GetAnchor(this IYamlDocument document)
+        {
+            var properties = GetDocumentBlockNodeProperties(document.Body.BlockNode);
+            return properties?.AnchorProperty?.Text?.GetText();
         }
     }
 }

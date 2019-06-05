@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.IsLanguageSupported<YamlLanguage>() && (
+            return sf.IsLanguageSupported<UALanguage>() && (
                        sf.Name.EndsWith("cs.meta", StringComparison.InvariantCultureIgnoreCase) ||
                        sf.Name.EndsWith("unity.meta", StringComparison.InvariantCultureIgnoreCase) ||
                        sf.Name.EndsWith("prefab.meta", StringComparison.InvariantCultureIgnoreCase)
@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (!IsApplicable(sourceFile))
                 return null;
 
-            if (!(sourceFile.GetDominantPsiFile<YamlLanguage>() is IYamlFile yamlFile))
+            if (!(sourceFile.GetDominantPsiFile<UALanguage>() is IYamlFile yamlFile))
                 return null;
 
             // Note that this opens the document body chameleon, but we don't care for .meta files. They're lightweight

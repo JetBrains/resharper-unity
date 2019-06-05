@@ -129,11 +129,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity Editor",
                     AbstractUnityCodeInsightProvider.StartUnityActionId));
             }
-            
+
             var iconId = isIconHot ? InsightUnityIcons.InsightHot.Id : InsightUnityIcons.InsightUnity.Id;
-            consumer.AddHighlighting(new UnityCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                displayName, tooltip, displayName, codeInsightsProvider, declaredElement,
-                myIconHost.Transform(iconId), CreateBulbItemsForUnityDeclaration(element), extraActions));
+            codeInsightsProvider.AddHighlighting(consumer, element, declaredElement, displayName, tooltip, displayName,
+                myIconHost.Transform(iconId), CreateBulbItemsForUnityDeclaration(element), extraActions);
 
         }
 

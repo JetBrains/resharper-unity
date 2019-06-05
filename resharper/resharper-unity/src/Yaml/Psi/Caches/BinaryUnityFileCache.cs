@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.IsLanguageSupported<YamlLanguage>();
+            return sf.IsLanguageSupported<UALanguage>();
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (!IsApplicable(sourceFile))
                 return null;
 
-            if (!(sourceFile.GetDominantPsiFile<YamlLanguage>() is IYamlFile yamlFile))
+            if (!(sourceFile.GetDominantPsiFile<UALanguage>() is IYamlFile yamlFile))
                 return null;
 
             // Handle empty files

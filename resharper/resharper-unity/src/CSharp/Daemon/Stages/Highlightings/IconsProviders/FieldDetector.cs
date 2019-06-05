@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 || myUnityApi.IsInjectedField(declaredElement))
             {
                 myImplicitUsageHighlightingContributor.AddUnityImplicitFieldUsage(consumer, field,
-                    "This field is initialised by Unity", "Set by Unity", kind);
+                    "This field is initialised by Unity", "Property", kind);
 
                 return declaredElement;
             }

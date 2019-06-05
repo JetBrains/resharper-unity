@@ -1,26 +1,28 @@
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
-
     public class MonoBehaviourPrimitiveValue : MonoBehaviourPropertyValue
     {
         [NotNull]
         public string PrimitiveValue { get; }
 
-        public MonoBehaviourPrimitiveValue([NotNull] string primitiveValue, [NotNull] string monoBehaviour)
-            : base(monoBehaviour)
+        public MonoBehaviourPrimitiveValue([CanBeNull] string primitiveValue, [NotNull] string monoBehaviour,
+            [CanBeNull] string localGameObjectAnchor)
+            : base(monoBehaviour, localGameObjectAnchor)
         {
-            PrimitiveValue = primitiveValue;
+            PrimitiveValue = primitiveValue ?? string.Empty;
         }
-        
+
         protected bool Equals(MonoBehaviourPrimitiveValue other)
         {
             return base.Equals(other) && string.Equals(PrimitiveValue, other.PrimitiveValue);
         }
-        
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -44,19 +46,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             base.WriteTo(writer);
         }
 
+        public override string GetSimplePresentation(ISolution solution, IPsiSourceFile file) => PrimitiveValue;
+
         public static MonoBehaviourPropertyValue ReadFrom(UnsafeReader reader)
         {
-            return new MonoBehaviourPrimitiveValue(reader.ReadString().NotNull("primitiveValue != null"), reader.ReadString().NotNull("monoBehaviour != null"));
+            return new MonoBehaviourPrimitiveValue(reader.ReadString().NotNull("primitiveValue != null"),
+                reader.ReadString().NotNull("monoBehaviour != null"), reader.ReadString());
         }
     }
 
-    public class MonoBehaviourReferenceValue : MonoBehaviourPropertyValue {
-    
+    public class MonoBehaviourReferenceValue : MonoBehaviourPropertyValue
+    {
         [NotNull]
         public FileID Reference { get; }
 
-        public MonoBehaviourReferenceValue([NotNull] FileID referenceValue, [NotNull] string monoBehaviour)
-            : base(monoBehaviour)
+        public MonoBehaviourReferenceValue([NotNull] FileID referenceValue, [NotNull] string monoBehaviour,
+            [CanBeNull] string localGameObjectAnchor)
+            : base(monoBehaviour, localGameObjectAnchor)
         {
             Reference = referenceValue;
         }
@@ -84,7 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         public static MonoBehaviourPropertyValue ReadFrom(UnsafeReader reader)
         {
-            return new MonoBehaviourReferenceValue(FileID.ReadFrom(reader), reader.ReadString().NotNull("monoBehaviour != null"));
+            return new MonoBehaviourReferenceValue(FileID.ReadFrom(reader),
+                reader.ReadString().NotNull("monoBehaviour != null"), reader.ReadString());
         }
 
         internal override void WriteTo(UnsafeWriter writer)
@@ -93,17 +100,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             Reference.WriteTo(writer);
             base.WriteTo(writer);
         }
+
+        public override string GetSimplePresentation(ISolution solution, IPsiSourceFile file)
+        {
+            var cache = solution.GetComponent<UnityGameObjectNamesCache>();
+            if (cache.Map.TryGetValue(file, out var anchorToName))
+            {
+                if (anchorToName.TryGetValue(Reference.fileID, out var name))
+                {
+                    return name;
+                }
+            }
+
+            return null;
+        }
     }
-    
+
     public abstract class MonoBehaviourPropertyValue
     {
         [NotNull]
         public string MonoBehaviour { get; }
 
-        public MonoBehaviourPropertyValue([NotNull] string monoBehaviour)
+        [NotNull]
+        public string LocalGameObjectAnchor { get; }
+
+        public MonoBehaviourPropertyValue([NotNull] string monoBehaviour, [CanBeNull] string localGameObjectAnchor)
         {
             MonoBehaviour = monoBehaviour;
+            LocalGameObjectAnchor = localGameObjectAnchor;
         }
+
         public override bool Equals(object obj)
         {
             if (!(obj is MonoBehaviourPropertyValue value))
@@ -125,7 +151,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         internal virtual void WriteTo(UnsafeWriter writer)
         {
             writer.Write(MonoBehaviour);
+            writer.Write(LocalGameObjectAnchor);
         }
+
+        public abstract string GetSimplePresentation(ISolution solution, IPsiSourceFile file);
     }
 
     public static class MonoBehaviourPropertyValueMarshaller
