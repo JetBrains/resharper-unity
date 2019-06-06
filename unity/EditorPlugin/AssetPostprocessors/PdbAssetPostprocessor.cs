@@ -35,7 +35,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           if (!AssemblyIsInAppDomain(dllPath)) continue;
           var pdb = Path.ChangeExtension(dllPath, ".pdb");
           if (!IsPortablePdb(pdb))
+          {
             ConvertSymbolsForAssembly(dllPath);
+            var mdbFile = Path.ChangeExtension(dllPath, ".dll.mdb");
+            if (new FileInfo(mdbFile).Exists)
+              AssetDatabase.ImportAsset(mdbFile);
+          }
           else
             ourLogger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
         }
