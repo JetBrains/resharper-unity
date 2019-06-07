@@ -12,7 +12,7 @@
 - Code completion of event function declarations in a class.
 - Use Generate Code to create event functions, with parameters, or start typing for automatic completion.
 - Highlights Unity event functions and serializable fields and marks as implicitly used by Unity.
-- Supports Unity API 5.0 - 2018.3, plus undocumented functions.
+- Supports Unity API 5.0 - 2019.2, plus undocumented functions.
 - Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explanations.
 - Performance indicators to avoid known code patterns that affect performance.
 - Parse class and method usage from scene, prefab and assets.
@@ -35,42 +35,13 @@
 </description>
 <releaseNotes>
 Added:
-
-- Add rename of methods and properties used in text base assets (#1140)
-- Add inspection and quick fix to avoid inefficient order of multiplication operations (#1031)
-- Add warning for string literal use in Animator.ResetTrigger (RIDER-24421, #1035)
-- Add support for marking ECS types and fields as "in use" (#1010, #1036)
-- Add gutter icon indicator for event function that "hides" a private event function in a base class (RIDER-14698, #1081)
-- Add Unity version to error report environment details (#1103)
-- Add ability to find similar issues for performance indicators (#1109)
-
-Changed:
-
-- Performance critical context now works cross files (#1037)
-- Event functions can be grouped by base classes in Generate dialog (#810, #1081)
-- No longer creates a .sln.DotSettings.user file when YAML size heuristic is applied (#1087)
-- Treat AddComponent(Type) as an expensive operation (#1044, #1109)
-- Include Unity YAML files in Solution Wide Error Analysis (#1118)
-- Updated API to 2019.2.0a9 (#1055, #1056)
+- Methods and properties defined in `UnityEditor.Build.*` are now implicitly used([#686](https://github.com/JetBrains/resharper-unity/issues/686))
 
 Fixed:
 
-- Event handler completion no longer matches on parameter types, only method names (RIDER-22944, #1081)
-- No longer shows code completion after [SerializeField] attribute (RIDER-22943, #1081)
-- Correctly resolves generated code when there is a namespace called System in the current context (RIDER-22605, #1081)
-- Correctly handle code generation of event functions that are implemented as virtual methods (RIDER-17104, #603, #879, #1081)
-- Correctly update name of existing method declaration with code completion (RIDER-9555, RIDER-14037, #0181)
-- Only show event function completion in classes, not structs or interfaces (RIDER-14147, #420, #1081)
-- Respect existing access modifier in code completion (RIDER-15290, #1081)
-- Remove incorrect method signature warning if method is implementing a virtual method (#876, #1081)
-- Fix spelling mistake in issue suppression comment (#1083, #1109)
-- Fix validation exceptions (RIDER-26102, RIDER-26109, RIDER-26103, #1108)
-- Fix exception when project contains empty YAML file (RIDER-25787, #1124)
-- Fix parse error in YAML files with multiline text containing single quotes (RIDER-26849, #1145)
-- Fix parse error in ShaderLab attribute values (RIDER-26909, #857, #1149)
-- Fix invalid references to scripts or event handlers in read only/referenced packages (RIDER-27009, #1153)
-- Fix rename of MonoBehaviour based classes being blocked by reported conflicts (RIDER-27053, #1153)
-
+- Fix parse errors in YAML for strings that begin with quotes, braces or tildes (#1169, RIDER-27475, #1192)
+- Fix errors in scene files for unresolved methods (RIDER-27445, #1178, #1174)
+- Fix rename of script components not being able to update correctly (#1196)
 
 See CHANGELOG.md in the project repo for more details and history.
 </releaseNotes>
