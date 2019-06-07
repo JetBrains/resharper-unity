@@ -18,6 +18,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
   // or break out of parsing that node and potentially be out of sync for the rest of the file
   internal class YamlTreeStructureBuilder : TreeStructureBuilderBase, IPsiBuilderTokenFactory
   {
+    private static readonly NodeTypeSet ourNsPlainInStopTokens = new NodeTypeSet(
+      YamlTokenType.COLON,
+      YamlTokenType.COMMA,
+      YamlTokenType.LBRACE,
+      YamlTokenType.RBRACE,
+      YamlTokenType.LBRACK,
+      YamlTokenType.RBRACK);
+
     private readonly PsiBuilder myBuilder;
     private bool myCreateClosedChameleons;
     private int myCurrentLineIndent;
@@ -720,7 +728,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       // --- !u!4 &154806035 stripped
       // Transform:
       //   m_PrefabParentObject: ...
-      if (GetTokenTypeNoSkipWhitespace().IsWhitespace && IsPlainScalarToken(LookAheadNoSkipWhitespaces(1)) &&
+      if (GetTokenTypeNoSkipWhitespace().IsWhitespace && IsPlainScalarStartToken(LookAheadNoSkipWhitespaces(1)) &&
           CompareLookAheadText(1, "stripped"))
       {
         Advance(); // <whitespace>
@@ -796,7 +804,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       var tt = GetTokenTypeNoSkipWhitespace();
       // TODO: Is TAG_CHARS a superset of ns-plain?
       // TODO: Perhaps we should accept all text and add an inspection for invalid chars?
-      if (tt != YamlTokenType.NS_TAG_CHARS && tt != YamlTokenType.NS_PLAIN_ONE_LINE)
+      if (tt != YamlTokenType.NS_TAG_CHARS && tt != YamlTokenType.NS_PLAIN_ONE_LINE_IN && tt != YamlTokenType.NS_PLAIN_ONE_LINE_OUT)
         ErrorBeforeWhitespaces(ParserMessages.GetExpectedMessage("text"));
       else
         Advance();
@@ -884,8 +892,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         Advance();
         elementType = ElementType.SINGLE_QUOTED_SCALAR_NODE;
       }
-      else if (IsPlainScalarToken(tt))
-        elementType = ParseMultilinePlainScalar(expectedIndent);
+      else if (IsPlainScalarStartToken(tt))
+        elementType = ParsePlainScalar(expectedIndent);
       else if (tt != YamlTokenType.DOCUMENT_END)
         elementType = ElementType.EMPTY_SCALAR_NODE;
 
@@ -899,7 +907,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     {
       var tt = GetTokenTypeNoSkipWhitespace();
       return tt == YamlTokenType.LBRACK || tt == YamlTokenType.RBRACK
-                                        || IsDoubleQuoted(tt) || IsSingleQuoted(tt) || IsPlainScalarToken(tt);
+          || IsDoubleQuoted(tt) || IsSingleQuoted(tt) || IsPlainScalarStartToken(tt);
     }
 
     private CompositeNodeType ParseFlowSequence(int expectedIndent)
@@ -1129,19 +1137,34 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         ParseFlowMapImplicitEntry(expectedIndent);
     }
 
-    private CompositeNodeType ParseMultilinePlainScalar(int expectedIndent)
+    // Parse a plain scalar, which might be multi-line. The problem is that the lexer will only match the first line,
+    // and not subsequent lines, which means subsequent lines can contain other tokens (e.g. `{0}` will be lexed as
+    // opening/closing braces). Furthermore, some of these tokens are not applicable if we're in flow/block in/out.
+    // TODO: Can this be handled by the lexer?
+    // We can handle multi-line block scalars that are terminated by indent, so we should be able to do this. When in
+    // FLOW or BLOCK state, match the first line, head into a new state, match subsequent lines (with correct patterns
+    // because we know if we're in flow/block) and output multiple NS_PLAIN line tokens. (We might even be able to enter
+    // an inner _locateToken loop, match multiple NS_PLAIN tokens and replace with a single NS_PLAIN_MULTILINE token)
+    private CompositeNodeType ParsePlainScalar(int expectedIndent)
     {
       var endOfValueMark = -1;
 
+      // Eat all tokens until the indent is decreased
       var tt = GetTokenTypeNoSkipWhitespace();
-      while (IsPlainScalarToken(tt) || tt == YamlTokenType.INDENT || tt == YamlTokenType.NEW_LINE)
+
+      var stopTokens = new NodeTypeSet();
+      if (tt == YamlTokenType.NS_PLAIN_ONE_LINE_IN)
+        stopTokens = ourNsPlainInStopTokens;
+
+      while (!myBuilder.Eof() && !stopTokens[tt])
       {
         if (myExpectImplicitKey && tt == YamlTokenType.NEW_LINE)
           break;
 
+        // Make sure we advance first. Then our end of value mark will actually be at the end of the value
         Advance();
 
-        if (IsPlainScalarToken(tt))
+        if (tt != YamlTokenType.INDENT && tt != YamlTokenType.NEW_LINE && !stopTokens[tt])
         {
           if (endOfValueMark != -1 && myCurrentLineIndent < expectedIndent)
             break;
@@ -1161,11 +1184,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return ElementType.PLAIN_SCALAR_NODE;
     }
 
-    private bool IsPlainScalarToken(TokenNodeType tt)
+    private bool IsPlainScalarStartToken(TokenNodeType tt)
     {
       if (myExpectImplicitKey)
-        return tt == YamlTokenType.NS_PLAIN_ONE_LINE;
-      return tt == YamlTokenType.NS_PLAIN_ONE_LINE || tt == YamlTokenType.NS_PLAIN_MULTI_LINE;
+        return tt == YamlTokenType.NS_PLAIN_ONE_LINE_IN || tt == YamlTokenType.NS_PLAIN_ONE_LINE_OUT;
+
+      // We don't have a multi-line token, as that requires the lexer to track indents. We could simplify this method,
+      // but it's helpful to remember the difference, and I'd like to get rid of the _IN and _OUT tokens one day
+      return tt == YamlTokenType.NS_PLAIN_ONE_LINE_IN || tt == YamlTokenType.NS_PLAIN_ONE_LINE_OUT /* || tt == YamlTokenType.NS_PLAIN_MULTI_LINE */;
     }
 
     private new void Advance()

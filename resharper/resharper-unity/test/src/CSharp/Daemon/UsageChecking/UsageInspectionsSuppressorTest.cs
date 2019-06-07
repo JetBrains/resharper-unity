@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
         [Test] public void MonoBehaviourMethods01() { DoNamedTest(); }
         [Test] public void MonoBehaviourFields01() { DoNamedTest(); }
         [Test] public void SerializableClassFields01() { DoNamedTest(); }
+        [Test] public void PreprocessBuildInterface01() { DoNamedTest(); }
 
         protected override void DoTest(IProject project)
         {
