@@ -33,8 +33,6 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
 
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
-    val play = model.play
-    val pause = model.pause
 
     val logSignal = Signal<RdLogEvent>()
 

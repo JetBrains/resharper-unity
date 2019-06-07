@@ -1,13 +1,11 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
-import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
-import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -18,16 +16,14 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
-import com.jetbrains.rider.unitTesting.panels.RiderUnitTestSessionPanel
 import com.jetbrains.rider.util.idea.application
-import com.jetbrains.rd.util.lifetime.Lifetime
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.KeyAdapter
@@ -40,7 +36,7 @@ import javax.swing.JMenuItem
 import javax.swing.JPopupMenu
 import javax.swing.event.DocumentEvent
 
-class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
+class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(AnalyzeStacktraceUtil.EP_NAME.getExtensions(project))
