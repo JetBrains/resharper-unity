@@ -81,14 +81,15 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         }.installOn(this)
 
-        var prevVal: Boolean? = null
-
-        unityHost.play.advise(lifetime) {
-            if (it && prevVal == false) {
-                logModel.events.clear()
-            }
-            prevVal = it
-        }
+        // This is commented, because it clears new messages, which we got after entering play RIDER-26880, todo: restore this feature
+//        var prevVal: Boolean? = null
+//
+//        unityHost.play.advise(lifetime) {
+//            if (it && prevVal == false) {
+//                logModel.events.clear()
+//            }
+//            prevVal = it
+//        }
     }
 
     private fun getDateFromTicks(ticks: Long): Date {
