@@ -8,6 +8,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ## 2019.2
 ### Fixed
+- Disable automatic cleanup of Unity messages in Rider ([#1217]https://github.com/JetBrains/resharper-unity/pull/1217)
 - Fix dynamic unit tests with similar name and different child-index ([#1214]https://github.com/JetBrains/resharper-unity/pull/1214)
 
 ## 2019.1.2
