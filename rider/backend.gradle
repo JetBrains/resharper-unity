@@ -96,6 +96,7 @@ task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
         sources.add(project.backend.getRiderSdkPath())
         sources.add(project.backend.getReSharperSdkPath())
     }
+    msBuildVersion = "15.9"
 }
 
 task restoreUnityEditorPluginPackages(type: nugetRestore.class) {
