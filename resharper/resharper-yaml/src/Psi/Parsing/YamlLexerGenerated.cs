@@ -89,9 +89,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
   {
     // ReSharper disable InconsistentNaming
     private TokenNodeType currentTokenType;
+    private bool explicitKey = false;
 
     private int lastNewLineOffset;
-    private int currentLineIndent;
+    public int currentLineIndent;
 
     // The indent of the indicator of a block scalar. The contents must be more
     // indented than this. However, we also need to handle the case where the
@@ -101,7 +102,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     // TODO: Use the indentation indicator value to set this
 
     private int parentNodeIndent;
-
+    private bool atChameleonStart = false;
+    
     // The number of unclosed LBRACE and LBRACK. flowLevel == 0 means block context
     private int flowLevel;
 
@@ -197,13 +199,23 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     private bool IsBlock => flowLevel == 0;
 
+    public void SetBlockState()
+    {
+      atChameleonStart = true;
+    }
+    
     private TokenNodeType LocateToken()
     {
       if (currentTokenType == null)
       {
         try
         {
+          if (atChameleonStart)
+          {
+            yybegin(BLOCK);
+          }
           currentTokenType = _locateToken();
+          atChameleonStart = false;
         }
         catch (Exception e)
         {
@@ -225,6 +237,116 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return currentTokenType;
     }
 
+    private TokenNodeType TryEatLinesWithGreaterIndent()
+    {
+      var previousLastNewLineOffset = lastNewLineOffset;
+      var previousLineIndent = currentLineIndent;
+      var count = EatLinesWithGreaterIndent();
+      if (count == 1)
+      {
+        RewindToken();
+        currentLineIndent = previousLineIndent;
+        lastNewLineOffset = previousLastNewLineOffset;
+        return _locateToken();
+      }
+      else
+      {
+        yy_at_bol = true;
+        return YamlTokenType.GetChameleonMapEntryValueWithIndent(currentLineIndent); 
+      }
+    }
+
+    private int EatLinesWithGreaterIndent()
+    {
+      var linesCount = 0;
+      RewindChar();
+      var curIndent = currentLineIndent;
+      
+      EatToEnd();
+      linesCount++;
+      lastNewLineOffset = yy_buffer_index;
+      
+      while (EatIndent() > curIndent || yy_buffer_index != yy_eof_pos && Buffer[yy_buffer_index] == '#')
+      {
+        linesCount++;
+        EatToEnd();
+        lastNewLineOffset = yy_buffer_index;
+      }
+
+      yy_buffer_index = lastNewLineOffset;
+      yy_buffer_end = lastNewLineOffset;
+      currentLineIndent = 0;
+
+      yybegin(BLOCK);
+
+      return linesCount;
+    }
+
+    private void EatToEnd()
+    {
+      while (true)
+      {
+        if (yy_buffer_index == yy_eof_pos)
+          break;
+
+        if (Buffer[yy_buffer_index] == '\n')
+        {
+          yy_buffer_index++;
+          break;
+        } 
+        
+        if (Buffer[yy_buffer_index] == '\r')
+        {
+          yy_buffer_index++;
+
+          if (yy_buffer_index < yy_eof_pos && Buffer[yy_buffer_index] == '\n')
+            yy_buffer_index++;
+
+          break;
+        }
+
+        yy_buffer_index++;
+      }
+    }
+
+    private int EatIndent()
+    {
+      currentLineIndent = 0;
+      while (true)
+      {
+        if (yy_buffer_index == yy_eof_pos)
+          break;
+
+        if (Buffer[yy_buffer_index] == ' ')
+        {
+          currentLineIndent++;
+        }
+        else
+        {
+          break;
+        }
+
+        yy_buffer_index++;
+      }
+
+      if (yy_buffer_index + 2 < yy_eof_pos)
+      {
+        if (Buffer[yy_buffer_index] == '-' && Buffer[yy_buffer_index  + 1] == ' ')
+        {
+          currentLineIndent += 2;
+        }
+      }
+
+      return currentLineIndent;
+    }
+
+    private void HandleIndent()
+    {
+      if (yy_buffer_index < yy_eof_pos && Buffer[yy_buffer_index] == ' ')
+        currentLineIndent += 2;
+    }
+    
+    
     // For completeness: These rewind functions don't reset any current indents or last new line offset. As long as you
     // don't rewind multiple times, especially across a new line or an indent, this shouldn't cause an issue
     private void RewindToken()
@@ -275,7 +397,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     private TokenNodeType HandleImplicitKey()
     {
       parentNodeIndent = yy_buffer_start - lastNewLineOffset;
-
       // The lexer matches an implicit key as a single line ns-plain, followed by optional whitespace and a colon
       // We want the lexer to return this as separate tokens (which the parser will then match as an implicit key), so
       // rewind to the end of the ns-plain and let the next lexer advance match the whitespace and colon.
@@ -286,6 +407,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     private void HandleExplicitKeyIndicator()
     {
+      explicitKey = true;
       parentNodeIndent = yy_buffer_start - lastNewLineOffset;
     }
 

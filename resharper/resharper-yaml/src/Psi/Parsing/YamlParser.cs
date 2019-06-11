@@ -26,12 +26,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       });
     }
 
-    public IYamlDocument ParseDocument()
+    public IYamlDocument ParseDocument(int chameleonOffset)
     {
       return Lifetime.Using(lifetime =>
       {
         var builder = CreateTreeBuilder(lifetime);
-        builder.ParseDocument(false);
+        builder.ParseDocument(chameleonOffset, false);
         return (IYamlDocument) builder.GetTree();
       });
     }
@@ -59,9 +59,22 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       });
     }
 
-    private YamlTreeStructureBuilder CreateTreeBuilder(Lifetime lifetime)
+    private YamlTreeStructureBuilder CreateTreeBuilder(Lifetime lifetime, int indent = 0)
     {
-      return new YamlTreeStructureBuilder(myLexer, lifetime);
+      return new YamlTreeStructureBuilder(myLexer, lifetime, indent);
+    }
+
+    public ITreeNode ParseContent(int chameleonOffset, int indent, int expectedIndent)
+    {
+      return Lifetime.Using(lifetime =>
+      {
+        var builder = CreateTreeBuilder(lifetime, indent);
+        builder.ParseContent(chameleonOffset, expectedIndent);
+
+        var content = builder.GetTree();
+        //Assertion.Assert(content is IContent, "rootBlockNode is IContent");
+        return content;
+      });
     }
   }
 }

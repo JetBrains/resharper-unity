@@ -1,4 +1,3 @@
-
 using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
@@ -12,19 +11,37 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
-{ 
-  internal class UAChameleonDocument : YamlDocument, IChameleonNode
+{
+  
+  public struct ContentContext
   {
+    public int CurrentParserIndent;
+    public int CurrentLexerIndent;
+    public int ExpectedIndent;
+
+    public ContentContext(int currentParserIndent, int currentLexerIndent, int expectedIndent)
+    {
+      CurrentParserIndent = currentParserIndent;
+      CurrentLexerIndent = currentLexerIndent;
+      ExpectedIndent = expectedIndent;
+    }
+  }
+  
+  internal class ChameleonContentNode : ContentNode, IChameleonNode
+  {
+    private readonly int myParserIndent;
+    private readonly int myLexerIndent;
+    private readonly int myExpectedIndent;
     private readonly object mySyncObject = new object();
     private bool myOpened;
-
-   
-    // Used by Resync to create a closed chameleon
-    public UAChameleonDocument(ClosedChameleonElement closedChameleonElement)
+    
+    public ChameleonContentNode(ContentContext data)
     {
-      AppendNewChild(closedChameleonElement);
+      myParserIndent = data.CurrentParserIndent;
+      myLexerIndent = data.CurrentLexerIndent;
+      myExpectedIndent = data.ExpectedIndent;
     }
-
+    
     public bool IsOpened
     {
       get
@@ -105,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       return null;
     }
 
-    
+
     private void OpenChameleon()
     {
       Assertion.Assert(!myOpened, "!myOpened");
@@ -115,9 +132,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       Assertion.Assert(service != null, "service != null");
 
       var buffer = GetTextAsBuffer();
-      var lexer = new TokenBuffer(service.GetPrimaryLexerFactory().CreateLexer(buffer)).CreateLexer();
-      var parser = (YamlParser)service.CreateParser(lexer, null, GetSourceFile());
-      var openedChameleon = parser.ParseDocument();
+      var baseLexer = service.GetPrimaryLexerFactory().CreateLexer(buffer) as YamlLexer;
+      baseLexer.currentLineIndent = myLexerIndent;
+      baseLexer.SetBlockState();
+      var lexer = new TokenBuffer(baseLexer).CreateLexer();
+      var parser = (YamlParser) service.CreateParser(lexer, null, GetSourceFile());
+      var openedChameleon = parser.ParseContent(firstChild.GetTreeStartOffset().Offset, myParserIndent, myExpectedIndent);
 
       AssertTextLength(openedChameleon);
 
@@ -156,7 +176,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
         expectedTextLength, actualTextLength);
     }
 
-    public override string ToString() => "ChameleonDocumentBody";
+    public override string ToString() => "ChameleonMapEntryContent";
   }
-
 }

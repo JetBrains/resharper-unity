@@ -13,5 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       : base(buffer, startOffset, endOffset)
     {
     }
+
+
   }
 }
