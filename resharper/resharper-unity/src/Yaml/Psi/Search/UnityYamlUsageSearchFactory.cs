@@ -3,7 +3,6 @@ using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -27,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
         public override bool IsCompatibleWithLanguage(PsiLanguageType languageType)
         {
-            return languageType.Is<UALanguage>();
+            return languageType.Is<UnityYamlLanguage>();
         }
 
         public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,
@@ -46,9 +45,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             if (IsInterestingElement(element))
             {
-                var words = new List<string> { element.ShortName };
+                var words = new List<string>();
 
-                // If it's a class, we also need the asset GUID
+                // If it's a class, we only need the asset GUID
                 if (element is IClass)
                 {
                     var metaFileGuidCache = element.GetSolution().GetComponent<MetaFileGuidCache>();
@@ -61,7 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         var guid = metaFileGuidCache.GetAssetGuid(sourceFile);
                         if (guid != null)
                             words.Add(guid);
-                    }
+                    } 
+                }
+                else
+                {
+                    words.Add(element.ShortName);
                 }
 
                 return words;

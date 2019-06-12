@@ -1,7 +1,7 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 
-namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
 {
     [ProjectFileTypeDefinition(Name)]
     public class UnityYamlProjectFileType : KnownProjectFileType

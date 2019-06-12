@@ -41,11 +41,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             //       m_CallState: 2
             //   m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
             //     Culture=neutral, PublicKeyToken=null
-            var methodNameMapEntry = BlockMappingEntryNavigator.GetByValue(methodNameValue);
+            var methodNameMapEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(methodNameValue));
             var callMapNode = BlockMappingNodeNavigator.GetByEntrie(methodNameMapEntry);
             var callsSequenceEntry = SequenceEntryNavigator.GetByValue(callMapNode);
             var callsSequenceNode = BlockSequenceNodeNavigator.GetByEntrie(callsSequenceEntry);
-            var callsMapEntry = BlockMappingEntryNavigator.GetByValue(callsSequenceNode);
+            var callsMapEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(callsSequenceNode));
 
             // callsMapEntry should be "m_Calls" (and contain a value that is a sequence node). If it's not null,
             // everything else is also not null
@@ -60,10 +60,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
                 // is to enable Find Usages of methods, not navigation *from* YAML). Or it might be e.g. a prefab.
                 // This would be a reference to a prefab that contains a MonoScript asset that has the method
                 // TODO: Create an index of other assets that we could target
-                var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Value.AsFileID();
+                var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Content.Value.AsFileID();
                 if (fileID != null && !fileID.IsNullReference && fileID.guid == null)
                 {
-                    var text = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Mode"))?.Value
+                    var text = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Mode"))?.Content.Value
                         .GetPlainScalarText();
 
                     var argMode = EventHandlerArgumentMode.Unknown;
@@ -73,8 +73,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
                             argMode = (EventHandlerArgumentMode) mode;
                     }
                     
-                    var arguments = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Arguments"))?.Value as IBlockMappingNode;
-                    var typeNameRecord = arguments?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_ObjectArgumentAssemblyTypeName"))?.Value;
+                    var arguments = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Arguments"))?.Content.Value as IBlockMappingNode;
+                    var typeNameRecord = arguments?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_ObjectArgumentAssemblyTypeName"))?.Content.Value;
                     var type = typeNameRecord?.GetPlainScalarText()?.Split(',').FirstOrDefault();
                     if (type.IsNullOrEmpty() && mode == 1)
                         type = null;
@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         public static bool CanHaveReference([CanBeNull] ITreeNode element)
         {
             var methodNameValue = element as IPlainScalarNode;
-            var methodNameEntry = BlockMappingEntryNavigator.GetByValue(methodNameValue);
+            var methodNameEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(methodNameValue));
             return methodNameValue != null && (methodNameEntry?.Key.MatchesPlainScalarText("m_MethodName") ?? false);
         }
     }

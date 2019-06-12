@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             // m_Script: {fileID: 11500000, guid: xxx, type: x}
             var guidEntry = FlowMapEntryNavigator.GetByValue(guidValue);
             var flowIDMap = FlowMappingNodeNavigator.GetByEntrie(guidEntry);
-            var blockMappingEntry = BlockMappingEntryNavigator.GetByValue(flowIDMap);
+            var blockMappingEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(flowIDMap));
 
             if (guidEntry?.Key.MatchesPlainScalarText("guid") == true
                 && blockMappingEntry?.Key.MatchesPlainScalarText("m_Script") == true)
@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             var guidValue = element as IPlainScalarNode;
             var guidEntry = FlowMapEntryNavigator.GetByValue(guidValue);
             var flowIDMap = FlowMappingNodeNavigator.GetByEntrie(guidEntry);
-            var blockMappingEntry = BlockMappingEntryNavigator.GetByValue(flowIDMap);
+            var blockMappingEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(flowIDMap));
             return guidEntry?.Key.MatchesPlainScalarText("guid") == true
                    && blockMappingEntry?.Key.MatchesPlainScalarText("m_Script") == true;
         }

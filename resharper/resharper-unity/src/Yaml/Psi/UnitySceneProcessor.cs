@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                         return;
                     
                     // [TODO] Is prefab file committed???
-                    var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<UALanguage>();
+                    var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<UnityYamlLanguage>();
 
                     var prefabStartGameObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID);
                     

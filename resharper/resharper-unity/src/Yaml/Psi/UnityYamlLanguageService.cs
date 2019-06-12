@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
@@ -11,7 +10,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
     [Language(typeof(UnityYamlLanguage))]
     public class UnityYamlLanguageService : LanguageService

@@ -1,14 +1,12 @@
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.UnityYaml.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Resources.Icons;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
     [ProjectFileType(typeof(UnityYamlProjectFileType))]
     public class UnityYamlProjectFileLanguageService : ProjectFileLanguageService

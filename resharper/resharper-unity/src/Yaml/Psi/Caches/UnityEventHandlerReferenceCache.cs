@@ -4,18 +4,15 @@ using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.UnityAsset;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 using JetBrains.Util.PersistentMap;
 
@@ -77,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
             return base.IsApplicable(sourceFile) &&
-                   sourceFile.LanguageType.Is<UAProjectFileType>() &&
+                   sourceFile.LanguageType.Is<UnityYamlProjectFileType>() &&
                    sourceFile.PsiModule is UnityExternalFilesPsiModule &&
                    sourceFile.IsAsset();
         }
@@ -88,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 return null;
 
             // If YAML parsing is disabled, this will return null
-            var file = sourceFile.GetDominantPsiFile<UALanguage>() as IYamlFile;
+            var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
             if (file == null)
                 return null;
 

@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 {
     public class UnityYamlLexer : ILexer
     {
@@ -17,7 +17,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi.Parsing
 
         private int myTokenStartOffset;
         private TokenNodeType myTokenNodeType;
-        private YamlLexer myYamlLexer;
 
 
         public UnityYamlLexer(IBuffer buffer, int startOffset, int endOffset)
@@ -25,7 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi.Parsing
             myBuffer = buffer;
             myStartOffset = startOffset;
             myEndOffset = endOffset;
-            myYamlLexer = new YamlLexer(buffer, startOffset, endOffset);
         }
 
         public void Start()
@@ -61,7 +59,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi.Parsing
                         break;
                     case '-':
                         AdvanceChar();
-                        // todo out of range
                         if (myCurOffset + 1 <= myEndOffset && myBuffer[myCurOffset] == '-' &&
                             myBuffer[myCurOffset + 1] == '-')
                         {

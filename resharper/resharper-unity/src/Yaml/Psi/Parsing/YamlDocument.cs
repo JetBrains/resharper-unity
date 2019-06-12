@@ -3,7 +3,7 @@
 
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 {
   internal partial class YamlDocument
     : YamlCompositeElement, JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.IYamlDocument{

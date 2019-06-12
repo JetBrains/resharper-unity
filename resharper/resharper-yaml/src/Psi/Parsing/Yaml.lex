@@ -161,7 +161,7 @@ MAP_VALUE_START = (.|{NEW_LINE})
 <MAP_VALUE>     {MAP_VALUE_START}         { return TryEatLinesWithGreaterIndent();}
 
 <YYINITIAL, BLOCK, FLOW>
-                ^{WHITESPACE}           { if (!atChameleonStart) { currentLineIndent = yylength(); return YamlTokenType.INDENT; } else { atChameleonStart = false; return YamlTokenType.WHITESPACE;}  }
+                ^{WHITESPACE}           { if (!AtChameleonStart) { currentLineIndent = yylength(); return YamlTokenType.INDENT; } else { AtChameleonStart = false; return YamlTokenType.WHITESPACE;}  }
 <YYINITIAL, BLOCK, FLOW>
                 {WHITESPACE}            { return YamlTokenType.WHITESPACE; }
 <YYINITIAL, BLOCK, FLOW>

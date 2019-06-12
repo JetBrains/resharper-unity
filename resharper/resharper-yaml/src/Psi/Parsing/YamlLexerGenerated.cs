@@ -102,12 +102,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     // TODO: Use the indentation indicator value to set this
 
     private int parentNodeIndent;
-    private bool atChameleonStart = false;
     
     // The number of unclosed LBRACE and LBRACK. flowLevel == 0 means block context
     private int flowLevel;
+    
+    protected bool AtChameleonStart = false;
+    protected int InitialLexicalState = YYINITIAL;
 
-    private struct TokenPosition
+    public struct TokenPosition
     {
       public TokenNodeType CurrentTokenType;
       public int LastNewLineOffset;
@@ -118,12 +120,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       public int YyBufferStart;
       public int YyBufferEnd;
       public int YyLexicalState;
+      public bool AtChameleonStart;
     }
-    // ReSharper restore InconsistentNaming
 
-    public void Start()
+    public virtual void Start()
     {
-      Start(0, yy_buffer.Length, YYINITIAL);
+      Start(0, yy_buffer.Length, (uint)InitialLexicalState);
     }
 
     public void Start(int startOffset, int endOffset, uint state)
@@ -154,6 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         tokenPosition.YyBufferStart = yy_buffer_start;
         tokenPosition.YyBufferEnd = yy_buffer_end;
         tokenPosition.YyLexicalState = yy_lexical_state;
+        tokenPosition.AtChameleonStart = AtChameleonStart;
         return tokenPosition;
       }
       set
@@ -168,6 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         yy_buffer_start = tokenPosition.YyBufferStart;
         yy_buffer_end = tokenPosition.YyBufferEnd;
         yy_lexical_state = tokenPosition.YyLexicalState;
+        AtChameleonStart = tokenPosition.AtChameleonStart;
       }
     }
 
@@ -199,23 +203,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     private bool IsBlock => flowLevel == 0;
 
-    public void SetBlockState()
-    {
-      atChameleonStart = true;
-    }
-    
     private TokenNodeType LocateToken()
     {
       if (currentTokenType == null)
       {
         try
         {
-          if (atChameleonStart)
-          {
-            yybegin(BLOCK);
-          }
           currentTokenType = _locateToken();
-          atChameleonStart = false;
+          AtChameleonStart = false;
         }
         catch (Exception e)
         {

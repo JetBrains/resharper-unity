@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 {
 //    public class UnityYamlTokenElement : YamlTokenBase
 //    {

@@ -82,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             // Prefab instance stores it's father in modification map
             var prefabModification = GetPrefabModification(prefabInstanceDocument);
 
-            var fileID = prefabModification?.FindMapEntryBySimpleKey(UnityYamlConstants.TransformParentProperty)?.Value.AsFileID();
+            var fileID = prefabModification?.FindMapEntryBySimpleKey(UnityYamlConstants.TransformParentProperty)?.Content.Value.AsFileID();
             if (fileID == null)
                 return null;
 
@@ -185,7 +185,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 {
                     // - component: {fileID: 1234567890}
                     var componentNode = componentEntry.Value as IBlockMappingNode;
-                    var componentFileID = componentNode?.EntriesEnumerable.FirstOrDefault()?.Value.AsFileID();
+                    var componentFileID = componentNode?.EntriesEnumerable.FirstOrDefault()?.Content.Value.AsFileID();
                     if (componentFileID != null && !componentFileID.IsNullReference && !componentFileID.IsExternal)
                     {
                         var component = file.FindDocumentByAnchor(componentFileID.fileID);
@@ -201,18 +201,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public static string GetValueFromModifications(IBlockMappingNode modification, string targetFileId, string value)
         {
-            if (targetFileId != null && modification.FindMapEntryBySimpleKey(UnityYamlConstants.ModificationsProperty)?.Value is IBlockSequenceNode modifications)
+            if (targetFileId != null && modification.FindMapEntryBySimpleKey(UnityYamlConstants.ModificationsProperty)?.Content.Value is IBlockSequenceNode modifications)
             {
                 foreach (var element in modifications.Entries)
                 {
                     if (!(element.Value is IBlockMappingNode mod))
                         return null;
-                    var type = (mod.FindMapEntryBySimpleKey(UnityYamlConstants.PropertyPathProperty)?.Value as IPlainScalarNode)
+                    var type = (mod.FindMapEntryBySimpleKey(UnityYamlConstants.PropertyPathProperty)?.Content.Value as IPlainScalarNode)
                         ?.Text.GetText();
-                    var target = mod.FindMapEntryBySimpleKey(UnityYamlConstants.TargetProperty)?.Value?.AsFileID();
+                    var target = mod.FindMapEntryBySimpleKey(UnityYamlConstants.TargetProperty)?.Content.Value?.AsFileID();
                     if (type?.Equals(value) == true && target?.fileID.Equals(targetFileId) == true)
                     {
-                        return (mod.FindMapEntryBySimpleKey(UnityYamlConstants.ValueProperty)?.Value as IPlainScalarNode)?.Text.GetText();
+                        return (mod.FindMapEntryBySimpleKey(UnityYamlConstants.ValueProperty)?.Content.Value as IPlainScalarNode)?.Text.GetText();
                     }
                 }
             }

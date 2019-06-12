@@ -12,30 +12,20 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 
-namespace JetBrains.ReSharper.Plugins.Unity.UnityYaml.Psi.Parsing
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 { 
   internal class UnityYamlChameleonDocument : YamlDocument, IChameleonNode
   {
-    private CachedPsiValue<Dictionary<int, IYamlDocument>> myData;
+
     
     private readonly object mySyncObject = new object();
     private bool myOpened;
-
-   
-    // Used by Resync to create a closed chameleon
+    
     public UnityYamlChameleonDocument(ClosedChameleonElement closedChameleonElement)
     {
-      myData = new CachedPsiValue<Dictionary<int, IYamlDocument>>();
-      
       AppendNewChild(closedChameleonElement);
     }
 
-//    IYamlDocument GetDocument(int i)
-//    {
-//      myData.GetValue(this, (d) => new Dictionary<int, IYamlDocument>());
-//    }
-//    
-    
     public bool IsOpened
     {
       get

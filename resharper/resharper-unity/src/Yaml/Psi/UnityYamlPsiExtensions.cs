@@ -121,6 +121,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 if (fileID == "0")
                     return FileID.Null;
                 var guid = flowMappingNode.FindMapEntryBySimpleKey("guid")?.Value.AsString();
+
+                if (guid == null && fileID == null)
+                    return null;
+                
                 return new FileID(guid, fileID);
             }
 
@@ -131,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [CanBeNull]
         public static INode GetUnityObjectPropertyValue([CanBeNull] this IYamlDocument document, [NotNull] string key)
         {
-            return FindRootBlockMapEntries(document).FindMapEntryBySimpleKey(key)?.Value;
+            return FindRootBlockMapEntries(document).FindMapEntryBySimpleKey(key)?.Content.Value;
         }
 
         // This will open the Body chameleon
@@ -180,7 +184,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             // A YAML document is a block mapping node with a single entry. The key is usually the type of the object,
             // while the value is another block mapping node. Those entries are the properties of the Unity object
             var rootBlockMappingNode = document?.Body.BlockNode as IBlockMappingNode;
-            return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Value as IBlockMappingNode;
+            return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Content.Value as IBlockMappingNode;
         }
 
         public static string GetAnchor(this IYamlDocument document)

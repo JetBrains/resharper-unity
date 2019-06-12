@@ -1,15 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Collections;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.UnityAsset;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
@@ -102,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
             return base.IsApplicable(sourceFile) &&
-                   sourceFile.LanguageType.Is<UAProjectFileType>() &&
+                   sourceFile.LanguageType.Is<UnityYamlProjectFileType>() &&
                    sourceFile.PsiModule is UnityExternalFilesPsiModule &&
                    sourceFile.IsAsset();
         }
@@ -114,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 return null;
 
             // If YAML parsing is disabled, this will return null
-            var file = sourceFile.GetDominantPsiFile<UALanguage>() as IYamlFile;
+            var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
             if (file == null)
                 return null;
 
@@ -151,8 +149,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         private List<(string, MonoBehaviourPropertyValue)> GetPropertiesWithValues(IYamlDocument document, string mbId, out string scriptGuid)
         {
-            scriptGuid = "";//document.GetUnityObjectPropertyValue("m_Script").AsFileID()?.guid;
-            var gameObjectId = "";//document.GetUnityObjectPropertyValue("m_GameObject").AsFileID()?.guid;
+            scriptGuid = document.GetUnityObjectPropertyValue("m_Script").AsFileID()?.guid;
+            var gameObjectId = document.GetUnityObjectPropertyValue("m_GameObject").AsFileID()?.guid;
             var entries = document.FindRootBlockMapEntries();
             if (entries == null)
                 return null;
@@ -164,15 +162,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
                 if (!myIgnoredMonoBehaviourEntries.Contains(key))
                 {
-                    var entryValue = entry.Value;
-                    if (entry.Value.GetTextAsBuffer().Length > 50)
+                    // TODO fix parser, entryValue should not be null
+                    var entryValue = entry.Content.Value;
+                    if (entryValue != null && entryValue.GetTextAsBuffer().Length > 50)
                         continue;
                     
-                    var fileId = entry.Value.AsFileID();
+                    var fileId = entryValue?.AsFileID();
 
                     if (fileId == null)
                     {
-                        var primitiveValue = entryValue.GetPlainScalarText();
+                        var primitiveValue = entryValue?.GetPlainScalarText() ?? string.Empty;
                         var value = new MonoBehaviourPrimitiveValue(primitiveValue, mbId, gameObjectId);
                         list.Add((key, value));
                     }
