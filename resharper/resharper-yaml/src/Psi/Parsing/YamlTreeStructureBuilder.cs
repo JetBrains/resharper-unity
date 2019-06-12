@@ -179,8 +179,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       Done(mark, YamlChameleonElementTypes.CHAMELEON_DOCUMENT_BODY);
     }
 
-    public void ParseDocumentBody()
+    public void ParseDocumentBody(int chameleonOffset = 0)
     {
+      myChameleonOffset = chameleonOffset;
       var mark = MarkNoSkipWhitespace();
 
       ParseRootBlockNode();

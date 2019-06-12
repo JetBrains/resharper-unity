@@ -5,7 +5,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
   public interface IYamlParser : IParser
   {
-    IDocumentBody ParseDocumentBody();
-    INode ParseRootBlockNode();
+    IDocumentBody ParseDocumentBody(int documentOffset);
   }
 }

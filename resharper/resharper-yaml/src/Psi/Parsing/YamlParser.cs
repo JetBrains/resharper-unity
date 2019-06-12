@@ -36,12 +36,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       });
     }
     
-    public IDocumentBody ParseDocumentBody()
+    public IDocumentBody ParseDocumentBody(int chameleonOffset = 0)
     {
       return Lifetime.Using(lifetime =>
       {
         var builder = CreateTreeBuilder(lifetime);
-        builder.ParseDocumentBody();
+        builder.ParseDocumentBody(chameleonOffset);
         return (IDocumentBody) builder.GetTree();
       });
     }
