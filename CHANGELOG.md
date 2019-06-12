@@ -9,6 +9,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 ## 2019.2
 ### Fixed
 - Fix dynamic unit tests with similar name and different child-index ([#1214]https://github.com/JetBrains/resharper-unity/pull/1214)
+- Fix mdb generation ([#1182]https://github.com/JetBrains/resharper-unity/pull/1182)
 
 ## 2019.1.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...191-eap10-rtm-2019.1.2)
