@@ -1,6 +1,7 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
@@ -11,9 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
     [ProjectFileType(typeof(UnityYamlProjectFileType))]
     public class UnityYamlProjectFileLanguageService : ProjectFileLanguageService
     {
-        private readonly UnityYamlSupport myYamlSupport;
+        private readonly YamlSupport myYamlSupport;
 
-        public UnityYamlProjectFileLanguageService(UnityYamlSupport yamlSupport)
+        public UnityYamlProjectFileLanguageService(YamlSupport yamlSupport)
             : base(UnityYamlProjectFileType.Instance)
         {
             myYamlSupport = yamlSupport;
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             {
                 var yamlLanguage = (PsiLanguageType) UnityYamlLanguage.Instance ?? UnknownLanguage.Instance;
                 // TODO 
-                return myYamlSupport.IsUnityYamlParsingEnabled.Value ? yamlLanguage : UnknownLanguage.Instance;
+                return myYamlSupport.IsParsingEnabled.Value ? yamlLanguage : UnknownLanguage.Instance;
             }
         }
 

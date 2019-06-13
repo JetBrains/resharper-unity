@@ -1,39 +1,75 @@
+using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Progress;
+using JetBrains.Application.Settings.Implementation;
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Feature.Services.Resources;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Plugins.Unity.Help;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.TextControl;
+using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
     [SolutionComponent]
-    public class EventHandlerDetector : IUnityDeclarationHiglightingProvider
+    public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
         private readonly UnityEventHandlerReferenceCache myCache;
-        private readonly UnityHighlightingContributor myImplicitUsageHighlightingContributor;
+        private readonly PerformanceCriticalCodeCallGraphAnalyzer myAnalyzer;
 
-        public EventHandlerDetector([NotNull] UnityApi unityApi, UnityEventHandlerReferenceCache cache,
-            UnityHighlightingContributor implicitUsageHighlightingContributor)
+        public EventHandlerDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore,
+            UnityEventHandlerReferenceCache cache, PerformanceCriticalCodeCallGraphAnalyzer analyzer)
+            : base(solution, swa, settingsStore, analyzer)
         {
             myCache = cache;
-            myImplicitUsageHighlightingContributor = implicitUsageHighlightingContributor;
+            myAnalyzer = analyzer;
         }
 
-        public IDeclaredElement Analyze(IDeclaration element, IHighlightingConsumer consumer, DaemonProcessKind kind)
+        public override IDeclaredElement Analyze(IDeclaration element, IHighlightingConsumer consumer,
+            DaemonProcessKind kind)
         {
             var declaredElement = element is IPropertyDeclaration
                 ? ((IProperty) element.DeclaredElement)?.Setter
                 : element.DeclaredElement as IMethod;
             if (declaredElement != null && myCache.IsEventHandler(declaredElement))
             {
-                myImplicitUsageHighlightingContributor.AddUnityEventHandler(consumer, element as ICSharpDeclaration, "Unity event handler",
-                    element is IMethodDeclaration ? "Event handler" : "Implicit usage", kind);
+                AddHighlighting(consumer, element as ICSharpDeclaration, "Event handler", "Unity event handler",  kind);
                 return declaredElement;
             }
 
             return null;
+        }
+
+        protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
+            string tooltip, DaemonProcessKind kind)
+        {
+            consumer.AddImplicitConfigurableHighlighting(element);
+
+            var isIconHot = element.HasHotIcon(Swa, Settings, myAnalyzer, kind);
+
+            var highlighting = isIconHot
+                ? new UnityHotGutterMarkInfo(GetActions(element), element, tooltip)
+                : (IHighlighting) new UnityGutterMarkInfo(GetActions(element), element, tooltip);
+            consumer.AddHighlighting(highlighting);
+        }
+
+        protected override IEnumerable<BulbMenuItem> GetActions(ICSharpDeclaration declaration)
+        {
+            return EnumerableCollection<BulbMenuItem>.Empty;
         }
     }
 }
