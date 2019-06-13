@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -24,21 +25,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             IContextBoundSettingsStore settingsStore,
             PerformanceCriticalCodeCallGraphAnalyzer analyzer, DaemonProcessKind kind)
         {
+            var declaredElement = element.DeclaredElement;
+            if (declaredElement == null)
+                return false;
+
+            return declaredElement.HasHotIcon(swa, settingsStore, analyzer, kind);
+        }
+        
+        public static bool HasHotIcon(this IDeclaredElement element, SolutionAnalysisService swa,
+            IContextBoundSettingsStore settingsStore,
+            PerformanceCriticalCodeCallGraphAnalyzer analyzer, DaemonProcessKind kind)
+        {
             if (!settingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode))
                 return false;
 
             if (!settingsStore.GetValue((UnitySettings key) => key.EnablePerformanceCriticalCodeHighlighting))
                 return false;
 
-            var declaredElement = element.DeclaredElement;
-            if (declaredElement == null)
-                return false;
-
             var usageChecker = swa.UsageChecker;
             if (usageChecker == null)
                 return false;
 
-            var id = swa.GetElementId(declaredElement, true);
+            var id = swa.GetElementId(element, true);
             if (!id.HasValue)
                 return false;
 
@@ -49,12 +57,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         public static void AddHotHighlighting(this IHighlightingConsumer consumer, SolutionAnalysisService swa,
             ICSharpDeclaration element, PerformanceCriticalCodeCallGraphAnalyzer analyzer,
             IContextBoundSettingsStore settings, string text,
-            string tooltip, DaemonProcessKind kind, IEnumerable<BulbMenuItem> items)
+            string tooltip, DaemonProcessKind kind, IEnumerable<BulbMenuItem> items, bool onlyHot = false)
         {
-            consumer.AddImplicitConfigurableHighlighting(element);
-
             var isIconHot = element.HasHotIcon(swa, settings, analyzer, kind);
-
+            if (onlyHot && !isIconHot)
+                return;
+            
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(items, element, tooltip)
                 : (IHighlighting) new UnityGutterMarkInfo(items, element, tooltip);

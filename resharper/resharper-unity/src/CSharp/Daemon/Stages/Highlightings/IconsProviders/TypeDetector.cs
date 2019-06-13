@@ -39,15 +39,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 if (myUnityApi.IsDescendantOfMonoBehaviour(typeElement))
                 {
-                    AddMonoBehaviourHiglighting(consumer, element, "Script", "Unity Editor script");
+                    AddMonoBehaviourHiglighting(consumer, element, "Script", "Unity Editor script", kind);
                 } else
                 if (myUnityApi.IsUnityType(typeElement))
                 {
-                    AddUnityTypeHighlighting(consumer, element, "Unity type", "Unity Editor type");
+                    AddUnityTypeHighlighting(consumer, element, "Unity type", "Unity Editor type", kind);
                 }
                 else if (myUnityApi.IsUnityECSType(typeElement))
                 {
-                    AddUnityECSHighlighting(consumer, element, "Unity ECS", "Unity entity component system object");
+                    AddUnityECSHighlighting(consumer, element, "Unity ECS", "Unity entity component system object", kind);
                 }
 
                 return typeElement;
@@ -56,23 +56,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             return null;
         }
 
-        protected virtual void AddMonoBehaviourHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip)
+        protected virtual void AddMonoBehaviourHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
         {
-            AddHighlighting(consumer, declaration, text, tooltip);
+            AddHighlighting(consumer, declaration, text, tooltip, kind);
         }
 
-        protected virtual void AddUnityTypeHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip)
+        protected virtual void AddUnityTypeHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
         {
-            AddHighlighting(consumer, declaration, text, tooltip);
+            AddHighlighting(consumer, declaration, text, tooltip, kind);
         }
 
-        protected virtual void AddUnityECSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip)
+        protected virtual void AddUnityECSHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
         {
-            AddHighlighting(consumer, declaration, text, tooltip);
+            AddHighlighting(consumer, declaration, text, tooltip, kind);
         }
 
 
-        protected virtual void AddHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip)
+        protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
         {
             consumer.AddHighlighting(new UnityGutterMarkInfo(GetActions(declaration), declaration, tooltip));
         }

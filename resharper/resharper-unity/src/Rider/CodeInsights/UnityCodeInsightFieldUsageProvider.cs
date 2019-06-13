@@ -35,50 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             : base(unitySolutionTracker, host, bulbMenu)
         {
         }
-
-        public override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
-            IDeclaredElement declaredElement,
-            string displayName, string tooltip, string moreText, IconModel iconModel, IEnumerable<BulbMenuItem> items,
-            List<CodeLensEntryExtraActionModel> extraActions)
-        {
-            if (displayName.Equals("Property"))
-            {
-                var solution = element.GetSolution();
-
-                var result = GetAssetGuidAndPropertyName(solution, declaredElement);
-                if (!result.HasValue)
-                    return;
-
-                var cache = solution.GetComponent<UnityPropertyValueCache>();
-                var values = cache.GetUnityPropertyValues(result.Value.guid, result.Value.propertyName);
-                if (values.Count == 0)
-                {
-                    displayName = "No Inspector values";
-                } else if (values.Count == 1)
-                {
-                    var valueWithLocation = values[0];
-                    var presentation = valueWithLocation.GetSimplePresentation(solution);
-                    if (presentation != null)
-                    {
-                        displayName = $"{presentation}";
-                        tooltip = "Value from Unity Editor Inspector";
-                    }
-                    else
-                    {
-                        displayName = "1 Inspector value";
-                    }
-                }
-                else
-                {
-                    displayName = $"{values.Count} Inspector values";
-                }
-            }
-            
-            base.AddHighlighting(consumer, element, declaredElement, displayName, tooltip, moreText, iconModel,
-                items,
-                extraActions);
-        }
-
+        
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
         {
             var containingType = (declaredElement as IClrDeclaredElement)?.GetContainingType();
@@ -98,39 +55,82 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         
         public override void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
         {
-            Shell.Instance.GetComponent<JetPopupMenus>().Show(solution.GetLifetime(),
-                JetPopupMenu.ShowWhen.NoItemsBannerIfNoItems, (lifetime, menu) =>
-                {
-                    
-                    var result = GetAssetGuidAndPropertyName(solution, highlighting.DeclaredElement);
-                    if (!result.HasValue)
-                        return;
-
-                    var valuesCache = solution.GetComponent<UnityPropertyValueCache>();
-                    var namesCache = solution.GetComponent<UnityGameObjectNamesCache>();
-                    var values = valuesCache.GetUnityPropertyValues(result.Value.guid, result.Value.propertyName);
-                    
-                    menu.Caption.Value = WindowlessControlAutomation.Create("Unity Editor values");
-                    menu.KeyboardAcceleration.Value = KeyboardAccelerationFlags.QuickSearch;
-
-                    menu.ItemKeys.AddRange(values);
-
-                    
-                    
-                    menu.DescribeItem.Advise(lifetime, e =>
+            if (highlighting is UnityInspectorCodeInsightsHighlighting)
+            {
+                Shell.Instance.GetComponent<JetPopupMenus>().Show(solution.GetLifetime(),
+                    JetPopupMenu.ShowWhen.NoItemsBannerIfNoItems, (lifetime, menu) =>
                     {
-                        var value = (e.Key as UnityPropertyValueCache.MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
 
-                        var shortRepresentation = value.GetSimplePresentation(solution) ?? "???";
+                        var result = GetAssetGuidAndPropertyName(solution, highlighting.DeclaredElement);
+                        if (!result.HasValue)
+                            return;
 
-                        e.Descriptor.Text = shortRepresentation;
-                        OccurrencePresentationUtil.AppendRelatedFile(e.Descriptor, value.File.DisplayName);
+                        var valuesCache = solution.GetComponent<UnityPropertyValueCache>();
+                        var namesCache = solution.GetComponent<UnityGameObjectNamesCache>();
+                        var values = valuesCache.GetUnityPropertyValues(result.Value.guid, result.Value.propertyName);
 
-                        e.Descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
+                        menu.Caption.Value = WindowlessControlAutomation.Create("Unity Editor values");
+                        menu.KeyboardAcceleration.Value = KeyboardAccelerationFlags.QuickSearch;
+
+                        menu.ItemKeys.AddRange(values);
+
+
+
+                        menu.DescribeItem.Advise(lifetime, e =>
+                        {
+                            var value = (e.Key as UnityPropertyValueCache.MonoBehaviourPropertyValueWithLocation)
+                                .NotNull("value != null");
+
+                            var shortRepresentation = value.GetSimplePresentation(solution) ?? "???";
+
+                            e.Descriptor.Text = shortRepresentation;
+                            OccurrencePresentationUtil.AppendRelatedFile(e.Descriptor, value.File.DisplayName);
+
+                            e.Descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
+                        });
+
+                        menu.ItemClicked.Advise(lifetime, key => { });
                     });
+            }
+        }
 
-                    menu.ItemClicked.Advise(lifetime, key => { });
-                });
+        public void AddInspectorHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
+            IDeclaredElement declaredElement, IconModel iconModel)
+        {
+            string displayName;
+            string tooltip = "Values from Unity Editor Inspector";
+
+            var solution = element.GetSolution();
+
+            var result = GetAssetGuidAndPropertyName(solution, declaredElement);
+            if (!result.HasValue)
+                return;
+
+            var cache = solution.GetComponent<UnityPropertyValueCache>();
+            var values = cache.GetUnityPropertyValues(result.Value.guid, result.Value.propertyName);
+            if (values.Count == 0)
+            {
+                displayName = "No Inspector values";
+            } else if (values.Count == 1)
+            {
+                var valueWithLocation = values[0];
+                var presentation = valueWithLocation.GetSimplePresentation(solution);
+                if (presentation != null)
+                {
+                    displayName = $"{presentation}";
+                }
+                else
+                {
+                    displayName = "1 Inspector value";
+                }
+            }
+            else
+            {
+                displayName = $"{values.Count} Inspector values";
+            }
+            
+            consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(), displayName, tooltip, "Property Inspector values",
+                this, declaredElement, iconModel));
         }
     }
 }

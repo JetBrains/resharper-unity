@@ -10,7 +10,6 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders

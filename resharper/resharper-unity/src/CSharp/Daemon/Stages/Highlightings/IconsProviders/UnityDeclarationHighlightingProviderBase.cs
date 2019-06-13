@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         protected readonly ISolution Solution;
         protected readonly SolutionAnalysisService Swa;
-        private readonly PerformanceCriticalCodeCallGraphAnalyzer myAnalyzer;
+        protected readonly PerformanceCriticalCodeCallGraphAnalyzer Analyzer;
         protected readonly IContextBoundSettingsStore Settings;
 
         public UnityDeclarationHighlightingProviderBase(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore, 
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             Solution = solution;
             Swa = swa;
-            myAnalyzer = analyzer;
+            Analyzer = analyzer;
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
         }
         
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         protected virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
             string tooltip, DaemonProcessKind kind)
         {
-            consumer.AddHotHighlighting(Swa, element, myAnalyzer, Settings, text, tooltip, kind, GetActions(element));
+            consumer.AddHotHighlighting(Swa, element, Analyzer, Settings, text, tooltip, kind, GetActions(element));
         }
 
 

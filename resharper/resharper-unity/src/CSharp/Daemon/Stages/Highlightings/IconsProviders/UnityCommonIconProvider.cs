@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             string text, string tooltip, DaemonProcessKind kind)
         {
             consumer.AddImplicitConfigurableHighlighting(declaration);
-            consumer.AddHotHighlighting(Swa, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty);
+            consumer.AddHotHighlighting(Swa, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
         
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)

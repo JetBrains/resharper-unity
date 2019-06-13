@@ -554,7 +554,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         Advance();
 
         var currentToken = GetTokenTypeNoSkipWhitespace();
-        if (currentToken.Equals(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT))
+        if (currentToken != null && currentToken.Equals(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT))
         {
           var valueMark = MarkNoSkipWhitespace();
           Advance();
