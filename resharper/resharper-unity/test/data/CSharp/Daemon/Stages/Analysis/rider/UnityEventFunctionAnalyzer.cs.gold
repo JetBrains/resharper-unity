@@ -2,9 +2,9 @@
 using UnityEditor;
 using UnityEngine;
 
-public class |HighlightExactMatchOnly|(0) : MonoBehaviour
+public class ||HighlightExactMatchOnly|(0)|(1) : MonoBehaviour
 {
-    public void ||Start|(1)|(2)()
+    public void ||Start|(2)|(3)()
     {
     }
 
@@ -13,60 +13,60 @@ public class |HighlightExactMatchOnly|(0) : MonoBehaviour
     }
 }
 
-public class |HighlightMultipleExactMatches|(3) : MonoBehaviour
+public class ||HighlightMultipleExactMatches|(4)|(5) : MonoBehaviour
 {
     // Both overloads are correct - collisionInfo is optional.
     // Which is picked is ambiguous, so mark both with a warning
-    public void ||OnCollisionStay|(4)|(5)(Collision collisionInfo)
+    public void ||OnCollisionStay|(6)|(7)(Collision collisionInfo)
     {
     }
 
-    public void ||OnCollisionStay|(6)|(7)()
+    public void ||OnCollisionStay|(8)|(9)()
     {
     }
 }
 
 // Incorrect signatures should still be marked as event functions,
 // as long as there isn't an exact match
-public class |HighlightIncorrectOverloads|(8) : MonoBehaviour
+public class ||HighlightIncorrectOverloads|(10)|(11) : MonoBehaviour
 {
-    public void ||Start|(9)|(10)(int i)
+    public void ||Start|(12)|(13)(int i)
     {
     }
 
-    public int ||Update|(11)|(12)()
+    public int ||Update|(14)|(15)()
     {
         return 0;
     }
 
-    public void ||OnCollisionStay|(13)|(14)(Collision collisionInfo, int i)
+    public void ||OnCollisionStay|(16)|(17)(Collision collisionInfo, int i)
     {
     }
 
     // Missing all parameters
-    public void ||OnAnimatorIK|(15)|(16)()
+    public void ||OnAnimatorIK|(18)|(19)()
     {
     }
 }
 
-public class ||StaticModifier|(17)|(18) : AssetPostprocessor
+public class ||StaticModifier|(20)|(21) : AssetPostprocessor
 {
     // Should be static
-    public void ||OnGeneratedCSProjectFiles|(19)|(20)()
+    public void ||OnGeneratedCSProjectFiles|(22)|(23)()
     {
     }
 
-    bool ||OnPreGeneratingCSProjectFiles|(21)|(22)()
+    bool ||OnPreGeneratingCSProjectFiles|(24)|(25)()
     {
     }
 
     // Should not be static
-    static void ||OnPreprocessAssembly|(23)|(24)(string pathName)
+    static void ||OnPreprocessAssembly|(26)|(27)(string pathName)
     {
     }
 }
 
-public class ||MyStateMachineBehaviour|(25)|(26) : StateMachineBehaviour
+public class ||MyStateMachineBehaviour|(28)|(29) : StateMachineBehaviour
 {
     // Do not show incorrect signature warning - the correct signature is implemented in the base class
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
@@ -75,16 +75,16 @@ public class ||MyStateMachineBehaviour|(25)|(26) : StateMachineBehaviour
     }
 }
 
-public class |TypeParameters|(27) : MonoBehaviour
+public class ||TypeParameters|(30)|(31) : MonoBehaviour
 {
-    public void ||Start|(28)|(29)<T1, T2>()
+    public void ||Start|(32)|(33)<T1, T2>()
     {
     }
 }
 
-public class ||AllWrong|(30)|(31) : AssetPostprocessor
+public class ||AllWrong|(34)|(35) : AssetPostprocessor
 {
-    public int ||OnGeneratedCSProjectFiles|(32)|(33)<T1, T2>(int value)
+    public int ||OnGeneratedCSProjectFiles|(36)|(37)<T1, T2>(int value)
     {
         return 42;
     }
@@ -92,36 +92,40 @@ public class ||AllWrong|(30)|(31) : AssetPostprocessor
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): ReSharper Unity Implicitly Used Identifier: 
-(2): UnityCodeInsights: 
-(3): ReSharper Unity Implicitly Used Identifier: 
+(1): UnityCodeInsights: 
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): UnityCodeInsights: 
 (4): ReSharper Unity Implicitly Used Identifier: 
 (5): UnityCodeInsights: 
 (6): ReSharper Unity Implicitly Used Identifier: 
 (7): UnityCodeInsights: 
 (8): ReSharper Unity Implicitly Used Identifier: 
-(9): ReSharper Unity Implicitly Used Identifier: 
-(10): UnityCodeInsights: 
-(11): ReSharper Unity Implicitly Used Identifier: 
-(12): UnityCodeInsights: 
-(13): ReSharper Unity Implicitly Used Identifier: 
-(14): UnityCodeInsights: 
-(15): ReSharper Unity Implicitly Used Identifier: 
-(16): UnityCodeInsights: 
-(17): ReSharper Unity Implicitly Used Identifier: 
-(18): UnityCodeInsights: 
-(19): ReSharper Unity Implicitly Used Identifier: 
-(20): UnityCodeInsights: 
-(21): ReSharper Unity Implicitly Used Identifier: 
-(22): UnityCodeInsights: 
-(23): ReSharper Unity Implicitly Used Identifier: 
-(24): UnityCodeInsights: 
-(25): ReSharper Unity Implicitly Used Identifier: 
-(26): UnityCodeInsights: 
-(27): ReSharper Unity Implicitly Used Identifier: 
+(9): UnityCodeInsights: 
+(10): ReSharper Unity Implicitly Used Identifier: 
+(11): UnityCodeInsights: 
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): UnityCodeInsights: 
+(14): ReSharper Unity Implicitly Used Identifier: 
+(15): UnityCodeInsights: 
+(16): ReSharper Unity Implicitly Used Identifier: 
+(17): UnityCodeInsights: 
+(18): ReSharper Unity Implicitly Used Identifier: 
+(19): UnityCodeInsights: 
+(20): ReSharper Unity Implicitly Used Identifier: 
+(21): UnityCodeInsights: 
+(22): ReSharper Unity Implicitly Used Identifier: 
+(23): UnityCodeInsights: 
+(24): ReSharper Unity Implicitly Used Identifier: 
+(25): UnityCodeInsights: 
+(26): ReSharper Unity Implicitly Used Identifier: 
+(27): UnityCodeInsights: 
 (28): ReSharper Unity Implicitly Used Identifier: 
 (29): UnityCodeInsights: 
 (30): ReSharper Unity Implicitly Used Identifier: 
 (31): UnityCodeInsights: 
 (32): ReSharper Unity Implicitly Used Identifier: 
 (33): UnityCodeInsights: 
+(34): ReSharper Unity Implicitly Used Identifier: 
+(35): UnityCodeInsights: 
+(36): ReSharper Unity Implicitly Used Identifier: 
+(37): UnityCodeInsights: 

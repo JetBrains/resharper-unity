@@ -37,6 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         protected virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
             string tooltip, DaemonProcessKind kind)
         {
+            consumer.AddImplicitConfigurableHighlighting(element);
             consumer.AddHotHighlighting(Swa, element, Analyzer, Settings, text, tooltip, kind, GetActions(element));
         }
 

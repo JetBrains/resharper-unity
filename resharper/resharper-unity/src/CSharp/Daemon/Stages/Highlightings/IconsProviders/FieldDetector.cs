@@ -91,6 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
             DaemonProcessKind kind)
         {
+            consumer.AddImplicitConfigurableHighlighting(element);
             consumer.AddHighlighting(new UnityGutterMarkInfo(element, tooltip));
         }
 

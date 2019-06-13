@@ -12,17 +12,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
     public static class RiderIconProviderUtil
     {
-        public static bool IsCodeVisionEnabled(IContextBoundSettingsStore settings, string providerId, Action fallback)
+        public static bool IsCodeVisionEnabled(IContextBoundSettingsStore settings, string providerId, Action fallback, out bool useFallback)
         {
+            useFallback = false;
             if (settings.GetIndexedValue((CodeInsightsSettings key) => key.DisabledProviders, providerId))
             {
                 fallback();
+                useFallback = true;
                 return false;
             }
 
             if (settings.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.Always)
             {
                 fallback();
+                useFallback = true;
             }
             return true;
         }

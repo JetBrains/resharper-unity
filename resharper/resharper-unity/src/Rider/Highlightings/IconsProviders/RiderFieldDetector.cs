@@ -33,10 +33,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myIconHost = iconHost;
         }
 
-        protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
+        protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
+            string text,
             string tooltip, DaemonProcessKind kind)
         {
-            myFieldUsageProvider.AddInspectorHighlighting(consumer, element, element.DeclaredElement, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id));
+            if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myFieldUsageProvider.ProviderId,
+                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
+            {
+                if (!useFallback)
+                {
+                    consumer.AddImplicitConfigurableHighlighting(element);
+                }
+                myFieldUsageProvider.AddInspectorHighlighting(consumer, element, element.DeclaredElement,
+                    myIconHost.Transform(InsightUnityIcons.InsightUnity.Id));
+            }
         }
 
 
@@ -45,8 +55,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             DaemonProcessKind kind)
         {
             if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myFieldUsageProvider.ProviderId,
-                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }))
+                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
             {
+                if (!useFallback)
+                {
+                    consumer.AddImplicitConfigurableHighlighting(element);
+                }
                 myFieldUsageProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                     tooltip, text, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id), GetActions(element),
                     RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));

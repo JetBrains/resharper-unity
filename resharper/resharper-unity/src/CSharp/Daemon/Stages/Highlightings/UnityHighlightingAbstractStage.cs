@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                         continue;
                     
                     myCommonIconProvider.AddFrequentlyCalledMethodHighlighting(highlightingConsumer, declaration,
-                        "Frequently called code", "Frequently called", myProcessKind);
+                        "Frequently called", "Frequently called code", myProcessKind);
                 }
             }
             

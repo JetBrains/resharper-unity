@@ -61,7 +61,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, 
             string text, string tooltip, DaemonProcessKind kind)
         {
-            consumer.AddImplicitConfigurableHighlighting(declaration);
             consumer.AddHotHighlighting(Swa, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
         

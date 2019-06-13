@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 : InsightUnityIcons.InsightUnity.Id;
             
             if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
-                () => { base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, tooltip, kind);}))
+                () => { base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, tooltip, kind);}, out var useFallback))
             {
                 foreach (var declaration in method.GetDeclarations())
                 {
@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 return;
             
             if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
-                () => { base.AddFrequentlyCalledMethodHighlighting(consumer, declaration, text, tooltip, kind);}))
+                () => { base.AddFrequentlyCalledMethodHighlighting(consumer, declaration, text, tooltip, kind);}, out var useFallback))
             {
                 myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text, tooltip, text,
                     myIconHost.Transform(InsightUnityIcons.InsightHot.Id), EmptyList<BulbMenuItem>.Instance, RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));

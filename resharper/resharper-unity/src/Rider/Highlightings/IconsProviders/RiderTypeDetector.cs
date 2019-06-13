@@ -38,8 +38,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             DaemonProcessKind kind)
         {
             if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
-                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }))
+                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
             {
+                if (!useFallback)
+                {
+                    consumer.AddImplicitConfigurableHighlighting(element);
+                }
                 myCodeInsightProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                     tooltip, text, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id), GetActions(element),
                     RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
