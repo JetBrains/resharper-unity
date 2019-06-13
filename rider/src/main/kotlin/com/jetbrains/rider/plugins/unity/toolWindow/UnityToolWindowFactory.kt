@@ -10,7 +10,6 @@ import com.intellij.openapi.wm.impl.status.StatusBarUtil
 import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
@@ -18,8 +17,7 @@ import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import icons.UnityIcons
 
 class UnityToolWindowFactory(project: Project,
-                             private val toolWindowManager: ToolWindowManager,
-                             private val host: UnityHost)
+                             private val toolWindowManager: ToolWindowManager)
     : LifetimedProjectComponent(project) {
 
     companion object {
@@ -59,7 +57,7 @@ class UnityToolWindowFactory(project: Project,
         ContentManagerWatcher(toolWindow, contentManager)
 
         val logModel = UnityLogPanelModel(componentLifetime, project)
-        val logView = UnityLogPanelView(componentLifetime, project, logModel, host)
+        val logView = UnityLogPanelView(componentLifetime, project, logModel)
         val toolWindowContent = contentManager.factory.createContent(null, "Log", true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel
