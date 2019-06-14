@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
@@ -63,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
                 yield return file.MakeRelativeTo(path).ChangeExtension(string.Empty).FullPath;
         }
 
-        protected override void DoTest(IProject testProject)
+        protected override void DoTest(Lifetime lifetime, IProject testProject)
         {
             var projectFile = testProject.GetAllProjectFiles().FirstNotNull();
             Assert.NotNull(projectFile);
