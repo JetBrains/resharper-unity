@@ -136,14 +136,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                         continue;
                     }
                     
-                    if (myCurrentLineOffset == 0 && myCurOffset + 2 <= myEndOffset && (
+                    if (myCurOffset + 2 <= myEndOffset && (
                             (myBuffer[myCurOffset] == '-' && myBuffer[myCurOffset + 1] == '-' &&
                              myBuffer[myCurOffset + 2] == '-')))
                     {
 #if DEBUG
                         myTokenNodeType = isInteresting ? UnityYamlTokenType.DOCUMENT : YamlTokenType.COMMENT;
 #else
-              myTokenNodeType = isInteresting ? YamlTokenType.DOCUMENT : YamlTokenType.USELESS_DOCUMENT;
+              myTokenNodeType = isInteresting ? UnityYamlTokenType.DOCUMENT : UnityYamlTokenType.USELESS_DOCUMENT;
 #endif
 
                         break;

@@ -74,13 +74,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       do
       {
-        ParseDocument();
+        ParseDocument(myChameleonOffset);
       } while (!myBuilder.Eof());
 
       Done(mark, ElementType.YAML_FILE);
     }
 
-    public void ParseDocument(int chameleonOffset = 0, bool createChameleon = true)
+    public void ParseDocument(int chameleonOffset, bool createChameleon = true)
     {
       myChameleonOffset = chameleonOffset;
       // TODO: Can we get indents in this prefix?
@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       if (createChameleon)
         ParseChameleonDocumentBody();
       else
-        ParseDocumentBody();
+        ParseDocumentBody(myChameleonOffset);
 
       if (GetTokenTypeNoSkipWhitespace() == YamlTokenType.DOCUMENT_END)
       {
@@ -179,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       Done(mark, YamlChameleonElementTypes.CHAMELEON_DOCUMENT_BODY);
     }
 
-    public void ParseDocumentBody(int chameleonOffset = 0)
+    public void ParseDocumentBody(int chameleonOffset)
     {
       myChameleonOffset = chameleonOffset;
       var mark = MarkNoSkipWhitespace();
