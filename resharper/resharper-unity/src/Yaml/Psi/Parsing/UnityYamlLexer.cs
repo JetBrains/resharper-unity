@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -12,8 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
         private readonly int myEndOffset;
 
         private int myCurOffset;
-        private int myCurrentLineIndent;
-        private bool myLineStart = true;
+        private int myCurrentLineOffset;
 
         private int myTokenStartOffset;
         private TokenNodeType myTokenNodeType;
@@ -50,23 +50,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                         while (true)
                         {
                             if (myCurOffset > myEndOffset)
-                                break;
+                            {
+                                myTokenNodeType = UnityYamlTokenType.DOCUMENT;
+                                return;
+                            }
 
-                            if (AdvanceChar())
+                            if (myBuffer[myCurOffset] == '\r')
+                            {
+                                myCurOffset++;
+                                myCurrentLineOffset = 0;
+                                if (myCurOffset <= myEndOffset && myBuffer[myCurOffset] == '\n')
+                                    myCurOffset++;
                                 break;
+                            }
+
+                            if (myBuffer[myCurOffset] == '\n')
+                            {
+                                myCurOffset++;
+                                myCurrentLineOffset = 0;
+                                break;
+                            }
+                            myCurOffset++;
                         }
 
                         break;
                     case '-':
-                        AdvanceChar();
+                        myCurOffset++;
                         if (myCurOffset + 1 <= myEndOffset && myBuffer[myCurOffset] == '-' &&
                             myBuffer[myCurOffset + 1] == '-')
                         {
-                            AdvanceChar();
-                            AdvanceChar();
+                            myCurOffset++;
+                            myCurOffset++;
                             if (myCurOffset <= myEndOffset && myBuffer[myCurOffset] == ' ')
                             {
-                                AdvanceChar();
+                                myCurOffset++;
                                 var sb = new StringBuilder();
                                 while (myCurOffset <= myEndOffset && myBuffer[myCurOffset] != ' '
                                                                   && myBuffer[myCurOffset] != '\r'
@@ -85,6 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                             }
                         }
 
+                        myCurrentLineOffset = 1; // just mark that it is not line start
                         EatUntilDocumentEnd();
                         return;
 
@@ -98,7 +116,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
             {
                 while (true)
                 {
-                    if (myCurrentLineIndent == 0 && myCurOffset + 2 <= myEndOffset && (
+                    if (myCurOffset > myEndOffset)
+                    {
+                        myTokenNodeType = UnityYamlTokenType.DOCUMENT;
+                        break;
+                    }
+                    
+                    if (myBuffer[myCurOffset] == '\r')
+                    {
+                        myCurrentLineOffset = 0;
+                        myCurOffset++;
+                        continue;
+                    }
+
+                    if (myBuffer[myCurOffset] == '\n')
+                    {
+                        myCurrentLineOffset = 0;
+                        myCurOffset++;
+                        continue;
+                    }
+                    
+                    if (myCurrentLineOffset == 0 && myCurOffset + 2 <= myEndOffset && (
                             (myBuffer[myCurOffset] == '-' && myBuffer[myCurOffset + 1] == '-' &&
                              myBuffer[myCurOffset + 2] == '-')))
                     {
@@ -111,52 +149,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                         break;
                     }
 
-                    if (myCurOffset > myEndOffset)
-                    {
-                        myTokenNodeType = UnityYamlTokenType.DOCUMENT;
-                        break;
-                    }
+                    myCurrentLineOffset++;
+                    myCurOffset++;
 
-                    AdvanceChar();
                 }
             }
-        }
-
-        private bool AdvanceChar()
-        {
-            if (myCurOffset > myEndOffset)
-                return false;
-
-            if (myLineStart && myBuffer[myCurOffset] == ' ')
-            {
-                myCurrentLineIndent++;
-            }
-
-            if (myBuffer[myCurOffset] != ' ')
-            {
-                myLineStart = false;
-            }
-
-            if (myBuffer[myCurOffset] == '\n')
-            {
-                myLineStart = true;
-                myCurrentLineIndent = 0;
-                myCurOffset++;
-                return true;
-            }
-
-            if (myBuffer[myCurOffset] == '\r')
-            {
-                myLineStart = true;
-                myCurrentLineIndent = 0;
-                myCurOffset++;
-                if (myCurOffset <= myEndOffset && myBuffer[myCurOffset] == '\n')
-                    myCurOffset++;
-                return true;
-            }
-
-            myCurOffset++;
-            return false;
         }
 
         public object CurrentPosition
