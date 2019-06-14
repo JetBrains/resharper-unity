@@ -97,6 +97,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 {
                     var appsHome = FileSystemPath.Parse("/Applications");
                     var unityApps = appsHome.GetChildDirectories("Unity*").Select(a=>a.Combine("Unity.app")).ToList();
+                    
+                    // /Applications/2019.1/Unity 2019.1XXX/Unity.app (by internal Unity deployment tool)
+                    unityApps.AddRange(appsHome.GetChildDirectories().SelectMany(a=>a.GetChildDirectories("Unity*")).Select(a=>a.Combine("Unity.app")));
 
                     var defaultHubLocation = appsHome.Combine("Unity/Hub/Editor");
                     var hubLocations = new List<FileSystemPath> {defaultHubLocation};
@@ -152,6 +155,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
                             .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
                         );
                     
+                    // C:\Program Files\2019.3\2019.3.0a4_7368acd360f4\Editor (by internal Unity deployment tool)
+                    unityApps.AddRange(programFiles.GetChildDirectories().SelectMany(a=>a.GetChildDirectories()).Select(a=>a.Combine(@"Editor\Unity.exe")));
+                    
                     // default Hub location
                     //"C:\Program Files\Unity\Hub\Editor\2018.1.0b4\Editor\Data\MonoBleedingEdge" 
                     unityApps.AddRange(
@@ -169,6 +175,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
                                 .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
                         );
                     }
+                    
+                    
                     
                     var lnks = FileSystemPath.Parse(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs")
                         .GetChildDirectories("Unity*").SelectMany(a => a.GetChildFiles("Unity.lnk")).ToArray();
