@@ -344,8 +344,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private List<TestFilter> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
             var elements = unitTestElements
-                .Where(unitTestElement => unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement ||
-                                                                             unitTestElement is UnityTestElement).ToArray();
+                .Where(unitTestElement => unitTestElement is NUnitTestElement || 
+                                          unitTestElement is NUnitRowTestElement).ToArray();
             foreach (var unitTestElement in elements)
             {
                 myElements[unitTestElement.Id] = unitTestElement;

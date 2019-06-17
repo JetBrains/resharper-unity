@@ -6,6 +6,7 @@ using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.DataContext;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
@@ -22,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.QuickD
     [TestReferences("System.Core", DoesNotInherit = false)]
     public abstract class QuickDocTestBase : BaseTestWithTextControl
     {
-        protected override void DoTest(IProject testProject)
+        protected override void DoTest(Lifetime lifetime, IProject testProject)
         {
             var textControl = OpenTextControl(TestLifetime);
             var document = textControl.Document;

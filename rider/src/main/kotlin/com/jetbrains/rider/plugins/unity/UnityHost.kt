@@ -5,6 +5,7 @@ import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.xdebugger.XDebugProcess
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerManagerListener
@@ -13,7 +14,6 @@ import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rdclient.util.idea.createNestedDisposable
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.model.rdUnityModel
@@ -33,8 +33,6 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
 
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
-    val play = model.play
-    val pause = model.pause
 
     val logSignal = Signal<RdLogEvent>()
 

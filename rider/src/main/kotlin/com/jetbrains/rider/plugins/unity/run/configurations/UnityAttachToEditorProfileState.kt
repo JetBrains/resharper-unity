@@ -7,15 +7,18 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.util.ui.UIUtil
+import com.intellij.xdebugger.XDebugProcess
+import com.intellij.xdebugger.XDebuggerManager
+import com.intellij.xdebugger.XDebuggerManagerListener
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.Signal
-import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rider.debugger.DebuggerHelperHost
+import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
+import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
-import com.jetbrains.rider.plugins.unity.run.attach.UnityProcessListener
 import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
@@ -29,28 +32,33 @@ import org.jetbrains.concurrency.Promise
 class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAttachToEditorRunConfiguration, executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
     private val logger = Logger.getInstance(UnityAttachToEditorProfileState::class.java)
-    private val debugAttached = Signal<Boolean>()
     private val project = executionEnvironment.project
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
-        val result = super.execute(executor, runner, workerProcessHandler)
-
         if (remoteConfiguration.play) {
-            debugAttached.adviseOnce(lifetime) {
-                if (it)
-                {
-                    logger.info("Pass value to backend, which will push Unity to enter play mode.")
-                    lifetime.bracket(opening = {
-                        // pass value to backend, which will push Unity to enter play mode.
-                        executionEnvironment.project.solution.rdUnityModel.play.set(true)
-                    }, terminationAction = {
-                        executionEnvironment.project.solution.rdUnityModel.play.set(false)
-                    })
+            val lt = lifetime.createNested().lifetime
+            project.messageBus.connect(lifetime.createNestedDisposable()).subscribe(XDebuggerManager.TOPIC, object : XDebuggerManagerListener {
+                override fun processStarted(debugProcess: XDebugProcess) {
+                    if (debugProcess is DotNetDebugProcess)
+                    {
+                        debugProcess.debuggerInitializingState.advise(lt){
+                            if (it == DebuggerInitializingState.Initialized)
+                            {
+                                logger.info("Pass value to backend, which will push Unity to enter play mode.")
+                                lt.bracket(opening = {
+                                    // pass value to backend, which will push Unity to enter play mode.
+                                    executionEnvironment.project.solution.rdUnityModel.play.set(true)
+                                }, terminationAction = {
+                                    executionEnvironment.project.solution.rdUnityModel.play.set(false)
+                                })
+                            }
+                        }
+                    }
                 }
-            }
+            })
         }
 
-        return result
+        return super.execute(executor, runner, workerProcessHandler)
     }
 
     override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<GeneralCommandLine> {
@@ -70,17 +78,10 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 remoteConfiguration.pid = actualPid
                 remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
 
-                val listenerLifetimeDefinition = lifetime.createNested()
-
-                UnityProcessListener({
-                    if (it.port == remoteConfiguration.port) {
-                        UIUtil.invokeLaterIfNeeded {
-                            super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
-                            listenerLifetimeDefinition.terminate()
-                        }
-
-                    }
-                }, {}, listenerLifetimeDefinition.lifetime)
+                Thread.sleep(2000)
+                UIUtil.invokeLaterIfNeeded {
+                    super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
+                }
             }
             catch (e: Exception) {
                 result.setError(e)
@@ -90,7 +91,6 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
     }
 
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
-        debugAttached.fire(true)
         return UnityDebuggerOutputListener(project, remoteConfiguration.address, "Unity Editor", true)
     }
 }

@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
+import com.intellij.execution.CantRunException
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.configurations.RunProfileState
@@ -12,8 +13,11 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.reactive.hasTrueValue
+import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
@@ -22,6 +26,7 @@ import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import org.jdom.Element
+import org.jetbrains.concurrency.AsyncPromise
 
 class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
@@ -32,6 +37,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     // TEMP, will be removed in 19.2
     companion object {
         val EP_NAME = ExtensionPointName<UnityAttachConfigurationExtension>("com.intellij.resharper.unity.unityAttachConfiguration")
+        private const val WAIT_FOR_PROCESSES_TIMEOUT = 10000L
     }
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
@@ -87,7 +93,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     }
 
     private fun updatePidAndPort() : Boolean {
-        val processList = OSProcessUtil.getProcessList()
+
+        val processList = getProcesses()
 
         // We might have a pid from a previous run, but the editor might have died
         pid = if (isUserSelectedPid) {
@@ -101,6 +108,32 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
 
         port = convertPidToDebuggerPort(pid!!)
         return true
+    }
+
+    //get processes on background thread with progress
+    private fun getProcesses(): Array<ProcessInfo> {
+        val promise = AsyncPromise<Array<ProcessInfo>>()
+
+        object : Task.Backgroundable(project, "Getting list of processes...") {
+            override fun run(p0: ProgressIndicator) {
+                try {
+                    val processes = OSProcessUtil.getProcessList()
+                    promise.setResult(processes)
+                } catch (t: Throwable) {
+                    promise.setError(t)
+                }
+            }
+
+        }.queue()
+
+        if (!pumpMessages(WAIT_FOR_PROCESSES_TIMEOUT) {
+                promise.isDone
+            }) {
+            throw CantRunException("Failed to fetch list of processes.")
+        }
+
+        return promise.blockingGet(WAIT_FOR_PROCESSES_TIMEOUT.toInt())
+            ?: throw CantRunException("Failed to fetch list of processes.")
     }
 
     private fun findUnityEditorInstance(processList: Array<ProcessInfo>): Int? {

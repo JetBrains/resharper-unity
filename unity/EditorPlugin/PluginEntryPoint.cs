@@ -39,19 +39,27 @@ namespace JetBrains.Rider.Unity.Editor
 
       ourPluginSettings = new PluginSettings();
       ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
-      var riderPath = ourRiderPathProvider.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
-        RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
-      if (string.IsNullOrEmpty(riderPath))
-        return;
 
-      AddRiderToRecentlyUsedScriptApp(riderPath);
-      if (!PluginSettings.RiderInitializedOnce)
+      if (IsLoadedFromAssets()) // old mechanism, when EditorPlugin was copied to Assets folder
       {
-        EditorPrefsWrapper.ExternalScriptEditor = riderPath;
-        PluginSettings.RiderInitializedOnce = true;
-      }
+        var riderPath = ourRiderPathProvider.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
+          RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
+        if (string.IsNullOrEmpty(riderPath))
+          return;
 
-      if (Enabled)
+        AddRiderToRecentlyUsedScriptApp(riderPath);
+        if (!PluginSettings.RiderInitializedOnce)
+        {
+          EditorPrefsWrapper.ExternalScriptEditor = riderPath;
+          PluginSettings.RiderInitializedOnce = true;
+        }
+        if (Enabled)
+        {
+          InitForPluginLoadedFromAssets();
+          Init();
+        }
+      }
+      else
       {
         Init();
       }
@@ -112,20 +120,10 @@ namespace JetBrains.Rider.Unity.Editor
         return;
 
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
 
       InitializeEditorInstanceJson();
-      ResetDefaultFileExtensions();
-
-      // process csproj files once per Unity process
-      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
-      {
-        // Perform on next editor frame update, so we avoid this exception:
-        // "Must set an output directory through SetCompileScriptsOutputDirectory before compiling"
-        EditorApplication.update += SyncSolutionOnceCallBack;
-      }
 
       var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
       var lifetime = lifetimeDefinition.Lifetime;
@@ -166,11 +164,28 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
       };
-
+      
       PlayModeSavedState = GetPlayModeState();
-      SetupAssemblyReloadEvents();
 
       ourInitialized = true;
+    }
+
+    internal static void InitForPluginLoadedFromAssets()
+    {
+      if (ourInitialized)
+        return;
+      
+      ResetDefaultFileExtensions();
+
+      // process csproj files once per Unity process
+      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
+      {
+        // Perform on next editor frame update, so we avoid this exception:
+        // "Must set an output directory through SetCompileScriptsOutputDirectory before compiling"
+        EditorApplication.update += SyncSolutionOnceCallBack;
+      }
+      
+      SetupAssemblyReloadEvents();
     }
 
     private static void SyncSolutionOnceCallBack()
