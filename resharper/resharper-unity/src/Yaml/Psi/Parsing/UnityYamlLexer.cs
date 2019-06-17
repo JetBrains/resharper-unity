@@ -136,7 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                         continue;
                     }
                     
-                    if (myCurOffset + 2 <= myEndOffset && (
+                    if (myCurrentLineOffset == 0 && myCurOffset + 2 <= myEndOffset && (
                             (myBuffer[myCurOffset] == '-' && myBuffer[myCurOffset + 1] == '-' &&
                              myBuffer[myCurOffset + 2] == '-')))
                     {
