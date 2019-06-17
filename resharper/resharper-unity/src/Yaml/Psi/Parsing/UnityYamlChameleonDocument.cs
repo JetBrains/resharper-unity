@@ -145,7 +145,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
     {
       if (firstChild == lastChild && firstChild is IClosedChameleonBody)
         return;
-      Assertion.Fail((string) "One ChameleonElement child but found also {0}", (object) lastChild.NodeType);
+      Assertion.Fail("One ChameleonElement child but found also {0}", lastChild.NodeType);
     }
 
     [Conditional("JET_MODE_ASSERT")]
@@ -153,11 +153,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
     {
       var expectedTextLength = firstChild.GetTextLength();
       var actualTextLength = openedChameleon.GetTextLength();
-      Assertion.Assert<int, int>(expectedTextLength == actualTextLength, "Chameleon length differ after opening! {0} {1}",
+      Assertion.Assert(expectedTextLength == actualTextLength, "Chameleon length differ after opening! {0} {1}",
         expectedTextLength, actualTextLength);
     }
 
-    public override string ToString() => "ChameleonDocumentBody";
+    public override string ToString() => "ChameleonDocument";
   }
 
 }
