@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InCSharpTypeMember(minimumLanguageVersion=2.0);InUnityCSharpProject
+scopes: InCSharpTypeMember(minimumLanguageVersion=2.0);InUnityCSharpFile
 parameterOrder: NAME
 
 ---

@@ -4,6 +4,8 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.LiveTemplates;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
@@ -16,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         public UnityTypeScopeProvider()
         {
             Creators.Add(TryToCreate<MustBeInUnityType>);
+            Creators.Add(TryToCreate<InUnityCSharpFile>);
             Creators.Add(TryToCreate<IsAvailableForClassAttribute>);
         }
 
@@ -35,6 +38,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 yield break;
 
             var psiFile = sourceFile.GetPrimaryPsiFile();
+            if (psiFile == null)
+                yield break;
+            
+            if (psiFile.Language.Is<CSharpLanguage>())
+                yield return new InUnityCSharpFile();
+
             var element = psiFile?.FindTokenAt(caretOffset - prefix.Length);
             var typeDeclaration = element?.GetContainingNode<ITypeDeclaration>();
             if (typeDeclaration == null)

@@ -174,9 +174,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             public override IconId Image => PsiSymbolsThemedIcons.Const.Id;
 
-            public override MatchingResult Match(PrefixMatcher prefixMatcher,ITextControl textControl)
+            public override MatchingResult Match(PrefixMatcher prefixMatcher)
             {
-                var matchingResult = prefixMatcher.Matcher(Text);
+                var matchingResult = prefixMatcher.Match(Text);
                 if (matchingResult == null)
                     return null;
                 return new MatchingResult(matchingResult.MatchedIndices, matchingResult.MostLikelyContinuation, matchingResult.AdjustedScore - 100, matchingResult.OriginalScore);
