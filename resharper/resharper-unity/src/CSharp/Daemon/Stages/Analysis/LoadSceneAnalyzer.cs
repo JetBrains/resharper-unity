@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         {
                             consumer.AddHighlighting(new LoadSceneDisabledSceneNameWarning(argument, sceneName));
                         }
-                        else if (cache.IsSceneExists(sceneName))
+                        else if (!cache.IsSceneExists(sceneName))
                         {
                             consumer.AddHighlighting(
                                 new LoadSceneUnknownSceneNameWarning(argument, sceneName));

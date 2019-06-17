@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             var buildSettings = GetEditorBuildSettings(unityModule);
 
             var scenes = GetSceneCollection(buildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile) as IBlockSequenceNode;
-            Assertion.Assert(scenes!= null, "scene != null");
+            Assertion.Assert(scenes != null, "scene != null");
             foreach (var entry in scenes.Entries)
             {
                 var scene = entry.Value;
@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 {
                     using (WriteLockCookie.Create(myWarning.Argument.IsPhysical()))
                     {
-                        var text = YamlTokenType.NS_PLAIN_ONE_LINE.Create("1");
+                        var text = YamlTokenType.NS_PLAIN_ONE_LINE_IN.Create("1");
                         if (isEnabledPlaneScalarNode.Text != null)
                             LowLevelModificationUtil.ReplaceChildRange(isEnabledPlaneScalarNode.Text, isEnabledPlaneScalarNode.Text, text);
                         else

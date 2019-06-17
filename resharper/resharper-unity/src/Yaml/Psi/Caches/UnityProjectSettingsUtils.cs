@@ -6,6 +6,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -55,9 +56,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public static INode GetCollection([CanBeNull] IBlockMappingNode blockMappingNode, string documentName, string name)
         {
             var documentEntry = blockMappingNode?.Entries.FirstOrDefault(
-                t => t.Key.GetText().Equals(documentName))?.Value as IBlockMappingNode;
+                t => documentName.Equals(t.Key.GetPlainScalarText()))?.Value as IBlockMappingNode;
 
-            var collection = documentEntry?.Entries.FirstOrDefault(t => t.Key.GetText().Equals(name))?.Value;
+            var collection = documentEntry?.Entries.FirstOrDefault(t => name.Equals(t.Key.GetPlainScalarText()))?.Value;
             
             return collection;
         }
