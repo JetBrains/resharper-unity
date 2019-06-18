@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex wordIndexForChecks)
         {
-            if (sourceFile.PrimaryPsiLanguage.Is<YamlLanguage>() && sourceFile.IsAsset())
+            if (sourceFile.PrimaryPsiLanguage.Is<UALanguage>() && sourceFile.IsAsset())
             {
                 if (wordIndexForChecks == null || wordIndexForChecks.CanContainAllSubwords(sourceFile, "m_MethodName"))
                     return new UnityEventTargetReferenceFactory();

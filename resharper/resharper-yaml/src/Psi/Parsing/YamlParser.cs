@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       myLexer = lexer;
     }
 
-    public IFile ParseFile()
+    public virtual IFile ParseFile()
     {
       return Lifetime.Using(lifetime =>
       {
@@ -26,6 +26,16 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       });
     }
 
+    public IYamlDocument ParseDocument()
+    {
+      return Lifetime.Using(lifetime =>
+      {
+        var builder = CreateTreeBuilder(lifetime);
+        builder.ParseDocument(false);
+        return (IYamlDocument) builder.GetTree();
+      });
+    }
+    
     public IDocumentBody ParseDocumentBody()
     {
       return Lifetime.Using(lifetime =>

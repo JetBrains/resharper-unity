@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
         public override bool IsCompatibleWithLanguage(PsiLanguageType languageType)
         {
-            return languageType.Is<YamlLanguage>();
+            return languageType.Is<UALanguage>();
         }
 
         public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,

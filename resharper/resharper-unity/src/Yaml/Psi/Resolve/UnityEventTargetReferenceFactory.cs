@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             // on the child nodes.
             // Then we search the buffer, potentially twice. We'll limit the tag searcher to the first 100 characters of
             // the buffer
-            var buffer = document.Body.GetTextAsBuffer();
+            var buffer = document.GetTextAsBuffer();
             return CanContainReference(buffer);
         }
 

@@ -4,6 +4,7 @@ using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.UnityAsset;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
@@ -19,13 +20,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
         public IEnumerable<ProjectFileType> GetFileTypes(string extension)
         {
             if (UnityYamlFileExtensions.Contains(extension))
-                return new[] {YamlProjectFileType.Instance};
+                return new[] {UAProjectFileType.Instance};
             return EmptyList<ProjectFileType>.Enumerable;
         }
 
         public IEnumerable<string> GetExtensions(ProjectFileType projectFileType)
         {
-            if (Equals(projectFileType, YamlProjectFileType.Instance))
+            if (Equals(projectFileType, UAProjectFileType.Instance))
                 return UnityYamlFileExtensions.AllFileExtensionsWithDot;
             return EmptyList<string>.Enumerable;
         }

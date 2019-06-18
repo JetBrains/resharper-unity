@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         
         public static bool CanContainReference([NotNull] IYamlDocument document)
         {
-            var buffer = document.Body.GetTextAsBuffer();
+            var buffer = document.GetTextAsBuffer();
             return CanContainReference(buffer);
         }
 

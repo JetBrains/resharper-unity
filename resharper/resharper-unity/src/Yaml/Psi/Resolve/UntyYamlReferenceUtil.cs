@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         // If we add any more references, add them here, or SWEA's usage count won't pick them up!!
         public static bool CanContainReference([NotNull] IYamlDocument document)
         {
-            var buffer = document.Body.GetTextAsBuffer();
+            var buffer = document.GetTextAsBuffer();
             return UnityEventTargetReferenceFactory.CanContainReference(buffer)
                 || MonoScriptReferenceFactory.CanContainReference(buffer);
         }

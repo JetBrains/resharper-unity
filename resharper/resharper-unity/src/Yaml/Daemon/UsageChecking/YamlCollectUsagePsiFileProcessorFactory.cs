@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
     // Perhaps it's time to introduce a specialisation of the YAML language for Unity file types, that can give us extra
     // flexibility for handling things (e.g. checking for Unity YAML files without having to always do a string
     // comparison with file extensions)
-    [Language(typeof(YamlLanguage))]
+    [Language(typeof(UALanguage))]
     public class YamlCollectUsagePsiFileProcessorFactory : CollectUsagesPsiFileProcessorFactory
     {
         public override ICollectUsagesPsiFileProcessor CreatePsiFileProcessor(
