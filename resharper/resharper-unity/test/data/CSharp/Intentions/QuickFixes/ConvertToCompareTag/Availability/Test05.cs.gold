@@ -4,7 +4,7 @@ public class Foo : MonoBehaviour
 {
     public void Method()
     {
-        if (||this.|(1)tag != "Whatever"|(0)) { }
+        if (||this.|(1)tag != |"Whatever"|(0)|(2)) { }
     }
 }
 
@@ -21,3 +21,5 @@ Remove redundant 'this' qualifier
 Remove redundant code in file
 --Remove redundant code in project
 --Remove redundant code in solution
+2: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
+NO QUICKFIXES

@@ -254,8 +254,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 })
                 .WithBehavior(_ => new UnityEventFunctionBehavior(myShellLocks, declaredElementInfo, eventFunction, accessRights))
                 .WithMatcher(_ =>
-                    new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, declaredElementInfo,
-                        context.BasicContext.IdentifierMatchingStyle));
+                    new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, declaredElementInfo));
         }
 
         [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
@@ -434,16 +433,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             private readonly int myShiftOffset;
 
             public ShiftedDeclaredElementMatcher(string customText, int shiftOffset,
-                                                 DeclaredElementInfo declaredElementInfo,
-                                                 IdentifierMatchingStyle matchingStyle)
-                : base(customText, declaredElementInfo, matchingStyle)
+                                                 DeclaredElementInfo declaredElementInfo)
+                : base(customText, declaredElementInfo)
             {
                 myShiftOffset = shiftOffset;
             }
 
-            public override MatchingResult Match(PrefixMatcher prefixMatcher, ITextControl textControl)
+            public override MatchingResult Match(PrefixMatcher prefixMatcher)
             {
-                var result = base.Match(prefixMatcher, textControl);
+                var result = base.Match(prefixMatcher);
                 return result?.Shift(myShiftOffset);
             }
         }

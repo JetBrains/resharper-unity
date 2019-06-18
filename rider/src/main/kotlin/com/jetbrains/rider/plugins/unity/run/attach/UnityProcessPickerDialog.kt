@@ -1,13 +1,13 @@
 package com.jetbrains.rider.plugins.unity.run.attach
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.defineNestedLifetime
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.ui.VerticalFlowLayout
 import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
-import com.jetbrains.rdclient.util.idea.defineNestedLifetime
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout

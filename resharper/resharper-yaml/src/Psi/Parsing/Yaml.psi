@@ -322,7 +322,8 @@ aliasNode
 plainScalarNode
 :
   nodeProperties<YAML_PROPERTIES, Properties>?
-  NS_PLAIN_ONE_LINE<YAML_TEXT, Text>
+  NS_PLAIN_ONE_LINE_IN<YAML_TEXT, Text>
+  | NS_PLAIN_ONE_LINE_OUT<YAML_TEXT, Text>
   | NS_PLAIN_MULTI_LINE<YAML_TEXT, Text>
 ;
 

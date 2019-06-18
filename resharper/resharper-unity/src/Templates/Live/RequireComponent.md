@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: IsAvailableForClassAttribute;InUnityCSharpProject
+scopes: IsAvailableForClassAttribute;InUnityCSharpFile
 parameterOrder: TYPE
 TYPE-expression: complete()
 ---

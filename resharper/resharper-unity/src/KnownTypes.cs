@@ -30,6 +30,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName Shader = new ClrTypeName("UnityEngine.Shader");
         public static readonly IClrTypeName Transform = new ClrTypeName("UnityEngine.Transform");
         public static readonly IClrTypeName Debug = new ClrTypeName("UnityEngine.Debug");
+        public static readonly IClrTypeName SceneManager = new ClrTypeName("UnityEngine.SceneManagement.SceneManager");
+        public static readonly IClrTypeName EditorSceneManager = new ClrTypeName("UnityEditor.SceneManagement.EditorSceneManager");
+        public static readonly IClrTypeName LayerMask = new ClrTypeName("UnityEngine.LayerMask");
+        public static readonly IClrTypeName Input = new ClrTypeName("UnityEngine.Input");
 
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");
