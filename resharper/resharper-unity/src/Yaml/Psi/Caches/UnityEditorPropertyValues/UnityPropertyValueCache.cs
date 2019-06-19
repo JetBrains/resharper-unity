@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Settings;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.DataContext;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
@@ -37,9 +40,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             "m_EditorClassIdentifier"
         };
 
-        public UnityPropertyValueCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager)
+        private readonly IContextBoundSettingsStore myContextBoundSettingStore;
+
+        public UnityPropertyValueCache(ISolution solution, Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
+            ISettingsStore settings)
             : base(lifetime, persistentIndexManager, CreateMarshaller())
         {
+            myContextBoundSettingStore = settings.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
         }
 
 
@@ -62,7 +69,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return base.IsApplicable(sourceFile) &&
+            return myContextBoundSettingStore.GetValue((UnitySettings k) => k.EnableInspectorPropertiesEditor) && 
+                   base.IsApplicable(sourceFile) &&
                    sourceFile.LanguageType.Is<UnityYamlProjectFileType>() &&
                    sourceFile.PsiModule is UnityExternalFilesPsiModule &&
                    sourceFile.IsAsset();
@@ -113,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private List<(string, MonoBehaviourPropertyValue)> GetPropertiesWithValues(IYamlDocument document, string mbId, out string scriptGuid)
         {
             scriptGuid = document.GetUnityObjectPropertyValue("m_Script").AsFileID()?.guid;
-            var gameObjectId = document.GetUnityObjectPropertyValue("m_GameObject").AsFileID()?.guid;
+            var gameObjectId = document.GetUnityObjectPropertyValue("m_GameObject").AsFileID()?.fileID;
             var entries = document.FindRootBlockMapEntries();
             if (entries == null)
                 return null;
@@ -213,14 +221,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return myLocalCache.GetValues(query);
         }
         
-        public bool HasUniqueValue(string guid, string propertyName)
+        public int GetValueCount(string guid, string propertyName, object value)
         {
-            return myLocalCache.HasUniqueValue(new MonoBehaviourProperty(guid, propertyName));
+            return myLocalCache.GetValueCount(new MonoBehaviourProperty(guid, propertyName), value);
         }
 
-        public int GetValueCount(string guid, string propertyName, object exceptValue)
+        public int GetPropertyValuesCount(string guid, string propertyName)
         {
-            return myLocalCache.GetValueCount(new MonoBehaviourProperty(guid, propertyName), exceptValue);
+            return myLocalCache.GetPropertyValuesCount(new MonoBehaviourProperty(guid, propertyName));
+        }
+        
+        public int GetPropertyUniqueValuesCount(string guid, string propertyName)
+        {
+            return myLocalCache.GetPropertyUniqueValuesCount(new MonoBehaviourProperty(guid, propertyName));
         }
     }
 }

@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var selectRequest = selectedReference == null
                 ? null
-                : CreateRequest(mySolutionDirectoryPath, mySceneProcessor, selectedReference, null);
+                : CreateRequest(mySolutionDirectoryPath, mySceneProcessor, selectedReference.ComponentDocument, false);
 
             var lifetimeDef = myLifetime.CreateNested();
             var pi = new ProgressIndicator(myLifetime);
@@ -89,25 +89,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private static FindUsageResultElement CreateRequest([NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneProcessor sceneProcessor, 
-            [NotNull] IUnityYamlReference currentReference, [CanBeNull] IUnityYamlReference selectedReference)
+        public static FindUsageResultElement CreateRequest([NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneProcessor sceneProcessor, 
+            [NotNull] IYamlDocument document, bool needExpand = false)
         {
-            var monoScriptDocument = currentReference.ComponentDocument;
-
-            var sourceFile = monoScriptDocument?.GetSourceFile();
+            var sourceFile = document.GetSourceFile();
             if (sourceFile == null)
                 return null;
 
-            var pathElements = UnityObjectPsiUtil.GetGameObjectPathFromComponent(sceneProcessor, currentReference.ComponentDocument).RemoveEnd("\\").Split("\\");
+            var pathElements = UnityObjectPsiUtil.GetGameObjectPathFromComponent(sceneProcessor, document).RemoveEnd("\\").Split("\\");
             
             // Constructing path of child indices
             var consumer = new UnityChildPathSceneConsumer();
-            sceneProcessor.ProcessSceneHierarchyFromComponentToRoot(monoScriptDocument, consumer);
+            sceneProcessor.ProcessSceneHierarchyFromComponentToRoot(document, consumer);
 
 
             if (!GetPathFromAssetFolder(solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
                 return null;
-            bool needExpand = currentReference == selectedReference;
             bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
             
             return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, pathElements, consumer.RootIndices.ToArray().Reverse().ToArray());
@@ -156,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public FindExecution Merge(IUnityYamlReference data)
             {
-                var request = CreateRequest(mySolutionDirectoryPath, mySceneProcessor,  data, mySelectedReference);
+                var request = CreateRequest(mySolutionDirectoryPath, mySceneProcessor, data.ComponentDocument, data == mySelectedReference);
                 if (request != null)
                     Result.Add(request);
                 

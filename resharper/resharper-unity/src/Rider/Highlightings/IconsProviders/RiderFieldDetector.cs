@@ -1,3 +1,4 @@
+using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
@@ -8,6 +9,8 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
@@ -19,24 +22,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
+        private readonly AssetSerializationMode myAssetSerializationMode;
 
         public RiderFieldDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore,
             PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi,
             UnityCodeInsightFieldUsageProvider fieldUsageProvider,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost)
+            IconHost iconHost, AssetSerializationMode assetSerializationMode)
             : base(solution, swa, settingsStore, analyzer, unityApi)
         {
             myFieldUsageProvider = fieldUsageProvider;
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
+            myAssetSerializationMode = assetSerializationMode;
         }
 
         protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
             string text,
             string tooltip, DaemonProcessKind kind)
         {
+            if (!myAssetSerializationMode.IsForceText || 
+                !Settings.GetValue((UnitySettings key) => key.EnableInspectorPropertiesEditor))
+            {
+                AddHighlighting(consumer, element, text, tooltip, kind);
+                return;
+            }
+            
             if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myFieldUsageProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
             {

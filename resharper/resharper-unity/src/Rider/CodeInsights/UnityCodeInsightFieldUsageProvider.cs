@@ -11,10 +11,13 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
@@ -35,8 +38,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             ValueType,
             Other
         }
-        
+
+        private readonly ConnectionTracker myConnectionTracker;
         private readonly UnityApi myUnityApi;
+        private readonly IPsiFiles myFiles;
+        private readonly UnityHost myUnityHost;
+        private readonly UnitySceneProcessor mySceneProcessor;
         public override string ProviderId => "Unity serialized field";
         public override string DisplayName => "Unity serialized field";
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
@@ -44,11 +51,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
             new[] {new CodeLensRelativeOrderingLast()};
 
-        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, UnityApi unityApi, UnityHost host,
-            BulbMenuComponent bulbMenu)
+        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
+            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneProcessor sceneProcessor)
             : base(unitySolutionTracker, host, bulbMenu)
         {
+            myConnectionTracker = connectionTracker;
             myUnityApi = unityApi;
+            myFiles = files;
+            myUnityHost = unityHost;
+            mySceneProcessor = sceneProcessor;
         }
         
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
@@ -99,8 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
                         menu.DescribeItem.Advise(lifetime, e =>
                         {
-                            var value = (e.Key as MonoBehaviourPropertyValueWithLocation)
-                                .NotNull("value != null");
+                            var value = (e.Key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
 
                             string shortPresentation;
                             if (ShouldShowUnknownPresentation(value.Value, presentationType))
@@ -116,11 +126,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             OccurrencePresentationUtil.AppendRelatedFile(e.Descriptor, value.File.DisplayName);
 
                             e.Descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
+                            e.Descriptor.Style = MenuItemStyle.Enabled;
                         });
 
                         menu.ItemClicked.Advise(lifetime, key =>
                         {
+                            if (!myConnectionTracker.IsConnectionEstablished())
+                                return;
                             
+                            var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
+                            using (ReadLockCookie.Create())
+                            {
+                                myFiles.CommitAllDocumentsAsync(() =>
+                                {
+                                    var file = value.File.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
+                                    if (file == null)
+                                        return;
+
+                                    var document = file.FindDocumentByAnchor(value.Value.MonoBehaviour);
+                                    if (document == null)
+                                        return;
+                                    var request = UnityEditorFindUsageResultCreator.CreateRequest(
+                                        solution.SolutionDirectory, mySceneProcessor, document);
+                                    myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(request));
+                                    UnityFocusUtil.FocusUnity(myUnityHost.GetValue(t => t.UnityProcessId.Value));
+                                });
+                            }
                         });
                     });
             }
@@ -162,20 +193,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             if (presentationType != UnityPresentationType.Other)
             {
-                if (cache.HasUniqueValue(guid, propertyName))
+                var initValueCount = cache.GetValueCount(guid, propertyName, GetUnitySerializedPresentation(presentationType, initValue));
+                if (initValueCount == 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 1 // only modified value
+                    || initValueCount > 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 2) // original value & modified value
                 {
-                    if (IsSameWithInitializer(values[0].Value, presentationType, initValue))
-                    {
-                        changesCount = 0;
-                    }
-                    else
-                    {
-                        displayName = values[0].GetSimplePresentation(solution);
-                    }
+                    displayName = values[0].GetSimplePresentation(solution);
                 }
                 else
                 {
-                    changesCount = cache.GetValueCount(guid, propertyName, GetUnitySerializedPresentation(presentationType, initValue));
+                    changesCount = cache.GetPropertyValuesCount(guid, propertyName) - initValueCount;
                 }
             }
             else
@@ -205,6 +231,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 declaredElement, iconModel, presentationType, initValue));
         }
 
+        
+        
         private string GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
         {
             if (presentationType == UnityPresentationType.Bool && value is bool b)

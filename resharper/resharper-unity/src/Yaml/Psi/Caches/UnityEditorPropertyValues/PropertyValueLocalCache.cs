@@ -77,16 +77,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
         }
 
-        public bool HasUniqueValue(MonoBehaviourProperty query)
+        public int GetValueCount(MonoBehaviourProperty query, object value)
         {
-            return myUniquePropertyValues.GetValues(query).Length == 1;
+            return myUniquePropertyValues.GetCount(query, value);
         }
 
-        public int GetValueCount(MonoBehaviourProperty query, object except)
+        public int GetPropertyValuesCount(MonoBehaviourProperty query)
         {
-            var length = myPropertyValues.GetValues(query).Length;
-            var exceptCount = myUniquePropertyValues.GetCount(query, except);
-            return length - exceptCount;
+            return myPropertyValues.GetValues(query).Length;
+        }
+
+        public int GetPropertyUniqueValuesCount(MonoBehaviourProperty query)
+        {
+            return myUniquePropertyValues.GetValues(query).Length;
         }
     }
 }
