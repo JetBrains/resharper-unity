@@ -9,10 +9,10 @@ import javax.swing.JList
 
 class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>() {
     private val validTokens: Map<String, TokenType> = mapOf("<b>" to TokenType.Bold,
-                                                            "</b>" to TokenType.BoldEnd,
-                                                            "<i>" to TokenType.Italic,
-                                                            "</i>" to TokenType.ItalicEnd,
-                                                            "</color>" to TokenType.ColorEnd)
+        "</b>" to TokenType.BoldEnd,
+        "<i>" to TokenType.Italic,
+        "</i>" to TokenType.ItalicEnd,
+        "</color>" to TokenType.ColorEnd)
 
     override fun customizeCellRenderer(list: JList<out LogPanelItem>, event: LogPanelItem?, index: Int, selected: Boolean, hasFocus: Boolean) {
         if (event != null) {
@@ -51,7 +51,7 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>() {
                     }
                 }
                 if (token.type == TokenType.Color) {
-                    for (x in tokens.count()-1 downTo i) {
+                    for (x in tokens.count() - 1 downTo i) {
                         if (tokens[x].type == TokenType.ColorEnd && !tokens[x].used) {
                             token.used = true
                             tokens[x].used = true
@@ -68,14 +68,25 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>() {
 
             for (token in tokens) {
                 if (!token.used) {
-                    var style = SimpleTextAttributes.STYLE_PLAIN
-                    if (token.bold)
-                        style = style or SimpleTextAttributes.STYLE_BOLD
+                    var style = SimpleTextAttributes.REGULAR_ATTRIBUTES
 
-                    if (token.italic)
-                        style = style or SimpleTextAttributes.STYLE_ITALIC
+                    if (token.bold && token.italic)
+                        style = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD or SimpleTextAttributes.STYLE_ITALIC, token.color)
+                    else if (token.bold)
+                        if (token.color == null)
+                            style = SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES
+                        else
+                            style = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, token.color)
+                    else if (token.italic)
+                        if (token.color == null)
+                            style = SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES
+                        else
+                            style = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, token.color)
+                    else if(token.color != null)
+                        style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, token.color)
 
-                    append(token.token, SimpleTextAttributes(style, token.color))
+
+                    append(token.token, style)
                 }
             }
 
@@ -100,10 +111,9 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>() {
                 }
 
                 lastIndex = checkToken(fullString, "<color=", i)
-                if(lastIndex != -1)
-                {
+                if (lastIndex != -1) {
                     var token = getToken(fullString, i)
-                    if(token == "")
+                    if (token == "")
                         break
 
                     val tempLastTokenIndex = i + token.length
@@ -114,7 +124,7 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>() {
                         lastTokenIndex,
                         tokens,
                         fullString,
-                        token.substring(token.indexOf('=')+1).trim('"'),
+                        token.substring(token.indexOf('=') + 1).trim('"'),
                         TokenType.Color
                     )
                     lastTokenIndex = tempLastTokenIndex + 1
@@ -134,13 +144,12 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>() {
         tokens.add(Token(tokenString, type))
     }
 
-    private fun getToken(fullString: String, startIndex: Int) : String
-    {
-        if(fullString[startIndex] != '<')
+    private fun getToken(fullString: String, startIndex: Int): String {
+        if (fullString[startIndex] != '<')
             return ""
 
         for (i in startIndex until fullString.length) {
-            if(fullString[i] == '>')
+            if (fullString[i] == '>')
                 return fullString.substring(startIndex until i)
         }
 
@@ -195,7 +204,7 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>() {
                 }
             }
         } catch (t: Throwable) {
-            return Color.white
+            return null
         }
     }
 
