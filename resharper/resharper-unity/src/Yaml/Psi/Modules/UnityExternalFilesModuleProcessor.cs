@@ -272,61 +272,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             if (paths.Count == 0)
                 return;
 
-            var projectFiles = new List<IProjectFile>();
             using (new ProjectModelBatchChangeCookie(mySolution, SimpleTaskExecutor.Instance))
             using (mySolution.Locks.UsingWriteLock())
             {
                 foreach (var path in paths)
                 {
-                    var projectFile = AddExternalProjectFile(path);
-                    if (projectFile != null)
-                        projectFiles.Add(projectFile);
+                    AddExternalProjectFile(path);
                 }
             }
-
-            AddProjectFilesToSwea(projectFiles);
         }
 
         // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
         // automatically get an IPsiSourceFile created for it, and attached to our module via
         // UnityMiscFilesProjectPsiModuleProvider
-        [MustUseReturnValue, CanBeNull]
-        private IProjectFile AddExternalProjectFile(FileSystemPath path)
+        private void AddExternalProjectFile(FileSystemPath path)
         {
-            var misc = mySolution.FindProjectItemsByLocation(path).FirstOrDefault();
-            if (misc != null)
-            {
-                if (!misc.IsMiscProjectItem())
-                    return null;
-                
-                return misc as IProjectFile;
-            }
+            if (mySolution.FindProjectItemsByLocation(path).Count > 0)
+                return;
 
             var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
             var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
                 new MiscFilesProjectProperties());
-            return projectImpl.DoCreateFile(path, properties);
-        }
-
-        private void AddProjectFilesToSwea(List<IProjectFile> projectFiles)
-        {
-            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
-                return;
-            
-            // Note that we don't want to use DaemonExcludedFilesManager.AddFileToForceEnable here, because that will
-            // add the files to .sln.dotSettings.user. We'll do it ourselves, in our hidden solution settings layer
-            using (myLocks.UsingWriteLock())
-            {
-                var filesAndFoldersToSkipEntry = mySettingsSchema.GetIndexedEntry<ExcludedFilesSettingsKey, string, ExcludedFileState>(key => key.FilesAndFoldersToSkip2);
-                var mountPoint = mySettingsLayersProvider.SolutionMountPoint;
-                foreach (var file in projectFiles)
-                {
-                    var id = file.GetPersistentID();
-                    ScalarSettingsStoreAccess.SetIndexedValue(mountPoint, filesAndFoldersToSkipEntry, id, null,
-                        ExcludedFileState.ForceIncluded, null, myLogger);
-                }
-            }
+            projectImpl.DoCreateFile(path, properties);
         }
 
         private void UpdateStatistics(ExternalFiles externalFiles)

@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         // If the document contains "m_Script: {fileID: 11500000, guid:", it's a reference to a class. This is fragile
         // if Unity starts to format its files differently, but I think this is ok
         private static readonly StringSearcher ourScriptReferenceStringSearcher =
-            new StringSearcher("m_Script: {fileID: 11500000, guid:", true);
+            new StringSearcher("m_Script:", true);
 
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {

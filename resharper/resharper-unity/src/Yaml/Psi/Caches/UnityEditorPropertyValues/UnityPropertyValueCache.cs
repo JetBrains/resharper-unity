@@ -11,7 +11,9 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+using JetBrains.Util.Collections;
 using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
@@ -19,46 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     [PsiComponent]
     public class UnityPropertyValueCache : SimpleICache<OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>>
     {
-        private OneToSetMap<MonoBehaviourProperty, MonoBehaviourPropertyValueWithLocation> myLocalCache =
-            new OneToSetMap<MonoBehaviourProperty, MonoBehaviourPropertyValueWithLocation>();
-
-        public class MonoBehaviourPropertyValueWithLocation
-        {
-            public readonly IPsiSourceFile File;
-            public readonly MonoBehaviourPropertyValue Value;
-
-            public MonoBehaviourPropertyValueWithLocation(IPsiSourceFile file, MonoBehaviourPropertyValue value)
-            {
-                File = file;
-                Value = value;
-            }
-
-            protected bool Equals(MonoBehaviourPropertyValueWithLocation other)
-            {
-                return Equals(File, other.File) && Value.Equals(other.Value);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != GetType()) return false;
-                return Equals((MonoBehaviourPropertyValueWithLocation) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (File.GetHashCode() * 397) ^ Value.GetHashCode();
-                }
-            }
-
-            public string GetSimplePresentation(ISolution solution)
-            {
-                return Value.GetSimplePresentation(solution, File);
-            }
-        }
+        private PropertyValueLocalCache myLocalCache = new PropertyValueLocalCache();
 
         private static readonly HashSet<string> myIgnoredMonoBehaviourEntries = new HashSet<string>()
         {
@@ -163,10 +126,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 if (!myIgnoredMonoBehaviourEntries.Contains(key))
                 {
                     // TODO fix parser, entryValue should not be null
-                    var entryValue = entry.Content.Value;
-                    if (entryValue != null && entryValue.GetTextAsBuffer().Length > 50)
+                    var entryContent= entry.Content;
+                    if (entryContent is IChameleonNode)
+                    {
+                        list.Add((key, new MonoBehaviourHugeValue(mbId, gameObjectId)));
                         continue;
-                    
+                    }
+
+                    var entryValue = entryContent?.Value;
                     var fileId = entryValue?.AsFileID();
 
                     if (fileId == null)
@@ -240,9 +207,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
         }
 
-        public List<MonoBehaviourPropertyValueWithLocation> GetUnityPropertyValues(string guid, string propertyName)
+        public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetUnityPropertyValues(string guid, string propertyName)
         {
-            return myLocalCache[new MonoBehaviourProperty(guid, propertyName)].ToList();
+            var query = new MonoBehaviourProperty(guid, propertyName);
+            return myLocalCache.GetValues(query);
+        }
+        
+        public bool HasUniqueValue(string guid, string propertyName)
+        {
+            return myLocalCache.HasUniqueValue(new MonoBehaviourProperty(guid, propertyName));
+        }
+
+        public int GetValueCount(string guid, string propertyName, object exceptValue)
+        {
+            return myLocalCache.GetValueCount(new MonoBehaviourProperty(guid, propertyName), exceptValue);
         }
     }
 }

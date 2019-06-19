@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
@@ -6,10 +7,38 @@ using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
+    public class MonoBehaviourHugeValue : MonoBehaviourPropertyValue
+    {
+        public MonoBehaviourHugeValue([NotNull] string monoBehaviour, [CanBeNull] string localGameObjectAnchor)
+            : base(monoBehaviour, localGameObjectAnchor)
+        {
+        }
+
+        public override object Value => null;
+        
+        internal override void WriteTo(UnsafeWriter writer)
+        {
+            writer.Write(2);
+            base.WriteTo(writer);
+        }
+        
+        public override string GetSimplePresentation(ISolution solution, IPsiSourceFile file)
+        {
+            return "...";
+        }
+        
+        public static MonoBehaviourPropertyValue ReadFrom(UnsafeReader reader)
+        {
+            return new MonoBehaviourHugeValue(reader.ReadString().NotNull("monoBehaviour != null"), reader.ReadString());
+        }
+    }
+    
     public class MonoBehaviourPrimitiveValue : MonoBehaviourPropertyValue
     {
         [NotNull]
         public string PrimitiveValue { get; }
+        
+        public override object Value => PrimitiveValue;
 
         public MonoBehaviourPrimitiveValue([CanBeNull] string primitiveValue, [NotNull] string monoBehaviour,
             [CanBeNull] string localGameObjectAnchor)
@@ -41,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         internal override void WriteTo(UnsafeWriter writer)
         {
-            writer.Write(true);
+            writer.Write(1);
             writer.Write(PrimitiveValue);
             base.WriteTo(writer);
         }
@@ -72,6 +101,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return base.Equals(other) && Reference.Equals(other.Reference);
         }
 
+        public override object Value => Reference;
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -96,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         internal override void WriteTo(UnsafeWriter writer)
         {
-            writer.Write(false);
+            writer.Write(0);
             Reference.WriteTo(writer);
             base.WriteTo(writer);
         }
@@ -123,6 +154,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         [NotNull]
         public string LocalGameObjectAnchor { get; }
+        
+        public abstract object Value { get; }
 
         public MonoBehaviourPropertyValue([NotNull] string monoBehaviour, [CanBeNull] string localGameObjectAnchor)
         {
@@ -161,15 +194,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     {
         public static MonoBehaviourPropertyValue Read(UnsafeReader reader)
         {
-            var isPrimitive = reader.ReadBool();
-            return isPrimitive
-                ? MonoBehaviourPrimitiveValue.ReadFrom(reader)
-                : MonoBehaviourReferenceValue.ReadFrom(reader);
+            var type = reader.ReadInt32();
+            switch (type)
+            {
+                case 0:
+                    return MonoBehaviourReferenceValue.ReadFrom(reader);
+                case 1:
+                    return MonoBehaviourPrimitiveValue.ReadFrom(reader);
+                case 2:
+                    return MonoBehaviourHugeValue.ReadFrom(reader);
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
-        public static void Write(UnsafeWriter writer, MonoBehaviourPropertyValue value)
-        {
-            value.WriteTo(writer);
-        }
+        public static void Write(UnsafeWriter writer, MonoBehaviourPropertyValue value) => value.WriteTo(writer);
     }
 }

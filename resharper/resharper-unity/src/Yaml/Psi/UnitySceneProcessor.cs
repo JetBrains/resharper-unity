@@ -126,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public static string GetUnityObjectTag(IYamlDocument document)
         {
-            var tag = (document.Body.BlockNode as IChameleonBlockMappingNode)?.Properties.TagProperty.GetText();
+            var tag = (document.Body.BlockNode as IBlockMappingNode)?.Properties.TagProperty.GetText();
             return tag;
         }
         
