@@ -212,7 +212,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     var target = mod.FindMapEntryBySimpleKey(UnityYamlConstants.TargetProperty)?.Value?.AsFileID();
                     if (type?.Equals(value) == true && target?.fileID.Equals(targetFileId) == true)
                     {
-                        return (mod.FindMapEntryBySimpleKey(UnityYamlConstants.ValueProperty)?.Value as IPlainScalarNode)?.Text.GetText();
+                        return mod.FindMapEntryBySimpleKey(UnityYamlConstants.ValueProperty)?.Value?.GetPlainScalarText();
                     }
                 }
             }

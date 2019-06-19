@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InCSharpStatement;InUnityCSharpProject
+scopes: InCSharpStatement;InUnityCSharpFile
 parameterOrder: VAR
 VAR-expression: complete()
 ---
@@ -14,6 +14,6 @@ VAR-expression: complete()
 Debug.Log()
 
 ```
-UnityEngine.Debug.Log($VAR$)
+UnityEngine.Debug.Log($VAR$);
 ```
 

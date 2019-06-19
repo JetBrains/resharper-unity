@@ -208,6 +208,63 @@
           be found in the current project or referenced assemblies. The call is likely to fail at runtime and return null.
         </Description>
       </Tag>
+
+      <Tag externalName="LoadSceneWrongIndexWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>The index is missing in the build settings</Title>
+        <Description>
+          There is no scene with the same index in the Unity build settings.
+        </Description>
+      </Tag>
+
+      <Tag externalName="LoadSceneAmbiguousSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Short scene name is not unique</Title>
+        <Description>
+          There are several scenes with the same name in the Unity build settings. 
+          Only scene with smallest index will be used.
+        </Description>  
+      </Tag>
+      
+      <Tag externalName="LoadSceneUnknownSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>There is no scene with the same name in the build settings</Title>
+        <Description>
+          The scene is missing in the Unity build settings.
+        </Description>
+      </Tag>
+
+      <Tag externalName="LoadSceneUnexistingSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Scene does not exist</Title>
+        <Description>
+          There is no scene with the same name in the project.
+        </Description>
+      </Tag>
+
+      <Tag externalName="LoadSceneDisabledSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Scene is disabled in the build settings</Title>
+        <Description>
+          Scene is disabled in the Unity build settings, so it could not be loaded
+        </Description>
+      </Tag>
+
+      <Tag externalName="UnknownInputAxesWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>The input name is not defined in the Input manager</Title>
+        <Description>
+          The name is not defined in the Input manager. The call is likely to fail at runtime.
+        </Description>
+      </Tag>
+
+      <Tag externalName="UnknownTagWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>The tag is not defined in the 'Tags &amp; Layers'</Title>
+        <Description>
+          The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'.
+        </Description>
+      </Tag>
+
+      <Tag externalName="UnknownLayerWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>The layer is not defined in the 'Tags &amp; Layers'</Title>
+        <Description>
+          The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime.
+        </Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
 
@@ -230,6 +287,65 @@
          to use ERROR mode)
        -->
 
+  <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
+    <Parameter type="ITreeNode" name="node" />
+    <Message value="The name is not defined in the Input manager. The call is likely to fail at runtime." />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="UnknownTag" configurableSeverity="Unity.UnknownTag">
+    <Parameter type="ITreeNode" name="node" />
+    <Message value="The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'." />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="UnknownLayer" configurableSeverity="Unity.UnknownLayer">
+    <Parameter type="ITreeNode" name="node" />
+    <Message value="The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime." />
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="LoadSceneUnexistingSceneName" configurableSeverity="Unity.LoadSceneUnexistingScene">
+    <Parameter type="IArgument" name="argument" />
+    <Message value="There is no scene with same name in the project." />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="LoadSceneDisabledSceneName" configurableSeverity="Unity.LoadSceneDisabledSceneName">
+    <Parameter type="IArgument" name="argument" />
+    <Parameter type="string" name="sceneName" />
+    <Message value="Scene is disabled in the Unity build settings, so it could not be loaded" />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
+  <Warning name="LoadSceneUnknownSceneName" configurableSeverity="Unity.LoadSceneUnknownSceneName">
+    <Parameter type="IArgument" name="argument" />
+    <Parameter type="string" name="sceneName" />
+    <Message value="The scene is missing in the Unity build settings." />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="LoadSceneAmbiguousSceneName" configurableSeverity="Unity.LoadSceneAmbiguousSceneName">
+    <Parameter type="IArgument" name="argument" />
+    <Parameter type="string" name="sceneName" />
+    <Message value="There are several scenes with same name in the Unity build settings. Only scene with smallest index will be used." />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="LoadSceneWrongIndex" configurableSeverity="Unity.LoadSceneWrongIndex">
+    <Parameter type="IArgument" name="argument" />
+    <Message value="There is no scene with same index in the Unity build settings." />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
   <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Message value="Event function with the same name is already declared" />

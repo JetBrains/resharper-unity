@@ -28,39 +28,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
             ;
         protected sealed override string RelativeTestDataPath=> $@"{RelativeTestDataRoot}\{ProductGoldSuffix}";
         protected abstract string RelativeTestDataRoot { get; }
-        protected override void DoTest(IProject project)
+        protected override void DoTest(Lifetime lifetime, IProject project)
         {
             var swea = SolutionAnalysisService.GetInstance(Solution);
             using (TestPresentationMap.Cookie())
             using (TestPsiConfigurationSettings.Instance.PersistCachesCookie())
             using (swea.RunAnalysisCookie())
             {
-                Lifetime.Using(lifetime =>
+                ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => 
+                    key.PerformanceHighlightingMode, PerformanceHighlightingMode.Always);
+
+                var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
+                swea.ReanalyzeAll();
+
+                ExecuteWithGold(TestMethodName + ".cs", writer =>
                 {
-                    ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => 
-                        key.PerformanceHighlightingMode, PerformanceHighlightingMode.Always);
-
-                    var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
-                    swea.ReanalyzeAll();
-
-                    ExecuteWithGold(TestMethodName + ".cs", writer =>
+                    foreach (var file in files)
                     {
-                        foreach (var file in files)
-                        {
-                            if (file.LanguageType.IsNullOrUnknown()) continue;
-                            var pf = file.ToProjectFile();
-                            if (pf == null) continue;
-                            if (!pf.Location.Name.EndsWith(".cs")) continue;
+                        if (file.LanguageType.IsNullOrUnknown()) continue;
+                        var pf = file.ToProjectFile();
+                        if (pf == null) continue;
+                        if (!pf.Location.Name.EndsWith(".cs")) continue;
 
-                            var process = new TestHighlightingDumperWithOverridenStages(file, writer,
-                                DaemonStageManager.GetInstance(Solution).Stages,
-                                HighlightingPredicate,
-                                CSharpLanguage.Instance);
-                            process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
-                            process.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);
-                            process.Dump();
-                        }
-                    });
+                        var process = new TestHighlightingDumperWithOverridenStages(file, writer,
+                            DaemonStageManager.GetInstance(Solution).Stages,
+                            HighlightingPredicate,
+                            CSharpLanguage.Instance);
+                        process.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
+                        process.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);
+                        process.Dump();
+                    }
                 });
             }
         }

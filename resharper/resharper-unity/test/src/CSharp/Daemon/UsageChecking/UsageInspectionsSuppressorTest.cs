@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
@@ -18,12 +19,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
         [Test] public void SerializableClassFields01() { DoNamedTest(); }
         [Test] public void PreprocessBuildInterface01() { DoNamedTest(); }
 
-        protected override void DoTest(IProject project)
+        protected override void DoTest(Lifetime lifetime, IProject project)
         {
             myOnProjectStarted?.Invoke(project);
             try
             {
-                base.DoTest(project);
+                base.DoTest(lifetime, project);
             }
             finally
             {

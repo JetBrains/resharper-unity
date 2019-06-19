@@ -206,6 +206,7 @@ namespace JetBrains.Rider.Unity.Editor
 
           // make sure the plugin was initialized first.
           // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
+          PluginEntryPoint.InitForPluginLoadedFromAssets();
           PluginEntryPoint.Init();
 
           EditorGUILayout.HelpBox("Unchecking will restore default external editor", MessageType.None);
