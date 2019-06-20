@@ -27,15 +27,17 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       YamlTokenType.RBRACK);
 
     private readonly PsiBuilder myBuilder;
-    private bool myCreateClosedChameleons;
     private int myCurrentLineIndent;
     private int myDocumentStartLexeme;
     private bool myExpectImplicitKey;
 
-    public YamlTreeStructureBuilder(ILexer<int> lexer, Lifetime lifetime)
+    private int myChameleonOffset = 0;
+
+    public YamlTreeStructureBuilder(ILexer<int> lexer, Lifetime lifetime, int currentLineIndent)
       : base(lifetime)
     {
       myBuilder = new PsiBuilder(lexer, ElementType.YAML_FILE, this, lifetime);
+      myCurrentLineIndent = currentLineIndent;
     }
 
 #pragma warning disable 809
@@ -51,8 +53,15 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     {
       if (tokenNodeType == YamlTokenType.CHAMELEON)
       {
-        return new ClosedChameleonElement(YamlTokenType.CHAMELEON, new TreeOffset(startOffset),
-          new TreeOffset(endOffset));
+        return new ClosedChameleonElement(YamlTokenType.CHAMELEON, new TreeOffset(startOffset + myChameleonOffset),
+          new TreeOffset(endOffset + myChameleonOffset));
+      }
+
+      if (tokenNodeType.Equals(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT))
+      {
+        // Yes. Any indent. We push correct lexer indent via ContentContext
+        return new ClosedChameleonElement(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT, new TreeOffset(startOffset + myChameleonOffset),
+          new TreeOffset(endOffset + myChameleonOffset));
       }
 
       // We define tokens in terms of buffers and ranges to avoid allocation of strings and substrings - nothing is
@@ -73,14 +82,15 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       do
       {
-        ParseDocument();
+        ParseDocument(myChameleonOffset);
       } while (!myBuilder.Eof());
 
       Done(mark, ElementType.YAML_FILE);
     }
 
-    private void ParseDocument()
+    public void ParseDocument(int chameleonOffset, bool createChameleon = true)
     {
+      myChameleonOffset = chameleonOffset;
       // TODO: Can we get indents in this prefix?
       // TODO: Should the document prefix be part of the document node?
       SkipLeadingWhitespace();
@@ -91,7 +101,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       var mark = MarkNoSkipWhitespace();
 
       ParseDirectives();
-      ParseChameleonDocumentBody();
+      if (createChameleon)
+        ParseChameleonDocumentBody();
+      else
+        ParseDocumentBody(myChameleonOffset);
 
       if (GetTokenTypeNoSkipWhitespace() == YamlTokenType.DOCUMENT_END)
       {
@@ -174,8 +187,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       Done(mark, YamlChameleonElementTypes.CHAMELEON_DOCUMENT_BODY);
     }
 
-    public void ParseDocumentBody()
+    public void ParseDocumentBody(int chameleonOffset)
     {
+      myChameleonOffset = chameleonOffset;
       var mark = MarkNoSkipWhitespace();
 
       ParseRootBlockNode();
@@ -190,13 +204,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       }
 
       Done(mark, ElementType.DOCUMENT_BODY);
-    }
-
-    private void ParseChameleonRootBlockNode()
-    {
-      myCreateClosedChameleons = true;
-      ParseRootBlockNode();
-      myCreateClosedChameleons = false;
     }
 
     public void ParseRootBlockNode()
@@ -411,28 +418,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       }
       else
       {
-        var createClosedChameleons = myCreateClosedChameleons;
-        myCreateClosedChameleons = false;
 
         if (!TryParseBlockMappingWithoutRollback(expectedIndent))
           myBuilder.RollbackTo(mark);
         else
         {
-          if (createClosedChameleons)
-          {
-            // Get rid of the markers of everything we've just parsed and create a closed by default chameleon
-            var currentLexeme = myBuilder.GetCurrentLexeme();
-            myBuilder.RollbackTo(blockNodeContentsMark);
-
-            var count = currentLexeme - myBuilder.GetCurrentLexeme();
-            myBuilder.AlterToken(YamlTokenType.CHAMELEON, count);
-          }
-          else
-          {
-            myBuilder.Drop(blockNodeContentsMark);
-          }
-
-          Done(mark, YamlChameleonElementTypes.CHAMELEON_BLOCK_MAPPING_NODE);
+          myBuilder.Drop(blockNodeContentsMark);
+          Done(mark, ElementType.BLOCK_MAPPING_NODE);
 
           return true;
         }
@@ -568,10 +560,25 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       if (GetTokenTypeNoSkipWhitespace() == YamlTokenType.COLON)
       {
         Advance();
-        if (!TryParseBlockNode(expectedIndent, false))
+
+        var currentToken = GetTokenTypeNoSkipWhitespace();
+        if (currentToken != null && currentToken.Equals(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT))
         {
-          Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
-          ParseComments();
+          var valueMark = MarkNoSkipWhitespace();
+          Advance();
+          myBuilder.Done(valueMark, YamlChameleonElementTypes.MAP_VALUE_CHAMELEON, 
+            new ContentContext(myCurrentLineIndent, ((YamlTokenType.ChameleonTokenNodeType)currentToken).LexerIndent, expectedIndent));
+        }
+        else if (!myBuilder.Eof())
+        {
+          var contentMark = MarkNoSkipWhitespace();
+          if (!TryParseBlockNode(expectedIndent, false))
+          {
+            Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+            ParseComments();
+          }
+          
+          Done(contentMark, ElementType.CONTENT_NODE);
         }
 
         Done(mark, ElementType.BLOCK_MAPPING_ENTRY);
@@ -582,6 +589,41 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return false;
     }
 
+    public void ParseContent(int curBufferOffset, int expectedIndent)
+    {
+      myChameleonOffset = curBufferOffset;
+      // INVARIANT : not start of document
+      myDocumentStartLexeme = -1;
+      var mark = MarkNoSkipWhitespace();
+      if (!TryParseBlockNode(expectedIndent, false))
+      {
+        while (!myBuilder.Eof())
+        {
+          Advance();
+        }   
+        myBuilder.Error(mark, "Unexpected content");
+      }
+      else
+      {
+        Done(MarkNoSkipWhitespace(), ElementType.EMPTY_SCALAR_NODE);
+        ParseComments();
+        
+        if (!myBuilder.Eof())
+        {
+          var errorMark = MarkNoSkipWhitespace();
+          while (!myBuilder.Eof())
+          {
+            Advance();
+          }
+
+          myBuilder.Error(errorMark, "Unexpected content");
+        }
+
+        Done(mark, ElementType.CONTENT_NODE);
+        
+      }
+    }
+    
     private bool TryParseCompactNotation(int expectedIndent)
     {
       var mark = MarkNoSkipWhitespace();

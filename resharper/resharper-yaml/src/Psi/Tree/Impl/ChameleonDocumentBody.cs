@@ -145,7 +145,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       var parser =
         (IYamlParser) Language.LanguageService().CreateParser(projectedLexer, GetPsiModule(), GetSourceFile());
 
-      var openedChameleon = parser.ParseDocumentBody();
+      var openedChameleon = parser.ParseDocumentBody(firstChild.GetTreeStartOffset().Offset);
       return new ChameleonDocumentBody(openedChameleon);
     }
 
@@ -213,7 +213,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       var openedChameleon = ((IClosedChameleonBody) firstChild).Parse(parser =>
       {
         var yamlParser = (IYamlParser) parser;
-        return yamlParser.ParseDocumentBody();
+        return yamlParser.ParseDocumentBody(firstChild.GetTreeStartOffset().Offset);
       });
 
       AssertTextLength(openedChameleon);

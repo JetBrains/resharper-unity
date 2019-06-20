@@ -150,8 +150,10 @@ C_NB_COMMENT_TEXT="#"{NB_CHAR}*
 C_DIRECTIVES_END=^"---"
 C_DOCUMENT_END=^"..."
 
+MAP_VALUE_START = (.|{NEW_LINE}) 
 
-%state BLOCK, FLOW
+
+%state BLOCK, FLOW, MAP_VALUE
 %state DIRECTIVE
 %state BLOCK_SCALAR_HEADER, BLOCK_SCALAR
 %state JSON_ADJACENT_VALUE
@@ -159,9 +161,10 @@ C_DOCUMENT_END=^"..."
 %state SHORTHAND_TAG, VERBATIM_TAG
 
 %%
+<MAP_VALUE>     {MAP_VALUE_START}         { return TryEatLinesWithGreaterIndent();}
 
 <YYINITIAL, BLOCK, FLOW>
-                ^{WHITESPACE}           { currentLineIndent = yylength(); return YamlTokenType.INDENT; }
+                ^{WHITESPACE}           { if (!AtChameleonStart) { currentLineIndent = yylength(); return YamlTokenType.INDENT; } else { AtChameleonStart = false; return YamlTokenType.WHITESPACE;}  }
 <YYINITIAL, BLOCK, FLOW>
                 {WHITESPACE}            { return YamlTokenType.WHITESPACE; }
 <YYINITIAL, BLOCK, FLOW>
@@ -189,9 +192,11 @@ C_DOCUMENT_END=^"..."
 <BLOCK, FLOW>   "!<"                    { yybegin(VERBATIM_TAG); return YamlTokenType.BANG_LT; }
 <BLOCK, FLOW>   ">"                     { BeginBlockScalar(); return YamlTokenType.GT; }
 <BLOCK, FLOW>   "|"                     { BeginBlockScalar(); return YamlTokenType.PIPE; }
-<BLOCK, FLOW>   ":"                     { return YamlTokenType.COLON; }
+<BLOCK>         ":"                     { if (explicitKey) {explicitKey = false;} else if (flowLevel == 0 && currentLineIndent > 0) {yybegin(MAP_VALUE);} return YamlTokenType.COLON; }
+<FLOW>          ":"                     { return YamlTokenType.COLON; }
 <BLOCK, FLOW>   ","                     { return YamlTokenType.COMMA; }
-<BLOCK, FLOW>   "-"                     { HandleSequenceItemIndicator(); return YamlTokenType.MINUS; }
+<FLOW>          "-"                     { HandleSequenceItemIndicator(); return YamlTokenType.MINUS; }
+<BLOCK>         "-"                     { HandleIndent(); HandleSequenceItemIndicator(); return YamlTokenType.MINUS; }
 <BLOCK, FLOW>   "<"                     { return YamlTokenType.LT; }
 <BLOCK, FLOW>   "{"                     { PushFlowIndicator(); return YamlTokenType.LBRACE; }
 <BLOCK, FLOW>   "}"                     { PopFlowIndicator(); BeginJsonAdjacentValue(); return YamlTokenType.RBRACE; }

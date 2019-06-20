@@ -11,9 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     [DaemonStage(StagesBefore = new[] {typeof(CSharpErrorStage)})]
     public class UnityHighlightingStage : UnityHighlightingAbstractStage
     {
-        public UnityHighlightingStage(IEnumerable<IUnityDeclarationHiglightingProvider> higlightingProviders,
-            UnityApi api, UnityHighlightingContributor unityHighlightingContributor)
-            : base(higlightingProviders, api, unityHighlightingContributor)
+        public UnityHighlightingStage(IEnumerable<IUnityDeclarationHighlightingProvider> higlightingProviders,
+            UnityApi api, UnityCommonIconProvider commonIconProvider) : base(higlightingProviders, api, commonIconProvider)
         {
         }
     }

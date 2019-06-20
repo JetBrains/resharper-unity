@@ -115,15 +115,17 @@ IYamlFile
               IPlainScalarNode
                 YamlTokenType+GenericTokenElement(1190,10)(type:NS_PLAIN, text:or perhaps)
               YamlTokenType+FixedTokenElement(1200,1)(type:COLON, text::)
-              IEmptyScalarNode
-              NewLine(1201,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              IContentNode
+                IEmptyScalarNode
+                NewLine(1201,1)(type:NEW_LINE, text:\n) spaces: "\n"
             YamlTokenType+GenericTokenElement(1202,2)(type:INDENT, text:  )
             IBlockMappingEntry
               IPlainScalarNode
                 YamlTokenType+GenericTokenElement(1204,15)(type:NS_PLAIN, text:different colon)
               YamlTokenType+FixedTokenElement(1219,1)(type:COLON, text::)
-              IEmptyScalarNode
-              NewLine(1220,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              IContentNode
+                IEmptyScalarNode
+                NewLine(1220,1)(type:NEW_LINE, text:\n) spaces: "\n"
         ISequenceEntry
           YamlTokenType+FixedTokenElement(1221,1)(type:MINUS, text:-)
           Whitespace(1222,1)(type:WHITESPACE, text: ) spaces: " "

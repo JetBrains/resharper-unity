@@ -2,64 +2,67 @@
 IYamlFile
   IYamlDocument
     ChameleonDocumentBody
-      ChameleonBlockMappingNode
+      IBlockMappingNode
         IBlockMappingEntry
           IPlainScalarNode
             YamlTokenType+GenericTokenElement(0,8)(type:NS_PLAIN, text:sequence)
           YamlTokenType+FixedTokenElement(8,1)(type:COLON, text::)
-          IBlockSequenceNode
-            Whitespace(9,1)(type:WHITESPACE, text: ) spaces: " "
-            INodeProperties
-              IShorthandTagProperty
-                ISecondaryTagHandle
-                  YamlTokenType+FixedTokenElement(10,1)(type:BANG, text:!)
-                  YamlTokenType+FixedTokenElement(11,1)(type:BANG, text:!)
-                YamlTokenType+GenericTokenElement(12,3)(type:NS_TAG_CHARS, text:seq)
-            NewLine(15,1)(type:NEW_LINE, text:\n) spaces: "\n"
-            ISequenceEntry
-              YamlTokenType+FixedTokenElement(16,1)(type:MINUS, text:-)
-              Whitespace(17,1)(type:WHITESPACE, text: ) spaces: " "
-              IPlainScalarNode
-                YamlTokenType+GenericTokenElement(18,5)(type:NS_PLAIN, text:entry)
-              NewLine(23,1)(type:NEW_LINE, text:\n) spaces: "\n"
-            ISequenceEntry
-              YamlTokenType+FixedTokenElement(24,1)(type:MINUS, text:-)
-              IBlockSequenceNode
-                Whitespace(25,1)(type:WHITESPACE, text: ) spaces: " "
-                INodeProperties
-                  IShorthandTagProperty
-                    ISecondaryTagHandle
-                      YamlTokenType+FixedTokenElement(26,1)(type:BANG, text:!)
-                      YamlTokenType+FixedTokenElement(27,1)(type:BANG, text:!)
-                    YamlTokenType+GenericTokenElement(28,3)(type:NS_TAG_CHARS, text:seq)
-                NewLine(31,1)(type:NEW_LINE, text:\n) spaces: "\n"
-                YamlTokenType+GenericTokenElement(32,1)(type:INDENT, text: )
-                ISequenceEntry
-                  YamlTokenType+FixedTokenElement(33,1)(type:MINUS, text:-)
-                  Whitespace(34,1)(type:WHITESPACE, text: ) spaces: " "
-                  IPlainScalarNode
-                    YamlTokenType+GenericTokenElement(35,6)(type:NS_PLAIN, text:nested)
-                  NewLine(41,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          IContentNode
+            IBlockSequenceNode
+              Whitespace(9,1)(type:WHITESPACE, text: ) spaces: " "
+              INodeProperties
+                IShorthandTagProperty
+                  ISecondaryTagHandle
+                    YamlTokenType+FixedTokenElement(10,1)(type:BANG, text:!)
+                    YamlTokenType+FixedTokenElement(11,1)(type:BANG, text:!)
+                  YamlTokenType+GenericTokenElement(12,3)(type:NS_TAG_CHARS, text:seq)
+              NewLine(15,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              ISequenceEntry
+                YamlTokenType+FixedTokenElement(16,1)(type:MINUS, text:-)
+                Whitespace(17,1)(type:WHITESPACE, text: ) spaces: " "
+                IPlainScalarNode
+                  YamlTokenType+GenericTokenElement(18,5)(type:NS_PLAIN, text:entry)
+                NewLine(23,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              ISequenceEntry
+                YamlTokenType+FixedTokenElement(24,1)(type:MINUS, text:-)
+                IBlockSequenceNode
+                  Whitespace(25,1)(type:WHITESPACE, text: ) spaces: " "
+                  INodeProperties
+                    IShorthandTagProperty
+                      ISecondaryTagHandle
+                        YamlTokenType+FixedTokenElement(26,1)(type:BANG, text:!)
+                        YamlTokenType+FixedTokenElement(27,1)(type:BANG, text:!)
+                      YamlTokenType+GenericTokenElement(28,3)(type:NS_TAG_CHARS, text:seq)
+                  NewLine(31,1)(type:NEW_LINE, text:\n) spaces: "\n"
+                  YamlTokenType+GenericTokenElement(32,1)(type:INDENT, text: )
+                  ISequenceEntry
+                    YamlTokenType+FixedTokenElement(33,1)(type:MINUS, text:-)
+                    Whitespace(34,1)(type:WHITESPACE, text: ) spaces: " "
+                    IPlainScalarNode
+                      YamlTokenType+GenericTokenElement(35,6)(type:NS_PLAIN, text:nested)
+                    NewLine(41,1)(type:NEW_LINE, text:\n) spaces: "\n"
         IBlockMappingEntry
           IPlainScalarNode
             YamlTokenType+GenericTokenElement(42,7)(type:NS_PLAIN, text:mapping)
           YamlTokenType+FixedTokenElement(49,1)(type:COLON, text::)
-          ChameleonBlockMappingNode
-            Whitespace(50,1)(type:WHITESPACE, text: ) spaces: " "
-            INodeProperties
-              IShorthandTagProperty
-                ISecondaryTagHandle
-                  YamlTokenType+FixedTokenElement(51,1)(type:BANG, text:!)
-                  YamlTokenType+FixedTokenElement(52,1)(type:BANG, text:!)
-                YamlTokenType+GenericTokenElement(53,3)(type:NS_TAG_CHARS, text:map)
-            NewLine(56,1)(type:NEW_LINE, text:\n) spaces: "\n"
-            YamlTokenType+GenericTokenElement(57,1)(type:INDENT, text: )
-            IBlockMappingEntry
-              IPlainScalarNode
-                YamlTokenType+GenericTokenElement(58,3)(type:NS_PLAIN, text:foo)
-              YamlTokenType+FixedTokenElement(61,1)(type:COLON, text::)
-              Whitespace(62,1)(type:WHITESPACE, text: ) spaces: " "
-              IPlainScalarNode
-                YamlTokenType+GenericTokenElement(63,3)(type:NS_PLAIN, text:bar)
-              NewLine(66,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          IContentNode
+            IBlockMappingNode
+              Whitespace(50,1)(type:WHITESPACE, text: ) spaces: " "
+              INodeProperties
+                IShorthandTagProperty
+                  ISecondaryTagHandle
+                    YamlTokenType+FixedTokenElement(51,1)(type:BANG, text:!)
+                    YamlTokenType+FixedTokenElement(52,1)(type:BANG, text:!)
+                  YamlTokenType+GenericTokenElement(53,3)(type:NS_TAG_CHARS, text:map)
+              NewLine(56,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              YamlTokenType+GenericTokenElement(57,1)(type:INDENT, text: )
+              IBlockMappingEntry
+                IPlainScalarNode
+                  YamlTokenType+GenericTokenElement(58,3)(type:NS_PLAIN, text:foo)
+                YamlTokenType+FixedTokenElement(61,1)(type:COLON, text::)
+                IContentNode
+                  Whitespace(62,1)(type:WHITESPACE, text: ) spaces: " "
+                  IPlainScalarNode
+                    YamlTokenType+GenericTokenElement(63,3)(type:NS_PLAIN, text:bar)
+                  NewLine(66,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

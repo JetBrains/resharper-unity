@@ -100,7 +100,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 // MonoBehaviour:
                 //   ...
                 //   m_Script: {fileID: 11500000, guid: $guid, type: 3}
-                return GetElementId("m_PersistentCalls", "m_MethodName", "11500000", shortName);
+                
+                // In some cases 1150000 is not presented...
+                //   m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3} Why?? Do not know
+                return GetElementId("m_PersistentCalls", "m_MethodName", shortName);
             }
 
             return new UnityYamlSearchGuruId(JetHashSet<IPsiSourceFile>.Empty);

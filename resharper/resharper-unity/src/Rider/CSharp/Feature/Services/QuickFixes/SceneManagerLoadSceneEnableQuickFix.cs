@@ -50,9 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                     continue;
                 
                 var path = GetUnityScenePathRepresentation(
-                    (sceneRecord.Entries[1].Value as IPlainScalarNode).NotNull("PlainScalarNode:1").Text.GetText());
+                    (sceneRecord.Entries[1].Content.Value as IPlainScalarNode).NotNull("PlainScalarNode:1").Text.GetText());
                 var simple = path.Split('/').Last();
-                var isEnabledPlaneScalarNode = (sceneRecord.Entries[0].Value as IPlainScalarNode).NotNull("PlainScalarNode:0");
+                var isEnabledPlaneScalarNode = (sceneRecord.Entries[0].Content.Value as IPlainScalarNode).NotNull("PlainScalarNode:0");
                 var isEnabled = isEnabledPlaneScalarNode.Text.GetText().Equals("1");
                 if (!isEnabled && (path.Equals(sceneName) || simple.Equals(sceneName)))
                 {

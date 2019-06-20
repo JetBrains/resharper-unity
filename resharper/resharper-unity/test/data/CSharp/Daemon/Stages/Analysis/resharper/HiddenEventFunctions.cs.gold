@@ -57,7 +57,7 @@ public class ||Derived|(13)|(14) : Base
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): Unity Gutter Icon: Unity scripting component
+(1): Unity Gutter Icon: Unity Editor script
 (2): ReSharper Unity Implicitly Used Identifier: 
 (3): Unity Gutter Icon: Unity event function
 
@@ -81,7 +81,7 @@ Awake is called when the script instance is being loaded.
 If OnAudioFilterRead is implemented, Unity will insert a custom filter into the audio DSP chain.
 (12): ReSharper Warning: Incorrect method parameters. Expected '(float[] data, int channels)'
 (13): ReSharper Unity Implicitly Used Identifier: 
-(14): Unity Gutter Icon: Unity scripting component
+(14): Unity Gutter Icon: Unity Editor script
 (15): ReSharper Unity Implicitly Used Identifier: 
 (16): ReSharper Hides: Hides method from class 'Base'(click to navigate)
 (17): Unity Gutter Icon: Unity event function

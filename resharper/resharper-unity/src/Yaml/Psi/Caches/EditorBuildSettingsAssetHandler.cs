@@ -43,8 +43,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                     if (sceneRecord == null)
                         continue;
                     
-                    var path = GetUnityScenePathRepresentation((sceneRecord.Entries[1].Value as IPlainScalarNode)?.Text.GetText());
-                    var isEnabledPlaneScalarNode = (sceneRecord.Entries[0].Value as IPlainScalarNode);
+                    var path = GetUnityScenePathRepresentation(sceneRecord.Entries[1].Content.Value.GetPlainScalarText());
+                    var isEnabledPlaneScalarNode = (sceneRecord.Entries[0].Content.Value as IPlainScalarNode);
                     var isEnabled = isEnabledPlaneScalarNode?.Text.GetText().Equals("1");
                     if (path == null || !isEnabled.HasValue)
                         continue;

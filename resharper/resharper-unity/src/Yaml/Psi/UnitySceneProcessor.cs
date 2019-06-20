@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         private static bool IsStripped(IYamlDocument element)
         {
-            return ((element.Body.BlockNode as IChameleonBlockMappingNode)?.Properties?.LastChild as YamlTokenType.GenericTokenElement)?
+            return ((element.Body.BlockNode as IBlockMappingNode)?.Properties?.LastChild as YamlTokenType.GenericTokenElement)?
                    .GetText().Equals("stripped") == true;
         }
         
@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                         return;
                     
                     // [TODO] Is prefab file committed???
-                    var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<YamlLanguage>();
+                    var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<UnityYamlLanguage>();
 
                     var prefabStartGameObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID);
                     
@@ -126,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public static string GetUnityObjectTag(IYamlDocument document)
         {
-            var tag = (document.Body.BlockNode as IChameleonBlockMappingNode)?.Properties.TagProperty.GetText();
+            var tag = (document.Body.BlockNode as IBlockMappingNode)?.Properties.TagProperty.GetText();
             return tag;
         }
         
