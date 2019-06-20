@@ -13,8 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class UnityEventTargetReferenceFactory : IReferenceFactory
     {
-        private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName", true);
-        private static readonly StringSearcher ourMonoBehaviourTagSearcher = new StringSearcher("!u!114", true);
+        private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName:", true);
 
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
@@ -112,8 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public static bool CanContainReference(IBuffer bodyBuffer)
         {
-            return ourMonoBehaviourTagSearcher.Find(bodyBuffer, 0, Math.Min(100, bodyBuffer.Length)) >= 0 &&
-                   ourMethodNameSearcher.Find(bodyBuffer) >= 0;
+            return ourMethodNameSearcher.Find(bodyBuffer) >= 0;
         }
 
         public static bool CanHaveReference([CanBeNull] ITreeNode element)

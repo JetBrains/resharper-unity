@@ -80,7 +80,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                 if (myEventFunctions != null && myEventFunctions.Contains(declaredElement))
                 {
                     var method = (declaredElement as IMethod).NotNull("method != null");
-                    var eventFunction = myAPI.GetUnityEventFunction(method).NotNull("eventFunction != null");
+                    var eventFunction = myAPI.GetUnityEventFunction(method);
+                    if (eventFunction == null) // happens after event function refactoring 
+                        continue;
+                    
                     myCommonIconProvider.AddEventFunctionHighlighting(highlightingConsumer, method, eventFunction,
                         "Event function", GetEventFunctionTooltip(eventFunction), myProcessKind);
                     myMarkedDeclarations.Add(method);
