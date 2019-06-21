@@ -58,8 +58,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
         
         private FileSystemPath GetDocumentationRoot()
         {
-            var version = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualVersionForSolution();
-            var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(version);
+            var appPath = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualAppPathForSolution();
+            var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
             return contentsPath == null ? FileSystemPath.Empty : contentsPath.Combine(@"Documentation/en");
         
         }

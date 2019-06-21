@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Util;
@@ -48,18 +49,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return worstChoice;
         }
         
-        public static FileSystemPath GetApplicationContentsPath(Version version)
+        public static FileSystemPath GetApplicationContentsPath(FileSystemPath path)
         {
-            var applicationPath = GetApplicationInfo(version)?.Path;
-            if (applicationPath == null)
+            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX && path.ExistsDirectory
+                || PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX && path.ExistsFile)
                 return null;
             switch (PlatformUtil.RuntimePlatform)
             {
                     case PlatformUtil.Platform.MacOsX:
-                        return applicationPath.Combine("Contents");
+                        return path.Combine("Contents");
                     case PlatformUtil.Platform.Linux:
                     case PlatformUtil.Platform.Windows:
-                        return applicationPath.Directory.Combine("Data");
+                        return path.Directory.Combine("Data");
             }
             ourLogger.Error("Unknown runtime platform");
             return null;
@@ -70,21 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var installations = GetPossibleApplicationPaths();
             return installations.Select(path =>
             {
-                Version version = null;
-                switch (PlatformUtil.RuntimePlatform)
-                {
-                    case PlatformUtil.Platform.Windows:
-                        version = UnityVersion.ReadUnityVersionFromExe(path);
-                        break;
-                    case PlatformUtil.Platform.MacOsX:
-                        var infoPlistPath = path.Combine("Contents/Info.plist");
-                        version = UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
-                        break;
-                    case PlatformUtil.Platform.Linux:
-                        version = UnityVersion.Parse(path.FullPath); // parse from path
-                        break;
-                }
-                
+                var version = UnityVersion.GetVersionByAppPath(path);
                 return new UnityInstallationInfo(version, path);
             }).ToList();
         }
@@ -181,7 +168,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         ourLogger.Log(LoggingLevel.VERBOSE, "Possible unity path: " + fileSystemPath);
                     }
                     return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
-                    
                 }
             }
             ourLogger.Error("Unknown runtime platform");
@@ -201,7 +187,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return FileSystemPath.Empty;
         }
 
-
         private static FileSystemPath GetProgramFiles()
         {
             // PlatformUtils.GetProgramFiles() will return the relevant folder for
@@ -210,6 +195,45 @@ namespace JetBrains.ReSharper.Plugins.Unity
             // native Program Files folder
             var environmentVariable = Environment.GetEnvironmentVariable("ProgramW6432");
             return string.IsNullOrWhiteSpace(environmentVariable) ? FileSystemPath.Empty : FileSystemPath.TryParse(environmentVariable);
+        }
+        
+        
+        [CanBeNull]
+        public static FileSystemPath GetAppPathByDll(XmlElement documentElement)
+        {
+            var referencePathElement = documentElement.ChildElements()
+                .Where(a => a.Name == "ItemGroup").SelectMany(b => b.ChildElements())
+                .Where(c => c.Name == "Reference" && c.GetAttribute("Include").StartsWith("UnityEngine") || c.GetAttribute("Include").Equals("UnityEditor"))
+                .SelectMany(d => d.ChildElements())
+                .FirstOrDefault(c => c.Name == "HintPath");
+
+            if (referencePathElement == null || string.IsNullOrEmpty(referencePathElement.InnerText))
+                return null;
+
+            var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
+            if (!filePath.IsAbsolute) // RIDER-21237
+                return null;
+            
+            if (filePath.ExistsFile)
+            {
+                if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
+                {
+                    var exePath = filePath.Combine("../../../Unity.exe"); // Editor\Data\Managed\UnityEngine.dll
+                    if (!exePath.ExistsFile)
+                        exePath = filePath.Combine("../../../../Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
+                    if (exePath.ExistsFile)
+                        return exePath;
+                }
+                else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+                {
+                    var appPath = filePath.Directory.Directory.Directory;
+                    if (!appPath.ExistsDirectory)
+                        appPath = appPath.Directory;
+                    return appPath;
+                }
+            }
+
+            return null;
         }
     }
 

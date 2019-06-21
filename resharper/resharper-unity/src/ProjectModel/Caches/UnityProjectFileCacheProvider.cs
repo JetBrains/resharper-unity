@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
@@ -54,6 +53,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             return data?.UnityVersion;
         }
 
+        [CanBeNull]
+        public FileSystemPath GetAppPath([NotNull] IProject project)
+        {
+            var data = myCache.GetData(this, project);
+            return data?.UnityAppPath;
+        }
+
         public bool CanHandle(FileSystemPath projectFileLocation)
         {
             using (ReadLockCookie.Create())
@@ -74,13 +80,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
         {
             var version = System.Version.Parse(reader.ReadString());
             var explicitlySpecified = reader.ReadBoolean();
-            return new UnityProjectDataCache(version, explicitlySpecified);
+            var unityAppPath = FileSystemPath.Parse(reader.ReadString());
+            return new UnityProjectDataCache(version, explicitlySpecified, unityAppPath);
         }
 
         public void Write(FileSystemPath projectFileLocation, BinaryWriter writer, UnityProjectDataCache data)
         {
             writer.Write(data.UnityVersion.ToString());
             writer.Write(data.LangVersionExplicitlySpecified);
+            writer.Write(data.UnityAppPath.FullPath);
         }
 
         public UnityProjectDataCache BuildData(FileSystemPath projectFileLocation, XmlDocument document)
@@ -92,7 +100,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             var explicitLangVersion = false;
             var unityVersion = new Version(0, 0);
 
-            var versionFromDll = TryGetUnityVersionFromDll(documentElement);
+            var appPath = UnityInstallationFinder.GetAppPathByDll(documentElement);
+            var versionFromDll = UnityVersion.GetVersionByAppPath(appPath);
 
             foreach (XmlNode propertyGroup in documentElement.GetElementsByTagName("PropertyGroup"))
             {
@@ -116,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
                     unityVersion = GetVersionFromDefines(defines.InnerText, unityVersion);
             }
 
-            return new UnityProjectDataCache(versionFromDll ?? unityVersion, explicitLangVersion);
+            return new UnityProjectDataCache(versionFromDll ?? unityVersion, explicitLangVersion, appPath);
         }
 
         public static Version GetVersionFromDefines(string defines, [NotNull] Version unityVersion)
@@ -142,44 +151,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
             return unityVersion;
         }
 
-        [CanBeNull]
-        private static Version TryGetUnityVersionFromDll(XmlElement documentElement)
-        {
-            var referencePathElement = documentElement.ChildElements()
-                .Where(a => a.Name == "ItemGroup").SelectMany(b => b.ChildElements())
-                .Where(c => c.Name == "Reference" && c.GetAttribute("Include").StartsWith("UnityEngine") || c.GetAttribute("Include").Equals("UnityEditor"))
-                .SelectMany(d => d.ChildElements())
-                .FirstOrDefault(c => c.Name == "HintPath");
-
-            if (referencePathElement == null || string.IsNullOrEmpty(referencePathElement.InnerText))
-                return null;
-
-            var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
-            if (!filePath.IsAbsolute) // RIDER-21237
-                return null;
-            
-            if (filePath.ExistsFile)
-            {
-                if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
-                {
-                    var exePath = filePath.Combine("../../../Unity.exe"); // Editor\Data\Managed\UnityEngine.dll
-                    if (!exePath.ExistsFile)
-                        exePath = filePath.Combine("../../../../Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
-                    if (exePath.ExistsFile)
-                        return UnityVersion.ReadUnityVersionFromExe(exePath);
-                }
-                else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
-                {
-                    var infoPlistPath = filePath.Combine("../../Info.plist");
-                    if (!infoPlistPath.ExistsFile)
-                        infoPlistPath = filePath.Combine("../../../Info.plist");
-                    return UnityVersion.GetVersionFromInfoPlist(infoPlistPath);
-                }
-            }
-
-            return null;
-        }
-
         public Action OnDataChanged(FileSystemPath projectFileLocation, UnityProjectDataCache oldData, UnityProjectDataCache newData)
         {
             myCallbacks.TryGetValue(projectFileLocation, out var action);
@@ -189,15 +160,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches
 
     public class UnityProjectDataCache
     {
-        public static readonly UnityProjectDataCache Empty = new UnityProjectDataCache(new Version(0, 0), false);
+        public static readonly UnityProjectDataCache Empty = new UnityProjectDataCache(new Version(0, 0), false, FileSystemPath.Empty);
 
-        public UnityProjectDataCache(Version unityVersion, bool langVersionExplicitlySpecified)
+        public UnityProjectDataCache(Version unityVersion, bool langVersionExplicitlySpecified, FileSystemPath unityAppPath)
         {
             UnityVersion = unityVersion;
+            UnityAppPath = unityAppPath;
             LangVersionExplicitlySpecified = langVersionExplicitlySpecified;
         }
 
         public Version UnityVersion { get; }
+        public FileSystemPath UnityAppPath { get; }
         public bool LangVersionExplicitlySpecified { get; }
     }
 }
