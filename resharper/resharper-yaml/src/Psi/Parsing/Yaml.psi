@@ -298,6 +298,11 @@ blockMappingEntry
   QUESTION<QUESTION_INDICATOR, QuestionIndicator>?
   node<KEY, Key>
   COLON<COLON_INDICATOR, ColonIndicator>
+  contentNode<CONTENT, Content>
+;
+
+contentNode
+:
   node<VALUE, Value>
 ;
 

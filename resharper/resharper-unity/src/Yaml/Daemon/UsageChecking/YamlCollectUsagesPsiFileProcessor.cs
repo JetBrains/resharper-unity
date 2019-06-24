@@ -1,7 +1,6 @@
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -16,8 +15,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
 
         public bool InteriorShouldBeProcessed(ITreeNode element, UsageData context)
         {
-            if (element is IYamlDocument document)
-                return UnityYamlReferenceUtil.CanContainReference(document);
+
+            if (element is IChameleonNode)
+                return UnityYamlReferenceUtil.CanContainReference(element.GetTextAsBuffer());
 
             return true;
         }

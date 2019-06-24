@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
 {
-    public interface IUnityDeclarationHiglightingProvider
+    public interface IUnityDeclarationHighlightingProvider
     {
         // Return declared element of marked node
         IDeclaredElement Analyze(IDeclaration treeNode, IHighlightingConsumer consumer, DaemonProcessKind kind);

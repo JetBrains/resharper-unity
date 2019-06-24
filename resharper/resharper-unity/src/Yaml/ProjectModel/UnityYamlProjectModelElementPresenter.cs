@@ -1,6 +1,5 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Yaml.ProjectModel;
 using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
@@ -12,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
     {
         public IconId GetIcon(IProjectModelElement projectModelElement)
         {
-            if (projectModelElement is IProjectFile projectFile && projectFile.LanguageType.Is<YamlProjectFileType>())
+            if (projectModelElement is IProjectFile projectFile && projectFile.LanguageType.Is<UnityYamlProjectFileType>())
             {
                 var location = projectFile.Location;
                 if (location.IsAsset())

@@ -89,9 +89,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
   {
     // ReSharper disable InconsistentNaming
     private TokenNodeType currentTokenType;
+    private bool explicitKey = false;
 
     private int lastNewLineOffset;
-    private int currentLineIndent;
+    public int currentLineIndent;
 
     // The indent of the indicator of a block scalar. The contents must be more
     // indented than this. However, we also need to handle the case where the
@@ -101,11 +102,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     // TODO: Use the indentation indicator value to set this
 
     private int parentNodeIndent;
-
+    
     // The number of unclosed LBRACE and LBRACK. flowLevel == 0 means block context
     private int flowLevel;
+    
+    protected bool AtChameleonStart = false;
+    protected int InitialLexicalState = YYINITIAL;
 
-    private struct TokenPosition
+    public struct TokenPosition
     {
       public TokenNodeType CurrentTokenType;
       public int LastNewLineOffset;
@@ -116,12 +120,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       public int YyBufferStart;
       public int YyBufferEnd;
       public int YyLexicalState;
+      public bool AtChameleonStart;
     }
-    // ReSharper restore InconsistentNaming
 
-    public void Start()
+    public virtual void Start()
     {
-      Start(0, yy_buffer.Length, YYINITIAL);
+      Start(0, yy_buffer.Length, (uint)InitialLexicalState);
     }
 
     public void Start(int startOffset, int endOffset, uint state)
@@ -152,6 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         tokenPosition.YyBufferStart = yy_buffer_start;
         tokenPosition.YyBufferEnd = yy_buffer_end;
         tokenPosition.YyLexicalState = yy_lexical_state;
+        tokenPosition.AtChameleonStart = AtChameleonStart;
         return tokenPosition;
       }
       set
@@ -166,6 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         yy_buffer_start = tokenPosition.YyBufferStart;
         yy_buffer_end = tokenPosition.YyBufferEnd;
         yy_lexical_state = tokenPosition.YyLexicalState;
+        AtChameleonStart = tokenPosition.AtChameleonStart;
       }
     }
 
@@ -204,6 +210,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         try
         {
           currentTokenType = _locateToken();
+          AtChameleonStart = false;
         }
         catch (Exception e)
         {
@@ -225,6 +232,116 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return currentTokenType;
     }
 
+    private TokenNodeType TryEatLinesWithGreaterIndent()
+    {
+      var previousLastNewLineOffset = lastNewLineOffset;
+      var previousLineIndent = currentLineIndent;
+      var count = EatLinesWithGreaterIndent();
+      if (count == 1)
+      {
+        RewindToken();
+        currentLineIndent = previousLineIndent;
+        lastNewLineOffset = previousLastNewLineOffset;
+        return _locateToken();
+      }
+      else
+      {
+        yy_at_bol = true;
+        return YamlTokenType.GetChameleonMapEntryValueWithIndent(currentLineIndent); 
+      }
+    }
+
+    private int EatLinesWithGreaterIndent()
+    {
+      var linesCount = 0;
+      RewindChar();
+      var curIndent = currentLineIndent;
+      
+      EatToEnd();
+      linesCount++;
+      lastNewLineOffset = yy_buffer_index;
+      
+      while (EatIndent() > curIndent || yy_buffer_index != yy_eof_pos && Buffer[yy_buffer_index] == '#')
+      {
+        linesCount++;
+        EatToEnd();
+        lastNewLineOffset = yy_buffer_index;
+      }
+
+      yy_buffer_index = lastNewLineOffset;
+      yy_buffer_end = lastNewLineOffset;
+      currentLineIndent = 0;
+
+      yybegin(BLOCK);
+
+      return linesCount;
+    }
+
+    private void EatToEnd()
+    {
+      while (true)
+      {
+        if (yy_buffer_index == yy_eof_pos)
+          break;
+
+        if (Buffer[yy_buffer_index] == '\n')
+        {
+          yy_buffer_index++;
+          break;
+        } 
+        
+        if (Buffer[yy_buffer_index] == '\r')
+        {
+          yy_buffer_index++;
+
+          if (yy_buffer_index < yy_eof_pos && Buffer[yy_buffer_index] == '\n')
+            yy_buffer_index++;
+
+          break;
+        }
+
+        yy_buffer_index++;
+      }
+    }
+
+    private int EatIndent()
+    {
+      currentLineIndent = 0;
+      while (true)
+      {
+        if (yy_buffer_index == yy_eof_pos)
+          break;
+
+        if (Buffer[yy_buffer_index] == ' ')
+        {
+          currentLineIndent++;
+        }
+        else
+        {
+          break;
+        }
+
+        yy_buffer_index++;
+      }
+
+      if (yy_buffer_index + 2 < yy_eof_pos)
+      {
+        if (Buffer[yy_buffer_index] == '-' && Buffer[yy_buffer_index  + 1] == ' ')
+        {
+          currentLineIndent += 2;
+        }
+      }
+
+      return currentLineIndent;
+    }
+
+    private void HandleIndent()
+    {
+      if (yy_buffer_index < yy_eof_pos && Buffer[yy_buffer_index] == ' ')
+        currentLineIndent += 2;
+    }
+    
+    
     // For completeness: These rewind functions don't reset any current indents or last new line offset. As long as you
     // don't rewind multiple times, especially across a new line or an indent, this shouldn't cause an issue
     private void RewindToken()
@@ -275,7 +392,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     private TokenNodeType HandleImplicitKey()
     {
       parentNodeIndent = yy_buffer_start - lastNewLineOffset;
-
       // The lexer matches an implicit key as a single line ns-plain, followed by optional whitespace and a colon
       // We want the lexer to return this as separate tokens (which the parser will then match as an implicit key), so
       // rewind to the end of the ns-plain and let the next lexer advance match the whitespace and colon.
@@ -286,6 +402,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
     private void HandleExplicitKeyIndicator()
     {
+      explicitKey = true;
       parentNodeIndent = yy_buffer_start - lastNewLineOffset;
     }
 

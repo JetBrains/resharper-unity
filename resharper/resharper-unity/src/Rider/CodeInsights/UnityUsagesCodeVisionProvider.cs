@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Host.Features.CodeInsights.Providers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -41,6 +43,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
             Assertion.Assert(elementId.HasValue, "elementId.HasValue");
             return usageChecker.GetCounterValue(elementId.Value, myUnityEditorUsageCounter);
+        }
+
+        public override bool IsAvailableIn(ISolution solution)
+        {
+            return solution.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue();
         }
 
         public override bool IsAvailableFor(IDeclaredElement declaredElement, ElementId? elementId)

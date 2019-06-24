@@ -25,14 +25,15 @@ IYamlFile
         NewLine(34,1)(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(35,3)(type:DIRECTIVES_END, text:---)
     ChameleonDocumentBody
-      ChameleonBlockMappingNode
+      IBlockMappingNode
         NewLine(38,1)(type:NEW_LINE, text:\n) spaces: "\n"
         IBlockMappingEntry
           IPlainScalarNode
             YamlTokenType+GenericTokenElement(39,9)(type:NS_PLAIN, text:matches %)
           YamlTokenType+FixedTokenElement(48,1)(type:COLON, text::)
-          Whitespace(49,1)(type:WHITESPACE, text: ) spaces: " "
-          IPlainScalarNode
-            YamlTokenType+GenericTokenElement(50,2)(type:NS_PLAIN, text:20)
-          NewLine(52,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          IContentNode
+            Whitespace(49,1)(type:WHITESPACE, text: ) spaces: " "
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(50,2)(type:NS_PLAIN, text:20)
+            NewLine(52,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

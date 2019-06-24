@@ -31,17 +31,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
             if (solution == null)
                 return EmptyList<BulbMenuItem>.InstanceList;
-
-            var unityImplicitUsageHighlightingContributor = solution.GetComponent<UnityHighlightingContributor>();
-
+            
             var daemon = solution.GetComponent<IDaemon>();
-            if (daemon.GetHighlighting(highlighter) is UnityGutterMarkInfo highlighting)
-            {
-                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                    return unityImplicitUsageHighlightingContributor.CreateBulbItemsForUnityDeclaration(highlighting
-                        .Declaration);
-            }
+            var highlighting = daemon.GetHighlighting(highlighter);
 
+            if (highlighting != null)
+            {
+                var items = (highlighting as UnityGutterMarkInfo)?.Actions ??
+                            (highlighting as UnityHotGutterMarkInfo)?.Actions;
+                if (items != null)
+                    return items;
+            }
             return EmptyList<BulbMenuItem>.InstanceList;
         }
     }

@@ -5,7 +5,6 @@ using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -77,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.IsLanguageSupported<YamlLanguage>();
+            return sf.IsLanguageSupported<UnityYamlLanguage>();
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -85,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (!IsApplicable(sourceFile))
                 return null;
 
-            if (!(sourceFile.GetDominantPsiFile<YamlLanguage>() is IYamlFile yamlFile))
+            if (!(sourceFile.GetDominantPsiFile<UnityYamlLanguage>() is IYamlFile yamlFile))
                 return null;
 
             // Handle empty files

@@ -41,5 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Enables showing hot icon for frequently called code")]
         public bool EnableIconsForPerformanceCriticalCode;
+        
+        [SettingsEntry(true, "Show Inspector properties changes in editor")]
+        public bool EnableInspectorPropertiesEditor;
     }
 }

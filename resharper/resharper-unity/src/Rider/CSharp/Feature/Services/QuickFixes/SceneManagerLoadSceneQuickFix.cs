@@ -160,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 var languageService = YamlLanguage.Instance.LanguageService().NotNull();
                 var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(buffer);
                 var file = (languageService.CreateParser(lexer, module, null) as IYamlParser)
-                    .NotNull("Not yaml parser").ParseDocumentBody();
+                    .NotNull("Not yaml parser").ParseDocumentBody(0);
 
                 var sceneRecord = GetSceneCollection((file.BlockNode as IBlockMappingNode)
                     .NotNull("blockMappingNode != null")) as IBlockSequenceNode;

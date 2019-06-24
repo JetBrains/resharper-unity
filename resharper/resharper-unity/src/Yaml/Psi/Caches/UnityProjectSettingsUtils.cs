@@ -56,9 +56,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public static INode GetCollection([CanBeNull] IBlockMappingNode blockMappingNode, string documentName, string name)
         {
             var documentEntry = blockMappingNode?.Entries.FirstOrDefault(
-                t => documentName.Equals(t.Key.GetPlainScalarText()))?.Value as IBlockMappingNode;
+                t => documentName.Equals(t.Key.GetPlainScalarText()))?.Content.Value as IBlockMappingNode;
 
-            var collection = documentEntry?.Entries.FirstOrDefault(t => name.Equals(t.Key.GetPlainScalarText()))?.Value;
+            var collection = documentEntry?.Entries.FirstOrDefault(t => name.Equals(t.Key.GetPlainScalarText()))?.Content.Value;
             
             return collection;
         }

@@ -100,7 +100,8 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      var args = string.Format("{0}{1}{0} --line {2} {0}{3}{0}", "\"", mySlnFile, line, assetFilePath);
+      var argsString = assetFilePath == "" ? "" : $" --line {line} \"{assetFilePath}\""; // on mac empty string in quotes is causing additional solution to be opened https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider/issues/21
+      var args = string.Format("{0}{1}{0}{2}", "\"", mySlnFile, argsString);
       return CallRider(args);
     }
 
@@ -117,7 +118,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
       {
         proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", "/" + defaultApp, args);
+        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", defaultApp, args);
         myLogger.Verbose("{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
       }
       else
