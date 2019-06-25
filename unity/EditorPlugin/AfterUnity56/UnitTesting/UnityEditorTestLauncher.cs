@@ -27,13 +27,32 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     {
       // todo: restore, once Unity fixes UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter.BuildNUnitFilter
       // Currently assemblyName filters are added with OR to testNames filers, should be done with AND
-      
       //foreach (var filter in myLaunch.TestFilters)
       //{
       //  TryLaunchUnitTestsInAssembly(filter.AssemblyName, filter.TestNames.ToArray());
       //}
       
-      TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
+      
+      // new way
+      var success = TryLaunchUnitTestsInternal();
+
+      // old way
+      if (!success && myLaunch.TestMode == TestMode.Edit) 
+        TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
+    }
+
+    private bool TryLaunchUnitTestsInternal()
+    {
+      var riderPackageAssembly = RiderPackageInterop.GetAssembly();
+      if (riderPackageAssembly == null) return false;
+      var launcherType = riderPackageAssembly.GetType("Packages.Rider.Editor.UnitTesting.RiderTestRunner");
+      if (launcherType == null) return false;
+      var assemblyNames = myLaunch.TestFilters.Select(a => a.AssemblyName).ToArray();
+      var testNames = myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
+      var runTestsMethod = launcherType.GetMethod("RunTests");
+      if (runTestsMethod == null) return false;
+      runTestsMethod.Invoke(null, new object[] {(int)myLaunch.TestMode, assemblyNames, testNames, null, null });
+      return true;
     }
 
     private void TryLaunchUnitTestsInAssembly(string[] testNames)
@@ -92,7 +111,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
         if (myLaunch.TestMode == TestMode.Play)
         {
-          PlayModeSupport.PlayModeLauncherRun(filter, launcherType, testEditorAssembly, testEngineAssembly);
+          //PlayModeSupport.PlayModeLauncherRun(filter, launcherType, testEditorAssembly, testEngineAssembly);
         }
         else
         {
@@ -158,8 +177,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           if (!AdviseTestFinished(runner, "m_TestFinishedEvent", result =>
           {
             if (!(result.Test is TestMethod)) return;
-            var res = TestEventsSender.GetTestResult(result);
-            TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(res));
+
+            TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(result));
           }))
             return;
 

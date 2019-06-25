@@ -3,8 +3,10 @@ using System.Linq;
 using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
+using Newtonsoft.Json;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using UnityEngine;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
@@ -13,43 +15,74 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
   {
     private readonly UnitTestLaunch myUnitTestLaunch;
     private static readonly ILog ourLogger = Log.GetLog(typeof(TestEventsSender).Name);
-
-    internal TestEventsSender(TestEventsCollector collector, UnitTestLaunch unitTestLaunch)
+    
+    internal TestEventsSender(UnitTestLaunch unitTestLaunch)
     {
       myUnitTestLaunch = unitTestLaunch;
-      ProcessQueue(collector);
-      collector.Clear();
+      
+      var myAssembly = RiderPackageInterop.GetAssembly();
+      if (myAssembly == null) return;
+      var myData = myAssembly.GetType("Packages.Rider.Editor.UnitTesting.CallbackData");
+      if (myData == null) return;
 
-      collector.ClearEvent();
-      collector.AddEvent += (col, _) =>
+      ProcessQueue(myData, myUnitTestLaunch);
+
+      SubscribeToChanged(myData, myUnitTestLaunch);
+    }
+
+    private static void SubscribeToChanged(Type data, UnitTestLaunch myUnitTestLaunch)
+    {
+      var eventInfo = data.GetEvent("Changed");
+      
+      if (eventInfo != null)
       {
-        ProcessQueue((TestEventsCollector)col);
-      };
+        var handler = new EventHandler((sender, e) => { ProcessQueue(data, myUnitTestLaunch); });
+        eventInfo.AddEventHandler(handler.Target, handler);
+        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+        {
+          eventInfo.RemoveEventHandler(handler.Target, handler);
+        });
+      }
+      else
+      {
+        ourLogger.Error("Changed event subscription failed.");
+      }
     }
     
-    private void ProcessQueue(TestEventsCollector collector)
+    private static void ProcessQueue(Type data, UnitTestLaunch unitTestLaunch)
     {
-      if (!collector.DelayedEvents.Any())
+      var baseType = data.BaseType;
+      if (baseType == null) return;
+      var instance = baseType.GetProperty("instance");
+      if (instance == null) return;
+      var myInstanceVal = instance.GetValue(null, new object[]{});
+      var myGetJsonAndClearMethod = data.GetMethod("GetJsonAndClear");
+      if (myGetJsonAndClearMethod == null) return;
+      var json = (string)myGetJsonAndClearMethod.Invoke(myInstanceVal, new object[] {});
+      Debug.Log(json);
+      var delayedEventsObject = JsonConvert.DeserializeObject<DelayedEvents>(json);
+      Debug.Log(delayedEventsObject);
+      var events = delayedEventsObject.events;
+      Debug.Log(events.Length);
+      if (!events.Any())
         return;
 
-      foreach (var myEvent in collector.DelayedEvents)
+      foreach (var myEvent in events)
       {
-        switch (myEvent.myType)
+        switch (myEvent.type)
         {
           case EventType.RunFinished:
-            RunFinished(myUnitTestLaunch);
+            RunFinished(unitTestLaunch);
             break;
           case EventType.TestFinished:
-            TestFinished(myUnitTestLaunch, GetTestResult(myEvent.Event));
+            TestFinished(unitTestLaunch, GetTestResult(myEvent));
             break;
           case EventType.TestStarted:
-            var tResult = new TestResult(myEvent.Event.myID, myEvent.Event.myAssemblyName,string.Empty, 0, Status.Running, myEvent.Event.myParentID);
-            TestStarted(myUnitTestLaunch, tResult);
+            var tResult = new TestResult(myEvent.id, myEvent.assemblyName,string.Empty, 0, Status.Running, myEvent.parentID);
+            TestStarted(unitTestLaunch, tResult);
             break;
         }        
       }
-
-      collector.Clear();
     }
     
     public static void RunFinished(UnitTestLaunch launch)
@@ -67,34 +100,42 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       launch.TestResult(testResult);
     }
 
-    internal static TestResult GetTestResult(TestInternalEvent tEvent)
+    internal static TestResult GetTestResult(TestEvent tEvent)
     {
-      return new TestResult(tEvent.myID, tEvent.myAssemblyName, tEvent.myOutput, tEvent.myDuration, tEvent.myStatus, tEvent.myParentID);
+      var status = GetStatus(new ResultState((TestStatus)Enum.Parse(typeof(TestStatus), tEvent.resultState)));
+      
+      return new TestResult(tEvent.id, tEvent.assemblyName, tEvent.output, (int) TimeSpan.FromMilliseconds(tEvent.duration).TotalMilliseconds, 
+        status, tEvent.parentID);
     }
 
-    internal static TestInternalEvent GetTestResult(ITestResult testResult)
+    internal static TestResult GetTestResult(ITestResult testResult)
     {
-      //ourLogger.Verbose("TestFinished : {0}, result : {1}", test.FullName, testResult.ResultState);
       var id = GetIdFromNUnitTest(testResult.Test);
       var assemblyName = testResult.Test.TypeInfo.Assembly.GetName().Name;
 
       var output = ExtractOutput(testResult);
-      Status status;
-      if (Equals(testResult.ResultState, ResultState.Success))
-        status = Status.Success;
-      else if (Equals(testResult.ResultState, ResultState.Ignored))
-        status = Status.Ignored;
-      else if (Equals(testResult.ResultState, ResultState.Inconclusive) ||
-               Equals(testResult.ResultState, ResultState.Skipped))
-        status = Status.Inconclusive;
-      else
-        status = Status.Failure;
-      return new TestInternalEvent(id, assemblyName, output,
+      var status = GetStatus(testResult.ResultState);
+      return new TestResult( id, assemblyName, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
         status, GetIdFromNUnitTest(testResult.Test.Parent));
     }
 
-    internal static string ExtractOutput(ITestResult testResult)
+    private static Status GetStatus(ResultState resultState)
+    {
+      Status status;
+      if (Equals(resultState, ResultState.Success))
+        status = Status.Success;
+      else if (Equals(resultState, ResultState.Ignored))
+        status = Status.Ignored;
+      else if (Equals(resultState, ResultState.Inconclusive) ||
+               Equals(resultState, ResultState.Skipped))
+        status = Status.Inconclusive;
+      else
+        status = Status.Failure;
+      return status;
+    }
+
+    private static string ExtractOutput(ITestResult testResult)
     {
       var stringBuilder = new StringBuilder();
       if (testResult.Message != null)
