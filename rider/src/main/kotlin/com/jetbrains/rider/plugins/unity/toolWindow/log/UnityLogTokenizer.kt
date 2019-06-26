@@ -4,7 +4,7 @@ import java.awt.Color
 
 class UnityLogTokenizer {
 
-    private val validTokens =  mapOf("<b>" to UnityLogTokenType.Bold,
+    private val validTokens = mapOf("<b>" to UnityLogTokenType.Bold,
         "</b>" to UnityLogTokenType.BoldEnd,
         "<i>" to UnityLogTokenType.Italic,
         "</i>" to UnityLogTokenType.ItalicEnd,
@@ -15,6 +15,12 @@ class UnityLogTokenizer {
         "<material=*>" to UnityLogTokenType.Material,
         "</material>" to UnityLogTokenType.MaterialEnd,
         "<quad=*>" to UnityLogTokenType.Quad)
+
+    private val startToEndMapping = mapOf(UnityLogTokenType.Bold to UnityLogTokenType.BoldEnd,
+        UnityLogTokenType.Italic to UnityLogTokenType.ItalicEnd,
+        UnityLogTokenType.Color to UnityLogTokenType.ColorEnd,
+        UnityLogTokenType.Size to UnityLogTokenType.SizeEnd,
+        UnityLogTokenType.Material to UnityLogTokenType.MaterialEnd)
 
     fun tokenize(fullString: String): List<Token> {
         var tokens: MutableList<Token> = mutableListOf()
@@ -30,27 +36,6 @@ class UnityLogTokenizer {
                     lastTokenIndex = lastIndex + 1
                     continue
                 }
-
-//                lastIndex = checkToken(fullString, "<color=", i)
-//                if (lastIndex != -1) {
-//                    var token = getToken(fullString, i)
-//                    if (token == "")
-//                        break
-//
-//                    val tempLastTokenIndex = i + token.length
-//                    token.replace(">", "")
-//
-//                    addTokens(
-//                        i,
-//                        lastTokenIndex,
-//                        tokens,
-//                        fullString,
-//                        token.substring(token.indexOf('=') + 1).trim('"'),
-//                        UnityLogTokenType.Color
-//                    )
-//                    lastTokenIndex = tempLastTokenIndex + 1
-//                    break
-//                }
             }
         }
 
@@ -103,9 +88,22 @@ class UnityLogTokenizer {
                     }
                 }
             }
+            else if(token.type == UnityLogTokenType.Quad)
+            {
+                token.used = true;
+            }
             else if(validTokens.containsValue(token.type))
             {
-                token.used = true
+                if(!startToEndMapping.containsKey(token.type))
+                    continue
+
+                val endToken = startToEndMapping[token.type]
+                for (x in i until tokens.count()) {
+                    if (tokens[x].type == endToken && !tokens[x].used) {
+                        token.used = true
+                        tokens[x].used = true
+                    }
+                }
             }
         }
     }
@@ -129,11 +127,12 @@ class UnityLogTokenizer {
         var expectedTokenIndex = 0
 
         for (i in startIndex until fullString.length) {
-            val expectedChar = expectedToken[expectedTokenIndex]
+            val currentChar = fullString[i].toLowerCase()
+            val expectedChar = expectedToken[expectedTokenIndex].toLowerCase()
 
             if(expectedChar == '*')
             {
-                if(fullString[i] == expectedToken[expectedTokenIndex + 1])
+                if(currentChar == expectedToken[expectedTokenIndex + 1].toLowerCase())
                 {
                     expectedTokenIndex++
                 }
@@ -143,7 +142,7 @@ class UnityLogTokenizer {
                 }
             }
 
-            else if (fullString[i] != expectedChar ) {
+            else if (currentChar != expectedChar ) {
                 return -1
             }
 
@@ -159,7 +158,7 @@ class UnityLogTokenizer {
 
     private fun parseColor(color: String): Color? {
         try {
-            when (color) {
+            when (color.toLowerCase()) {
                 "aqua" -> return Color.decode("#00ffff")
                 "black" -> return Color.decode("#000000")
                 "blue" -> return Color.decode("#0000ff")
