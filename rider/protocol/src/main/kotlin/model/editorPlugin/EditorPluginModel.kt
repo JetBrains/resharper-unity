@@ -102,6 +102,7 @@ object EditorPluginModel: Root() {
         property("play", bool)
         property("pause", bool)
         source("step", void)
+        signal("showFileInUnity", string)
         signal("showGameObjectOnScene", RdFindUsageResultElement)
         signal("findUsageResults", RdFindUsageResult)
 

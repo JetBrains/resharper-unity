@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
+using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Navigation.ContextNavigation;
@@ -10,6 +11,7 @@ using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Features.Navigation.Features.Usages;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages
 {
@@ -17,13 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.G
     public class GoToUnityUsagesProvider : UsagesContextSearchProviderBase<UnityUsagesContextSearch>,
         INavigateFromHereProvider
     {
-        internal static readonly OccurrencePresentationOptions GotoUsagePresentationOptions =
-            new OccurrencePresentationOptions
-            {
-                IconDisplayStyle = IconDisplayStyle.OccurrenceKind,
-                TextDisplayStyle = TextDisplayStyle.IdentifierAndContext
-            };
-
         public GoToUnityUsagesProvider(IFeaturePartsContainer manager)
             : base(manager)
         {
@@ -33,8 +28,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.G
         public IEnumerable<ContextNavigation> CreateWorkflow(IDataContext dataContext)
         {
             var solution = dataContext.GetData(ProjectModelDataConstants.SOLUTION);
+            if (solution == null)
+                yield break;
+            
+            var solutionTracker = solution.GetComponent<UnitySolutionTracker>();
+            if (!solutionTracker.IsUnityProject.HasTrueValue())
+                yield break;
+            
             var navigationExecutionHost = DefaultNavigationExecutionHost.GetInstance(solution);
-
+    
             var execution = GetSearchesExecution(dataContext, navigationExecutionHost);
             if (execution != null)
             {

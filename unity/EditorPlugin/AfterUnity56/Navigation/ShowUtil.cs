@@ -7,7 +7,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 {
   internal static class ShowUtil
   {
-    public static void ShowPrefabUsage(string filePath, string[] path)
+    public static void ShowFileUsage(string filePath)
     {
       EditorUtility.FocusProjectWindow();
       var prefab = AssetDatabase.LoadAssetAtPath(filePath, typeof(GameObject));

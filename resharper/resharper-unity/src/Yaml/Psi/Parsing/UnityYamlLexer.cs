@@ -90,12 +90,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                                                                   && myBuffer[myCurOffset] != '\n')
                                 {
                                     sb.Append(Buffer[myCurOffset]);
-                                    myCurOffset++; // Yes, no AdvanceChar.. 
+                                    myCurOffset++; 
                                 }
 
                                 var tag = sb.ToString();
                                 if (tag.Equals("!u!1") || tag.Equals("!u!4") || tag.Equals("!u!1001") ||
-                                    tag.Equals("!u!114"))
+                                    tag.Equals("!u!114") || tag.Equals("!u!224"))
                                 {
                                     isInteresting = true;
                                 }

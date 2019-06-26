@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                         if (inputRecord == null)
                             continue;
 
-                        var name = inputRecord.Entries.FirstOrDefault(t => t.Key.GetText().Equals("m_Name"))?.Content.Value.GetPlainScalarText();
+                        var name = inputRecord.Entries.FirstOrDefault(t => t.Key.GetText().Equals(UnityYamlConstants.NameProperty))?.Content.Value.GetPlainScalarText();
                         
                         if (!name.IsNullOrEmpty())
                             cacheItem.Inputs.Add(name);

@@ -189,6 +189,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
                     myHost.PerformModelAction(t => t.ShowGameObjectOnScene.Advise(lf, v => editor.ShowGameObjectOnScene.Fire(v.ConvertToUnityModel())));
+                    myHost.PerformModelAction(t => t.ShowFileInUnity.Advise(lf, v => editor.ShowFileInUnity.Fire(v)));
 
                     // pass all references to Unity TODO temp workaround, replace with async api
                     myHost.PerformModelAction(t => t.FindUsageResults.Advise(lf, v =>editor.FindUsageResults.Fire(v.ConvertToUnityModel())));
