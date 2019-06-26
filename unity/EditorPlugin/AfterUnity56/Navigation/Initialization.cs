@@ -19,7 +19,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
           {
             if (findUsagesResult.IsPrefab)
             {
-              ShowUtil.ShowPrefabUsage(findUsagesResult.FilePath, findUsagesResult.PathElements);
+              ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
             }
             else
             {
@@ -41,6 +41,17 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
 
             var window = FindUsagesWindow.GetWindow(result.Target);
             window.SetDataToEditor(result.Elements);
+          });  
+        }
+      });
+      
+      modelValue.ShowFileInUnity.Advise(connectionLifetime, result =>
+      {
+        if (result != null)
+        {
+          MainThreadDispatcher.Instance.Queue(() =>
+          {
+            ShowUtil.ShowFileUsage(result);
           });  
         }
       });
