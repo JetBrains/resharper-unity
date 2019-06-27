@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using UnityEngine;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
@@ -72,7 +70,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         var id = (string)ev.GetType().GetField("id").GetValue(ev);
         var assemblyName = (string)ev.GetType().GetField("assemblyName").GetValue(ev);
         var output = (string)ev.GetType().GetField("output").GetValue(ev);
-        var resultState = (string)ev.GetType().GetField("resultState").GetValue(ev);
+        var resultState = (int)ev.GetType().GetField("testStatus").GetValue(ev);
         var duration = (double)ev.GetType().GetField("duration").GetValue(ev);
         var parentId = (string)ev.GetType().GetField("parentId").GetValue(ev);
         
@@ -86,7 +84,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           }
           case 1: // TestFinished
           {
-            var status = GetStatus(new ResultState((TestStatus)Enum.Parse(typeof(TestStatus), resultState)));
+            var status = GetStatus(new ResultState((TestStatus)resultState));
 
             var testResult = new TestResult(id, assemblyName, output, (int) TimeSpan.FromMilliseconds(duration).TotalMilliseconds, 
               status, parentId);
