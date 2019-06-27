@@ -1,9 +1,10 @@
 using System;
-using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using Newtonsoft.Json;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine;
@@ -13,30 +14,32 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public class TestEventsSender
   {
-    private readonly UnitTestLaunch myUnitTestLaunch;
     private static readonly ILog ourLogger = Log.GetLog(typeof(TestEventsSender).Name);
     
     internal TestEventsSender(UnitTestLaunch unitTestLaunch)
-    {
-      myUnitTestLaunch = unitTestLaunch;
-      
-      var myAssembly = RiderPackageInterop.GetAssembly();
-      if (myAssembly == null) return;
-      var myData = myAssembly.GetType("Packages.Rider.Editor.UnitTesting.CallbackData");
-      if (myData == null) return;
+    { 
+      var assembly = RiderPackageInterop.GetAssembly();
+      if (assembly == null)
+      {
+        ourLogger.Error("EditorPlugin assembly is null.");
+        return;
+      }
 
-      ProcessQueue(myData, myUnitTestLaunch);
+      var data = assembly.GetType("Packages.Rider.Editor.UnitTesting.CallbackData");
+      if (data == null) return;
 
-      SubscribeToChanged(myData, myUnitTestLaunch);
+      ProcessQueue(data, unitTestLaunch);
+
+      SubscribeToChanged(assembly, data, unitTestLaunch);
     }
 
-    private static void SubscribeToChanged(Type data, UnitTestLaunch myUnitTestLaunch)
+    private static void SubscribeToChanged(Assembly assembly, Type data, UnitTestLaunch unitTestLaunch)
     {
       var eventInfo = data.GetEvent("Changed");
       
       if (eventInfo != null)
       {
-        var handler = new EventHandler((sender, e) => { ProcessQueue(data, myUnitTestLaunch); });
+        var handler = new EventHandler((sender, e) => { ProcessQueue(data, unitTestLaunch); });
         eventInfo.AddEventHandler(handler.Target, handler);
         AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
         {
@@ -55,34 +58,53 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       if (baseType == null) return;
       var instance = baseType.GetProperty("instance");
       if (instance == null) return;
-      var myInstanceVal = instance.GetValue(null, new object[]{});
-      var myGetJsonAndClearMethod = data.GetMethod("GetJsonAndClear");
-      if (myGetJsonAndClearMethod == null) return;
-      var json = (string)myGetJsonAndClearMethod.Invoke(myInstanceVal, new object[] {});
-      Debug.Log(json);
-      var delayedEventsObject = JsonConvert.DeserializeObject<DelayedEvents>(json);
-      Debug.Log(delayedEventsObject);
-      var events = delayedEventsObject.events;
-      Debug.Log(events.Length);
-      if (!events.Any())
-        return;
+      var instanceVal = instance.GetValue(null, new object[]{});
 
-      foreach (var myEvent in events)
+      var listField = data.GetField("events");
+      if (listField == null) return;
+      var list = listField.GetValue(instanceVal);
+
+      var events = (IEnumerable) list;
+      
+      foreach (var ev in events)
       {
-        switch (myEvent.type)
+        var type = (int)ev.GetType().GetField("type").GetValue(ev);
+        var id = (string)ev.GetType().GetField("id").GetValue(ev);
+        var assemblyName = (string)ev.GetType().GetField("assemblyName").GetValue(ev);
+        var output = (string)ev.GetType().GetField("output").GetValue(ev);
+        var resultState = (string)ev.GetType().GetField("resultState").GetValue(ev);
+        var duration = (double)ev.GetType().GetField("duration").GetValue(ev);
+        var parentId = (string)ev.GetType().GetField("parentId").GetValue(ev);
+        
+        switch (type)
         {
-          case EventType.RunFinished:
-            RunFinished(unitTestLaunch);
-            break;
-          case EventType.TestFinished:
-            TestFinished(unitTestLaunch, GetTestResult(myEvent));
-            break;
-          case EventType.TestStarted:
-            var tResult = new TestResult(myEvent.id, myEvent.assemblyName,string.Empty, 0, Status.Running, myEvent.parentID);
+          case 0: // TestStarted
+          {
+            var tResult = new TestResult(id, assemblyName,string.Empty, 0, Status.Running, parentId);
             TestStarted(unitTestLaunch, tResult);
             break;
-        }        
+          }
+          case 1: // TestFinished
+          {
+            var status = GetStatus(new ResultState((TestStatus)Enum.Parse(typeof(TestStatus), resultState)));
+
+            var testResult = new TestResult(id, assemblyName, output, (int) TimeSpan.FromMilliseconds(duration).TotalMilliseconds, 
+              status, parentId);
+            TestFinished(unitTestLaunch, testResult);
+            break;
+          }
+          case 2: // RunFinished
+            RunFinished(unitTestLaunch);
+            break;
+          default:
+            ourLogger.Error("Unexpected TestEvent type.");
+            break;
+        }
       }
+      
+      var clearMethod = data.GetMethod("Clear");
+      if (clearMethod == null) return;      
+      clearMethod.Invoke(instanceVal, new object[] {});
     }
     
     public static void RunFinished(UnitTestLaunch launch)
@@ -98,14 +120,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     public static void TestFinished(UnitTestLaunch launch, TestResult testResult)
     {
       launch.TestResult(testResult);
-    }
-
-    internal static TestResult GetTestResult(TestEvent tEvent)
-    {
-      var status = GetStatus(new ResultState((TestStatus)Enum.Parse(typeof(TestStatus), tEvent.resultState)));
-      
-      return new TestResult(tEvent.id, tEvent.assemblyName, tEvent.output, (int) TimeSpan.FromMilliseconds(tEvent.duration).TotalMilliseconds, 
-        status, tEvent.parentID);
     }
 
     internal static TestResult GetTestResult(ITestResult testResult)

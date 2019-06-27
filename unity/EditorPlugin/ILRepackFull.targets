@@ -1,7 +1,6 @@
 ﻿<Project>
   <ItemGroup>
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-    <ILRepackInputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll" />
     <ILRepackInputAssemblies Include="../lib/*.dll" />
   </ItemGroup>
   <PropertyGroup>
