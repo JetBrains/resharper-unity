@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             "m_Enabled",
             "m_EditorHideFlags",
             "m_Script",
-            "m_Name",
+            UnityYamlConstants.NameProperty,
             "m_EditorClassIdentifier"
         };
 

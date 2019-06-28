@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             var yamlFile = (IYamlFile) myOwner.GetContainingFile();
             var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);
-            var fileID = document.GetUnityObjectPropertyValue("m_Script").AsFileID();
+            var fileID = document.GetUnityObjectPropertyValue(UnityYamlConstants.ScriptProperty).AsFileID();
             return fileID?.guid;
         }
     }
