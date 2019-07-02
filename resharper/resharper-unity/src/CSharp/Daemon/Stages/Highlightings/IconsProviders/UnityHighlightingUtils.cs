@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
@@ -22,18 +23,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public static bool HasHotIcon(this ICSharpDeclaration element, SolutionAnalysisService swa,
-            IContextBoundSettingsStore settingsStore,
+            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, IContextBoundSettingsStore settingsStore,
             PerformanceCriticalCodeCallGraphAnalyzer analyzer, DaemonProcessKind kind)
         {
             var declaredElement = element.DeclaredElement;
             if (declaredElement == null)
                 return false;
 
-            return declaredElement.HasHotIcon(swa, settingsStore, analyzer, kind);
+            return declaredElement.HasHotIcon(swa, callGraphSwaExtensionProvider, settingsStore, analyzer, kind);
         }
         
         public static bool HasHotIcon(this IDeclaredElement element, SolutionAnalysisService swa,
-            IContextBoundSettingsStore settingsStore,
+            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, IContextBoundSettingsStore settingsStore,
             PerformanceCriticalCodeCallGraphAnalyzer analyzer, DaemonProcessKind kind)
         {
             if (!settingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode))
@@ -50,16 +51,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (!id.HasValue)
                 return false;
 
-            return usageChecker.IsMarkedByCallGraphAnalyzer(analyzer.AnalyzerId, id.Value,
+            return callGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(analyzer.Id, id.Value,
                 kind == DaemonProcessKind.GLOBAL_WARNINGS);
         }
 
         public static void AddHotHighlighting(this IHighlightingConsumer consumer, SolutionAnalysisService swa,
-            ICSharpDeclaration element, PerformanceCriticalCodeCallGraphAnalyzer analyzer,
+            CallGraphSwaExtensionProvider swaExtensionProvider, ICSharpDeclaration element, PerformanceCriticalCodeCallGraphAnalyzer analyzer,
             IContextBoundSettingsStore settings, string text,
             string tooltip, DaemonProcessKind kind, IEnumerable<BulbMenuItem> items, bool onlyHot = false)
         {
-            var isIconHot = element.HasHotIcon(swa, settings, analyzer, kind);
+            var isIconHot = element.HasHotIcon(swa, swaExtensionProvider, settings, analyzer, kind);
             if (onlyHot && !isIconHot)
                 return;
             

@@ -1,6 +1,7 @@
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
@@ -20,12 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
 
-        public RiderTypeDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore,
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi,
+        public RiderTypeDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi,
             UnityCodeInsightProvider codeInsightProvider,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost)
-            : base(solution, swa, settingsStore, unityApi, analyzer)
+            : base(solution, swa, callGraphSwaExtensionProvider, settingsStore, unityApi, analyzer)
         {
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;

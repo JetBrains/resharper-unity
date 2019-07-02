@@ -3,6 +3,7 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Psi;
@@ -16,9 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class InitialiseOnLoadCctorDetector : UnityDeclarationHighlightingProviderBase
     {
         
-        public InitialiseOnLoadCctorDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore, 
+        public InitialiseOnLoadCctorDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, 
             PerformanceCriticalCodeCallGraphAnalyzer analyzer)
-            : base(solution, swa, settingsStore, analyzer)
+            : base(solution, swa, callGraphSwaExtensionProvider, settingsStore, analyzer)
         {
         }
         

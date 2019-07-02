@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using JetBrains.Diagnostics;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -18,9 +19,8 @@ namespace JetBrains.Rider.Unity.Editor
     /// <param name="externalEditor"></param>
     /// <param name="allFoundPaths"></param>
     /// <returns>May return null, if nothing found.</returns>
-    public string GetDefaultRiderApp(string externalEditor, string[] allFoundPaths)
+    public string GetActualRider(string externalEditor, string[] allFoundPaths)
     {
-      // update previously selected editor, if better one is found
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
@@ -28,21 +28,12 @@ namespace JetBrains.Rider.Unity.Editor
         {
           if (!allFoundPaths.Any() || allFoundPaths.Any() && allFoundPaths.Contains(alreadySetPath))
           {
-            myPluginSettings.RiderPath = alreadySetPath;
             return alreadySetPath;
           }
         }
       }
 
-      if (!string.IsNullOrEmpty(myPluginSettings.RiderPath) &&
-          allFoundPaths.Contains(new FileInfo(myPluginSettings.RiderPath).FullName))
-      {
-        // Settings.RiderPath is good enough
-      }
-      else
-        myPluginSettings.RiderPath = allFoundPaths.FirstOrDefault();
-
-      return myPluginSettings.RiderPath;
+      return allFoundPaths.FirstOrDefault();
     }
 
     internal static bool RiderPathExist(string path, OperatingSystemFamilyRider operatingSystemFamilyRider)

@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Feature.Services.LinqTools;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -121,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             {
                 var editorBuildSettings = GetEditorBuildSettings(myUnityModule);
                 Assertion.Assert(editorBuildSettings != null, "editorBuildSettings != null");
-                var yamlFile = editorBuildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
+                var yamlFile = editorBuildSettings.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
                 Assertion.Assert(yamlFile != null, "yamlFile != null");
                 
                 var scenesNode = GetSceneCollection(yamlFile);

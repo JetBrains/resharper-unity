@@ -9,6 +9,7 @@ using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
@@ -28,15 +29,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         protected readonly ISolution Solution;
         protected readonly SolutionAnalysisService Swa;
+        protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtensionProvider;
         protected readonly PerformanceCriticalCodeCallGraphAnalyzer Analyzer;
         protected readonly UnityApi UnityApi;
         protected readonly IContextBoundSettingsStore Settings;
 
-        public UnityCommonIconProvider(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore, 
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi)
+        public UnityCommonIconProvider(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi)
         {
             Solution = solution;
             Swa = swa;
+            CallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             Analyzer = analyzer;
             UnityApi = unityApi;
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
@@ -51,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
                 {
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
-                    consumer.AddHotHighlighting(Swa, cSharpDeclaration, Analyzer, Settings, text,
+                    consumer.AddHotHighlighting(Swa, CallGraphSwaExtensionProvider, cSharpDeclaration, Analyzer, Settings, text,
                         tooltip, kind, GetEventFunctionActions(cSharpDeclaration));
 
                 }
@@ -61,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, 
             string text, string tooltip, DaemonProcessKind kind)
         {
-            consumer.AddHotHighlighting(Swa, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
+            consumer.AddHotHighlighting(Swa, CallGraphSwaExtensionProvider, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
         
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)
