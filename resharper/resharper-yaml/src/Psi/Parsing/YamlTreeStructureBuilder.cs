@@ -31,8 +31,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     private int myDocumentStartLexeme;
     private bool myExpectImplicitKey;
 
-    private int myChameleonOffset = 0;
-
     public YamlTreeStructureBuilder(ILexer<int> lexer, Lifetime lifetime, int currentLineIndent)
       : base(lifetime)
     {
@@ -53,15 +51,15 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     {
       if (tokenNodeType == YamlTokenType.CHAMELEON)
       {
-        return new ClosedChameleonElement(YamlTokenType.CHAMELEON, new TreeOffset(startOffset + myChameleonOffset),
-          new TreeOffset(endOffset + myChameleonOffset));
+        return new ClosedChameleonElement(YamlTokenType.CHAMELEON, buffer, new TreeOffset(startOffset),
+          new TreeOffset(endOffset));
       }
 
       if (tokenNodeType.Equals(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT))
       {
         // Yes. Any indent. We push correct lexer indent via ContentContext
-        return new ClosedChameleonElement(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT, new TreeOffset(startOffset + myChameleonOffset),
-          new TreeOffset(endOffset + myChameleonOffset));
+        return new ClosedChameleonElement(YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT, buffer, new TreeOffset(startOffset),
+          new TreeOffset(endOffset));
       }
 
       // We define tokens in terms of buffers and ranges to avoid allocation of strings and substrings - nothing is
@@ -82,15 +80,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       do
       {
-        ParseDocument(myChameleonOffset);
+        ParseDocument();
       } while (!myBuilder.Eof());
 
       Done(mark, ElementType.YAML_FILE);
     }
 
-    public void ParseDocument(int chameleonOffset, bool createChameleon = true)
+    public void ParseDocument(bool createChameleon = true)
     {
-      myChameleonOffset = chameleonOffset;
       // TODO: Can we get indents in this prefix?
       // TODO: Should the document prefix be part of the document node?
       SkipLeadingWhitespace();
@@ -104,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       if (createChameleon)
         ParseChameleonDocumentBody();
       else
-        ParseDocumentBody(myChameleonOffset);
+        ParseDocumentBody();
 
       if (GetTokenTypeNoSkipWhitespace() == YamlTokenType.DOCUMENT_END)
       {
@@ -187,9 +184,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       Done(mark, YamlChameleonElementTypes.CHAMELEON_DOCUMENT_BODY);
     }
 
-    public void ParseDocumentBody(int chameleonOffset)
+    public void ParseDocumentBody()
     {
-      myChameleonOffset = chameleonOffset;
       var mark = MarkNoSkipWhitespace();
 
       ParseRootBlockNode();
@@ -589,9 +585,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return false;
     }
 
-    public void ParseContent(int curBufferOffset, int expectedIndent)
+    public void ParseContent(int expectedIndent)
     {
-      myChameleonOffset = curBufferOffset;
       // INVARIANT : not start of document
       myDocumentStartLexeme = -1;
       var mark = MarkNoSkipWhitespace();
