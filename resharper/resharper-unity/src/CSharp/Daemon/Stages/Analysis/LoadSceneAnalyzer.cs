@@ -44,28 +44,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (sceneName != null)
                 {
                     // check build settings warnings
-                    if (!cache.IsScenePresentedAtEditorBuildSettings(sceneName,
+                    if (cache.IsScenePresentedAtEditorBuildSettings(sceneName,
                         out var ambiguousDefinition))
                     {
                         if (cache.IsSceneDisabledAtEditorBuildSettings(sceneName))
                         {
                             consumer.AddHighlighting(new LoadSceneDisabledSceneNameWarning(argument, sceneName));
                         }
-                        else if (!cache.IsSceneExists(sceneName))
+                        else if (ambiguousDefinition)
                         {
                             consumer.AddHighlighting(
-                                new LoadSceneUnknownSceneNameWarning(argument, sceneName));
+                                new LoadSceneAmbiguousSceneNameWarning(argument, sceneName));
+                        } 
+                        
+                    }
+                    else
+                    {
+                        if (cache.IsSceneExists(sceneName))
+                        {
+                            consumer.AddHighlighting(new LoadSceneUnknownSceneNameWarning(argument, sceneName));
                         } else
                         {
                             consumer.AddHighlighting(new LoadSceneUnexistingSceneNameWarning(argument));
                         }
                     }
 
-                    if (ambiguousDefinition)
-                    {
-                        consumer.AddHighlighting(
-                            new LoadSceneAmbiguousSceneNameWarning(argument, sceneName));
-                    } 
+                    
                 } else if (literal.ConstantValue.IsInteger())
                 {
                     var value = (int) literal.ConstantValue.Value;
