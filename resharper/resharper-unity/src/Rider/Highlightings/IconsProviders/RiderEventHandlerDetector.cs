@@ -1,6 +1,7 @@
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
@@ -21,12 +22,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
 
-        public RiderEventHandlerDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore,
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityEventHandlerReferenceCache cache,
+        public RiderEventHandlerDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityEventHandlerReferenceCache cache,
             UnityCodeInsightProvider codeInsightProvider,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost)
-            : base(solution, swa, settingsStore, cache, analyzer)
+            : base(solution, swa,  settingsStore, callGraphSwaExtensionProvider, cache, analyzer)
         {
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;
@@ -37,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
             DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(Swa, Settings, Analyzer, kind)
+            var iconId = element.HasHotIcon(Swa, CallGraphSwaExtensionProvider, Settings, Analyzer, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
             

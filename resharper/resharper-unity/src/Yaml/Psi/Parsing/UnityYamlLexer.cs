@@ -44,6 +44,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
             myTokenStartOffset = myCurOffset;
             while (true)
             {
+                if (myCurOffset > myEndOffset)
+                {
+                    EatUntilDocumentEnd();
+                    return;
+                }
                 switch (myBuffer[myCurOffset])
                 {
                     case '%':

@@ -12,9 +12,9 @@ using JetBrains.ReSharper.Feature.Services.LinqTools;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -85,7 +85,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                     return GetUnityPathFor(psiSourceFile).Equals(scene);
                 }
 
-                var file = files.Single(IsCorrespondingSourceFile);
+                var file = files.FirstOrDefault(IsCorrespondingSourceFile);
+                if (file == null)
+                    return EmptyList<(IPsiSourceFile, string)>.Instance;
                 return new[] {(file, GetUnityPathFor(file))};
 
             }
@@ -121,7 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             {
                 var editorBuildSettings = GetEditorBuildSettings(myUnityModule);
                 Assertion.Assert(editorBuildSettings != null, "editorBuildSettings != null");
-                var yamlFile = editorBuildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
+                var yamlFile = editorBuildSettings.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
                 Assertion.Assert(yamlFile != null, "yamlFile != null");
                 
                 var scenesNode = GetSceneCollection(yamlFile);
@@ -157,12 +159,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             {
                 // TODO yaml psi factory?
                 var buffer = new StringBuffer($"EditorBuildSettings:\n  m_Scenes:\n  - enabled: 1\n    path: Assets/{sceneName}.unity\n    guid: {guid}");
-                var languageService = YamlLanguage.Instance.LanguageService().NotNull();
+                var languageService = UnityYamlLanguage.Instance.LanguageService().NotNull();
                 var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(buffer);
                 var file = (languageService.CreateParser(lexer, module, null) as IYamlParser)
-                    .NotNull("Not yaml parser").ParseDocumentBody(0);
+                    .NotNull("Not yaml parser").ParseFile() as IYamlFile;
 
-                var sceneRecord = GetSceneCollection((file.BlockNode as IBlockMappingNode)
+                var sceneRecord = GetSceneCollection((file.Documents.First().Body.BlockNode as IBlockMappingNode)
                     .NotNull("blockMappingNode != null")) as IBlockSequenceNode;
                 SandBox.CreateSandBoxFor(sceneRecord.NotNull("sceneRecord != null"), module);
                 return sceneRecord;

@@ -4,6 +4,7 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
@@ -20,8 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         private readonly UnityApi myUnityApi;
 
-        public FieldDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi)
-            : base(solution, swa, settingsStore, analyzer)
+        public FieldDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi)
+            : base(solution, swa, callGraphSwaExtensionProvider, settingsStore, analyzer)
         {
             myUnityApi = unityApi;
         }

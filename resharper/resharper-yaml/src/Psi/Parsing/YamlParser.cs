@@ -26,22 +26,22 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       });
     }
 
-    public IYamlDocument ParseDocument(int chameleonOffset)
+    public IYamlDocument ParseDocument()
     {
       return Lifetime.Using(lifetime =>
       {
         var builder = CreateTreeBuilder(lifetime);
-        builder.ParseDocument(chameleonOffset, false);
+        builder.ParseDocument(false);
         return (IYamlDocument) builder.GetTree();
       });
     }
     
-    public IDocumentBody ParseDocumentBody(int chameleonOffset = 0)
+    public IDocumentBody ParseDocumentBody()
     {
       return Lifetime.Using(lifetime =>
       {
         var builder = CreateTreeBuilder(lifetime);
-        builder.ParseDocumentBody(chameleonOffset);
+        builder.ParseDocumentBody();
         return (IDocumentBody) builder.GetTree();
       });
     }
@@ -64,12 +64,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       return new YamlTreeStructureBuilder(myLexer, lifetime, indent);
     }
 
-    public ITreeNode ParseContent(int chameleonOffset, int indent, int expectedIndent)
+    public ITreeNode ParseContent(int indent, int expectedIndent)
     {
       return Lifetime.Using(lifetime =>
       {
         var builder = CreateTreeBuilder(lifetime, indent);
-        builder.ParseContent(chameleonOffset, expectedIndent);
+        builder.ParseContent(expectedIndent);
 
         var content = builder.GetTree();
         //Assertion.Assert(content is IContent, "rootBlockNode is IContent");
