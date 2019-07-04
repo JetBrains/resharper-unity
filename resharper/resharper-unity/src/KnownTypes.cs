@@ -13,6 +13,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName ExecuteInEditMode = new ClrTypeName("UnityEngine.ExecuteInEditMode");
         public static readonly IClrTypeName GameObject = new ClrTypeName("UnityEngine.GameObject");
         public static readonly IClrTypeName HideInInspector = new ClrTypeName("UnityEngine.HideInInspector");
+        public static readonly IClrTypeName Space = new ClrTypeName("UnityEngine.SpaceAttribute");
+        public static readonly IClrTypeName Header = new ClrTypeName("UnityEngine.HeaderAttribute");
+        public static readonly IClrTypeName Tooltip = new ClrTypeName("UnityEngine.TooltipAttribute");
+        public static readonly IClrTypeName Range = new ClrTypeName("UnityEngine.RangeAttribute");
         public static readonly IClrTypeName ImageEffectAfterScale = new ClrTypeName("UnityEngine.ImageEffectAfterScale");
         public static readonly IClrTypeName ImageEffectAllowedInSceneView = new ClrTypeName("UnityEngine.ImageEffectAllowedInSceneView");
         public static readonly IClrTypeName ImageEffectOpaque = new ClrTypeName("UnityEngine.ImageEffectOpaque");
@@ -47,6 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         // UnityEditor
         public static readonly IClrTypeName CanEditMultipleObjects = new ClrTypeName("UnityEditor.CanEditMultipleObjects");
         public static readonly IClrTypeName CustomEditor = new ClrTypeName("UnityEditor.CustomEditor");
+        public static readonly IClrTypeName Editor = new ClrTypeName("UnityEditor.Editor");
+        public static readonly IClrTypeName EditorWindow = new ClrTypeName("UnityEditor.EditorWindow");
         public static readonly IClrTypeName DrawGizmo = new ClrTypeName("UnityEditor.DrawGizmo");
         public static readonly IClrTypeName GizmoType = new ClrTypeName("UnityEditor.GizmoType");
         public static readonly IClrTypeName InitializeOnLoadAttribute = new ClrTypeName("UnityEditor.InitializeOnLoadAttribute");

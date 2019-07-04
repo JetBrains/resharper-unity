@@ -1,3 +1,4 @@
+using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
@@ -9,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
@@ -33,7 +35,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
         }
-        
+
+        protected override void AddMonoBehaviourHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text,
+            string tooltip, DaemonProcessKind kind)
+        {
+            if (Settings.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.Always)
+            {
+                base.AddHighlighting(consumer, declaration, text, tooltip, kind);
+            }
+        }
+
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
             string tooltip,
             DaemonProcessKind kind)
