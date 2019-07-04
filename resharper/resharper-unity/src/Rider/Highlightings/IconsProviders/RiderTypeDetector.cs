@@ -39,9 +39,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         protected override void AddMonoBehaviourHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text,
             string tooltip, DaemonProcessKind kind)
         {
-            if (Settings.GetValue((UnitySettings key) => key.GutterIconMode) == GutterIconMode.Always)
+            if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
+                () => { base.AddHighlighting(consumer, declaration, text, tooltip, kind); }, out var useFallback))
             {
-                base.AddHighlighting(consumer, declaration, text, tooltip, kind);
+                if (!useFallback)
+                {
+                    consumer.AddImplicitConfigurableHighlighting(declaration);
+                }
             }
         }
 

@@ -75,10 +75,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
                 () => { base.AddFrequentlyCalledMethodHighlighting(consumer, declaration, text, tooltip, kind);}, out var useFallback))
             {
-                if (!useFallback)
-                {
-                    consumer.AddImplicitConfigurableHighlighting(declaration);
-                }
 
                 IEnumerable<BulbMenuItem> actions;
                 if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
