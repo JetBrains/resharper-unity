@@ -1,5 +1,9 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -36,21 +40,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         }
 
         public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method, UnityEventFunction eventFunction,
-            string text, string tooltip, DaemonProcessKind kind)
+            string text,DaemonProcessKind kind)
         {
             var iconId = method.HasHotIcon(Swa, CallGraphSwaExtensionProvider, Settings, Analyzer, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
             
             if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
-                () => { base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, tooltip, kind);}, out var useFallback))
+                () => { base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, kind);}, out var useFallback))
             {
                 foreach (var declaration in method.GetDeclarations())
                 {
                     if (declaration is ICSharpDeclaration cSharpDeclaration)
                     {
-                        consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
-                        myCodeInsightProvider.AddHighlighting(consumer, cSharpDeclaration, method, text, tooltip, text,
+                        if (!useFallback)
+                        {
+                            consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
+                        }
+                        
+                        myCodeInsightProvider.AddHighlighting(consumer, cSharpDeclaration, method, text, eventFunction.Description ?? string.Empty, text,
                             myIconHost.Transform(iconId), GetEventFunctionActions(cSharpDeclaration), RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
                     }
                 }
@@ -67,8 +75,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
                 () => { base.AddFrequentlyCalledMethodHighlighting(consumer, declaration, text, tooltip, kind);}, out var useFallback))
             {
+                if (!useFallback)
+                {
+                    consumer.AddImplicitConfigurableHighlighting(declaration);
+                }
+
+                IEnumerable<BulbMenuItem> actions;
+                if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
+                {
+                    actions = GetEventFunctionActions(declaration);
+                }
+                else
+                {
+                    actions = EmptyList<BulbMenuItem>.Instance;
+                }
+                
                 myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text, tooltip, text,
-                    myIconHost.Transform(InsightUnityIcons.InsightHot.Id), EmptyList<BulbMenuItem>.Instance, RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
+                    myIconHost.Transform(InsightUnityIcons.InsightHot.Id), actions, RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
             }
         }
     }

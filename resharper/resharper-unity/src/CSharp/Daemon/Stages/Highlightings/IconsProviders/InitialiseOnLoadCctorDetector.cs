@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (containingType != null &&
                 containingType.HasAttributeInstance(KnownTypes.InitializeOnLoadAttribute, false))
             {
-                AddHighlighting(consumer, element, "Implicit usage", 
+                AddHighlighting(consumer, element, "Used implicitly", 
                     "Called when Unity first launches the editor, the player, or recompiles scripts", kind);
                 return containingType;
             }

@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                     file.AddChild(document);
                 }
                 else
-                    file.AddChild(token);
+                    file.AddComponentDocument(token);
 
                 myLexer.Advance();
             }
