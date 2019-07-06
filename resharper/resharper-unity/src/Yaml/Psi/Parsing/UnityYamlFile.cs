@@ -4,21 +4,12 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 {
-    public class UnityYamlFile : FileElementBase, IYamlFile
+    public class UnityYamlFile : FileElementBase, IUnityYamlFile
     {
-        private CachedPsiValue<Dictionary<int, IYamlDocument>> myData =
-            new CachedPsiValue<Dictionary<int, IYamlDocument>>();
-
-        IYamlDocument GetDocument(int i)
-        {
-            myData.GetValue(this, (d) => new Dictionary<int, IYamlDocument>());
-            throw new NotImplementedException();
-        }
-
-
         public override PsiLanguageType Language => UnityYamlLanguage.Instance;
 
         public const short DOCUMENT = ChildRole.LAST + 1;
@@ -57,5 +48,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
             AsChildrenEnumerable<IYamlDocument>(DOCUMENT);
 
         public override string ToString() => "IYamlFile";
+        
+        private List<ITreeNode> myComponentDocuments = new List<ITreeNode>();
+
+        public void AddComponentDocument(ITreeNode token)
+        {
+            myComponentDocuments.Add(token);
+        }
+
+        IEnumerable<ITreeNode> IUnityYamlFile.ComponentDocuments => myComponentDocuments;
     }
 }

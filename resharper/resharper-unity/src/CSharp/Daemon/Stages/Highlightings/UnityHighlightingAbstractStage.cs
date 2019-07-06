@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                         continue;
                     
                     myCommonIconProvider.AddEventFunctionHighlighting(highlightingConsumer, method, eventFunction,
-                        "Event function", GetEventFunctionTooltip(eventFunction), myProcessKind);
+                        "Event function", myProcessKind);
                     myMarkedDeclarations.Add(method);
                 }
                 else
@@ -113,17 +113,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                 }
             }
 
-        }
-        
-        private string GetEventFunctionTooltip(UnityEventFunction eventFunction)
-        {
-            var tooltip = "Unity event function";
-            if (!string.IsNullOrEmpty(eventFunction.Description))
-                tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
-            if (eventFunction.Coroutine)
-                tooltip += Environment.NewLine + "This function can be a coroutine.";
-
-            return tooltip;
         }
     }
 }

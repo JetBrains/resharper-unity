@@ -1,14 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.JavaScript.Util.Literals;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 
@@ -49,37 +53,105 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
 
             // If YAML parsing is disabled, this will return null
-            var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
+            var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IUnityYamlFile;
             if (file == null)
                 return null;
 
             var result = new Dictionary<string, string>();
-            foreach (var document in file.DocumentsEnumerable)
+            foreach (var document in file.Documents)
             {
                 var buffer = document.GetTextAsBuffer();
-                if (ourGameObjectReferenceStringSearcher.Find(buffer) >= 0)
+                if (ourGameObjectReferenceStringSearcher.Find(buffer, 0, Math.Min(100, buffer.Length)) >= 0)
                 {
-                    var anchor = GetAnchorFromBuffer(document);
-                    var name = GetNameFromBuffer(document);
+                    var anchor = GetAnchorFromBuffer(buffer);
+                    var name = GetNameFromBuffer(buffer);
+                    if (name == null)
+                        continue;
                     result[anchor] = name;
                 }
+                else
+                {
+                    FillDictionary(result, buffer);
+                }
+            }
+
+            foreach (var componentDocument in file.ComponentDocuments)
+            {
+                FillDictionary(result, componentDocument.GetTextAsBuffer());
             }
 
             if (result.Count == 0)
                 return null;
             return result;
         }
-        
-        public static string GetAnchorFromBuffer(IYamlDocument document)
+
+        private void FillDictionary(Dictionary<string, string> result, IBuffer buffer)
         {
-            var buffer = document.GetTextAsBuffer();
+            var anchor = GetAnchorFromBuffer(buffer);
+            var name = GetComponentNameFromBuffer(buffer);
+            if (name == null)
+                return;
+                    
+            result[anchor] = name;
+        }
+
+        public static string GetComponentNameFromBuffer(IBuffer buffer)
+        {
+            var sb = new StringBuilder();
+            int index = 0;
+            while (true)
+            {
+                if (index > 100)
+                    return null;
+                
+                if (index == buffer.Length)
+                    return null;
+
+                if (buffer[index] == '\r')
+                {
+                    index++;
+                    if (index < buffer.Length && buffer[index + 1] == '\n')
+                    {
+                        index++;
+                        break;
+                    }
+                }
+
+                if (buffer[index] == '\n')
+                {
+                    index++;
+                    break;
+                }
+                index++;
+            }
+            
+            while (true)
+            {
+                if (index > 100)
+                    return null;
+                
+                if (index == buffer.Length)
+                    return null;
+
+                if (buffer[index] == ':')
+                {
+                    break;
+                }
+
+                sb.Append(buffer[index]);
+                index++;
+            }
+
+            return sb.ToString();
+        }
+        
+        public static string GetAnchorFromBuffer(IBuffer buffer)
+        {
             var index = 0;
             while (true)
             {
                 if (index == buffer.Length)
-                {
                     return null;
-                }
                 
                 if (buffer[index] == '&')
                     break;
@@ -97,9 +169,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return sb.ToString();
         }
         
-        public static string GetNameFromBuffer(IYamlDocument document)
+        public static string GetNameFromBuffer(IBuffer buffer)
         {
-            var buffer = document.GetTextAsBuffer();
             var index = 0;
             while (true)
             {
