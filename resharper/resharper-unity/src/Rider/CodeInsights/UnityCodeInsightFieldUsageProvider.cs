@@ -301,7 +301,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (presentationType == UnityPresentationType.FileId && value == null)
                 return FileID.Null;
 
-            if (presentationType == UnityPresentationType.OtherSimple && value == null)
+            if ((presentationType == UnityPresentationType.OtherSimple  || presentationType == UnityPresentationType.Bool) && value == null)
                 return "0";
             
             if (value == null)

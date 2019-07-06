@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
     public class AddSpaceAttributeAction : AddInspectorAttributeAction
     {
         [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
-            new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
+            new SubmenuAnchor(ourBaseAnchor, SubmenuBehavior.Executable);
         protected override IClrTypeName AttributeTypeName => KnownTypes.Space;
 
         public AddSpaceAttributeAction(ICSharpContextActionDataProvider dataProvider) : base(dataProvider, ourSubmenuAnchor)

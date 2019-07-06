@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
@@ -17,6 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 {
     public abstract class AddInspectorAttributeAction : IContextAction
     {
+        [NotNull] protected static readonly SubmenuAnchor ourBaseAnchor = 
+            new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Static("Add Inspector attribute"));
+
         protected readonly ICSharpContextActionDataProvider DataProvider;
         private readonly IAnchor myAnchor;
 
