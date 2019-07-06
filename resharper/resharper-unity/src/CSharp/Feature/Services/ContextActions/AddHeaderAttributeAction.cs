@@ -28,8 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             "Add header for this property in the Unity Editor inspector")]
     public class AddHeaderAttributeAction : AddInspectorAttributeAction
     {
-        [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
-            new SubmenuAnchor(IntentionsAnchors.LowPriorityContextActionsAnchor, SubmenuBehavior.Executable);
+        [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor = new SubmenuAnchor(ourBaseAnchor, SubmenuBehavior.Executable);
         protected override IClrTypeName AttributeTypeName => KnownTypes.Header;
 
         public AddHeaderAttributeAction(ICSharpContextActionDataProvider dataProvider) : base(dataProvider, ourSubmenuAnchor)

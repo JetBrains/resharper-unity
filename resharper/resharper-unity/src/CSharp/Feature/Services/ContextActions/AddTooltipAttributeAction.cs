@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
     public class AddTooltipAttributeAction : AddInspectorAttributeAction
     {
         [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
-            new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
+            new SubmenuAnchor(ourBaseAnchor, SubmenuBehavior.Executable);
         protected override IClrTypeName AttributeTypeName => KnownTypes.Tooltip;
 
         
