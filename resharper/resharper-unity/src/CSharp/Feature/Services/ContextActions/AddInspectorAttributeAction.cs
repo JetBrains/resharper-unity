@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
     public abstract class AddInspectorAttributeAction : IContextAction
     {
         [NotNull] protected static readonly SubmenuAnchor ourBaseAnchor = 
-            new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Static("Add Inspector attribute"));
+            new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Static("Modify Inspector attribute"));
 
         protected readonly ICSharpContextActionDataProvider DataProvider;
         private readonly IAnchor myAnchor;
