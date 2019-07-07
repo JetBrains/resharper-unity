@@ -1,0 +1,6 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+  [Space] [SerializeField] private int my{caret}Value, myValue2, myValue3;
+}
