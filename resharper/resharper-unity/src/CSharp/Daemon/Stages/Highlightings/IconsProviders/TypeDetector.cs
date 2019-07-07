@@ -4,6 +4,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -22,9 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         private readonly UnityApi myUnityApi;
 
-        public TypeDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore, UnityApi unityApi,
+        public TypeDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, UnityApi unityApi,
             PerformanceCriticalCodeCallGraphAnalyzer analyzer)
-            : base(solution, swa, settingsStore, analyzer)
+            : base(solution, swa, callGraphSwaExtensionProvider, settingsStore, analyzer)
         {
             myUnityApi = unityApi;
         }
@@ -40,10 +41,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 if (myUnityApi.IsDescendantOfMonoBehaviour(typeElement))
                 {
                     AddMonoBehaviourHiglighting(consumer, element, "Script", "Unity Editor script", kind);
-                } else
-                if (myUnityApi.IsUnityType(typeElement))
+                } else if (myUnityApi.IsDescendantOf(KnownTypes.Editor, typeElement) || myUnityApi.IsDescendantOf(KnownTypes.EditorWindow, typeElement))
                 {
-                    AddUnityTypeHighlighting(consumer, element, "Unity type", "Unity Editor type", kind);
+                    AddEditorHiglighting(consumer, element, "Editor", "Custom Editor", kind);
+                } else if (myUnityApi.IsUnityType(typeElement))
+                {
+                    AddUnityTypeHighlighting(consumer, element, "Unity type", "Custom Unity type", kind);
                 }
                 else if (myUnityApi.IsUnityECSType(typeElement))
                 {
@@ -61,6 +64,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             AddHighlighting(consumer, declaration, text, tooltip, kind);
         }
 
+        protected virtual void AddEditorHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
+        {
+            AddHighlighting(consumer, declaration, text, tooltip, kind);
+        }
+        
         protected virtual void AddUnityTypeHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
         {
             AddHighlighting(consumer, declaration, text, tooltip, kind);

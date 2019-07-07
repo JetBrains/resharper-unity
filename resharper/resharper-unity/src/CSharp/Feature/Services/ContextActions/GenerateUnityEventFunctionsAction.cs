@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             var fix = new GenerateUnityEventFunctionsFix(classDeclaration);
             var action = new IntentionAction(fix, PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id,
-            BulbMenuAnchors.PermanentItem);
+            new SubmenuAnchor(IntentionsAnchors.LowPriorityContextActionsAnchor, SubmenuBehavior.Executable));
 
             return new[] {action};
         }

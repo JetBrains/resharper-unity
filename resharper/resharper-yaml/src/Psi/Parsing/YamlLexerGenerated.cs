@@ -247,7 +247,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       else
       {
         yy_at_bol = true;
-        return YamlTokenType.GetChameleonMapEntryValueWithIndent(currentLineIndent); 
+        return YamlTokenType.GetChameleonMapEntryValueWithIndent(previousLineIndent); 
       }
     }
 

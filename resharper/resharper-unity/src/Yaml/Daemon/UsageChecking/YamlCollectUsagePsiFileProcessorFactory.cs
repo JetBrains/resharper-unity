@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ReSharper.Daemon.UsageChecking.SwaExtension;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
@@ -22,8 +23,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
         public override ICollectUsagesPsiFileProcessor CreatePsiFileProcessor(
             CollectUsagesStageProcess collectUsagesStageProcess,
             IDaemonProcess daemonProcess, IContextBoundSettingsStore settingsStore,
-            CollectUsagesStageProcess.PersistentData persistentData,
-            TaskBarrier fibers, IReadOnlyList<IFile> psiFiles, IScopeProcessorFactory scopeProcessorFactory)
+            CollectUsagesStagePersistentData persistentData,
+            TaskBarrier fibers, IReadOnlyList<IFile> psiFiles, IScopeProcessorFactory scopeProcessorFactory,
+            IEnumerable<SwaExtensionProviderBase> swaExtensionProviders)
         {
             // TODO: We could return a no-op processor for .meta or boring assets
             return new YamlCollectUsagesPsiFileProcessor();

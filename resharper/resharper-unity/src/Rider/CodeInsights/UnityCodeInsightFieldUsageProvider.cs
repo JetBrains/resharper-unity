@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
@@ -9,6 +10,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
@@ -17,7 +19,9 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValue
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
@@ -34,9 +38,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             Enum,
             Bool,
             String,
+            OtherSimple,
             FileId,
             ValueType,
-            Other
+            Other,
         }
 
         private readonly ConnectionTracker myConnectionTracker;
@@ -88,22 +93,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                     {
                         var presentationType = unityInspectorCodeInsightsHighlighting.UnityPresentationType;
                         var initValue = unityInspectorCodeInsightsHighlighting.ConstantValue;
-                        var result = GetAssetGuidAndPropertyName(solution, highlighting.DeclaredElement);
+                        var declaredElement = (highlighting.DeclaredElement as IClrDeclaredElement).NotNull("declaredElement != null");
+
+                        if (!declaredElement.IsValid())
+                            return;
+                        
+                        var result = GetAssetGuidAndPropertyName(solution, declaredElement);
                         if (!result.HasValue)
                             return;
 
+                        
                         var valuesCache = solution.GetComponent<UnityPropertyValueCache>();
-                        var values = valuesCache.GetUnityPropertyValues(result.Value.guid, result.Value.propertyName);
+                        var values = valuesCache.GetPropertyValues(result.Value.guid, result.Value.propertyName);
 
                         menu.Caption.Value = WindowlessControlAutomation.Create("Inspector values");
                         menu.KeyboardAcceleration.Value = KeyboardAccelerationFlags.QuickSearch;
 
-                        foreach (var valueWithLocation in values.Take(POP_UP_MAX_COUNT))
+                        var valuesToShow = values.Where(t => !IsSameWithInitializer(t.Value, presentationType, initValue)).Take(POP_UP_MAX_COUNT);
+                        foreach (var valueWithLocation in valuesToShow)
                         {
                             var value = valueWithLocation.Value;
                             if (ShouldShowUnknownPresentation(value, presentationType))
                                 menu.ItemKeys.Add(valueWithLocation);
-                            else if (!IsSameWithInitializer(value, presentationType, initValue)) 
+                            else
                                 menu.ItemKeys.Add(valueWithLocation);
 
                         }
@@ -119,7 +131,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             }
                             else
                             {
-                                shortPresentation = value.Value.GetSimplePresentation(solution, value.File) ?? "...";
+                                if (!declaredElement.IsValid())
+                                    return;
+
+                                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                                {
+                                    var type = declaredElement.Type();
+                                    shortPresentation = GetPresentation(value, presentationType, type, solution,
+                                        declaredElement.Module);
+                                }
                             }
 
                             e.Descriptor.Text = shortPresentation;
@@ -157,10 +177,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             }
         }
 
+        private string GetPresentation(MonoBehaviourPropertyValueWithLocation monoBehaviourPropertyValueWithLocation,
+            UnityPresentationType unityPresentationType, IType enumType, ISolution solution, IPsiModule psiModule)
+        {
+            if (monoBehaviourPropertyValueWithLocation.Value is MonoBehaviourPrimitiveValue primitiveValue)
+            {
+                return GetRiderPresentation(unityPresentationType, primitiveValue.PrimitiveValue, enumType, psiModule);
+            }
+            else
+            {
+                return monoBehaviourPropertyValueWithLocation.GetSimplePresentation(solution);
+            }
+        }
+        
+        private string GetRiderPresentation(UnityPresentationType unityPresentationType, string unityValue, IType enumType, IPsiModule psiModule)
+        {
+            if (unityPresentationType == UnityPresentationType.Bool)
+            {
+                if (unityValue.Equals("0"))
+                    return "\"false\"";
+                return "\"true\"";
+            }
+
+            if (unityPresentationType == UnityPresentationType.Enum)
+            {
+                if (!int.TryParse(unityValue, out var result))
+                    return  "...";
+                var intType = psiModule.GetPredefinedType().Int;
+                var @enum = enumType.GetTypeElement() as IEnum;
+                var enumMemberType = @enum?.EnumMembers.FirstOrDefault()?.ConstantValue.Type;
+                if (enumMemberType == null)
+                    return "...";
+                var enumMembers = CSharpEnumUtil.CalculateEnumMembers(new ConstantValue(result, enumMemberType), @enum);
+
+                return string.Join(" | ", enumMembers.Select(t => t.ShortName));
+            }
+
+            return $"\"{unityValue ?? "..." }\"";
+        }
+        
         private bool ShouldShowUnknownPresentation(MonoBehaviourPropertyValue value, UnityPresentationType presentationType)
         {
             return presentationType == UnityPresentationType.Other ||
-                presentationType == UnityPresentationType.ValueType && value is MonoBehaviourHugeValue;
+                   presentationType == UnityPresentationType.ValueType;
         }
         
         
@@ -180,49 +239,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var propertyName = result.Value.propertyName;
 
             var cache = solution.GetComponent<UnityPropertyValueCache>();
-            var values = cache.GetUnityPropertyValues(guid, propertyName).ToArray();
 
             var field = (declaredElement as IField).NotNull();
             var type = field.Type;
             var presentationType = GetUnityPresentationType(type);
-            var changesCount = 0;
-            
+
+            if  (!type.IsSimplePredefined() && presentationType != UnityPresentationType.FileId  && presentationType != UnityPresentationType.Enum)
+                return;
             
             var initializer = (element as IFieldDeclaration).NotNull("element as IFieldDeclaration != null").Initial;
             var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue.Value;
+            
+            var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
+            var initValueCount = cache.GetValueCount(guid, propertyName, initValueUnityPresentation);
 
             if (presentationType != UnityPresentationType.Other)
             {
-                var initValueCount = cache.GetValueCount(guid, propertyName, GetUnitySerializedPresentation(presentationType, initValue));
-                if (initValueCount == 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 1 // only modified value
-                    || initValueCount > 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 2) // original value & modified value
+                if (initValueCount == 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 1) // only modified value
                 {
-                    displayName = values[0].GetSimplePresentation(solution);
-                }
-                else
+                    var valueWithLocations = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray(); 
+                    Assertion.Assert(valueWithLocations.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
+                    displayName = GetPresentation(valueWithLocations[0], presentationType, type, solution,element.GetPsiModule());
+                } else if (initValueCount > 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 2)  
                 {
-                    changesCount = cache.GetPropertyValuesCount(guid, propertyName) - initValueCount;
+                    
+                    // original value & only one modified value
+                    var values = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray();
+                    Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
+                    
+                    var anotherValueWithLocation = values[0].Value.Value.Equals(initValueUnityPresentation) ? values[1] : values[0];
+                    displayName = GetPresentation(anotherValueWithLocation, presentationType, type, solution,element.GetPsiModule());
                 }
             }
             else
             {
-                changesCount = values.Length;
+                // do not show anything for not presentable types
+                return;
             }
-
-
+            
             if (displayName == null)
             {
-                if (changesCount == 0)
-                {
-                    displayName = "No Inspector changes";
-                } else if (changesCount == 1)
-                {
-                    displayName = "1 Inspector change";
-                }
-                else
-                {
-                    displayName = $"{changesCount} Inspector changes";
-                }
+                var count = cache.GetFilesWithPropertyCount(guid, propertyName) - cache.GetFilesCountWithoutChanges(guid, propertyName, initValueUnityPresentation);
+                if (count == 0)
+                    return;
+
+                var word = count == 1 ? "asset" : "assets";
+                displayName = $"Changed in {count} {word}";
             }
 
             
@@ -230,20 +292,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 displayName, tooltip, "Property Inspector values", this, 
                 declaredElement, iconModel, presentationType, initValue));
         }
-
         
-        
-        private string GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
+        private object GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
         {
             if (presentationType == UnityPresentationType.Bool && value is bool b)
                 return b ? "1" : "0";
 
+            if (presentationType == UnityPresentationType.FileId && value == null)
+                return FileID.Null;
+
+            if ((presentationType == UnityPresentationType.OtherSimple  || presentationType == UnityPresentationType.Bool) && value == null)
+                return "0";
+            
             if (value == null)
                 return string.Empty;
 
             return value.ToString();
         }
-
+        
         private UnityPresentationType GetUnityPresentationType(IType type)
         {
             if (type.IsBool())
@@ -253,6 +319,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (type.IsString())
                 return UnityPresentationType.String;
 
+            if (type.IsSimplePredefined())
+                return UnityPresentationType.OtherSimple;
+            
             if (type.IsValueType())
                 return UnityPresentationType.ValueType;
 

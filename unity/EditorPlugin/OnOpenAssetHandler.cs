@@ -13,7 +13,7 @@ using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  internal class OnOpenAssetHandler
+  public class OnOpenAssetHandler
   {
     private readonly ILog myLogger = Log.GetLog<OnOpenAssetHandler>();
     private readonly RiderPathProvider myRiderPathProvider;
@@ -108,9 +108,10 @@ namespace JetBrains.Rider.Unity.Editor
     public bool CallRider(string args)
     {
       var paths = RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider);
-      var defaultApp = myRiderPathProvider.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor, paths);
+      var defaultApp = myRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor, paths);
       if (string.IsNullOrEmpty(defaultApp))
       {
+        myLogger.Verbose("Could not find default rider app");
         return false;
       }
 

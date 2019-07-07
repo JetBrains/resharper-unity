@@ -28,9 +28,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     static CsprojAssetPostprocessor()
     {
-      if (!PluginEntryPoint.Enabled)
-        return;
-      
       ourApiCompatibilityLevel = GetApiCompatibilityLevel();
     }
     
@@ -48,9 +45,6 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     [UsedImplicitly]
     public static string OnGeneratedCSProject(string path, string contents)
     {
-      if (!PluginEntryPoint.Enabled)
-        return contents;
-
       try
       {
         ourLogger.Verbose("Post-processing {0} (in memory)", path);
@@ -79,11 +73,12 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // This method is for pre-2018.1, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!PluginEntryPoint.Enabled || UnityUtils.UnityVersion >= new Version(2018, 1))
+      if (UnityUtils.UnityVersion >= new Version(2018, 1))
         return;
 
       try
       {
+        ourLogger.Verbose("Post-processing {0} (old version)");
         // get only csproj files, which are mentioned in sln
         var lines = SlnAssetPostprocessor.GetCsprojLinesInSln();
         var currentDirectory = Directory.GetCurrentDirectory();
