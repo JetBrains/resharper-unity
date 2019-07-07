@@ -20,27 +20,27 @@ namespace JetBrains.Rider.Unity.Editor.Tests
     [Fact]
     public void EmptyDefaultPathTest()
     {
-      Assert.Null(ourRiderPathProvider.GetDefaultRiderApp(string.Empty, new string[0]));
+      Assert.Null(ourRiderPathProvider.GetActualRider(string.Empty, new string[0]));
     }
     
     [Fact]
     public void NullDefaultPathTest()
     {
-      Assert.Null(ourRiderPathProvider.GetDefaultRiderApp(null, new string[0]));
+      Assert.Null(ourRiderPathProvider.GetActualRider(null, new string[0]));
     }
     
     [Fact]
     public void NullButExistRiderDefaultPathTest()
     {
       File.WriteAllText(ourRiderPathForTests.FullName, "test");
-      Assert.Equal(ourRiderPathForTests.FullName, ourRiderPathProvider.GetDefaultRiderApp(null, new[] {ourRiderPathForTests.FullName, "B"}));
+      Assert.Equal(ourRiderPathForTests.FullName, ourRiderPathProvider.GetActualRider(null, new[] {ourRiderPathForTests.FullName, "B"}));
     }
 
     [Fact]
     public void AllFoundPathsContainExternalEditorPathTest()
     {
       File.WriteAllText(ourRiderPathForTests.FullName, "test");
-      var res = ourRiderPathProvider.GetDefaultRiderApp(ourRiderPathForTests.FullName, new[] {"", ourRiderPathForTests.FullName, "B"});
+      var res = ourRiderPathProvider.GetActualRider(ourRiderPathForTests.FullName, new[] {"", ourRiderPathForTests.FullName, "B"});
       Assert.Equal(ourRiderPathForTests.FullName, res);
     }
     
@@ -48,7 +48,7 @@ namespace JetBrains.Rider.Unity.Editor.Tests
     public void AllFoundPathsNotContainExternalEditorPathTest()
     {
       File.WriteAllText(ourRiderPathForTests.FullName, "test");
-      var res = ourRiderPathProvider.GetDefaultRiderApp(null, new[] {"", ourRiderPathForTests.FullName, "B"});
+      var res = ourRiderPathProvider.GetActualRider(null, new[] {"", ourRiderPathForTests.FullName, "B"});
       Assert.Equal(ourRiderPathForTests.FullName, res);
     }
   }

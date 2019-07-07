@@ -11,8 +11,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
     
     static EntryPoint()
     {
-      if (!PluginEntryPoint.Enabled)
-        return;
       ourLogger.Verbose("AfterUnity56.EntryPoint");
 
       PluginEntryPoint.OnModelInitialization += UnitTesting.Initialization.OnModelInitializationHandler;

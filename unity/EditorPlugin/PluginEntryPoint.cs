@@ -42,22 +42,25 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (IsLoadedFromAssets()) // old mechanism, when EditorPlugin was copied to Assets folder
       {
-        var riderPath = ourRiderPathProvider.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
+        var riderPath = ourRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
           RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
-        if (string.IsNullOrEmpty(riderPath))
-          return;
+        if (!string.IsNullOrEmpty(riderPath))
+        {
+          AddRiderToRecentlyUsedScriptApp(riderPath);
+          if (IsRiderDefaultEditor() && PluginSettings.UseLatestRiderFromToolbox)
+          {
+            EditorPrefsWrapper.ExternalScriptEditor = riderPath;
+          }
+        }
 
-        AddRiderToRecentlyUsedScriptApp(riderPath);
         if (!PluginSettings.RiderInitializedOnce)
         {
           EditorPrefsWrapper.ExternalScriptEditor = riderPath;
           PluginSettings.RiderInitializedOnce = true;
         }
-        if (Enabled)
-        {
-          InitForPluginLoadedFromAssets();
-          Init();
-        }
+
+        InitForPluginLoadedFromAssets();
+        Init();
       }
       else
       {
@@ -99,10 +102,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     internal static string SlnFile;
 
-    public static bool Enabled
+    public static bool IsRiderDefaultEditor()
     {
-      get
-      {
         // When Unity is started by Rider tests
         string[] args = Environment.GetCommandLineArgs ();
         if (args.Contains("-riderTests"))
@@ -110,8 +111,11 @@ namespace JetBrains.Rider.Unity.Editor
         
         // Regular check
         var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
-        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider") && !UnityEditorInternal.InternalEditorUtility.inBatchMode;
-      }
+        bool isEnabled = !string.IsNullOrEmpty(defaultApp) &&
+                         Path.GetFileName(defaultApp).ToLower().Contains("rider") &&
+                         !UnityEditorInternal.InternalEditorUtility.inBatchMode;
+        
+        return isEnabled;
     }
 
     public static void Init()
@@ -543,8 +547,11 @@ namespace JetBrains.Rider.Unity.Editor
     [OnOpenAsset]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (!Enabled) // || UnityUtils.UnityVersion >= new Version(2019, 2)
+      if (!PluginEntryPoint.IsRiderDefaultEditor())
         return false;
+      
+      // if (UnityUtils.UnityVersion >= new Version(2019, 2)
+      //   return false;
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
     }
     
@@ -554,7 +561,10 @@ namespace JetBrains.Rider.Unity.Editor
     //[OnOpenAsset] // todo: restore, when we move this code to package, otherwise when OnOpenedAsset is called, there is a LogError in older Unity
     static bool OnOpenedAsset(int instanceID, int line, int column)
     {
-      if (!Enabled || UnityUtils.UnityVersion < new Version(2019, 2))
+      if (!PluginEntryPoint.IsRiderDefaultEditor())
+        return false;
+      
+      if (UnityUtils.UnityVersion < new Version(2019, 2))
         return false;
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, column);
     }

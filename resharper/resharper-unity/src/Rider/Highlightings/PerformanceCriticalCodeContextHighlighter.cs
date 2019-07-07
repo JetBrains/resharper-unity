@@ -6,6 +6,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
@@ -54,6 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 
                 var solution = psiDocumentRangeView.Solution;
                 var swa = solution.GetComponent<SolutionAnalysisService>();
+                var callGraphExtension = solution.GetComponent<CallGraphSwaExtensionProvider>();
                 var callGraphAnalyzer = solution.GetComponent<PerformanceCriticalCodeCallGraphAnalyzer>();
                 var usageChecker = swa.UsageChecker;
                 if (usageChecker == null)
@@ -62,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 if (!elementId.HasValue)
                     return;
 
-                if (usageChecker.IsMarkedByCallGraphAnalyzer(callGraphAnalyzer.AnalyzerId, elementId.Value))
+                if (callGraphExtension.IsMarkedByCallGraphAnalyzer(callGraphAnalyzer.Id, elementId.Value))
                 {
                     consumer.ConsumeHighlighting(new PerformanceContextHiglighting(node.GetDocumentRange()));
                 }

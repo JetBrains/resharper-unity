@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             "m_Enabled",
             "m_EditorHideFlags",
             "m_Script",
-            "m_Name",
+            UnityYamlConstants.NameProperty,
             "m_EditorClassIdentifier"
         };
 
@@ -215,10 +215,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
         }
 
-        public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetUnityPropertyValues(string guid, string propertyName)
+        public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetPropertyValues(string guid, string propertyName)
         {
             var query = new MonoBehaviourProperty(guid, propertyName);
-            return myLocalCache.GetValues(query);
+            return myLocalCache.GetPropertyValues(query);
         }
         
         public int GetValueCount(string guid, string propertyName, object value)
@@ -234,6 +234,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         public int GetPropertyUniqueValuesCount(string guid, string propertyName)
         {
             return myLocalCache.GetPropertyUniqueValuesCount(new MonoBehaviourProperty(guid, propertyName));
+        }
+        
+        public IEnumerable<object> GetUniqueValues(string guid, string propertyName)
+        {
+            var query = new MonoBehaviourProperty(guid, propertyName);
+            return myLocalCache.GetUniqueValues(query);
+        }
+        
+        public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetUniqueValuesWithLocation(string guid, string propertyName)
+        {
+            var query = new MonoBehaviourProperty(guid, propertyName);
+            return myLocalCache.GetUniqueValuesWithLocation(query);
+        }
+        
+        public int GetFilesCountWithoutChanges(string guid, string propertyName, object value)
+        {
+            var query = new MonoBehaviourProperty(guid, propertyName);
+            return myLocalCache.GetFilesCountWithoutChanges(query, value);
+        }
+
+        public int GetFilesWithPropertyCount(string guid, string propertyName)
+        {
+            var query = new MonoBehaviourProperty(guid, propertyName);
+            return myLocalCache.GetFilesWithPropertyCount(query);
         }
     }
 }

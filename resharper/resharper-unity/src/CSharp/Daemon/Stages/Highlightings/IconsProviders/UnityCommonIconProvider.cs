@@ -6,9 +6,11 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Help;
+using JetBrains.Application.UI.Icons.CommonThemedIcons;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
@@ -28,15 +30,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         protected readonly ISolution Solution;
         protected readonly SolutionAnalysisService Swa;
+        protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtensionProvider;
         protected readonly PerformanceCriticalCodeCallGraphAnalyzer Analyzer;
         protected readonly UnityApi UnityApi;
         protected readonly IContextBoundSettingsStore Settings;
 
-        public UnityCommonIconProvider(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore, 
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi)
+        public UnityCommonIconProvider(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi)
         {
             Solution = solution;
             Swa = swa;
+            CallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             Analyzer = analyzer;
             UnityApi = unityApi;
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
@@ -44,24 +48,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         
         
         public virtual void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method, 
-            UnityEventFunction eventFunction, string text, string tooltip, DaemonProcessKind kind)
+            UnityEventFunction eventFunction, string text, DaemonProcessKind kind)
         {
             foreach (var declaration in method.GetDeclarations())
             {
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
                 {
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
-                    consumer.AddHotHighlighting(Swa, cSharpDeclaration, Analyzer, Settings, text,
-                        tooltip, kind, GetEventFunctionActions(cSharpDeclaration));
+                    consumer.AddHotHighlighting(Swa, CallGraphSwaExtensionProvider, cSharpDeclaration, Analyzer, Settings, text,
+                        GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration));
 
                 }
             }
         }
+        
+        
 
         public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, 
             string text, string tooltip, DaemonProcessKind kind)
         {
-            consumer.AddHotHighlighting(Swa, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
+            consumer.AddHotHighlighting(Swa, CallGraphSwaExtensionProvider, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
         
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)
@@ -95,13 +101,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                             Solution.GetComponent<ShowUnityHelp>(), declaredElement, UnityApi);
                         result.Add(new BulbMenuItem(
                             new IntentionAction.MyExecutableProxi(documentationNavigationAction, Solution,
-                                textControl), documentationNavigationAction.Text, BulbThemedIcons.ContextAction.Id,
+                                textControl), documentationNavigationAction.Text, CommonThemedIcons.Question.Id,
                             BulbMenuAnchors.FirstClassContextItems));
                     }
                 }
             }
 
             return result;
+        }
+        
+        protected virtual string GetEventFunctionTooltip(UnityEventFunction eventFunction)
+        {
+            var tooltip = "Unity event function";
+            if (!string.IsNullOrEmpty(eventFunction.Description))
+                tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
+            if (eventFunction.Coroutine)
+                tooltip += Environment.NewLine + "This function can be a coroutine.";
+
+            return tooltip;
         }
         
         private class DocumentationNavigationAction : BulbActionBase

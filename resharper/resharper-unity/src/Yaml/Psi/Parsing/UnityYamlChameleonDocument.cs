@@ -118,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
       var buffer = GetTextAsBuffer();
       var lexer = new TokenBuffer(service.GetPrimaryLexerFactory().CreateLexer(buffer)).CreateLexer();
       var parser = (YamlParser)service.CreateParser(lexer, null, GetSourceFile());
-      var openedChameleon = parser.ParseDocument(firstChild.GetTreeStartOffset().Offset);
+      var openedChameleon = parser.ParseDocument();
 
       AssertTextLength(openedChameleon);
 

@@ -3,6 +3,7 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
@@ -17,12 +18,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     [SolutionComponent]
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
+        private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtension;
         private readonly UnityEventHandlerReferenceCache myCache;
 
         public EventHandlerDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore,
-            UnityEventHandlerReferenceCache cache, PerformanceCriticalCodeCallGraphAnalyzer analyzer)
-            : base(solution, swa, settingsStore, analyzer)
+            CallGraphSwaExtensionProvider callGraphSwaExtension,  UnityEventHandlerReferenceCache cache, PerformanceCriticalCodeCallGraphAnalyzer analyzer)
+            : base(solution, swa, callGraphSwaExtension, settingsStore, analyzer)
         {
+            myCallGraphSwaExtension = callGraphSwaExtension;
             myCache = cache;
         }
 
@@ -46,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             consumer.AddImplicitConfigurableHighlighting(element);
 
-            var isIconHot = element.HasHotIcon(Swa, Settings, Analyzer, kind);
+            var isIconHot = element.HasHotIcon(Swa, myCallGraphSwaExtension, Settings, Analyzer, kind);
 
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(GetActions(element), element, tooltip)

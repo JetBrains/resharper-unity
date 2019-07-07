@@ -5,6 +5,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
@@ -18,14 +19,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         protected readonly ISolution Solution;
         protected readonly SolutionAnalysisService Swa;
+        protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtensionProvider;
         protected readonly PerformanceCriticalCodeCallGraphAnalyzer Analyzer;
         protected readonly IContextBoundSettingsStore Settings;
 
-        public UnityDeclarationHighlightingProviderBase(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore, 
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer)
+        public UnityDeclarationHighlightingProviderBase(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer)
         {
             Solution = solution;
             Swa = swa;
+            CallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             Analyzer = analyzer;
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
         }
@@ -38,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             string tooltip, DaemonProcessKind kind)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
-            consumer.AddHotHighlighting(Swa, element, Analyzer, Settings, text, tooltip, kind, GetActions(element));
+            consumer.AddHotHighlighting(Swa, CallGraphSwaExtensionProvider, element, Analyzer, Settings, text, tooltip, kind, GetActions(element));
         }
 
 

@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
     {
         private readonly FileID myFileID;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
-        [CanBeNull] private readonly string myResolvedName;
+        [CanBeNull] private string myResolvedName;
 
         public MonoScriptReference(IPlainScalarNode owner, FileID fileID, MetaFileGuidCache metaFileGuidCache)
             : this(owner, fileID, metaFileGuidCache, null)
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override ResolveResultWithInfo ResolveWithoutCache()
         {
-            var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
+             var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
             if (!resolveResultWithInfo.Result.IsEmpty)
                 return resolveResultWithInfo;
 
@@ -78,13 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             return symbolTable;
         }
 
-        public override ISymbolFilter[] GetSymbolFilters()
-        {
-            if (myResolvedName != null)
-                return new ISymbolFilter[] {new ExactNameFilter(myResolvedName)};
-            return EmptyArray<ISymbolFilter>.Instance;
-        }
-
+        public override ISymbolFilter[] GetSymbolFilters() => EmptyArray<ISymbolFilter>.Instance;
         public override TreeTextRange GetTreeTextRange() => myOwner.GetTreeTextRange();
         public override IAccessContext GetAccessContext() => new DefaultAccessContext(myOwner);
 
@@ -106,16 +100,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             }
         }
 
-        public override IReference BindTo(IDeclaredElement element)
+        public override IReference BindTo(IDeclaredElement element)    
         {
             // When resolving a guid reference to a type, Unity will match the guid to a script file asset, and use a
             // type in that file that has the same name as the file. However, during rename, the new reference is
             // resolved to ensure that the rename has happened correctly, and that resolve happens before the file is
             // renamed. So we give the expected resolved name to the new reference. If this is specified, we'll use this
             // to resolve, so we can resolve correctly before the file is renamed
-            return new MonoScriptReference(myOwner, myFileID, myMetaFileGuidCache, element.ShortName);
+            myResolvedName = element.ShortName;
+            return this;
         }
 
         public override IReference BindTo(IDeclaredElement element, ISubstitution substitution) => BindTo(element);
+        
+        
     }
 }

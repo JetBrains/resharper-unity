@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
         {
             {
-                var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
+                var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
                 var inputs = GetCollection(file, "InputManager", "m_Axes");
 
                 if (inputs == null)
@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                         if (inputRecord == null)
                             continue;
 
-                        var name = inputRecord.Entries.FirstOrDefault(t => t.Key.GetText().Equals("m_Name"))?.Content.Value.GetPlainScalarText();
+                        var name = inputRecord.Entries.FirstOrDefault(t => t.Key.GetText().Equals(UnityYamlConstants.NameProperty))?.Content.Value.GetPlainScalarText();
                         
                         if (!name.IsNullOrEmpty())
                             cacheItem.Inputs.Add(name);

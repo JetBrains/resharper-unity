@@ -13,7 +13,6 @@ namespace JetBrains.Rider.Unity.Editor
   public interface IPluginSettings
   {
     OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
-    string RiderPath { get; set; }
   }
 
   public enum AssemblyReloadSettings
@@ -104,6 +103,12 @@ namespace JetBrains.Rider.Unity.Editor
       }
       set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
     }
+    
+    public static bool UseLatestRiderFromToolbox
+    {
+      get { return EditorPrefs.GetBool("UseLatestRiderFromToolbox", true); }
+      set { EditorPrefs.SetBool("UseLatestRiderFromToolbox", value); }
+    }
 
     private static string TargetFrameworkVersionDefault = "4.6";
 
@@ -145,12 +150,6 @@ namespace JetBrains.Rider.Unity.Editor
       set { EditorPrefs.SetBool("RiderInitializedOnce", value); }
     }
 
-    private static string RiderPathInternal
-    {
-      get { return EditorPrefs.GetString("Rider_RiderPath", null); }
-      set { EditorPrefs.SetString("Rider_RiderPath", value); }
-    }
-    
     public static bool LogEventsCollectorEnabled
     {
       get { return EditorPrefs.GetBool("Rider_LogEventsCollectorEnabled", true); }
@@ -183,43 +182,31 @@ namespace JetBrains.Rider.Unity.Editor
       var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
       if (alternatives.Any()) // from known locations
       {
-        var paths = alternatives.Select(a => a.Path).ToArray();
-        var index = Array.IndexOf(paths, RiderPathInternal);
-        var alts = alternatives.Select(s => s.Presentation).ToArray();
-        RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
+        var paths = alternatives.Select(a => a.Path).ToList();
+        var externalEditor = EditorPrefsWrapper.ExternalScriptEditor;
+        var alts = alternatives.Select(s => s.Presentation).ToList();
+
+        if (!paths.Contains(externalEditor))
+        {
+          paths.Add(externalEditor);
+          alts.Add(externalEditor);
+        }
+
+        var index = paths.IndexOf(externalEditor);
+        
+        
+        var result = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts.ToArray())];
+        
+        EditorPrefsWrapper.ExternalScriptEditor = result;
       }
-      // may be rider from known location or selected by user from custom location
-      if(RiderPathProvider.RiderPathExist(RiderPathInternal, SystemInfoRiderPlugin.operatingSystemFamily))
-        EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
-      else if (PluginEntryPoint.Enabled)
+      
+      if (PluginEntryPoint.IsRiderDefaultEditor() && !RiderPathProvider.RiderPathExist(EditorPrefsWrapper.ExternalScriptEditor, SystemInfoRiderPlugin.operatingSystemFamily))
       {
         EditorGUILayout.HelpBox($"Rider is selected as preferred ExternalEditor, but doesn't exist on disk {EditorPrefsWrapper.ExternalScriptEditor}", MessageType.Warning);
       }
-      else
-        EditorGUILayout.HelpBox($"Lately used Rider doesn't exist on disk {RiderPathInternal}", MessageType.Warning);
 
-      if (!string.IsNullOrEmpty(RiderPathInternal))
-      {
-        if (EditorGUILayout.Toggle(new GUIContent("Make Rider default editor:"), PluginEntryPoint.Enabled))
-        {
-          EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
-
-          // make sure the plugin was initialized first.
-          // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-          PluginEntryPoint.InitForPluginLoadedFromAssets();
-          PluginEntryPoint.Init();
-
-          EditorGUILayout.HelpBox("Unchecking will restore default external editor", MessageType.None);
-        }
-        else
-        {
-          EditorPrefsWrapper.ExternalScriptEditor = string.Empty;
-          EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
-        }
-      }
-
-      GUI.enabled = PluginEntryPoint.Enabled;
-
+      UseLatestRiderFromToolbox = EditorGUILayout.Toggle(new GUIContent("Update Rider to latest version"),  UseLatestRiderFromToolbox);
+      
       GUILayout.BeginVertical();
       LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider:"), LogEventsCollectorEnabled);
 
@@ -362,12 +349,6 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     public OperatingSystemFamilyRider OperatingSystemFamilyRider => SystemInfoRiderPlugin.operatingSystemFamily;
-
-    string IPluginSettings.RiderPath
-    {
-      get => RiderPathInternal;
-      set => RiderPathInternal = value;
-    }
 
     internal static class SystemInfoRiderPlugin
     {
