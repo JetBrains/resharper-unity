@@ -8,8 +8,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
     {
         public new const string Name = "SHADERLAB";
 
-        [CanBeNull]
-        public static readonly ShaderLabLanguage Instance = null;
+        [CanBeNull, UsedImplicitly]
+        public static ShaderLabLanguage Instance { get; private set; }
 
         public ShaderLabLanguage()
             : base(Name, "ShaderLab")

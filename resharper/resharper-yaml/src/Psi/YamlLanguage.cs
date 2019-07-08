@@ -8,7 +8,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
   {
     public new const string Name = "YAML";
 
-    [CanBeNull] public static readonly YamlLanguage Instance = null;
+    [CanBeNull, UsedImplicitly]
+    public static YamlLanguage Instance { get; private set; }
 
     public YamlLanguage()
       : base(Name, "YAML")
