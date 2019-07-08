@@ -95,7 +95,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 if (project.IsUnityProject())
                 {
                     var path = myUnityProjectFileCache.GetAppPath(project);
-                    return path;
+                    if (path != null)
+                        return path;
                 }
             } 
             return FileSystemPath.Empty;
