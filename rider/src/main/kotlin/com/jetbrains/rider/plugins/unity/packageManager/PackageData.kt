@@ -36,7 +36,22 @@ data class PackageDetails(val canonicalName: String, val displayName: String, va
             val name = packageJson.name ?: packageFolder.name
             return PackageDetails(name, packageJson.displayName
                     ?: name, packageJson.version ?: "",
-                    packageJson.description ?: "", packageJson.author ?: "", packageJson.dependencies ?: mapOf())
+                    packageJson.description ?: "", getAuthor(packageJson.author), packageJson.dependencies ?: mapOf())
+        }
+
+        private fun getAuthor(author: Any?): String {
+            if (author == null)
+                return ""
+
+            if (author is String)
+                return author
+
+
+            if (author is Map<*, *>) {
+               return author["name"] as String? ?: "";
+            }
+
+            return "";
         }
     }
 }
@@ -45,5 +60,5 @@ data class GitDetails(val url: String, val revision: String, val hash: String)
 
 // Other properties are available: category, keywords, unity (supported version)
 data class PackageJson(val name: String?, val displayName: String?, val version: String?, val description: String?,
-                       val author: String?, val dependencies: Map<String, String>?)
+                       val author: Any?, val dependencies: Map<String, String>?)
 
