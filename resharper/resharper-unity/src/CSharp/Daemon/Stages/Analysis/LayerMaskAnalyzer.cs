@@ -18,16 +18,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class LayerMaskAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly UnityYamlSupport myUnityYamlSupport;
 
-        public LayerMaskAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode)
+        public LayerMaskAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
+            UnityYamlSupport unityYamlSupport)
             : base(unityApi)
         {
             myAssetSerializationMode = assetSerializationMode;
+            myUnityYamlSupport = unityYamlSupport;
         }
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             if (!myAssetSerializationMode.IsForceText) 
+                return;
+            
+            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
                 return;
             
             if (IsLayerMaskGetMask(element) || IsLayerMaskNameToLayer(element))

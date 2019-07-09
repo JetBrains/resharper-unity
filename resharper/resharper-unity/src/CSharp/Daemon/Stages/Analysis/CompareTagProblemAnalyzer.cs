@@ -17,11 +17,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class CompareTagProblemAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly UnityYamlSupport myUnityYamlSupport;
 
-        public CompareTagProblemAnalyzer(UnityApi unityApi, AssetSerializationMode assetSerializationMode)
+        public CompareTagProblemAnalyzer(UnityApi unityApi, AssetSerializationMode assetSerializationMode,
+            UnityYamlSupport unityYamlSupport)
             : base(unityApi)
         {
             myAssetSerializationMode = assetSerializationMode;
+            myUnityYamlSupport = unityYamlSupport;
         }
 
         protected override void Analyze(IEqualityExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -61,7 +64,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private void CheckTag(string value, ICSharpExpression expression, IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText)
+            if (!myAssetSerializationMode.IsForceText) 
+                return;
+            
+            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
                 return;
             
             var cache = expression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();

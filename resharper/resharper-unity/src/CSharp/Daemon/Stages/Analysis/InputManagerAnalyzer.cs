@@ -18,16 +18,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class InputManagerAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly UnityYamlSupport myUnityYamlSupport;
 
-        public InputManagerAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode)
+        public InputManagerAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
+            UnityYamlSupport unityYamlSupport)
             : base(unityApi)
         {
             myAssetSerializationMode = assetSerializationMode;
+            myUnityYamlSupport = unityYamlSupport;
         }
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
             if (!myAssetSerializationMode.IsForceText) 
+                return;
+            
+            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
                 return;
             
             if (IsInputAxisMethod(element) || IsInputButtonMethod(element))

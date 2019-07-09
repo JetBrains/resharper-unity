@@ -305,7 +305,7 @@
     <Parameter type="ITreeNode" name="node" />
     <Message value="The tag is not defined in the 'Tags &amp; Layers'. Expression will return 'false'." />
     <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
   
   <Warning name="UnknownLayer" configurableSeverity="Unity.UnknownLayer">
@@ -391,7 +391,7 @@
     <Parameter type="bool" name="leftOperandIsTagReference" />
     <Message value="Explicit string comparison is inefficient, use 'CompareTag' instead" />
     <Range>EqualityExpression.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="WARNING" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">

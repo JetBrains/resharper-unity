@@ -22,14 +22,14 @@ public class Test : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0):<overlapped> ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
-(1):<overlapped> ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
-(2):<overlapped> ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
-(3):<overlapped> ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
-(4):<overlapped> ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
-(5):<overlapped> ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
-(6):<overlapped> ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
-(7):<overlapped> ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
+(0): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
+(1): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
+(2): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
+(3): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
+(4): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
+(5): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
+(6): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
+(7): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
 (8): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
 (9): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
 (10): ReSharper Warning: Explicit string comparison is inefficient, use 'CompareTag' instead
