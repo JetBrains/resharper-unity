@@ -1,4 +1,5 @@
-﻿using JetBrains.ProjectModel;
+﻿using JetBrains.Annotations;
+using JetBrains.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Json.ProjectModel
 {
@@ -11,7 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Json.ProjectModel
         public new const string Name = "ASMDEF";
         public const string ASMDEF_EXTENSION = ".asmdef";
 
-        public new static readonly AsmDefProjectFileType Instance = null;
+        [CanBeNull, UsedImplicitly]
+        public new static AsmDefProjectFileType Instance { get; private set; }
 
         public AsmDefProjectFileType()
             : base(Name, "Assembly Definition (Unity)", new[] { ASMDEF_EXTENSION })
