@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 {
                     var text = (s.Value as IPlainScalarNode)?.Text.GetText();
                     if (!text.IsNullOrEmpty())
-                        cacheItem.Layers.Add(text);
+                        cacheItem.Tags.Add(text);
                 }
             }
             
