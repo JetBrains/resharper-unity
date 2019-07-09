@@ -3,6 +3,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -20,14 +21,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     })]
     public class LoadSceneAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        public LoadSceneAnalyzer([NotNull] UnityApi unityApi)
+        private readonly AssetSerializationMode myAssetSerializationMode;
+
+        public LoadSceneAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode)
             : base(unityApi)
         {
+            myAssetSerializationMode = assetSerializationMode;
         }
 
         protected override void Analyze(IInvocationExpression invocationExpression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
+            if (!myAssetSerializationMode.IsForceText)
+                return;
+            
             var argument = GetSceneNameArgument(invocationExpression);
 
             var literal = argument?.Value as ICSharpLiteralExpression;
