@@ -22,11 +22,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class LoadSceneAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly UnityYamlSupport myUnityYamlSupport;
 
-        public LoadSceneAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode)
+        public LoadSceneAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
+            UnityYamlSupport unityYamlSupport)
             : base(unityApi)
         {
             myAssetSerializationMode = assetSerializationMode;
+            myUnityYamlSupport = unityYamlSupport;
         }
 
         protected override void Analyze(IInvocationExpression invocationExpression, ElementProblemAnalyzerData data,
@@ -34,6 +37,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             if (!myAssetSerializationMode.IsForceText)
                 return;
+            
+            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
+                return;
+            
             
             var argument = GetSceneNameArgument(invocationExpression);
 
