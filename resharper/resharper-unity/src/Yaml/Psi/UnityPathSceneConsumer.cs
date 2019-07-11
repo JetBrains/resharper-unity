@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
@@ -11,8 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             myOnlyName = onlyName;
         }
+
+        public List<string> NameParts => myParts.ToList();
         
-        public readonly List<string> NameParts = new List<string>();
+        private Stack<string> myParts = new Stack<string>();
+        
         public bool ConsumeGameObject(IYamlDocument gameObject, IBlockMappingNode modifications)
         {
             string name = null;
@@ -28,7 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
             if (name?.Equals(string.Empty) == true)
                 name = null;
-            NameParts.Add(name ?? "Unknown");
+            
+            myParts.Push(name ?? "Unknown");
 
 
             return !myOnlyName;

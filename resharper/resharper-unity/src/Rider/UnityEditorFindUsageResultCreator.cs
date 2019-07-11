@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Impl.Search.Operations;
