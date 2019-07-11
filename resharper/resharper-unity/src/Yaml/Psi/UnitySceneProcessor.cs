@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         
         // Invariant : startGameObject is Transform Component if it is not stripped 
         // This method traverse scene hierarchy via visiting transform components and push corresponding to transform GameObject into consumer
-        private void ProcessSceneHierarchyFromComponentToRootInner(IYamlDocument startUnityObject, IUnitySceneProcessorConsumer consumer, IBlockMappingNode modifications)
+        private bool ProcessSceneHierarchyFromComponentToRootInner(IYamlDocument startUnityObject, IUnitySceneProcessorConsumer consumer, IBlockMappingNode modifications)
         {
             var currentUnityObject = startUnityObject;
             while (currentUnityObject != null)
@@ -71,18 +71,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     
                     // assert not null
                     if (correspondingId == null || prefabInstanceId == null)
-                        return;
+                        return false;
                     
                     var prefabInstance = file.FindDocumentByAnchor(prefabInstanceId.fileID);
                     var prefabSourceFile = myMetaFileGuidCache.GetAssetFilePathsFromGuid(correspondingId.guid);
                     if (prefabSourceFile.Count > 1 || prefabSourceFile.Count == 0)
-                        return;
+                        return false;
 
                     myFactory.PsiModule.NotNull("externalFilesModuleFactory.PsiModule != null")
                         .TryGetFileByPath(prefabSourceFile.First(), out var sourceFile);
 
                     if (sourceFile == null)
-                        return;
+                        return false;
                     
                     // [TODO] Is prefab file committed???
                     var prefabFile = (IYamlFile)sourceFile.GetDominantPsiFile<UnityYamlLanguage>();
@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     var prefabStartGameObject = prefabFile.FindDocumentByAnchor(correspondingId.fileID);
                     
                     if (prefabStartGameObject == null)
-                        return; // TODO [vkrasnotsvetov] 19.1 Handle case, when prefab contains prefab which contains prefab
+                        return false; // TODO [vkrasnotsvetov] 19.1 Handle case, when prefab contains prefab which contains prefab
                     
                     if (!IsStripped(prefabStartGameObject))
                     {
@@ -118,10 +118,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     // assert that startGameObject is GameObject
                     var father = currentUnityObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.FatherProperty);
                     var gameObject = currentUnityObject.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.GameObjectProperty);
-                    consumer.ConsumeGameObject(gameObject, modifications);
+                    if (!consumer.ConsumeGameObject(gameObject, modifications))
+                        return false;
                     currentUnityObject = father;
                 }
             }
+
+            return true;
         }
 
         public static string GetUnityObjectTag(IYamlDocument document)
@@ -137,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             
             return document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty)?.AsFileID() ??
                    document.GetUnityObjectPropertyValue(UnityYamlConstants.CorrespondingSourceObjectProperty2017)?.AsFileID();
-    }
+        }
         
         private FileID GetPrefabInstanceFileId(IYamlDocument document)
         {
