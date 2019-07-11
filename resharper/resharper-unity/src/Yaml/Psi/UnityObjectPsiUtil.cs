@@ -61,14 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             if (parts.Count == 1)
                 return parts[0];
 
-            var sb = new StringBuilder();
-            for (var i = parts.Count - 1; i >= 0; i--)
-            {
-                sb.Append(parts[i]);
-                sb.Append("\\");
-            }
-
-            return sb.ToString();
+            return string.Join("\\", parts);
         }
 
         public static IBlockMappingNode GetPrefabModification(IYamlDocument yamlDocument)
