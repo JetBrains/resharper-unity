@@ -7,32 +7,6 @@ using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
-    public class MonoBehaviourHugeValue : MonoBehaviourPropertyValue
-    {
-        public MonoBehaviourHugeValue([NotNull] string monoBehaviour, [CanBeNull] string localGameObjectAnchor)
-            : base(monoBehaviour, localGameObjectAnchor)
-        {
-        }
-
-        public override object Value => null;
-        
-        internal override void WriteTo(UnsafeWriter writer)
-        {
-            writer.Write(2);
-            base.WriteTo(writer);
-        }
-        
-        public override string GetSimplePresentation(ISolution solution, IPsiSourceFile file)
-        {
-            return "...";
-        }
-        
-        public static MonoBehaviourPropertyValue ReadFrom(UnsafeReader reader)
-        {
-            return new MonoBehaviourHugeValue(reader.ReadString().NotNull("monoBehaviour != null"), reader.ReadString());
-        }
-    }
-    
     public class MonoBehaviourPrimitiveValue : MonoBehaviourPropertyValue
     {
         [NotNull]
@@ -201,8 +175,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     return MonoBehaviourReferenceValue.ReadFrom(reader);
                 case 1:
                     return MonoBehaviourPrimitiveValue.ReadFrom(reader);
-                case 2:
-                    return MonoBehaviourHugeValue.ReadFrom(reader);
                 default:
                     throw new InvalidOperationException();
             }
