@@ -294,7 +294,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
             var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
                 new MiscFilesProjectProperties());
-            projectImpl.DoCreateFile(path, properties);
+            projectImpl.DoCreateFile(null, path, properties);
         }
 
         private void UpdateStatistics(ExternalFiles externalFiles)
