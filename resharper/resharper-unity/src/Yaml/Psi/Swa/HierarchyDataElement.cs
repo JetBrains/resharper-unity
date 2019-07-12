@@ -1,23 +1,32 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
+using JetBrains.DocumentManagers;
+using JetBrains.Extension;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Daemon.UsageChecking.SwaExtension;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches.Persistence;
+using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Web.WebConfig;
 using JetBrains.Serialization;
+using JetBrains.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
 {
-    [PolymorphicMarshaller(1)]
-    public class HierarchyDataElement : ISwaExtensionData, ISwaExtensionInfo
+    public class HierarchyDataElement
     {
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly UnityVersion myUnityVersion;
@@ -25,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
         public readonly OneToCompactCountingSet<FileID, IUnityHierarchyElement> Elements =
             new OneToCompactCountingSet<FileID, IUnityHierarchyElement>();
 
-        [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
+        [UsedImplicitly] public static UnsafeReader.ReadDelegate<HierarchyDataElement> ReadDelegate = Read;
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as HierarchyDataElement);
@@ -69,30 +78,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
 
             return element;
         }
+        
 
-
-        public void AddData(ISwaExtensionData data)
+        public void Build(IPsiSourceFile sourceFile)
         {
-            var otherHierarchyElement = (data as HierarchyDataElement).NotNull("otherHierarchyElement != null");
-            foreach (var (id, elements) in otherHierarchyElement.Elements)
+            var extension = sourceFile.GetExtensionWithDot();
+            if (extension.Equals(UnityYamlFileExtensions.MetaFileExtensionWithDot))
+                return;
+            
+            var yamlFile = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
+            if (yamlFile == null)
+                return;
+
+            
+            var metaPath = (sourceFile as PsiSourceFileFromPath)?.Location.ChangeExtension($"{extension}.meta");
+            if (metaPath == null || !metaPath.ExistsFile)
+                return;
+
+            var text = metaPath.ReadAllText2();
+
+            var guid = GetGuid(text);
+            foreach (var document in yamlFile.Documents)
             {
-                foreach (var (element, count) in elements)
-                {
-                    Elements.Add(id, element, count);
-                }
-            }
-        }
-
-        public ISwaExtensionInfo ToInfo(CollectUsagesStagePersistentData persistentData)
-        {
-            return this;
-        }
-
-        public void ProcessBeforeInterior(ITreeNode element, IParameters parameters)
-        {
-            if (element is IYamlDocument document)
-            {
-                var guid = myMetaFileGuidCache.GetAssetGuid(element.GetSourceFile());
                 var tag = GetUnityObjectTag(document);
                 var isStripped = IsStripped(document);
                 var id = document.GetAnchor();
@@ -246,6 +253,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
             }
         }
 
+        private string GetGuid(StreamEx.TextAndEncoding text)
+        {
+            var str = text.Text;
+            var regex = new Regex("^guid:\\s*(.*?)$", RegexOptions.Multiline);
+            var result = regex.Match(str);
+            if (result.Success)
+                return result.Groups[1].Value;
+
+            return null;
+        }
+
         private static bool IsStripped(IYamlDocument element)
         {
             return ((element.Body.BlockNode as IBlockMappingNode)?.Properties?.LastChild as
@@ -278,14 +296,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
 
             return document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty)?.AsFileID() ??
                    document.GetUnityObjectPropertyValue(UnityYamlConstants.PrefabInstanceProperty2017)?.AsFileID();
-        }
-
-        public void ProcessAfterInterior(ITreeNode element, IParameters parameters)
-        {
-        }
-
-        public void ProcessNode(ITreeNode element, IParameters parameters)
-        {
         }
     }
 }

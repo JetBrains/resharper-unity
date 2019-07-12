@@ -41,28 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
             if (guid == null)
                 return null;
             
-            if (mySolutionAnalysisConfiguration.CompletedOnceAfterStart.Value)
-            {
-                var consumer = new UnityPathCachedSceneConsumer();
-                myCachedSceneProcessor.ProcessSceneHierarchyFromComponentToRoot(yamlDocument, consumer);
-                return consumer.NameParts;
-            }
-            else
-            {
-                if (fastName)
-                {
-                    if (!myUnityGameObjectNamesCache.Map.TryGetValue(sourceFile, out var map))
-                        return null;
-
-                    return new List<string> {map.GetValueSafe(anchor)};
-                }
-                else
-                {
-                    var consumer = new UnityPathSceneConsumer();
-                    mySceneProcessor.ProcessSceneHierarchyFromComponentToRoot(yamlDocument, consumer);
-                    return consumer.NameParts;
-                }
-            }
+            var consumer = new UnityPathCachedSceneConsumer();
+            myCachedSceneProcessor.ProcessSceneHierarchyFromComponentToRoot(yamlDocument, consumer);
+            return consumer.NameParts;
         }
     }
 }
