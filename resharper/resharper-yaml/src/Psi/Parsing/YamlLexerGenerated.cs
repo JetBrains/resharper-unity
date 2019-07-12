@@ -284,13 +284,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         if (yy_buffer_index == yy_eof_pos)
           break;
 
-        if (Buffer[yy_buffer_index] == '\n')
+        var ch = Buffer[yy_buffer_index];
+        if (ch == '\n')
         {
           yy_buffer_index++;
           break;
         } 
         
-        if (Buffer[yy_buffer_index] == '\r')
+        if (ch == '\r')
         {
           yy_buffer_index++;
 
