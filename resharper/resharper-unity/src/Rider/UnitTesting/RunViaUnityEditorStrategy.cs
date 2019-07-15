@@ -89,7 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return false;
         }
 
-        public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project, TargetFrameworkId targetFrameworkId)
+        public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project, TargetFrameworkId targetFrameworkId,
+            IUnitTestElement element)
         {
             var targetPlatform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
             return new UnityRuntimeEnvironment(targetPlatform);
