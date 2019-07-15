@@ -38,13 +38,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             "m_EditorClassIdentifier"
         };
 
-        private readonly IContextBoundSettingsStore myContextBoundSettingStore;
 
-        public UnityPropertyValueCache(ISolution solution, Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
-            ISettingsStore settings)
+        public UnityPropertyValueCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager)
             : base(lifetime, persistentIndexManager, CreateMarshaller())
         {
-            myContextBoundSettingStore = settings.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
+            
         }
 
 
@@ -67,10 +65,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return myContextBoundSettingStore.GetValue((UnitySettings k) => k.EnableInspectorPropertiesEditor) && 
+            return sourceFile.PsiModule is UnityExternalFilesPsiModule && 
                    base.IsApplicable(sourceFile) &&
                    sourceFile.LanguageType.Is<UnityYamlProjectFileType>() &&
-                   sourceFile.PsiModule is UnityExternalFilesPsiModule &&
                    sourceFile.IsAsset();
         }
 
@@ -100,6 +97,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private void ProcessScriptDocumentsForProperties(IBuffer buffer, OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue> unityPropertyValueCacheItem)
         {
             var anchor = UnityGameObjectNamesCache.GetAnchorFromBuffer(buffer);
+            if (anchor == null)
+                return;
+            
             var simpleValues = new Dictionary<string, string>();
             var referenceValues = new Dictionary<string, FileID>();
             FillDataViaLexer(buffer, simpleValues, referenceValues);
