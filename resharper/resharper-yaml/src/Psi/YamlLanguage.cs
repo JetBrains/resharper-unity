@@ -11,8 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
     [CanBeNull, UsedImplicitly]
     public static YamlLanguage Instance { get; private set; }
 
-    public YamlLanguage()
-      : base(Name, "YAML")
+    public YamlLanguage() : base(Name, "YAML")
+    {
+    }
+    
+    protected YamlLanguage([NotNull] string name, [NotNull] string presentableName) : base(name, presentableName)
     {
     }
   }
