@@ -213,6 +213,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static Version GetVersionByAppPath(FileSystemPath appPath)
         {
+            if (appPath == null || appPath.Exists == FileSystemPath.Existence.Missing)
+                return null;
+            
             Version version = null;
             ourLogger.CatchWarn(() => // RIDER-23674
             {
