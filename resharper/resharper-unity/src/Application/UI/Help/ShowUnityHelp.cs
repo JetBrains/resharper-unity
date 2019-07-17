@@ -5,7 +5,7 @@ using JetBrains.Application.UI.Help;
 using JetBrains.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Help
+namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
 {
     [ShellComponent]
     public class ShowUnityHelp : IShowHelp
@@ -55,13 +55,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Help
                    ?? GetFileUri(documentationRoot, $"ScriptReference/{keyword.Replace('.', '-')}.html")
                    ?? new Uri($"https://docs.unity3d.com/ScriptReference/30_search.html?q={keyword}");
         }
-        
+
         private FileSystemPath GetDocumentationRoot()
         {
             var appPath = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualAppPathForSolution();
             var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
             return contentsPath == null ? FileSystemPath.Empty : contentsPath.Combine(@"Documentation/en");
-        
         }
 
         private static Uri GetFileUri(FileSystemPath documentationRoot, string htmlPath)
