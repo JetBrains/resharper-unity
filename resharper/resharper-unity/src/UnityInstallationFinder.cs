@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -20,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var possible = GetPossibleInstallationInfos().ToArray();
             var possibleWithVersion = possible.Where(a => a.Version != null).ToArray();
-            
+
             var bestChoice = possibleWithVersion.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
                 a.Version.Build == version.Build && a.Version.Revision == version.Revision
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (bestChoice != null)
                 return bestChoice;
             var choice1 = possibleWithVersion.Where(a =>
-                a.Version.Major == version.Major && a.Version.Minor == version.Minor &&  
+                a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
                 a.Version.Build == version.Build).OrderBy(b=>b.Version).LastOrDefault();
             if (choice1 != null)
                 return choice1;
@@ -44,29 +45,32 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 .OrderBy(b=>b.Version).LastOrDefault();
             if (choice4!=null)
                 return choice4;
-            
+
             var worstChoice = possible.LastOrDefault();
             return worstChoice;
         }
-        
-        public static FileSystemPath GetApplicationContentsPath(FileSystemPath path)
+
+        [NotNull]
+        public static FileSystemPath GetApplicationContentsPath(FileSystemPath applicationPath)
         {
-            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX && path.ExistsDirectory
-                || PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX && path.ExistsFile)
-                return null;
+            if (applicationPath.IsEmpty)
+                return applicationPath;
+
+            AssertApplicationPath(applicationPath);
+
             switch (PlatformUtil.RuntimePlatform)
             {
                     case PlatformUtil.Platform.MacOsX:
-                        return path.Combine("Contents");
+                        return applicationPath.Combine("Contents");
                     case PlatformUtil.Platform.Linux:
                     case PlatformUtil.Platform.Windows:
-                        return path.Directory.Combine("Data");
+                        return applicationPath.Directory.Combine("Data");
             }
             ourLogger.Error("Unknown runtime platform");
-            return null;
+            return FileSystemPath.Empty;
         }
 
-        public static List<UnityInstallationInfo> GetPossibleInstallationInfos()
+        private static List<UnityInstallationInfo> GetPossibleInstallationInfos()
         {
             var installations = GetPossibleApplicationPaths();
             return installations.Select(path =>
@@ -87,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
                     var defaultHubLocation = appsHome.Combine("Unity/Hub/Editor");
                     var hubLocations = new List<FileSystemPath> {defaultHubLocation};
-                    
+
                     // Hub custom location
                     var appData = FileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
                     var hubCustomLocation = GetCustomHubInstallPath(appData);
@@ -105,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     var unityApps = new List<FileSystemPath>();
                     var homeEnv = Environment.GetEnvironmentVariable("HOME");
                     var homes = new List<FileSystemPath> {FileSystemPath.Parse("/opt")};
-                    
+
                     unityApps.AddRange(
                         homes.SelectMany(a => a.GetChildDirectories("Unity*"))
                             .Select(unityDir => unityDir.Combine(@"Editor/Unity")));
@@ -114,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         return unityApps;
                     var home = FileSystemPath.Parse(homeEnv);
                     homes.Add(home);
-                    
+
                     var defaultHubLocation = home.Combine("Unity/Hub/Editor");
                     var hubLocations = new List<FileSystemPath> {defaultHubLocation};
                     // Hub custom location
@@ -125,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
                     unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
                         unityDir.Combine(@"Editor/Unity"))));
-                    
+
                     return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
 
@@ -138,14 +142,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         programFiles.GetChildDirectories("Unity*")
                             .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
                         );
-                    
+
                     // default Hub location
-                    //"C:\Program Files\Unity\Hub\Editor\2018.1.0b4\Editor\Data\MonoBleedingEdge" 
+                    //"C:\Program Files\Unity\Hub\Editor\2018.1.0b4\Editor\Data\MonoBleedingEdge"
                     unityApps.AddRange(
                         programFiles.Combine(@"Unity\Hub\Editor").GetChildDirectories()
                             .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
                     );
-                    
+
                     // custom Hub location
                     var appData = FileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
                     var customHubInstallPath = GetCustomHubInstallPath(appData);
@@ -156,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                                 .Select(unityDir => unityDir.Combine(@"Editor\Unity.exe"))
                         );
                     }
-                    
+
                     var lnks = FileSystemPath.Parse(@"C:\ProgramData\Microsoft\Windows\Start Menu\Programs")
                         .GetChildDirectories("Unity*").SelectMany(a => a.GetChildFiles("Unity.lnk")).ToArray();
                     unityApps.AddRange(lnks
@@ -196,8 +200,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var environmentVariable = Environment.GetEnvironmentVariable("ProgramW6432");
             return string.IsNullOrWhiteSpace(environmentVariable) ? FileSystemPath.Empty : FileSystemPath.TryParse(environmentVariable);
         }
-        
-        
+
         [CanBeNull]
         public static FileSystemPath GetAppPathByDll(XmlElement documentElement)
         {
@@ -213,7 +216,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var filePath = FileSystemPath.Parse(referencePathElement.InnerText);
             if (!filePath.IsAbsolute) // RIDER-21237
                 return null;
-            
+
             if (filePath.ExistsFile)
             {
                 if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
@@ -233,13 +236,34 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         if (!appPath.ExistsDirectory || appPath.IsEmpty)
                             return null;
                     }
-                    
+
                     appPath = appPath.Directory;
                     return appPath;
                 }
             }
 
             return null;
+        }
+
+        // Asserts the given path is to the application itself, either Whatever.app/ for Mac or Whatever.exe for Windows
+        [Conditional("JET_MODE_ASSERT")]
+        private static void AssertApplicationPath(FileSystemPath path)
+        {
+            if (path.IsEmpty || path.Exists == FileSystemPath.Existence.Missing)
+                return;
+
+            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+            {
+                Assertion.Assert(path.ExistsDirectory, "path.ExistsDirectory");
+                Assertion.Assert(path.FullPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase),
+                    "path.FullPath.EndsWith('.app', StringComparison.OrdinalIgnoreCase)");
+            }
+            else
+            {
+                Assertion.Assert(path.ExistsFile, "path.ExistsFile");
+                Assertion.Assert(path.FullPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase),
+                    "path.FullPath.EndsWith('.exe', StringComparison.OrdinalIgnoreCase)");
+            }
         }
     }
 
