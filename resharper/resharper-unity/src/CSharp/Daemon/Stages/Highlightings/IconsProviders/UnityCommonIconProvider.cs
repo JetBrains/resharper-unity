@@ -15,9 +15,9 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
-using JetBrains.ReSharper.Plugins.Unity.Help;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         protected readonly UnityApi UnityApi;
         protected readonly IContextBoundSettingsStore Settings;
 
-        public UnityCommonIconProvider(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
+        public UnityCommonIconProvider(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi)
         {
             Solution = solution;
@@ -45,9 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             UnityApi = unityApi;
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
         }
-        
-        
-        public virtual void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method, 
+
+        public virtual void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method,
             UnityEventFunction eventFunction, string text, DaemonProcessKind kind)
         {
             foreach (var declaration in method.GetDeclarations())
@@ -61,15 +60,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 }
             }
         }
-        
-        
 
-        public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, 
+        public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration,
             string text, string tooltip, DaemonProcessKind kind)
         {
             consumer.AddHotHighlighting(Swa, CallGraphSwaExtensionProvider, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
-        
+
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)
         {
             var result = new List<BulbMenuItem>();
@@ -77,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 var declaredElement = methodDeclaration.DeclaredElement;
                 var textControl = Solution.GetComponent<ITextControlManager>().LastFocusedTextControl.Value;
-                
+
                 if (textControl != null && declaredElement != null)
                 {
                     var isCoroutine = IsCoroutine(methodDeclaration, UnityApi);
@@ -109,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
             return result;
         }
-        
+
         protected virtual string GetEventFunctionTooltip(UnityEventFunction eventFunction)
         {
             var tooltip = "Unity event function";
@@ -120,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
             return tooltip;
         }
-        
+
         private class DocumentationNavigationAction : BulbActionBase
         {
             private readonly ShowUnityHelp myShowUnityHelp;
@@ -160,6 +157,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
             return Equals(type.GetClrName(), PredefinedType.IENUMERATOR_FQN);
         }
-        
     }
 }
