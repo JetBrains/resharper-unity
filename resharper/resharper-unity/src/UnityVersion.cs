@@ -84,7 +84,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return GetVersionForTests(mySolution);
         }
-        
+
+        [NotNull]
         public FileSystemPath GetActualAppPathForSolution()
         {
             if (mySolution.IsVirtualSolution())
@@ -98,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     if (path != null)
                         return path;
                 }
-            } 
+            }
             return FileSystemPath.Empty;
         }
 
@@ -215,7 +216,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             if (appPath == null || appPath.Exists == FileSystemPath.Existence.Missing)
                 return null;
-            
+
             Version version = null;
             ourLogger.CatchWarn(() => // RIDER-23674
             {

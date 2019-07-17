@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.Application.StdApplicationUI;
 using JetBrains.Application.UI.Help;
@@ -48,6 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
             return keyword.Substring(12);
         }
 
+        [NotNull]
         private Uri GetUri(string keyword)
         {
             var documentationRoot = GetDocumentationRoot();
@@ -56,14 +58,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
                    ?? new Uri($"https://docs.unity3d.com/ScriptReference/30_search.html?q={keyword}");
         }
 
+        [NotNull]
         private FileSystemPath GetDocumentationRoot()
         {
             var appPath = mySolutionsManager.Solution?.GetComponent<UnityVersion>().GetActualAppPathForSolution();
             var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
-            return contentsPath == null ? FileSystemPath.Empty : contentsPath.Combine(@"Documentation/en");
+            return contentsPath.Combine(@"Documentation/en");
         }
 
-        private static Uri GetFileUri(FileSystemPath documentationRoot, string htmlPath)
+        [CanBeNull]
+        private static Uri GetFileUri([NotNull] FileSystemPath documentationRoot, string htmlPath)
         {
             if (documentationRoot.IsEmpty)
                 return null;
