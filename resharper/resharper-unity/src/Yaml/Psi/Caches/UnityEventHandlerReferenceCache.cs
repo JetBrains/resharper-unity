@@ -73,9 +73,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return base.IsApplicable(sourceFile) &&
+            return sourceFile.PsiModule is UnityExternalFilesPsiModule && base.IsApplicable(sourceFile) &&
                    sourceFile.LanguageType.Is<UnityYamlProjectFileType>() &&
-                   sourceFile.PsiModule is UnityExternalFilesPsiModule &&
                    sourceFile.IsAsset();
         }
 

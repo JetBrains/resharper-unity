@@ -226,9 +226,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
                 else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 {
-                    var appPath = filePath.Directory.Directory.Directory;
-                    if (!appPath.ExistsDirectory)
+                    var appPath = filePath;
+                    while (!appPath.Name.Equals("Contents"))
+                    {
                         appPath = appPath.Directory;
+                        if (!appPath.ExistsDirectory || appPath.IsEmpty)
+                            return null;
+                    }
+                    
+                    appPath = appPath.Directory;
                     return appPath;
                 }
             }
