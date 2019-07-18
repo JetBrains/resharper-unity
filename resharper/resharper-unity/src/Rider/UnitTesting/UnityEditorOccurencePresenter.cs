@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Presentation;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -27,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             // false to show full scene path. Very expensive
             var processor = rangeOccurrence.GetSolution().NotNull("rangeOccurrence.GetSolution() != null")
-                .GetComponent<UnityScenePath>();
+                .GetComponent<UnityPropertyValueCache>().UnitySceneDataLocalCache;
             var occurrence = (rangeOccurrence as UnityEditorOccurrence).NotNull("rangeOccurrence as UnityEditorOccurrence != null");
             var reference = (occurrence.PrimaryReference as IUnityYamlReference).NotNull("occurrence.PrimaryReference as IUnityYamlReference != null");
 
@@ -50,10 +51,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return true;
         }
         
-        public static string GetAttachedGameObjectName(UnityScenePath scenePath, IYamlDocument document) {
+        public static string GetAttachedGameObjectName(UnitySceneDataLocalCache cache, IYamlDocument document) {
     
+            var consumer = new UnityPathCachedSceneConsumer();
+            cache.ProcessSceneHierarchyFromComponentToRoot(document, consumer);
             // false to show full scene path. Very expensive
-            return string.Join("/", scenePath.GetScenePathSafe(document, true));
+            var parts = consumer.NameParts;
+            if (parts.Count == 0)
+                return "...";
+            return string.Join("/", consumer.NameParts);
         }
     }
 }

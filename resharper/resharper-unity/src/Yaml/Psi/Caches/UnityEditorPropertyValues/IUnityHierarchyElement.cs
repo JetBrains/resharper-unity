@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
     public interface IUnityHierarchyElement
     {

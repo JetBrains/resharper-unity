@@ -12,16 +12,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
     {
         private readonly SolutionAnalysisConfiguration mySolutionAnalysisConfiguration;
         private readonly UnitySceneProcessor mySceneProcessor;
-        private readonly UnityHierarchyExtension myCachedSceneProcessor;
+        private readonly UnityPropertyValueCache myUnityPropertyValueCache;
         private readonly UnityGameObjectNamesCache myUnityGameObjectNamesCache;
         private readonly MetaFileGuidCache myCache;
 
         public UnityScenePath(SolutionAnalysisConfiguration solutionAnalysisConfiguration, UnitySceneProcessor sceneProcessor,
-            UnityHierarchyExtension cachedSceneProcessor, UnityGameObjectNamesCache unityGameObjectNamesCache, MetaFileGuidCache cache)
+            UnityPropertyValueCache unityPropertyValueCache, UnityGameObjectNamesCache unityGameObjectNamesCache, MetaFileGuidCache cache)
         {
             mySolutionAnalysisConfiguration = solutionAnalysisConfiguration;
             mySceneProcessor = sceneProcessor;
-            myCachedSceneProcessor = cachedSceneProcessor;
+            myUnityPropertyValueCache = unityPropertyValueCache;
             myUnityGameObjectNamesCache = unityGameObjectNamesCache;
             myCache = cache;
         }
@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
                 return null;
             
             var consumer = new UnityPathCachedSceneConsumer();
-            myCachedSceneProcessor.ProcessSceneHierarchyFromComponentToRoot(yamlDocument, consumer);
+            myUnityPropertyValueCache.UnitySceneDataLocalCache.ProcessSceneHierarchyFromComponentToRoot(yamlDocument, consumer);
             return consumer.NameParts;
         }
     }

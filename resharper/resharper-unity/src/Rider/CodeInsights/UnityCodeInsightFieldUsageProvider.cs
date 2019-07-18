@@ -103,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             return;
 
                         
-                        var valuesCache = solution.GetComponent<UnityPropertyValueCache>();
+                        var valuesCache = solution.GetComponent<UnityPropertyValueCache>().UnitySceneDataLocalCache;
                         var values = valuesCache.GetPropertyValues(result.Value.guid, result.Value.propertyName);
 
                         menu.Caption.Value = WindowlessControlAutomation.Create("Inspector values");
@@ -238,7 +238,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var guid = result.Value.guid;
             var propertyName = result.Value.propertyName;
 
-            var cache = solution.GetComponent<UnityPropertyValueCache>();
+            var cache = solution.GetComponent<UnityPropertyValueCache>().UnitySceneDataLocalCache;
 
             var field = (declaredElement as IField).NotNull();
             var type = field.Type;

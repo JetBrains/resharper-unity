@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       return GetDefaultLexer(buffer);
     }
 
-    protected virtual ILexer GetDefaultLexer(IBuffer buffer) => new YamlLexer(buffer);
+    protected virtual ILexer GetDefaultLexer(IBuffer buffer) => new YamlLexer(buffer, true, false);
 
     private bool IsBinaryBuffer(IBuffer buffer)
     {

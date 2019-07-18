@@ -4,7 +4,7 @@ using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Features.Inspections.Resources;
 using JetBrains.Serialization;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
     [PolymorphicMarshaller]
     public class GameObjectHierarchyElement : IUnityHierarchyElement
@@ -14,16 +14,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
         public FileID PrefabInstance { get; }
         public bool IsStripped { get; }
         public string Name { get; }
-        public IList<FileID> Components { get; }
-        
-        public GameObjectHierarchyElement(FileID id, FileID correspondingSourceObject, FileID prefabParentObject, bool isStripped, string name, IList<FileID> components)
+        public FileID TransformId { get; set; }
+
+        public GameObjectHierarchyElement(FileID id, FileID correspondingSourceObject, FileID prefabParentObject, bool isStripped, FileID transformId, string name)
         {
             Id = id;
             CorrespondingSourceObject = correspondingSourceObject ?? FileID.Null;
             PrefabInstance = prefabParentObject ?? FileID.Null;
             IsStripped = isStripped;
+            TransformId = transformId ?? FileID.Null;
             Name = name;
-            Components = components;
         }
         
         [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
@@ -36,18 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
                FileID.ReadFrom(reader),
                FileID.ReadFrom(reader),
                reader.ReadBool(),
-               reader.ReadString(),
-               ReadChildren(reader));
-        }
-
-        private static IList<FileID> ReadChildren(UnsafeReader reader)
-        {
-            var count = reader.ReadInt32();
-            var result = new List<FileID>(count);
-            for (var i = 0; i < count; i++) 
-                result.Add(FileID.ReadFrom(reader));
-
-            return result;
+               FileID.ReadFrom(reader), 
+               reader.ReadString());
         }
 
         private static void Write(UnsafeWriter writer, GameObjectHierarchyElement value)
@@ -56,14 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
             value.CorrespondingSourceObject.WriteTo(writer);
             value.PrefabInstance.WriteTo(writer);
             writer.Write(value.IsStripped);
+            value.TransformId.WriteTo(writer);
             writer.Write(value.Name);
-            
-            
-            writer.Write(value.Components.Count);
-            foreach (var component in value.Components)
-            {
-                component.WriteTo(writer);
-            }
         }
 
         protected bool Equals(GameObjectHierarchyElement other)
