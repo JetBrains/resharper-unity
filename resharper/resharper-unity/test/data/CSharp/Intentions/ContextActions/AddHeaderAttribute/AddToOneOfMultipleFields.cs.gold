@@ -2,5 +2,7 @@
 
 public class Foo : MonoBehaviour
 {
-  [Header("myValue2"{caret})] [SerializeField] private int myValue, myValue2, myValue3;
+  [SerializeField] private int myValue;
+  [Header("myValue2"{caret})] [SerializeField] private int myValue2;
+  [SerializeField] private int myValue3;
 }
