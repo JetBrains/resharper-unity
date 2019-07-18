@@ -1,9 +1,9 @@
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa;
 using JetBrains.Serialization;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
     [PolymorphicMarshaller]
     public class ComponentHierarchyElement : IUnityHierarchyElement

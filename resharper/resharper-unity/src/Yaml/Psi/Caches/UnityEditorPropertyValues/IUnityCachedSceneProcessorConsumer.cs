@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
 {
@@ -29,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
             if (name?.Equals(string.Empty) == true)
                 name = null;
             
-            myParts.Push(name ?? "Unknown");
+            myParts.Push(name ?? "...");
         }
     }
 }

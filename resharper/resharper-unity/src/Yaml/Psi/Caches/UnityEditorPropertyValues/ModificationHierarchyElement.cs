@@ -5,7 +5,7 @@ using JetBrains.Application.PersistentMap;
 using JetBrains.Collections;
 using JetBrains.Serialization;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
     [PolymorphicMarshaller]
     public class ModificationHierarchyElement : IUnityHierarchyElement
@@ -109,6 +109,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa
             });
             
             WriteDictionary(writer, value.myNames, (w, v) => w.Write(v));
+        }
+
+        protected bool Equals(ModificationHierarchyElement other)
+        {
+            return Id.Equals(other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ModificationHierarchyElement) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 }

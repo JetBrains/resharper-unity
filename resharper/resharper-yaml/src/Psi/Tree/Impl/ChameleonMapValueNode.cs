@@ -132,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl
       Assertion.Assert(service != null, "service != null");
 
       var buffer = GetTextAsBuffer();
-      var baseLexer = new YamlLexer(buffer, true) {currentLineIndent = myLexerIndent};
+      var baseLexer = new YamlLexer(buffer, true, true) {currentLineIndent = myLexerIndent};
       var lexer = new TokenBuffer(baseLexer).CreateLexer();
       var parser = (YamlParser) service.CreateParser(lexer, null, GetSourceFile());
       var openedChameleon = parser.ParseContent(myParserIndent, myExpectedIndent);
