@@ -192,7 +192,7 @@ MAP_VALUE_START = (.|{NEW_LINE})
 <BLOCK, FLOW>   "!<"                    { yybegin(VERBATIM_TAG); return YamlTokenType.BANG_LT; }
 <BLOCK, FLOW>   ">"                     { BeginBlockScalar(); return YamlTokenType.GT; }
 <BLOCK, FLOW>   "|"                     { BeginBlockScalar(); return YamlTokenType.PIPE; }
-<BLOCK>         ":"                     { if (explicitKey) {explicitKey = false;} else if (flowLevel == 0 && currentLineIndent > 0) {yybegin(MAP_VALUE);} return YamlTokenType.COLON; }
+<BLOCK>         ":"                     { if (explicitKey) {explicitKey = false;} else if (myAllowChameleonOptimizations && flowLevel == 0 && currentLineIndent > 0) {yybegin(MAP_VALUE);} return YamlTokenType.COLON; }
 <FLOW>          ":"                     { return YamlTokenType.COLON; }
 <BLOCK, FLOW>   ","                     { return YamlTokenType.COMMA; }
 <FLOW>          "-"                     { HandleSequenceItemIndicator(); return YamlTokenType.MINUS; }

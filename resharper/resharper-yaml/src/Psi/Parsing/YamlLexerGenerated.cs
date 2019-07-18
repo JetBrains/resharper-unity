@@ -87,12 +87,20 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
   // `c-flow-indicator`)
   public partial class YamlLexerGenerated
   {
+    private readonly bool myAllowChameleonOptimizations;
+
     // ReSharper disable InconsistentNaming
     private TokenNodeType currentTokenType;
     private bool explicitKey = false;
 
     private int lastNewLineOffset;
     public int currentLineIndent;
+    
+    public YamlLexerGenerated(IBuffer buffer, bool allowChameleonOptimizations = true) : this(buffer)
+    {
+      myAllowChameleonOptimizations = allowChameleonOptimizations;
+    }
+    
 
     // The indent of the indicator of a block scalar. The contents must be more
     // indented than this. However, we also need to handle the case where the
