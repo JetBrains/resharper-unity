@@ -2,5 +2,5 @@ using UnityEngine;
 
 public class Foo : MonoBehaviour
 {
-  [SerializeField] private int my{caret:Annotate:all:fields:with:'Space':attribute}Value, myValue2, myValue3;
+  [SerializeField] private int my{caret:Add:'Space':before:all:fields}Value, myValue2, myValue3;
 }
