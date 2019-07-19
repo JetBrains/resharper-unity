@@ -14,14 +14,14 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class LangVersionSetting : IUnityProjectSettingsProvider
+    public class LangVersionProjectSettingsProvider : IUnityProjectSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;
         private readonly ILogger myLogger;
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private static readonly Version ourVersion46 = new Version(4, 6);
 
-        public LangVersionSetting(ISettingsSchema settingsSchema, ILogger logger,
+        public LangVersionProjectSettingsProvider(ISettingsSchema settingsSchema, ILogger logger,
                                   UnityProjectFileCacheProvider unityProjectFileCache)
         {
             mySettingsSchema = settingsSchema;

@@ -12,12 +12,12 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class NamespaceProviderSettings : IUnityProjectSettingsProvider
+    public class NamespaceProviderProjectSettingsProvider : IUnityProjectSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;
         private readonly ILogger myLogger;
 
-        public NamespaceProviderSettings(ISettingsSchema settingsSchema, ILogger logger)
+        public NamespaceProviderProjectSettingsProvider(ISettingsSchema settingsSchema, ILogger logger)
         {
             mySettingsSchema = settingsSchema;
             myLogger = logger;
