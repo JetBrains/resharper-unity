@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly UnityApi myUnityApi;
         private readonly IPsiFiles myFiles;
         private readonly UnityHost myUnityHost;
-        private readonly UnitySceneProcessor mySceneProcessor;
+        private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
         public override string ProviderId => "Unity serialized field";
         public override string DisplayName => "Unity serialized field";
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
@@ -57,14 +57,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             new[] {new CodeLensRelativeOrderingLast()};
 
         public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
-            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneProcessor sceneProcessor)
+            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnityPropertyValueCache propertyValueCache)
             : base(unitySolutionTracker, host, bulbMenu)
         {
             myConnectionTracker = connectionTracker;
             myUnityApi = unityApi;
             myFiles = files;
             myUnityHost = unityHost;
-            mySceneProcessor = sceneProcessor;
+            myUnitySceneDataLocalCache = propertyValueCache.UnitySceneDataLocalCache;
         }
         
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
@@ -157,20 +157,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
                             using (ReadLockCookie.Create())
                             {
-                                myFiles.CommitAllDocumentsAsync(() =>
-                                {
-                                    var file = value.File.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
-                                    if (file == null)
-                                        return;
-
-                                    var document = file.FindDocumentByAnchor(value.Value.MonoBehaviour);
-                                    if (document == null)
-                                        return;
-                                    var request = UnityEditorFindUsageResultCreator.CreateRequest(
-                                        solution.SolutionDirectory, mySceneProcessor, document);
-                                    myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(request));
-                                    UnityFocusUtil.FocusUnity(myUnityHost.GetValue(t => t.UnityProcessId.Value));
-                                });
+                                UnityEditorFindUsageResultCreator.CreateRequestAndShow(myUnityHost, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
+                                    value.Value.MonoBehaviour, value.File);
                             }
                         });
                     });

@@ -1,15 +1,11 @@
-using System.Drawing;
-using System.Linq;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Presentation;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.UI.RichText;
 
@@ -45,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             var displayText = GetDisplayText(options, unityOccurrence) + OccurrencePresentationUtil.TextContainerDelimiter;
             descriptor.Text = displayText;
-            OccurrencePresentationUtil.AppendRelatedFile(descriptor, unityOccurrence.SourceFile.DisplayName);
+            OccurrencePresentationUtil.AppendRelatedFile(descriptor, unityOccurrence.SourceFile.DisplayName.Replace('\\', '/'));
             
             descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
             return true;
