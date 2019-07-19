@@ -3,7 +3,6 @@ using System.Linq;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Swa;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util.Collections;
@@ -137,6 +136,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             if (sourceFile == null || anchor == null)
                 return;
             
+            ProcessSceneHierarchyFromComponentToRoot(sourceFile, new FileID(null, anchor),  consumer);
+        }
+        
+        public void ProcessSceneHierarchyFromComponentToRoot(IPsiSourceFile sourceFile, string anchor, IUnityCachedSceneProcessorConsumer consumer)
+        {
             ProcessSceneHierarchyFromComponentToRoot(sourceFile, new FileID(null, anchor),  consumer);
         }
 
