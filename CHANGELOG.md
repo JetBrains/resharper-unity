@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). Note that this project does not follow semantic versioning but uses version numbers based on JetBrains [Rider](https://www.jetbrains.com/rider/) and [ReSharper](https://www.jetbrains.com/resharper/) releases.
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
+
 ## 2019.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...192)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/22?closed=1)
@@ -13,23 +14,25 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add completion for scenes, tags, layers and inputs ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
 - Add inspection for unknown scenes, tags, layers, inputs ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
 - Add quickfix which specifies scene name when several scenes with same name are presented in build settings ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+- Methods and properties defined in `UnityEditor.Build.*` are now implicitly used([#686](https://github.com/JetBrains/resharper-unity/issues/686))
+- Exclude `Boo` and `UnityScript` namespaces from import completion ([#574](https://github.com/JetBrains/resharper-unity/issues/574), [#1252](https://github.com/JetBrains/resharper-unity/pull/1252))
 - Rider: Add quickfix for missed scenes in build settings ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
 - Rider: Add quickfix for disabled scenes in build settings ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
 
 
 
-## 2019.2
 ### Fixed
 - Disable automatic cleanup of Unity messages in Rider ([#1217]https://github.com/JetBrains/resharper-unity/pull/1217)
 - Fix dynamic unit tests with similar name and different child-index ([#1214]https://github.com/JetBrains/resharper-unity/pull/1214)
 - Fix mdb generation ([#1182]https://github.com/JetBrains/resharper-unity/pull/1182)
+
+
 
 ## 2019.1.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...191-eap10-rtm-2019.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/28?closed=1)
 
 ### Added
-- Methods and properties defined in `UnityEditor.Build.*` are now implicitly used([#686](https://github.com/JetBrains/resharper-unity/issues/686))
 - Rider: Added support for the Rider integration package used by Unity 2019.2+. No longer copies Rider plugin to Assets folder, and is loaded directly from the Rider installation folder ([#1176](https://github.com/JetBrains/resharper-unity/pull/1176))
 
 ### Fixed

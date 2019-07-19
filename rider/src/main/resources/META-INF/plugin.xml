@@ -242,25 +242,13 @@
   <change-notes>
 <![CDATA[
 <p>
-<strong>New in 2019.1.2</strong>
+<strong>New in 2019.2</strong>
 <em>Added:</em>
 <ul>
-  <li>Rider: Methods and properties defined in `UnityEditor.Build.*` are now implicitly used (<a href="https://github.com/JetBrains/resharper-unity/issues/686">#686</a>)</li>
-  <li>Rider: Added support for the Rider integration package used by Unity 2019.2+. No longer copies Rider plugin to Assets folder, and is loaded directly from the Rider installation folder (<a href="https://github.com/JetBrains/resharper-unity/pull/1176">#1176</a>)</li>
-</ul>
-<em>Fixed:</em>
-<ul>
-  <li>Fix parse errors in YAML for strings that begin with quotes, braces or tildes (<a href="https://github.com/JetBrains/resharper-unity/issues/1169">#1169</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-27475">RIDER-27475</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1192">#1192</a>)</li>
-  <li>Fix errors in scene files for unresolved methods (<a href="https://youtrack.jetbrains.com/issue/RIDER-27445">RIDER-27445</a>, <a href="https://github.com/JetBrains/resharper-unity/1178">#1178</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1174">#1174</a>)</li>
-  <li>Fix rename of script components not being able to update correctly (<a href="https://github.com/JetBrains/resharper-unity/pull/1196">#1196</a>)</li>
-  <li>Rider: Fix usage counter not always correct for methods used in scene files (<a href="https://youtrack.jetbrains.com/issue/RIDER-27684">RIDER-27684</a>, <a href="https://github.com/JetBrains/resharper-unity/1178">#1178</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1174">#1174</a>)</li>
-  <li>Rider: Fix high CPU usage on Linux (<a href="https://github.com/JetBrains/resharper-unity/issues/1163">#1163</a>, <a href="https://github.com/JetBrains/resharper-unity/1171">#1171</a>)</li>
-  <li>Rider: Fix issue with switching to play mode when debugging (<a href="https://youtrack.jetbrains.com/issue/RIDER-26857">RIDER-26857</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1202">#1202</a>)</li>
-  <li>Rider: Fix Code Vision flickering when typing inside method (<a href="https://github.com/JetBrains/resharper-unity/pull/1203">#1203</a>)
-  <li>Rider: Ignore "unityhub" Ubuntu process in debug dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/1210">#1210</a>)
+  <li>Exclude `Boo` and `UnityScript` namespaces from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1252">#1252</a>)</li>
 </ul>
 </p>
-<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/191/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
+<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/192/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
 ]]>
   </change-notes>
 </idea-plugin>
