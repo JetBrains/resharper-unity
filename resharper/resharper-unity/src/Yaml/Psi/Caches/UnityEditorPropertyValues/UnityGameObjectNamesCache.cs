@@ -6,12 +6,9 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
-using JetBrains.ReSharper.Psi.JavaScript.Util.Literals;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
@@ -63,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 var buffer = document.GetTextAsBuffer();
                 if (ourGameObjectReferenceStringSearcher.Find(buffer, 0, Math.Min(100, buffer.Length)) >= 0)
                 {
-                    var anchor = GetAnchorFromBuffer(buffer);
+                    var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(buffer);
                     if (anchor == null)
                         continue;
                     
@@ -90,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         private void FillDictionary(Dictionary<string, string> result, IBuffer buffer)
         {
-            var anchor = GetAnchorFromBuffer(buffer);
+            var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(buffer);
             if (anchor == null)
                 return;
 
@@ -150,31 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
             return sb.ToString();
         }
-        
-        public static string GetAnchorFromBuffer(IBuffer buffer)
-        {
-            var index = 0;
-            while (true)
-            {
-                if (index == buffer.Length)
-                    return null;
-                
-                if (buffer[index] == '&')
-                    break;
 
-                index++;
-            }
-            index++;
-
-            var sb = new StringBuilder();
-            while (index != buffer.Length && buffer[index].IsDigit())
-            {
-                sb.Append(buffer[index++]);
-            }
-
-            return sb.ToString();
-        }
-        
         public static string GetNameFromBuffer(IBuffer buffer)
         {
             var index = 0;

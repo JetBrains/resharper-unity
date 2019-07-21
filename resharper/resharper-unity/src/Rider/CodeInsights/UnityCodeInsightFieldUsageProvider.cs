@@ -57,14 +57,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             new[] {new CodeLensRelativeOrderingLast()};
 
         public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
-            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnityPropertyValueCache propertyValueCache)
+            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneDataCache sceneDataCache)
             : base(unitySolutionTracker, host, bulbMenu)
         {
             myConnectionTracker = connectionTracker;
             myUnityApi = unityApi;
             myFiles = files;
             myUnityHost = unityHost;
-            myUnitySceneDataLocalCache = propertyValueCache.UnitySceneDataLocalCache;
+            myUnitySceneDataLocalCache = sceneDataCache.UnitySceneDataLocalCache;
         }
         
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
@@ -103,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             return;
 
                         
-                        var valuesCache = solution.GetComponent<UnityPropertyValueCache>().UnitySceneDataLocalCache;
+                        var valuesCache = solution.GetComponent<UnitySceneDataCache>().UnitySceneDataLocalCache;
                         var values = valuesCache.GetPropertyValues(result.Value.guid, result.Value.propertyName);
 
                         menu.Caption.Value = WindowlessControlAutomation.Create("Inspector values");
@@ -226,7 +226,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var guid = result.Value.guid;
             var propertyName = result.Value.propertyName;
 
-            var cache = solution.GetComponent<UnityPropertyValueCache>().UnitySceneDataLocalCache;
+            var cache = solution.GetComponent<UnitySceneDataCache>().UnitySceneDataLocalCache;
 
             var field = (declaredElement as IField).NotNull();
             var type = field.Type;

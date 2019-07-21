@@ -1,17 +1,19 @@
 using System.Collections.Generic;
-using JetBrains.Collections;
+using System.Text;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
+using JetBrains.ReSharper.Psi.JavaScript.Util.Literals;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
-    public static class UnitySceneUtil
+    public static class UnitySceneDataUtil
     {
-        public static void FillDataViaLexer(IBuffer buffer, Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues)
+        public static void ExtractSimpleAndReferenceValues(IBuffer buffer, Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues)
         {
-            simpleValues["&anchor"] = UnityGameObjectNamesCache.GetAnchorFromBuffer(buffer);
+            // special field for accessing anchor id
+            simpleValues["&anchor"] = GetAnchorFromBuffer(buffer);
             
             var lexer = new YamlLexer(buffer, true, false);
             lexer.Start();
@@ -29,6 +31,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     if (currentToken == YamlTokenType.NS_PLAIN_ONE_LINE_OUT)
                     {
                         var key = buffer.GetText(new TextRange(lexer.TokenStart, lexer.TokenEnd));
+                      
+                        // special filed for checking stripped documents
                         if (key.Equals("stripped"))
                             simpleValues["stripped"] = "1";
                     }
@@ -60,6 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                                     referenceValues[key] = result;
                             } else if (YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT.Equals(currentToken))
                             {
+                                // sometimes, FileId is multiline
                                 var result = GetFileId(ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd)));
                                 if (result != null)
                                     referenceValues[key] = result;
@@ -209,6 +214,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     return true;
                 lexer.Advance();
             }
+        }
+        
+        public static string GetAnchorFromBuffer(IBuffer buffer)
+        {
+            var index = 0;
+            while (true)
+            {
+                if (index == buffer.Length)
+                    return null;
+                
+                if (buffer[index] == '&')
+                    break;
+
+                index++;
+            }
+            index++;
+
+            var sb = new StringBuilder();
+            while (index != buffer.Length && buffer[index].IsDigit())
+            {
+                sb.Append(buffer[index++]);
+            }
+
+            return sb.ToString();
         }
     }
 }
