@@ -59,17 +59,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 var buffer = document.GetTextAsBuffer();
                 if (ourPrefabModificationSearcher.Find(buffer, 0, Math.Min(buffer.Length, 100)) > 0)
                 {
-                    sceneHierarchy.FillFromPrefabModifications(buffer);
+                    sceneHierarchy.AddPrefabModification(buffer);
                 }
                 else
                 {
                     var simpleValues = new Dictionary<string, string>();
                     var referenceValues = new Dictionary<string, FileID>();
-                    UnitySceneUtil.FillDataViaLexer(buffer, simpleValues, referenceValues);
+                    UnitySceneDataUtil.ExtractSimpleAndReferenceValues(buffer, simpleValues, referenceValues);
 
                     FillProperties(simpleValues, referenceValues, unityPropertyValueCacheItem);
 
-                    sceneHierarchy.FillFrom(simpleValues, referenceValues);
+                    sceneHierarchy.AddSceneHierarchyElement(simpleValues, referenceValues);
                 }
 
             }

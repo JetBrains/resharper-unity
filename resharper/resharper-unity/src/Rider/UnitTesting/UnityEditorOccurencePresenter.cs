@@ -21,10 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         protected override RichText GetDisplayText(OccurrencePresentationOptions options, RangeOccurrence rangeOccurrence)
         {
-
-            // false to show full scene path. Very expensive
             var processor = rangeOccurrence.GetSolution().NotNull("rangeOccurrence.GetSolution() != null")
-                .GetComponent<UnityPropertyValueCache>().UnitySceneDataLocalCache;
+                .GetComponent<UnitySceneDataCache>().UnitySceneDataLocalCache;
             var occurrence = (rangeOccurrence as UnityEditorOccurrence).NotNull("rangeOccurrence as UnityEditorOccurrence != null");
             var reference = (occurrence.PrimaryReference as IUnityYamlReference).NotNull("occurrence.PrimaryReference as IUnityYamlReference != null");
 
@@ -51,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     
             var consumer = new UnityPathCachedSceneConsumer();
             cache.ProcessSceneHierarchyFromComponentToRoot(document, consumer);
-            // false to show full scene path. Very expensive
+
             var parts = consumer.NameParts;
             if (parts.Count == 0)
                 return "...";

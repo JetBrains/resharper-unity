@@ -21,14 +21,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class UnityYamlExtraGroupingRulesProvider : IRiderExtraGroupingRulesProvider
     {
         // IconHost is optional so that we don't fail if we're in tests
-        public UnityYamlExtraGroupingRulesProvider(UnityPropertyValueCache propertyValueCache = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
+        public UnityYamlExtraGroupingRulesProvider(UnitySceneDataCache sceneDataCache = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
         {
             if (unitySolutionTracker != null && unitySolutionTracker.IsUnityProject.HasValue() && unitySolutionTracker.IsUnityProject.Value
-                && iconHost != null && propertyValueCache != null)
+                && iconHost != null && sceneDataCache != null)
             {
                 ExtraRules = new IRiderUsageGroupingRule[]
                 {
-                    new GameObjectUsageGroupingRule(propertyValueCache.UnitySceneDataLocalCache, iconHost),
+                    new GameObjectUsageGroupingRule(sceneDataCache.UnitySceneDataLocalCache, iconHost),
                     new ComponentUsageGroupingRule(iconHost)
                 };
             }
@@ -96,8 +96,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 if (occurrence is ReferenceOccurrence referenceOccurrence &&
                     referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
                 {
-                    var sourceFile = reference.ComponentDocument.GetSourceFile();
-                    var anchor = UnityGameObjectNamesCache.GetAnchorFromBuffer(reference.ComponentDocument.GetTextAsBuffer());
+                    var document = reference.ComponentDocument;
+                    var sourceFile = document.GetSourceFile();
+                    var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(document.GetTextAsBuffer());
                     if (sourceFile == null || anchor == null)
                         return EmptyModel();
                     

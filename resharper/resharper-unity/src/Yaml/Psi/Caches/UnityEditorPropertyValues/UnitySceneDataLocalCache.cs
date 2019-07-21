@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         private struct SceneElementId
         {
-            public IPsiSourceFile SourceFile;
-            public FileID FileID;
+            public readonly IPsiSourceFile SourceFile;
+            public readonly FileID FileID;
 
             public SceneElementId(IPsiSourceFile sourceFile, FileID fileID)
             {
@@ -132,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         public void ProcessSceneHierarchyFromComponentToRoot(IYamlDocument startComponent, IUnityCachedSceneProcessorConsumer consumer)
         {
             var sourceFile = startComponent.GetSourceFile();
-            var anchor = UnityGameObjectNamesCache.GetAnchorFromBuffer(startComponent.GetTextAsBuffer());
+            var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(startComponent.GetTextAsBuffer());
             if (sourceFile == null || anchor == null)
                 return;
             

@@ -7,14 +7,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     public class ProjectSettingsCacheItem
     {
-        public class SceneData
+        public class ProjectSettingsSceneData
         {
             public readonly JetHashSet<string> SceneNamesFromBuildSettings;
             public readonly JetHashSet<string> DisabledSceneNamesFromBuildSettings;
             public readonly JetHashSet<string> SceneNames;
             
 
-            public SceneData(JetHashSet<string> sceneNamesFromBuildSettings = null,
+            public ProjectSettingsSceneData(JetHashSet<string> sceneNamesFromBuildSettings = null,
                 JetHashSet<string> disabledSceneNamesFromBuildSettings = null,
                 JetHashSet<string> sceneNames = null)
             {
@@ -30,9 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 WriteSet(writer, SceneNames);
             }
             
-            public static SceneData ReadFrom(UnsafeReader reader)
+            public static ProjectSettingsSceneData ReadFrom(UnsafeReader reader)
             {
-                return new SceneData(ReadSet(reader), ReadSet(reader),
+                return new ProjectSettingsSceneData(ReadSet(reader), ReadSet(reader),
                     ReadSet(reader));
             }
 
@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             }
         }
 
-        public readonly SceneData Scenes;
+        public readonly ProjectSettingsSceneData Scenes;
         public readonly JetHashSet<string> Inputs;
         public readonly JetHashSet<string> Tags;
         public readonly JetHashSet<string> Layers;
@@ -51,10 +51,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public static readonly IUnsafeMarshaller<ProjectSettingsCacheItem> Marshaller =
             new UniversalMarshaller<ProjectSettingsCacheItem>(Read, Write);
 
-        public ProjectSettingsCacheItem(SceneData sceneData = null,
+        public ProjectSettingsCacheItem(ProjectSettingsSceneData sceneData = null,
             JetHashSet<string> inputs = null,JetHashSet<string> tags = null, JetHashSet<string> layers = null)
         {
-            Scenes = sceneData ?? new SceneData();
+            Scenes = sceneData ?? new ProjectSettingsSceneData();
             Inputs = inputs ?? new JetHashSet<string>();
             Tags = tags ?? new JetHashSet<string>();
             Layers = layers ?? new JetHashSet<string>();
@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         private static ProjectSettingsCacheItem Read(UnsafeReader reader)
         {
-            return new ProjectSettingsCacheItem(SceneData.ReadFrom(reader),
+            return new ProjectSettingsCacheItem(ProjectSettingsSceneData.ReadFrom(reader),
                 ReadSet(reader), ReadSet(reader), ReadSet(reader));
         }
 

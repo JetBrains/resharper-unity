@@ -18,11 +18,11 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
     [PsiComponent]
-    public class UnityPropertyValueCache : SimpleICache<UnitySceneData>
+    public class UnitySceneDataCache : SimpleICache<UnitySceneData>
     {
         public readonly UnitySceneDataLocalCache UnitySceneDataLocalCache;
         
-        public UnityPropertyValueCache(Lifetime lifetime, MetaFileGuidCache metaFileGuidCache, IPersistentIndexManager persistentIndexManager)
+        public UnitySceneDataCache(Lifetime lifetime, MetaFileGuidCache metaFileGuidCache, IPersistentIndexManager persistentIndexManager)
             : base(lifetime, persistentIndexManager, UnitySceneData.Marshaller)
         {
             UnitySceneDataLocalCache = new UnitySceneDataLocalCache(metaFileGuidCache);

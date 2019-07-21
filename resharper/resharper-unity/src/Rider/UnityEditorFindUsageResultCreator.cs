@@ -33,12 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly FileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
-            UnityPropertyValueCache propertyValueCache, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory, [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
+            UnitySceneDataCache sceneDataCache, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory, [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
             myLifetime = lifetime;
             mySolution = solution;
             myLocks = locks;
-            myUnitySceneDataLocalCache = propertyValueCache.UnitySceneDataLocalCache;
+            myUnitySceneDataLocalCache = sceneDataCache.UnitySceneDataLocalCache;
             myBackgroundTaskHost = backgroundTaskHost;
             myYamlSearchDomain = searchDomainFactory.CreateSearchDomain(externalFilesModuleFactory.PsiModule);
             myUnityHost = unityHost;
@@ -55,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (sourceFile == null)
                 return;
 
-            var anchor = UnityGameObjectNamesCache.GetAnchorFromBuffer(yamlReference.ComponentDocument.GetTextAsBuffer());
+            var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(yamlReference.ComponentDocument.GetTextAsBuffer());
             
             CreateRequestToUnity(declaredElement, sourceFile, anchor, focusUnity);
         }
@@ -159,7 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             public FindExecution Merge(IUnityYamlReference data)
             {
                 var sourceFile = data.ComponentDocument.GetSourceFile();
-                var anchor = UnityGameObjectNamesCache.GetAnchorFromBuffer(data.ComponentDocument.GetTextAsBuffer());
+                var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(data.ComponentDocument.GetTextAsBuffer());
                 if (anchor == null || sourceFile == null)
                     return myFindExecution;
                 

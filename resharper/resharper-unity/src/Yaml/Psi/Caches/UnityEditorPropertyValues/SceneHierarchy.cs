@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     {
         public readonly Dictionary<FileID, IUnityHierarchyElement> Elements =new Dictionary<FileID, IUnityHierarchyElement>();
 
-         private Dictionary<FileID, FileID> gameObjectsTransforms = new Dictionary<FileID, FileID>();
+        private readonly Dictionary<FileID, FileID> myGameObjectsTransforms = new Dictionary<FileID, FileID>();
             
         public void WriteTo(UnsafeWriter writer)
         {
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return element;
         }
 
-        public void FillFrom(Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues)
+        public void AddSceneHierarchyElement(Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues)
         {
             var anchor = simpleValues.GetValueSafe("&anchor");
             if (anchor == null)
@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 }
                 else
                 {
-                    gameObjectsTransforms[gameObject] = id;
+                    myGameObjectsTransforms[gameObject] = id;
                 }
             }
             else if (referenceValues.ContainsKey(UnityYamlConstants.GameObjectProperty))
@@ -92,9 +92,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             else
             {
                 // gameobject
-                var transformId = gameObjectsTransforms.GetValueSafe(id);
+                var transformId = myGameObjectsTransforms.GetValueSafe(id);
                 if (transformId != null)
-                    gameObjectsTransforms.Remove(transformId);
+                    myGameObjectsTransforms.Remove(transformId);
                 
                 Elements.Add(id, new GameObjectHierarchyElement(id, correspondingId, prefabInstanceId, isStripped, transformId,
                     simpleValues.GetValueSafe(UnityYamlConstants.NameProperty)));
@@ -110,12 +110,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private FileID GetPrefabInstanceId(Dictionary<string, FileID> referenceValues)
         {
             return referenceValues.GetValueSafe(UnityYamlConstants.PrefabInstanceProperty) ??
-                   referenceValues.GetValueSafe(UnityYamlConstants.CorrespondingSourceObjectProperty2017);
+                   referenceValues.GetValueSafe(UnityYamlConstants.PrefabInstanceProperty2017);
         }
 
-        public void FillFromPrefabModifications(IBuffer buffer)
+        public void AddPrefabModification(IBuffer buffer)
         {
-            var anchor = UnityGameObjectNamesCache.GetAnchorFromBuffer(buffer);
+            var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(buffer);
             if (anchor == null)
                 return;
             
@@ -140,14 +140,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                         if (text.Equals(UnityYamlConstants.TransformParentProperty))
                         {
                             lexer.Advance();
-                            UnitySceneUtil.SkipWhitespace(lexer);
+                            UnitySceneDataUtil.SkipWhitespace(lexer);
                             currentToken = lexer.TokenType;
                             
                             if (currentToken == YamlTokenType.COLON)
                             {
                                 lexer.Advance();
                                 
-                                var result = UnitySceneUtil.GetFileId(buffer, lexer);
+                                var result = UnitySceneDataUtil.GetFileId(buffer, lexer);
                                 if (result != null)
                                     transformParentId = result;
                             }                            
@@ -170,20 +170,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
         }
 
-        private void GetModifications(IBuffer buffer, YamlLexer lexer, int parentSize, Dictionary<FileID, string> names, Dictionary<FileID, int?> rootIndexes)
+        /// <summary>
+        /// This methods skips all m_Modifications entry in prefab document
+        /// add fills corresponding dictionaries
+        ///
+        /// After this method is executed, lexer current token is indent of next entry or null
+        /// </summary>
+        private void GetModifications(IBuffer buffer, YamlLexer lexer, int parentIndentSize, Dictionary<FileID, string> names, Dictionary<FileID, int?> rootIndexes)
         {
-            TokenNodeType tokenType = lexer.TokenType;
-            
             FileID curTarget = null;
             string curPropertyPath = null;
             string curValue = null;
             
-            while (UnitySceneUtil.FindNextIndent(lexer))
+            // Each property modifications is flow node:
+            // - target: ..
+            //   propertyPath: ..
+            //   value:
+            // Minus token means that new modification description is started
+            // There are several entries in description. We are interested only
+            // in target, propertyPath and value
+            
+            while (UnitySceneDataUtil.FindNextIndent(lexer))
             {
                 var currentSize = lexer.TokenEnd - lexer.TokenStart;
                 
                 lexer.Advance();
-                tokenType = lexer.TokenType;
+                var tokenType = lexer.TokenType;
+                
+                
                 if (tokenType == YamlTokenType.MINUS)
                 {
                     currentSize++;
@@ -191,10 +205,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     lexer.Advance();
                 }
                 
-                if (currentSize <= parentSize)
+                
+                if (currentSize <= parentIndentSize)
                     break;
                 
-                UnitySceneUtil.SkipWhitespace(lexer);
+                UnitySceneDataUtil.SkipWhitespace(lexer);
                 tokenType = lexer.TokenType;
                 
                 if (tokenType == YamlTokenType.NS_PLAIN_ONE_LINE_IN)
@@ -203,27 +218,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     if (text.Equals(UnityYamlConstants.TargetProperty))
                     {
                         lexer.Advance();
-                        UnitySceneUtil.SkipWhitespace(lexer);
+                        UnitySceneDataUtil.SkipWhitespace(lexer);
                         lexer.Advance(); // skip column
                         
-                        // really null ?? TODO : check it
-                        curTarget = UnitySceneUtil.GetFileId(buffer, lexer).WithGuid(null);
+                        // [TODO] handle prefab in prefab
+                        curTarget = UnitySceneDataUtil.GetFileId(buffer, lexer).WithGuid(null);
                     }
                     else if (text.Equals(UnityYamlConstants.PropertyPathProperty))
                     {
                         lexer.Advance();
-                        UnitySceneUtil.SkipWhitespace(lexer);
+                        UnitySceneDataUtil.SkipWhitespace(lexer);
                         lexer.Advance();
                         
-                        curPropertyPath = UnitySceneUtil.GetPrimitiveValue(buffer, lexer);
+                        curPropertyPath = UnitySceneDataUtil.GetPrimitiveValue(buffer, lexer);
                     }
                     else if (text.Equals(UnityYamlConstants.ValueProperty))
                     {
                         lexer.Advance();
-                        UnitySceneUtil.SkipWhitespace(lexer);
+                        UnitySceneDataUtil.SkipWhitespace(lexer);
                         lexer.Advance();
                         
-                        curValue = UnitySceneUtil.GetPrimitiveValue(buffer, lexer);
+                        curValue = UnitySceneDataUtil.GetPrimitiveValue(buffer, lexer);
                     }
                 }
             }
