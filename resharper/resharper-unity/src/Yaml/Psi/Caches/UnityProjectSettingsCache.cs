@@ -114,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             }
         }
 
-        private void RemoveScenes(ProjectSettingsCacheItem.SceneData sceneData)
+        private void RemoveScenes(ProjectSettingsCacheItem.ProjectSettingsSceneData sceneData)
         {
             foreach (var name in sceneData.SceneNamesFromBuildSettings)
             {
@@ -159,7 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             }
         }
 
-        private void AddScenes(ProjectSettingsCacheItem.SceneData sceneData)
+        private void AddScenes(ProjectSettingsCacheItem.ProjectSettingsSceneData sceneData)
         {
             foreach (var name in sceneData.SceneNamesFromBuildSettings)
             {

@@ -11,15 +11,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     public class UnityEditorOccurrence : ReferenceOccurrence
     {
-        public readonly string Anchor;
-        private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
-
-        public UnityEditorOccurrence([NotNull] UnityPropertyValueCache unityPropertyValueCache, [NotNull] IUnityYamlReference unityEventTargetReference, IDeclaredElement element,
+        public UnityEditorOccurrence([NotNull] IUnityYamlReference unityEventTargetReference, IDeclaredElement element,
             OccurrenceType occurrenceType)
             : base(unityEventTargetReference, element, occurrenceType)
         {
-            myUnitySceneDataLocalCache = unityPropertyValueCache.UnitySceneDataLocalCache;
-            Anchor = UnityGameObjectNamesCache.GetAnchorFromBuffer(unityEventTargetReference.ComponentDocument.GetTextAsBuffer());
         }
 
         public override bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
