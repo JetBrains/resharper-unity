@@ -4,14 +4,14 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InCSharpStatement;InUnityCSharpFile
+scopes: InCSharpStatement;MustBeInUnityCSharpFile
 parameterOrder: VAR
 VAR-expression: complete()
 ---
 
 # logwarn
 
-Debug.LogWarning()
+Unity log warning
 
 ```
 UnityEngine.Debug.LogWarning($VAR$);

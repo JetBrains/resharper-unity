@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InCSharpTypeMember(minimumLanguageVersion=2.0);InUnityCSharpFile
+scopes: InCSharpTypeMember(minimumLanguageVersion=2.0);MustBeInUnityCSharpFile
 parameterOrder: MENUNAME, NAME
 MENUNAME-expression: complete()
 NAME-expression: complete()
@@ -13,7 +13,7 @@ NAME-expression: complete()
 
 # menuitem
 
-Create menu item
+Unity menu item handler
 
 ```
 [UnityEditor.MenuItem($MENUNAME$)]

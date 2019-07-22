@@ -7,7 +7,7 @@ shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=EditorWindow, ValidateFileName=True
 scopes: InUnityCSharpEditorFolder
-parameterOrder: HEADER, (CLASS), (NAMESPACE), MENUITEM, TITLE 
+parameterOrder: HEADER, (CLASS), (NAMESPACE), MENUITEM, TITLE
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension
 NAMESPACE-expression: fileDefaultNamespace()
@@ -16,21 +16,18 @@ NAMESPACE-expression: fileDefaultNamespace()
 # Editor Window
 
 ```
-$HEADER$using UnityEngine;
-using UnityEditor;
-
-namespace $NAMESPACE$ {
-  public class $CLASS$ : EditorWindow
+$HEADER$namespace $NAMESPACE$ {
+  public class $CLASS$ : UnityEditor.EditorWindow
   {
-    [MenuItem("$MENUITEM$")]
-    private static void ShowWindow() 
+    [UnityEditor.MenuItem("$MENUITEM$")]
+    private static void ShowWindow()
     {
       var window = GetWindow<$CLASS$>();
-      window.titleContent = new GUIContent("$TITLE$");
+      window.titleContent = new UnityEngine.GUIContent("$TITLE$");
       window.Show();
     }
 
-    private void OnGUI() 
+    private void OnGUI()
     {
       $END$
     }
