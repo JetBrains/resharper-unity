@@ -58,14 +58,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             new[] {new CodeLensRelativeOrderingLast()};
 
         public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
-            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneDataCache sceneDataCache)
+            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneDataLocalCache sceneDataCache)
             : base(unitySolutionTracker, host, bulbMenu)
         {
             myConnectionTracker = connectionTracker;
             myUnityApi = unityApi;
             myFiles = files;
             myUnityHost = unityHost;
-            myUnitySceneDataLocalCache = sceneDataCache.UnitySceneDataLocalCache;
+            myUnitySceneDataLocalCache = sceneDataCache;
         }
         
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
@@ -109,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             return;
 
                         
-                        var valuesCache = solution.GetComponent<UnitySceneDataCache>().UnitySceneDataLocalCache;
+                        var valuesCache = solution.GetComponent<UnitySceneDataLocalCache>();
                         var values = valuesCache.GetPropertyValues(result.Value.guid, result.Value.propertyName);
 
                         menu.Caption.Value = WindowlessControlAutomation.Create("Inspector values");
@@ -231,7 +231,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var guid = result.Value.guid;
             var propertyName = result.Value.propertyName;
 
-            var cache = solution.GetComponent<UnitySceneDataCache>().UnitySceneDataLocalCache;
+            var cache = solution.GetComponent<UnitySceneDataLocalCache>();
 
             var field = (declaredElement as IField).NotNull();
             var type = field.Type;

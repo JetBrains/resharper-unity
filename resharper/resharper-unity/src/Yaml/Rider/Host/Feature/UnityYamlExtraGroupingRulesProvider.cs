@@ -21,14 +21,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class UnityYamlExtraGroupingRulesProvider : IRiderExtraGroupingRulesProvider
     {
         // IconHost is optional so that we don't fail if we're in tests
-        public UnityYamlExtraGroupingRulesProvider(UnitySceneDataCache sceneDataCache = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
+        public UnityYamlExtraGroupingRulesProvider(UnitySceneDataLocalCache sceneDataCache = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
         {
             if (unitySolutionTracker != null && unitySolutionTracker.IsUnityProject.HasValue() && unitySolutionTracker.IsUnityProject.Value
                 && iconHost != null && sceneDataCache != null)
             {
                 ExtraRules = new IRiderUsageGroupingRule[]
                 {
-                    new GameObjectUsageGroupingRule(sceneDataCache.UnitySceneDataLocalCache, iconHost),
+                    new GameObjectUsageGroupingRule(sceneDataCache, iconHost),
                     new ComponentUsageGroupingRule(iconHost)
                 };
             }
