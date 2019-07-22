@@ -1,27 +1,18 @@
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
-using JetBrains.Extension;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
-using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.ReSharper.Psi.Web.WebConfig;
 using JetBrains.Serialization;
 using JetBrains.Text;
 using JetBrains.Util;
-using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
     public class SceneHierarchy
     {
-        public readonly Dictionary<FileID, IUnityHierarchyElement> Elements =new Dictionary<FileID, IUnityHierarchyElement>();
+        public readonly Dictionary<FileID, IUnityHierarchyElement> Elements = new Dictionary<FileID, IUnityHierarchyElement>();
 
         private readonly Dictionary<FileID, FileID> myGameObjectsTransforms = new Dictionary<FileID, FileID>();
             
@@ -115,6 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         public void AddPrefabModification(IBuffer buffer)
         {
+            
             var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(buffer);
             if (anchor == null)
                 return;

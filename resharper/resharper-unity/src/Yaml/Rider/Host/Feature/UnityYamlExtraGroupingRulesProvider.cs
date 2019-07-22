@@ -98,8 +98,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 {
                     var document = reference.ComponentDocument;
                     var sourceFile = document.GetSourceFile();
+                    if (sourceFile == null  || sourceFile.IsValid())
+                        return EmptyModel();
+                    
                     var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(document.GetTextAsBuffer());
-                    if (sourceFile == null || anchor == null)
+                    if (anchor == null)
                         return EmptyModel();
                     
                     return CreateModel(UnityObjectPsiUtil.GetGameObjectPathFromComponent(myUnitySceneDataLocalCache, sourceFile, anchor));

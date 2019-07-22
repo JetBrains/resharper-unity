@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
@@ -69,12 +70,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
         {
+            Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
+            
             var containingType = (declaredElement as IClrDeclaredElement)?.GetContainingType();
             if (containingType == null)
                 return null;
 
             var sourceFile = declaredElement.GetSourceFiles().FirstOrDefault();
             if (sourceFile == null)
+                return null;
+
+            if (!sourceFile.IsValid())
                 return null;
 
             var guid = solution.GetComponent<MetaFileGuidCache>().GetAssetGuid(sourceFile);
@@ -155,11 +161,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                                 return;
                             
                             var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
-                            using (ReadLockCookie.Create())
-                            {
-                                UnityEditorFindUsageResultCreator.CreateRequestAndShow(myUnityHost, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
-                                    value.Value.MonoBehaviour, value.File);
-                            }
+                            
+                            UnityEditorFindUsageResultCreator.CreateRequestAndShow(myUnityHost, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
+                                value.Value.MonoBehaviour, value.File);
                         });
                     });
             }
@@ -218,6 +222,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             string tooltip = "Values from Unity Editor Inspector";
 
             var solution = element.GetSolution();
+            Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
             var result = GetAssetGuidAndPropertyName(solution, declaredElement);
             if (!result.HasValue)
