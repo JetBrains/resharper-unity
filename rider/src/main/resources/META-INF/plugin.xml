@@ -242,25 +242,40 @@
   <change-notes>
 <![CDATA[
 <p>
-<strong>New in 2019.1.2</strong>
+<strong>New in 2019.2</strong>
 <em>Added:</em>
 <ul>
-  <li>Rider: Methods and properties defined in `UnityEditor.Build.*` are now implicitly used (<a href="https://github.com/JetBrains/resharper-unity/issues/686">#686</a>)</li>
-  <li>Rider: Added support for the Rider integration package used by Unity 2019.2+. No longer copies Rider plugin to Assets folder, and is loaded directly from the Rider installation folder (<a href="https://github.com/JetBrains/resharper-unity/pull/1176">#1176</a>)</li>
+  <li>Add completion and inspections for scenes, tags, layers and inputs (<a href="https://github.com/JetBrains/resharper-unity/pull/1158">#1158</a>)</li>
+  <li>Add quick fix which specifies scene name when several scenes with the same name are present in build settings (<a href="https://github.com/JetBrains/resharper-unity/pull/1158">#1158</a>)</li>
+  <li>Add new file and live templates (<a href="https://github.com/JetBrains/resharper-unity/pull/1201">#1201</a>)</li>
+  <li>Add context action to generate event function in any Unity type (<a href="https://github.com/JetBrains/resharper-unity/pull/1209">#1209</a>)</li>
+  <li>Add context actions to add Inspector attributes `Space`, `Header` and `Tooltip` to serialised fields (<a href="https://github.com/JetBrains/resharper-unity/pull/1244">#1244</a>)</li>
+  <li>Add Find Unity Usages of Symbol to Navigate To menu (<a href="https://github.com/JetBrains/resharper-unity/pull/1209">#1209</a>)</li>
+  <li>Add inspection for duplicate shortcut items in a menu attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1246">#1246</a>)</li>
+  <li>Rider: Add quick fix to add or enable scenes in build settings (<a href="https://github.com/JetBrains/resharper-unity/pull/1158">#1158</a>)</li>
+  <li>Rider: Show serialised field values in Code Vision links (<a href="https://github.com/JetBrains/resharper-unity/pull/1226">#1226</a>)</li>
+  <li>Rider: Add "Show in Unity" action to Unity YAML file notifications (<a href="https://github.com/JetBrains/resharper-unity/pull/1236">#1236</a>)</li>
+  <li>Unity Editor: Correctly detect Rider installed via snap (<a href="https://github.com/JetBrains/resharper-unity/pull/1215">#1215</a>)</li>
+</ul>
+<em>Changed:</em>
+<ul>
+  <li>Improve performance of YAML based asset parsing (<a href="https://github.com/JetBrains/resharper-unity/pull/1226">#1226</a>)</li>
+  <li>Generate event function body according to settings (<a href="https://github.com/JetBrains/resharper-unity/pull/1236">#1236</a>)</li>
+  <li>Classes implementing editor interfaces no longer marked as unused (<a href="https://github.com/JetBrains/resharper-unity/issues/686">#686</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1167">#1167</a>)</li>
+  <li>Rider: Show asset usage count in Code Vision (<a href="https://github.com/JetBrains/resharper-unity-pull/1209">#1209</a>)</li>
+  <li>Rider: Show event function method summary docs in Code Vision tooltip (<a href="https://github.com/JetBrains/resharper-unity/pull/1206">#1206</a>)</li>
+  <li>Rider: Improve handling of <tt>[UnityTest]</tt> attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1224">#1224</a>)</li>
+  <li>Unity Editor: Improve performance of editor plugin reload (<a href="https://github.com/JetBrains/resharper-unity/issues/1197">#1197</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1221">#1221</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
-  <li>Fix parse errors in YAML for strings that begin with quotes, braces or tildes (<a href="https://github.com/JetBrains/resharper-unity/issues/1169">#1169</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-27475">RIDER-27475</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1192">#1192</a>)</li>
-  <li>Fix errors in scene files for unresolved methods (<a href="https://youtrack.jetbrains.com/issue/RIDER-27445">RIDER-27445</a>, <a href="https://github.com/JetBrains/resharper-unity/1178">#1178</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1174">#1174</a>)</li>
-  <li>Fix rename of script components not being able to update correctly (<a href="https://github.com/JetBrains/resharper-unity/pull/1196">#1196</a>)</li>
-  <li>Rider: Fix usage counter not always correct for methods used in scene files (<a href="https://youtrack.jetbrains.com/issue/RIDER-27684">RIDER-27684</a>, <a href="https://github.com/JetBrains/resharper-unity/1178">#1178</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1174">#1174</a>)</li>
-  <li>Rider: Fix high CPU usage on Linux (<a href="https://github.com/JetBrains/resharper-unity/issues/1163">#1163</a>, <a href="https://github.com/JetBrains/resharper-unity/1171">#1171</a>)</li>
-  <li>Rider: Fix issue with switching to play mode when debugging (<a href="https://youtrack.jetbrains.com/issue/RIDER-26857">RIDER-26857</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1202">#1202</a>)</li>
-  <li>Rider: Fix Code Vision flickering when typing inside method (<a href="https://github.com/JetBrains/resharper-unity/pull/1203">#1203</a>)
-  <li>Rider: Ignore "unityhub" Ubuntu process in debug dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/1210">#1210</a>)
+  <li>Rider: Disable automatic cleanup of Unity messages in Rider (<a href="https://youtrack.jetbrains.com/issue/RIDER-26880">#RIDER-26880</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1217">#1217</a>)</li>
+  <li>Rider: Fix presentation of unit tests with similar name (<a href="https://github.com/JetBrains/resharper-unity/issues/526">#526</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1214">#1214</a>)/li>
+  <li>Rider: Fix exception checking process ID in Unity run configuration (<a href="https://youtrack.jetbrains.com/issue/RIDER-28743">RIDER-38743</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1223">#1223</a>)</li>
+  <li>Unity Editor: Fix generation of MDB files (<a href="https://github.com/JetBrains/resharper-unity/issues/1155">#1155</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1182">#1182</a>)</li>
 </ul>
 </p>
-<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/191/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
+<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/192/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
 ]]>
   </change-notes>
 </idea-plugin>
