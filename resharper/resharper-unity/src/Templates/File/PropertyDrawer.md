@@ -17,14 +17,11 @@ TYPE-expression: complete()
 # Property Drawer
 
 ```
-$HEADER$using UnityEngine;
-using UnityEditor;
-
-namespace $NAMESPACE$ {
-  [CustomPropertyDrawer(typeof($TYPE$))]
-  public class $CLASS$ : PropertyDrawer
+$HEADER$namespace $NAMESPACE$ {
+  [UnityEditor.CustomPropertyDrawer(typeof($TYPE$))]
+  public class $CLASS$ : UnityEditor.PropertyDrawer
   {
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    public override void OnGUI(UnityEngine.Rect position, UnityEditor.SerializedProperty property, UnityEngine.GUIContent label)
     {
       $END$
     }

@@ -20,13 +20,10 @@ OTHER-expression: complete()
 # Scriptable Wizard
 
 ```
-$HEADER$using UnityEngine;
-using UnityEditor;
-
-namespace $NAMESPACE$ {
-  public class $CLASS$ : ScriptableWizard 
+$HEADER$namespace $NAMESPACE$ {
+  public class $CLASS$ : UnityEditor.ScriptableWizard
   {
-    [MenuItem("$MENUNAME$")]
+    [UnityEditor.MenuItem("$MENUNAME$")]
     public static void CreateWizard()
     {
         DisplayWizard<$CLASS$>("$TITLE$", "$CREATE$", "$OTHER$");
@@ -39,7 +36,7 @@ namespace $NAMESPACE$ {
 
     public void OnWizardUpdate()
     {
-    
+
     }
   }
 }
