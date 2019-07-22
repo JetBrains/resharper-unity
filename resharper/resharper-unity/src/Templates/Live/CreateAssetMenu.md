@@ -4,7 +4,7 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: IsAvailableForClassAttribute;InUnityCSharpFile
+scopes: InCSharpTypeAndNamespace;MustBeInUnityCSharpFile
 parameterOrder: FILENAME, MENUNAME, ORDER
 FILENAME-expression: complete()
 MENUNAME-expression: complete()
@@ -13,7 +13,7 @@ ORDER-expression: complete()
 
 # assetmenu
 
-CreateAssetMenu(...)
+Unity CreateAssetMenu attribute
 
 ```
 [UnityEngine.CreateAssetMenu(fileName = $FILENAME$, menuName = $MENUNAME$, order = $ORDER$)]

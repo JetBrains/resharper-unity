@@ -17,13 +17,11 @@ TYPE-expression: complete()
 # Custom Editor
 
 ```
-$HEADER$using UnityEditor;
-
-namespace $NAMESPACE$ {
-  [CustomEditor(typeof($TYPE$))]
-  public class $CLASS$ : Editor
+$HEADER$namespace $NAMESPACE$ {
+  [UnityEditor.CustomEditor(typeof($TYPE$))]
+  public class $CLASS$ : UnityEditor.Editor
   {
-    public override void OnInspectorGUI() 
+    public override void OnInspectorGUI()
     {
       $END$
       base.OnInspectorGUI();
