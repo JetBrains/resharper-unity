@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
@@ -11,6 +13,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
@@ -22,10 +25,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     {
         public readonly UnitySceneDataLocalCache UnitySceneDataLocalCache;
         
-        public UnitySceneDataCache(Lifetime lifetime, MetaFileGuidCache metaFileGuidCache, IPersistentIndexManager persistentIndexManager)
+        public UnitySceneDataCache(Lifetime lifetime, MetaFileGuidCache metaFileGuidCache, IPersistentIndexManager persistentIndexManager,
+            IShellLocks shellLocks)
             : base(lifetime, persistentIndexManager, UnitySceneData.Marshaller)
         {
-            UnitySceneDataLocalCache = new UnitySceneDataLocalCache(metaFileGuidCache);
+            UnitySceneDataLocalCache = new UnitySceneDataLocalCache(metaFileGuidCache, shellLocks);
         }
         
         protected override bool IsApplicable(IPsiSourceFile sourceFile)

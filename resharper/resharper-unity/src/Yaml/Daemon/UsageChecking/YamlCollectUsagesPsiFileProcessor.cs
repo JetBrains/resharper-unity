@@ -43,10 +43,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
             foreach (var (_, swaElement) in context.UsageData.SwaExtensionsData)
             {
                 swaElement.ProcessBeforeInterior(element, context);
-            }
-            
-            foreach (var (_, swaElement) in context.UsageData.SwaExtensionsData)
-            {
                 swaElement.ProcessNode(element, context);
             }
         }

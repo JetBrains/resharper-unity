@@ -112,8 +112,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public static void CreateRequestAndShow([NotNull]  UnityHost unityHost, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
             [NotNull] string anchor, IPsiSourceFile sourceFile, bool needExpand = false)
         {
-            var request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile, needExpand);
-            unityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(request));
+            
+            using (ReadLockCookie.Create())
+            {
+                var request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile, needExpand);
+                unityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(request));
+            }
             UnityFocusUtil.FocusUnity(unityHost.GetValue(t => t.UnityProcessId.Value));
         }
         
@@ -159,8 +163,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             public FindExecution Merge(IUnityYamlReference data)
             {
                 var sourceFile = data.ComponentDocument.GetSourceFile();
+                if (sourceFile == null || !sourceFile.IsValid())
+                    return myFindExecution;
+                
                 var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(data.ComponentDocument.GetTextAsBuffer());
-                if (anchor == null || sourceFile == null)
+                if (anchor == null)
                     return myFindExecution;
                 
                 var request = CreateRequest(mySolutionDirectoryPath, myUnitySceneDataLocalCache, anchor, sourceFile);

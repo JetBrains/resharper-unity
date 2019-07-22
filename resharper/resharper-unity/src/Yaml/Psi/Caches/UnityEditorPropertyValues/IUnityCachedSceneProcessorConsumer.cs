@@ -38,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             {
                 rootOrder = modifications.GetRootIndex(transformHierarchyElement.Id.WithGuid(null));
             }
+            
             if (rootOrder == null)
             {
                 rootOrder = transformHierarchyElement.RootOrder;
