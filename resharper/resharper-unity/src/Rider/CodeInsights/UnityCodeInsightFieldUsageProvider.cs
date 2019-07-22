@@ -168,9 +168,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private string GetPresentation(MonoBehaviourPropertyValueWithLocation monoBehaviourPropertyValueWithLocation,
             UnityPresentationType unityPresentationType, IType enumType, ISolution solution, IPsiModule psiModule)
         {
-            if (monoBehaviourPropertyValueWithLocation.Value is MonoBehaviourPrimitiveValue primitiveValue)
+            if (monoBehaviourPropertyValueWithLocation.Value is MonoBehaviourPrimitiveValue)
             {
-                return GetRiderPresentation(unityPresentationType, primitiveValue.PrimitiveValue, enumType, psiModule);
+                return GetRiderPresentation(unityPresentationType, monoBehaviourPropertyValueWithLocation.GetSimplePresentation(solution), enumType, psiModule);
             }
             else
             {

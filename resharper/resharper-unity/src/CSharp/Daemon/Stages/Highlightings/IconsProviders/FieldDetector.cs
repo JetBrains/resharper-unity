@@ -41,17 +41,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 if (myUnityApi.IsDescendantOfMonoBehaviour(declaredElement.GetContainingType()))
                 {
-                    AddMonoBehaviourHighlighting(consumer, field, "Property", "This field is initialised from Inspector", kind);
+                    AddMonoBehaviourHighlighting(consumer, field, "Serialized field", "This field is initialised from Inspector", kind);
                     return declaredElement;
 
                 } else if (myUnityApi.IsDescendantOfScriptableObject(declaredElement.GetContainingType()))
                 {
-                    AddScriptableObjectHighlighting(consumer, field, "Property", "This field is initialised from Inspector", kind);
+                    AddScriptableObjectHighlighting(consumer, field, "Serialized field", "This field is initialised from Inspector", kind);
                     return declaredElement;
 
                 } else if (myUnityApi.IsInjectedField(declaredElement))
                 {
-                    AddECSHighlighting(consumer, field, "Property", "This field is injected by Unity", kind);
+                    AddECSHighlighting(consumer, field, "Serialized field", "This field is injected by Unity", kind);
                     return declaredElement;
                 } else if (declaredElement.GetAttributeInstances(false)
                     .All(t => !t.GetClrName().Equals(KnownTypes.SerializeField)))
