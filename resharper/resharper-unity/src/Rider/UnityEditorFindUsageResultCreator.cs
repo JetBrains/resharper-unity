@@ -33,12 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly FileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
-            UnitySceneDataCache sceneDataCache, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory, [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
+            UnitySceneDataLocalCache sceneDataCache, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory, [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
             myLifetime = lifetime;
             mySolution = solution;
             myLocks = locks;
-            myUnitySceneDataLocalCache = sceneDataCache.UnitySceneDataLocalCache;
+            myUnitySceneDataLocalCache = sceneDataCache;
             myBackgroundTaskHost = backgroundTaskHost;
             myYamlSearchDomain = searchDomainFactory.CreateSearchDomain(externalFilesModuleFactory.PsiModule);
             myUnityHost = unityHost;

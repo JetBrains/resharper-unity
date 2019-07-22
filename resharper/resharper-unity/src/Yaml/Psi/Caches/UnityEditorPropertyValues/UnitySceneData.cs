@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -57,12 +58,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             Assertion.Assert(file.IsValid(), "file.IsValid()");
             Assertion.Assert(file.GetSolution().Locks.IsReadAccessAllowed(), "ReadLock is required");
             
-            
+            var interruptChecker = new SeldomInterruptChecker();
             var unityPropertyValueCacheItem = new OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>();
             var sceneHierarchy = new SceneHierarchy();
             
             foreach (var document in file.DocumentsEnumerable)
             {
+                interruptChecker.CheckForInterrupt();
                 var buffer = document.GetTextAsBuffer();
                 if (ourPrefabModificationSearcher.Find(buffer, 0, Math.Min(buffer.Length, 100)) > 0)
                 {

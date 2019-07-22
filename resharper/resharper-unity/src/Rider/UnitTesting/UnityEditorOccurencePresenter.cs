@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         protected override RichText GetDisplayText(OccurrencePresentationOptions options, RangeOccurrence rangeOccurrence)
         {
             var processor = rangeOccurrence.GetSolution().NotNull("rangeOccurrence.GetSolution() != null")
-                .GetComponent<UnitySceneDataCache>().UnitySceneDataLocalCache;
+                .GetComponent<UnitySceneDataLocalCache>();
             var occurrence = (rangeOccurrence as UnityEditorOccurrence).NotNull("rangeOccurrence as UnityEditorOccurrence != null");
             var reference = (occurrence.PrimaryReference as IUnityYamlReference).NotNull("occurrence.PrimaryReference as IUnityYamlReference != null");
 

@@ -23,13 +23,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     [PsiComponent]
     public class UnitySceneDataCache : SimpleICache<UnitySceneData>
     {
-        public readonly UnitySceneDataLocalCache UnitySceneDataLocalCache;
-        
+        private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
+
         public UnitySceneDataCache(Lifetime lifetime, MetaFileGuidCache metaFileGuidCache, IPersistentIndexManager persistentIndexManager,
-            IShellLocks shellLocks)
+            UnitySceneDataLocalCache unitySceneDataLocalCache)
             : base(lifetime, persistentIndexManager, UnitySceneData.Marshaller)
         {
-            UnitySceneDataLocalCache = new UnitySceneDataLocalCache(metaFileGuidCache, shellLocks);
+            myUnitySceneDataLocalCache = unitySceneDataLocalCache;
         }
         
         protected override bool IsApplicable(IPsiSourceFile sourceFile)
@@ -84,14 +84,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         private void AddToLocalCache(IPsiSourceFile sourceFile, UnitySceneData sceneData)
         {
-            UnitySceneDataLocalCache.Add(sourceFile, sceneData);
+            myUnitySceneDataLocalCache.Add(sourceFile, sceneData);
         }
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
             if (Map.TryGetValue(sourceFile, out var sceneData))
             {
-                UnitySceneDataLocalCache.Remove(sourceFile, sceneData);
+                myUnitySceneDataLocalCache.Remove(sourceFile, sceneData);
             }
         }
     }

@@ -11,50 +11,22 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
+    [SolutionComponent]
     public class UnitySceneDataLocalCache
     {
         private readonly MetaFileGuidCache myGuidCache;
         private readonly IShellLocks myShellLocks;
-
-        private struct SceneElementId
-        {
-            public readonly IPsiSourceFile SourceFile;
-            public readonly FileID FileID;
-
-            public SceneElementId(IPsiSourceFile sourceFile, FileID fileID)
-            {
-                SourceFile = sourceFile;
-                FileID = fileID;
-            }
-            public bool Equals(SceneElementId other)
-            {
-                return SourceFile.Equals(other.SourceFile) && FileID.Equals(other.FileID);
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is SceneElementId other && Equals(other);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (SourceFile.GetHashCode() * 397) ^ FileID.GetHashCode();
-                }
-            }
-        }
-        
-        private readonly PropertyValueLocalCache myPropertyValueLocalCache = new PropertyValueLocalCache();
-        private readonly OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement> mySceneElements
-            = new OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement>();
 
         public UnitySceneDataLocalCache(MetaFileGuidCache guidCache, IShellLocks shellLocks)
         {
             myGuidCache = guidCache;
             myShellLocks = shellLocks;
         }
-        
+
+        private readonly PropertyValueLocalCache myPropertyValueLocalCache = new PropertyValueLocalCache();
+        private readonly OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement> mySceneElements
+            = new OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement>();
+
         public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetPropertyValues(string guid, string propertyName)
         {
             myShellLocks.AssertReadAccessAllowed();
@@ -311,6 +283,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     
                     consumer.ConsumeGameObject(gameObject, transformComponent, modifications);
                     currentUnityObject = father;
+                }
+            }
+        }
+        
+        
+        private struct SceneElementId
+        {
+            public readonly IPsiSourceFile SourceFile;
+            public readonly FileID FileID;
+
+            public SceneElementId(IPsiSourceFile sourceFile, FileID fileID)
+            {
+                SourceFile = sourceFile;
+                FileID = fileID;
+            }
+            public bool Equals(SceneElementId other)
+            {
+                return SourceFile.Equals(other.SourceFile) && FileID.Equals(other.FileID);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is SceneElementId other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (SourceFile.GetHashCode() * 397) ^ FileID.GetHashCode();
                 }
             }
         }

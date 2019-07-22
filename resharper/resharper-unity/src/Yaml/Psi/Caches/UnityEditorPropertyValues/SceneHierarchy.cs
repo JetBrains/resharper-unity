@@ -163,10 +163,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         }
 
         /// <summary>
-        /// This methods skips all m_Modifications entry in prefab document
-        /// add fills corresponding dictionaries
-        ///
-        /// After this method is executed, lexer current token is indent of next entry or null
+        /// This method skips m_Modifications entry in prefab document and stores modifications in dictionaries
+        /// 
+        /// After this method is executed, lexer current token is null or indent of next entry (after m_Modifications)
         /// </summary>
         private void GetModifications(IBuffer buffer, YamlLexer lexer, int parentIndentSize, Dictionary<FileID, string> names, Dictionary<FileID, int?> rootIndexes)
         {
