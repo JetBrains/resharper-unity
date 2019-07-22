@@ -59,7 +59,7 @@ public interface Quux
 (0): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
 (1): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
 (2): ReSharper Unity Implicitly Used Identifier: 
-(3): Unity Gutter Icon: Unity Editor script
+(3): Unity Gutter Icon: Unity script
 (4): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
 (5): ReSharper Unity Implicitly Used Identifier: 
 (6): Unity Gutter Icon: This field is initialised from Inspector

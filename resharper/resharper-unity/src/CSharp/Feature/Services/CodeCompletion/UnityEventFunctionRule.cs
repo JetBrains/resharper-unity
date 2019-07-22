@@ -155,7 +155,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // Secondary sort order is OrderString, which is usually display text, but can be overridden.
 
             // Generated items get a boost over normal declared element items
-            item.Placement.Relevance |= (long) CLRLookupItemRelevance.GenerateItems;
+            item.Placement.Relevance |= (long) (CLRLookupItemRelevance.GenerateItems | CLRLookupItemRelevance.Methods |
+                                                CLRLookupItemRelevance.MemberOfCurrentType);
 
             // Set high selection priority to push us further up, unless it's undocumented, in which case, give it a
             // smaller selection boost
