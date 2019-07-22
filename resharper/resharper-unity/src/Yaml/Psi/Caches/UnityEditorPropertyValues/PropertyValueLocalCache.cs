@@ -153,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         }
         
         
-        // Different indexes for queries from local stage. All queries should take O(1)
+        // Different indices for queries from local stage. All queries should take O(1)
         private readonly OneToCompactCountingSet<MonoBehaviourPropertyWithFile, object> myValueCountPerPropertyAndFile = 
             new OneToCompactCountingSet<MonoBehaviourPropertyWithFile, object>();
         

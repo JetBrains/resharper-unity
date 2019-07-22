@@ -68,15 +68,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             // Note that this opens the document body chameleon, but we don't care for .meta files. They're lightweight
             var document = yamlFile.Documents.FirstOrDefault();
 
-            var guid = GetGuid(document);
-            if (guid != null)
-                return new MetaFileCacheItem(guid);
-            
-            return null;
-        }
-
-        public static string GetGuid(IYamlDocument document)
-        {
             if (document?.Body.BlockNode is IBlockMappingNode blockMappingNode)
             {
                 foreach (var entry in blockMappingNode.Entries)
@@ -85,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                     {
                         var guid = valueScalarNode.Text?.GetText();
                         if (guid != null)
-                            return guid;
+                            return new MetaFileCacheItem(guid);
                     }
                 }
             }

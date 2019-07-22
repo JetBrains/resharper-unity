@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Serialization;
 using JetBrains.Text;
 using JetBrains.Util;
@@ -51,6 +54,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         public static UnitySceneData Build(IUnityYamlFile file)
         {
+            Assertion.Assert(file.IsValid(), "file.IsValid()");
+            Assertion.Assert(file.GetSolution().Locks.IsReadAccessAllowed(), "ReadLock is required");
+            
+            
             var unityPropertyValueCacheItem = new OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>();
             var sceneHierarchy = new SceneHierarchy();
             

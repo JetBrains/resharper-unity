@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -12,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     public class UnitySceneDataLocalCache
     {
         private readonly MetaFileGuidCache myGuidCache;
+        private readonly IShellLocks myShellLocks;
 
         private struct SceneElementId
         {
@@ -46,58 +49,76 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private readonly OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement> mySceneElements
             = new OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement>();
 
-        public UnitySceneDataLocalCache(MetaFileGuidCache guidCache)
+        public UnitySceneDataLocalCache(MetaFileGuidCache guidCache, IShellLocks shellLocks)
         {
             myGuidCache = guidCache;
+            myShellLocks = shellLocks;
         }
         
         public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetPropertyValues(string guid, string propertyName)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             var query = new MonoBehaviourProperty(guid, propertyName);
             return myPropertyValueLocalCache.GetPropertyValues(query);
         }
         
         public int GetValueCount(string guid, string propertyName, object value)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             return myPropertyValueLocalCache.GetValueCount(new MonoBehaviourProperty(guid, propertyName), value);
         }
 
         public int GetPropertyValuesCount(string guid, string propertyName)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             return myPropertyValueLocalCache.GetPropertyValuesCount(new MonoBehaviourProperty(guid, propertyName));
         }
         
         public int GetPropertyUniqueValuesCount(string guid, string propertyName)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             return myPropertyValueLocalCache.GetPropertyUniqueValuesCount(new MonoBehaviourProperty(guid, propertyName));
         }
         
         public IEnumerable<object> GetUniqueValues(string guid, string propertyName)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             var query = new MonoBehaviourProperty(guid, propertyName);
             return myPropertyValueLocalCache.GetUniqueValues(query);
         }
         
         public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetUniqueValuesWithLocation(string guid, string propertyName)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             var query = new MonoBehaviourProperty(guid, propertyName);
             return myPropertyValueLocalCache.GetUniqueValuesWithLocation(query);
         }
         
         public int GetFilesCountWithoutChanges(string guid, string propertyName, object value)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             var query = new MonoBehaviourProperty(guid, propertyName);
             return myPropertyValueLocalCache.GetFilesCountWithoutChanges(query, value);
         }
 
         public int GetFilesWithPropertyCount(string guid, string propertyName)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             var query = new MonoBehaviourProperty(guid, propertyName);
             return myPropertyValueLocalCache.GetFilesWithPropertyCount(query);
         }
 
         public void Add(IPsiSourceFile sourceFile, UnitySceneData sceneData)
         {
+            myShellLocks.AssertMainThread();
 
             foreach (var (property, values) in sceneData.PropertiesData)
             {
@@ -115,6 +136,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         public void Remove(IPsiSourceFile sourceFile, UnitySceneData sceneData)
         {
+            myShellLocks.AssertMainThread();
+
             foreach (var (property, values) in sceneData.PropertiesData)
             {
                 foreach (var value in values)
@@ -131,6 +154,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         
         public void ProcessSceneHierarchyFromComponentToRoot(IYamlDocument startComponent, IUnityCachedSceneProcessorConsumer consumer)
         {
+            myShellLocks.AssertReadAccessAllowed();
+
             var sourceFile = startComponent.GetSourceFile();
             var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(startComponent.GetTextAsBuffer());
             if (sourceFile == null || anchor == null)
@@ -141,6 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         
         public void ProcessSceneHierarchyFromComponentToRoot(IPsiSourceFile sourceFile, string anchor, IUnityCachedSceneProcessorConsumer consumer)
         {
+            myShellLocks.AssertReadAccessAllowed();
             ProcessSceneHierarchyFromComponentToRoot(sourceFile, new FileID(null, anchor),  consumer);
         }
 
