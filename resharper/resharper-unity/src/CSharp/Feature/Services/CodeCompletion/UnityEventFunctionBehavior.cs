@@ -24,13 +24,13 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
-    public class UnityEventFunctionBehavior : TextualBehavior<DeclaredElementInfo>
+    public class UnityEventFunctionBehavior : TextualBehavior<TextualInfo>
     {
         private readonly IShellLocks myShellLocks;
         private readonly UnityEventFunction myEventFunction;
         private readonly AccessRights myAccessRights;
 
-        public UnityEventFunctionBehavior(IShellLocks shellLocks, DeclaredElementInfo info,
+        public UnityEventFunctionBehavior(IShellLocks shellLocks, TextualInfo info,
                                           UnityEventFunction eventFunction, AccessRights accessRights)
             : base(info)
         {
