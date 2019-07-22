@@ -4,6 +4,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
@@ -49,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             base.WriteTo(writer);
         }
 
-        public override string GetSimplePresentation(ISolution solution, IPsiSourceFile file) => PrimitiveValue;
+        public override string GetSimplePresentation(ISolution solution, IPsiSourceFile file) => StringUtil.DropMiddleIfLong(PrimitiveValue, 30);
 
         public static MonoBehaviourPropertyValue ReadFrom(UnsafeReader reader)
         {
@@ -108,6 +109,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         public override string GetSimplePresentation(ISolution solution, IPsiSourceFile file)
         {
+            var componentName = GetReferenceName(solution, file);
+            return $"{StringUtil.DropMiddleIfLong(componentName, 30)}";
+        }
+
+
+        private string GetReferenceName(ISolution solution, IPsiSourceFile file)
+        {
             var cache = solution.GetComponent<UnityGameObjectNamesCache>();
             if (cache.Map.TryGetValue(file, out var anchorToName))
             {
@@ -117,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 }
             }
 
-            return null;
+            return "...";
         }
     }
 
@@ -130,6 +138,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         public string LocalGameObjectAnchor { get; }
         
         public abstract object Value { get; }
+
+        private const int wrapCount = 0;
 
         public MonoBehaviourPropertyValue([NotNull] string monoBehaviour, [CanBeNull] string localGameObjectAnchor)
         {

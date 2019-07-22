@@ -161,7 +161,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 {
                     gameObjectId = componentHierarchyElement.GameObject;
                 }
-                else
+                else if (start is GameObjectHierarchyElement gameObjectHierarchyElement)
+                {
+                    gameObjectId = gameObjectHierarchyElement.Id;
+                } else
                 {
                     Assertion.Fail("Unexpected hierarchy element");
                     return;
