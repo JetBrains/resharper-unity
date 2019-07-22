@@ -32,25 +32,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
         public override IDeclaredElement Analyze(IDeclaration node, IHighlightingConsumer consumer, DaemonProcessKind kind)
         {
-            if (!(node is IClassLikeDeclaration element)) 
+            if (!(node is IClassLikeDeclaration element))
                 return null;
-            
+
             var typeElement = element.DeclaredElement;
             if (typeElement != null)
             {
                 if (myUnityApi.IsDescendantOfMonoBehaviour(typeElement))
                 {
-                    AddMonoBehaviourHiglighting(consumer, element, "Script", "Unity Editor script", kind);
-                } else if (myUnityApi.IsDescendantOf(KnownTypes.Editor, typeElement) || myUnityApi.IsDescendantOf(KnownTypes.EditorWindow, typeElement))
+                    AddMonoBehaviourHiglighting(consumer, element, "Script", "Unity script", kind);
+                }
+                else if (myUnityApi.IsDescendantOf(KnownTypes.Editor, typeElement) ||
+                         myUnityApi.IsDescendantOf(KnownTypes.EditorWindow, typeElement))
                 {
-                    AddEditorHiglighting(consumer, element, "Editor", "Custom Editor", kind);
-                } else if (myUnityApi.IsUnityType(typeElement))
+                    AddEditorHiglighting(consumer, element, "Editor", "Custom Unity Editor", kind);
+                }
+                else if (myUnityApi.IsUnityType(typeElement))
                 {
                     AddUnityTypeHighlighting(consumer, element, "Unity type", "Custom Unity type", kind);
                 }
                 else if (myUnityApi.IsUnityECSType(typeElement))
                 {
-                    AddUnityECSHighlighting(consumer, element, "Unity ECS", "Unity entity component system object", kind);
+                    AddUnityECSHighlighting(consumer, element, "Unity ECS", "Unity entity component system object",
+                        kind);
                 }
 
                 return typeElement;
@@ -68,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             AddHighlighting(consumer, declaration, text, tooltip, kind);
         }
-        
+
         protected virtual void AddUnityTypeHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
         {
             AddHighlighting(consumer, declaration, text, tooltip, kind);
@@ -90,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             var result = new List<BulbMenuItem>();
             var textControl = Solution.GetComponent<ITextControlManager>().LastFocusedTextControl.Value;
-            if (declaration is IClassLikeDeclaration classLikeDeclaration && 
+            if (declaration is IClassLikeDeclaration classLikeDeclaration &&
                 textControl != null && myUnityApi.IsUnityType(classLikeDeclaration.DeclaredElement))
             {
                 var fix = new GenerateUnityEventFunctionsFix(classLikeDeclaration);
