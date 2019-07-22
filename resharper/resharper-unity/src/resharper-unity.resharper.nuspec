@@ -35,13 +35,22 @@
 </description>
 <releaseNotes>
 Added:
-- Methods and properties defined in `UnityEditor.Build.*` are now implicitly used([#686](https://github.com/JetBrains/resharper-unity/issues/686))
+
+- Add completion and inspections for scenes, tags, layers and inputs (#1158)
+- Add quick fix which specifies scene name when several scenes with the same name are present in build settings (#1158)
+- Add new file and live templates (#1201)
+- Add context action to generate event function in any Unity type (#1209)
+- Add context actions to add Inspector attributes `Space`, `Header` and `Tooltip` to serialised fields (#1244)
+- Add Find Unity Usages of Symbol to Navigate To menu (#1209)
+- Add inspection for duplicate shortcut items in a menu attribute (#1246)
+
+Changed:
+- Improve performance of YAML based asset parsing (#1226)
+- Generate event function body according to settings (#1236)
+- Classes implementing editor interfaces no longer marked as unused (#686, #1167)
 
 Fixed:
-
-- Fix parse errors in YAML for strings that begin with quotes, braces or tildes (#1169, RIDER-27475, #1192)
-- Fix errors in scene files for unresolved methods (RIDER-27445, #1178, #1174)
-- Fix rename of script components not being able to update correctly (#1196)
+- Fix filtering of event function code completion in ReSharper (#1245, DEXP-454736, #1255)
 
 See CHANGELOG.md in the project repo for more details and history.
 </releaseNotes>
