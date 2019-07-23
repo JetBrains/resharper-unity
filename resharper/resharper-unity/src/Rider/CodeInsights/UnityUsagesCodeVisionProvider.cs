@@ -9,10 +9,10 @@ using JetBrains.ReSharper.Host.Features.CodeInsights.Providers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.VB.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
@@ -57,6 +57,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             if (declaredElement is IMethod method)
             {
+                if (!method.GetSolution().GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled.Value)
+                    return false;
+                
+                if (!method.GetSolution().GetComponent<AssetSerializationMode>().IsForceText)
+                    return false;
+
                 var cache = method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>();
                 return cache.IsEventHandler(method);
             }
