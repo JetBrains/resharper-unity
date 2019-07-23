@@ -8,8 +8,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
     {
         public new const string Name = "CG";
         
-        [CanBeNull]
-        public static readonly CgLanguage Instance = null;
+        [CanBeNull, UsedImplicitly]
+        public static CgLanguage Instance { get; private set; }
 
         public CgLanguage() : base(Name, "Cg")
         {

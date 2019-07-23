@@ -3,6 +3,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -15,9 +16,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         HighlightingTypes = new[] { typeof(ExplicitTagStringComparisonWarning), typeof(UnknownTagWarning) })]
     public class CompareTagProblemAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
     {
-        public CompareTagProblemAnalyzer(UnityApi unityApi)
+        private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly UnityYamlSupport myUnityYamlSupport;
+
+        public CompareTagProblemAnalyzer(UnityApi unityApi, AssetSerializationMode assetSerializationMode,
+            UnityYamlSupport unityYamlSupport)
             : base(unityApi)
         {
+            myAssetSerializationMode = assetSerializationMode;
+            myUnityYamlSupport = unityYamlSupport;
         }
 
         protected override void Analyze(IEqualityExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -57,6 +64,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         private void CheckTag(string value, ICSharpExpression expression, IHighlightingConsumer consumer)
         {
+            if (!myAssetSerializationMode.IsForceText) 
+                return;
+            
+            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
+                return;
+            
             var cache = expression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
 
             if (cache == null)

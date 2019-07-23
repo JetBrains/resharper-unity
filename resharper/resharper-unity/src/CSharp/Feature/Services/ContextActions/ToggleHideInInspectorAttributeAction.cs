@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
@@ -21,52 +22,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         Name = "Toggle 'HideInInspector' attribute on fields",
         Description =
             "Adds or removes the 'HideInInspector' attribute on a Unity serialized field, removing the field from the Inspector window.")]
-    public class ToggleHideInInspectorAttributeAction : IContextAction
+    public class ToggleHideInInspectorAttributeAction : AddInspectorAttributeAction
     {
         [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
-            new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
-
-        private readonly ICSharpContextActionDataProvider myDataProvider;
-
-        public ToggleHideInInspectorAttributeAction(ICSharpContextActionDataProvider dataProvider)
+            new SubmenuAnchor(ourBaseAnchor, SubmenuBehavior.Executable);
+    
+        public ToggleHideInInspectorAttributeAction(ICSharpContextActionDataProvider dataProvider) : base(dataProvider, ourSubmenuAnchor)
         {
-            myDataProvider = dataProvider;
         }
 
-        public IEnumerable<IntentionAction> CreateBulbItems()
+        protected override IClrTypeName AttributeTypeName => KnownTypes.HideInInspector;
+        protected override bool IsRemoveActionAvailable() => true;
+
+        public override BulbActionBase GetActionForOne(IMultipleFieldDeclaration multipleFieldDeclaration, IFieldDeclaration fieldDeclaration, IPsiModule module,
+            CSharpElementFactory elementFactory, IAttribute existingAttribute)
         {
-            var fieldDeclaration = myDataProvider.GetSelectedElement<IFieldDeclaration>();
-            var multipleFieldDeclaration = MultipleFieldDeclarationNavigator.GetByDeclarator(fieldDeclaration);
-            var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
-
-            if (!unityApi.IsSerialisedField(fieldDeclaration?.DeclaredElement) || multipleFieldDeclaration == null)
-                return EmptyList<IntentionAction>.Enumerable;
-
-            var existingAttribute = AttributeUtil.GetAttribute(fieldDeclaration, KnownTypes.HideInInspector);
-
-            if (multipleFieldDeclaration.Declarators.Count == 1)
-            {
-                return new ToggleHideInInspectorAll(multipleFieldDeclaration, myDataProvider.PsiModule,
-                    myDataProvider.ElementFactory, existingAttribute).ToContextActionIntentions();
-            }
-
-            return new[]
-            {
-                new ToggleHideInInspectorOne(fieldDeclaration, myDataProvider.PsiModule, myDataProvider.ElementFactory,
-                    existingAttribute).ToContextActionIntention(ourSubmenuAnchor),
-                new ToggleHideInInspectorAll(multipleFieldDeclaration, myDataProvider.PsiModule,
-                    myDataProvider.ElementFactory, existingAttribute).ToContextActionIntention(ourSubmenuAnchor)
-            };
+            return new ToggleHideInInspectorOne(multipleFieldDeclaration.Declarators.Count, fieldDeclaration, module, elementFactory, existingAttribute);
         }
 
-        public bool IsAvailable(IUserDataHolder cache)
+        public override BulbActionBase GetActionForAll(IMultipleFieldDeclaration multipleFieldDeclaration, IPsiModule module,
+            CSharpElementFactory elementFactory, IAttribute existingAttribute)
         {
-            if (!myDataProvider.Project.IsUnityProject())
-                return false;
-
-            var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
-            var fieldDeclaration = myDataProvider.GetSelectedElement<IFieldDeclaration>();
-            return unityApi.IsSerialisedField(fieldDeclaration?.DeclaredElement);
+            return new ToggleHideInInspectorAll(multipleFieldDeclaration, module, elementFactory, existingAttribute);
         }
 
         private class ToggleHideInInspectorAll : BulbActionBase
@@ -117,14 +94,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
         private class ToggleHideInInspectorOne : BulbActionBase
         {
+            private readonly int myDeclaratorsCount;
             private readonly IFieldDeclaration myFieldDeclaration;
             private readonly IPsiModule myPsiModule;
             private readonly CSharpElementFactory myElementFactory;
             private readonly IAttribute myExistingAttribute;
 
-            public ToggleHideInInspectorOne(IFieldDeclaration fieldDeclaration, IPsiModule psiModule,
+            public ToggleHideInInspectorOne(int declaratorsCount, IFieldDeclaration fieldDeclaration,
+                IPsiModule psiModule,
                 CSharpElementFactory elementFactory, IAttribute existingAttribute)
             {
+                myDeclaratorsCount = declaratorsCount;
                 myFieldDeclaration = fieldDeclaration;
                 myPsiModule = psiModule;
                 myElementFactory = elementFactory;
@@ -147,7 +127,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             public override string Text => myExistingAttribute != null
                 ? $"Remove 'HideInInspector' attribute from '{myFieldDeclaration.DeclaredName}'"
-                : $"Annotate field '{myFieldDeclaration.DeclaredName}' with 'HideInInspector' attribute";
+                : myDeclaratorsCount == 1 ? "Add 'HideInInspector'" : $"Annotate '{myFieldDeclaration.DeclaredName}' with 'HideInInspector' attribute";
         }
+        
     }
 }

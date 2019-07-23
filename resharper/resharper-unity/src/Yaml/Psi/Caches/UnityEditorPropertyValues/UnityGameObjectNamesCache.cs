@@ -64,6 +64,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 if (ourGameObjectReferenceStringSearcher.Find(buffer, 0, Math.Min(100, buffer.Length)) >= 0)
                 {
                     var anchor = GetAnchorFromBuffer(buffer);
+                    if (anchor == null)
+                        continue;
+                    
                     var name = GetNameFromBuffer(buffer);
                     if (name == null)
                         continue;
@@ -88,6 +91,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private void FillDictionary(Dictionary<string, string> result, IBuffer buffer)
         {
             var anchor = GetAnchorFromBuffer(buffer);
+            if (anchor == null)
+                return;
+
             var name = GetComponentNameFromBuffer(buffer);
             if (name == null)
                 return;

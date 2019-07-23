@@ -1,8 +1,8 @@
-using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -16,13 +16,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     })]
     public class CompareTagAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
-        public CompareTagAnalyzer([NotNull] UnityApi unityApi)
+        private readonly UnityYamlSupport myUnityYamlSupport;
+        private readonly AssetSerializationMode myAssetSerializationMode;
+
+        public CompareTagAnalyzer(UnityApi unityApi, AssetSerializationMode assetSerializationMode,
+            UnityYamlSupport unityYamlSupport)
             : base(unityApi)
         {
+            myAssetSerializationMode = assetSerializationMode;
+            myUnityYamlSupport = unityYamlSupport;
         }
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
+            if (!myAssetSerializationMode.IsForceText) 
+                return;
+            
+            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
+                return;
+            
             if (IsCompareTagMethod(element))
             {
                 var argument = element.ArgumentList.Arguments.FirstOrDefault();

@@ -1,4 +1,5 @@
-﻿using JetBrains.ProjectModel;
+﻿using JetBrains.Annotations;
+using JetBrains.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel
 {
@@ -8,7 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel
         public new const string Name = "SHADERLAB";
         public const string SHADERLAB_EXTENSION = ".shader";
 
-        public new static readonly ShaderLabProjectFileType Instance = null;
+        [CanBeNull, UsedImplicitly]
+        public new static ShaderLabProjectFileType Instance { get; private set; }
 
         public ShaderLabProjectFileType()
             : base(Name, "ShaderLab", new[] {SHADERLAB_EXTENSION})

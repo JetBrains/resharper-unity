@@ -17,6 +17,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
         {
           MainThreadDispatcher.Instance.Queue(() =>
           {
+            EditorUtility.FocusProjectWindow();
             if (findUsagesResult.IsPrefab)
             {
               ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
@@ -51,6 +52,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
         {
           MainThreadDispatcher.Instance.Queue(() =>
           {
+            EditorUtility.FocusProjectWindow();
             ShowUtil.ShowFileUsage(result);
           });  
         }

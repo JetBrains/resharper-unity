@@ -49,6 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                     EatUntilDocumentEnd();
                     return;
                 }
+                
                 switch (myBuffer[myCurOffset])
                 {
                     case '%':
@@ -126,15 +127,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                         myTokenNodeType = UnityYamlTokenType.DOCUMENT;
                         break;
                     }
-                    
-                    if (myBuffer[myCurOffset] == '\r')
+
+                    var curChar = myBuffer[myCurOffset];
+                    if (curChar == '\r')
                     {
                         myCurrentLineOffset = 0;
                         myCurOffset++;
                         continue;
                     }
 
-                    if (myBuffer[myCurOffset] == '\n')
+                    if (curChar == '\n')
                     {
                         myCurrentLineOffset = 0;
                         myCurOffset++;
@@ -142,7 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                     }
                     
                     if (myCurrentLineOffset == 0 && myCurOffset + 2 <= myEndOffset && (
-                            (myBuffer[myCurOffset] == '-' && myBuffer[myCurOffset + 1] == '-' &&
+                            (curChar == '-' && myBuffer[myCurOffset + 1] == '-' &&
                              myBuffer[myCurOffset + 2] == '-')))
                     {
                         

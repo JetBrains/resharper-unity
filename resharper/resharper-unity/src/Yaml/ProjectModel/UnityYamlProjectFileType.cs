@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 
@@ -8,7 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
     {
         public new const string Name = "UnityYaml";
 
-        public new static readonly UnityYamlProjectFileType Instance = null;
+        [CanBeNull, UsedImplicitly]
+        public new static UnityYamlProjectFileType Instance { get; private set; }
 
         public UnityYamlProjectFileType()
             : base(Name, "Unity Yaml", UnityYamlFileExtensions.AllFileExtensionsWithDot)

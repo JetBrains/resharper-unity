@@ -1,0 +1,6 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    [Range(0, 1{caret})] [SerializeField] public int myValue;
+}
