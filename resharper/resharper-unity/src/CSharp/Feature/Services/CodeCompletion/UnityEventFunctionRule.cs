@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
+using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
@@ -14,18 +16,18 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupI
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.LookupItems.Presentation;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
+using JetBrains.ReSharper.Feature.Services.Descriptions;
 using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.ExpectedTypes;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Text;
 using JetBrains.TextControl;
+using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 using JetBrains.Util;
 
@@ -153,7 +155,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // Secondary sort order is OrderString, which is usually display text, but can be overridden.
 
             // Generated items get a boost over normal declared element items
-            item.Placement.Relevance |= (long) CLRLookupItemRelevance.GenerateItems;
+            item.Placement.Relevance |= (long) (CLRLookupItemRelevance.GenerateItems | CLRLookupItemRelevance.Methods |
+                                                CLRLookupItemRelevance.MemberOfCurrentType);
 
             // Set high selection priority to push us further up, unless it's undocumented, in which case, give it a
             // smaller selection boost
@@ -194,18 +197,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 accessRights = AccessRights.PRIVATE;
             }
 
+            // Note that we can't keep this declaration - it will become invalid as the user types to narrow down the
+            // search and modifies the PSI file. This only affects ReSharper, Rider has different code completion
+            // mechanism
             var factory = CSharpElementFactory.GetInstance(declaration, false);
             var methodDeclaration = eventFunction.CreateDeclaration(factory, declaration, accessRights);
             if (methodDeclaration.DeclaredElement == null)
                 return null;
-
-            var instance = new DeclaredElementInstance(methodDeclaration.DeclaredElement);
-
-            var declaredElementInfo = new DeclaredElementInfoWithoutParameterInfo(methodDeclaration.DeclaredName,
-                instance, CSharpLanguage.Instance, context.BasicContext.LookupItemsOwner, context)
-            {
-                Ranges = context.CompletionRanges
-            };
 
             // This is effectively the same as GenerateMemberPresentation, but without the overhead that comes
             // with the flexibility of formatting any time of declared element. We just hard code the format
@@ -236,7 +234,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             var psiIconManager = context.BasicContext.LookupItemsOwner.Services.PsiIconManager;
 
-            return LookupItemFactory.CreateLookupItem(declaredElementInfo)
+            var textualInfo = new TextualInfo(text, text) {Ranges = context.CompletionRanges};
+
+            var lookupItem = LookupItemFactory.CreateLookupItem(textualInfo)
                 .WithPresentation(item =>
                 {
                     var displayName = new RichText($"{modifier}{text} {{ ... }}");
@@ -247,14 +247,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                         TextRange.FromLength(parameterStartOffset, displayName.Length - parameterStartOffset));
                     LookupUtil.AddEmphasize(displayName, new TextRange(modifier.Length, displayName.Length));
 
-                    var image = psiIconManager.GetImage(methodDeclaration.DeclaredElement,
-                        methodDeclaration.DeclaredElement.PresentationLanguage, true);
+                    var image = psiIconManager.GetImage(CLRDeclaredElementType.METHOD);
+                    psiIconManager.AttachExtensions(image, GetAccessExtensions(accessRights));
                     var marker = item.Info.Ranges.CreateVisualReplaceRangeMarker();
                     return new SimplePresentation(displayName, image, marker);
                 })
-                .WithBehavior(_ => new UnityEventFunctionBehavior(myShellLocks, declaredElementInfo, eventFunction, accessRights))
+                .WithBehavior(_ => new UnityEventFunctionBehavior(myShellLocks, textualInfo, eventFunction, accessRights))
                 .WithMatcher(_ =>
-                    new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, declaredElementInfo));
+                    new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, textualInfo));
+
+            var description = GetDescription(context, methodDeclaration);
+            return new WrappedLookupItem(lookupItem, description);
+        }
+
+        private RichTextBlock GetDescription(CSharpCodeCompletionContext context, IMethodDeclaration methodDeclaration)
+        {
+            if (methodDeclaration.DeclaredElement == null)
+                return null;
+
+            var presenter = context.BasicContext.Solution.GetComponent<IDeclaredElementDescriptionPresenter>();
+            var richTextBlock = new RichTextBlock(new RichTextBlockParameters(1));
+            var psiLanguageType = methodDeclaration.Language;
+            var declaredElementInstance = new DeclaredElementInstance(methodDeclaration.DeclaredElement);
+            richTextBlock.Add(DeclaredElementPresenter.Format(psiLanguageType, ourPresenter, declaredElementInstance)
+                .Capitalize());
+            var description = presenter.GetDeclaredElementDescription(methodDeclaration.DeclaredElement,
+                DeclaredElementDescriptionStyle.SUMMARY_STYLE, psiLanguageType);
+            if (!RichTextBlock.IsNullOrEmpty(description)) richTextBlock.AddLines(description);
+
+            return richTextBlock;
         }
 
         [ContractAnnotation("=> false, classDeclaration: null; => true, classDeclaration: notnull")]
@@ -405,36 +426,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return completionNode.GetContainingNode<IClassDeclaration>();
         }
 
-        // The code completion tooltip tries to show parameter info, if available. We already show this as part of the
-        // lookup item text, so it's pointless showing it again. If there aren't any parameter info candidates, the
-        // tooltip will show a custom description via IDescriptionProvidingLookupItem, which LookupItem<T> doesn't
-        // implement. Fortunately, it also falls back to showing the standard declared element description, so we'll
-        // get a proper description after all.
-        private class DeclaredElementInfoWithoutParameterInfo : DeclaredElementInfo
+        private static PsiIconExtension GetAccessExtensions(AccessRights access)
         {
-            public DeclaredElementInfoWithoutParameterInfo(string methodDeclaredName, DeclaredElementInstance instance,
-                                                           PsiLanguageType language,
-                                                           ILookupItemsOwner lookupItemsOwner,
-                                                           IElementPointerFactory elementPointerFactory)
-                : base(methodDeclaredName, instance, language, lookupItemsOwner, elementPointerFactory)
+            switch (access)
             {
+                case AccessRights.PUBLIC:
+                    return PsiIconExtension.Public;
+                case AccessRights.INTERNAL:
+                    return PsiIconExtension.Internal;
+                case AccessRights.PRIVATE:
+                    return PsiIconExtension.Private;
+                case AccessRights.PROTECTED:
+                case AccessRights.PROTECTED_AND_INTERNAL:
+                    return PsiIconExtension.Protected;
+                case AccessRights.PROTECTED_OR_INTERNAL:
+                    return PsiIconExtension.ProtectedInternal;
+                case AccessRights.NONE:
+                    return PsiIconExtension.None;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(access), access, null);
             }
-
-            public override bool HasCandidates => false;
-            public override IEnumerable<InvocationCandidate> Candidates => EmptyList<InvocationCandidate>.Enumerable;
         }
 
         // DeclaredElementMatcher can take a custom text to match against, but ReSharper applies the matching result to
         // the display text, so it looks wrong. Interestingly, Rider gets it right. Don't know why they're difference.
         // This class will shift the match result by a given value. It assumes that the custom text is the tail of the
         // display text and makes no other modifications to the matched offsets
-        private class ShiftedDeclaredElementMatcher : DeclaredElementMatcher
+        private class ShiftedDeclaredElementMatcher : TextualMatcher<TextualInfo>
         {
             private readonly int myShiftOffset;
 
-            public ShiftedDeclaredElementMatcher(string customText, int shiftOffset,
-                                                 DeclaredElementInfo declaredElementInfo)
-                : base(customText, declaredElementInfo)
+            public ShiftedDeclaredElementMatcher(string customText, int shiftOffset, TextualInfo textualInfo)
+                : base(customText, textualInfo)
             {
                 myShiftOffset = shiftOffset;
             }
@@ -444,6 +467,82 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var result = base.Match(prefixMatcher);
                 return result?.Shift(myShiftOffset);
             }
+        }
+
+        private static readonly DeclaredElementPresenterStyle ourPresenter = new DeclaredElementPresenterStyle
+        {
+            ShowName = NameStyle.QUALIFIED,
+            ShowEntityKind = EntityKindForm.NORMAL,
+            ShowType = TypeStyle.DEFAULT,
+            ShowTypesQualified = false,
+            TextStyles = DeclaredElementPresenterTextStyles.ParameterInfo
+        };
+
+        private class WrappedLookupItem : IWrappedLookupItem, IDescriptionProvidingLookupItem
+        {
+            private readonly ILookupItem myLookupItem;
+            [CanBeNull] private readonly RichTextBlock myDescription;
+
+            public WrappedLookupItem(ILookupItem lookupItem, [CanBeNull] RichTextBlock description)
+            {
+                myLookupItem = lookupItem;
+                myDescription = description;
+            }
+
+            public ILookupItem Item => myLookupItem;
+
+            public RichTextBlock GetDescription() => myDescription;
+
+            #region Delegation
+
+            public bool AcceptIfOnlyMatched(LookupItemAcceptanceContext itemAcceptanceContext)
+            {
+                return myLookupItem.AcceptIfOnlyMatched(itemAcceptanceContext);
+            }
+
+            public MatchingResult Match(PrefixMatcher prefixMatcher)
+            {
+                return myLookupItem.Match(prefixMatcher);
+            }
+
+            public void Accept(ITextControl textControl, DocumentRange nameRange, LookupItemInsertType insertType, Suffix suffix,
+                               ISolution solution, bool keepCaretStill)
+            {
+                myLookupItem.Accept(textControl, nameRange, insertType, suffix, solution, keepCaretStill);
+            }
+
+            public DocumentRange GetVisualReplaceRange(DocumentRange nameRange)
+            {
+                return myLookupItem.GetVisualReplaceRange(nameRange);
+            }
+
+            public bool Shrink()
+            {
+                return myLookupItem.Shrink();
+            }
+
+            public void Unshrink()
+            {
+                myLookupItem.Unshrink();
+            }
+
+            public LookupItemPlacement Placement => myLookupItem.Placement;
+
+            public IconId Image => myLookupItem.Image;
+
+            public RichText DisplayName => myLookupItem.DisplayName;
+
+            public RichText DisplayTypeName => myLookupItem.DisplayTypeName;
+
+            public bool CanShrink => myLookupItem.CanShrink;
+
+            public bool IsDynamic => myLookupItem.IsDynamic;
+
+            public bool IgnoreSoftOnSpace => myLookupItem.IgnoreSoftOnSpace;
+
+            public int Identity => myLookupItem.Identity;
+
+            #endregion
         }
     }
 }

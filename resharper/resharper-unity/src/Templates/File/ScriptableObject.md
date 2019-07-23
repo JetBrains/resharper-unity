@@ -18,11 +18,9 @@ MENUNAME-expression: complete()
 # Scriptable Object
 
 ```
-$HEADER$using UnityEngine;
-
-namespace $NAMESPACE$ {
-  [CreateAssetMenu(fileName = "$FILENAME$", menuName = "$MENUNAME$", order = 0)]
-  public class $CLASS$ : ScriptableObject 
+$HEADER$namespace $NAMESPACE$ {
+  [UnityEngine.CreateAssetMenu(fileName = "$FILENAME$", menuName = "$MENUNAME$", order = 0)]
+  public class $CLASS$ : UnityEngine.ScriptableObject
   {
     $END$
   }

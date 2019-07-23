@@ -16,11 +16,8 @@ NAMESPACE-expression: fileDefaultNamespace()
 # Asset Postprocessor
 
 ```
-$HEADER$using UnityEngine;
-using UnityEditor;
-
-namespace $NAMESPACE$ {
-  public class $CLASS$ : AssetPostprocessor
+$HEADER$namespace $NAMESPACE$ {
+  public class $CLASS$ : UnityEditor.AssetPostprocessor
   {
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
     {

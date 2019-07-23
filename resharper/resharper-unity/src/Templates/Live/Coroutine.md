@@ -4,19 +4,17 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: InCSharpTypeMember(minimumLanguageVersion=2.0);InUnityCSharpFile
+scopes: InCSharpTypeMember(minimumLanguageVersion=2.0);MustBeInUnityCSharpFile
 parameterOrder: NAME
-
 ---
 
 # cor
 
-Create coroutine
+Unity coroutine method
 
 ```
 private System.Collections.IEnumerator $NAME$()
 {
-  $END$
-  yield break;
+  $END$yield break;
 }
 ```

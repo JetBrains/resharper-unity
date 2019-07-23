@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.Application.DataContext;
@@ -8,8 +7,6 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Navigation.ContextNavigation;
 using JetBrains.ReSharper.Feature.Services.Navigation.ExecutionHosting;
 using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
-using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Features.Navigation.Features.Usages;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 
@@ -24,23 +21,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.G
         {
         }
 
-        
+
         public IEnumerable<ContextNavigation> CreateWorkflow(IDataContext dataContext)
         {
             var solution = dataContext.GetData(ProjectModelDataConstants.SOLUTION);
             if (solution == null)
                 yield break;
-            
+
             var solutionTracker = solution.GetComponent<UnitySolutionTracker>();
             if (!solutionTracker.IsUnityProject.HasTrueValue())
                 yield break;
-            
+
             var navigationExecutionHost = DefaultNavigationExecutionHost.GetInstance(solution);
-    
+
             var execution = GetSearchesExecution(dataContext, navigationExecutionHost);
             if (execution != null)
             {
-                yield return new ContextNavigation("U&nity Usages of Symbol", "FindUnityUsages",
+                yield return new ContextNavigation("Unity Usages of Symbol", "FindUnityUsages",
                     NavigationActionGroup.Important, execution);
             }
         }

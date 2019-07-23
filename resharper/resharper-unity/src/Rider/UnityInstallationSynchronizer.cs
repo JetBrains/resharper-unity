@@ -29,26 +29,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private static void NotifyFrontend(UnityHost host, UnityVersion unityVersion)
         {
             var version = unityVersion.GetActualVersionForSolution();
-            var path = unityVersion.GetActualAppPathForSolution();
-            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX && !path.ExistsDirectory
-                || PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX && !path.ExistsFile)
+            var applicationPath = unityVersion.GetActualAppPathForSolution();
+
+            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX && !applicationPath.ExistsDirectory
+                || PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX && !applicationPath.ExistsFile)
             {
                 var info = UnityInstallationFinder.GetApplicationInfo(version);
                 if (info == null)
                     return;
-                path = info.Path;
+                applicationPath = info.Path;
                 version = info.Version;
             }
-            
+
             host.PerformModelAction(rd =>
             {
-                // ApplicationPath may be already set via UnityEditorProtocol, which is more accurate
+                // ApplicationPath may be already set via UnityEditorProtocol, which will obviously be correct
                 if (!rd.ApplicationPath.HasValue())
-                    rd.ApplicationPath.SetValue(path.FullPath);
+                    rd.ApplicationPath.SetValue(applicationPath.FullPath);
+
                 if (!rd.ApplicationContentsPath.HasValue())
                 {
-                    var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(path);
-                    if (contentsPath != null)
+                    var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(applicationPath);
+                    if (!contentsPath.IsEmpty)
                         rd.ApplicationContentsPath.SetValue(contentsPath.FullPath);
                 }
                 if (!rd.ApplicationVersion.HasValue() && version != null)

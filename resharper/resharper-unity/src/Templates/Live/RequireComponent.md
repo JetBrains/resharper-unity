@@ -4,14 +4,14 @@ type: Live
 reformat: True
 shortenReferences: True
 categories: unity
-scopes: IsAvailableForClassAttribute;InUnityCSharpFile
+scopes: InCSharpTypeAndNamespace;MustBeInUnityCSharpFile
 parameterOrder: TYPE
 TYPE-expression: complete()
 ---
 
 # reqcomp
 
-RequireComponent(typeof(...))
+Unity RequireComponent attribute
 
 ```
 [UnityEngine.RequireComponent(typeof($TYPE$))]

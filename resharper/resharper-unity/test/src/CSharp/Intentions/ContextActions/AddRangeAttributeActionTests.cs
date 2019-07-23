@@ -23,7 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActio
 
         [Test] public void TestAddAttribute() { DoNamedTest2(); }
         [Test] public void TestAddToExistingAttributes() { DoNamedTest2(); }
-        [Test] public void TestAddAttributeToAllFields() { DoNamedTest2(); }
         [Test] public void TestAddToOneOfMultipleFields() { DoNamedTest2(); }
     }
 }
