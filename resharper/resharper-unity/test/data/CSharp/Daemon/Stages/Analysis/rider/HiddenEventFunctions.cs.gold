@@ -71,15 +71,15 @@ public class |Derived|(12) : Base
 (12): ReSharper Unity Implicitly Used Identifier: 
 (13): ReSharper Unity Implicitly Used Identifier: 
 (14): UnityCodeInsights: 
-(15): ReSharper Hides: Hides method from class 'Base'(click to navigate)
+(15): ReSharper Hides: Hides method from class 'Base' (click to navigate)
 (16): ReSharper Unity Implicitly Used Identifier: 
 (17): UnityCodeInsights: 
-(18): ReSharper Hides: Hides method from class 'Base'(click to navigate)
+(18): ReSharper Hides: Hides method from class 'Base' (click to navigate)
 (19): ReSharper Unity Implicitly Used Identifier: 
 (20): UnityCodeInsights: 
-(21): ReSharper Hides: Hides method from class 'Base'(click to navigate)
+(21): ReSharper Hides: Hides method from class 'Base' (click to navigate)
 (22): ReSharper Unity Implicitly Used Identifier: 
 (23): UnityCodeInsights: 
-(24): ReSharper Hides: Hides Unity event function from class 'Base'(click to navigate)
+(24): ReSharper Hides: Hides Unity event function from class 'Base' (click to navigate)
 (25): ReSharper Unity Implicitly Used Identifier: 
 (26): UnityCodeInsights: 

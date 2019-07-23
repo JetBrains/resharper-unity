@@ -17,7 +17,7 @@ using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
-    public class UnityExternalFilesPsiModule : UserDataHolder, IPsiModuleOnFileSystemPaths
+    public class UnityExternalFilesPsiModule : UserDataHolder, IPsiModuleOnFileSystemPaths, IResourceModule
     {
         [NotNull] private readonly ISolution mySolution;
         private readonly string myPersistentId;
