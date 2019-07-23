@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.Serialization;
+using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
@@ -16,6 +17,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     [Language(typeof(YamlLanguage))]
     public class YamlTrigramIndexBuilder : ITrigramIndexBuilder
     {
+        private readonly ILogger myLogger;
+
+        public YamlTrigramIndexBuilder(ILogger logger)
+        {
+            myLogger = logger;
+        }
+        
         public int[] Build(IPsiSourceFile sourceFile, SeldomInterruptChecker interruptChecker)
         {
             var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
@@ -27,9 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 TrigramIndexEntryBuilder indexEntryBuilder = new TrigramIndexEntryBuilder(unsafeWriterCookie);
                 foreach (var yamlDocument in file.Documents)
                 {
-                    if (UnityYamlReferenceUtil.CanContainReference(yamlDocument.GetTextAsBuffer()))
-                        foreach (TrigramToken trigramToken in new BufferTrigramSource(yamlDocument.GetTextAsBuffer()))
-                            indexEntryBuilder.Add(trigramToken);
+                    foreach (TrigramToken trigramToken in new BufferTrigramSource(yamlDocument.GetTextAsBuffer()))
+                        indexEntryBuilder.Add(trigramToken);
                 }
 
                 UnsafeIntArray entryData = indexEntryBuilder.Build();
@@ -39,7 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         public int[] Build(IDocument document, SeldomInterruptChecker interruptChecker, string displayName)
         {
-            throw new NotImplementedException("Not supported operation for yaml files");
+            myLogger.Error("Unsupported operation for yaml file");
+            return Array.Empty<int>();
         }
     }
 }
