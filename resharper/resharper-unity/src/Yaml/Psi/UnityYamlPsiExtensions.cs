@@ -69,6 +69,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 return ((guid != null ? guid.GetHashCode() : 0) * 397) ^ (fileID != null ? fileID.GetHashCode() : 0);
             }
         }
+
+        public FileID WithGuid(string newGuid)
+        {
+            return new FileID(newGuid, fileID);
+        }
     }
     // ReSharper restore InconsistentNaming
 
@@ -191,6 +196,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             var properties = GetDocumentBlockNodeProperties(document.Body.BlockNode);
             return properties?.AnchorProperty?.Text?.GetText();
+        }
+        
+        public static INode GetValue(this IBlockMappingNode document, string key)
+        {
+            return document?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText(key))?.Content?.Value;
         }
     }
 }

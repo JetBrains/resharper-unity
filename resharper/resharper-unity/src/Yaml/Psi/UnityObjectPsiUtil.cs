@@ -4,6 +4,7 @@ using System.Text;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -48,27 +49,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         /// <param name="componentDocument">GameObject's component</param>
         /// <returns></returns>
         [NotNull]
-        public static string GetGameObjectPathFromComponent([NotNull] UnitySceneProcessor sceneProcessor, [NotNull] IYamlDocument componentDocument)
+        public static string GetGameObjectPathFromComponent([NotNull] UnitySceneDataLocalCache localCache, [NotNull] IPsiSourceFile file, string anchor)
         {
-            var consumer = new UnityPathSceneConsumer();
-            sceneProcessor.ProcessSceneHierarchyFromComponentToRoot(componentDocument, consumer);
+            var consumer = new UnityPathCachedSceneConsumer();
+            localCache.ProcessSceneHierarchyFromComponentToRoot(file, anchor, consumer);
 
             var parts = consumer.NameParts;
 
             if (parts.Count == 0)
-                return "Unknown";
+                return "...";
 
-            if (parts.Count == 1)
-                return parts[0];
-
-            var sb = new StringBuilder();
-            for (var i = parts.Count - 1; i >= 0; i--)
-            {
-                sb.Append(parts[i]);
-                sb.Append("\\");
-            }
-
-            return sb.ToString();
+            return string.Join("\\", parts);
         }
 
         public static IBlockMappingNode GetPrefabModification(IYamlDocument yamlDocument)

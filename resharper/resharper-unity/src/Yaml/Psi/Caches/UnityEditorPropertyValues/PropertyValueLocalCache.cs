@@ -65,7 +65,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
             private bool Equals(MonoBehaviorPropertyValueBox other)
             {
-                return myHashObj.Equals(other.myHashObj);
+                var hashObjEq = myHashObj.Equals(other.myHashObj);
+                
+                // this helps query count without knowing source file in `GetValueCount` for specific monobehavior property
+                if (other.BoxedValue == null || BoxedValue == null) 
+                {
+                    return hashObjEq;
+                }
+                else
+                {
+                    // we should never allow to store MonoBehaviorPropertyValueBox in `myUniquePropertyValues` without BoxedValue
+                    return hashObjEq && other.BoxedValue.File.Equals(BoxedValue.File);
+                }
+                
             }
 
             public override bool Equals(object obj)
@@ -140,6 +152,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
         }
         
+        
+        // Different indices for queries from local stage. All queries should take O(1)
         private readonly OneToCompactCountingSet<MonoBehaviourPropertyWithFile, object> myValueCountPerPropertyAndFile = 
             new OneToCompactCountingSet<MonoBehaviourPropertyWithFile, object>();
         

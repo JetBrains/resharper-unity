@@ -1,12 +1,10 @@
-using System.Drawing;
-using System.Linq;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Presentation;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.UI.RichText;
@@ -23,10 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         protected override RichText GetDisplayText(OccurrencePresentationOptions options, RangeOccurrence rangeOccurrence)
         {
-
-            // false to show full scene path. Very expensive
             var processor = rangeOccurrence.GetSolution().NotNull("rangeOccurrence.GetSolution() != null")
-                .GetComponent<UnitySceneProcessor>();
+                .GetComponent<UnitySceneDataLocalCache>();
             var occurrence = (rangeOccurrence as UnityEditorOccurrence).NotNull("rangeOccurrence as UnityEditorOccurrence != null");
             var reference = (occurrence.PrimaryReference as IUnityYamlReference).NotNull("occurrence.PrimaryReference as IUnityYamlReference != null");
 
@@ -43,18 +39,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             var displayText = GetDisplayText(options, unityOccurrence) + OccurrencePresentationUtil.TextContainerDelimiter;
             descriptor.Text = displayText;
-            OccurrencePresentationUtil.AppendRelatedFile(descriptor, unityOccurrence.SourceFile.DisplayName);
+            OccurrencePresentationUtil.AppendRelatedFile(descriptor, unityOccurrence.SourceFile.DisplayName.Replace('\\', '/'));
             
             descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
             return true;
         }
         
-        public static string GetAttachedGameObjectName(UnitySceneProcessor sceneProcessor, IYamlDocument document) {
+        public static string GetAttachedGameObjectName(UnitySceneDataLocalCache cache, IYamlDocument document) {
     
-            // false to show full scene path. Very expensive
-            var unityPathSceneConsumer = new UnityPathSceneConsumer(true);
-            sceneProcessor.ProcessSceneHierarchyFromComponentToRoot(document, unityPathSceneConsumer);
-            return unityPathSceneConsumer.NameParts.FirstOrDefault() ?? "Unknown";
+            var consumer = new UnityPathCachedSceneConsumer();
+            cache.ProcessSceneHierarchyFromComponentToRoot(document, consumer);
+
+            var parts = consumer.NameParts;
+            if (parts.Count == 0)
+                return "...";
+            return string.Join("/", consumer.NameParts);
         }
     }
 }

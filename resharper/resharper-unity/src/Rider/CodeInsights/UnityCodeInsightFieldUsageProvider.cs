@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
@@ -48,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly UnityApi myUnityApi;
         private readonly IPsiFiles myFiles;
         private readonly UnityHost myUnityHost;
-        private readonly UnitySceneProcessor mySceneProcessor;
+        private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
         public override string ProviderId => "Unity serialized field";
         public override string DisplayName => "Unity serialized field";
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
@@ -57,24 +58,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             new[] {new CodeLensRelativeOrderingLast()};
 
         public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
-            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneProcessor sceneProcessor)
+            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneDataLocalCache sceneDataCache)
             : base(unitySolutionTracker, host, bulbMenu)
         {
             myConnectionTracker = connectionTracker;
             myUnityApi = unityApi;
             myFiles = files;
             myUnityHost = unityHost;
-            mySceneProcessor = sceneProcessor;
+            myUnitySceneDataLocalCache = sceneDataCache;
         }
         
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
         {
+            Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
+            
             var containingType = (declaredElement as IClrDeclaredElement)?.GetContainingType();
             if (containingType == null)
                 return null;
 
             var sourceFile = declaredElement.GetSourceFiles().FirstOrDefault();
             if (sourceFile == null)
+                return null;
+
+            if (!sourceFile.IsValid())
                 return null;
 
             var guid = solution.GetComponent<MetaFileGuidCache>().GetAssetGuid(sourceFile);
@@ -103,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             return;
 
                         
-                        var valuesCache = solution.GetComponent<UnityPropertyValueCache>();
+                        var valuesCache = solution.GetComponent<UnitySceneDataLocalCache>();
                         var values = valuesCache.GetPropertyValues(result.Value.guid, result.Value.propertyName);
 
                         menu.Caption.Value = WindowlessControlAutomation.Create("Inspector values");
@@ -155,23 +161,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                                 return;
                             
                             var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
-                            using (ReadLockCookie.Create())
-                            {
-                                myFiles.CommitAllDocumentsAsync(() =>
-                                {
-                                    var file = value.File.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
-                                    if (file == null)
-                                        return;
-
-                                    var document = file.FindDocumentByAnchor(value.Value.MonoBehaviour);
-                                    if (document == null)
-                                        return;
-                                    var request = UnityEditorFindUsageResultCreator.CreateRequest(
-                                        solution.SolutionDirectory, mySceneProcessor, document);
-                                    myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(request));
-                                    UnityFocusUtil.FocusUnity(myUnityHost.GetValue(t => t.UnityProcessId.Value));
-                                });
-                            }
+                            
+                            UnityEditorFindUsageResultCreator.CreateRequestAndShow(myUnityHost, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
+                                value.Value.MonoBehaviour, value.File);
                         });
                     });
             }
@@ -180,9 +172,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private string GetPresentation(MonoBehaviourPropertyValueWithLocation monoBehaviourPropertyValueWithLocation,
             UnityPresentationType unityPresentationType, IType enumType, ISolution solution, IPsiModule psiModule)
         {
-            if (monoBehaviourPropertyValueWithLocation.Value is MonoBehaviourPrimitiveValue primitiveValue)
+            if (monoBehaviourPropertyValueWithLocation.Value is MonoBehaviourPrimitiveValue)
             {
-                return GetRiderPresentation(unityPresentationType, primitiveValue.PrimitiveValue, enumType, psiModule);
+                return GetRiderPresentation(unityPresentationType, monoBehaviourPropertyValueWithLocation.GetSimplePresentation(solution), enumType, psiModule);
             }
             else
             {
@@ -230,6 +222,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             string tooltip = "Values from Unity Editor Inspector";
 
             var solution = element.GetSolution();
+            Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
             var result = GetAssetGuidAndPropertyName(solution, declaredElement);
             if (!result.HasValue)
@@ -238,7 +231,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var guid = result.Value.guid;
             var propertyName = result.Value.propertyName;
 
-            var cache = solution.GetComponent<UnityPropertyValueCache>();
+            var cache = solution.GetComponent<UnitySceneDataLocalCache>();
 
             var field = (declaredElement as IField).NotNull();
             var type = field.Type;
