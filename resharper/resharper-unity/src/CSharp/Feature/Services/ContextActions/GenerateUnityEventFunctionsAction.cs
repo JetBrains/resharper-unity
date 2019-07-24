@@ -33,8 +33,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var classDeclaration = node.GetContainingNode<IClassLikeDeclaration>();
 
             var fix = new GenerateUnityEventFunctionsFix(classDeclaration);
+            
+            //RIDER-30526
             var action = new IntentionAction(fix, PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id,
-            new SubmenuAnchor(IntentionsAnchors.LowPriorityContextActionsAnchor, SubmenuBehavior.Executable));
+            new SubmenuAnchor(BulbMenuAnchors.PermanentBackgroundItems, SubmenuBehavior.Executable));
 
             return new[] {action};
         }
