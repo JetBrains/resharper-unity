@@ -21,4 +21,4 @@ public class ||Test02|(3)|(4) : MonoBehaviour
 (4): Unity Gutter Icon: Unity script
 (5): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (6): ReSharper Unity Implicitly Used Identifier: 
-(7): Unity Gutter Icon: This field is initialised from Inspector
+(7): Unity Gutter Icon: This field is initialized from Inspector
