@@ -57,8 +57,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     consumer.AddImplicitConfigurableHighlighting(element);
                 }
-                myFieldUsageProvider.AddInspectorHighlighting(consumer, element, element.DeclaredElement,
-                    myIconHost.Transform(InsightUnityIcons.InsightUnity.Id));
+                myFieldUsageProvider.AddInspectorHighlighting(consumer, element, element.DeclaredElement, text,
+                    tooltip, text, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id), GetActions(element),
+                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
             }
         }
 

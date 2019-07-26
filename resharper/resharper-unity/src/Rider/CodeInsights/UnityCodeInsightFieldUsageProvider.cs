@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
@@ -12,6 +13,7 @@ using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Util;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
@@ -87,6 +89,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (guid == null)
                 return null;
 
+            // TODO [19.3] support several names for field 
+//            var formerlySerializedAs = AttributeUtil.GetAttribute(fieldDeclaration, KnownTypes.FormerlySerializedAsAttribute);
+//            var oldName = formerlySerializedAs?.Arguments.FirstOrDefault()?.Value?.ConstantValue?.Value as string;
+
             return (guid, declaredElement.ShortName);
         }
         
@@ -119,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                         foreach (var valueWithLocation in valuesToShow)
                         {
                             var value = valueWithLocation.Value;
-                            if (ShouldShowUnknownPresentation(value, presentationType))
+                            if (ShouldShowUnknownPresentation(presentationType))
                                 menu.ItemKeys.Add(valueWithLocation);
                             else
                                 menu.ItemKeys.Add(valueWithLocation);
@@ -131,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             var value = (e.Key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
 
                             string shortPresentation;
-                            if (ShouldShowUnknownPresentation(value.Value, presentationType))
+                            if (ShouldShowUnknownPresentation(presentationType))
                             {
                                 shortPresentation = "...";
                             }
@@ -195,7 +201,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             {
                 if (!int.TryParse(unityValue, out var result))
                     return  "...";
-                var intType = psiModule.GetPredefinedType().Int;
                 var @enum = enumType.GetTypeElement() as IEnum;
                 var enumMemberType = @enum?.EnumMembers.FirstOrDefault()?.ConstantValue.Type;
                 if (enumMemberType == null)
@@ -208,7 +213,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             return $"\"{unityValue ?? "..." }\"";
         }
         
-        private bool ShouldShowUnknownPresentation(MonoBehaviourPropertyValue value, UnityPresentationType presentationType)
+        private bool ShouldShowUnknownPresentation(UnityPresentationType presentationType)
         {
             return presentationType == UnityPresentationType.Other ||
                    presentationType == UnityPresentationType.ValueType;
@@ -216,7 +221,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         
         
         public void AddInspectorHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
-            IDeclaredElement declaredElement, IconModel iconModel)
+            IDeclaredElement declaredElement, string baseDisplayName, string baseTooltip, string moreText, IconModel iconModel,
+            IEnumerable<BulbMenuItem> items, List<CodeLensEntryExtraActionModel> extraActions)
         {
             string displayName = null;
             string tooltip = "Values from Unity Editor Inspector";
@@ -237,8 +243,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var type = field.Type;
             var presentationType = GetUnityPresentationType(type);
 
-            if  (!type.IsSimplePredefined() && presentationType != UnityPresentationType.FileId  && presentationType != UnityPresentationType.Enum)
+            if (ShouldShowUnknownPresentation(presentationType))
+            {
+                base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
+            }
             
             var initializer = (element as IFieldDeclaration).NotNull("element as IFieldDeclaration != null").Initial;
             var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue.Value;
@@ -246,38 +255,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
             var initValueCount = cache.GetValueCount(guid, propertyName, initValueUnityPresentation);
 
-            if (presentationType != UnityPresentationType.Other)
+            if (initValueCount == 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 1) // only modified value
             {
-                if (initValueCount == 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 1) // only modified value
-                {
-                    var valueWithLocations = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray(); 
-                    Assertion.Assert(valueWithLocations.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
-                    displayName = GetPresentation(valueWithLocations[0], presentationType, type, solution,element.GetPsiModule());
-                } else if (initValueCount > 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 2)  
-                {
-                    
-                    // original value & only one modified value
-                    var values = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray();
-                    Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
-                    
-                    var anotherValueWithLocation = values[0].Value.Value.Equals(initValueUnityPresentation) ? values[1] : values[0];
-                    displayName = GetPresentation(anotherValueWithLocation, presentationType, type, solution,element.GetPsiModule());
-                }
-            }
-            else
+                var valueWithLocations = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray(); 
+                Assertion.Assert(valueWithLocations.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
+                displayName = GetPresentation(valueWithLocations[0], presentationType, type, solution,element.GetPsiModule());
+            } else if (initValueCount > 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 2)  
             {
-                // do not show anything for not presentable types
-                return;
+                    
+                // original value & only one modified value
+                var values = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray();
+                Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
+                    
+                var anotherValueWithLocation = values[0].Value.Value.Equals(initValueUnityPresentation) ? values[1] : values[0];
+                displayName = GetPresentation(anotherValueWithLocation, presentationType, type, solution,element.GetPsiModule());
             }
             
             if (displayName == null)
             {
                 var count = cache.GetFilesWithPropertyCount(guid, propertyName) - cache.GetFilesCountWithoutChanges(guid, propertyName, initValueUnityPresentation);
                 if (count == 0)
-                    return;
-
-                var word = count == 1 ? "asset" : "assets";
-                displayName = $"Changed in {count} {word}";
+                {
+                    displayName = "Unchanged";
+                }
+                else
+                {
+                    var word = count == 1 ? "asset" : "assets";
+                    displayName = $"Changed in {count} {word}";
+                }
             }
 
             
