@@ -47,10 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
     
     public abstract class InitializeComponentContextActionBase<T> : IContextAction where T : class, ITypeOwnerDeclaration
     {
-        // TODO : 2 separate actions or nested?
         [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
             new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
-        [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor2 =
+        [NotNull] private static readonly SubmenuAnchor ourAttributeSubmenuAnchor =
             new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
         
         private readonly ICSharpContextActionDataProvider myDataProvider;
@@ -67,13 +66,57 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var classDeclaration = typeOwner.GetContainingNode<IClassDeclaration>();
             Assertion.Assert(classDeclaration != null, "classDeclaration != null");
 
-            return new[]
+            var type = typeOwner.Type;
+
+            if (!HasRequireComponentWithSameType(type, classDeclaration))
+                yield return new AddRequireComponentBulbActionBase(type, classDeclaration)
+                    .ToContextActionIntention(ourAttributeSubmenuAnchor);
+
+
+            if (!IsInitializedIn(classDeclaration, typeOwner.DeclaredElement, "Start") &&
+                !IsInitializedIn(classDeclaration, typeOwner.DeclaredElement, "Awake"))
             {
-                new InitializeComponentBulbActionBase(typeOwner.DeclaredName, typeOwner.Type.GetTypeElement(),
-                    classDeclaration, "Start").ToContextActionIntention(ourSubmenuAnchor),
-                new InitializeComponentBulbActionBase(typeOwner.DeclaredName, typeOwner.Type.GetTypeElement(),
-                    classDeclaration, "Awake").ToContextActionIntention(ourSubmenuAnchor2),
-            };
+                yield return new InitializeComponentBulbActionBase(typeOwner.DeclaredName, type.GetTypeElement(),
+                    classDeclaration, "Start").ToContextActionIntention(ourSubmenuAnchor);
+                yield return new InitializeComponentBulbActionBase(typeOwner.DeclaredName, type.GetTypeElement(),
+                    classDeclaration, "Awake").ToContextActionIntention(ourSubmenuAnchor);
+            }
+        }
+
+        private bool IsInitializedIn(IClassDeclaration classDeclaration, IDeclaredElement typeOwnerDeclaredElement, string methodName)
+        {
+            var method = MonoBehaviourMoveUtil.GetMonoBehaviourMethod(classDeclaration, methodName);
+            if (method == null)
+                return false;
+            
+            foreach (var assignmentExpression in method.Descendants<IAssignmentExpression>())
+            {
+                if (assignmentExpression.Dest is IReferenceExpression referenceExpression)
+                {
+                    var declaredElement = referenceExpression.Reference.Resolve().DeclaredElement;
+                    if (typeOwnerDeclaredElement.Equals(declaredElement))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool HasRequireComponentWithSameType(IType type, IClassDeclaration classDeclaration)
+        {
+            var existingAttributes = AttributeUtil.GetAttributes(classDeclaration, KnownTypes.RequireComponent);
+            foreach (var attribute in existingAttributes)
+            {
+                var argument = attribute.Arguments.FirstOrDefault();
+
+                if (argument?.Value is ITypeofExpression typeofExpression)
+                {
+                    if (typeofExpression.ArgumentType.Equals(type))
+                        return true;
+                }
+            }
+
+            return false;
         }
         
         public virtual bool IsAvailable(IUserDataHolder cache)
@@ -113,7 +156,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return null;
             }
 
-            public override string Text => $"Initialize at {myMethodName}";
+            public override string Text => $"Initialize in '{myMethodName}'";
+        }
+        
+        private class AddRequireComponentBulbActionBase : BulbActionBase
+        {
+            private readonly IType myType;
+            private readonly IClassDeclaration myClassDeclaration;
+            private readonly CSharpElementFactory myFactory;
+
+            public AddRequireComponentBulbActionBase(IType type, IClassDeclaration classDeclaration)
+            {
+                myType = type;
+                myClassDeclaration = classDeclaration;
+                myFactory = CSharpElementFactory.GetInstance(classDeclaration);
+            }
+
+            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
+            {
+                AttributeUtil.AddAttributeToSingleDeclaration(myClassDeclaration, KnownTypes.RequireComponent,
+                    new[] {new AttributeValue(myType)}, myClassDeclaration.GetPsiModule(), myFactory);
+                return null;
+            }
+
+            public override string Text => $"Add 'RequireComponent'";
         }
     }
 }
