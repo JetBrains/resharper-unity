@@ -157,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
         myLogger.Verbose("ActivateWindow: {0} {1}", process.Id, windowHandle);
         if (windowHandle != IntPtr.Zero)
         {
-          //User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
+          User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
           User32Dll.SetForegroundWindow(windowHandle);
         }
 
