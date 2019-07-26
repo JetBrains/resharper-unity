@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -12,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
     public static class AttributeUtil
     {
         [CanBeNull]
-        public static IAttribute AddAttributeToSingleDeclaration([CanBeNull] IFieldDeclaration fieldDeclaration,
+        public static IAttribute AddAttributeToSingleDeclaration([CanBeNull] IAttributesOwnerDeclaration fieldDeclaration,
                                                                  IClrTypeName attributeTypeName,
                                                                  [NotNull] AttributeValue[] attributeValues,
                                                                  IPsiModule module,
@@ -35,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         }
 
         [CanBeNull]
-        public static IAttribute AddAttributeToSingleDeclaration([CanBeNull] IFieldDeclaration fieldDeclaration,
+        public static IAttribute AddAttributeToSingleDeclaration([CanBeNull] IAttributesOwnerDeclaration fieldDeclaration,
             IClrTypeName attributeTypeName, IPsiModule module, CSharpElementFactory elementFactory)
         {
             return AddAttributeToSingleDeclaration(fieldDeclaration, attributeTypeName,
@@ -121,7 +122,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         public static IAttribute GetAttribute([CanBeNull] IAttributesOwnerDeclaration attributesOwner,
             IClrTypeName requiredAttributeTypeName)
         {
-            if (attributesOwner == null) return null;
+            return GetAttributes(attributesOwner, requiredAttributeTypeName).FirstOrDefault(null);
+        }
+        
+        public static IEnumerable<IAttribute> GetAttributes([CanBeNull] IAttributesOwnerDeclaration attributesOwner,
+            IClrTypeName requiredAttributeTypeName)
+        {
+            if (attributesOwner == null) yield break;
 
             foreach (var attribute in attributesOwner.AttributesEnumerable)
             {
@@ -129,11 +136,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 {
                     var attributeTypeName = typeElement.GetClrName();
                     if (Equals(attributeTypeName, requiredAttributeTypeName))
-                        return attribute;
+                        yield return attribute;
                 }
             }
-
-            return null;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName Space = new ClrTypeName("UnityEngine.SpaceAttribute");
         public static readonly IClrTypeName Header = new ClrTypeName("UnityEngine.HeaderAttribute");
         public static readonly IClrTypeName Tooltip = new ClrTypeName("UnityEngine.TooltipAttribute");
+        public static readonly IClrTypeName RequireComponent = new ClrTypeName("UnityEngine.RequireComponent");
         public static readonly IClrTypeName Range = new ClrTypeName("UnityEngine.RangeAttribute");
         public static readonly IClrTypeName ImageEffectAfterScale = new ClrTypeName("UnityEngine.ImageEffectAfterScale");
         public static readonly IClrTypeName ImageEffectAllowedInSceneView = new ClrTypeName("UnityEngine.ImageEffectAllowedInSceneView");
