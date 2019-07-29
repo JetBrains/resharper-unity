@@ -116,16 +116,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         private string GetReferenceName(ISolution solution, IPsiSourceFile file)
         {
-            var cache = solution.GetComponent<UnityGameObjectNamesCache>();
-            if (cache.Map.TryGetValue(file, out var anchorToName))
+            var pathProvider = solution.GetComponent<UnitySceneDataLocalCache>();
+            var consumer = new UnityPathCachedSceneConsumer();
+            pathProvider.ProcessSceneHierarchyFromComponentToRoot(file, LocalGameObjectAnchor, consumer);
+
+            var parts = consumer.NameParts;
+            if (parts.Count == 0)
             {
-                if (anchorToName.TryGetValue(Reference.fileID, out var name))
+                var cache = solution.GetComponent<UnityGameObjectNamesCache>();
+                if (cache.Map.TryGetValue(file, out var anchorToName))
                 {
-                    return name;
+                    if (anchorToName.TryGetValue(Reference.fileID, out var name))
+                    {
+                        return name;
+                    }
                 }
+                return "...";
+
             }
 
-            return "...";
+            return parts[parts.Count - 1];
         }
     }
 
