@@ -6,14 +6,12 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
-import com.intellij.openapi.editor.impl.EditorImpl
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
-import com.intellij.util.SingleAlarm
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.lifetime.onTermination
@@ -27,8 +25,8 @@ import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.util.idea.application
 
-class UnityAutoSaveConfigureNotification (project: Project, private val unityProjectDiscoverer: UnityProjectDiscoverer,
-                                          private val unityHost: UnityHost, solutionLifecycleHost: SolutionLifecycleHost) : LifetimedProjectComponent(project){
+class UnityAutoSaveConfigureNotification(project: Project, private val unityProjectDiscoverer: UnityProjectDiscoverer,
+                                         private val unityHost: UnityHost, solutionLifecycleHost: SolutionLifecycleHost) : LifetimedProjectComponent(project) {
 
     private val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance()
     private var lifetimeDefinition = componentLifetime.createNested()
@@ -43,6 +41,8 @@ class UnityAutoSaveConfigureNotification (project: Project, private val unityPro
             if (!propertiesComponent.getBoolean(settingName) && unityProjectDiscoverer.isUnityProject) {
 
                 val eventMulticaster = EditorFactory.getInstance().eventMulticaster
+                val generalSettings = GeneralSettings.getInstance()
+
                 val documentListener: DocumentListener = object : DocumentListener {
                     override fun documentChanged(event: DocumentEvent) {
                         if (unityHost.model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
@@ -57,7 +57,6 @@ class UnityAutoSaveConfigureNotification (project: Project, private val unityPro
                         if (!lifetimeDefinition.isAlive)
                             return
 
-                        val generalSettings = GeneralSettings.getInstance()
                         if (generalSettings.isAutoSaveIfInactive || generalSettings.isSaveOnFrameDeactivation) {
 
                             val editor = event.document.getFirstEditor(project) ?: return
@@ -87,42 +86,33 @@ class UnityAutoSaveConfigureNotification (project: Project, private val unityPro
         textEditor.putUserData(KEY, Any())
 
         // Do not show notification, when user leaves play mode and start typing in that moment
-        val alarm = SingleAlarm(Runnable {
+        if (unityHost.model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
+            return
 
-            if (unityHost.model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
-                return@Runnable
+        val panel = EditorNotificationPanel(LightColors.RED)
+        panel.setText("You are modifying a script while Unity Editor is being in Play Mode. This can lead to a loss of the state in your running game.")
 
-            val panel = EditorNotificationPanel(LightColors.RED)
-            panel.setText("You are modifying a script while Unity Editor is being in Play Mode. This can lead to a loss of the state in your running game.")
-
-            panel.createActionLabel("Configure Unity Editor") {
-                unityHost.model.showPreferences.fire()
-                lifetimeDefinition.terminate()
-            }
-
-            panel.createActionLabel("Don't show again") {
-                propertiesComponent.setValue(settingName, true)
-                lifetimeDefinition.terminate()
-            }
-
-            panel.createActionLabel("X") {
-                lifetimeDefinition.terminate()
-            }
-
-            lifetimeDefinition.onTermination {
-                if (textEditor.getUserData(KEY) != null) {
-                    FileEditorManager.getInstance(project).removeTopComponent(textEditor, panel)
-                    textEditor.putUserData(KEY, null)
-                }
-            }
-
-            FileEditorManager.getInstance(project).addTopComponent(textEditor, panel)
-        },1_500, (editor as? EditorImpl)?.disposable ?: return)
-
-        alarm.request()
-        lifetimeDefinition.onTermination {
-            alarm.dispose()
+        panel.createActionLabel("Configure Unity Editor") {
+            unityHost.model.showPreferences.fire()
+            lifetimeDefinition.terminate()
         }
 
+        panel.createActionLabel("Do not show again") {
+            propertiesComponent.setValue(settingName, true)
+            lifetimeDefinition.terminate()
+        }
+
+        panel.createActionLabel("X") {
+            lifetimeDefinition.terminate()
+        }
+
+        lifetimeDefinition.onTermination {
+            if (textEditor.getUserData(KEY) != null) {
+                FileEditorManager.getInstance(project).removeTopComponent(textEditor, panel)
+                textEditor.putUserData(KEY, null)
+            }
+        }
+
+        FileEditorManager.getInstance(project).addTopComponent(textEditor, panel)
     }
 }
