@@ -315,7 +315,7 @@ namespace JetBrains.Rider.Unity.Editor
           else
             model.ScriptCompilationDuringPlay.Set((int)PluginSettings.AssemblyReloadSettings);
 
-          AdviseShowPreferences(model, connectionLifetime);
+          AdviseShowPreferences(model, connectionLifetime, ourLogger);
           
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -330,7 +330,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static void AdviseShowPreferences(EditorPluginModel model, Lifetime connectionLifetime)
+    private static void AdviseShowPreferences(EditorPluginModel model, Lifetime connectionLifetime, ILog log)
     {
       model.ShowPreferences.Advise(connectionLifetime, result =>
       {
@@ -338,19 +338,43 @@ namespace JetBrains.Rider.Unity.Editor
         {
           MainThreadDispatcher.Instance.Queue(() =>
           {
-            var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+            try
+            {
+              var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
 
-            var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
-            if (type != null)
-            {
-              var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
-              method?.Invoke(null, new object[] {$"Preferences/{tab}"});
+              var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
+              if (type != null)
+              {
+                var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
+                method?.Invoke(null, new object[] {$"Preferences/{tab}"});
+                
+                if (method == null)
+                {
+                  log.Error("'OpenUserPreferences' was not found");
+                }
+                else
+                {
+                  method.Invoke(null, new object[] {$"Preferences/{tab}"});
+                }
+              }
+              else
+              {
+                type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
+                var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
+                
+                if (method == null)
+                {
+                  log.Error("'ShowPreferencesWindow' was not found");
+                }
+                else
+                {
+                  method.Invoke(null, null);
+                }
+              }
             }
-            else
+            catch (Exception ex)
             {
-              type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
-              var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
-              method?.Invoke(null, null);
+              log.Error("Show preferences " + ex);
             }
           });
         }
