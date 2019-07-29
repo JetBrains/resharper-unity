@@ -155,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                             }
 
                             e.Descriptor.Text = shortPresentation;
-                            OccurrencePresentationUtil.AppendRelatedFile(e.Descriptor, value.File.DisplayName);
+                            OccurrencePresentationUtil.AppendRelatedFile(e.Descriptor, value.File.DisplayName.Replace("\\", "/"));
 
                             e.Descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
                             e.Descriptor.Style = MenuItemStyle.Enabled;
