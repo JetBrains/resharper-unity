@@ -345,8 +345,8 @@ namespace JetBrains.Rider.Unity.Editor
               var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
               if (type != null)
               {
+                // 2018+
                 var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
-                method?.Invoke(null, new object[] {$"Preferences/{tab}"});
                 
                 if (method == null)
                 {
@@ -359,6 +359,7 @@ namespace JetBrains.Rider.Unity.Editor
               }
               else
               {
+                // 5.5, 2017 ...
                 type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
                 var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
                 
