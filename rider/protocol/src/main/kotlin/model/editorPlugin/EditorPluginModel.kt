@@ -105,6 +105,7 @@ object EditorPluginModel: Root() {
         signal("showFileInUnity", string)
         signal("showGameObjectOnScene", RdFindUsageResultElement)
         signal("findUsageResults", RdFindUsageResult)
+        signal("showPreferences", void)
 
         property("unityPluginVersion", string)
         property("riderProcessId", int)
@@ -132,7 +133,6 @@ object EditorPluginModel: Root() {
         property("editorLogPath", string)
         property("playerLogPath", string)
 
-        property("scriptChangesDuringPlayTabName", string.nullable)
-        source("setScriptCompilationDuringPlay", int)
+        property("ScriptCompilationDuringPlay", int)
     }
 }

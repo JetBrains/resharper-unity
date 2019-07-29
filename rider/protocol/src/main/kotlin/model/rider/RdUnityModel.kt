@@ -60,6 +60,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         source("step", void)
         source("refresh", bool)
+        source("showPreferences", void)
 
         property("sessionInitialized", bool)
 
@@ -81,10 +82,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("hasUnityReference", bool)
 
         sink("startUnity", void)
-        property("scriptChangesDuringPlayTabName", string.nullable)
         sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
-        source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
+        property("ScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
 
         signal("findUsageResults", FindUsageResult)

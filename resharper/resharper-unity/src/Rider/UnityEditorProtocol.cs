@@ -112,8 +112,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
            myHost.PerformModelAction(rd => rd.Play.Advise(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
            myHost.PerformModelAction(rd => rd.Pause.Advise(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
            myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step())));
-           myHost.PerformModelAction(model => {model.SetScriptCompilationDuringPlay.Advise(lifetime, 
-             scriptCompilationDuringPlay => UnityModel.Value.DoIfNotNull(editor => editor.SetScriptCompilationDuringPlay((int)scriptCompilationDuringPlay)));});
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -190,6 +188,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
                     myHost.PerformModelAction(t => t.ShowGameObjectOnScene.Advise(lf, v => editor.ShowGameObjectOnScene.Fire(v.ConvertToUnityModel())));
                     myHost.PerformModelAction(t => t.ShowFileInUnity.Advise(lf, v => editor.ShowFileInUnity.Fire(v)));
+                    myHost.PerformModelAction(t => t.ShowPreferences.Advise(lf, v =>
+                    {
+                        if (t.UnityProcessId.HasValue())
+                            UnityFocusUtil.FocusUnity(t.UnityProcessId.Value);
+
+                        editor.ShowPreferences.Fire();
+                    }));
 
                     // pass all references to Unity TODO temp workaround, replace with async api
                     myHost.PerformModelAction(t => t.FindUsageResults.Advise(lf, v =>editor.FindUsageResults.Fire(v.ConvertToUnityModel())));
@@ -207,8 +212,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
                     editor.ApplicationContentsPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
-                    editor.ScriptChangesDuringPlayTabName.AdviseNotNull(lifetime,
-                        s => myHost.PerformModelAction(a => a.ScriptChangesDuringPlayTabName.Set(s)));
+                    editor.ScriptCompilationDuringPlay.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.ScriptCompilationDuringPlay.Set(ConvertToScriptCompilationEnum(s))));
 
                     BindPluginPathToSettings(lf, editor);
 
@@ -234,6 +239,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 myLogger.Error(ex);
             }
+        }
+
+        private ScriptCompilationDuringPlay ConvertToScriptCompilationEnum(int mode)
+        {
+            if (mode < 0 || mode >= 3)
+                return ScriptCompilationDuringPlay.RecompileAndContinuePlaying;
+
+            return (ScriptCompilationDuringPlay) mode;
         }
 
         private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel editor)
