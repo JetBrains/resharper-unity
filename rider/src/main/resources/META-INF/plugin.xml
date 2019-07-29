@@ -87,13 +87,13 @@
     <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ContentModelUpdater</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AutoSaveNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OutOfSyncEditorNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.settings.RiderUnitySettings</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.SaveAllTracker</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.VcsPullTracker</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
