@@ -52,6 +52,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     
     private static void ProcessQueue(Type data, UnitTestLaunch unitTestLaunch)
     {
+      if (!unitTestLaunch.IsBound)
+        return;
+      
       var baseType = data.BaseType;
       if (baseType == null) return;
       var instance = baseType.GetProperty("instance");
