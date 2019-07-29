@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
 using UnityEditor;
@@ -54,6 +56,32 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
           {
             EditorUtility.FocusProjectWindow();
             ShowUtil.ShowFileUsage(result);
+          });  
+        }
+      });
+      
+      modelValue.ShowPreferences.Advise(connectionLifetime, result =>
+      {
+        if (result != null)
+        {
+          MainThreadDispatcher.Instance.Queue(() =>
+          {
+
+            var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+
+            var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
+            if (type != null)
+            {
+              var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
+              method?.Invoke(null, new object[] {$"Preferences/{tab}"});
+            }
+            else
+            {
+              type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
+              var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
+              method?.Invoke(null, null); 
+            }
+
           });  
         }
       });

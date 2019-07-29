@@ -302,7 +302,6 @@ namespace JetBrains.Rider.Unity.Editor
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           InitEditorLogPath(model);
-          AdviseScriptCompilationDuringPlay(model, connectionLifetime);
 
           model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
           model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
@@ -311,10 +310,10 @@ namespace JetBrains.Rider.Unity.Editor
           model.ApplicationVersion.SetValue(UnityUtils.UnityApplicationVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
-          if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
-            model.ScriptChangesDuringPlayTabName.Set("General");
-          else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
-            model.ScriptChangesDuringPlayTabName.Set("Rider");
+          if (UnityUtils.UnityVersion >= new Version(2018, 2))
+            model.ScriptCompilationDuringPlay.Set(EditorPrefsWrapper.ScriptChangesDuringPlayOptions);
+          else
+            model.ScriptCompilationDuringPlay.Set((int)PluginSettings.AssemblyReloadSettings);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -327,18 +326,6 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
-    }
-
-    private static void AdviseScriptCompilationDuringPlay(EditorPluginModel model, Lifetime lifetime)
-    {
-      model.SetScriptCompilationDuringPlay.Advise(lifetime,
-        scriptCompilationDuringPlay =>
-        {
-          if (UnityUtils.UnityVersion >= new Version(2018, 2))
-            EditorPrefsWrapper.ScriptChangesDuringPlayOptions = scriptCompilationDuringPlay;
-          else
-            PluginSettings.AssemblyReloadSettings = (AssemblyReloadSettings) scriptCompilationDuringPlay;
-        });
     }
 
     private static void AdviseEditorState(EditorPluginModel modelValue)
