@@ -315,6 +315,8 @@ namespace JetBrains.Rider.Unity.Editor
           else
             model.ScriptCompilationDuringPlay.Set((int)PluginSettings.AssemblyReloadSettings);
 
+          AdviseShowPreferences(model, connectionLifetime);
+          
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
@@ -326,6 +328,33 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
+    }
+
+    private static void AdviseShowPreferences(EditorPluginModel model, Lifetime connectionLifetime)
+    {
+      model.ShowPreferences.Advise(connectionLifetime, result =>
+      {
+        if (result != null)
+        {
+          MainThreadDispatcher.Instance.Queue(() =>
+          {
+            var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+
+            var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
+            if (type != null)
+            {
+              var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
+              method?.Invoke(null, new object[] {$"Preferences/{tab}"});
+            }
+            else
+            {
+              type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
+              var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
+              method?.Invoke(null, null);
+            }
+          });
+        }
+      });
     }
 
     private static void AdviseEditorState(EditorPluginModel modelValue)
