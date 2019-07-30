@@ -150,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                                 {
                                     var type = declaredElement.Type();
                                     shortPresentation = GetPresentation(value, presentationType, type, solution,
-                                        declaredElement.Module);
+                                        declaredElement.Module, true);
                                 }
                             }
 
@@ -176,16 +176,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         }
 
         private string GetPresentation(MonoBehaviourPropertyValueWithLocation monoBehaviourPropertyValueWithLocation,
-            UnityPresentationType unityPresentationType, IType enumType, ISolution solution, IPsiModule psiModule)
+            UnityPresentationType unityPresentationType, IType enumType, ISolution solution, IPsiModule psiModule, bool showOwner)
         {
+            string baseResult;
             if (monoBehaviourPropertyValueWithLocation.Value is MonoBehaviourPrimitiveValue)
             {
-                return GetRiderPresentation(unityPresentationType, monoBehaviourPropertyValueWithLocation.GetSimplePresentation(solution), enumType, psiModule);
+                baseResult = GetRiderPresentation(unityPresentationType, monoBehaviourPropertyValueWithLocation.GetSimplePresentation(solution), enumType, psiModule);
             }
-            else
+            else 
             {
-                return monoBehaviourPropertyValueWithLocation.GetSimplePresentation(solution);
+                baseResult = monoBehaviourPropertyValueWithLocation.GetSimplePresentation(solution);
             }
+
+            if (showOwner)
+                baseResult += " in " + monoBehaviourPropertyValueWithLocation.GetOwnerPresentation(solution);
+
+            return baseResult;
         }
         
         private string GetRiderPresentation(UnityPresentationType unityPresentationType, string unityValue, IType enumType, IPsiModule psiModule)
@@ -259,7 +265,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             {
                 var valueWithLocations = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray(); 
                 Assertion.Assert(valueWithLocations.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
-                displayName = GetPresentation(valueWithLocations[0], presentationType, type, solution,element.GetPsiModule());
+                displayName = GetPresentation(valueWithLocations[0], presentationType, type, solution,element.GetPsiModule(), false);
             } else if (initValueCount > 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 2)  
             {
                     
@@ -268,7 +274,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
                     
                 var anotherValueWithLocation = values[0].Value.Value.Equals(initValueUnityPresentation) ? values[1] : values[0];
-                displayName = GetPresentation(anotherValueWithLocation, presentationType, type, solution,element.GetPsiModule());
+                displayName = GetPresentation(anotherValueWithLocation, presentationType, type, solution,element.GetPsiModule(), false);
             }
             
             if (displayName == null)
