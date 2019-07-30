@@ -84,17 +84,24 @@ namespace JetBrains.Rider.Unity.Editor
       var models = PluginEntryPoint.UnityModels.Where(a=>a.Lifetime.IsAlive).ToArray();
       if (models.Any())
       {
-        var model = models.First().Model;
+        var modelLifetime = models.First();
+        var model = modelLifetime.Model;
+        var lifetime = modelLifetime.Lifetime;
         if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
-          if (model.RiderProcessId.HasValue())
-            ActivateWindow(model.RiderProcessId.Value);
-          else
-            ActivateWindow();
-          
-          model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, column));
-          
+          var task = model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, column));
+          task.Result.AdviseNotNull(lifetime, result =>
+          {
+            if (result.Result)
+            {
+              if (model.RiderProcessId.HasValue())
+                ActivateWindow(model.RiderProcessId.Value);
+              else
+                ActivateWindow();
+            }
+          });
+
           // todo: maybe fallback to CallRider, if returns false
           return true;
         }
@@ -157,7 +164,8 @@ namespace JetBrains.Rider.Unity.Editor
         myLogger.Verbose("ActivateWindow: {0} {1}", process.Id, windowHandle);
         if (windowHandle != IntPtr.Zero)
         {
-          User32Dll.ShowWindow(windowHandle, 9); //SW_RESTORE = 9
+          User32Dll.SwitchToThisWindow(windowHandle, true);
+          //User32Dll.ShowWindow(windowHandle, 5); //SW_SHOW 5
           User32Dll.SetForegroundWindow(windowHandle);
         }
 
