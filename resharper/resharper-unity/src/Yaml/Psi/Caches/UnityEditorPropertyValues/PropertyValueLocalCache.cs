@@ -43,6 +43,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         {
             return Value.GetSimplePresentation(solution, File);
         }
+        
+        public string GetOwnerPresentation(ISolution solution)
+        {
+            return Value.GetOwnerPresentation(solution, File);
+        }
     }
 
     public class PropertyValueLocalCache
