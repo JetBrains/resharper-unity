@@ -53,5 +53,8 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     [DllImport("user32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true,
       ExactSpelling = true)]
     public static extern uint ShowWindow(IntPtr hWnd, int nCmdShow);
+    
+    [DllImport("User32.dll")]
+    public static extern bool SwitchToThisWindow (IntPtr hwnd, bool fUnknown);
   }
 }

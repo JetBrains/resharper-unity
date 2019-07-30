@@ -19,9 +19,9 @@ using JetBrains.Rd.Impl;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl;
+using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
@@ -177,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     myHost.PerformModelAction(m => m.SessionInitialized.Value = true);
 
                     SubscribeToLogs(lf, editor);
-                    SubscribeToOpenFile(editor);
+                    SubscribeToOpenFile(lf, editor);
 
                     editor.Play.Advise(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.Advise(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
@@ -274,12 +274,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myUsageStatistics.TrackActivity("ScriptingRuntime", editor.ScriptingRuntime.Value.ToString());
         }
 
-        private void SubscribeToOpenFile([NotNull] EditorPluginModel editor)
+        private void SubscribeToOpenFile(Lifetime lifetime, [NotNull] EditorPluginModel editor)
         {
             editor.OpenFileLineCol.Set(args =>
             {
+                var lifetimeDef = lifetime.CreateNested();
                 var result = false;
-                using (ReadLockCookie.Create())
+                mySolution.Locks.ExecuteWithReadLock(() =>
                 {
                     mySolution.GetComponent<IEditorManager>()
                         .OpenFile(FileSystemPath.Parse(args.Path), OpenFileOptions.DefaultActivate, myThreading,
@@ -287,7 +288,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             {
                                 var line = args.Line;
                                 var column = args.Col;
-                                    
+
                                 if (line > 0 || column > 0) // avoid changing placement when it is not requested
                                 {
                                     if (line > 0) line = line - 1;
@@ -301,9 +302,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                                 myHost.PerformModelAction(m => m.ActivateRider());
                                 result = true;
+                                lifetimeDef.Terminate();
                             },
-                            () => { result = false; });
-                }
+                            () =>
+                            {
+                                result = false;
+                                lifetimeDef.Terminate();
+                            });
+                });
+
+                JetDispatcher.Run(()=>lifetimeDef.Lifetime.IsAlive, TimeSpan.FromMinutes(1), false);
                 return result;
             });
         }
