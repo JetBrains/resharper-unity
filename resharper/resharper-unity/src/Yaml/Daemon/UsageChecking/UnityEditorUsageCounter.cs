@@ -1,4 +1,5 @@
 using JetBrains.Application;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.Util;
 

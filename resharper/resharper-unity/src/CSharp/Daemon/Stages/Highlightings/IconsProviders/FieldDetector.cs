@@ -39,24 +39,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             bool isSerializedField = myUnityApi.IsSerialisedField(declaredElement);
             if (isSerializedField)
             {
+                const string displayText = "Serializable";
+                const string baseTooltip = "This field is initialized from Inspector";
                 if (myUnityApi.IsDescendantOfMonoBehaviour(declaredElement.GetContainingType()))
                 {
-                    AddMonoBehaviourHighlighting(consumer, field, "Serialized field", "This field is initialised from Inspector", kind);
+                    AddMonoBehaviourHighlighting(consumer, field, displayText, baseTooltip, kind);
                     return declaredElement;
 
                 } else if (myUnityApi.IsDescendantOfScriptableObject(declaredElement.GetContainingType()))
                 {
-                    AddScriptableObjectHighlighting(consumer, field, "Serialized field", "This field is initialised from Inspector", kind);
+                    AddScriptableObjectHighlighting(consumer, field, displayText, baseTooltip, kind);
                     return declaredElement;
 
                 } else if (myUnityApi.IsInjectedField(declaredElement))
                 {
-                    AddECSHighlighting(consumer, field, "Serialized field", "This field is injected by Unity", kind);
+                    AddECSHighlighting(consumer, field, displayText, "This field is injected by Unity", kind);
                     return declaredElement;
-                } else if (declaredElement.GetAttributeInstances(false)
-                    .All(t => !t.GetClrName().Equals(KnownTypes.SerializeField)))
+                } else 
                 {
-                    AddSerializableHighlighting(consumer, field, "Serializable", "This field is serialized by Unity", kind);
+                    AddSerializableHighlighting(consumer, field, displayText, "This field is serialized by Unity", kind);
                 }
 
                 return null;

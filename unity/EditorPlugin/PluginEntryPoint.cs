@@ -302,7 +302,6 @@ namespace JetBrains.Rider.Unity.Editor
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           InitEditorLogPath(model);
-          AdviseScriptCompilationDuringPlay(model, connectionLifetime);
 
           model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
           model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
@@ -311,11 +310,13 @@ namespace JetBrains.Rider.Unity.Editor
           model.ApplicationVersion.SetValue(UnityUtils.UnityApplicationVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
-          if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
-            model.ScriptChangesDuringPlayTabName.Set("General");
-          else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
-            model.ScriptChangesDuringPlayTabName.Set("Rider");
+          if (UnityUtils.UnityVersion >= new Version(2018, 2))
+            model.ScriptCompilationDuringPlay.Set(EditorPrefsWrapper.ScriptChangesDuringPlayOptions);
+          else
+            model.ScriptCompilationDuringPlay.Set((int)PluginSettings.AssemblyReloadSettings);
 
+          AdviseShowPreferences(model, connectionLifetime, ourLogger);
+          
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
@@ -329,16 +330,56 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static void AdviseScriptCompilationDuringPlay(EditorPluginModel model, Lifetime lifetime)
+    private static void AdviseShowPreferences(EditorPluginModel model, Lifetime connectionLifetime, ILog log)
     {
-      model.SetScriptCompilationDuringPlay.Advise(lifetime,
-        scriptCompilationDuringPlay =>
+      model.ShowPreferences.Advise(connectionLifetime, result =>
+      {
+        if (result != null)
         {
-          if (UnityUtils.UnityVersion >= new Version(2018, 2))
-            EditorPrefsWrapper.ScriptChangesDuringPlayOptions = scriptCompilationDuringPlay;
-          else
-            PluginSettings.AssemblyReloadSettings = (AssemblyReloadSettings) scriptCompilationDuringPlay;
-        });
+          MainThreadDispatcher.Instance.Queue(() =>
+          {
+            try
+            {
+              var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+
+              var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
+              if (type != null)
+              {
+                // 2018+
+                var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
+                
+                if (method == null)
+                {
+                  log.Error("'OpenUserPreferences' was not found");
+                }
+                else
+                {
+                  method.Invoke(null, new object[] {$"Preferences/{tab}"});
+                }
+              }
+              else
+              {
+                // 5.5, 2017 ...
+                type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
+                var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
+                
+                if (method == null)
+                {
+                  log.Error("'ShowPreferencesWindow' was not found");
+                }
+                else
+                {
+                  method.Invoke(null, null);
+                }
+              }
+            }
+            catch (Exception ex)
+            {
+              log.Error("Show preferences " + ex);
+            }
+          });
+        }
+      });
     }
 
     private static void AdviseEditorState(EditorPluginModel modelValue)
