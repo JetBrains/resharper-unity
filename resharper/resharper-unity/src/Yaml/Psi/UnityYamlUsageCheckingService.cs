@@ -1,8 +1,6 @@
-using System;
-using JetBrains.DataFlow;
+using System.Collections.Generic;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.UsageChecking;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
@@ -10,8 +8,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
     [Language(typeof(UnityYamlLanguage))]
     public class UnityYamlUsageCheckingServices : UsageCheckingServices
     {
-        public UnityYamlUsageCheckingServices(Lifetime lifetime, IViewable<IUsageInspectionsSuppressor> suppressors)
-            : base(new UsageAnalyzer(lifetime, suppressors))
+        public UnityYamlUsageCheckingServices(Lifetime lifetime, IEnumerable<IUsageInspectionsSuppressor> suppressors, 
+            IEnumerable<ICustomUsageAnalysisProcessor> customUsageAnalysisProcessors)
+            : base(new UsageAnalyzer(suppressors, customUsageAnalysisProcessors))
         {
         }
 
