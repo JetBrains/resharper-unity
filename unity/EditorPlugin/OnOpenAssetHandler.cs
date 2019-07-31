@@ -163,12 +163,7 @@ namespace JetBrains.Rider.Unity.Editor
         var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
         myLogger.Verbose("ActivateWindow: {0} {1}", process.Id, windowHandle);
         if (windowHandle != IntPtr.Zero)
-        {
-          User32Dll.SwitchToThisWindow(windowHandle, true);
-          //User32Dll.ShowWindow(windowHandle, 5); //SW_SHOW 5
           User32Dll.SetForegroundWindow(windowHandle);
-        }
-
       }
       catch (Exception e)
       {
