@@ -86,21 +86,16 @@ namespace JetBrains.Rider.Unity.Editor
       {
         var modelLifetime = models.First();
         var model = modelLifetime.Model;
-        var lifetime = modelLifetime.Lifetime;
         if (PluginEntryPoint.CheckConnectedToBackendSync(model))
         {
           myLogger.Verbose("Calling OpenFileLineCol: {0}, {1}, {2}", assetFilePath, line, column);
-          var task = model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, column));
-          task.Result.AdviseNotNull(lifetime, result =>
-          {
-            if (result.Result)
-            {
-              if (model.RiderProcessId.HasValue())
-                ActivateWindow(model.RiderProcessId.Value);
-              else
-                ActivateWindow();
-            }
-          });
+          
+          if (model.RiderProcessId.HasValue())
+            AllowSetForegroundWindow(model.RiderProcessId.Value);
+          else
+            AllowSetForegroundWindow();
+          
+          model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, column));
 
           // todo: maybe fallback to CallRider, if returns false
           return true;
@@ -139,11 +134,12 @@ namespace JetBrains.Rider.Unity.Editor
       proc.StartInfo.UseShellExecute = true; // avoid HandleInheritance
       proc.Start();
 
-      ActivateWindow(proc.Id);
+      AllowSetForegroundWindow(proc.Id);
       return true;
     }
 
-    private void ActivateWindow(int? processId=null)
+    // This is required to be called to help frontend Focus itself
+    private void AllowSetForegroundWindow(int? processId=null)
     {
       if (myPluginSettings.OperatingSystemFamilyRider != OperatingSystemFamilyRider.Windows)
         return;
@@ -154,20 +150,12 @@ namespace JetBrains.Rider.Unity.Editor
         if (process == null)
           return;
         
-        if (process.Id>0)
+        if (process.Id > 0)
           User32Dll.AllowSetForegroundWindow(process.Id);
-        
-        // Collect top level windows
-        var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
-        // Get process main window title
-        var windowHandle = topLevelWindows.FirstOrDefault(hwnd => User32Dll.GetWindowProcessId(hwnd) == process.Id);
-        myLogger.Verbose("ActivateWindow: {0} {1}", process.Id, windowHandle);
-        if (windowHandle != IntPtr.Zero)
-          User32Dll.SetForegroundWindow(windowHandle);
       }
       catch (Exception e)
       {
-        myLogger.Warn("Exception on ActivateWindow: " + e);
+        myLogger.Warn("Exception on AllowSetForegroundWindow: " + e);
       }
     }
 
