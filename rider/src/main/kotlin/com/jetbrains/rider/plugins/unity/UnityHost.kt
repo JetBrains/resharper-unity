@@ -6,6 +6,7 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
+import com.intellij.openapi.wm.WindowManager
 import com.intellij.xdebugger.XDebugProcess
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerManagerListener
@@ -26,7 +27,7 @@ import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorR
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.getComponent
-
+import java.awt.Frame
 
 class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComponent(project) {
     val model = project.solution.rdUnityModel
@@ -39,6 +40,10 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
     init {
         model.activateRider.advise(componentLifetime) {
             ProjectUtil.focusProjectWindow(project, true)
+            val frame = WindowManager.getInstance().getFrame(project)
+            if (frame != null) {
+                frame.extendedState = frame.extendedState xor Frame.ICONIFIED
+            }
         }
 
         model.onUnityLogEvent.adviseNotNull(componentLifetime) {
