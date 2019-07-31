@@ -21,7 +21,6 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
 using JetBrains.TextControl;
-using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
@@ -177,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     myHost.PerformModelAction(m => m.SessionInitialized.Value = true);
 
                     SubscribeToLogs(lf, editor);
-                    SubscribeToOpenFile(lf, editor);
+                    SubscribeToOpenFile(editor);
 
                     editor.Play.Advise(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.Advise(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
@@ -274,11 +273,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myUsageStatistics.TrackActivity("ScriptingRuntime", editor.ScriptingRuntime.Value.ToString());
         }
 
-        private void SubscribeToOpenFile(Lifetime lifetime, [NotNull] EditorPluginModel editor)
+        private void SubscribeToOpenFile([NotNull] EditorPluginModel editor)
         {
             editor.OpenFileLineCol.Set(args =>
             {
-                var lifetimeDef = lifetime.CreateNested();
                 var result = false;
                 mySolution.Locks.ExecuteWithReadLock(() =>
                 {
@@ -300,18 +298,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                         CaretVisualPlacement.Generic);
                                 }
 
-                                myHost.PerformModelAction(m => m.ActivateRider());
-                                result = true;
-                                lifetimeDef.Terminate();
+                                myHost.PerformModelAction(m =>
+                                {
+                                    m.ActivateRider();
+                                    result = true;
+                                });
                             },
-                            () =>
-                            {
-                                result = false;
-                                lifetimeDef.Terminate();
-                            });
+                            () => { result = false; });
                 });
 
-                JetDispatcher.Run(()=>lifetimeDef.Lifetime.IsAlive, TimeSpan.FromMinutes(1), false);
                 return result;
             });
         }

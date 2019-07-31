@@ -7,6 +7,7 @@ import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.wm.WindowManager
+import com.intellij.util.BitUtil
 import com.intellij.xdebugger.XDebugProcess
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerManagerListener
@@ -42,7 +43,7 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             ProjectUtil.focusProjectWindow(project, true)
             val frame = WindowManager.getInstance().getFrame(project)
             if (frame != null) {
-                frame.extendedState = frame.extendedState xor Frame.ICONIFIED
+                frame.setExtendedState(BitUtil.set(frame.extendedState, Frame.ICONIFIED, false))
             }
         }
 
