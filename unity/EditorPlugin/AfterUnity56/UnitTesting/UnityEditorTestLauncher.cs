@@ -43,7 +43,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       var testNames = myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
       var runTestsMethod = launcherType.GetMethod("RunTests");
       if (runTestsMethod == null) return false;
-      runTestsMethod.Invoke(null, new object[] {(int)myLaunch.TestMode, assemblyNames, testNames, null, null });
+      runTestsMethod.Invoke(null, new object[] {(int)myLaunch.TestMode, assemblyNames, testNames, null, null, null });
       return true;
     }
 
