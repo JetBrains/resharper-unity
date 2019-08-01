@@ -27,10 +27,17 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     {
       // new way
       var success = TryLaunchUnitTestsInternal();
-
+      if (success)
+        return;
+      
+      // old way running tests works only for EditMode tests
+      if (myLaunch.TestMode != TestMode.Edit)
+      {
+        return;
+      }
+      
       // old way
-      if (!success && myLaunch.TestMode == TestMode.Edit) 
-        TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
+      TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
     }
 
     private bool TryLaunchUnitTestsInternal()
@@ -65,9 +72,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           return;
         }
 
-        var launcherTypeString = myLaunch.TestMode == TestMode.Edit ? 
-          "UnityEditor.TestTools.TestRunner.EditModeLauncher" : 
-          "UnityEditor.TestTools.TestRunner.PlaymodeLauncher";
+        var launcherTypeString = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
         var launcherType = testEditorAssembly.GetType(launcherTypeString);
         if (launcherType == null)
         {
@@ -91,11 +96,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           return;
         }
         fieldInfo.SetValue(filter, testNames);
-        
-        if (myLaunch.TestMode == TestMode.Play)
-        {
-          return;
-        }
 
         object launcher;
         if (UnityUtils.UnityVersion >= new Version(2018, 1))
