@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
             mySolutionsManager = solutionsManager;
         }
 
-        public bool ShowHelp(string keyword, HelpSystem.HelpKind kind)
+        public bool ShowHelp(string keyword, HelpSystem.HelpKind kind, string preferredProduct = "")
         {
             if (kind != HelpSystem.HelpKind.Msdn) return false;
             if (!IsUnityKeyword(keyword)) return false;
