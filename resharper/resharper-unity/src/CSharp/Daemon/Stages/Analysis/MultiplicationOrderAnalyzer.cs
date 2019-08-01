@@ -1,5 +1,6 @@
-using     System.Collections.Generic;
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -12,9 +13,9 @@ using JetBrains.ReSharper.Psi.CSharp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IMultiplicativeExpression), HighlightingTypes =
+    [ElementProblemAnalyzer(typeof(ICSharpExpression), HighlightingTypes =
         new[] {typeof(InefficientMultiplicationOrderWarning)})]
-    public class MultiplicationOrderAnalyzer : UnityElementProblemAnalyzer<IMultiplicativeExpression>
+    public class MultiplicationOrderAnalyzer : UnityElementProblemAnalyzer<ICSharpExpression>
     {
         private static Dictionary<IClrTypeName, int> knownTypes = new Dictionary<IClrTypeName, int>()
         {
@@ -30,89 +31,65 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
         }
 
-        protected override void Analyze(IMultiplicativeExpression expression, ElementProblemAnalyzerData data,
+        protected override void Analyze(ICSharpExpression expression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-            var byLeft = MultiplicativeExpressionNavigator.GetByLeftOperand(expression.GetContainingParenthesizedExpression());
-            if (byLeft != null)
+
+            var parent = expression.GetContainingParenthesizedExpression()?.Parent as ICSharpExpression;
+            if (GetMulOperation(expression) != null || GetMulOperation(parent) == null)
                 return;
-
-            var byRight = MultiplicativeExpressionNavigator.GetByRightOperand(expression.GetContainingParenthesizedExpression());
-            if (byRight != null)
-                return;
-
-
-            var (count, hasDivOrUnknownType) = CalculateMatrixIntMulCount(expression);
-            if (hasDivOrUnknownType)
-                return;
-
-            if (count > GetElementCount(expression.GetExpressionType()))
-                consumer.AddHighlighting(new InefficientMultiplicationOrderWarning(expression));
+            
+            if (IsMatrixType(expression.GetExpressionType()))
+            {
+                var count = 0;
+                ICSharpExpression scalar = null;
+                while (true)
+                {
+                    count++;
+                    var curExpr = parent.GetContainingParenthesizedExpression();
+                    var byLeft = MultiplicativeExpressionNavigator.GetByLeftOperand(curExpr);
+                    var byRight = MultiplicativeExpressionNavigator.GetByRightOperand(curExpr);
+                    if (byLeft == null && byRight != null)
+                    {
+                        scalar = byRight?.LeftOperand;
+                        parent = byRight;
+                    } else if (byRight == null && byLeft != null)
+                    {
+                        scalar = byLeft?.RightOperand;
+                        parent = byLeft;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if (count > 1)
+                {
+                    Assertion.Assert(scalar != null, "scalar != null");
+                    consumer.AddHighlighting(new InefficientMultiplicationOrderWarning(parent, expression, scalar));
+                }
+            }
         }
 
-        private (int, bool) CalculateMatrixIntMulCount(ICSharpExpression expression)
+        private IMultiplicativeExpression GetMulOperation(ICSharpExpression expression)
         {
-            if (expression == null)
-                return (0, false);
-
-            if (!(expression is IBinaryExpression binaryExpression))
-                return (0, false);
-
-            if (!(expression is IMultiplicativeExpression mul &&
-                  mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK))
-                return (0, true);
+            if (expression is IMultiplicativeExpression mul && mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK)
+                return mul;
             
-            var left = binaryExpression.LeftOperand.GetOperandThroughParenthesis();
-            var right = binaryExpression.RightOperand.GetOperandThroughParenthesis();
-            if (left == null || right == null)
-                return (0, true);
-
-            var leftType = left.GetExpressionType();
-            var rightType = right.GetExpressionType();
-            if (leftType.IsUnknown || rightType.IsUnknown)
-                return (0, true);
-
-            if (!IsAcceptableType(leftType) || !IsAcceptableType(rightType))
-                return (0, true);
-
-            var leftMulCount = 0;
-            var rightMulCount = 0;
-            if (IsMatrixType(leftType))
-            {
-                var (newCount, hasDivOrUnknownType) = CalculateMatrixIntMulCount(left);
-                if (hasDivOrUnknownType)
-                    return (0, true);
-
-                leftMulCount += newCount;
-            }
-
-            if (IsMatrixType(rightType))
-            {
-                var (newCount, hasDivOrUnknownType) = CalculateMatrixIntMulCount(right);
-                if (hasDivOrUnknownType)
-                    return (0, true);
-                rightMulCount += newCount;
-            }
-
-            var mulCount = 0;
-
-            if (IsMatrixType(leftType) && right.GetExpressionType().ToIType().IsPredefinedNumeric())
-            {
-                mulCount += GetElementCount(leftType);
-            }
-
-            if (IsMatrixType(rightType) && left.GetExpressionType().ToIType().IsPredefinedNumeric())
-            {
-                mulCount += GetElementCount(rightType);
-            }
-            
-            return (leftMulCount + rightMulCount + mulCount, false);
+            return null;
         }
 
-
-        private bool IsAcceptableType(IExpressionType rightType)
+        private int GetMulCount(ICSharpExpression expression)
         {
-            return IsMatrixType(rightType) || rightType.ToIType()?.IsPredefinedNumeric() == true;
+            if (expression is IMultiplicativeExpression mul &&
+                mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK)
+            {
+                return GetMulCount(mul.LeftOperand) + GetMulCount(mul.RightOperand);
+            }
+            else
+            {
+                return 1;
+            }
         }
 
         private bool IsMatrixType([NotNull] IExpressionType expression)
@@ -121,15 +98,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (clrType == null)
                 return false;
             return knownTypes.ContainsKey(clrType);
-        }
-        
-        private int GetElementCount(IExpressionType expression)
-        {
-            var clrType = (expression as IDeclaredType)?.GetClrName();
-            if (clrType == null || !knownTypes.ContainsKey(clrType))
-                return 0;
-            
-            return knownTypes[clrType];
         }
     }
 }

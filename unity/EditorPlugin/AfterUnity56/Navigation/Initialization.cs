@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
 using UnityEditor;

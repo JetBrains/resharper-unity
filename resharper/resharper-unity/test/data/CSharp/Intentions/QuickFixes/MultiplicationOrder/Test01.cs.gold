@@ -8,7 +8,7 @@ namespace DefaultNamespace
         {
             int a =5;
             var b = Vector3.up;
-            var c = {caret}a * 5 * 1 * b;
+            var c = 1 *{caret} (a * 5) * b;
         }
     }
 }

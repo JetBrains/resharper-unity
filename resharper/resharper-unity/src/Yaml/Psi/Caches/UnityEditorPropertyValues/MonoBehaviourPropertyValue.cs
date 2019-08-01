@@ -2,6 +2,7 @@ using System;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
 using JetBrains.Util;
@@ -112,20 +113,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             var componentName = GetReferenceName(solution, file);
             return $"{StringUtil.DropMiddleIfLong(componentName, 30)}";
         }
-
-
+        
         private string GetReferenceName(ISolution solution, IPsiSourceFile file)
         {
-            var cache = solution.GetComponent<UnityGameObjectNamesCache>();
-            if (cache.Map.TryGetValue(file, out var anchorToName))
+            const string unknownResult = "...";
+            
+            var pathProvider = solution.GetComponent<UnitySceneDataLocalCache>();
+            var consumer = new UnityPathCachedSceneConsumer();
+
+            var gameObjectFile = file;
+            if (Reference.guid != null)
             {
-                if (anchorToName.TryGetValue(Reference.fileID, out var name))
+                var module = file.PsiModule as UnityExternalFilesPsiModule;
+                Assertion.Assert(module != null, "module != null");
+                var guidCache = solution.GetComponent<MetaFileGuidCache>();
+                var filePath = guidCache.GetAssetFilePathsFromGuid(Reference.guid).FirstOrDefault(null);
+                if (filePath == null)
+                    return unknownResult;
+
+                if (!module.TryGetFileByPath(filePath, out gameObjectFile))
                 {
-                    return name;
+                    return unknownResult;
                 }
             }
+            
+            
+            pathProvider.ProcessSceneHierarchyFromComponentToRoot(gameObjectFile, Reference.fileID, consumer);
 
-            return "...";
+            var parts = consumer.NameParts;
+            if (parts.Count == 0)
+            {
+                var cache = solution.GetComponent<UnityGameObjectNamesCache>();
+                if (cache.Map.TryGetValue(gameObjectFile, out var anchorToName))
+                {
+                    if (anchorToName.TryGetValue(Reference.fileID, out var name))
+                    {
+                        return name;
+                    }
+                }
+                return "...";
+
+            }
+
+            return parts[parts.Count - 1];
         }
     }
 
@@ -172,6 +202,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         }
 
         public abstract string GetSimplePresentation(ISolution solution, IPsiSourceFile file);
+
+        public virtual string GetOwnerPresentation(ISolution solution, IPsiSourceFile file)
+        {
+            const string unknownResult = "...";
+            
+            var pathProvider = solution.GetComponent<UnitySceneDataLocalCache>();
+            var consumer = new UnityPathCachedSceneConsumer();
+            
+            pathProvider.ProcessSceneHierarchyFromComponentToRoot(file, LocalGameObjectAnchor, consumer);
+            var parts = consumer.NameParts;
+            if (parts.Count == 0)
+                return unknownResult;
+      
+            
+            return $"{StringUtil.DropMiddleIfLong(parts[parts.Count - 1], 30)}";
+        }
     }
 
     public static class MonoBehaviourPropertyValueMarshaller
