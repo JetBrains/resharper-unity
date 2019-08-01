@@ -1,4 +1,5 @@
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.io.exists
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rdclient.util.idea.waitAndPump
@@ -34,8 +35,11 @@ class ConnectionTest : BaseTestWithSolution() {
         else -> throw Exception("Not implemented")
     }
 
-    @Test(enabled = false)
+    @Test
     fun test() {
+
+
+        VfsRootAccess.allowRootAccess("C:/Program Files/Unity")
 
         val editorPluginPath = Paths.get(project.basePath).resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
 
@@ -85,5 +89,7 @@ class ConnectionTest : BaseTestWithSolution() {
         changeFileSystem2(project){ arrayOf(projectVirtualFile) }
 
         checkSwea(project)
+
+        process.destroyForcibly()
     }
 }

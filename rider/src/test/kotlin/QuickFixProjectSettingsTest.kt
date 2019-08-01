@@ -4,10 +4,18 @@ import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.BeforeMethod
+import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 import java.io.File
 
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
+
+    lateinit var unityDll : File
+
+    @BeforeSuite(alwaysRun = true)
+    fun getUnityDll() {
+        unityDll = DownloadUnityDll()
+    }
 
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
     override val editorGoldFile: File
@@ -65,6 +73,6 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
 
     @BeforeMethod
     fun InitializeEnvironement() {
-        CopyUnityDll(project, activeSolutionDirectory)
+        CopyUnityDll(unityDll, project, activeSolutionDirectory)
     }
 }
