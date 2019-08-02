@@ -1,0 +1,106 @@
+﻿Language: PsiLanguageType:SHADERLAB
+IShaderLabFile
+  Whitespace(type:WHITESPACE, text: ) spaces: " "
+  IShaderCommand
+    ShaderLabTokenType+KeywordTokenElement(type:SHADER_KEYWORD, text:Shader)
+    Whitespace(type:WHITESPACE, text: ) spaces: " "
+    IShaderValue
+      ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"test")
+      Whitespace(type:WHITESPACE, text: ) spaces: " "
+      ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      Whitespace(type:WHITESPACE, text:  ) spaces: "  "
+      IPropertiesCommand
+        ShaderLabTokenType+KeywordTokenElement(type:PROPERTIES_KEYWORD, text:Properties)
+        Whitespace(type:WHITESPACE, text: ) spaces: " "
+        IPropertiesValue
+          ShaderLabTokenType+FixedTokenElement(type:LBRACE, text:{)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPropertyDeclaration
+            IAttribute
+              ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Header)
+              IAttributeParameters
+                ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            ErrorElement:] expected
+              ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:()
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              Identifier(type:IDENTIFIER, text:_Value3)
+              ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+              ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+              ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+              Whitespace(type:WHITESPACE, text: ) spaces: " "
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+              ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPropertyDeclaration
+            IAttribute
+              ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Header)
+              IAttributeParameters
+                ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                IAttributeParameterValues
+                  IStringAttributeParameterValue
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:(inactive))
+                ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_Value3)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPropertyDeclaration
+            IAttribute
+              ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Header)
+              IAttributeParameters
+                ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_Value3)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Whatever")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:  ) spaces: "  "
+          ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+      NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+      ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
+  NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+

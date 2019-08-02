@@ -165,9 +165,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
 
         private void MoveToNextBracket()
         {
+            var curIndex = yy_buffer_index;
+            var hasAnyChar = false;
             while (yy_buffer_index < yy_eof_pos)
             {
-                var curChar = Buffer[yy_buffer_index];
+                var curChar = Buffer[curIndex];
                 if (curChar == ']')
                     break;
                 
@@ -182,10 +184,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
 
                 if (curChar == ')')
                     break;
+
+                hasAnyChar |= !char.IsWhiteSpace(curChar);
                 
-                yy_buffer_end++;
-                yy_buffer_index++;
+                curIndex++;
             }
+
+            if (hasAnyChar)
+            {
+                yy_buffer_end = yy_buffer_index = curIndex;
+            }
+
         }
 
         private bool IsBracketAfterWhiteSpaces(int curPos)

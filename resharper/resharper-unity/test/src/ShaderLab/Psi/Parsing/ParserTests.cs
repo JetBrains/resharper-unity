@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
 
         [TestCase("PropertiesEmpty")]
         [TestCase("Properties")]
+        [TestCase("Properties2")]
         [TestCase("PropertiesWithAttributes")]
         [TestCase("PropertiesWithErrors")]
         [TestCase("PropertiesTextureValue")]
