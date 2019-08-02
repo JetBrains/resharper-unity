@@ -1,0 +1,16 @@
+Search target
+    NewBehaviourScript.Test():void
+Found usages  (3 usages found)
+    <Miscellaneous Files>  (3 usages found)
+        Button (1).prefab  (1 usage found)
+            Button (1)  (1 usage found)
+                MonoBehaviour  (1 usage found)
+                    [3963, Assets/Button (1).prefab] (134: 23)  m_MethodName: Test
+        scene.unity  (2 usages found)
+            Canvas  (2 usages found)
+                Button (2)  (1 usage found)
+                    MonoBehaviour  (1 usage found)
+                        [20817, Assets/scene.unity] (723: 23)  m_MethodName: Test
+                Button2  (1 usage found)
+                    MonoBehaviour  (1 usage found)
+                        [28379, Assets/scene.unity] (950: 23)  m_MethodName: Test

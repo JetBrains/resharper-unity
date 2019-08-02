@@ -9,7 +9,7 @@ import java.io.File
 
 
 fun DownloadUnityDll() : File{
-    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/unityengine-2018.3-07-30-2019.dll")
+    return downloadAndExtractArchiveArtifactIntoPersistentCache("https://repo.labs.intellij.net/dotnet-rider-test-data/UnityEngine-2018.3-08-01-2019.dll.zip").combine("UnityEngine.dll")
 }
 
 fun CopyUnityDll(unityDll : File, project : Project, activeSolutionDirectory : File) {

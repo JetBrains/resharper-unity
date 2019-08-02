@@ -29,7 +29,7 @@ import java.nio.file.Paths
 import kotlin.test.assertNotNull
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
-class FindUsagesAssetTest : BaseTestWithSolution() {
+class PropertyCodeVisionAssetTest : BaseTestWithSolution() {
 
     override fun getSolutionDirectoryName(): String {
         return "FindUsages_event_handlers_2017"

@@ -9,10 +9,19 @@ import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
+import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 import java.io.File
 
 class ProjectSettingsCompletionTest : BaseTestWithSolution() {
+
+    lateinit var unityDll : File
+
+    @BeforeSuite(alwaysRun = true)
+    fun getUnityDll() {
+        unityDll = DownloadUnityDll()
+    }
+
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
 
     override val traceCategories: List<String>
@@ -152,7 +161,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
 
         //all tests were written with this setting which default was changed only in 18.3
         RiderCodeCompletionExtraSettings.instance.allowToCompleteWithWhitespace = true
-        CopyUnityDll(project, activeSolutionDirectory)
+        CopyUnityDll(unityDll, project, activeSolutionDirectory)
     }
 
     // debug only
