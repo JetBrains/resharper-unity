@@ -1164,7 +1164,7 @@ attribute
 attributeParameters
 :
   LPAREN<LPAREN, LParen>
-  attributeParameterValues<PARAMETER_VALUES, ParameterValues>
+  attributeParameterValues<PARAMETER_VALUES, ParameterValues>?
   RPAREN<RPAREN, RParen>
 ;
 
