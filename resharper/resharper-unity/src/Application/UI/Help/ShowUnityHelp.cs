@@ -22,11 +22,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Help
 
         public bool ShowHelp(string keyword, HelpSystem.HelpKind kind, string preferredProduct = "")
         {
-            return ShowHelp(keyword, kind);
-        }
-
-        public bool ShowHelp(string keyword, HelpSystem.HelpKind kind)
-        {
             if (kind != HelpSystem.HelpKind.Msdn) return false;
             if (!IsUnityKeyword(keyword)) return false;
 
