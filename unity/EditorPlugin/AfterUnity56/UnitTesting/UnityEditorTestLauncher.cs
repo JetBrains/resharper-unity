@@ -42,17 +42,26 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     private bool TryLaunchUnitTestsInternal()
     {
-      var riderPackageAssembly = RiderPackageInterop.GetAssembly();
-      if (riderPackageAssembly == null) return false;
-      var launcherType = riderPackageAssembly.GetType("Packages.Rider.Editor.UnitTesting.RiderTestRunner");
-      if (launcherType == null) return false;
-      var assemblyNames = myLaunch.TestFilters.Select(a => a.AssemblyName).ToArray();
-      var testNames = myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
-      var runTestsMethod = launcherType.GetMethod("RunTests");
-      if (runTestsMethod == null) return false;
-      var mode = (int) myLaunch.TestMode; // 0 for Both, 1 for Edit, 2 for Play
-      runTestsMethod.Invoke(null, new object[] {mode, assemblyNames, testNames, null, null, null});
-      return true;
+      try
+      {
+        var riderPackageAssembly = RiderPackageInterop.GetAssembly();
+        if (riderPackageAssembly == null) return false;
+        var launcherType = riderPackageAssembly.GetType("Packages.Rider.Editor.UnitTesting.RiderTestRunner");
+        if (launcherType == null) return false;
+        var assemblyNames = myLaunch.TestFilters.Select(a => a.AssemblyName).ToArray();
+        var testNames = myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
+        var runTestsMethod = launcherType.GetMethod("RunTests");
+        if (runTestsMethod == null) return false;
+        var mode = (int) myLaunch.TestMode; // 0 for Both, 1 for Edit, 2 for Play
+        runTestsMethod.Invoke(null, new object[] {mode, assemblyNames, testNames, null, null, null});
+        return true;
+      }
+      catch (Exception e)
+      {
+        ourLogger.Error(e, "Exception while TryLaunchUnitTestsInternal.");
+      }
+
+      return false;
     }
 
     private void TryLaunchUnitTestsInAssembly(string[] testNames)
