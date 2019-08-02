@@ -66,6 +66,7 @@ object EditorPluginModel: Root() {
     }
 
     val TestMode = enum {
+        +"Both"
         +"Edit"
         +"Play"
     }

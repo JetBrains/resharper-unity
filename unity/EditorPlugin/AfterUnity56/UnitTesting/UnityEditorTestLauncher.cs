@@ -25,15 +25,43 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     public void TryLaunchUnitTests()
     {
-      // todo: restore, once Unity fixes UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter.BuildNUnitFilter
-      // Currently assemblyName filters are added with OR to testNames filers, should be done with AND
+      // new way
+      var success = TryLaunchUnitTestsInternal();
+      if (success)
+        return;
       
-      //foreach (var filter in myLaunch.TestFilters)
-      //{
-      //  TryLaunchUnitTestsInAssembly(filter.AssemblyName, filter.TestNames.ToArray());
-      //}
+      // old way running tests works only for EditMode tests
+      if (myLaunch.TestMode != TestMode.Edit)
+      {
+        return;
+      }
       
+      // old way
       TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
+    }
+
+    private bool TryLaunchUnitTestsInternal()
+    {
+      try
+      {
+        var riderPackageAssembly = RiderPackageInterop.GetAssembly();
+        if (riderPackageAssembly == null) return false;
+        var launcherType = riderPackageAssembly.GetType("Packages.Rider.Editor.UnitTesting.RiderTestRunner");
+        if (launcherType == null) return false;
+        var assemblyNames = myLaunch.TestFilters.Select(a => a.AssemblyName).ToArray();
+        var testNames = myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
+        var runTestsMethod = launcherType.GetMethod("RunTests");
+        if (runTestsMethod == null) return false;
+        var mode = (int) myLaunch.TestMode; // 0 for Both, 1 for Edit, 2 for Play
+        runTestsMethod.Invoke(null, new object[] {mode, assemblyNames, testNames, null, null, null});
+        return true;
+      }
+      catch (Exception e)
+      {
+        ourLogger.Error(e, "Exception while TryLaunchUnitTestsInternal.");
+      }
+
+      return false;
     }
 
     private void TryLaunchUnitTestsInAssembly(string[] testNames)
@@ -53,9 +81,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           return;
         }
 
-        var launcherTypeString = myLaunch.TestMode == TestMode.Edit ? 
-          "UnityEditor.TestTools.TestRunner.EditModeLauncher" : 
-          "UnityEditor.TestTools.TestRunner.PlaymodeLauncher";
+        var launcherTypeString = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
         var launcherType = testEditorAssembly.GetType(launcherTypeString);
         if (launcherType == null)
         {
@@ -80,105 +106,88 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         }
         fieldInfo.SetValue(filter, testNames);
 
-        // todo: restore, once Unity fixes UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter.BuildNUnitFilter
-        // Currently assemblyName filters are added with OR to testNames filers
-//        var assemblyNamesFieldInfo = filter.GetType().GetField("assemblyNames", BindingFlags.Instance | BindingFlags.Public);
-//        if (assemblyNamesFieldInfo == null)
-//        {
-//          ourLogger.Warn("Could not find assemblyNames field via reflection");
-//          return;
-//        }
-//        assemblyNamesFieldInfo.SetValue(filter, new[] { assemblyName });
-
-        if (myLaunch.TestMode == TestMode.Play)
+        object launcher;
+        if (UnityUtils.UnityVersion >= new Version(2018, 1))
         {
-          PlayModeSupport.PlayModeLauncherRun(filter, launcherType, testEditorAssembly, testEngineAssembly);
-        }
-        else
-        {
-          object launcher;
-          if (UnityUtils.UnityVersion >= new Version(2018, 1))
+          var enumType = testEngineAssembly.GetType("UnityEngine.TestTools.TestPlatform");
+          if (enumType == null)
           {
-            var enumType = testEngineAssembly.GetType("UnityEngine.TestTools.TestPlatform");
-            if (enumType == null)
-            {
-              ourLogger.Verbose("Could not find TestPlatform field via reflection");
-              return;
-            }
+            ourLogger.Verbose("Could not find TestPlatform field via reflection");
+            return;
+          }
 
-            var assemblyProviderType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
-            var testPlatformVal = 2; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
-            if (assemblyProviderType != null)
-            {
-              var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
-                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                new[] {Enum.ToObject(enumType, testPlatformVal)}, null);
-              ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
-              launcher = Activator.CreateInstance(launcherType,
-                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                null, new[] {filter, assemblyProvider},
-                null);
-            }
-            else
-            {
-              launcher = Activator.CreateInstance(launcherType,
-                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)},
-                null);
-            }
+          var assemblyProviderType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
+          var testPlatformVal = 2; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
+          if (assemblyProviderType != null)
+          {
+            var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
+              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
+              new[] {Enum.ToObject(enumType, testPlatformVal)}, null);
+            ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
+            launcher = Activator.CreateInstance(launcherType,
+              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+              null, new[] {filter, assemblyProvider},
+              null);
           }
           else
           {
             launcher = Activator.CreateInstance(launcherType,
               BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-              null, new[] {filter},
+              null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)},
               null);
           }
-
-          var runnerField = launcherType.GetField("m_EditModeRunner", BindingFlags.Instance | BindingFlags.NonPublic);
-          if (runnerField == null)
-          {
-            ourLogger.Verbose("Could not find runnerField via reflection");
-            return;
-          }
-
-          var runner = runnerField.GetValue(launcher);
-          SupportAbort(runner);
-
-          if (!AdviseTestStarted(runner, "m_TestStartedEvent", test =>
-          {
-            if (!(test is TestMethod)) return;
-            ourLogger.Verbose("TestStarted : {0}", test.FullName);
-            var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running,
-              TestEventsSender.GetIdFromNUnitTest(test.Parent));
-            TestEventsSender.TestStarted(myLaunch, tResult);
-          }))
-            return;
-
-          if (!AdviseTestFinished(runner, "m_TestFinishedEvent", result =>
-          {
-            if (!(result.Test is TestMethod)) return;
-            var res = TestEventsSender.GetTestResult(result);
-            TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(res));
-          }))
-            return;
-
-          if (!AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
-          {
-            TestEventsSender.RunFinished(myLaunch);
-          }))
-            return;
-
-          var runMethod = launcherType.GetMethod("Run", BindingFlags.Instance | BindingFlags.Public);
-          if (runMethod == null)
-          {
-            ourLogger.Verbose("Could not find runMethod via reflection");
-            return;
-          }
-
-          //run!
-          runMethod.Invoke(launcher, null);
         }
+        else
+        {
+          launcher = Activator.CreateInstance(launcherType,
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+            null, new[] {filter},
+            null);
+        }
+
+        var runnerField = launcherType.GetField("m_EditModeRunner", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (runnerField == null)
+        {
+          ourLogger.Verbose("Could not find runnerField via reflection");
+          return;
+        }
+
+        var runner = runnerField.GetValue(launcher);
+        SupportAbort(runner);
+
+        if (!AdviseTestStarted(runner, "m_TestStartedEvent", test =>
+        {
+          if (!(test is TestMethod)) return;
+          ourLogger.Verbose("TestStarted : {0}", test.FullName);
+          var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running,
+            TestEventsSender.GetIdFromNUnitTest(test.Parent));
+          TestEventsSender.TestStarted(myLaunch, tResult);
+        }))
+          return;
+
+        if (!AdviseTestFinished(runner, "m_TestFinishedEvent", result =>
+        {
+          if (!(result.Test is TestMethod)) return;
+
+          TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(result));
+        }))
+          return;
+
+        if (!AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
+        {
+          TestEventsSender.RunFinished(myLaunch);
+        }))
+          return;
+
+        var runMethod = launcherType.GetMethod("Run", BindingFlags.Instance | BindingFlags.Public);
+        if (runMethod == null)
+        {
+          ourLogger.Verbose("Could not find runMethod via reflection");
+          return;
+        }
+
+        //run!
+        runMethod.Invoke(launcher, null);
       }
       catch (Exception e)
       {
