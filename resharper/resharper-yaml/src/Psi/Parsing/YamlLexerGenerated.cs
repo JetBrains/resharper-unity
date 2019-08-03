@@ -269,7 +269,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       linesCount++;
       lastNewLineOffset = yy_buffer_index;
       
-      while (EatIndent() > curIndent || yy_buffer_index != yy_eof_pos && Buffer[yy_buffer_index] == '#')
+      while (IsIndentGreaterOrEmptyLine(curIndent) || yy_buffer_index != yy_eof_pos && Buffer[yy_buffer_index] == '#')
       {
         linesCount++;
         EatToEnd();
@@ -313,7 +313,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
       }
     }
 
-    private int EatIndent()
+    private bool IsIndentGreaterOrEmptyLine(int parentIndent)
     {
       currentLineIndent = 0;
       while (true)
@@ -331,6 +331,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         }
 
         yy_buffer_index++;
+        
       }
 
       if (yy_buffer_index + 2 < yy_eof_pos)
@@ -341,7 +342,20 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
         }
       }
 
-      return currentLineIndent;
+      // hack for multiline strings with empty lines
+      // TODO 2019.3 krasnotsvetov RIDER-31051
+      if (currentLineIndent == 0)
+      {
+        if (yy_buffer_index == yy_eof_pos)
+          return false;
+        
+        var curChar = Buffer[yy_buffer_index];
+        if (curChar == '\r' || curChar == '\n' || curChar == '\'' || curChar == '"')
+          return true;
+
+      }
+      
+      return currentLineIndent > parentIndent;
     }
 
     private void HandleIndent()
