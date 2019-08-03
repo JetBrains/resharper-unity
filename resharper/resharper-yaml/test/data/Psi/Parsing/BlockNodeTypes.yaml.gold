@@ -38,10 +38,11 @@ IYamlFile
                 YamlTokenType+GenericTokenElement(67,3)(type:NS_PLAIN, text:foo)
               Whitespace(70,1)(type:WHITESPACE, text: ) spaces: " "
               YamlTokenType+FixedTokenElement(71,1)(type:COLON, text::)
-              IContentNode
+              ChameleonMapEntryContent
                 Whitespace(72,1)(type:WHITESPACE, text: ) spaces: " "
                 IPlainScalarNode
                   YamlTokenType+GenericTokenElement(73,3)(type:NS_PLAIN, text:bar)
                 NewLine(76,1)(type:NEW_LINE, text:\n) spaces: "\n"
                 NewLine(77,1)(type:NEW_LINE, text:\n) spaces: "\n"
+                IEmptyScalarNode
 
