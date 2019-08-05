@@ -30,8 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
     protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
                                                          DaemonProcessKind processKind, IYamlFile file)
     {
-      return new IdentifierHighlightingProcess(process, file, myRegistrar,
-        ShouldAllowOpeningChameleons(file, processKind));
+      return new IdentifierHighlightingProcess(process, file, processKind, myRegistrar,
+        ShouldAllowOpeningChameleons(file, processKind), myInternalMode);
     }
 
     protected override bool IsSupported(IPsiSourceFile sourceFile)
@@ -40,22 +40,23 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
       if (sourceFile == null || !sourceFile.IsValid())
         return false;
       
-      if (myInternalMode)
-        return sourceFile.IsLanguageSupported<YamlLanguage>();
-      
-      return false;
+      return sourceFile.IsLanguageSupported<YamlLanguage>();
     }
 
     private class IdentifierHighlightingProcess : YamlDaemonStageProcessBase
     {
+      private readonly DaemonProcessKind myKind;
+      private readonly bool myInternalMode;
       private readonly ResolveProblemHighlighter myResolveProblemHighlighter;
       private readonly IReferenceProvider myReferenceProvider;
 
-      public IdentifierHighlightingProcess(IDaemonProcess process, IYamlFile file,
+      public IdentifierHighlightingProcess(IDaemonProcess process, IYamlFile file, DaemonProcessKind kind,
                                            ResolveHighlighterRegistrar resolveHighlighterRegistrar,
-                                           bool allowOpeningChameleons)
+                                           bool allowOpeningChameleons, bool internalMode)
         : base(process, file, allowOpeningChameleons)
       {
+        myKind = kind;
+        myInternalMode = internalMode;
         myResolveProblemHighlighter = new ResolveProblemHighlighter(resolveHighlighterRegistrar);
         myReferenceProvider = ((IFileImpl) file).ReferenceProvider;
       }
@@ -65,6 +66,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
         var references = node.GetReferences(myReferenceProvider);
         myResolveProblemHighlighter.CheckForResolveProblems(node, consumer, references);
 
+        if (!myInternalMode && myKind != DaemonProcessKind.VISIBLE_DOCUMENT)
+          return;
+        
         if (node is IErrorElement errorElement)
         {
           var range = errorElement.GetDocumentRange();
