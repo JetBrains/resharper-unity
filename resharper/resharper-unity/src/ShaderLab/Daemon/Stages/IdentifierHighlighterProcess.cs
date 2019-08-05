@@ -42,9 +42,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
                 if (info != null)
                     consumer.AddHighlighting(info.Highlighting, info.Range);
             }
+            
 
             var references = node.GetReferences(myReferenceProvider);
             myResolveProblemHighlighter.CheckForResolveProblems(node, consumer, references);
+            
+            if (myProcessKind != DaemonProcessKind.VISIBLE_DOCUMENT)
+            {
+#if !JET_MODE_ASSERT
+                return;
+#endif
+            }
 
             // TODO: Move to ShaderLabSyntaxHighlightingStage
             // (Not Rider's syntax highlighting though!)
