@@ -25,11 +25,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         public IdentifierHighlighterProcess(IDaemonProcess process, ResolveHighlighterRegistrar registrar,
             IContextBoundSettingsStore settingsStore, DaemonProcessKind processKind, IShaderLabFile file,
             ConfigurableIdentifierHighlightingStageService identifierHighlightingStageService, 
-            RunsProducts.ProductConfigurations productConfigurations)
+            bool internalMode)
             : base(process, settingsStore, file)
         {
             myProcessKind = processKind;
-            myInternalMode = productConfigurations.IsInternalMode();
+            myInternalMode = internalMode;
             myIdentifierHighlightingEnabled = identifierHighlightingStageService.ShouldHighlightIdentifiers(settingsStore);
             myVisualElementHighlighter = new VisualElementHighlighter(ShaderLabLanguage.Instance, settingsStore);
             myResolveProblemHighlighter = new ResolveProblemHighlighter(registrar);
