@@ -1,4 +1,6 @@
-﻿using JetBrains.Application.Settings;
+﻿using JetBrains.Application.Environment;
+using JetBrains.Application.Environment.Helpers;
+using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -17,10 +19,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
   public class IdentifierHighlightingStage : YamlDaemonStageBase
   {
     private readonly ResolveHighlighterRegistrar myRegistrar;
+    private readonly bool myInternalMode;
 
-    public IdentifierHighlightingStage(ResolveHighlighterRegistrar registrar)
+    public IdentifierHighlightingStage(ResolveHighlighterRegistrar registrar, RunsProducts.ProductConfigurations productConfigurations)
     {
       myRegistrar = registrar;
+      myInternalMode = productConfigurations.IsInternalMode();
     }
 
     protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
@@ -36,11 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
       if (sourceFile == null || !sourceFile.IsValid())
         return false;
       
-      #if !JET_MODE_ASSERT
-        return false;
-      #else
+      if (myInternalMode)
         return sourceFile.IsLanguageSupported<YamlLanguage>();
-      #endif
+      
+      return false;
     }
 
     private class IdentifierHighlightingProcess : YamlDaemonStageProcessBase
