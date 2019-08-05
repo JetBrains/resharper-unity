@@ -44,15 +44,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             }
             
 
-            var references = node.GetReferences(myReferenceProvider);
-            myResolveProblemHighlighter.CheckForResolveProblems(node, consumer, references);
-            
-            if (myProcessKind != DaemonProcessKind.VISIBLE_DOCUMENT)
-            {
 #if !JET_MODE_ASSERT
                 return;
-#endif
-            }
+#else
+            var references = node.GetReferences(myReferenceProvider);
+            myResolveProblemHighlighter.CheckForResolveProblems(node, consumer, references);
 
             // TODO: Move to ShaderLabSyntaxHighlightingStage
             // (Not Rider's syntax highlighting though!)
@@ -76,6 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             }
 
             base.VisitNode(node, consumer);
+#endif
         }
     }
 }
