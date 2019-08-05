@@ -35,8 +35,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Daemon.Stages
       // Don't check PSI properties - a syntax error is a syntax error
       if (sourceFile == null || !sourceFile.IsValid())
         return false;
-
-      return sourceFile.IsLanguageSupported<YamlLanguage>();
+      
+      #if !JET_MODE_ASSERT
+        return false;
+      #else
+        return sourceFile.IsLanguageSupported<YamlLanguage>();
+      #endif
     }
 
     private class IdentifierHighlightingProcess : YamlDaemonStageProcessBase
