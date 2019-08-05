@@ -166,4 +166,5 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
 
     fun BaseTestWithSolution.unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
 
+    override val waitForCaches = true
 }
