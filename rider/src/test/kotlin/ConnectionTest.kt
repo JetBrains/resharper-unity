@@ -61,7 +61,8 @@ class ConnectionTest : BaseTestWithSolution() {
             appPath = localAppPath
         }
 
-        val args = mutableListOf("-logfile", logPath.toString(), "-batchMode", "-quit", "-silent-crashes",
+        val args = mutableListOf(appPath.toString(), project.basePath.toString(),
+            "-logfile", logPath.toString(), "-batchMode", "-quit", "-silent-crashes",
             "\"-executeMethod\"", "\"JetBrains.Rider.Unity.Editor.Internal.RiderTests.EnableLogsSyncSolution\"",
             "-riderTests")
         if (isRunningInTeamCity)
@@ -72,7 +73,7 @@ class ConnectionTest : BaseTestWithSolution() {
             assertNotNull(password, "System.getenv(\"password\") is null.")
             args.addAll(arrayOf("-username", login, "-password", password))
         }
-        val process = StartUnityAction.startUnity(appPath, project, args.toTypedArray())
+        val process = StartUnityAction.startUnity(args)
         assertNotNull(process)
 
         val unityHost = UnityHost.getInstance(project)

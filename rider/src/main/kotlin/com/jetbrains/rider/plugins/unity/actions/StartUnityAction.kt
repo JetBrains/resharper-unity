@@ -4,6 +4,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
+
 
 open class StartUnityAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -28,17 +30,14 @@ open class StartUnityAction : DumbAwareAction() {
 
     companion object {
         fun startUnity(project: Project, vararg args: String): Process? {
-            val appPath = UnityInstallationFinder.getInstance(project).getApplicationPath() ?: return null
-            return startUnity(appPath, project, args)
+            val processBuilderArgs = getUnityWithProjectArgs(project)
+            processBuilderArgs.addAll(args)
+            return startUnity(processBuilderArgs)
         }
 
-        fun startUnity(appPath: java.nio.file.Path, project: Project, args: Array<out String>): Process? {
-            val path = appPath.toString()
-            val projectPath = project.basePath.toString();
-            val processBuilderArgs = mutableListOf(path, "-projectPath", projectPath)
-
+        fun startUnity(args: MutableList<String>): Process? {
+            val processBuilderArgs = mutableListOf<String>()
             processBuilderArgs.addAll(args)
-
             val processBuilder = ProcessBuilder(processBuilderArgs)
             return processBuilder.start()
         }
