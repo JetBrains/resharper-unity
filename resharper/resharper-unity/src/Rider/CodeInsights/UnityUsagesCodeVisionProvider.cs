@@ -52,17 +52,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public override bool IsAvailableFor(IDeclaredElement declaredElement, ElementId? elementId)
         {
-            if (!elementId.HasValue)
+            if (!elementId.HasValue || declaredElement == null)
                 return false;
 
+            if (!declaredElement.GetSolution().GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled.Value)
+                return false;
+                
+            if (!declaredElement.GetSolution().GetComponent<AssetSerializationMode>().IsForceText)
+                return false;
+            
             if (declaredElement is IMethod method)
             {
-                if (!method.GetSolution().GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled.Value)
-                    return false;
-                
-                if (!method.GetSolution().GetComponent<AssetSerializationMode>().IsForceText)
-                    return false;
-
                 var cache = method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>();
                 return cache.IsEventHandler(method);
             }

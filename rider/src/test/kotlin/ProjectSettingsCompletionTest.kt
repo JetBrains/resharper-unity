@@ -19,7 +19,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
 
     @BeforeSuite(alwaysRun = true)
     fun getUnityDll() {
-        unityDll = DownloadUnityDll()
+        unityDll = downloadUnityDll()
     }
 
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
@@ -161,7 +161,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
 
         //all tests were written with this setting which default was changed only in 18.3
         RiderCodeCompletionExtraSettings.instance.allowToCompleteWithWhitespace = true
-        CopyUnityDll(unityDll, project, activeSolutionDirectory)
+        copyUnityDll(unityDll, project, activeSolutionDirectory)
     }
 
     // debug only

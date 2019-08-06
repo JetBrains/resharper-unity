@@ -44,7 +44,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             string tooltip, DaemonProcessKind kind)
         {
             if (!myAssetSerializationMode.IsForceText || 
-                !Settings.GetValue((UnitySettings key) => key.EnableInspectorPropertiesEditor))
+                !Settings.GetValue((UnitySettings key) => key.EnableInspectorPropertiesEditor) ||
+                !Settings.GetValue((UnitySettings key) => key.IsYamlParsingEnabled))
             {
                 AddHighlighting(consumer, element, text, tooltip, kind);
                 return;

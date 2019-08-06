@@ -1,169 +1,114 @@
-import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
-import com.intellij.util.io.exists
-import com.jetbrains.rd.util.reactive.hasTrueValue
-import com.jetbrains.rdclient.usages.setRuleEnabled
-import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.model.findUsagesHost
-import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.projectView.solution
+import com.intellij.openapi.editor.impl.EditorImpl
 import com.jetbrains.rider.test.annotations.TestEnvironment
-import com.jetbrains.rider.test.base.BaseTestWithSolution
-import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.enums.ToolsetVersion
-import com.jetbrains.rider.test.framework.TeamCityHelper
+import com.jetbrains.rider.test.base.CodeLensBaseTest
 import com.jetbrains.rider.test.framework.combine
-import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
 import com.jetbrains.rider.test.framework.executeWithGold
+import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import com.jetbrains.rider.util.idea.lifetime
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File
-import java.nio.file.Path
-import java.nio.file.Paths
-import kotlin.test.assertNotNull
 
-@TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
-class PropertyCodeVisionAssetTest : BaseTestWithSolution() {
+class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
 
-    override fun getSolutionDirectoryName(): String {
-        return "FindUsages_event_handlers_2017"
-    }
+    private val disableYamlDotSettingsContents = """<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	        <s:Boolean x:Key="/Default/CodeEditing/Unity/IsYamlParsingEnabled/@EntryValue">False</s:Boolean>
+            </wpf:ResourceDictionary>"""
 
-    lateinit var unityDll : File
+    lateinit var unityDll: File
 
     @BeforeSuite(alwaysRun = true)
     fun getUnityDll() {
-        unityDll = DownloadUnityDll()
+        unityDll = downloadUnityDll()
     }
 
     @BeforeMethod
     fun InitializeEnvironement() {
-        CopyUnityDll(unityDll, project, activeSolutionDirectory)
+        copyUnityDll(unityDll, project, activeSolutionDirectory)
+        enableAllLensProviders()
     }
 
-
-    @DataProvider(name = "findUsagesGrouping")
-    fun test1() = arrayOf(
-        arrayOf("allGroupsEnabled", arrayOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
-    )
-
-    @Test(dataProvider = "findUsagesGrouping")
-    fun findScript_2017(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(5, 17)
+    companion object {
+        const val assetUsagesProvider = "Unity Assets Usage"
+        const val unityFieldProvider = "Unity serialized field"
+        const val impicitUsagesProvider = "Unity implicit usage"
     }
 
-    @Test(dataProvider = "findUsagesGrouping")
-    fun findEventHandler_2017(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
+    override val waitForCaches = true
 
-        doTest(17, 18)
-    }
+    override fun getSolutionDirectoryName() = "CodeLensTestSolution"
 
-    @Test(dataProvider = "findUsagesGrouping")
-    @TestEnvironment(solution = "FindUsages_02_2017")
-    fun findScript_02_2017(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(5, 17)
-    }
-
-    @Test(dataProvider = "findUsagesGrouping")
-    @TestEnvironment(solution = "FindUsages_03_2017")
-    fun findScript_03_2017(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(5, 17)
-    }
-
-    @Test(dataProvider = "findUsagesGrouping")
-    @TestEnvironment(solution = "FindUsages_04_2017")
-    fun findScript_04_2017(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(5, 17)
-    }
-
-    @Test(dataProvider = "findUsagesGrouping")
-    fun findScript_2018(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(5, 17)
-    }
-
-    @Test(dataProvider = "findUsagesGrouping")
-    fun findEventHandler_2018(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(17, 18)
-    }
-
-    @Test(dataProvider = "findUsagesGrouping")
-    @TestEnvironment(solution = "FindUsages_02_2018")
-    fun findScript_02_2018(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(5, 17)
-    }
-
-    @Test(dataProvider = "findUsagesGrouping")
-    @TestEnvironment(solution = "FindUsages_03_2018")
-    fun findScript_03_2018(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(5, 17)
-    }
-
-    @Test(dataProvider = "findUsagesGrouping")
-    @TestEnvironment(solution = "FindUsages_04_2018")
-    fun findScript_04_2018(caseName: String, groups: Array<String>?) {
-        disableAllGroups()
-        groups?.forEach { group -> setGroupingEnabled(group, true) }
-
-        doTest(5, 17)
-    }
-
-    private fun doTest(line : Int, column : Int) {
-        withOpenedEditor("Assets/NewBehaviourScript.cs") {
-            setCaretToPosition(line, column)
-            val text = requestFindUsages(activeSolutionDirectory)
-            executeWithGold(testGoldFile) { printStream ->
-                printStream.print(text)
-            }
+    override fun preprocessTempDirectory(tempDir: File) {
+        if (testMethod.name.contains("YamlOff")) {
+            val dotSettingsFile = activeSolutionDirectory.combine("$activeSolution.sln.DotSettings.user")
+            dotSettingsFile.writeText(disableYamlDotSettingsContents)
         }
     }
 
+    @DataProvider(name = "assetSettings")
+    fun assetSettings() = arrayOf(
+        arrayOf("Properties", "True"),
+        arrayOf("NoProperties", "False")
+    )
 
-    private fun disableAllGroups() {
-        occurrenceTypeGrouping(false)
-        solutionFolderGrouping(false)
-        projectGrouping(false)
-        directoryGrouping(false)
-        fileGrouping(false)
-        namespaceGrouping(false)
-        typeGrouping(false)
-        unityGameObjectGrouping(false)
-        unityComponentGrouping(false)
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "FindUsages_05_2018")
+    fun baseTest(caseName: String, showProperties: String) = doUnityTest(showProperties,
+            "Assets/NewBehaviourScript.cs") { false }
+
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "RiderSample")
+    fun propertyCodeVision(caseName: String, showProperties: String) = doUnityTest(showProperties,
+        "Assets/SampleScript.cs") { false }
+
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "RiderSample")
+    fun propertyCodeVisionWithTyping(caseName: String, showProperties: String) = doUnityTest(showProperties,
+        "Assets/SampleScript.cs") {
+        typeFromOffset("1", 577)
+        waitForNextLenses()
+        true
     }
 
-    fun BaseTestWithSolution.unityGameObjectGrouping(enable: Boolean) = setGroupingEnabled("UnityGameObject", enable)
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "FindUsages_05_2018")
+    fun baseTestYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
+        "Assets/NewBehaviourScript.cs") { false }
 
-    fun BaseTestWithSolution.unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "RiderSample")
+    fun propertyCodeVisionYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
+        "Assets/SampleScript.cs") { false }
 
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "RiderSample")
+    fun propertyCodeVisionWithTypingYamlOff(caseName: String, showProperties: String) = doUnityTest(showProperties,
+        "Assets/SampleScript.cs") {
+        typeFromOffset("1", 577)
+        true
+    }
+
+    fun doUnityTest(showProperties: String, file: String, action: EditorImpl.() -> Boolean) {
+        setReSharperSetting("CodeEditing/Unity/EnableInspectorPropertiesEditor/@EntryValue", showProperties)
+
+        waitForLensInfos(project)
+        waitForAllAnalysisFinished(project)
+        val editor = withOpenedEditor(file) {
+            waitForLenses()
+            executeWithGold(testGoldFile) {
+
+                it.println("before change")
+                it.print(dumpLenses())
+                if (action()) {
+                    persistAllFilesOnDisk(project)
+                    waitForNextLenses()
+                    it.println("after change")
+                    it.print(dumpLenses())
+                }
+            }
+        }
+        closeEditor(editor)
+    }
 }

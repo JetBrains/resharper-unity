@@ -1,0 +1,48 @@
+Search target
+    NewBehaviourScript
+Found usages  (7 usages found)
+    <Assembly-CSharp>  (1 usage found)
+        Assets  (1 usage found)
+            NewBehaviourScript.cs  (1 usage found)
+                NewBehaviourScript  (1 usage found)
+                    Start()  (1 usage found)
+                        [244, Assets/NewBehaviourScript.cs] (10: 27)  gameObject.AddComponent<NewBehaviourScript>();
+    <Miscellaneous Files>  (6 usages found)
+        Prefab1_b (1).prefab  (1 usage found)
+            Prefab1_b (1)  (1 usage found)
+                Prefab3  (1 usage found)
+                    Cylinder  (1 usage found)
+                        Plane  (1 usage found)
+                            NewBehaviourScript (Script)  (1 usage found)
+                                [5636, Assets/Prefab1_b (1).prefab] (198: 38)  m_Script: {fileID: 11500000, guid: 3b13d83fa1f2fbc4e9d238d67efb119a, type: 3}
+        PrefabWithPrefab.prefab  (1 usage found)
+            PrefabWithPrefab  (1 usage found)
+                Prefab3Name  (1 usage found)
+                    CylinderName  (1 usage found)
+                        Plane  (1 usage found)
+                            NewBehaviourScript (Script)  (1 usage found)
+                                [8295, Assets/PrefabWithPrefab.prefab] (291: 38)  m_Script: {fileID: 11500000, guid: 3b13d83fa1f2fbc4e9d238d67efb119a, type: 3}
+        scene.unity  (4 usages found)
+            Prefab1  (1 usage found)
+                Cube  (1 usage found)
+                    Prefab2  (1 usage found)
+                        Cube  (1 usage found)
+                            NewBehaviourScript (Script)  (1 usage found)
+                                [6648, Assets/scene.unity] (213: 38)  m_Script: {fileID: 11500000, guid: 3b13d83fa1f2fbc4e9d238d67efb119a, type: 3}
+            Prefab1_b  (1 usage found)
+                Prefab3  (1 usage found)
+                    Cylinder  (1 usage found)
+                        Plane  (1 usage found)
+                            NewBehaviourScript (Script)  (1 usage found)
+                                [20263, Assets/scene.unity] (645: 38)  m_Script: {fileID: 11500000, guid: 3b13d83fa1f2fbc4e9d238d67efb119a, type: 3}
+            Prefab1_a  (1 usage found)
+                Cube  (1 usage found)
+                    Prefab2  (1 usage found)
+                        NewBehaviourScript (Script)  (1 usage found)
+                            [26936, Assets/scene.unity] (861: 38)  m_Script: {fileID: 11500000, guid: 3b13d83fa1f2fbc4e9d238d67efb119a, type: 3}
+            PrefabWithPrefabaSdasd  (1 usage found)
+                Prefab3Name12312  (1 usage found)
+                    CylinderName222222  (1 usage found)
+                        1user  (1 usage found)
+                            NewBehaviourScript (Script)  (1 usage found)
+                                [33761, Assets/scene.unity] (1056: 38)  m_Script: {fileID: 11500000, guid: 3b13d83fa1f2fbc4e9d238d67efb119a, type: 3}

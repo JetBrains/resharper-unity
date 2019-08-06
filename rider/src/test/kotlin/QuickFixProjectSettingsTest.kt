@@ -14,7 +14,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
 
     @BeforeSuite(alwaysRun = true)
     fun getUnityDll() {
-        unityDll = DownloadUnityDll()
+        unityDll = downloadUnityDll()
     }
 
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
@@ -73,6 +73,6 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
 
     @BeforeMethod
     fun InitializeEnvironement() {
-        CopyUnityDll(unityDll, project, activeSolutionDirectory)
+        copyUnityDll(unityDll, project, activeSolutionDirectory)
     }
 }
