@@ -22,30 +22,31 @@ class UnityIgnoredFileProvider : IgnoredFileProvider {
     }
     override fun isIgnoredFile(project: Project, filePath: FilePath): Boolean {
         if (!UnityProjectDiscoverer.getInstance(project).isUnityProject)
-            return false;
+            return false
 
+        val solDir = project.solutionDirectory
         val ignoredFolders = arrayOf(
-            File(project.solutionDirectory, "Library"),
-            File(project.solutionDirectory, "library"),
-            File(project.solutionDirectory, "Temp"),
-            File(project.solutionDirectory, "temp"),
-            File(project.solutionDirectory, "Obj"),
-            File(project.solutionDirectory, "obj"),
-            File(project.solutionDirectory, "Build"),
-            File(project.solutionDirectory, "build"),
-            File(project.solutionDirectory, "Builds"),
-            File(project.solutionDirectory, "builds"),
-            File(project.solutionDirectory, "Logs"),
-            File(project.solutionDirectory, "logs"),
-            File(project.solutionDirectory, "MemoryCaptures"),
-            File(project.solutionDirectory, "memoryCaptures"),
-            getPluginPath(File(project.solutionDirectory, "Assets")),
-            getPluginPath(File(project.solutionDirectory, "assets"))
+            File(solDir, "Library"),
+            File(solDir, "library"),
+            File(solDir, "Temp"),
+            File(solDir, "temp"),
+            File(solDir, "Obj"),
+            File(solDir, "obj"),
+            File(solDir, "Build"),
+            File(solDir, "build"),
+            File(solDir, "Builds"),
+            File(solDir, "builds"),
+            File(solDir, "Logs"),
+            File(solDir, "logs"),
+            File(solDir, "MemoryCaptures"),
+            File(solDir, "memoryCaptures"),
+            getPluginPath(File(solDir, "Assets")),
+            getPluginPath(File(solDir, "assets"))
         )
 
         val name = filePath.name
         if (name == "sysinfo.txt" || name == "crashlytics-build.properties")
-            return true;
+            return true
 
        for (ext in ignoredExtensions)
            if (name.endsWith(ext))
