@@ -15,7 +15,7 @@ ext.repoRoot = project.file("..")
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 ext.bundledRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
 
-buildSearchableOptions.enabled = false
+buildSearchableOptions.enabled = BuildConfiguration == "Release"
 
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
