@@ -131,10 +131,23 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           }
           else
           {
-            launcher = Activator.CreateInstance(launcherType,
-              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-              null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)},
-              null);
+            try
+            {
+              launcher = Activator.CreateInstance(launcherType,
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+                null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)},
+                null);
+            }
+            catch (Exception)
+            {
+              var apiFilterType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.Api.Filter");
+              var apiFilter = Activator.CreateInstance(apiFilterType);
+              var testNamesFieldInfo = apiFilter.GetType().GetField("testNames");
+              testNamesFieldInfo.SetValue(apiFilter, testNames);
+              var array = Array.CreateInstance(apiFilterType, 1);
+              array.SetValue(apiFilter, 0);
+              launcher = Activator.CreateInstance(launcherType, array, Enum.ToObject(enumType, testPlatformVal));
+            }
           }
         }
         else
