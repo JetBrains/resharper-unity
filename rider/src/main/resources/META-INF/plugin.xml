@@ -24,6 +24,9 @@
     <lang.documentationProvider language="C#" implementationClass="com.jetbrains.rider.plugins.unity.quickDoc.UnityDocumentationProvider"
                                 order="first" />
 
+
+    <ignoredFileProvider implementation="com.jetbrains.rider.plugins.unity.UnityIgnoredFileProvider"/>
+
     <!-- For future reference, fileTypeFactory[@id] defines the name used in the @language attributes of the other
          registration elements. This @id MUST match the value returned by FileType.getName() - case sensitive! -->
 
