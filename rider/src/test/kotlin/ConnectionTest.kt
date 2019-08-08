@@ -24,7 +24,7 @@ import kotlin.test.assertNotNull
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
 class ConnectionTest : BaseTestWithSolution() {
     override fun getSolutionDirectoryName(): String {
-        return "SimpleUnityProject"
+        return "SimpleUnityProjectWithoutPlugin"
     }
 
     override val waitForCaches = true;
@@ -37,13 +37,11 @@ class ConnectionTest : BaseTestWithSolution() {
 
     @Test
     fun test() {
-
-
         VfsRootAccess.allowRootAccess("C:/Program Files/Unity")
 
         val editorPluginPath = Paths.get(project.basePath).resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
+        val unityStartFile = Paths.get(project.basePath).resolve(".start")
 
-        waitAndPump(project.lifetime, { editorPluginPath.exists()}, 10000, { "EditorPlugin was not installed."})
 
         val logPath = Paths.get(project.basePath).resolve("Editor.log")
 
@@ -65,9 +63,7 @@ class ConnectionTest : BaseTestWithSolution() {
             appPath = localAppPath
         }
 
-        val args = mutableListOf(appPath.toString(), project.basePath.toString(),
-            "-logfile", logPath.toString(), "-batchMode", "-quit", "-silent-crashes",
-            "\"-executeMethod\"", "\"JetBrains.Rider.Unity.Editor.Internal.RiderTests.EnableLogsSyncSolution\"",
+        val args = mutableListOf("-logfile", logPath.toString(), "-batchMode", "-silent-crashes",
             "-riderTests")
         if (isRunningInTeamCity)
         {
@@ -77,19 +73,30 @@ class ConnectionTest : BaseTestWithSolution() {
             assertNotNull(password, "System.getenv(\"password\") is null.")
             args.addAll(arrayOf("-username", login, "-password", password))
         }
-        val process = StartUnityAction.startUnity(args)
-        assertNotNull(process)
+        val process = StartUnityAction.startUnity(appPath, project, args.toTypedArray())
+        try {
+            assertNotNull(process)
 
-        val unityHost = UnityHost.getInstance(project)
-        waitAndPump(project.lifetime, {unityHost.sessionInitialized.hasTrueValue}, 100000, {"unityHost is not initialized."})
+            waitAndPump(project.lifetime, { unityStartFile.exists() }, 120000, { "Unity was not started." })
 
-        waitAndPump(project.lifetime, {!process.isAlive}, 100000, {"Process should have existed."})
+            val unityHost = UnityHost.getInstance(project)
+            unityHost.model.installEditorPlugin.fire(Unit)
 
-        val projectVirtualFile = File(project.basePath).combine("Assembly-CSharp.csproj")
-        changeFileSystem2(project){ arrayOf(projectVirtualFile) }
+            waitAndPump(project.lifetime, { editorPluginPath.exists() }, 10000, { "EditorPlugin was not installed." })
 
-        checkSwea(project)
+            waitAndPump(project.lifetime, { unityHost.sessionInitialized.hasTrueValue }, 100000, { "unityHost is not initialized." })
 
-        process.destroyForcibly()
+            process.destroy()
+            waitAndPump(project.lifetime, { !process.isAlive }, 100000, { "Process should have existed." })
+
+            val projectVirtualFile = File(project.basePath).combine("Assembly-CSharp.csproj")
+            changeFileSystem2(project) { arrayOf(projectVirtualFile) }
+
+            checkSwea(project)
+        } finally {
+            if (process?.isAlive == true)
+                process.destroy()
+        }
+
     }
 }
