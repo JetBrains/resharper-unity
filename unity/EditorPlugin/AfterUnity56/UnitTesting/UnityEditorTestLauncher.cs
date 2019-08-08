@@ -138,7 +138,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
                 null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)},
                 null);
             }
-            catch (Exception)
+            catch (Exception) // Unity 2019.2+ with package com.unity.test-framework v 1.0.18 and 1.1.0 ctor was changed. in v 1.1.1 it was added back for compatibility
             {
               var apiFilterType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.Api.Filter");
               var apiFilter = Activator.CreateInstance(apiFilterType);
