@@ -19,7 +19,7 @@ fun getUnityWithProjectArgs(project: Project) : MutableList<String> {
     val riderPath = RiderAppPath.getPath()
     if (riderPath!=null)
     {
-        val originArgs = mutableListOf("-origin", riderPath)
+        val originArgs = mutableListOf("-riderPath", riderPath)
         args.addAll(originArgs)
     }
     return args;
