@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Collections;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -17,12 +19,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
     [SolutionComponent]
     public class UnityShortcutCache : SimpleICache<CountingSet<string>>
     {
+        private readonly UnityReferencesTracker myUnityReferencesTracker;
         private CountingSet<string> myLocalCache = new CountingSet<string>();
         private OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithShortCut = new OneToCompactCountingSet<string, IPsiSourceFile>();
         
-        public UnityShortcutCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager)
+        public UnityShortcutCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, UnityReferencesTracker unityReferencesTracker)
             : base(lifetime, persistentIndexManager,  CreateMarshaller())
         {
+            myUnityReferencesTracker = unityReferencesTracker;
         }
 
         
@@ -53,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
         
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>();
+            return myUnityReferencesTracker.HasUnityReference.HasTrueValue() && base.IsApplicable(sf) && sf.PrimaryPsiLanguage.Is<CSharpLanguage>();
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -76,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
                     case IMethodDeclaration methodDeclaration:
                         // we could not resolve here: this means if user uses name alias we will not find this attribute
                         // SwaExtension??
-                        var attribute = methodDeclaration.Attributes.FirstOrDefault(t => t.Name.NameIdentifier.Name.Equals("MenuItem"));
+                        var attribute = methodDeclaration.Attributes.FirstOrDefault(t => t.Name?.NameIdentifier?.Name.Equals("MenuItem") == true);
                         if (attribute != null)
                         {
                             var arguments = attribute.Arguments;
