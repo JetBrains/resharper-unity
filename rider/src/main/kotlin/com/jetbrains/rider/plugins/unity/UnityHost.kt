@@ -77,7 +77,7 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
                         override fun processStarted(debugProcess: XDebugProcess) {
                            if (debugProcess is DotNetDebugProcess)
                            {
-                               debugProcess.debuggerInitializingState.advise(lt){
+                               debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt){
                                    if (it == DebuggerInitializingState.Initialized)
                                        task.set(true)
                                    if (it == DebuggerInitializingState.Canceled)
