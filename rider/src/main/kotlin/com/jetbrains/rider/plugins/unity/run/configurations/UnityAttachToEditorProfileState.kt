@@ -41,7 +41,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 override fun processStarted(debugProcess: XDebugProcess) {
                     if (debugProcess is DotNetDebugProcess)
                     {
-                        debugProcess.debuggerInitializingState.advise(lt){
+                        debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt){
                             if (it == DebuggerInitializingState.Initialized)
                             {
                                 logger.info("Pass value to backend, which will push Unity to enter play mode.")
