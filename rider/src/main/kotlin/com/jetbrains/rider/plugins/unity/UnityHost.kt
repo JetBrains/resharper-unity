@@ -5,19 +5,17 @@ import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
-import com.intellij.xdebugger.XDebugProcess
 import com.intellij.xdebugger.XDebuggerManager
-import com.intellij.xdebugger.XDebuggerManagerListener
 import com.jetbrains.rd.framework.impl.RdTask
+import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.debugger.DebuggerInitializingState
-import com.jetbrains.rider.debugger.DotNetDebugProcess
+import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
@@ -73,19 +71,18 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
 
                 }
                 if (!isAttached) {
-                    project.messageBus.connect(lt.createNestedDisposable()).subscribe(XDebuggerManager.TOPIC, object : XDebuggerManagerListener {
-                        override fun processStarted(debugProcess: XDebugProcess) {
-                           if (debugProcess is DotNetDebugProcess)
-                           {
-                               debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt){
-                                   if (it == DebuggerInitializingState.Initialized)
-                                       task.set(true)
-                                   if (it == DebuggerInitializingState.Canceled)
-                                       task.set(false)
-                               }
-                           }
+                    val processTracker: RiderDebugActiveDotNetSessionsTracker = project.getComponent()
+                    processTracker.dotNetDebugProcesses.change.advise(componentLifetime) { (event, debugProcess) ->
+                        if (event == AddRemove.Add) {
+                            debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
+                                if (it == DebuggerInitializingState.Initialized)
+                                    task.set(true)
+                                if (it == DebuggerInitializingState.Canceled)
+                                    task.set(false)
+                            }
                         }
-                    })
+                    }
+
                     ProgramRunnerUtil.executeConfiguration(configuration, DefaultDebugExecutor.getDebugExecutorInstance())
                 } else
                     task.set(true)

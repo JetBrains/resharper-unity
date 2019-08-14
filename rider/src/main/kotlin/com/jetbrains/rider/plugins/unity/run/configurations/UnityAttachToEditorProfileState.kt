@@ -7,16 +7,13 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.util.ui.UIUtil
-import com.intellij.xdebugger.XDebugProcess
-import com.intellij.xdebugger.XDebuggerManager
-import com.intellij.xdebugger.XDebuggerManagerListener
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
-import com.jetbrains.rider.debugger.DotNetDebugProcess
+import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
@@ -26,6 +23,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.util.idea.application
+import com.jetbrains.rider.util.idea.getComponent
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 
@@ -37,25 +35,22 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
         if (remoteConfiguration.play) {
             val lt = lifetime.createNested().lifetime
-            project.messageBus.connect(lifetime.createNestedDisposable()).subscribe(XDebuggerManager.TOPIC, object : XDebuggerManagerListener {
-                override fun processStarted(debugProcess: XDebugProcess) {
-                    if (debugProcess is DotNetDebugProcess)
-                    {
-                        debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt){
-                            if (it == DebuggerInitializingState.Initialized)
-                            {
-                                logger.info("Pass value to backend, which will push Unity to enter play mode.")
-                                lt.bracket(opening = {
-                                    // pass value to backend, which will push Unity to enter play mode.
-                                    executionEnvironment.project.solution.rdUnityModel.play.set(true)
-                                }, terminationAction = {
-                                    executionEnvironment.project.solution.rdUnityModel.play.set(false)
-                                })
-                            }
+            val processTracker: RiderDebugActiveDotNetSessionsTracker = project.getComponent()
+            processTracker.dotNetDebugProcesses.change.advise(lifetime) { (event, debugProcess) ->
+                if (event == AddRemove.Add) {
+                    debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
+                        if (it == DebuggerInitializingState.Initialized) {
+                            logger.info("Pass value to backend, which will push Unity to enter play mode.")
+                            lt.bracket(opening = {
+                                // pass value to backend, which will push Unity to enter play mode.
+                                executionEnvironment.project.solution.rdUnityModel.play.set(true)
+                            }, terminationAction = {
+                                executionEnvironment.project.solution.rdUnityModel.play.set(false)
+                            })
                         }
                     }
                 }
-            })
+            }
         }
 
         return super.execute(executor, runner, workerProcessHandler)
