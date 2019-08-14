@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             // ReSharper disable ArgumentsStyleNamedExpression
             // Displayed in the debugger as "objectValueSource.Name = {typeName} value"
             var objectValue = ObjectValue.CreateObject(objectValueSource, new ObjectPath(objectValueSource.Name),
-                typeDisplayName: string.Empty,  string.Empty, string.Empty,
+                TypePresentation.Null, value: string.Empty, 
                 ObjectValueFlags.Group | ObjectValueFlags.ReadOnly | ObjectValueFlags.NoRefresh, null);
             objectValue.ChildSelector = string.Empty;
             return objectValue;
