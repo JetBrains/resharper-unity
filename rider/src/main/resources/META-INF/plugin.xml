@@ -83,6 +83,7 @@
     <rdclient.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
 
     <feedbackDescriptionProvider implementation="com.jetbrains.rider.plugins.unity.UnityFeedbackDescriptionProvider" />
+    <statusBarWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.UnityStatusBarWidget" />
   </extensions>
 
   <project-components>
