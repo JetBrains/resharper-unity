@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
+## 2019.2.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/30?closed=1)
+
+### Added
+- Rider: Suggest files and folders to be ignored by version control ([RIDER-31206](https://youtrack.jetbrains.com/issue/RIDER-31206), [#1276](https://github.com/JetBrains/resharper-unity/pull/1276))
+
+### Changed
+- Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages ([#1275](https://github.com/JetBrains/resharper-unity/pull/1275))
+
+### Fixed
+- Fix exception when pasting code ([RIDER-31338](https://youtrack.jetbrains.com/issue/RIDER-31338), [#1280](https://github.com/JetBrains/resharper-unity/pull/1280))
+- Unity Editor: Fix exception running tests with older test framework packages ([#1273](https://github.com/JetBrains/resharper-unity/pull/1273))
+
+
+
 ## 2019.2.1
 Bundled with Rider 2019.2.1
 * [No changes](https://github.com/JetBrains/resharper-unity/compare/192-eap7-rtm-2019.2.0...192-eap8-rtm-2019.2.1)
