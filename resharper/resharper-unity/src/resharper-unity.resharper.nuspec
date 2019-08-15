@@ -34,6 +34,9 @@
 - And much more!
 </description>
 <releaseNotes>
+Changed:
+- Suppress warning when using CollisionFlags in a bitwise operation (RIDER-28661, #1289)
+
 Fixed:
 - Fix exception when pasting code (RIDER-31338, #1280)
 

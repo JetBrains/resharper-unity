@@ -14,6 +14,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Suggest files and folders to be ignored by version control ([RIDER-31206](https://youtrack.jetbrains.com/issue/RIDER-31206), [#1276](https://github.com/JetBrains/resharper-unity/pull/1276))
 
 ### Changed
+- Suppress warning when using `CollisionFlags` in a bitwise operation ([RIDER-28661](https://youtrack.jetbrains.com/issue/RIDER-28661), [#1289](https://github.com/JetBrains/resharper-unity/pull/1289))
 - Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages ([#1275](https://github.com/JetBrains/resharper-unity/pull/1275))
 - Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug ([#1283](https://github.com/JetBrains/resharper-unity/issues/1283), [#1284](https://github.com/JetBrains/resharper-unity/pull/1284))
 - Rider: Files in read only packages no longer shown as "ignored" in Unity Explorer ([#1288](https://github.com/JetBrains/resharper-unity/pull/1288))

@@ -253,6 +253,7 @@
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Suppress warning when using <tt>CollisionFlags</tt> in a bitwise operation (<a href="https://youtrack.jetbrains.com/issue/RIDER-28661">RIDER-28661</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1289">#1289</a>)</li>
   <li>Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1275">#1275</a>)</li>
   <li>Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug (<a href="https://github.com/JetBrains/resharper-unity/issues/1283">#1283</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1284">#1284</a>)</li>
   <li>Rider: Files in read only packages no longer shown as "ignored" in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1288">#1288</a>)</li>
