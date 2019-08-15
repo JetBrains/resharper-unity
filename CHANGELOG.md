@@ -15,6 +15,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Changed
 - Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages ([#1275](https://github.com/JetBrains/resharper-unity/pull/1275))
+- Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug ([#1283](https://github.com/JetBrains/resharper-unity/issues/1283), [#1284](https://github.com/JetBrains/resharper-unity/pull/1284))
 
 ### Fixed
 - Fix exception when pasting code ([RIDER-31338](https://youtrack.jetbrains.com/issue/RIDER-31338), [#1280](https://github.com/JetBrains/resharper-unity/pull/1280))
