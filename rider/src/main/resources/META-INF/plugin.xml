@@ -254,6 +254,7 @@
 <em>Changed:</em>
 <ul>
   <li>Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1275">#1275</a>)</li>
+  <li>Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug (<a href="https://github.com/JetBrains/resharper-unity/issues/1283">#1283</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1284">#1284</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
