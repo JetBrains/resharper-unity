@@ -26,6 +26,7 @@ object UnityRunUtil {
             !name.contains("Unity Hub") &&
             !name.contains("UnityCrashHandler") &&
             !name.contains("UnityPackageManager") &&
+            !name.contains("Unity.Licensing.Client") &&
             !name.contains("unityhub", true)
     }
 
