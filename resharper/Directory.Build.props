@@ -21,6 +21,7 @@
 
   <PropertyGroup>
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
+      <RdModelDir>$(MSBuildThisFileDirectory)\..\rider\</RdModelDir>
   </PropertyGroup>
 
   <Import Project="..\Packaging.props" />
