@@ -27,12 +27,19 @@
       <argument>x: null, y: null =&gt; false</argument>
     </attribute>
   </member>
-  
-  
+
+
   <!-- UnityEngine.Camera -->
   <member name="P:UnityEngine.Camera.main">
     <!-- https://docs.unity3d.com/ScriptReference/Camera-main.html - "Returns null if there is no camera tagged 'MainCamera' in the scene" -->
     <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+  </member>
+
+
+  <!-- UnityEngine.CollisionFlags -->
+  <member name="T:UnityEngine.CollisionFlags">
+    <!-- Missing [Flags] attribute causes warnings on bitwise operations. See RIDER-28661 -->
+    <attribute ctor="M:System.FlagsAttribute.#ctor" />
   </member>
 
 
@@ -56,7 +63,7 @@
       </attribute>
     </typeparameter>
   </member>
-  
+
 
   <!-- UnityEngine.Assertions.Assert -->
   <member name="M:UnityEngine.Assertions.Assert.IsTrue(System.Boolean)">
@@ -174,7 +181,7 @@
     </attribute>
   </member>
 
-  
+
   <!-- UnityEngine.Assertions.Must -->
   <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeTrue(System.Boolean)">
     <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
