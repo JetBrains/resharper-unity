@@ -7,12 +7,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
   [InitializeOnLoad]
   public static class EntryPoint
   {
-    private static readonly ILog ourLogger = Log.GetLog("AfterUnity56.EntryPoint");
-    
     static EntryPoint()
     {
-      ourLogger.Verbose("AfterUnity56.EntryPoint");
-
       PluginEntryPoint.OnModelInitialization += UnitTesting.Initialization.OnModelInitializationHandler;
       PluginEntryPoint.OnModelInitialization += Navigation.Initialization.OnModelInitializationHandler;
       AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
