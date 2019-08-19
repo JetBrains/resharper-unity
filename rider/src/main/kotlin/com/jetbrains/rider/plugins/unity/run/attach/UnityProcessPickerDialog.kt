@@ -1,5 +1,7 @@
 package com.jetbrains.rider.plugins.unity.run.attach
 
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.defineNestedLifetime
 import com.intellij.openapi.ui.DialogWrapper
@@ -88,22 +90,25 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     }
 
     override fun show() {
-        val lifetimeDefinition = project.defineNestedLifetime()
-        try {
-            UnityProcessListener({
-                synchronized(listModelLock) {
-                    listModel.addElement(it)
+        object : Task.Backgroundable(project, "Getting list of Unity processes...") {
+            override fun run(indicator: ProgressIndicator) {
+                val lifetimeDefinition = project.defineNestedLifetime()
+                try {
+                    UnityProcessListener({
+                        synchronized(listModelLock) {
+                            listModel.addElement(it)
+                        }
+                    }, {
+                        synchronized(listModelLock) {
+                            listModel.removeElement(it)
+                        }
+                    }, lifetimeDefinition.lifetime)
+                } finally {
+                    lifetimeDefinition.terminate()
                 }
-            }, {
-                synchronized(listModelLock) {
-                    listModel.removeElement(it)
-                }
-            }, lifetimeDefinition.lifetime)
-
-            super.show()
-        } finally {
-            lifetimeDefinition.terminate()
-        }
+            }
+        }.queue()
+        super.show()
     }
 
     private fun enterCustomIp() {
