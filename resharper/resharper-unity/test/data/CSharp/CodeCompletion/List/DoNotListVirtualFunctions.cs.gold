@@ -12,7 +12,7 @@ CustomRenderTextureUpdateZoneSpace
 PhysicsUpdateBehaviour2D
 UISystemProfilerApi
 WaitForFixedUpdate
-protected override Update() { ... }
+protected override Update() { … }    void
 UpdatedEventHandler (in UnityEngine.RemoteSettings)
 UploadHandler (in UnityEngine.Networking)
 UploadHandlerRaw (in UnityEngine.Networking)
@@ -72,7 +72,7 @@ CustomRenderTextureUpdateZoneSpace
 PhysicsUpdateBehaviour2D
 UISystemProfilerApi
 WaitForFixedUpdate
-protected override Update() { ... }
+protected override Update() { … }    void
 UpdatedEventHandler (in UnityEngine.RemoteSettings)
 UploadHandler (in UnityEngine.Networking)
 UploadHandlerRaw (in UnityEngine.Networking)

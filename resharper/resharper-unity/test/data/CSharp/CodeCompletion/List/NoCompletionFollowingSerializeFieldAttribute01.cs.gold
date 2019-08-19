@@ -1,4 +1,4 @@
-﻿# 671 ITEMS #
+﻿# 674 ITEMS #
 
 + abstract
 async
@@ -671,8 +671,11 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
+public override Equals(object) { … }    bool
+public override GetHashCode() { … }    int
+public override ToString() { … }    string
 # AUTOMATIC #
-# 671 ITEMS #
+# 674 ITEMS #
 
 + abstract
 async
@@ -1345,3 +1348,6 @@ UnityEditor
 UnityEditorInternal
 UnityEngine
 UnityEngineInternal
+public override Equals(object) { … }    bool
+public override GetHashCode() { … }    int
+public override ToString() { … }    string
