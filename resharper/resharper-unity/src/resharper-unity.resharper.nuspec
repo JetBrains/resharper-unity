@@ -12,7 +12,7 @@
 - Code completion of event function declarations in a class.
 - Use Generate Code to create event functions, with parameters, or start typing for automatic completion.
 - Highlights Unity event functions and serializable fields and marks as implicitly used by Unity.
-- Supports Unity API 5.0 - 2019.2, plus undocumented functions.
+- Supports Unity API 5.0 - 2019.3, plus undocumented functions.
 - Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explanations.
 - Performance indicators to avoid known code patterns that affect performance.
 - Parse class and method usage from scene, prefab and assets.
@@ -48,7 +48,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     <copyright>Copyright 2019 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[192.0]" />
+      <dependency id="Wave" version="[193.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>

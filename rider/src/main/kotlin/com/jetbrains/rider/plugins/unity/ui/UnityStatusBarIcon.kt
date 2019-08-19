@@ -4,10 +4,10 @@ import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.util.Consumer
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.plugins.unity.UnityHost
 import icons.UnityIcons
-import com.jetbrains.rd.util.reactive.valueOrDefault
 import java.awt.event.MouseEvent
 import javax.swing.Icon
 

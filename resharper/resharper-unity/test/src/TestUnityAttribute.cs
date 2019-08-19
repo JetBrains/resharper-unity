@@ -11,7 +11,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework.Utils;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-using NuGet;
+using PackageDependency = NuGet.Packaging.Core.PackageDependency;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
