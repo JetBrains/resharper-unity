@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
         {
             var text = buffer.GetText();
             text = NormaliseLindEndings(text);
-            return new ShaderLabLexer(new StringBuffer(text));
+            return new ShaderLabLexerGenerated(new StringBuffer(text));
         }
 
         private string NormaliseLindEndings(string text)
@@ -41,6 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
         [TestCase("Preprocessor")]
         [TestCase("Properties")]
         [TestCase("PropertyAttributes")]
+        [TestCase("PropertyAttributes2")]
         [TestCase("Tags")]
         [TestCase("MultipleTagsOnSingleLine")]
         [TestCase("CgInclude")]

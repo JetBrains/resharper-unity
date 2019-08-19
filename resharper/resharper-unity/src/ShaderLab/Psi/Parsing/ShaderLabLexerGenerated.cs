@@ -124,6 +124,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
                 try
                 {
                     currentTokenType = _locateToken();
+
+                    if (currentTokenType == ShaderLabTokenType.UNQUOTED_STRING_LITERAL)
+                    {
+                        while (yy_buffer_index < yy_eof_pos)
+                        {
+                            if (Buffer[yy_buffer_index] == ')' && !IsBracketAfterWhiteSpaces(yy_buffer_index + 1))
+                            {
+                                yy_buffer_end++;
+                                yy_buffer_index++;
+
+                                MoveToNextBracket();
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -143,6 +161,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
             }
 
             return currentTokenType;
+        }
+
+        private void MoveToNextBracket()
+        {
+            var curIndex = yy_buffer_index;
+            var hasAnyChar = false;
+            while (yy_buffer_index < yy_eof_pos)
+            {
+                var curChar = Buffer[curIndex];
+                if (curChar == ']')
+                    break;
+                
+                if (curChar == ',')
+                    break;
+                
+                if (curChar == '\n')
+                    break;
+                
+                if (curChar == '\r')
+                    break;
+
+                if (curChar == ')')
+                    break;
+
+                hasAnyChar |= !char.IsWhiteSpace(curChar);
+                
+                curIndex++;
+            }
+
+            if (hasAnyChar)
+            {
+                yy_buffer_end = yy_buffer_index = curIndex;
+            }
+
+        }
+
+        private bool IsBracketAfterWhiteSpaces(int curPos)
+        {
+            while (curPos < yy_eof_pos)
+            {
+                if (Buffer[curPos] == ']')
+                    return true;
+
+                if (!char.IsWhiteSpace(Buffer[curPos]))
+                    return false;
+                
+                curPos++;
+            }
+            return false;
         }
 
         private TokenNodeType FindKeywordByCurrentToken()

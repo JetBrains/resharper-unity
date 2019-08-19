@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 {
                     var document = reference.ComponentDocument;
                     var sourceFile = document.GetSourceFile();
-                    if (sourceFile == null  || sourceFile.IsValid())
+                    if (sourceFile == null  || !sourceFile.IsValid())
                         return EmptyModel();
                     
                     var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(document.GetTextAsBuffer());

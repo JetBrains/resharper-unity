@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEngine;
@@ -19,8 +18,7 @@ namespace JetBrains.Rider.Unity.Editor
       var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
       if (eventInfo == null)
         eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
-      var domainLifetime = Lifetime.Define();
-      
+
       if (eventInfo != null)
       {
         var handler = new Application.LogCallback(ApplicationOnLogMessageReceived);
@@ -28,7 +26,6 @@ namespace JetBrains.Rider.Unity.Editor
         AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
         {
           eventInfo.RemoveEventHandler(null, handler);
-          domainLifetime.Terminate();
         });
       }
       else

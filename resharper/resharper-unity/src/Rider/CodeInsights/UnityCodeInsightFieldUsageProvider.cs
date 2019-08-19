@@ -1,25 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
+using JetBrains.Application.UI.Tooltips;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Feature.Services.Util;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -29,6 +27,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
+using JetBrains.TextControl.TextControlsManagement;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
@@ -47,11 +46,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             Other,
         }
 
+        private readonly Lifetime myLifetime;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly UnityApi myUnityApi;
         private readonly IPsiFiles myFiles;
         private readonly UnityHost myUnityHost;
         private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
+        private readonly ITooltipManager myTooltipManager;
+        private readonly TextControlManager myTextControlManager;
         public override string ProviderId => "Unity serialized field";
         public override string DisplayName => "Unity serialized field";
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
@@ -59,15 +61,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
             new[] {new CodeLensRelativeOrderingLast()};
 
-        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
-            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneDataLocalCache sceneDataCache)
+        public UnityCodeInsightFieldUsageProvider(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
+            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneDataLocalCache sceneDataCache,
+            ITooltipManager tooltipManager, TextControlManager textControlManager)
             : base(unitySolutionTracker, host, bulbMenu)
         {
+            myLifetime = lifetime;
             myConnectionTracker = connectionTracker;
             myUnityApi = unityApi;
             myFiles = files;
             myUnityHost = unityHost;
             myUnitySceneDataLocalCache = sceneDataCache;
+            myTooltipManager = tooltipManager;
+            myTextControlManager = textControlManager;
         }
         
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
@@ -164,8 +170,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                         menu.ItemClicked.Advise(lifetime, key =>
                         {
                             if (!myConnectionTracker.IsConnectionEstablished())
+                            {
+                                ShowNotification();
                                 return;
-                            
+                            }
+
                             var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
                             
                             UnityEditorFindUsageResultCreator.CreateRequestAndShow(myUnityHost, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
@@ -173,6 +182,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                         });
                     });
             }
+        }
+
+        private void ShowNotification()
+        {
+            var textControl = myTextControlManager.LastFocusedTextControl.Value;
+            if (textControl == null)
+                return;
+            
+            myTooltipManager.Show("Start the Unity Editor to view changes in the Inspector", lifetime => textControl.PopupWindowContextFactory.CreatePopupWindowContext(lifetime));
         }
 
         private string GetPresentation(MonoBehaviourPropertyValueWithLocation monoBehaviourPropertyValueWithLocation,

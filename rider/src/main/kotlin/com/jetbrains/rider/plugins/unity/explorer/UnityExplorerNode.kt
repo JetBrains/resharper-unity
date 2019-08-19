@@ -5,6 +5,7 @@ import com.intellij.ide.projectView.ViewSettings
 import com.intellij.ide.scratch.ScratchProjectViewPane
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
@@ -14,6 +15,7 @@ import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import icons.UnityIcons
+import java.awt.Color
 import javax.swing.Icon
 
 class UnityExplorerRootNode(project: Project, private val packageManager: PackageManager)
@@ -73,7 +75,8 @@ class UnityExplorerRootNode(project: Project, private val packageManager: Packag
 open class UnityExplorerNode(project: Project,
                              virtualFile: VirtualFile,
                              nestedFiles: List<VirtualFile>,
-                             private val isUnderAssets: Boolean)
+                             private val isUnderAssets: Boolean,
+                             private val isReadOnlyPackageFile: Boolean = false)
     : FileSystemNodeBase(project, virtualFile, nestedFiles) {
 
     val nodes: Array<IProjectModelNode>
@@ -226,7 +229,7 @@ open class UnityExplorerNode(project: Project,
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets, isReadOnlyPackageFile)
     }
 
     override fun getVirtualFileChildren(): List<VirtualFile> {
@@ -250,5 +253,18 @@ open class UnityExplorerNode(project: Project,
         }
 
         return true
+    }
+
+    override fun getFileStatus(): FileStatus {
+        // Read only package files are cached under Library, which is ignored by VCS, but it's pointless us showing them
+        // as IGNORED
+        if (isReadOnlyPackageFile) return FileStatus.NOT_CHANGED
+        return super.getFileStatus()
+    }
+
+    override fun getFileStatusColor(status: FileStatus?): Color? {
+        // NOT_CHANGED colour is discovered recursively, so if any files under this are ignored, we'd get the wrong colour
+        if (isReadOnlyPackageFile && status == FileStatus.NOT_CHANGED) return status?.color
+        return super.getFileStatusColor(status)
     }
 }
