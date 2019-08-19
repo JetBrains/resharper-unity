@@ -8,8 +8,8 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.packageManager.PackageData
-import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
+import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
@@ -96,7 +96,7 @@ class PackagesRoot(project: Project, private val packageManager: PackageManager)
 }
 
 class PackageNode(project: Project, private val packageManager: PackageManager, packageFolder: VirtualFile, private val packageData: PackageData)
-    : UnityExplorerNode(project, packageFolder, listOf(), false), Comparable<AbstractTreeNode<*>> {
+    : UnityExplorerNode(project, packageFolder, listOf(), false, !packageData.source.isEditable()), Comparable<AbstractTreeNode<*>> {
 
     init {
         icon = when (packageData.source) {
