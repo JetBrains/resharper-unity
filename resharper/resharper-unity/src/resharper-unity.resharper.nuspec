@@ -34,25 +34,13 @@
 - And much more!
 </description>
 <releaseNotes>
-Added:
-
-- Add completion and inspections for scenes, tags, layers and inputs (#1158)
-- Add quick fix which specifies scene name when several scenes with the same name are present in build settings (#1158)
-- Add new file and live templates (#1201)
-- Add context action to generate event function in any Unity type (#1209)
-- Add context actions to add Inspector attributes `Space`, `Header` and `Tooltip` to serialised fields (#1244)
-- Add Find Unity Usages of Symbol to Navigate To menu (#1209)
-- Add inspection for duplicate shortcut items in a menu attribute (#1246)
-
 Changed:
-- Improve performance of YAML based asset parsing (#1226)
-- Generate event function body according to settings (#1236)
-- Classes implementing editor interfaces no longer marked as unused (#686, #1167)
+- Suppress warning when using CollisionFlags in a bitwise operation (RIDER-28661, #1289)
 
 Fixed:
-- Fix filtering of event function code completion in ReSharper (#1245, DEXP-454736, #1255)
+- Fix exception when pasting code (RIDER-31338, #1280)
 
-See CHANGELOG.md in the project repo for more details and history.
+See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
