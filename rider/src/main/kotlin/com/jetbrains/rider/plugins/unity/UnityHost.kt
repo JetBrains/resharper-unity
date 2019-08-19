@@ -7,10 +7,6 @@ import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
-import com.intellij.openapi.rd.createNestedDisposable
-import com.intellij.openapi.wm.WindowManager
-import com.intellij.util.BitUtil
-import com.intellij.xdebugger.XDebugProcess
 import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
 import com.jetbrains.rd.util.reactive.AddRemove
