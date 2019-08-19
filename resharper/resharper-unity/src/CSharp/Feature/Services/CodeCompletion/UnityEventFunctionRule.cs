@@ -234,6 +234,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             var psiIconManager = context.BasicContext.LookupItemsOwner.Services.PsiIconManager;
 
+            // Note that because this is a text based lookup item, then it won't be included if the normal C# method
+            // filter is applied. We can't make it a method based lookup item because the DeclaredElement isn't valid in
+            // this situation - it's not a real method, and a DeclaredElementInfo would try to store a pointer to it,
+            // and be unable to recreate it when it's needed.
             var textualInfo = new TextualInfo(text, text) {Ranges = context.CompletionRanges};
 
             var lookupItem = LookupItemFactory.CreateLookupItem(textualInfo)
@@ -449,7 +453,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         }
 
         // DeclaredElementMatcher can take a custom text to match against, but ReSharper applies the matching result to
-        // the display text, so it looks wrong. Interestingly, Rider gets it right. Don't know why they're difference.
+        // the display text, so it looks wrong. Interestingly, Rider gets it right. Don't know why they're different.
         // This class will shift the match result by a given value. It assumes that the custom text is the tail of the
         // display text and makes no other modifications to the matched offsets
         private class ShiftedDeclaredElementMatcher : TextualMatcher<TextualInfo>

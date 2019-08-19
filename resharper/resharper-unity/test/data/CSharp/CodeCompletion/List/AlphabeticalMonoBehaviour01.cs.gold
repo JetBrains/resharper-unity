@@ -740,9 +740,9 @@ virtual
 void
 volatile
 ---- FULL EVALUATION ----
-public override Equals(object) { ... }
-public override GetHashCode() { ... }
-public override ToString() { ... }
+public override Equals(object) { … }    bool
+public override GetHashCode() { … }    int
+public override ToString() { … }    string
 # AUTOMATIC #
 # 742 ITEMS #
 
@@ -1486,6 +1486,6 @@ virtual
 void
 volatile
 ---- FULL EVALUATION ----
-public override Equals(object) { ... }
-public override GetHashCode() { ... }
-public override ToString() { ... }
+public override Equals(object) { … }    bool
+public override GetHashCode() { … }    int
+public override ToString() { … }    string
