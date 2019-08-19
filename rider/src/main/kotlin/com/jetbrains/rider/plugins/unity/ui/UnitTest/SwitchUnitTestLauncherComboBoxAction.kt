@@ -24,7 +24,7 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
     }
 
     override fun createPopupActionGroup(p0: JComponent?): DefaultActionGroup {
-        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseNunitLauncherAction()/*, UseUnityPlayLauncherAction()*/) {
+        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseNunitLauncherAction()) {
             override fun update(e: AnActionEvent) {
                 val project = e.project ?: return
 
