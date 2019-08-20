@@ -180,7 +180,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     editor.Play.Advise(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.Advise(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
-
+                    editor.ClearOnPlay.Advise(lf, time => myHost.PerformModelAction(rd => rd.ClearOnPlay(time)));
 
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
 

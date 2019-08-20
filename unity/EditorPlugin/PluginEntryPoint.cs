@@ -435,6 +435,10 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(() =>
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+          
+          if (isPlaying)
+            model.ClearOnPlay(DateTime.UtcNow.Ticks);
+          
           if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
