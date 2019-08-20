@@ -7,6 +7,7 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
+import java.util.function.Predicate
 
 class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
     private val lock = Object()
@@ -87,6 +88,17 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
             selectedItem = null
             onChanged.fire()
             onCleared.fire()
+        }
+
+        fun clearBefore(time:Long) {
+            synchronized(lock) { allEvents.removeIf { t -> t.time < time } }
+            if (selectedItem == null)
+                return
+            if (selectedItem!!.time < time) {
+                selectedItem = null
+                onChanged.fire()
+                onCleared.fire()
+            }
         }
 
         fun addEvent(event: RdLogEvent) {
