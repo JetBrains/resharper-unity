@@ -20,7 +20,7 @@ open class UnityAttachToEditorFactory(type: ConfigurationType)
 }
 
 class UnityAttachToEditorAndPlayFactory(type: ConfigurationType)
-    : UnityAttachToEditorFactory(type) {
+    : DotNetConfigurationFactoryBase<UnityAttachToEditorRunConfiguration>(type) {
 
     override fun createTemplateConfiguration(project: Project) = UnityAttachToEditorRunConfiguration(project, this, true)
     override fun isConfigurationSingletonByDefault() = true

@@ -1,10 +1,7 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.configurations.RuntimeConfigurationError
-import com.intellij.execution.configurations.WithoutOwnBeforeRunSteps
+import com.intellij.execution.configurations.*
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
@@ -20,7 +17,7 @@ import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import org.jdom.Element
 
-class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
+class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
     RunConfigurationWithSuppressedDefaultRunAction,
     RemoteConfiguration,
@@ -98,20 +95,17 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     }
 
     private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
-        val (status, editorInstanceJson) = EditorInstanceJson.load(project)
-        if (status == EditorInstanceJsonStatus.Valid && editorInstanceJson != null) {
-            return checkValidEditorInstance(editorInstanceJson.process_id, processList)
+        val editorInstanceJson = EditorInstanceJson.getInstance(project)
+        if (editorInstanceJson.validateStatus(processList) == EditorInstanceJsonStatus.Valid) {
+            return editorInstanceJson.contents!!.process_id
         }
 
         return null
     }
 
     private fun checkValidEditorInstance(pid: Int?, processList: Array<ProcessInfo>): Int? {
-        if (pid != null) {
-            // Look for processes, if it exists and has the correct name, return it unchanged,
-            // else return invalidValue. Do not throw, as we'll attempt to recover
-            if (processList.any { it.pid == pid && UnityRunUtil.isUnityEditorProcess(it) })
-                return pid
+        if (pid != null && UnityRunUtil.isValidUnityEditorProcess(pid, processList)) {
+            return pid
         }
         return null
     }

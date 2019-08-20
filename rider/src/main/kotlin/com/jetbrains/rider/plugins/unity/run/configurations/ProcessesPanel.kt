@@ -40,7 +40,7 @@ class ProcessesPanel : PanelWithButtons() {
 
         val vm = viewModel!!
 
-        val columns = arrayOf("Process ID", "Process Name")
+        val columns = arrayOf("Process ID", "Process Name", "Project Name")
 
         val dataModel = object : AbstractTableModel() {
             override fun getColumnCount() = columns.count()
@@ -49,6 +49,7 @@ class ProcessesPanel : PanelWithButtons() {
                 return when (columnIndex) {
                     0 -> Integer::class.java
                     1 -> String::class.java
+                    2 -> String::class.java
                     else -> null
                 }
             }
@@ -59,6 +60,7 @@ class ProcessesPanel : PanelWithButtons() {
                 return when (columnIndex) {
                     0 -> vm.editorProcesses[rowIndex].pid
                     1 -> vm.editorProcesses[rowIndex].name
+                    2 -> vm.editorProcesses[rowIndex].projectName
                     else -> null
                 }
             }
@@ -76,9 +78,13 @@ class ProcessesPanel : PanelWithButtons() {
             setEnableAntialiasing(true)
             emptyText.text = "No Unity Editor instances found"
             preferredScrollableViewportSize = Dimension(150, rowHeight * 6)
-            val preferredWidth = 20 + tableHeader.getFontMetrics(tableHeader.font).stringWidth(columns[0])
+
+            val fontMetrics = tableHeader.getFontMetrics(tableHeader.font)
+            val preferredWidth = 20 + fontMetrics.stringWidth(columns[0])
             getColumn(columns[0]).preferredWidth = preferredWidth
             getColumn(columns[0]).maxWidth = preferredWidth
+
+            getColumn(columns[1]).preferredWidth = 20 + fontMetrics.stringWidth(columns[1])
 
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
             selectionModel.addListSelectionListener {
@@ -90,13 +96,13 @@ class ProcessesPanel : PanelWithButtons() {
 
             updateSelection(this)
 
-            vm.pid.advise(vm.lifetime) { it.let { updateSelection(this) } }
+            vm.pid.advise(vm.lifetime) { updateSelection(this) }
         }
 
         return ToolbarDecorator.createDecorator(table!!)
                 .addExtraAction(object: AnActionButton("Refresh", AllIcons.Actions.Refresh){
                     override fun actionPerformed(p0: AnActionEvent) {
-                        vm.updateProcessList()
+                        vm.refreshProcessList()
                         updateSelection(table!!)
                     }
                 })

@@ -93,7 +93,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         try {
             object : Task.Backgroundable(project, "Getting list of Unity processes...") {
                 override fun run(indicator: ProgressIndicator) {
-                    UnityPlayerListener({
+                    UnityPlayerListener(project, {
                         synchronized(listModelLock) { listModel.addElement(it) }
                     }, {
                         synchronized(listModelLock) { listModel.removeElement(it) }
