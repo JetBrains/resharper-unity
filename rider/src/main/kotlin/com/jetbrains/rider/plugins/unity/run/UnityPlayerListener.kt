@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.run.attach
+package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.openapi.diagnostic.Logger
@@ -9,10 +9,10 @@ import java.net.*
 import java.util.*
 import java.util.regex.Pattern
 
-class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, private val onPlayerRemoved: (UnityPlayer) -> Unit, lifetime: Lifetime) {
+class UnityPlayerListener(private val onPlayerAdded: (UnityPlayer) -> Unit, private val onPlayerRemoved: (UnityPlayer) -> Unit, lifetime: Lifetime) {
 
     companion object {
-        private val logger = Logger.getInstance(UnityProcessListener::class.java)
+        private val logger = Logger.getInstance(UnityPlayerListener::class.java)
 
         // E.g.:
         // [IP] 10.211.55.4 [Port] 55376 [Flags] 3 [Guid] 1410689715 [EditorId] 1006284310 [Version] 1048832 [Id] WindowsPlayer(PARALLELS) [Debug] 1 [PackageName] WindowsPlayer [ProjectName] GemShader is awesome

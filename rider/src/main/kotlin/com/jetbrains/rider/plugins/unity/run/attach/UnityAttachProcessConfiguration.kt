@@ -10,8 +10,8 @@ import com.jetbrains.rider.debugger.IRiderDebuggable
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import javax.swing.Icon
 
-class UnityAttachConfiguration(override var address: String, override var port: Int, private val playerId: String,
-                               private val isEditor: Boolean)
+class UnityAttachProcessConfiguration(override var address: String, override var port: Int,
+                                      private val playerId: String, private val isEditor: Boolean)
     : RemoteConfiguration, RunProfile, IRiderDebuggable {
 
     override fun getName(): String = playerId

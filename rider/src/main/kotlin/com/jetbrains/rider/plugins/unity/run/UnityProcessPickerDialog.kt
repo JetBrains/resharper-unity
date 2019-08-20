@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.run.attach
+package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
@@ -94,7 +94,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             override fun run(indicator: ProgressIndicator) {
                 val lifetimeDefinition = project.defineNestedLifetime()
                 try {
-                    UnityProcessListener({
+                    UnityPlayerListener({
                         synchronized(listModelLock) {
                             listModel.addElement(it)
                         }

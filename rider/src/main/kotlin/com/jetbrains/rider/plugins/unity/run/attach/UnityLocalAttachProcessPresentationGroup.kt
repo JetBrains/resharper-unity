@@ -6,7 +6,7 @@ import com.intellij.openapi.util.UserDataHolder
 import com.intellij.xdebugger.attach.XAttachProcessPresentationGroup
 import icons.UnityIcons
 
-object UnityAttachPresentationGroup : XAttachProcessPresentationGroup {
+object UnityLocalAttachProcessPresentationGroup : XAttachProcessPresentationGroup {
     override fun getOrder(): Int = 3
     override fun getGroupName(): String = "Local Unity processes"
     override fun getItemIcon(project: Project, process: ProcessInfo, userData: UserDataHolder) = UnityIcons.Icons.UnityLogo
