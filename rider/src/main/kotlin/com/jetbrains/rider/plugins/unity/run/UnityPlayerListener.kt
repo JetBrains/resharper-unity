@@ -89,15 +89,15 @@ class UnityPlayerListener(private val onPlayerAdded: (UnityPlayer) -> Unit, priv
             }
         }
 
-        refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
-            refreshUnityPlayersList()
-        }
-
         OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }.map { processInfo ->
             val port = convertPidToDebuggerPort(processInfo.pid)
             UnityPlayer.createEditorPlayer("127.0.0.1", port, "${processInfo.executableName} (pid: ${processInfo.pid})", null)
         }.forEach {
             onPlayerAdded(it)
+        }
+
+        refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
+            refreshUnityPlayersList()
         }
 
         lifetime.onTermination {
