@@ -18,6 +18,7 @@ import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
@@ -100,7 +101,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         }.installOn(this)
 
-        UnityHost.getInstance(project).model.clearOnPlay.advise(lifetime) {
+        UnityHost.getInstance(project).model.clearOnPlay.adviseNotNull(lifetime) {
             logModel.events.clearBefore(it)
         }
     }

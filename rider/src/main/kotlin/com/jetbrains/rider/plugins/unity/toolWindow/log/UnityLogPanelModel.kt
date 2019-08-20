@@ -91,13 +91,19 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
         }
 
         fun clearBefore(time:Long) {
-            synchronized(lock) { allEvents.removeIf { t -> t.time < time } }
-            if (selectedItem == null)
-                return
-            if (selectedItem!!.time < time) {
-                selectedItem = null
+            var changed = false
+            synchronized(lock) {
+                changed = allEvents.removeIf { t -> t.time < time }
+            }
+
+            if (changed)
+            {
+                if (selectedItem != null)
+                if (selectedItem!!.time < time) {
+                    selectedItem = null
+                    onCleared.fire()
+                }
                 onChanged.fire()
-                onCleared.fire()
             }
         }
 
