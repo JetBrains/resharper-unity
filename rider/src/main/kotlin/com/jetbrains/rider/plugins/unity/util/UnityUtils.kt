@@ -16,5 +16,11 @@ fun addPlayModeArguments(args : MutableList<String>) {
 fun getUnityWithProjectArgs(project: Project) : MutableList<String> {
     val finder = UnityInstallationFinder.getInstance(project)
     val args = mutableListOf(finder.getApplicationPath().toString(), "-projectPath", project.basePath.toString())
+    val riderPath = RiderAppPath.getPath()
+    if (riderPath!=null)
+    {
+        val originArgs = mutableListOf("-riderPath", riderPath)
+        args.addAll(originArgs)
+    }
     return args;
 }
