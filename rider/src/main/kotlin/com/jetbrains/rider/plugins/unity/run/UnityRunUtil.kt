@@ -5,11 +5,12 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.openapi.project.Project
+import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rider.plugins.unity.run.attach.UnityAttachProcessConfiguration
-import com.jetbrains.rider.plugins.unity.run.attach.UnityAttachRunProfile
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
+import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import java.nio.file.Paths
 
 object UnityRunUtil {
@@ -50,16 +51,27 @@ object UnityRunUtil {
         else null
     }
 
+    fun isDebuggerAttached(host: String, port: Int, project: Project): Boolean {
+        val debuggerManager = XDebuggerManager.getInstance(project)
+        return debuggerManager.debugSessions.any {
+            val profile = it.runProfile
+            return if (profile is RemoteConfiguration) {
+                // Note that this is best effort - host values must match exactly. "localhost" and "127.0.0.1" are not the same
+                profile.address == host && profile.port == port
+            }
+            else false
+        }
+    }
+
     fun attachToLocalUnityProcess(pid: Int, project: Project) {
         val port = convertPidToDebuggerPort(pid)
-        attachToUnityProcess("localhost", port, "Unity Editor", project, true)
+        attachToUnityProcess("127.0.0.1", port, "Unity Editor", project, true)
     }
 
     fun attachToUnityProcess(host: String, port: Int, playerId: String, project: Project, isEditor: Boolean) {
         val configuration = UnityAttachProcessConfiguration(host, port, playerId, isEditor)
-        val profile = UnityAttachRunProfile(playerId, configuration, playerId, isEditor)
         val environment = ExecutionEnvironmentBuilder
-            .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), profile)
+            .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), configuration)
             .build()
         ProgramRunnerUtil.executeConfiguration(environment, false, true)
     }
