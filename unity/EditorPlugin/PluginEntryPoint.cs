@@ -236,7 +236,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (EditorApplication.isPaused)
         return PlayModeState.Paused;
-      if (EditorApplication.isPlaying)
+      if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
         return PlayModeState.Playing;
       return PlayModeState.Stopped;
     }
