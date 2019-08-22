@@ -236,7 +236,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (EditorApplication.isPaused)
         return PlayModeState.Paused;
-      if (EditorApplication.isPlaying)
+      if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
         return PlayModeState.Playing;
       return PlayModeState.Stopped;
     }
@@ -435,6 +435,10 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(() =>
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+          
+          if (isPlaying)
+            model.ClearOnPlay(DateTime.UtcNow.Ticks);
+          
           if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);

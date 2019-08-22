@@ -11,12 +11,15 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFocusManager
-import com.intellij.ui.*
+import com.intellij.ui.DocumentAdapter
+import com.intellij.ui.DoubleClickListener
+import com.intellij.ui.JBSplitter
+import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.components.Panel
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.model.FontStyle
+import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
@@ -25,7 +28,6 @@ import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import com.jetbrains.rider.util.idea.application
 import java.awt.BorderLayout
-import java.awt.Color
 import java.awt.Component
 import java.awt.Font
 import java.awt.event.KeyAdapter
@@ -99,15 +101,9 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         }.installOn(this)
 
-        // This is commented, because it clears new messages, which we got after entering play RIDER-26880, todo: restore this feature
-//        var prevVal: Boolean? = null
-//
-//        unityHost.play.advise(lifetime) {
-//            if (it && prevVal == false) {
-//                logModel.events.clear()
-//            }
-//            prevVal = it
-//        }
+        UnityHost.getInstance(project).model.clearOnPlay.adviseNotNull(lifetime) {
+            logModel.events.clearBefore(it)
+        }
     }
 
     private fun getDateFromTicks(ticks: Long): Date {
@@ -184,8 +180,8 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
     fun getMainSplitterIcon(invert: Boolean = false): Icon? = when (mainSplitterOrientation.value xor invert) {
-        true -> com.intellij.icons.AllIcons.Actions.SplitHorizontally
-        false -> com.intellij.icons.AllIcons.Actions.SplitVertically
+        true -> AllIcons.Actions.SplitHorizontally
+        false -> AllIcons.Actions.SplitVertically
     }
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)

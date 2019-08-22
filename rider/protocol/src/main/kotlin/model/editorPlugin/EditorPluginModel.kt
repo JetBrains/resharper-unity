@@ -135,5 +135,6 @@ object EditorPluginModel: Root() {
         property("playerLogPath", string)
 
         property("ScriptCompilationDuringPlay", int)
+        sink("clearOnPlay", long)
     }
 }
