@@ -63,6 +63,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         break;
                     }
                 }
+                
+                // incomplete expression
+                if (scalar == null)
+                    return;
+                
                 if (count > 1)
                 {
                     Assertion.Assert(scalar != null, "scalar != null");
