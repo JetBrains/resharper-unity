@@ -1,19 +1,30 @@
 package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.execution.ProgramRunnerUtil
+import com.intellij.execution.configurations.CommandLineTokenizer
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
+import com.intellij.execution.util.ExecUtil
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rider.plugins.unity.run.attach.UnityAttachProcessConfiguration
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
+import org.jetbrains.annotations.NotNull
+import java.io.File
+import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
 object UnityRunUtil {
+    private val logger = Logger.getInstance(UnityRunUtil::class.java)
 
     fun isUnityEditorProcess(processInfo: ProcessInfo): Boolean {
         val name = processInfo.executableDisplayName
@@ -38,17 +49,155 @@ object UnityRunUtil {
         return processList.any { it.pid == pid && isUnityEditorProcess(it) }
     }
 
-    fun getUnityProcessProjectName(pid: Int, project: Project): String? {
-        // The best we can do right now is return the project name for the current instance. Going further, we could:
-        // a) get the project from the title of the main window. This has problems on Mac/Linux and there's also no
-        //    fixed format for the title. It's not consistent across versions and the '-' delimiters are valid inside
-        //    scene names. We might have to just show the entire title
-        // b) write the project name from our plugin, to a global location we parse and cache
-        val editorInstanceJson = EditorInstanceJson.getInstance(project)
-        return if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid && editorInstanceJson.contents?.process_id == pid) {
-            project.name
+    fun getUnityProcessProjectName(processInfo: ProcessInfo, project: Project): String? {
+        return getUnityProcessProjectNames(listOf(processInfo), project)[processInfo.pid]
+    }
+
+    fun getUnityProcessProjectNames(processList: List<@NotNull ProcessInfo>, project: Project): Map<Int, String> {
+        // We have several options to get the project name (and directory, for future use):
+        // 1) Match pid with EditorInstance.json - it's the current project
+        // 2) If the editor was started from Unity Hub, use the -projectPath or -createProject parameters
+        // 3) If we're on Mac/Linux, use `lsof -a -p {pid},{pid},{pid} -d cwd -Fn` to get the current working directory
+        //    This is the project directory. (It's better performance to fetch these all at once)
+        //    Getting current directory on Windows is painful and requires JNI to read process memory
+        //    E.g. https://stackoverflow.com/questions/16110936/read-other-process-current-directory-in-c-sharp
+        // 4) Scrape the main window title. This is fragile, as the format changes, and can easily break with hyphens in
+        //    project or scene names. It also doesn't give us the project path. And it doesn't work on Mac/Linux
+        val projectNames = mutableMapOf<Int, String>()
+
+        processList.forEach {
+            val projectName = getProjectNameFromEditorInstanceJson(it, project) ?:
+                getProjectNameFromCommandLine(it)
+            projectName?.let { name -> projectNames[it.pid] = name }
         }
-        else null
+
+        if (projectNames.size != processList.size) {
+            fillProjectNamesFromWorkingDirectory(processList, projectNames)
+        }
+
+        return projectNames
+    }
+
+    private fun getProjectNameFromEditorInstanceJson(processInfo: ProcessInfo, project: Project): String? {
+        val editorInstanceJson = EditorInstanceJson.getInstance(project)
+        return if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid && editorInstanceJson.contents?.process_id == processInfo.pid) {
+            project.name
+        } else null
+    }
+
+    private fun getProjectNameFromCommandLine(processInfo: ProcessInfo): String? {
+        // Make sure the command line we're using is properly quoted, if possible
+        getQuotedCommandLine(processInfo)?.let {
+            val tokenizer = CommandLineTokenizer(processInfo.commandLine)
+            while (tokenizer.hasMoreTokens()) {
+                val token = tokenizer.nextToken()
+                if (token.equals("-projectPath", true) || token.equals("-createPath", true)) {
+                    return getProjectNameFromPath(StringUtil.unescapeStringCharacters(tokenizer.nextToken()))
+                }
+            }
+        }
+
+        // Try to parse the unquoted command line, coping with a -projectPath or -createPath that might contain spaces
+        // and/or hyphens. Split the command line at argument boundaries, e.g. a hyphen followed by a non-whitespace
+        // char, with leading whitespace, or at the start of the string. Each split string should be an arg and an
+        // argvalue (lookahead means we keep the delimiter). If the path contains an embedded space-hyphen-nonspace
+        // sequence, we need to join segments until we're sure we've got the longest possible path.
+        // There is a pathological edge case of two directories with the same name but one with a suffix that matches
+        // the next command line argument. If we take the longest path, we can get the wrong one. E.g.
+        // "/home/Unity/project1" and "/home/Unity/project1 -useHub" would confuse things. I think this is so unlikely
+        // as to be happily ignored
+        // This assumes that all arguments begin with a hyphen, and there are no standalone arguments. Empirically, this
+        // is true
+        val split = processInfo.commandLine.split("(^|\\s)(?=-[^\\s])".toRegex())
+        var i = 0
+        do {
+            if (split[i].startsWith("-projectPath", ignoreCase = true)
+                || split[i].startsWith("-createProject", ignoreCase = true)) {
+                val whitespace = split[i].indexOf(' ')
+                if (whitespace == -1) continue   // Weird if true
+                var path = split[i].substring(whitespace + 1)
+
+                var lastValid = ""
+                do {
+                    if (File(path).isDirectory) {
+                        lastValid = path
+                    }
+                    i++
+                    path += " " + split[i]
+                } while (i < split.size - 1)
+
+                return getProjectNameFromPath(lastValid)
+            }
+
+            i++
+        } while (i < split.size)
+
+        return null
+    }
+
+    private fun getQuotedCommandLine(processInfo: ProcessInfo): String? {
+        return when {
+            SystemInfo.isWindows -> processInfo.commandLine
+            SystemInfo.isMac -> null
+            SystemInfo.isUnix -> {
+                try {
+                    // ProcessListUtil.getProcessListOnUnix already reads /proc/{pid}/cmdline, but doesn't quote
+                    // arguments that contain spaces, which makes it much harder to parse
+                    val procfsCmdline = File("/proc/${processInfo.pid}/cmdline")
+                    val cmdlineString = String(FileUtil.loadFileBytes(procfsCmdline), StandardCharsets.UTF_8)
+                    val cmdlineParts = StringUtil.split(cmdlineString, "\u0000")
+                    return cmdlineParts.joinToString(" ") {
+                        var s = it
+                        if (!StringUtil.isQuotedString(s)) {
+                            if (s.contains('\\')) {
+                                s = StringUtil.escapeBackSlashes(s)
+                            }
+                            if (s.contains('\"')) {
+                                s = StringUtil.escapeQuotes(s)
+                            }
+                            if (s.contains(' ')) {
+                                s = StringUtil.wrapWithDoubleQuote(s)
+                            }
+                        }
+                        return@joinToString s
+                    }
+                } catch (t: Throwable) {
+                    logger.warn("Error while quoting command line: ${processInfo.commandLine}", t)
+                }
+                return null
+            }
+            else -> null
+        }
+    }
+
+    private fun getProjectNameFromPath(projectPath: String): String = Paths.get(projectPath).fileName.toString()
+
+    private fun fillProjectNamesFromWorkingDirectory(processList: List<@NotNull ProcessInfo>, projectNames: MutableMap<Int, String>) {
+        if (SystemInfo.isWindows) return
+        try {
+            val processIds = processList.joinToString(",") { it.pid.toString() }
+            val command = when {
+                SystemInfo.isMac -> "/usr/sbin/lsof"
+                else -> "/usr/bin/lsof"
+            }
+            val output = ExecUtil.execAndGetOutput(GeneralCommandLine(command, "-a", "-p", processIds, "-d", "cwd", "-Fn"))
+            if (output.exitCode == 0) {
+                val stdout = output.stdoutLines
+
+                // p{PID}
+                // fcwd
+                // n{CWD}
+                for (i in 0 until stdout.size step 3) {
+                    val pid = stdout[i].substring(1).toInt()
+                    val cwd = getProjectNameFromPath(stdout[i + 2].substring(1))
+
+                    projectNames[pid] = cwd
+                }
+            }
+        }
+        catch (t: Throwable) {
+            logger.warn("Error fetching current directory", t)
+        }
     }
 
     fun isDebuggerAttached(host: String, port: Int, project: Project): Boolean {

@@ -80,11 +80,14 @@ class ProcessesPanel : PanelWithButtons() {
             preferredScrollableViewportSize = Dimension(150, rowHeight * 6)
 
             val fontMetrics = tableHeader.getFontMetrics(tableHeader.font)
-            val preferredWidth = 20 + fontMetrics.stringWidth(columns[0])
-            getColumn(columns[0]).preferredWidth = preferredWidth
-            getColumn(columns[0]).maxWidth = preferredWidth
+            var headerWidth = fontMetrics.stringWidth(columns[0])
+            getColumn(columns[0]).preferredWidth = headerWidth + 20
+            getColumn(columns[0]).maxWidth = headerWidth + 20
 
-            getColumn(columns[1]).preferredWidth = 20 + fontMetrics.stringWidth(columns[1])
+            headerWidth = fontMetrics.stringWidth(columns[1])
+            getColumn(columns[1]).preferredWidth = headerWidth + 50
+            getColumn(columns[1]).maxWidth = headerWidth + 200
+            getColumn(columns[2]).preferredWidth = fontMetrics.stringWidth(columns[2])
 
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
             selectionModel.addListSelectionListener {

@@ -35,12 +35,11 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
         }
     }
 
-    private fun updateProcessList(processList: Array<out ProcessInfo>) {
-        processList.forEach {
-            if (UnityRunUtil.isUnityEditorProcess(it)) {
-                val projectName = if (editorInstanceJson.contents?.process_id == it.pid) project.name else null
-                editorProcesses.add(EditorProcessInfo(it.executableName, it.pid, projectName))
-            }
+    private fun updateProcessList(processList: Array<ProcessInfo>) {
+        val unityProcesses = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
+        val projectNames = UnityRunUtil.getUnityProcessProjectNames(unityProcesses, project)
+        unityProcesses.forEach {
+            editorProcesses.add(EditorProcessInfo(it.executableName, it.pid, projectNames[it.pid]))
         }
     }
 

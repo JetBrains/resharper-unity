@@ -6,6 +6,7 @@ import com.intellij.openapi.util.UserDataHolder
 import com.intellij.xdebugger.attach.*
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 
+@Suppress("UnstableApiUsage")
 class UnityLocalAttachProcessDebuggerProvider : XAttachDebuggerProvider {
     override fun getAvailableDebuggers(project: Project, host: XAttachHost, process: ProcessInfo, userData: UserDataHolder): MutableList<XAttachDebugger> {
         if (UnityRunUtil.isUnityEditorProcess(process))

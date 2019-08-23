@@ -7,13 +7,14 @@ import com.intellij.xdebugger.attach.XAttachProcessPresentationGroup
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import icons.UnityIcons
 
+@Suppress("UnstableApiUsage")
 object UnityLocalAttachProcessPresentationGroup : XAttachProcessPresentationGroup {
     override fun getOrder(): Int = 3
     override fun getGroupName(): String = "Local Unity processes"
     override fun getItemIcon(project: Project, process: ProcessInfo, userData: UserDataHolder) = UnityIcons.Icons.UnityLogo
 
     override fun getItemDisplayText(project: Project, process: ProcessInfo, userData: UserDataHolder): String {
-        val projectName = UnityRunUtil.getUnityProcessProjectName(process.pid, project)
+        val projectName = UnityRunUtil.getUnityProcessProjectName(process, project)
         return if (projectName != null) {
             "${process.executableDisplayName} ($projectName)"
         }
