@@ -22,12 +22,12 @@ import java.io.File
 import javax.swing.DefaultListModel
 import javax.swing.ListSelectionModel
 
-class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
+class UnityLogPanelEventList(lifetime: Lifetime, logModel: UnityLogPanelModel) : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
     val riderModel: DefaultListModel<LogPanelItem>
         get() = model as DefaultListModel<LogPanelItem>
 
     init {
-        cellRenderer = UnityLogPanelEventRenderer()
+        cellRenderer = UnityLogPanelEventRenderer(logModel, lifetime)
         selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
         emptyText.text = "Log is empty"
         TreeUIHelper.getInstance().installListSpeedSearch(this)

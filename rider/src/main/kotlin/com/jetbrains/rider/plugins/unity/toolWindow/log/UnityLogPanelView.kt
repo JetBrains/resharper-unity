@@ -15,7 +15,6 @@ import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
-import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -27,6 +26,7 @@ import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
 import com.jetbrains.rider.util.idea.application
+import net.miginfocom.swing.MigLayout
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Font
@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.Icon
 import javax.swing.JMenuItem
+import javax.swing.JPanel
 import javax.swing.JPopupMenu
 import javax.swing.event.DocumentEvent
 
@@ -48,7 +49,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
 
-    private val eventList = UnityLogPanelEventList(lifetime).apply {
+    private val eventList = UnityLogPanelEventList(lifetime, logModel).apply {
         addListSelectionListener {
             if (selectedValue != null && logModel.selectedItem != selectedValue) {
                 logModel.selectedItem = selectedValue
@@ -148,9 +149,9 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
     }
 
-    private val listPanel = RiderUI.boxPanel {
-        add(JBScrollPane(eventList))
-        add(searchTextField, "growx, pushx")
+    private val listPanel = JPanel(MigLayout("ins 0, gap 0, flowy, novisualpadding, fill", "", "[][min!]")).apply {
+        add(eventList, "grow, wmin 0")
+        add(searchTextField, "growx")
     }
 
     private val mainSplitter = JBSplitter().apply {
