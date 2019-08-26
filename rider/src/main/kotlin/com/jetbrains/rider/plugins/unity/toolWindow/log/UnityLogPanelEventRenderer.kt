@@ -23,13 +23,7 @@ class UnityLogPanelEventRenderer(logModel: UnityLogPanelModel, lifetime: Lifetim
         view.add(this, "wmin 0, pushx")
         countLabel.foreground = Color.GRAY
 
-        logModel.mergeSimilarItems.advise(lifetime) {
-            if (it)
-                view.add(countLabel, "east, gapbefore ${JBUI.scale(20)}, gapafter ${JBUI.scale(10)} ")
-            else
-                view.remove(countLabel)
-        }
-
+        view.add(countLabel, "east") //, gapbefore ${JBUI.scale(20)}, gapafter ${JBUI.scale(10)}
     }
 
     override fun getListCellRendererComponent(list: JList<out LogPanelItem>, item: LogPanelItem, index: Int, selected: Boolean, hasFocus: Boolean): Component {
@@ -39,11 +33,11 @@ class UnityLogPanelEventRenderer(logModel: UnityLogPanelModel, lifetime: Lifetim
         this.myForeground = if (this.isEnabled) list.getForeground() else UIUtil.getLabelDisabledForeground()
         this.mySelectionForeground = list.getSelectionForeground()
         val bg =
-        if (UIUtil.isUnderWin10LookAndFeel()) {
-            if (selected) list.getSelectionBackground() else list.getBackground()
-        } else {
-            if (selected) list.getSelectionBackground() else null
-        }
+            if (UIUtil.isUnderWin10LookAndFeel()) {
+                if (selected) list.getSelectionBackground() else list.getBackground()
+            } else {
+                if (selected) list.getSelectionBackground() else null
+            }
         this.background = bg
         countLabel.background = bg
         view.background = bg
@@ -51,7 +45,11 @@ class UnityLogPanelEventRenderer(logModel: UnityLogPanelModel, lifetime: Lifetim
         this.setPaintFocusBorder(hasFocus)
         this.customizeCellRenderer(list, item, index, selected, hasFocus)
 
-        countLabel.text = "×" + item.count.toString()
+        if (item.count>1)
+            countLabel.text = " ×${item.count} "
+        else
+            countLabel.text = ""
+
         return view
     }
 
