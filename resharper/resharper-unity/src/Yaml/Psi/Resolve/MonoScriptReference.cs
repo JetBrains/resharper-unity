@@ -69,8 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             {
                 if (useReferenceName && resolvedName != null)
                 {
-                    if (resolvedName == candidate.ShortName && !candidate.HasTypeParameters() 
-                        && candidate.GetContainingType() == null)
+                    if (resolvedName == candidate.ShortName)
                         symbolTable.AddSymbol(assetGuid, candidate);
                 }
                 else
