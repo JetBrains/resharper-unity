@@ -150,7 +150,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     foreach (var element in elements)
                     {
                         // We can't use nested types at all
-                        if (element is ITypeElement typeElement && typeElement.GetContainingType() == null)
+                        if (element is ITypeElement typeElement && typeElement.GetContainingType() == null && 
+                            !typeElement.HasTypeParameters())
                             candidates.Add(typeElement);
                     }
                 }
