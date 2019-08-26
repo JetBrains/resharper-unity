@@ -51,7 +51,7 @@ class UnityLogPanelEventRenderer(logModel: UnityLogPanelModel, lifetime: Lifetim
         this.setPaintFocusBorder(hasFocus)
         this.customizeCellRenderer(list, item, index, selected, hasFocus)
 
-        countLabel.text = item.count.toString()
+        countLabel.text = "×" + item.count.toString()
         return view
     }
 
