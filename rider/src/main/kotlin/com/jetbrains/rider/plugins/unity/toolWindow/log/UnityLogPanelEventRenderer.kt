@@ -15,7 +15,7 @@ import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.ListCellRenderer
 
-class UnityLogPanelEventRenderer(logModel: UnityLogPanelModel, lifetime: Lifetime) : ColoredListCellRenderer<LogPanelItem>(), ListCellRenderer<LogPanelItem> {
+class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), ListCellRenderer<LogPanelItem> {
     private val countLabel = JLabel()
     private val view = JPanel(MigLayout("ins 0, fillx, gap 0, novisualpadding"))
 
