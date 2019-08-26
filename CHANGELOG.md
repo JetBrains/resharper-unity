@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
+## 2019.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192...net193)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/29?closed=1)
+
+### Added
+
+- Rider: Show prompt to set Rider as default external editor when Unity is started by Rider ([#1127](https://github.com/JetBrains/resharper-unity/issues/1127), [#1270](https://github.com/JetBrains/resharper-unity/pull/1270))
+
+### Changed
+
+- Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) ([#888](https://github.com/JetBrains/resharper-unity/issues/888))
+
+### Fixed
+
+- Rider: Fix Clear on Play in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
+
+
+
 ## 2019.2.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/30?closed=1)
