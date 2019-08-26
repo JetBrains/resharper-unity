@@ -256,10 +256,12 @@
   <li>Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1275">#1275</a>)</li>
   <li>Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug (<a href="https://github.com/JetBrains/resharper-unity/issues/1283">#1283</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1284">#1284</a>)</li>
   <li>Rider: Files in read only packages no longer shown as "ignored" in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1288">#1288</a>)</li>
+  <li>Unity Editor: Improve performance on AppDomain reloads (<a href="https://github.com/JetBrains/resharper-unity/pull/1291">#1291</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
   <li>Fix exception when pasting code (<a href="https://youtrack.jetbrains.com/issue/RIDER-31338">RIDER-31338</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1280">#1280</a>)</li>
+  <li>Rider: Fix fetching list of Unity editors and players on UI thread (<a href="https://youtrack.jetbrains.com/issue/RIDER-31585">RIDER-31585</a>)</li>
   <li>Unity Editor: Fix exception running tests with older test framework packages (<a href="https://github.com/JetBrains/resharper-unity/pull/1273">#1273</a>)</li>
 </ul>
 </p>
