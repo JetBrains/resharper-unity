@@ -49,7 +49,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
 
-    private val eventList = UnityLogPanelEventList(lifetime, logModel).apply {
+    private val eventList = UnityLogPanelEventList(lifetime).apply {
         addListSelectionListener {
             if (selectedValue != null && logModel.selectedItem != selectedValue) {
                 logModel.selectedItem = selectedValue
