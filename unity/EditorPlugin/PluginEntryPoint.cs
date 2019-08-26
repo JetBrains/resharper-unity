@@ -386,6 +386,11 @@ namespace JetBrains.Rider.Unity.Editor
     {
       modelValue.GetUnityEditorState.Set(rdVoid =>
       {
+        if (EditorApplication.isPaused)
+        {
+          return UnityEditorState.Pause;
+        }
+        
         if (EditorApplication.isPlaying)
         {
           return UnityEditorState.Play;
