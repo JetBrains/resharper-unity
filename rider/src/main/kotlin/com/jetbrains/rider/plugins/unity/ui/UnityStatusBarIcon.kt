@@ -42,7 +42,7 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
         return StatusBarIconId
     }
 
-    override fun getPresentation(type: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation? {
+    override fun getPresentation(): StatusBarWidget.WidgetPresentation? {
         return this
     }
 
