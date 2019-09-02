@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
@@ -65,17 +66,13 @@ class UnityAutoSaveConfigureNotification(project: Project, private val unityProj
                     }
                 }
 
-                eventMulticaster.addDocumentListener(documentListener)
-                lifetimeDefinition.lifetime.onTermination {
-                    eventMulticaster.removeDocumentListener(documentListener)
-                }
+                eventMulticaster.addDocumentListener(documentListener, it.createNestedDisposable())
             }
         }
     }
 
     fun showNotification(lifetime: Lifetime, editor: Editor) {
         application.assertIsDispatchThread()
-
 
         if (!lifetime.isAlive) return
         val project = editor.project ?: return

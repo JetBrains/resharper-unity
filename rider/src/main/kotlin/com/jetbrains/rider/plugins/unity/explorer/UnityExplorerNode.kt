@@ -94,7 +94,7 @@ open class UnityExplorerNode(project: Project,
         presentation.setIcon(calculateIcon())
 
         // Add additional info for directories
-        if (!virtualFile.isDirectory || !UnityExplorer.getInstance(myProject).myShowProjectNames) return
+        if (!virtualFile.isDirectory || !UnityExplorer.getInstance(myProject).showProjectNames) return
         addProjects(presentation)
     }
 
@@ -237,7 +237,7 @@ open class UnityExplorerNode(project: Project,
     }
 
     private fun filterNode(file: VirtualFile): Boolean {
-        if (UnityExplorer.getInstance(myProject).myShowHiddenItems) {
+        if (UnityExplorer.getInstance(myProject).showHiddenItems) {
             return true
         }
 

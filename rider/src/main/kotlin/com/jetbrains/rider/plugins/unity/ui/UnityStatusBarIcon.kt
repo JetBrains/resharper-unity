@@ -26,10 +26,10 @@ class UnityStatusBarIcon(private val host: UnityHost): StatusBarWidget, StatusBa
     private var myStatusBar: StatusBar? = null
 
     override fun ID(): String {
-        return "UnityStatusIcon"
+        return StatusBarIconId
     }
 
-    override fun getPresentation(type: StatusBarWidget.PlatformType): StatusBarWidget.WidgetPresentation? {
+    override fun getPresentation(): StatusBarWidget.WidgetPresentation? {
         return this
     }
 

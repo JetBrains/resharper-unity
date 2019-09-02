@@ -1,8 +1,18 @@
 package com.jetbrains.rider.plugins.unity
 
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.components.ProjectComponent
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.*
+import com.intellij.openapi.vfs.AsyncFileListener
+import com.intellij.openapi.vfs.AsyncFileListener.ChangeApplier
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
+import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent
+import com.intellij.util.SingleAlarm
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
@@ -20,29 +30,30 @@ class ContentModelUpdater(private val project: Project,
                           private val contentModel: ContentModelUserStore)
     : ProjectComponent {
 
-    private val projectModelViewHost: ProjectModelViewHost by lazy { ProjectModelViewHost.getInstance(project) }
-    private val packageManager: PackageManager by lazy { PackageManager.getInstance(project) }
-    private val allFolders = hashSetOf<File>()
+    private val excludedFolders = hashSetOf<File>()
+    private val includedFolders = hashSetOf<File>()
 
     override fun projectOpened() {
         if (unityProjectDiscoverer.isUnityProject) {
 
-            onRootFoldersChanged()
+            val alarm = SingleAlarm(Runnable(::onRootFoldersChanged), 1000, ModalityState.any(), project)
+            val listener = Listener(alarm)
 
-            val listener = Listener()
-            VirtualFileManager.getInstance().addVirtualFileListener(listener, project)
-            packageManager.addListener(listener)
+            // Listen to add/remove of folders in the root of the project
+            VirtualFileManager.getInstance().addAsyncFileListener(listener, project)
+
+            // Listen for external packages that we should be indexing
+            PackageManager.getInstance(project).addListener(listener)
+
+            alarm.request()
         }
     }
 
     private fun onRootFoldersChanged() {
+        application.assertIsDispatchThread()
 
-        contentModel.attachedFolders.removeAll(allFolders)
-        contentModel.explicitExcludes.removeAll(allFolders)
-        contentModel.explicitIncludes.removeAll(allFolders)
-
-        val excludes = mutableListOf<File>()
-        val includes = mutableListOf<File>()
+        val newExcludedFolders = mutableSetOf<File>()
+        val newIncludedFolders = mutableSetOf<File>()
 
         // It's common practice to have extra folders in the root project folder, e.g. a backup copy of Library for
         // a different version of Unity, or target, which can be renamed instead of having to do a time consuming
@@ -53,30 +64,47 @@ class ContentModelUpdater(private val project: Project,
                 val file = VfsUtil.virtualToIoFile(child)
 
                 if (shouldInclude(child.name)) {
-                    includes.add(file)
+                    newIncludedFolders.add(file)
                 }
                 else {
-                    excludes.add(file)
+                    newExcludedFolders.add(file)
                 }
             }
         }
 
-        for (p in packageManager.allPackages) {
+        for (p in PackageManager.getInstance(project).allPackages) {
             if (p.packageFolder != null && p.source != PackageSource.BuiltIn
                     && p.source != PackageSource.Embedded
                     && p.source != PackageSource.Unknown) {
 
-                includes.add(VfsUtil.virtualToIoFile(p.packageFolder))
+                newIncludedFolders.add(VfsUtil.virtualToIoFile(p.packageFolder))
             }
         }
 
-        contentModel.tryExclude(excludes.toTypedArray(), false)
-        contentModel.tryInclude(includes.toTypedArray(), false)
-        contentModel.update()
+        val excludesChanged = excludedFolders != newExcludedFolders
+        val includesChanged = includedFolders != newIncludedFolders
+        if (excludesChanged || includesChanged) {
+            // They shouldn't be attached as folders, but just make sure
+            contentModel.attachedFolders.removeAll(excludedFolders)
+            contentModel.attachedFolders.removeAll(includedFolders)
 
-        allFolders.clear()
-        allFolders.addAll(excludes)
-        allFolders.addAll(includes)
+            if (excludesChanged) {
+                contentModel.explicitExcludes.removeAll(excludedFolders)
+                contentModel.tryExclude(newExcludedFolders.toTypedArray(), false)
+
+                excludedFolders.clear()
+                excludedFolders.addAll(newExcludedFolders)
+            }
+            if (includesChanged) {
+                contentModel.explicitIncludes.removeAll(includedFolders)
+                contentModel.tryInclude(newIncludedFolders.toTypedArray(), false)
+
+                includedFolders.clear()
+                includedFolders.addAll(newIncludedFolders)
+            }
+
+            contentModel.update()
+        }
     }
 
     private fun isRootFolder(file: VirtualFile): Boolean {
@@ -84,7 +112,7 @@ class ContentModelUpdater(private val project: Project,
     }
 
     private fun isInProject(file: VirtualFile): Boolean {
-        return projectModelViewHost.getItemsByVirtualFile(file).isNotEmpty()
+        return ProjectModelViewHost.getInstance(project).getItemsByVirtualFile(file).isNotEmpty()
     }
 
     private fun shouldInclude(name: String): Boolean {
@@ -93,21 +121,32 @@ class ContentModelUpdater(private val project: Project,
                 || name.equals("Packages", true)
     }
 
-    private inner class Listener : VirtualFileListener, PackageManagerListener {
-
-        override fun onRefresh(all: Boolean) {
-            application.invokeLater { onRootFoldersChanged() }
+    private inner class Listener(private val alarm: SingleAlarm) : AsyncFileListener, PackageManagerListener {
+        override fun onPackagesUpdated() {
+            alarm.cancelAndRequest()
         }
 
-        override fun fileCreated(event: VirtualFileEvent) {
-            if (isRootFolder(event.file)) {
-                application.invokeLater { onRootFoldersChanged() }
+        override fun prepareChange(events: MutableList<out VFileEvent>): ChangeApplier? {
+            var requiresUpdate = false
+
+            events.forEach {
+                ProgressManager.checkCanceled()
+                when (it) {
+                    is VFileCreateEvent -> {
+                        requiresUpdate = requiresUpdate || (it.isDirectory && it.parent == project.projectDir)
+                    }
+                    is VFileDeleteEvent -> {
+                        requiresUpdate = requiresUpdate || isRootFolder(it.file)
+                    }
+                }
             }
-        }
 
-        override fun fileDeleted(event: VirtualFileEvent) {
-            if (isRootFolder(event.file)) {
-                application.invokeLater { onRootFoldersChanged() }
+            if (!requiresUpdate) {
+                return null
+            }
+
+            return object: ChangeApplier {
+                override fun afterVfsChange() = alarm.cancelAndRequest()
             }
         }
     }

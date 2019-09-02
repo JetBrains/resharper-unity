@@ -1,23 +1,31 @@
 package com.jetbrains.rider.plugins.unity.packageManager
 
 import com.google.gson.Gson
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.vfs.*
+import com.intellij.openapi.vfs.AsyncFileListener
+import com.intellij.openapi.vfs.AsyncFileListener.ChangeApplier
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.util.EventDispatcher
+import com.intellij.util.concurrency.NonUrgentExecutor
 import com.intellij.util.io.isDirectory
+import com.intellij.util.pooledThreadSingleAlarm
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
-import com.jetbrains.rider.model.*
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.explorer.LockDetails
 import com.jetbrains.rider.plugins.unity.explorer.ManifestJson
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.plugins.unity.util.refreshAndFindFile
+import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.projectDir
-import com.jetbrains.rider.projectView.ProjectModelViewHost
-import com.jetbrains.rider.projectView.nodes.ProjectModelNode
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.lifetime
 import java.nio.file.Path
@@ -25,7 +33,8 @@ import java.nio.file.Paths
 import java.util.*
 
 interface PackageManagerListener : EventListener {
-    fun onRefresh(all: Boolean)
+    // This method is called on the UI thread
+    fun onPackagesUpdated()
 }
 
 class PackageManager(private val project: Project) {
@@ -35,30 +44,30 @@ class PackageManager(private val project: Project) {
         private val logger = Logger.getInstance(PackageManager::class.java)
 
         fun getInstance(project: Project) = project.getOrCreateUserData(KEY) { PackageManager(project) }
+
+        private const val MILLISECONDS_BEFORE_REFRESH = 1000
     }
 
     private val gson = Gson()
-    private val packagesByCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
-    private val packagesByFolderName: MutableMap<String, PackageData> = mutableMapOf()
     private val listeners = EventDispatcher.create(PackageManagerListener::class.java)
+    private val alarm = pooledThreadSingleAlarm(MILLISECONDS_BEFORE_REFRESH, project, ::refreshAndNotify)
+
+    private var packagesByCanonicalName: Map<String, PackageData> = mutableMapOf()
+    private var packagesByFolderName: Map<String, PackageData> = mutableMapOf()
+
+    private data class Packages(val packagesByCanonicalName: Map<String, PackageData>, val packagesByFolderName: Map<String, PackageData>)
 
     init {
-        refresh()
-
-        val listener = FileListener(project)
-        VirtualFileManager.getInstance().addVirtualFileListener(listener, project)
+        val listener = PackagesAsyncFileListener()
+        VirtualFileManager.getInstance().addAsyncFileListener(listener, project)
 
         val lifetime = project.lifetime
 
-        // The application path affects the module packages
-        project.solution.rdUnityModel.applicationPath.advise(lifetime) { refresh() }
+        // The application path affects the module packages. This comes from the backend, so will be up to date with
+        // changes from the Editor via protocol, or changes to the project files via heuristics
+        project.solution.rdUnityModel.applicationPath.advise(lifetime) { scheduleRefreshAndNotify() }
 
-        // Unity will rewrite solution/projects after resolving packages. If we don't listen for it, we might resolve to
-        // an incorrect cache folder, or mark packages as unknown
-        val projectModelViewHost = ProjectModelViewHost.getInstance(project)
-        projectModelViewHost.addSignal.advise(lifetime) { onProjectModelChanged(it) }
-        projectModelViewHost.updateSignal.advise(lifetime) { onProjectModelChanged(it) }
-        projectModelViewHost.removeSignal.advise(lifetime) { onProjectModelChanged(it) }
+        scheduleRefreshAndNotify()
     }
 
     val packagesFolder: VirtualFile
@@ -95,18 +104,31 @@ class PackageManager(private val project: Project) {
         listeners.addListener(listener, project)
     }
 
-    fun refresh(all: Boolean = false) {
-        doRefresh()
-        listeners.multicaster.onRefresh(all)
+    private fun scheduleRefreshAndNotify() {
+        alarm.cancelAndRequest()
     }
 
-    private fun doRefresh() {
+    private fun refreshAndNotify() {
+        // Get package data on a background thread
+        ReadAction.nonBlocking<Packages> { getPackages() }
+            .expireWith(project)
+            .finishOnUiThread(ModalityState.any()) {
+                // Updated without locks. Each reference is updated atomically, and they are not used together, so there
+                // are no tearing issues
+                packagesByCanonicalName = it.packagesByCanonicalName
+                packagesByFolderName = it.packagesByFolderName
+                listeners.multicaster.onPackagesUpdated()
+            }
+            .submit(NonUrgentExecutor.getInstance())
+    }
+
+    private fun getPackages(): Packages {
         logger.debug("Refreshing packages manager")
 
-        packagesByCanonicalName.clear()
-        packagesByFolderName.clear()
+        val byCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
+        val byFolderName: MutableMap<String, PackageData> = mutableMapOf()
 
-        val manifestJson = getManifestJsonFile() ?: return
+        val manifestJson = getManifestJsonFile() ?: return Packages(byCanonicalName, byFolderName)
         val builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
 
         val manifest = try {
@@ -122,9 +144,9 @@ class PackageManager(private val project: Project) {
 
             val lockDetails = manifest.lock?.get(name)
             val packageData = getPackageData(packagesFolder, name, version, registry, builtInPackagesFolder, lockDetails)
-            packagesByCanonicalName[name] = packageData
+            byCanonicalName[name] = packageData
             if (packageData.packageFolder != null) {
-                packagesByFolderName[packageData.packageFolder.name] = packageData
+                byFolderName[packageData.packageFolder.name] = packageData
             }
         }
 
@@ -133,14 +155,14 @@ class PackageManager(private val project: Project) {
         for (child in packagesFolder.children) {
             val packageData = getPackageDataFromFolder(child.name, child, PackageSource.Embedded)
             if (packageData != null) {
-                packagesByCanonicalName[packageData.details.canonicalName] = packageData
-                packagesByFolderName[child.name] = packageData
+                byCanonicalName[packageData.details.canonicalName] = packageData
+                byFolderName[child.name] = packageData
             }
         }
 
         // Calculate the transitive dependencies. This is all based on observation
-        val resolvedPackages = packagesByCanonicalName
-        var packagesToProcess: Collection<PackageData> = packagesByCanonicalName.values
+        val resolvedPackages = byCanonicalName
+        var packagesToProcess: Collection<PackageData> = byCanonicalName.values
         while (packagesToProcess.isNotEmpty()) {
 
             // This can't get stuck in an infinite loop. We look up each package in resolvedPackages - if it's already
@@ -148,14 +170,16 @@ class PackageManager(private val project: Project) {
             // after every loop
             packagesToProcess = getPackagesFromDependencies(packagesFolder, registry, builtInPackagesFolder, resolvedPackages, packagesToProcess)
             for (newPackage in packagesToProcess) {
-                packagesByCanonicalName[newPackage.details.canonicalName] = newPackage
-                newPackage.packageFolder?.let { packagesByFolderName[it.name] = newPackage }
+                byCanonicalName[newPackage.details.canonicalName] = newPackage
+                newPackage.packageFolder?.let { byFolderName[it.name] = newPackage }
             }
         }
+
+        return Packages(byCanonicalName, byFolderName)
     }
 
     private fun getManifestJsonFile(): VirtualFile? {
-        return project.refreshAndFindFile("Packages/manifest.json")
+        return project.findFile("Packages/manifest.json")
     }
 
     private fun getPackagesFromDependencies(packagesFolder: VirtualFile, registry: String, builtInPackagesFolder: Path?,
@@ -246,7 +270,7 @@ class PackageManager(private val project: Project) {
 
         // If we have lockDetails, we know this is a git based package, so always return something
         return try {
-            val packageFolder = project.refreshAndFindFile("Library/PackageCache/$name@${lockDetails.hash}")
+            val packageFolder = project.findFile("Library/PackageCache/$name@${lockDetails.hash}")
             getPackageDataFromFolder(name, packageFolder, PackageSource.Git, GitDetails(version, lockDetails.revision, lockDetails.hash))
         }
         catch (throwable: Throwable) {
@@ -261,12 +285,12 @@ class PackageManager(private val project: Project) {
     }
 
     private fun getRegistryPackage(name: String, version: String, registry: String): PackageData? {
-        // Unity 2018.3 introduced an additional layer of caching, local to the project, so that any edits to the files
-        // in the package only affect this project. This is primarily for the API updater, which would otherwise modify
-        // files in the per-user cache
+        // Unity 2018.3 introduced an additional layer of caching for registry based packages, local to the project, so
+        // that any edits to the files in the package only affect this project. This is primarily for the API updater,
+        // which would otherwise modify files in the per-user cache
         // NOTE: We use findChild here because name/version might contain illegal chars, e.g. "https://" which will
         // throw in refreshAndFindFile on Windows
-        val packageCacheFolder = project.refreshAndFindFile("Library/PackageCache")
+        val packageCacheFolder = project.findFile("Library/PackageCache")
         var packageFolder = packageCacheFolder?.findChild("$name@$version")
         val packageData = getPackageDataFromFolder(name, packageFolder, PackageSource.Registry)
         if (packageData != null) return packageData
@@ -327,57 +351,29 @@ class PackageManager(private val project: Project) {
         return packagesByCanonicalName.filterValues { it.source == source }.values.toList()
     }
 
-    private fun onProjectModelChanged(node: ProjectModelNode) {
+    private inner class PackagesAsyncFileListener : AsyncFileListener {
+        override fun prepareChange(events: MutableList<out VFileEvent>): ChangeApplier? {
+            var refreshPackages = false
 
-        val descriptor = node.descriptor
-        if (descriptor is RdSolutionDescriptor && descriptor.state == RdSolutionState.Ready) {
-            refresh()
-        }
-        else if (descriptor is RdProjectDescriptor && descriptor.state == RdProjectState.Ready) {
-            refresh()
-        }
-    }
+            events.forEach {
+                ProgressManager.checkCanceled()
 
-    private inner class FileListener(private val project: Project) : VirtualFileListener {
+                // Update on any kind of change/creation/deletion of the main manifest.json, any package.json or the
+                // deletion/creation of the Packages folder
+                val path = it.path
+                if (path.endsWith("/Packages/manifest.json", true)
+                    || path.endsWith("/package.json", true)
+                    || path.endsWith("/Packages", true)) {
 
-        override fun contentsChanged(event: VirtualFileEvent) {
-            // Note that we update if a package.json file changes because it might mean a change of dependencies
-            if (isManifestJson(event.file) || isPackageJson(event.file)) {
-                refresh()
+                    refreshPackages = true
+                }
             }
-        }
 
-        override fun fileCreated(event: VirtualFileEvent) {
-            if (isPackagesFolder(event.file)) {
-                refresh(true)
+            if (!refreshPackages) return null
+
+            return object: ChangeApplier {
+                override fun afterVfsChange() = scheduleRefreshAndNotify()
             }
-            else if (isManifestJson(event.file)) {
-                refresh()
-            }
-        }
-
-        override fun fileDeleted(event: VirtualFileEvent) {
-            if (isPackagesFolder(event.file)) {
-                refresh(true)
-            }
-            else if (isManifestJson(event.file)) {
-                refresh()
-            }
-        }
-
-        private fun isPackagesFolder(file: VirtualFile?): Boolean {
-            return file != null && file.name == "Packages" && file.parent == project.projectDir
-        }
-
-        private fun isManifestJson(file: VirtualFile?): Boolean {
-            return file != null && file.name == "manifest.json" && isPackagesFolder(file.parent)
-        }
-
-        private fun isPackageJson(file: VirtualFile?): Boolean {
-            // Ideally, this would be package.json that belonged to a package, but we don't have a way of knowing this.
-            // We might be refreshing the packages list based on changes to a project file. This is acceptable because
-            // Unity projects usually won't contain package.json
-            return file != null && file.name == "package.json"
         }
     }
 }
