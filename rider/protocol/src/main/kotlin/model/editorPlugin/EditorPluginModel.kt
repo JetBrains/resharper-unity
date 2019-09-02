@@ -90,6 +90,7 @@ object EditorPluginModel: Root() {
         +"Disconnected"
         +"Idle"
         +"Play"
+        +"Pause"
         +"Refresh"
     }
 

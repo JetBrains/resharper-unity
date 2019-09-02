@@ -49,6 +49,7 @@ class UnityIcons {
         companion object {
             val UnityStatus = IconLoader.getIcon("/Icons/status/unityStatus.svg")
             val UnityStatusPlay = IconLoader.getIcon("/Icons/status/unityStatusPlay.svg")
+            val UnityStatusPause = IconLoader.getIcon("/Icons/status/unityStatusPause.svg")
 
             val UnityStatusProgress1 = IconLoader.getIcon("/Icons/status/unityStatusProgress1.svg")
             val UnityStatusProgress2 = IconLoader.getIcon("/Icons/status/unityStatusProgress2.svg")
@@ -75,6 +76,19 @@ class UnityIcons {
                 UnityStatusPlayProgress3,
                 UnityStatusPlayProgress2,
                 UnityStatusPlayProgress1)
+
+            val UnityStatusPauseProgress1 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress1.svg")
+            val UnityStatusPauseProgress2 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress2.svg")
+            val UnityStatusPauseProgress3 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress3.svg")
+            val UnityStatusPauseProgress4 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress4.svg")
+            val UnityStatusPauseProgress5 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress5.svg")
+
+            val UnityStatusPauseProgress = AnimatedIcon(150,
+                UnityStatusPauseProgress5,
+                UnityStatusPauseProgress4,
+                UnityStatusPauseProgress3,
+                UnityStatusPauseProgress2,
+                UnityStatusPauseProgress1)
         }
     }
 

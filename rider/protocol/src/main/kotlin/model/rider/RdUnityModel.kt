@@ -16,6 +16,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"Disconnected"
         +"ConnectedIdle"
         +"ConnectedPlay"
+        +"ConnectedPause"
         +"ConnectedRefresh"
     }
 

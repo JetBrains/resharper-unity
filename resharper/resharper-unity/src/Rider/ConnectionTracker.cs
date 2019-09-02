@@ -70,6 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return EditorState.ConnectedIdle;
                 case UnityEditorState.Play:
                     return EditorState.ConnectedPlay;
+                case UnityEditorState.Pause:
+                    return EditorState.ConnectedPause;
                 case UnityEditorState.Refresh:
                     return EditorState.ConnectedRefresh;
                 default:
