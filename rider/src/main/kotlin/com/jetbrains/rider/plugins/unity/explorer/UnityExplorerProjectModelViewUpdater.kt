@@ -2,12 +2,11 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.*
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.tree.TreeVisitor
-import com.jetbrains.rider.model.RdProjectDescriptor
-import com.jetbrains.rider.model.RdSolutionDescriptor
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
+import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import com.jetbrains.rider.projectView.nodes.ProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
@@ -23,12 +22,15 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
         application.invokeLater {
             val packageManager = PackageManager.getInstance(project)
             packageManager.addListener(object : PackageManagerListener {
-                override fun onRefresh(all: Boolean) {
-                    // Update all if the PackagesRoot node needs to be added/removed
-                    if (all) {
+                override fun onPackagesUpdated() {
+                    // Only update the Packages subtree, unless it's been added/removed, then update everything
+                    val hasPackagesRoot = pane?.hasPackagesRoot()
+                    val hasPackagesFolder = project.findFile("Packages")?.isDirectory
+                    if (hasPackagesRoot != hasPackagesFolder) {
                         updateAll()
-                    } else {
-                        updatePackagesRoot()
+                    }
+                    else {
+                        updateFromPackagesRootNode()
                     }
                 }
             })
@@ -36,14 +38,12 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
     }
 
     override fun update(node: ProjectModelNode?) {
-        updateAssetsRoot(node)
         node?.getVirtualFile()?.let {
             pane?.refresh(SolutionViewVisitor.createFor(it), false, false)
         }
     }
 
     override fun updateWithChildren(node: ProjectModelNode?) {
-        updateAssetsRoot(node)
         node?.getVirtualFile()?.let {
             pane?.refresh(SolutionViewVisitor.createFor(it), false, true)
         }
@@ -56,6 +56,8 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
     }
 
     override fun updateAll() {
+        // This is called when project or solution nodes change, and invalidate the entire model, so our extra
+        // presentation text (project name, "loading...", etc.) will be correctly updated automatically
         pane?.updateFromRoot()
     }
 
@@ -63,22 +65,7 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
         pane?.updatePresentationsFromRoot()
     }
 
-    private fun updateAssetsRoot(node: ProjectModelNode?) {
-        // If the solution node or a project node is modified, update the Assets root to display correct additional text
-        if (node?.descriptor is RdSolutionDescriptor || node?.descriptor is RdProjectDescriptor) {
-            pane?.refresh(object : SolutionViewVisitor() {
-                override fun visit(node: AbstractTreeNode<*>): TreeVisitor.Action {
-                    if (node is AssetsRoot) {
-                        return TreeVisitor.Action.INTERRUPT
-                    }
-
-                    return TreeVisitor.Action.SKIP_CHILDREN
-                }
-            }, false, false)
-        }
-    }
-
-    private fun updatePackagesRoot() {
+    private fun updateFromPackagesRootNode() {
         // Refresh the Packages root node, but no further. This causes the tree model for Packages to refresh, which
         // updates the entire branch. We skip all other children (Assets, Scratches)
         // Note that refresh will never refresh the root node, only its children

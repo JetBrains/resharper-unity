@@ -66,14 +66,13 @@ class UnityAutoSaveConfigureNotification(project: Project, private val unityProj
                     }
                 }
 
-                eventMulticaster.addDocumentListener(documentListener, lifetimeDefinition.createNestedDisposable())
+                eventMulticaster.addDocumentListener(documentListener, it.createNestedDisposable())
             }
         }
     }
 
     fun showNotification(lifetime: Lifetime, editor: Editor) {
         application.assertIsDispatchThread()
-
 
         if (!lifetime.isAlive) return
         val project = editor.project ?: return

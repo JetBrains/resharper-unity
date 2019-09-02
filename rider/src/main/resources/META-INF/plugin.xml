@@ -246,22 +246,18 @@
   <change-notes>
 <![CDATA[
 <p>
-<strong>New in 2019.2.2</strong>
+<strong>New in 2019.3</strong>
 <em>Added:</em>
 <ul>
-  <li>Rider: Suggest files and folders to be ignored by version control (<a href="https://youtrack.jetbrains.com/issue/RIDER-31206">#1206</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1276">#1276</a>)</li>
+  <li>Rider: Show prompt to set Rider as default external editor when Unity is started by Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/1127">#1127<a/>), <a href="https://github.com/JetBrains/resharper-unity/pull/1270">#1270</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
-  <li>Suppress warning when using <tt>CollisionFlags</tt> in a bitwise operation (<a href="https://youtrack.jetbrains.com/issue/RIDER-28661">RIDER-28661</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1289">#1289</a>)</li>
-  <li>Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1275">#1275</a>)</li>
-  <li>Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug (<a href="https://github.com/JetBrains/resharper-unity/issues/1283">#1283</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1284">#1284</a>)</li>
-  <li>Rider: Files in read only packages no longer shown as "ignored" in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1288">#1288</a>)</li>
+  <li>Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) (<a href="https://github.com/JetBrains/resharper-unity/issues/888">#888<a/>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
-  <li>Fix exception when pasting code (<a href="https://youtrack.jetbrains.com/issue/RIDER-31338">RIDER-31338</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1280">#1280</a>)</li>
-  <li>Unity Editor: Fix exception running tests with older test framework packages (<a href="https://github.com/JetBrains/resharper-unity/pull/1273">#1273</a>)</li>
+  <li>Rider: Fix Clear on Play in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/192/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
