@@ -23,6 +23,11 @@ class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewU
             val packageManager = PackageManager.getInstance(project)
             packageManager.addListener(object : PackageManagerListener {
                 override fun onPackagesUpdated() {
+                    // Don't refresh if we've not been yet been created
+                    if (pane?.tree == null) {
+                        return
+                    }
+
                     // Only update the Packages subtree, unless it's been added/removed, then update everything
                     val hasPackagesRoot = pane?.hasPackagesRoot()
                     val hasPackagesFolder = project.findFile("Packages")?.isDirectory

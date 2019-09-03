@@ -47,7 +47,11 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
     fun hasPackagesRoot(): Boolean {
         // The tree's model is cached, while this.model.root.children isn't. This is important in that it reflects the
-        // current state of the model before it's had a chance to be invalidated
+        // current state of the model before it's had a chance to be invalidated. Note that `tree` isn't valid until the
+        // component has been created, so it will be null if the pane is hidden
+        if (this.tree == null) {
+            return false
+        }
         val root = tree.model.root
         val count = tree.model.getChildCount(root)
         for (i in 0..count) {
