@@ -248,23 +248,26 @@ namespace JetBrains.Rider.Unity.Editor
       EditorApplication.playmodeStateChanged += () =>
 #pragma warning restore 618
       {
-        var newPlayModeState = GetPlayModeState();
-        if (PlayModeSavedState != newPlayModeState)
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
         {
-          if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
+          MainThreadDispatcher.Instance.Queue(() =>
           {
-            if (newPlayModeState == PlayModeState.Playing)
+            var newPlayModeState = GetPlayModeState();
+            if (PlayModeSavedState != newPlayModeState)
             {
-              ourLogger.Info("LockReloadAssemblies");
-              EditorApplication.LockReloadAssemblies();
+              if (newPlayModeState == PlayModeState.Playing)
+              {
+                ourLogger.Info("LockReloadAssemblies");
+                EditorApplication.LockReloadAssemblies();
+              }
+              else if (newPlayModeState == PlayModeState.Stopped)
+              {
+                ourLogger.Info("UnlockReloadAssemblies");
+                EditorApplication.UnlockReloadAssemblies();
+              }
+              PlayModeSavedState = newPlayModeState;
             }
-            else if (newPlayModeState == PlayModeState.Stopped)
-            {
-              ourLogger.Info("UnlockReloadAssemblies");
-              EditorApplication.UnlockReloadAssemblies();
-            }
-          }
-          PlayModeSavedState = newPlayModeState;
+          }); 
         }
       };
 
