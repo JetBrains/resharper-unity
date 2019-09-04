@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [CanBeNull, UsedImplicitly]
         public new static UnityYamlLanguage Instance { get; private set; }
 
-        public UnityYamlLanguage() : base(Name, "UnityYaml")
+        public UnityYamlLanguage() : base(Name, "Unity Yaml")
         {
         }
     }
