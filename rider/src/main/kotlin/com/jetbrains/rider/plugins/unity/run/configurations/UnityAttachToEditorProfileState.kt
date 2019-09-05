@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
@@ -10,12 +11,16 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
+import com.jetbrains.rd.util.reactive.hasTrueValue
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
@@ -57,23 +62,29 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
     }
 
     override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<GeneralCommandLine> {
-        if (remoteConfiguration.pid != null)
-            return super.createWorkerRunCmd(lifetime, helper, port)
 
         val result = AsyncPromise<GeneralCommandLine>()
         application.executeOnPooledThread {
             try {
-                val args = getUnityWithProjectArgs(project)
-                if (remoteConfiguration.play) {
-                    addPlayModeArguments(args)
+                if (!remoteConfiguration.updatePidAndPort()) {
+
+                    val model = UnityHost.getInstance(project).model
+                    if (UnityInstallationFinder.getInstance(project).getApplicationPath() == null ||
+                        model.hasUnityReference.hasTrueValue && !UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
+                        throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")
+
+                    val args = getUnityWithProjectArgs(project)
+                    if (remoteConfiguration.play) {
+                        addPlayModeArguments(args)
+                    }
+
+                    val process = ProcessBuilder(args).start()
+                    val actualPid = OSProcessUtil.getProcessID(process)
+                    remoteConfiguration.pid = actualPid
+                    remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
+
+                    Thread.sleep(2000)
                 }
-
-                val process = ProcessBuilder(args).start()
-                val actualPid = OSProcessUtil.getProcessID(process)
-                remoteConfiguration.pid = actualPid
-                remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
-
-                Thread.sleep(2000)
                 UIUtil.invokeLaterIfNeeded {
                     super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
                 }
