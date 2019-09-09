@@ -12,7 +12,11 @@ Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ
 
 The plugin adds code completion and generation of Unity event functions, inspections for common errors, quick fixes, support for `.shader` files, automatic handling of `.meta` files and more. The Rider plugin includes additional support for attaching the debugger to the Editor instance and a Unity Editor plugin to improve integration.
 
-## Installation
+## Installation 2019.2+ with Rider package
+
+In Unity just setting External Editor to Rider should be enough.
+
+## Installation 2019.1-
 
 This plugin comes bundled with Rider, and manual installation is not required. However, it is necessary to configure Unity to use Rider as the external script editor:
 
@@ -191,6 +195,8 @@ The plugin also adds some functionality just for Rider:
 Please [suggest new features in the issues](https://github.com/JetBrains/resharper-unity/issues)!
 
 ## Unity Editor plugin
+
+> For `Unity 2019.2+ with Rider package` Editor plugin is loaded directly from Rider installation. 
 
 By default, when Rider opens a Unity project, it will automatically install a Unity Editor plugin, and keep it up to date with new versions. This behaviour can be disabled in Rider's _Preferences &rarr; Languages &amp; Frameworks &rarr; Unity Engine_.
 
