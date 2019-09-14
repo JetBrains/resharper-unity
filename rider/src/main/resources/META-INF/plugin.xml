@@ -249,6 +249,7 @@
 <strong>New in 2019.3</strong>
 <em>Added:</em>
 <ul>
+  <li>Prevent "possibly impure struct method" warnings with <tt>ProfilerMarker</tt> (<a href="https://github.com/JetBrains/resharper-unity/pull/1319">#1319</a>)</li>
   <li>Rider: Show prompt to set Rider as default external editor when Unity is started by Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/1127">#1127<a/>), <a href="https://github.com/JetBrains/resharper-unity/pull/1270">#1270</a>)</li>
 </ul>
 <em>Changed:</em>

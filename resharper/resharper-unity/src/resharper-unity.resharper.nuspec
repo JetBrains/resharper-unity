@@ -34,6 +34,8 @@
 - And much more!
 </description>
 <releaseNotes>
+Added:
+- Prevent "possibly impure struct method" warnings with ProfilerMarker (#1319)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>

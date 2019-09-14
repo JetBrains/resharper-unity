@@ -12,6 +12,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Added
 
+- Prevent "possibly impure struct method" warnings with `ProfilerMarker` ([#1319](https://github.com/JetBrains/resharper-unity/pull/1319))
 - Rider: Show prompt to set Rider as default external editor when Unity is started by Rider ([#1127](https://github.com/JetBrains/resharper-unity/issues/1127), [#1270](https://github.com/JetBrains/resharper-unity/pull/1270))
 
 ### Changed
