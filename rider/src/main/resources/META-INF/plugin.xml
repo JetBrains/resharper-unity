@@ -254,11 +254,15 @@
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Rider: Improve rendering of Unity log event counts (<a href="https://github.com/JetBrains/resharper-unity/issues/1296">#1296</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
+  <li>Rider: Display pause state in connection status icon (<a href="https://github.com/JetBrains/resharper-unity/issues/1227">#1227</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
   <li>Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) (<a href="https://github.com/JetBrains/resharper-unity/issues/888">#888<a/>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
   <li>Rider: Fix Clear on Play in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
+  <li>Rider: Fix exception checking process list on UI thread (<a href="https://youtrack.jetbrains.com/issue/RIDER-28743">RIDER-28743</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1311">#1311</a>)</li>
+  <li>Unity Editor: Fix exceptions calling <tt>isPlaying</tt> on incorrect thread (<a href="https://github.com/JetBrains/resharper-unity/pull/1308">#1308</a>)</li>
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/192/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
