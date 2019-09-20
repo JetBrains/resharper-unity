@@ -35,7 +35,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="IDEA jdk" project-jdk-type="JavaSDK" />
   <component name="TaskProjectConfiguration">
     <server type="GitHub" url="https://github.com" />
   </component>

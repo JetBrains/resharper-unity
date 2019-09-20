@@ -8,7 +8,7 @@ targetCompatibility = 1.8
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
-        allWarningsAsErrors = warningsAsErrors.toBoolean()
+        allWarningsAsErrors = false
         freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
     }
 }

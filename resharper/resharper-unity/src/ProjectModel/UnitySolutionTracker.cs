@@ -20,20 +20,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public readonly ViewableProperty<Version> UnityAppVersion = new ViewableProperty<Version>(null);
 
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
-            ISolutionLoadTasksSchedulerProvider solutionLoadTasksSchedulerProvider, bool inTests = false)
+            ISolutionLoadTasksScheduler solutionLoadTasksScheduler, bool inTests = false)
         {
             mySolution = solution;
             if (inTests)
-            {
-                IsUnityGeneratedProject.Value = false;
-                IsUnityProject.Value = false;
-                IsUnityProjectFolder.Value = false;
                 return;
-            }
 
             SetValues();
             
-            solutionLoadTasksSchedulerProvider.GetTasksScheduler().EnqueueTask(new SolutionLoadTask("ParseUnityVersion", SolutionLoadTaskKinds.AfterDone,
+            solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("ParseUnityVersion", SolutionLoadTaskKinds.AfterDone,
                 SetVersion));
 
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false,
