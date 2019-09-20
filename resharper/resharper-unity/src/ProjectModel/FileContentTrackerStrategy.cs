@@ -1,4 +1,3 @@
-using System;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.ProjectsHost.LiveTracking;
 using JetBrains.Util;
@@ -17,8 +16,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         
         public bool IsApplicable(FileSystemPath path)
         {
-            return mySolutionTracker.IsUnityGeneratedProject.Value 
-                   
+            return mySolutionTracker.IsUnityGeneratedProject.Value
+                   && mySolutionTracker.UnityAppVersion.Value != null
+                   && mySolutionTracker.UnityAppVersion.Value.Major <= 2017
                    && (path.ExtensionNoDot == "csproj" || path.ExtensionNoDot == "sln");
         }
 

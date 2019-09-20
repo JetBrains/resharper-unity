@@ -1,8 +1,10 @@
+using System;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Tasks;
 using JetBrains.Rd.Base;
 using JetBrains.Util;
 
@@ -12,11 +14,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     public class UnitySolutionTracker
     {
         private readonly ISolution mySolution;
-        public readonly ViewableProperty<bool> IsUnityProjectFolder = new ViewableProperty<bool>();
-        public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
-        public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>();
+        public readonly ViewableProperty<bool> IsUnityProjectFolder = new ViewableProperty<bool>(false);
+        public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>(false);
+        public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>(false);
+        public readonly ViewableProperty<Version> UnityAppVersion = new ViewableProperty<Version>(null);
 
-        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, bool inTests = false)
+        public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
+            ISolutionLoadTasksSchedulerProvider solutionLoadTasksSchedulerProvider, bool inTests = false)
         {
             mySolution = solution;
             if (inTests)
@@ -28,12 +32,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             }
 
             SetValues();
+            
+            solutionLoadTasksSchedulerProvider.GetTasksScheduler().EnqueueTask(new SolutionLoadTask("ParseUnityVersion", SolutionLoadTaskKinds.AfterDone,
+                SetVersion));
 
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder), false,
                 OnChangeAction);
             // track not only folder itself, but also files inside
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
                 OnChangeActionProjectSettingsFolder);
+        }
+
+        private void SetVersion()
+        {
+            if (!IsUnityGeneratedProject.Value) return;
+            var version = UnityVersion.TryGetVersionFromProjectVersion(
+                GetProjectVersionTxtFile(GetProjectSettingsFolder(mySolution.SolutionDirectory)));
+            UnityAppVersion.SetValue(version);
         }
 
         private void SetValues()
@@ -49,6 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             if (delta.ChangeType == FileSystemChangeType.ADDED || delta.ChangeType == FileSystemChangeType.DELETED)
             {
                 SetValues();
+                SetVersion();
             }
         }
 
@@ -70,12 +86,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private static bool HasUnityFileStructure(FileSystemPath solutionDir)
         {
             var assetsFolder = solutionDir.CombineWithShortName(ProjectExtensions.AssetsFolder);
-            var projectSettingsFolder = solutionDir.CombineWithShortName(ProjectExtensions.ProjectSettingsFolder);
-            var projectVersionTxtFile = projectSettingsFolder.CombineWithShortName("ProjectVersion.txt");
+            var projectSettingsFolder = GetProjectSettingsFolder(solutionDir);
+            var projectVersionTxtFile = GetProjectVersionTxtFile(projectSettingsFolder);
             return assetsFolder.IsAbsolute && assetsFolder.ExistsDirectory
                                            && projectSettingsFolder.IsAbsolute && projectSettingsFolder.ExistsDirectory
                                            && (projectVersionTxtFile.IsAbsolute && projectVersionTxtFile.ExistsFile
                                                || projectSettingsFolder.GetChildFiles("*.asset").Any());
+        }
+
+        private static FileSystemPath GetProjectVersionTxtFile(FileSystemPath projectSettingsFolder)
+        {
+            return projectSettingsFolder.CombineWithShortName("ProjectVersion.txt");
+        }
+
+        private static FileSystemPath GetProjectSettingsFolder(FileSystemPath solutionDir)
+        {
+            return solutionDir.CombineWithShortName(ProjectExtensions.ProjectSettingsFolder);
         }
     }
 }

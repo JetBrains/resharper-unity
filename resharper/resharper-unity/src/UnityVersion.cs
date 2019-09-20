@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [CanBeNull]
-        private Version TryGetVersionFromProjectVersion(FileSystemPath projectVersionTxtPath)
+        public static Version TryGetVersionFromProjectVersion(FileSystemPath projectVersionTxtPath)
         {
             // Get the version from ProjectSettings/ProjectVersion.txt
             if (!projectVersionTxtPath.ExistsFile)
