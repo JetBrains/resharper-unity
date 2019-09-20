@@ -8,7 +8,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 {
-    [SolutionComponent]
+    [SolutionInstanceComponent]
     public class UnitySolutionTracker
     {
         private readonly ISolution mySolution;
@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private void SetValues()
         {
             IsUnityProjectFolder.SetValue(HasUnityFileStructure(mySolution.SolutionDirectory));
-            IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() &&
+            IsUnityProject.SetValue(IsUnityProjectFolder.Value &&
                                     mySolution.SolutionFilePath.ExtensionNoDot.ToLower() == "sln");
             IsUnityGeneratedProject.SetValue(IsUnityProject.Value && SolutionNameMatchesUnityProjectName());
         }

@@ -28,12 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
                 return;
 
-            unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
+            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) => 
             {
+                if (!args) return;
                 //periodically check connection between backend and unity editor
-                lifetime.StartMainUnguardedAsync(async ()=>
+                lf.StartMainUnguardedAsync(async ()=>
                 {
-                    while (lifetime.IsAlive)
+                    while (lf.IsAlive)
                     {
                         var model = editorProtocol.UnityModel.Value;
                         if (model == null)
@@ -45,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             try
                             {
                                 var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
-                                rdTask?.Result.Advise(lifetime, result =>
+                                rdTask?.Result.Advise(lf, result =>
                                 {
                                     State.SetValue(result.Result);
                                     logger.Trace($"myIsConnected = {State.Value}");
@@ -60,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                         logger.Trace($"Sending connection state. State: {State.Value}");
                         host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
-                        await Task.Delay(1000, lifetime);
+                        await Task.Delay(1000, lf);
                     }
                 });
             });
