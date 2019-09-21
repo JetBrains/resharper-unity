@@ -245,24 +245,10 @@
   <change-notes>
 <![CDATA[
 <p>
-<strong>New in 2019.2.2</strong>
-<em>Added:</em>
-<ul>
-  <li>Rider: Suggest files and folders to be ignored by version control (<a href="https://youtrack.jetbrains.com/issue/RIDER-31206">#1206</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1276">#1276</a>)</li>
-</ul>
+<strong>New in 2019.2.3</strong>
 <em>Changed:</em>
 <ul>
-  <li>Suppress warning when using <tt>CollisionFlags</tt> in a bitwise operation (<a href="https://youtrack.jetbrains.com/issue/RIDER-28661">RIDER-28661</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1289">#1289</a>)</li>
-  <li>Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1275">#1275</a>)</li>
-  <li>Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug (<a href="https://github.com/JetBrains/resharper-unity/issues/1283">#1283</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1284">#1284</a>)</li>
-  <li>Rider: Files in read only packages no longer shown as "ignored" in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1288">#1288</a>)</li>
-  <li>Unity Editor: Improve performance on AppDomain reloads (<a href="https://github.com/JetBrains/resharper-unity/pull/1291">#1291</a>)</li>
-</ul>
-<em>Fixed:</em>
-<ul>
-  <li>Fix exception when pasting code (<a href="https://youtrack.jetbrains.com/issue/RIDER-31338">RIDER-31338</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1280">#1280</a>)</li>
-  <li>Rider: Fix fetching list of Unity editors and players on UI thread (<a href="https://youtrack.jetbrains.com/issue/RIDER-31585">RIDER-31585</a>)</li>
-  <li>Unity Editor: Fix exception running tests with older test framework packages (<a href="https://github.com/JetBrains/resharper-unity/pull/1273">#1273</a>)</li>
+  <li>Use platform native line endings in generated <tt>.meta</tt> files. Works better with Perforce (<a href="https://github.com/JetBrains/resharper-unity/pull/1323">#1323</a>)</li>
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/192/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>

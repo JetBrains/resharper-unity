@@ -25,12 +25,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             mySolution = solution;
             myLogger = logger;
-            
+
             solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("AdviseForChanges", SolutionLoadTaskKinds.AfterDone,
                 () =>
                 {
                     changeManager.RegisterChangeProvider(lifetime, this);
-                    changeManager.AddDependency(lifetime, this, solution);        
+                    changeManager.AddDependency(lifetime, this, solution);
                 }));
         }
 
@@ -239,7 +239,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 {
                     var guid = Guid.NewGuid();
                     var timestamp = (long)(DateTime.UtcNow - ourUnixTime).TotalSeconds;
-                    DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2\r\nguid: {guid:N}\r\ntimeCreated: {timestamp}"));
+                    DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2{Environment.NewLine}guid: {guid:N}{Environment.NewLine}timeCreated: {timestamp}"));
                     myLogger.Info("*** resharper-unity: Meta added {0}", path);
                 }
                 catch (Exception e)

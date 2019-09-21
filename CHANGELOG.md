@@ -6,8 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
+## 2019.2.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap9-rtm-2019.2.2...192)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/31?closed=1)
+
+### Changed
+* Use platform native line endings in generated `.meta` files. Works better with Perforce ([#1323](https://github.com/JetBrains/resharper-unity/pull/1323))
+
+
+
 ## 2019.2.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192-eap9-rtm-2019.2.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/30?closed=1)
 
 ### Added
