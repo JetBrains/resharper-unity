@@ -52,50 +52,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             // Get the node at the caret. This will be the identifier
             var identifierNode = TextControlToPsi.GetElement<ITreeNode>(solution, textControl) as IIdentifier;
-            if (identifierNode == null)
-                return;
 
             var methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
             if (UpdateExistingMethod(methodDeclaration, psiServices))
                 return;
 
-            // Delete the half completed identifier node. Also delete any explicitly entered return type, as our
-            // declared element will create one anyway
-            if (!(identifierNode.GetPreviousMeaningfulSibling() is ITypeUsage typeUsage))
+            if (identifierNode != null)
             {
-                // E.g. `void OnAnim{caret} [SerializeField]...` This is parsed as a field with an array specifier
-                var fieldDeclaration = identifierNode.GetContainingNode<IFieldDeclaration>();
-                typeUsage = fieldDeclaration?.GetPreviousMeaningfulSibling() as ITypeUsage;
-            }
-
-            var parameterListStart = methodDeclaration?.LPar;
-            var parameterListEnd = methodDeclaration?.RPar;
-
-            using (var cookie = new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "RemoveIdentifier"))
-            using (new DisableCodeFormatter())
-            {
-                using (WriteLockCookie.Create())
+                // Delete the half completed identifier node. Also delete any explicitly entered return type, as our
+                // declared element will create one anyway
+                if (!(identifierNode.GetPreviousMeaningfulSibling() is ITypeUsage typeUsage))
                 {
-                    ModificationUtil.DeleteChild(identifierNode);
-                    if (typeUsage != null)
-                    {
-                        nameRange = nameRange.Shift(-typeUsage.GetTextLength());
-                        ModificationUtil.DeleteChild(typeUsage);
-
-                        // Also delete the parameter list, if there is one. If there was an existing method declaration,
-                        // with parameter list and body, we would have fixed it by simply replacing the name. Deleting
-                        // an existing parameter list allows rewriting the return type, method name, parameter list and
-                        // body
-                        if (parameterListStart != null && parameterListEnd != null)
-                            ModificationUtil.DeleteChildRange(parameterListStart, parameterListEnd);
-                        else if (parameterListStart != null)
-                            ModificationUtil.DeleteChild(parameterListStart);
-                        else if (parameterListEnd != null)
-                            ModificationUtil.DeleteChild(parameterListEnd);
-                    }
+                    // E.g. `void OnAnim{caret} [SerializeField]...` This is parsed as a field with an array specifier
+                    var fieldDeclaration = identifierNode.GetContainingNode<IFieldDeclaration>();
+                    typeUsage = fieldDeclaration?.GetPreviousMeaningfulSibling() as ITypeUsage;
                 }
 
-                cookie.Commit();
+                var parameterListStart = methodDeclaration?.LPar;
+                var parameterListEnd = methodDeclaration?.RPar;
+
+                using (var cookie = new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "RemoveIdentifier"))
+                using (new DisableCodeFormatter())
+                {
+                    using (WriteLockCookie.Create())
+                    {
+                        ModificationUtil.DeleteChild(identifierNode);
+                        if (typeUsage != null)
+                        {
+                            nameRange = nameRange.Shift(-typeUsage.GetTextLength());
+                            ModificationUtil.DeleteChild(typeUsage);
+
+                            // Also delete the parameter list, if there is one. If there was an existing method declaration,
+                            // with parameter list and body, we would have fixed it by simply replacing the name. Deleting
+                            // an existing parameter list allows rewriting the return type, method name, parameter list and
+                            // body
+                            if (parameterListStart != null && parameterListEnd != null)
+                                ModificationUtil.DeleteChildRange(parameterListStart, parameterListEnd);
+                            else if (parameterListStart != null)
+                                ModificationUtil.DeleteChild(parameterListStart);
+                            else if (parameterListEnd != null)
+                                ModificationUtil.DeleteChild(parameterListEnd);
+                        }
+                    }
+
+                    cookie.Commit();
+                }
             }
 
             // Insert a dummy method declaration, as text, which means the PSI is reparsed. This will remove empty type
@@ -127,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             // Get the UnityEventFunction generator to actually insert the methods
             GenerateCodeWorkflowBase.ExecuteNonInteractive(
-                GeneratorUnityKinds.UnityEventFunctions, solution, textControl, identifierNode.Language,
+                GeneratorUnityKinds.UnityEventFunctions, solution, textControl, classDeclaration.Language,
                 configureContext: context =>
                 {
                     // Note that the generated code will use the access rights, if specified. However, if they haven't
