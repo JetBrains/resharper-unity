@@ -6,6 +6,8 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Behaviors;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
+using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
 using JetBrains.ReSharper.Feature.Services.Lookup;
@@ -18,116 +20,72 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Transactions;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
+using DocumentRange = JetBrains.DocumentModel.DocumentRange;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
-    public class UnityEventFunctionBehavior : TextualBehavior<TextualInfo>
+    public class UnityEventFunctionBehavior : TextualBehavior<UnityEventFunctionTextualInfo>
     {
-        private readonly IShellLocks myShellLocks;
         private readonly UnityEventFunction myEventFunction;
         private readonly AccessRights myAccessRights;
 
-        public UnityEventFunctionBehavior(IShellLocks shellLocks, TextualInfo info,
-                                          UnityEventFunction eventFunction, AccessRights accessRights)
+        public UnityEventFunctionBehavior(UnityEventFunctionTextualInfo info,
+            UnityEventFunction eventFunction, AccessRights accessRights)
             : base(info)
         {
-            myShellLocks = shellLocks;
             myEventFunction = eventFunction;
             myAccessRights = accessRights;
         }
 
-        public override void Accept(ITextControl textControl, DocumentRange nameRange,
-            LookupItemInsertType lookupItemInsertType, Suffix suffix,
-            ISolution solution, bool keepCaretStill)
-        {
-            Accept(textControl, nameRange, solution);
-        }
+        public override bool AcceptIfOnlyMatched(LookupItemAcceptanceContext itemAcceptanceContext) => false;
 
-        private void Accept(ITextControl textControl, DocumentRange nameRange, ISolution solution)
+        public override void Accept(
+            ITextControl textControl, DocumentRange nameRange,
+            LookupItemInsertType insertType, Suffix suffix, ISolution solution, bool keepCaretStill)
         {
             var psiServices = solution.GetPsiServices();
-
-            // Get the node at the caret. This will be the identifier
-            var identifierNode = TextControlToPsi.GetElement<ITreeNode>(solution, textControl) as IIdentifier;
-            if (identifierNode == null)
+            var updateMethodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
+            if (UpdateExistingMethod(updateMethodDeclaration, psiServices))
                 return;
 
-            var methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
-            if (UpdateExistingMethod(methodDeclaration, psiServices))
-                return;
-
-            // Delete the half completed identifier node. Also delete any explicitly entered return type, as our
-            // declared element will create one anyway
-            if (!(identifierNode.GetPreviousMeaningfulSibling() is ITypeUsage typeUsage))
-            {
-                // E.g. `void OnAnim{caret} [SerializeField]...` This is parsed as a field with an array specifier
-                var fieldDeclaration = identifierNode.GetContainingNode<IFieldDeclaration>();
-                typeUsage = fieldDeclaration?.GetPreviousMeaningfulSibling() as ITypeUsage;
-            }
-
-            var parameterListStart = methodDeclaration?.LPar;
-            var parameterListEnd = methodDeclaration?.RPar;
-
-            using (var cookie = new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "RemoveIdentifier"))
-            using (new DisableCodeFormatter())
-            {
-                using (WriteLockCookie.Create())
-                {
-                    ModificationUtil.DeleteChild(identifierNode);
-                    if (typeUsage != null)
-                    {
-                        nameRange = nameRange.Shift(-typeUsage.GetTextLength());
-                        ModificationUtil.DeleteChild(typeUsage);
-
-                        // Also delete the parameter list, if there is one. If there was an existing method declaration,
-                        // with parameter list and body, we would have fixed it by simply replacing the name. Deleting
-                        // an existing parameter list allows rewriting the return type, method name, parameter list and
-                        // body
-                        if (parameterListStart != null && parameterListEnd != null)
-                            ModificationUtil.DeleteChildRange(parameterListStart, parameterListEnd);
-                        else if (parameterListStart != null)
-                            ModificationUtil.DeleteChild(parameterListStart);
-                        else if (parameterListEnd != null)
-                            ModificationUtil.DeleteChild(parameterListEnd);
-                    }
-                }
-
-                cookie.Commit();
-            }
-
+            var fixedNameRange = nameRange.SetStartTo(Info.MemberReplaceRanges.InsertRange.StartOffset);
+            var memberRange = Info.MemberReplaceRanges.GetAcceptRange(fixedNameRange, insertType);
+            
             // Insert a dummy method declaration, as text, which means the PSI is reparsed. This will remove empty type
             // usages and merge leading attributes into a method declaration, such that we can copy them and replace
             // them once the declared element has expanded. This also fixes up the case where the type usage picks up
             // the attribute of the next code construct as an array specifier. E.g. `OnAni{caret} [SerializeField]`
             using (WriteLockCookie.Create())
-                textControl.Document.InsertText(nameRange.StartOffset, "void Foo(){}");
+            {
+                textControl.Document.ReplaceText(memberRange, "void Foo(){}");
+            }
 
             psiServices.Files.CommitAllDocuments();
 
-            methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
+            var methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
             if (methodDeclaration == null) return;
 
-            var attributeList = methodDeclaration.FirstChild as IAttributeSectionList;
+            var methodDeclarationCopy = methodDeclaration.Copy();
+            var nodesBeforeCopyRange = NodesBeforeMethodHeader(methodDeclarationCopy);
 
-            using (var cookie = new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "RemoveInsertedDeclaration"))
-            using (new DisableCodeFormatter())
+            using (new PsiTransactionCookie(psiServices, DefaultAction.Commit, "RemoveInsertedDeclaration"))
+            using (WriteLockCookie.Create())
             {
-                using (WriteLockCookie.Create())
-                    ModificationUtil.DeleteChild(methodDeclaration);
-                cookie.Commit();
+                LowLevelModificationUtil.DeleteChild(methodDeclaration);
             }
+
 
             var classDeclaration = TextControlToPsi.GetElement<IClassLikeDeclaration>(solution, textControl);
             Assertion.AssertNotNull(classDeclaration, "classDeclaration != null");
 
             var factory = CSharpElementFactory.GetInstance(classDeclaration);
 
-            // Get the UnityEventFunction generator to actually insert the methods
             GenerateCodeWorkflowBase.ExecuteNonInteractive(
-                GeneratorUnityKinds.UnityEventFunctions, solution, textControl, identifierNode.Language,
+                GeneratorUnityKinds.UnityEventFunctions, solution, textControl, methodDeclaration.Language,
                 configureContext: context =>
                 {
                     // Note that the generated code will use the access rights, if specified. However, if they haven't
@@ -140,32 +98,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 },
                 onCompleted: context =>
                 {
-                    if (attributeList == null)
-                        return;
+                    if (nodesBeforeCopyRange.IsEmpty) return;
 
-                    methodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
-                    if (methodDeclaration == null)
-                        return;
-
-                    // The Generate workflow adds a helper function to the queue to select the contents of the method.
-                    // Unfortunately, the offsets are calculated before adding the callback to the queue. If we modify
-                    // the PSI directly here, the offsets are incorrect and the selection is wrong. Doing it this way
-                    // loses the selection, but at least everything works.
-                    // Technically, we should probably add the attributes during the generation method, but then we'd
-                    // lose how multiple attributes are split into sections, etc.
-                    myShellLocks.Queue(Lifetime.Eternal, "FinishDeclaration", () =>
+                    foreach (var outputElement in context.OutputElements)
                     {
-                        using (ReadLockCookie.Create())
-                        using (var transactionCookie =
-                            new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "FinishDeclaration"))
+                        if (outputElement is GeneratorDeclarationElement declarationElement)
                         {
-                            methodDeclaration.SetAttributeSectionList(attributeList);
-                            transactionCookie.Commit();
-                        }
-                    });
-                });
-        }
+                            using (new PsiTransactionCookie(psiServices, DefaultAction.Commit, "BringBackAttributes"))
+                            using (WriteLockCookie.Create())
+                            {
+                                var newDeclaration = declarationElement.Declaration;
+                                ModificationUtil.AddChildRangeAfter(newDeclaration, anchor: null, nodesBeforeCopyRange);
+                            }
 
+                            return;
+                        }
+                    }
+                });
+
+            ITreeRange NodesBeforeMethodHeader(IMethodDeclaration declaration)
+            {
+                var firstNode = declaration.ModifiersList ?? declaration.TypeUsage as ITreeNode;
+
+                var smthBeforeTypeUsage = firstNode?.PrevSibling;
+                if (smthBeforeTypeUsage == null) return TreeRange.Empty;
+
+                return new TreeRange(declaration.FirstChild, smthBeforeTypeUsage);
+            }
+        }
+        
         private bool UpdateExistingMethod([CanBeNull] IMethodDeclaration methodDeclaration, IPsiServices psiServices)
         {
             if (methodDeclaration?.Body == null)
@@ -186,8 +147,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 // At least the method signature inspections will help fix up if necessary
                 // When this comes back, remember to try to match the existing parameters - they might be correct but
                 // renamed. We don't want to set the names back and break code
-//                methodDeclaration.SetTypeUsage(newDeclaration.TypeUsage);
-//                methodDeclaration.SetParams(newDeclaration.Params);
+                //methodDeclaration.SetTypeUsage(newDeclaration.TypeUsage);
+                //methodDeclaration.SetParams(newDeclaration.Params);
 
                 cookie.Commit();
             }
