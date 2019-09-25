@@ -34,11 +34,10 @@
 - And much more!
 </description>
 <releaseNotes>
-Changed:
-- Suppress warning when using CollisionFlags in a bitwise operation (RIDER-28661, #1289)
+New in 2019.2.3:
 
 Fixed:
-- Fix exception when pasting code (RIDER-31338, #1280)
+- Fix issues with completion of Unity event functions (RIDER-33167, #1326)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
