@@ -106,6 +106,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         }
         fieldInfo.SetValue(filter, testNames);
 
+        var clientController = ClientControllerWrapper.TryCreate(myLaunch.SessionId, myLaunch.ClientControllerInfo);
+        clientController?.OnSessionStarted();
+
         object launcher;
         if (UnityUtils.UnityVersion >= new Version(2018, 1))
         {
@@ -172,8 +175,11 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         {
           if (!(test is TestMethod)) return;
           ourLogger.Verbose("TestStarted : {0}", test.FullName);
-          var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running,
-            TestEventsSender.GetIdFromNUnitTest(test.Parent));
+
+          var testId = TestEventsSender.GetIdFromNUnitTest(test);
+          var tResult = new TestResult(testId, test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
+          
+          clientController?.OnTestStarted(testId);
           TestEventsSender.TestStarted(myLaunch, tResult);
         }))
           return;
@@ -182,12 +188,14 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         {
           if (!(result.Test is TestMethod)) return;
 
+          clientController?.OnTestFinished();
           TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(result));
         }))
           return;
 
         if (!AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
         {
+          clientController?.OnSessionFinished();
           TestEventsSender.RunFinished(myLaunch);
         }))
           return;
