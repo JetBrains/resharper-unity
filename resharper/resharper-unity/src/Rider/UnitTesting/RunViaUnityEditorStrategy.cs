@@ -125,13 +125,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         });
                     });
                     break;
-                case WellKnownHostProvidersIds.RunProviderId:
+                
+                default:
                     RefreshAndRunTask(run, tcs);
                     break;
-                default:
-                    run.Launch.Output.Error(
-                        $"Starting Unity tests from '{hostId}' is currently unsupported. Please use `Run`.");
-                    return Task.FromResult(false);
             }
 
             return tcs.Task;
@@ -252,8 +249,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     ? TestMode.Play
                     : TestMode.Edit;    
             }
-              
-            var launch = new UnitTestLaunch(tests, emptyList, emptyList, mode);
+
+            UnitTestLaunchClientControllerInfo unityClientControllerInfo = null;
+            
+            var clientControllerInfo = firstRun.HostController.GetClientControllerInfo(firstRun);
+            if (clientControllerInfo != null)
+                unityClientControllerInfo = new UnitTestLaunchClientControllerInfo(clientControllerInfo.ControllerType.Assembly.CodeBase, 
+                                                                                   clientControllerInfo.ExtraDependencies?.ToList(),
+                                                                                   clientControllerInfo.ControllerType.FullName.NotNull());
+
+            var launch = new UnitTestLaunch(firstRun.Launch.Session.Id, tests, emptyList, emptyList, mode, unityClientControllerInfo);
             return launch;
         }
         
