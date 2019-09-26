@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return HostProviderAvailability.Available;
 
             var rdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
-            if (rdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.NUnit)
+            if (rdUnityModel.UnitTestPreference.Value != UnitTestLaunchPreference.PlayMode)
                 return HostProviderAvailability.Available;
 
             return HostProviderAvailability.Nonexistent;
