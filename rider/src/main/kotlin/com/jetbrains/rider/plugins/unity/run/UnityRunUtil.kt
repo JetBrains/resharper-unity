@@ -7,6 +7,7 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.execution.util.ExecUtil
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
@@ -63,6 +64,9 @@ object UnityRunUtil {
         //    E.g. https://stackoverflow.com/questions/16110936/read-other-process-current-directory-in-c-sharp
         // 4) Scrape the main window title. This is fragile, as the format changes, and can easily break with hyphens in
         //    project or scene names. It also doesn't give us the project path. And it doesn't work on Mac/Linux
+
+        // We might have to call external processes. Make sure we're running in the background
+        assertNotDispatchThread()
         val projectNames = mutableMapOf<Int, String>()
 
         processList.forEach {
@@ -76,6 +80,15 @@ object UnityRunUtil {
         }
 
         return projectNames
+    }
+
+    private fun assertNotDispatchThread() {
+        val application = ApplicationManager.getApplication()
+        if (application != null && application.isInternal) {
+            if (application.isDispatchThread) {
+                throw RuntimeException("Access not allowed on event dispatch thread")
+            }
+        }
     }
 
     private fun getProjectNameFromEditorInstanceJson(processInfo: ProcessInfo, project: Project): String? {

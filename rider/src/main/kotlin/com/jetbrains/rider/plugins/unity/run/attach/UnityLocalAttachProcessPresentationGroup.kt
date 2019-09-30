@@ -14,7 +14,7 @@ object UnityLocalAttachProcessPresentationGroup : XAttachProcessPresentationGrou
     override fun getItemIcon(project: Project, process: ProcessInfo, userData: UserDataHolder) = UnityIcons.Icons.UnityLogo
 
     override fun getItemDisplayText(project: Project, process: ProcessInfo, userData: UserDataHolder): String {
-        val projectName = UnityRunUtil.getUnityProcessProjectName(process, project)
+        val projectName = userData.getUserData(UnityLocalAttachProcessDebuggerProvider.PROJECT_NAME_KEY)
         return if (projectName != null) {
             "${process.executableDisplayName} ($projectName)"
         }
