@@ -66,13 +66,6 @@ class ProcessesPanel : PanelWithButtons() {
             }
         }
 
-        vm.editorProcesses.advise(vm.lifetime) {
-            if (it.newValueOpt == null)
-                dataModel.fireTableRowsDeleted(it.index, it.index)
-            else
-                dataModel.fireTableRowsInserted(it.index, it.index)
-        }
-
         table = JBTable(dataModel)
         with(table!!) {
             setEnableAntialiasing(true)
@@ -93,13 +86,20 @@ class ProcessesPanel : PanelWithButtons() {
             selectionModel.addListSelectionListener {
                 if (selectedRow > -1) {
                     vm.pid.value = vm.editorProcesses[selectedRow].pid
-                    vm.isUserSelectedPid.value = true
                 }
             }
 
             updateSelection(this)
 
             vm.pid.advise(vm.lifetime) { updateSelection(this) }
+        }
+
+        vm.editorProcesses.advise(vm.lifetime) {
+            if (it.newValueOpt == null)
+                dataModel.fireTableRowsDeleted(it.index, it.index)
+            else
+                dataModel.fireTableRowsInserted(it.index, it.index)
+            updateSelection(table!!)
         }
 
         return ToolbarDecorator.createDecorator(table!!)
