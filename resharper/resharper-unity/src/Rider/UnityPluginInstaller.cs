@@ -120,7 +120,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var match = Regex.Match(text, @"""com\.unity\.ide\.rider""\s*:\s*""(?<version>.*)""", RegexOptions.Multiline);
                 if (match.Success)
                 {
-                    if (Version.TryParse(match.Groups["version"].Value, out var version))
+                    //it could be "com.unity.ide.rider": "1.1.2-preview"
+                    var versionString = match.Groups["version"].Value.Replace("-preview", string.Empty);
+                    if (Version.TryParse(versionString, out var version))
                     {
                         if (version >= new Version(1, 0, 7))
                         {
