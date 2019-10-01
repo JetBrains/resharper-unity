@@ -6,6 +6,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.*
+import com.intellij.openapi.vfs.AsyncFileListener.*
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.projectDir
 import java.io.FileReader
@@ -23,10 +25,10 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
     companion object {
         private val logger = Logger.getInstance(EditorInstanceJson::class.java)
         private val INSTANCE_KEY: Key<EditorInstanceJson> = Key("Unity::EditorInstanceJson")
-        private val LISTENER_KEY: Key<VirtualFileListener> = Key("Unity::EditorInstanceJson::Listener")
+        private val LISTENER_KEY: Key<AsyncFileListener> = Key("Unity::EditorInstanceJson::Listener")
 
         fun getInstance(project: Project): EditorInstanceJson {
-            addFileListener(project)
+            initFileListener(project)
 
             var editorInstanceJson = project.getUserData(INSTANCE_KEY)
             if (editorInstanceJson != null)
@@ -60,19 +62,19 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
 
         private fun empty(status: EditorInstanceJsonStatus) = EditorInstanceJson(status, null)
 
-        private fun addFileListener(project: Project) {
+        private fun initFileListener(project: Project) {
 
             var listener = project.getUserData(LISTENER_KEY)
             if (listener == null) {
-                listener = object: VirtualFileListener {
-                    override fun contentsChanged(event: VirtualFileEvent) = resetEditorInstanceJson(event)
-                    override fun fileCreated(event: VirtualFileEvent) = resetEditorInstanceJson(event)
-                    override fun fileDeleted(event: VirtualFileEvent) = resetEditorInstanceJson(event)
-
-                    private fun resetEditorInstanceJson(event: VirtualFileEvent) {
-                        if (isEditorInstanceJson(event.file)) {
-                            project.putUserData(INSTANCE_KEY, null)
+                listener = object: AsyncFileListener {
+                    override fun prepareChange(events: MutableList<out VFileEvent>): ChangeApplier? {
+                        if (events.any { isEditorInstanceJson(it.file) }) {
+                            return object: ChangeApplier {
+                                override fun afterVfsChange() = project.putUserData(INSTANCE_KEY, null)
+                            }
                         }
+
+                        return null
                     }
 
                     private fun isEditorInstanceJson(file: VirtualFile?): Boolean {
@@ -84,7 +86,7 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
                     }
                 }
 
-                VirtualFileManager.getInstance().addVirtualFileListener(listener, project)
+                VirtualFileManager.getInstance().addAsyncFileListener(listener, project)
 
                 project.putUserData(LISTENER_KEY, listener)
             }
