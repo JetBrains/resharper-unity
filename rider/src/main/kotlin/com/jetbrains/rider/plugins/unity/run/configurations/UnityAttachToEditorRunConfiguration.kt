@@ -75,14 +75,9 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         // Try to reuse the previous process ID, if it's still valid, then fall back to finding the process
         // automatically. Theoretically, there is a tiny chance the previous process has died, and the process ID has
         // been recycled for a new process that just happens to be a Unity process. Practically, this is not likely
-        pid = checkValidEditorInstance(pid, processList) ?: findUnityEditorInstance(processList) ?: return false
+        pid = checkValidEditorInstance(pid, processList) ?: findUnityEditorInstanceFromEditorInstanceJson(processList) ?: return false
         port = convertPidToDebuggerPort(pid!!)
         return true
-    }
-
-    private fun findUnityEditorInstance(processList: Array<ProcessInfo>): Int? {
-        return findUnityEditorInstanceFromEditorInstanceJson(processList)
-            ?: findUnityEditorInstanceFromProcesses(processList)
     }
 
     private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
@@ -99,20 +94,6 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             return pid
         }
         return null
-    }
-
-    private fun findUnityEditorInstanceFromProcesses(processList: Array<ProcessInfo>): Int? {
-
-        val pids = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
-            .map { it.pid }
-
-        if (pids.isEmpty()) {
-            return null
-        } else if (pids.size > 1) {
-            throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please select from the list or open the project in Unity.")
-        }
-
-        return pids[0]
     }
 
     override fun checkConfiguration() {
