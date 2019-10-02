@@ -169,6 +169,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 append(" (Script Debugging disabled)", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES)
             }
             append(" ${player.host}:${player.debuggerPort}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+            if (player.pid != null) {
+                append(" (pid: ${player.pid})", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+            }
         }
     }
 }

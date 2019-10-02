@@ -106,7 +106,7 @@ class UnityPlayerListener(private val project: Project,
         unityProcesses.map { processInfo ->
             val projectName = projectNames[processInfo.pid]
             val port = convertPidToDebuggerPort(processInfo.pid)
-            UnityPlayer.createEditorPlayer("127.0.0.1", port, "${processInfo.executableName} (pid: ${processInfo.pid})", projectName)
+            UnityPlayer.createEditorPlayer("127.0.0.1", port, processInfo.executableName, processInfo.pid, projectName)
         }.forEach {
             onPlayerAdded(it)
         }
