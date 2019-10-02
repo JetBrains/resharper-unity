@@ -68,7 +68,7 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
             if (listener == null) {
                 listener = object: AsyncFileListener {
                     override fun prepareChange(events: MutableList<out VFileEvent>): ChangeApplier? {
-                        if (events.any { isEditorInstanceJson(it.file) }) {
+                        if (events.any { isEditorInstanceJson(it.path) }) {
                             return object: ChangeApplier {
                                 override fun afterVfsChange() = project.putUserData(INSTANCE_KEY, null)
                             }
@@ -77,12 +77,8 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
                         return null
                     }
 
-                    private fun isEditorInstanceJson(file: VirtualFile?): Boolean {
-                        return file != null && file.name == "EditorInstance.json" && isLibraryFolder(file.parent)
-                    }
-
-                    private fun isLibraryFolder(file: VirtualFile?): Boolean {
-                        return file != null && file.name == "Library" && file.parent == project.projectDir
+                    private fun isEditorInstanceJson(path: String): Boolean {
+                        return path.endsWith("Library/EditorInstance.json", true)
                     }
                 }
 
