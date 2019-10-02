@@ -24,8 +24,21 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 
+## 2019.2.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap9-rtm-2019.2.2...192)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/31?closed=1)
+
+### Changed
+* Use platform native line endings in generated `.meta` files. Works better with Perforce ([#1323](https://github.com/JetBrains/resharper-unity/pull/1323))
+
+### Fixed
+* Fix issues with completion of Unity event functions ([RIDER-33167](https://youtrack.jetbrains.com/issue/RIDER-33167), [#1326](https://github.com/JetBrains/resharper-unity/pull/1326))
+* Rider: Fix missing "Install Mono" notification ([#1329](https://github.com/JetBrains/resharper-unity/pull/1329))
+
+
+
 ## 2019.2.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192-eap9-rtm-2019.2.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/30?closed=1)
 
 ### Added
@@ -36,9 +49,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages ([#1275](https://github.com/JetBrains/resharper-unity/pull/1275))
 - Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug ([#1283](https://github.com/JetBrains/resharper-unity/issues/1283), [#1284](https://github.com/JetBrains/resharper-unity/pull/1284))
 - Rider: Files in read only packages no longer shown as "ignored" in Unity Explorer ([#1288](https://github.com/JetBrains/resharper-unity/pull/1288))
+- Unity Editor: Improve performance on AppDomain reloads ([#1291](https://github.com/JetBrains/resharper-unity/pull/1291))
 
 ### Fixed
 - Fix exception when pasting code ([RIDER-31338](https://youtrack.jetbrains.com/issue/RIDER-31338), [#1280](https://github.com/JetBrains/resharper-unity/pull/1280))
+- Rider: Fix fetching list of Unity editors and players on UI thread ([RIDER-31585](https://youtrack.jetbrains.com/issue/RIDER-31585))
 - Unity Editor: Fix exception running tests with older test framework packages ([#1273](https://github.com/JetBrains/resharper-unity/pull/1273))
 
 

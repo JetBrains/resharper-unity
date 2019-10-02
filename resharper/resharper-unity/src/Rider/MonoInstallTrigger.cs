@@ -33,24 +33,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     var installedValidMono = wellKnownMonoRuntimes
                         .Any(runtime =>
                         {
-                            var parsedVersion = string.Empty; 
+                            var parsedVersion = string.Empty;
                             try
                             {
                                 parsedVersion = ProcessOutputUtil.ExtractMonoVersion(runtime.ExePath);
-                                
                             }
                             catch (Exception e)
                             {
                                 logger.Warn(e);
                             }
-                            
+
                             // if we fail to parse version - consider it is old
                             if (Version.TryParse(parsedVersion, out var version))
-                                return version.Major >= 5 && version.Minor >= 16; // mono 5.16+ supports C# 7.3
-                            
+                                return version >= new Version(5, 16); // mono 5.16+ supports C# 7.3
+
                             logger.Warn("Failed to parse ProcessOutputUtil.ExtractMonoVersion output.");
                             return false;
-
                         });
 
                     if (!installedValidMono)
@@ -61,19 +59,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 });
             }));
         }
-    
+
         private static bool HasModernUnityProjects(ISolution solution)
         {
-            // Either all projects are not loaded, when msbuild is not found or 
+            // Either all projects are not loaded, when msbuild is not found or
             // Unity, which requires new MSBuild with C# 7.3 support, writes TargetFrameworkVersion 4.7.1 to csproj
             using (solution.Locks.UsingReadLock())
             {
+                var version471 = new Version(4, 7, 1);
                 var projects = solution.GetAllProjects();
-                return 
+                return
                     projects.All(project => !project.GetAllTargetFrameworks().Any()) ||
-                    projects.Any(project => 
-                        project.TargetFrameworkIds
-                            .Any(x => x.IsNetFramework && x.Version.Major >= 4 && x.Version.Minor >= 7 && x.Version.MajorRevision >= 1));
+                    projects.Any(project =>
+                        project.TargetFrameworkIds.Any(x => x.IsNetFramework && x.Version >= version471));
             }
         }
     }
