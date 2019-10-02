@@ -426,4 +426,16 @@
       <argument>UnityEngine.MonoBehaviour</argument>
     </attribute>
   </member>
+
+  <!-- Profiling -->
+  <!-- Prevents "Possibly impure struct method called on readonly variable" -->
+  <member name="M:Unity.Profiling.ProfilerMarker.Begin">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:Unity.Profiling.ProfilerMarker.End">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
+  <member name="M:Unity.Profiling.ProfilerMarker.Auto">
+    <attribute ctor="M:JetBrains.Annotations.PureAttribute.#ctor" />
+  </member>
 </assembly>

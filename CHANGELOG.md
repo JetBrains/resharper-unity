@@ -12,20 +12,25 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Added
 
+- Prevent "possibly impure struct method" warnings with `ProfilerMarker` ([#1319](https://github.com/JetBrains/resharper-unity/pull/1319))
 - Rider: Show prompt to set Rider as default external editor when Unity is started by Rider ([#1127](https://github.com/JetBrains/resharper-unity/issues/1127), [#1270](https://github.com/JetBrains/resharper-unity/pull/1270))
 
 ### Changed
 
+- Rider: Improve rendering of Unity log event counts ([#1296](https://github.com/JetBrains/resharper-unity/issues/1296), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
+- Rider: Display pause state in connection status icon ([#1227](https://github.com/JetBrains/resharper-unity/issues/1227), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
 - Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) ([#888](https://github.com/JetBrains/resharper-unity/issues/888))
 
 ### Fixed
 
 - Rider: Fix Clear on Play in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
+- Rider: Fix exception checking process list on UI thread ([RIDER-28743](https://youtrack.jetbrains.com/issue/RIDER-28743), [#1311](https://github.com/JetBrains/resharper-unity/pull/1311))
+- Unity Editor: Fix exceptions calling `isPlaying` on incorrect thread ([#1308](https://github.com/JetBrains/resharper-unity/pull/1308))
 
 
 
 ## 2019.2.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192-eap9-rtm-2019.2.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/30?closed=1)
 
 ### Added
