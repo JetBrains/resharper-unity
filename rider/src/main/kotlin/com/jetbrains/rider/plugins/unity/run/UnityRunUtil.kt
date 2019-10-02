@@ -19,7 +19,6 @@ import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import org.jetbrains.annotations.NotNull
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
@@ -54,7 +53,7 @@ object UnityRunUtil {
         return getUnityProcessProjectNames(listOf(processInfo), project)[processInfo.pid]
     }
 
-    fun getUnityProcessProjectNames(processList: List<@NotNull ProcessInfo>, project: Project): Map<Int, String> {
+    fun getUnityProcessProjectNames(processList: List<ProcessInfo>, project: Project): Map<Int, String> {
         // We have several options to get the project name (and directory, for future use):
         // 1) Match pid with EditorInstance.json - it's the current project
         // 2) If the editor was started from Unity Hub, use the -projectPath or -createProject parameters
@@ -121,29 +120,28 @@ object UnityRunUtil {
         // as to be happily ignored
         // This assumes that all arguments begin with a hyphen, and there are no standalone arguments. Empirically, this
         // is true
-        val split = processInfo.commandLine.split("(^|\\s)(?=-[^\\s])".toRegex())
+        val commandLineArgs = processInfo.commandLine.split("(^|\\s)(?=-[^\\s])".toRegex())
         var i = 0
         do {
-            if (split[i].startsWith("-projectPath", ignoreCase = true)
-                || split[i].startsWith("-createProject", ignoreCase = true)) {
-                val whitespace = split[i].indexOf(' ')
+            if (commandLineArgs[i].startsWith("-projectPath", ignoreCase = true)
+                || commandLineArgs[i].startsWith("-createProject", ignoreCase = true)) {
+                val whitespace = commandLineArgs[i].indexOf(' ')
                 if (whitespace == -1) continue   // Weird if true
-                var path = split[i].substring(whitespace + 1)
+                var path = commandLineArgs[i].substring(whitespace + 1)
 
-                var lastValid = ""
-                do {
+                var lastValid = if (File(path).isDirectory) path else ""
+                while (i < commandLineArgs.size - 1) {
+                    path += " " + commandLineArgs[++i]
                     if (File(path).isDirectory) {
                         lastValid = path
                     }
-                    i++
-                    path += " " + split[i]
-                } while (i < split.size - 1)
+                }
 
                 return getProjectNameFromPath(lastValid)
             }
 
             i++
-        } while (i < split.size)
+        } while (i < commandLineArgs.size)
 
         return null
     }
@@ -185,7 +183,7 @@ object UnityRunUtil {
 
     private fun getProjectNameFromPath(projectPath: String): String = Paths.get(projectPath).fileName.toString()
 
-    private fun fillProjectNamesFromWorkingDirectory(processList: List<@NotNull ProcessInfo>, projectNames: MutableMap<Int, String>) {
+    private fun fillProjectNamesFromWorkingDirectory(processList: List<ProcessInfo>, projectNames: MutableMap<Int, String>) {
         if (SystemInfo.isWindows) return
         try {
             val processIds = processList.joinToString(",") { it.pid.toString() }
