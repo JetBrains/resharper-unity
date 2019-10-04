@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
+using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
@@ -30,10 +31,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
         private readonly RiderBackgroundTaskHost myBackgroundTaskHost;
         private readonly UnityHost myUnityHost;
+        private readonly UnityEditorProtocol myEditorProtocol;
         private readonly FileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
-            UnitySceneDataLocalCache sceneDataCache, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory, [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
+            UnitySceneDataLocalCache sceneDataCache, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory,
+            UnityEditorProtocol editorProtocol,
+            [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
             myLifetime = lifetime;
             mySolution = solution;
@@ -42,6 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBackgroundTaskHost = backgroundTaskHost;
             myYamlSearchDomain = searchDomainFactory.CreateSearchDomain(externalFilesModuleFactory.PsiModule);
             myUnityHost = unityHost;
+            myEditorProtocol = editorProtocol;
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
 
@@ -89,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     finder.FindAsync(new[] {declaredElement}, myYamlSearchDomain,
                         consumer, SearchPattern.FIND_USAGES ,pi,
-                        FinderSearchRoot.Empty, new UnityUsagesAsyncFinderCallback(lifetimeDef, consumer, myUnityHost, myLocks,
+                        FinderSearchRoot.Empty, new UnityUsagesAsyncFinderCallback(lifetimeDef, myLifetime, consumer, myUnityHost, myEditorProtocol, myLocks,
                             declaredElement.ShortName, selectRequest, focusUnity));
                 }
             });
@@ -109,16 +114,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray());
         }
 
-        public static void CreateRequestAndShow([NotNull]  UnityHost unityHost, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
+        public static void CreateRequestAndShow([NotNull]  UnityEditorProtocol editor, UnityHost host, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
             [NotNull] string anchor, IPsiSourceFile sourceFile, bool needExpand = false)
         {
-            
-            using (ReadLockCookie.Create())
-            {
-                var request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile, needExpand);
-                unityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(request));
-            }
-            UnityFocusUtil.FocusUnity(unityHost.GetValue(t => t.UnityProcessId.Value));
+            host.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result.Advise(Lifetime.Eternal,
+                result =>
+                {
+                    using (ReadLockCookie.Create())
+                    {
+                        var request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile,
+                            needExpand);
+                        editor.UnityModel.Value.ShowGameObjectOnScene.Fire(request.ConvertToUnityModel());
+                    }
+
+                }));
         }
         
         private static bool GetPathFromAssetFolder([NotNull] FileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file, 
@@ -181,20 +190,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         
         private class UnityUsagesAsyncFinderCallback : IFinderAsyncCallback
         {
-            private readonly LifetimeDefinition myLifetimeDef;
+            private readonly LifetimeDefinition myProgressBarLifetimeDefinition;
+            private readonly Lifetime myComponentLifetime;
             private readonly UnityUsagesFinderConsumer myConsumer;
             private readonly UnityHost myUnityHost;
+            private readonly UnityEditorProtocol myEditorProtocol;
             private readonly IShellLocks myShellLocks;
             private readonly string myDisplayName;
             private readonly FindUsageResultElement mySelected;
             private readonly bool myFocusUnity;
 
-            public UnityUsagesAsyncFinderCallback(LifetimeDefinition lifetimeDef, UnityUsagesFinderConsumer consumer, UnityHost unityHost, IShellLocks shellLocks, 
+            public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, UnityHost unityHost, UnityEditorProtocol editorProtocol, IShellLocks shellLocks, 
                 string displayName, FindUsageResultElement selected, bool focusUnity)
             {
-                myLifetimeDef = lifetimeDef;
+                myProgressBarLifetimeDefinition = progressBarLifetimeDefinition;
+                myComponentLifetime = componentLifetime;
                 myConsumer = consumer;
                 myUnityHost = unityHost;
+                myEditorProtocol = editorProtocol;
                 myShellLocks = shellLocks;
                 myDisplayName = displayName;
                 mySelected = selected;
@@ -203,28 +216,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public void Complete()
             {
-                myShellLocks.Tasks.StartNew(myLifetimeDef.Lifetime, Scheduling.MainGuard, () =>
+                myShellLocks.Tasks.StartNew(myComponentLifetime, Scheduling.MainGuard, () =>
                 {
                     if (myConsumer.Result.Count != 0)
                     {
-
-                        if (myFocusUnity)
-                            UnityFocusUtil.FocusUnity(myUnityHost.GetValue(t => t.UnityProcessId.Value));
-
-                        if (mySelected != null)
-                            myUnityHost.PerformModelAction(t => t.ShowGameObjectOnScene.Fire(mySelected));
-                        myUnityHost.PerformModelAction(t =>
-                            t.FindUsageResults.Fire(new FindUsageResult(myDisplayName, myConsumer.Result.ToArray())));
-
+                        myUnityHost.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result
+                            .Advise(myComponentLifetime,
+                                result =>
+                                {
+                                    if (mySelected != null)
+                                        myEditorProtocol.UnityModel.Value.ShowGameObjectOnScene.Fire(
+                                            mySelected.ConvertToUnityModel());
+                                    myUnityHost.PerformModelAction(t =>
+                                        t.FindUsageResults.Fire(new FindUsageResult(myDisplayName,
+                                            myConsumer.Result.ToArray())));
+                                }));
                     }
-    
-                    myLifetimeDef.Terminate();
+
+                    myProgressBarLifetimeDefinition.Terminate();
                 });
             }
 
             public void Error(string message)
             {
-                myLifetimeDef.Terminate();
+                myProgressBarLifetimeDefinition.Terminate();
             }
         }
     }

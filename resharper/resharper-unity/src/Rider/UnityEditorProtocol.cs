@@ -185,13 +185,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
 
                     // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
-                    myHost.PerformModelAction(t => t.ShowGameObjectOnScene.Advise(lf, v => editor.ShowGameObjectOnScene.Fire(v.ConvertToUnityModel())));
                     myHost.PerformModelAction(t => t.ShowFileInUnity.Advise(lf, v => editor.ShowFileInUnity.Fire(v)));
                     myHost.PerformModelAction(t => t.ShowPreferences.Advise(lf, v =>
                     {
-                        if (t.UnityProcessId.HasValue())
-                            UnityFocusUtil.FocusUnity(t.UnityProcessId.Value);
-
                         editor.ShowPreferences.Fire();
                     }));
 

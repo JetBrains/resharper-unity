@@ -90,11 +90,12 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         source("enableYamlParsing", void)
 
         signal("findUsageResults", FindUsageResult)
-        signal("showGameObjectOnScene", FindUsageResultElement)
+
         signal("showFileInUnity", string)
         property("unityProcessId", int)
 
         sink("onEditorModelOutOfSync", void)
         callback("attachDebuggerToUnityEditor", void, bool)
+        callback("allowSetForegroundWindow", void, bool)
     }
 }
