@@ -89,8 +89,6 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("ScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
 
-        signal("findUsageResults", FindUsageResult)
-
         signal("showFileInUnity", string)
         property("unityProcessId", int)
 

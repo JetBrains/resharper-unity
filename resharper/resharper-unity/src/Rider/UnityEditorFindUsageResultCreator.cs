@@ -114,10 +114,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray());
         }
 
-        public static void CreateRequestAndShow([NotNull]  UnityEditorProtocol editor, UnityHost host, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
+        public static void CreateRequestAndShow([NotNull]  UnityEditorProtocol editor, UnityHost host, Lifetime lifetime, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
             [NotNull] string anchor, IPsiSourceFile sourceFile, bool needExpand = false)
         {
-            host.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result.Advise(Lifetime.Eternal,
+            host.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result.Advise(lifetime,
                 result =>
                 {
                     using (ReadLockCookie.Create())
@@ -126,7 +126,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             needExpand);
                         editor.UnityModel.Value.ShowGameObjectOnScene.Fire(request.ConvertToUnityModel());
                     }
-
                 }));
         }
         
@@ -198,7 +197,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private readonly IShellLocks myShellLocks;
             private readonly string myDisplayName;
             private readonly FindUsageResultElement mySelected;
-            private readonly bool myFocusUnity;
 
             public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, UnityHost unityHost, UnityEditorProtocol editorProtocol, IShellLocks shellLocks, 
                 string displayName, FindUsageResultElement selected, bool focusUnity)
@@ -211,7 +209,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myShellLocks = shellLocks;
                 myDisplayName = displayName;
                 mySelected = selected;
-                myFocusUnity = focusUnity;
             }
 
             public void Complete()
@@ -224,12 +221,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             .Advise(myComponentLifetime,
                                 result =>
                                 {
+                                    if (myEditorProtocol.UnityModel.Value == null) return;
+                                    
+                                    var model = myEditorProtocol.UnityModel.Value;
                                     if (mySelected != null)
-                                        myEditorProtocol.UnityModel.Value.ShowGameObjectOnScene.Fire(
-                                            mySelected.ConvertToUnityModel());
-                                    myUnityHost.PerformModelAction(t =>
-                                        t.FindUsageResults.Fire(new FindUsageResult(myDisplayName,
-                                            myConsumer.Result.ToArray())));
+                                        model.ShowGameObjectOnScene.Fire(mySelected.ConvertToUnityModel());
+                                    // pass all references to Unity TODO temp workaround, replace with async api
+                                    model.FindUsageResults.Fire(new FindUsageResult(myDisplayName,
+                                        myConsumer.Result.ToArray()).ConvertToUnityModel());
                                 }));
                     }
 

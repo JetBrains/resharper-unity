@@ -11,7 +11,10 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
-import com.jetbrains.rd.util.reactive.*
+import com.jetbrains.rd.util.reactive.AddRemove
+import com.jetbrains.rd.util.reactive.Signal
+import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
@@ -91,19 +94,18 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             task
         }
 
-        model.unityProcessId.adviseNotNull(componentLifetime){
-            if (SystemInfo.isWindows) {
-                if (it>0)
-                {
-                    val res = user32.AllowSetForegroundWindow(it)
-                    logger.info("AllowSetForegroundWindow result = $res")
-                }
-            }
-        }
-
         model.allowSetForegroundWindow.set { _, _ ->
             val task = RdTask<Boolean>()
-            task.set(user32.AllowSetForegroundWindow(model.unityProcessId.valueOrThrow))
+            if (SystemInfo.isWindows) {
+                val id = model.unityProcessId.valueOrNull
+                if (id != null && id > 0)
+                    task.set(user32.AllowSetForegroundWindow(id))
+                else
+                    logger.warn("unityProcessId is null or 0")
+            }
+            else
+                task.set(true)
+
             task
         }
 
