@@ -179,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
                             var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
                             
-                            UnityEditorFindUsageResultCreator.CreateRequestAndShow(myProtocol, myUnityHost, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
+                            UnityEditorFindUsageResultCreator.CreateRequestAndShow(myProtocol, myUnityHost, myLifetime, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
                                 value.Value.MonoBehaviour, value.File);
                         });
                     });
