@@ -45,15 +45,43 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       try
       {
         var riderPackageAssembly = RiderPackageInterop.GetAssembly();
-        if (riderPackageAssembly == null) return false;
-        var launcherType = riderPackageAssembly.GetType("Packages.Rider.Editor.UnitTesting.RiderTestRunner");
+        var launcherType = riderPackageAssembly?.GetType("Packages.Rider.Editor.UnitTesting.RiderTestRunner");
         if (launcherType == null) return false;
         var assemblyNames = myLaunch.TestFilters.Select(a => a.AssemblyName).ToArray();
         var testNames = myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
-        var runTestsMethod = launcherType.GetMethod("RunTests");
-        if (runTestsMethod == null) return false;
         var mode = (int) myLaunch.TestMode; // 0 for Both, 1 for Edit, 2 for Play
-        runTestsMethod.Invoke(null, new object[] {mode, assemblyNames, testNames, null, null, null});
+
+        MethodInfo runTestsMethod;
+        object[] args;
+
+        if (myLaunch.ClientControllerInfo != null)
+        {
+          ourLogger.Verbose($"ClientController specified (SessionId={myLaunch.SessionId}): {myLaunch.ClientControllerInfo.TypeName}, {myLaunch.ClientControllerInfo.CodeBase}");
+
+          runTestsMethod = launcherType.GetMethod("RunTestsWithSyncCallbacks");
+          if (runTestsMethod == null)
+          {
+            ourLogger.Verbose($"Method 'RunTestsWithSyncCallbacks' not found in type '{launcherType.AssemblyQualifiedName}'");
+            return false;
+          }
+
+          args = new object[] {myLaunch.SessionId, mode, assemblyNames, testNames, null, null, null, 
+            myLaunch.ClientControllerInfo.CodeBase, myLaunch.ClientControllerInfo.TypeName, 
+            myLaunch.ClientControllerInfo.CodeBaseDependencies?.ToArray() };
+        }
+        else
+        {
+          runTestsMethod = launcherType.GetMethod("RunTests");
+          if (runTestsMethod == null)
+          {
+            ourLogger.Verbose($"Method 'RunTests' not found in type '{launcherType.AssemblyQualifiedName}'");
+            return false;
+          }
+
+          args = new object[] {mode, assemblyNames, testNames, null, null, null};
+        }
+
+        runTestsMethod.Invoke(null, args);
         return true;
       }
       catch (Exception e)
