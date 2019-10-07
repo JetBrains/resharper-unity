@@ -252,6 +252,7 @@
 <ul>
   <li>Rider: Add support for play mode tests (<a href="https://github.com/JetBrains/resharper-unity/issues/1293">#1293</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-19513">RIDER-19513</a>)</li>
   <li>Rider: Show prompt to set Rider as default external editor when Unity is started by Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/1127">#1127<a/>), <a href="https://github.com/JetBrains/resharper-unity/pull/1270">#1270</a>)</li>
+  <li>Rider: Add Unity specific Live Templates settings page (<a href="https://github.com/JetBrains/resharper-unity/pull/1351">#1351</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
