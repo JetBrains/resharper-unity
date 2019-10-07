@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return AutocompletionBehaviour.AutocompleteWithReplace;
         }
 
-        protected override void DecorateItems(CSharpCodeCompletionContext context, IEnumerable<ILookupItem> items)
+        protected override void DecorateItems(CSharpCodeCompletionContext context, IReadOnlyCollection<ILookupItem> items)
         {
             if (!IsAvailable(context))
                 return;

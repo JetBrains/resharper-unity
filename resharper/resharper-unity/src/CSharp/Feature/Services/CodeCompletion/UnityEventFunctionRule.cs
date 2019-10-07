@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
-using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
@@ -841,8 +840,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         public TextLookupRanges MemberReplaceRanges { get; }
 
         public UnityEventFunctionTextualInfo(TextLookupRanges memberReplaceRanges, [NotNull] string text,
-            [NotNull] string identity, bool isRiderAsync = true)
-            : base(text, identity, isRiderAsync)
+                                             [NotNull] string identity)
+            : base(text, identity)
         {
             MemberReplaceRanges = memberReplaceRanges;
         }
