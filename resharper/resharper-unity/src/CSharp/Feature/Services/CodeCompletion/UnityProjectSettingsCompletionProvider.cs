@@ -16,7 +16,6 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util.Literals;
 using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.TextControl;
 using JetBrains.UI.Icons;
 using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
 
@@ -34,47 +33,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         {
             var ranges = context.CompletionRanges;
             IEnumerable<string> completionItems = null;
-            ICSharpLiteralExpression argumentLiteral = null;
-            
+
             // scene completion
-            if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsLoadSceneMethod, IsCorrespondingArgument("sceneName")))
+            if (IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral, IsLoadSceneMethod, IsCorrespondingArgument("sceneName")))
             {
-                var cache = context.NodeInFile.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
+                var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllPossibleSceneNames();
 
             } // tag completion, tag == "..."
-            else if (IsTagEquality(context, out argumentLiteral)) 
+            else if (IsTagEquality(context, out argumentLiteral))
             {
-                var cache = context.NodeInFile.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
+                var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllTags();
-            } //// tag completion, CompareTag("...")
+            } // tag completion, CompareTag("...")
             else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsCompareTagMethod , IsCorrespondingArgument("tag")))
             {
-                var cache = context.NodeInFile.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
+                var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllTags();
             } // layer completion
             else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsLayerMaskNameToLayer,
                 IsCorrespondingArgument("layerName")) || IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsLayerMaskGetMask,
                            (_, __) => true))
             {
-                var cache = context.NodeInFile.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
+                var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllLayers();
             }  // input completion
-            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsInputButtonMethod, IsCorrespondingArgument("buttonName")) || 
+            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsInputButtonMethod, IsCorrespondingArgument("buttonName")) ||
                      IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsInputAxisMethod, IsCorrespondingArgument("axisName")))
             {
-                var cache = context.NodeInFile.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
+                var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllInput();
             }
 
-            var any = false;    
-      
+            var any = false;
+
             if (argumentLiteral != null)
             {
                 var offset = argumentLiteral.GetDocumentRange().EndOffset;
                 ranges = ranges.WithInsertRange(ranges.InsertRange.SetEndTo(offset)).WithReplaceRange(ranges.ReplaceRange.SetEndTo(offset));
             }
-            
+
             if (completionItems != null)
             {
                 foreach (var sceneName in completionItems)
@@ -89,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         }
 
-        private bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression stringLiteral, 
+        private bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression stringLiteral,
             Func<IInvocationExpression, bool> methodChecker, Func<IArgumentList, ICSharpArgument, bool> argumentChecker)
         {
             stringLiteral = null;
@@ -102,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             {
                 if (!literalExpression.Literal.IsAnyStringLiteral())
                     return false;
-                
+
                 var argument = CSharpArgumentNavigator.GetByValue(literalExpression);
                 var argumentList = ArgumentListNavigator.GetByArgument(argument);
                 if (argument == null || argumentList == null)
@@ -112,10 +110,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 {
                     stringLiteral = literalExpression;
                     possibleInvocationExpression = InvocationExpressionNavigator.GetByArgument(argument);
-                } 
+                }
             }
-            
-            
+
+
             if (possibleInvocationExpression is IInvocationExpression invocationExpression)
             {
                 if (methodChecker(invocationExpression))
@@ -133,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return (argumentList, argument) => argument.IsNamedArgument && argument.NameIdentifier.Name.Equals(argumentName) ||
                    !argument.IsNamedArgument && argumentList.Arguments[0] == argument;
         }
-        
+
         private bool IsLoadSceneMethod(IInvocationExpression invocationExpression)
         {
             return IsSceneManagerSceneRelatedMethod(invocationExpression.InvocationExpressionReference) ||
@@ -146,25 +144,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var nodeInFile = context.NodeInFile;
             var eqExpression = nodeInFile.NextSibling as IEqualityExpression ??
                                nodeInFile.PrevSibling as IEqualityExpression;
-            
+
             var possibleLiteral = context.NodeInFile.Parent;
             if (possibleLiteral is ICSharpLiteralExpression literalExpression)
             {
                 stringLiteral = literalExpression;
                 eqExpression = possibleLiteral.Parent as IEqualityExpression;
             }
-            
+
             if (eqExpression != null)
             {
                 return CompareTagProblemAnalyzer.IsTagReference(eqExpression.LeftOperand as IReferenceExpression) ||
                        CompareTagProblemAnalyzer.IsTagReference(eqExpression.RightOperand as IReferenceExpression);
             }
-                
+
             stringLiteral = null;
             return false;
         }
-        
-        
+
         private sealed class StringLiteralItem : TextLookupItemBase
         {
             public StringLiteralItem([NotNull] string text)
@@ -179,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var matchingResult = prefixMatcher.Match(Text);
                 if (matchingResult == null)
                     return null;
-                return new MatchingResult(matchingResult.MatchedIndices, matchingResult.MostLikelyContinuation, matchingResult.AdjustedScore - 100, matchingResult.OriginalScore);
+                return new MatchingResult(matchingResult.MatchedIndices, matchingResult.AdjustedScore - 100, matchingResult.OriginalScore);
             }
         }
     }
