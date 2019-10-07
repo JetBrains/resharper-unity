@@ -19,6 +19,7 @@
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
 
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
+    <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
 
     <!-- This has to be first, as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
     <lang.documentationProvider language="C#" implementationClass="com.jetbrains.rider.plugins.unity.quickDoc.UnityDocumentationProvider"
