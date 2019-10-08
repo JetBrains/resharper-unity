@@ -21,7 +21,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 ### Fixed
 
 - Rider: Fix Clear on Play in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
-
+- Unity window should get focus, when Rider is showing usages in it ([#1344](https://github.com/JetBrains/resharper-unity/pull/1344)
 
 
 ## 2019.2.2

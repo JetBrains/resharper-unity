@@ -258,6 +258,7 @@
 <em>Fixed:</em>
 <ul>
   <li>Rider: Fix Clear on Play in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
+  <li>Unity window should get focus, when Rider is showing usages in it ([#1344](https://github.com/JetBrains/resharper-unity/pull/1344)</li>
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/192/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
