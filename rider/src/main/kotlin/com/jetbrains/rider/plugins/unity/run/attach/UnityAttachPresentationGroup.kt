@@ -6,6 +6,7 @@ import com.intellij.openapi.util.UserDataHolder
 import com.intellij.xdebugger.attach.XAttachProcessPresentationGroup
 import icons.UnityIcons
 
+@Suppress("UnstableApiUsage")
 object UnityAttachPresentationGroup : XAttachProcessPresentationGroup {
     override fun getProcessIcon(project: Project, process: ProcessInfo, userData: UserDataHolder) = UnityIcons.Icons.UnityLogo
     override fun getProcessDisplayText(project: Project, process: ProcessInfo, userData: UserDataHolder) = process.executableDisplayName
