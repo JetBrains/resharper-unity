@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
@@ -63,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 if (!method.GetSolution().GetComponent<AssetSerializationMode>().IsForceText)
                     return false;
 
-                var cache = method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>();
+                var cache = method.GetSolution().GetComponent<UnitySceneDataLocalCache>();
                 return cache.IsEventHandler(method);
             }
 

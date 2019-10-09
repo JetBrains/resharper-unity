@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
@@ -23,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly IconHost myIconHost;
 
         public RiderEventHandlerDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityEventHandlerReferenceCache cache,
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnitySceneDataLocalCache cache,
             UnityCodeInsightProvider codeInsightProvider,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost)

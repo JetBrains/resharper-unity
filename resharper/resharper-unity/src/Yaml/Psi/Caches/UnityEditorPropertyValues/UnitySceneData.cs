@@ -18,24 +18,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private static readonly StringSearcher ourPrefabModificationSearcher = new StringSearcher("!u!1001", true);
         
         public readonly OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue> PropertiesData;
+        // We need to be able to check if a method is declared on a base type but used in a deriving type. We keep a map
+        // of method/property setter short name to all the asset guids where it's used. These usages will always be the
+        // most derived type. If we get all (inherited) members of each usage, we can match to see if a given method
+        // (potentially declared on a base type) is being used as an event handler
+        public readonly OneToSetMap<string, string> ShortNameToAssetGuid;
         public readonly SceneHierarchy SceneHierarchy;
 
         public static readonly IUnsafeMarshaller<UnitySceneData> Marshaller = new UniversalMarshaller<UnitySceneData>(Read, Write);
         
-        private UnitySceneData(OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue> propertiesData, SceneHierarchy sceneHierarchy)
+        private UnitySceneData(OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue> propertiesData,OneToSetMap<string, string> eventHandlers, SceneHierarchy sceneHierarchy)
         {
             PropertiesData = propertiesData;
             SceneHierarchy = sceneHierarchy;
+            ShortNameToAssetGuid = eventHandlers;
         }
         
         private static UnitySceneData Read(UnsafeReader reader)
         {
-            return new UnitySceneData(PropertiesDataMarshaller.Unmarshal(reader), SceneHierarchy.Read(reader));
+            return new UnitySceneData(PropertiesDataMarshaller.Unmarshal(reader), EventHandlersMarshaller.Unmarshal(reader), SceneHierarchy.Read(reader));
         }
 
         private static void Write(UnsafeWriter writer, UnitySceneData value)
         {
             PropertiesDataMarshaller.Marshal(writer, value.PropertiesData);
+            EventHandlersMarshaller.Marshal(writer, value.ShortNameToAssetGuid);
             value.SceneHierarchy.WriteTo(writer);
         }
         
@@ -53,6 +60,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     n => new OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>(n)
                 );
 
+        private static IUnsafeMarshaller<OneToSetMap<string, string>> EventHandlersMarshaller = 
+            UnsafeMarshallers
+                .GetOneToManyMapMarshaller<string, string, ISet<string>, OneToSetMap<string, string>>
+                (
+                    UnsafeMarshallers.UnicodeStringMarshaller,
+                    UnsafeMarshallers.UnicodeStringMarshaller,
+                    n => new OneToSetMap<string, string>(n)
+                );
+        
         public static UnitySceneData Build(IUnityYamlFile file)
         {
             Assertion.Assert(file.IsValid(), "file.IsValid()");
@@ -61,6 +77,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             var interruptChecker = new SeldomInterruptChecker();
             var unityPropertyValueCacheItem = new OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>();
             var sceneHierarchy = new SceneHierarchy();
+            
+            var anchorToGuid = new Dictionary<string, string>();
+            var anchorToEventHandler = new OneToSetMap<string, string>();
+            var eventHandlerToGuid = new OneToSetMap<string, string>();
             
             foreach (var document in file.DocumentsEnumerable)
             {
@@ -74,21 +94,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 {
                     var simpleValues = new Dictionary<string, string>();
                     var referenceValues = new Dictionary<string, FileID>();
-                    UnitySceneDataUtil.ExtractSimpleAndReferenceValues(buffer, simpleValues, referenceValues);
+                    var targetToMethods = new OneToSetMap<string, string>();
+                    UnitySceneDataUtil.ExtractSimpleAndReferenceValues(buffer, simpleValues, referenceValues, targetToMethods);
 
                     FillProperties(simpleValues, referenceValues, unityPropertyValueCacheItem);
 
                     sceneHierarchy.AddSceneHierarchyElement(simpleValues, referenceValues);
-                }
 
+                    var anchor = simpleValues.GetValueSafe("&anchor");
+                    var fileId = referenceValues.GetValueSafe(UnityYamlConstants.ScriptProperty);
+                    if (anchor != null && fileId != null)
+                        anchorToGuid[anchor] = fileId.guid;
+
+                    foreach (var key in targetToMethods.Keys)
+                    {
+                        anchorToEventHandler.AddRange(key, targetToMethods[key]);
+                    }
+                    
+                }
             }
 
-            
+            foreach (var (anchor, shortNames) in anchorToEventHandler)
+            {
+                var guid = anchorToGuid.GetValueSafe(anchor);
+                if (guid == null)
+                    continue;
+                foreach (var shortName in shortNames)
+                {
+                    eventHandlerToGuid.Add(shortName, guid);
+                }
+            }
             
             if (unityPropertyValueCacheItem.Count == 0 && sceneHierarchy.Elements.Count == 0)
                 return null;
 
-            return new UnitySceneData(unityPropertyValueCacheItem, sceneHierarchy);
+            return new UnitySceneData(unityPropertyValueCacheItem, eventHandlerToGuid, sceneHierarchy);
         }
 
         private static void FillProperties(Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues,

@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -19,14 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtension;
-        private readonly UnityEventHandlerReferenceCache myCache;
+        private readonly UnitySceneDataLocalCache mySceneDataCache;
 
         public EventHandlerDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore,
-            CallGraphSwaExtensionProvider callGraphSwaExtension,  UnityEventHandlerReferenceCache cache, PerformanceCriticalCodeCallGraphAnalyzer analyzer)
+            CallGraphSwaExtensionProvider callGraphSwaExtension, UnitySceneDataLocalCache sceneDataCache, PerformanceCriticalCodeCallGraphAnalyzer analyzer)
             : base(solution, swa, callGraphSwaExtension, settingsStore, analyzer)
         {
             myCallGraphSwaExtension = callGraphSwaExtension;
-            myCache = cache;
+            mySceneDataCache = sceneDataCache;
         }
 
         public override IDeclaredElement Analyze(IDeclaration element, IHighlightingConsumer consumer,
@@ -35,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var declaredElement = element is IPropertyDeclaration
                 ? ((IProperty) element.DeclaredElement)?.Setter
                 : element.DeclaredElement as IMethod;
-            if (declaredElement != null && myCache.IsEventHandler(declaredElement))
+            if (declaredElement != null && mySceneDataCache.IsEventHandler(declaredElement))
             {
                 AddHighlighting(consumer, element as ICSharpDeclaration, "Event handler", "Unity event handler",  kind);
                 return declaredElement;

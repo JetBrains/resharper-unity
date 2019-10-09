@@ -3,6 +3,7 @@ using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         private static bool IsEventHandler(IDeclaredElement declaredElement)
         {
-            var eventHandlerCache = declaredElement.GetSolution().GetComponent<UnityEventHandlerReferenceCache>();
+            var eventHandlerCache = declaredElement.GetSolution().GetComponent<UnitySceneDataLocalCache>();
             switch (declaredElement)
             {
                 case IMethod method:

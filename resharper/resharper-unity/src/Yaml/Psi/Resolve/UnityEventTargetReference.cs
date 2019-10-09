@@ -1,4 +1,6 @@
 using JetBrains.Annotations;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -54,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var assetGuid = GetScriptAssetGuid();
+            var assetGuid = GetScriptAssetGuid(myOwner.GetSolution().GetComponent<UnitySceneDataCache>());
             var targetType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(myOwner.GetSolution(), assetGuid);
             if (targetType == null)
                 return EmptySymbolTable.INSTANCE;
@@ -102,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         // necessarily the guid of the script asset that *declares* the method (property setter is a method). The method
         // might be declared on a base type, or might be a virtual override
         [CanBeNull]
-        public string GetScriptAssetGuid()
+        public string GetScriptAssetGuid(UnitySceneDataCache cache)
         {
             var yamlFile = (IYamlFile) myOwner.GetContainingFile();
             var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);
