@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -7,11 +9,14 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Serialization;
 using JetBrains.Text;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
     public class SceneHierarchy
     {
+        private static readonly ILogger ourLogger = Logger.GetLogger<SceneHierarchy>();
+
         public readonly Dictionary<FileID, IUnityHierarchyElement> Elements = new Dictionary<FileID, IUnityHierarchyElement>();
 
         private readonly Dictionary<FileID, FileID> myGameObjectsTransforms = new Dictionary<FileID, FileID>();
@@ -46,8 +51,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             var anchor = simpleValues.GetValueSafe("&anchor");
             if (string.IsNullOrEmpty(anchor))
                 return;
+            
 
             var id = new FileID(null, anchor);
+            if (Elements.ContainsKey(id))
+                ourLogger.Verbose($"Id = {anchor.Substring(0, Math.Min(anchor.Length, 100))} is defined several times for different documents");
+            
             var correspondingId = GetCorrespondingSourceObjectId(referenceValues);
             var prefabInstanceId = GetPrefabInstanceId(referenceValues);
             bool isStripped = simpleValues.ContainsKey("stripped");
