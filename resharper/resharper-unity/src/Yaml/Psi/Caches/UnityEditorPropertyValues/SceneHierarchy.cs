@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         public void AddSceneHierarchyElement(Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues)
         {
             var anchor = simpleValues.GetValueSafe("&anchor");
-            if (anchor == null)
+            if (string.IsNullOrEmpty(anchor))
                 return;
 
             var id = new FileID(null, anchor);
@@ -61,8 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 var gameObject = referenceValues.GetValueSafe(UnityYamlConstants.GameObjectProperty);
                 var father = referenceValues.GetValueSafe(UnityYamlConstants.FatherProperty);
                 
-                Elements.Add(id, new TransformHierarchyElement(id, correspondingId, 
-                    prefabInstanceId, isStripped, rootOrder, gameObject, father));
+                Elements[id] = new TransformHierarchyElement(id, correspondingId,prefabInstanceId, isStripped, rootOrder, gameObject, father);
 
                 if (Elements.TryGetValue(gameObject, out var element))
                 {
@@ -78,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             {
                 // component
                 var gameObject = referenceValues.GetValueSafe(UnityYamlConstants.GameObjectProperty);
-                Elements.Add(id, new ComponentHierarchyElement(id, correspondingId, prefabInstanceId, gameObject, isStripped));
+                Elements[id] = new ComponentHierarchyElement(id, correspondingId, prefabInstanceId, gameObject, isStripped);
             }
             else
             {
@@ -87,8 +86,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 if (transformId != null)
                     myGameObjectsTransforms.Remove(transformId);
                 
-                Elements.Add(id, new GameObjectHierarchyElement(id, correspondingId, prefabInstanceId, isStripped, transformId,
-                    simpleValues.GetValueSafe(UnityYamlConstants.NameProperty)));
+                Elements[id] = new GameObjectHierarchyElement(id, correspondingId, prefabInstanceId, isStripped, transformId,
+                    simpleValues.GetValueSafe(UnityYamlConstants.NameProperty));
             }
         }
 
@@ -149,8 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                             var rootIndexes = new Dictionary<FileID, int?>();
                             GetModifications(buffer, lexer, indentSize, names, rootIndexes);
                             var id = new FileID(null, anchor);
-                            Elements.Add(id,
-                                new ModificationHierarchyElement(id, null, null,  false, transformParentId, rootIndexes, names));
+                            Elements[id] = new ModificationHierarchyElement(id, null, null,  false, transformParentId, rootIndexes, names);
                             return;
                         }
                     }
