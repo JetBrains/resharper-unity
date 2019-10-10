@@ -8,3 +8,9 @@ class UnityFileTemplatesOptionPage: SimpleOptionsPage("Unity", "RiderUnityFileTe
         return "RiderUnityFileTemplatesSettings"
     }
 }
+
+class UnityLiveTemplatesOptionPage: SimpleOptionsPage("Unity", "RiderUnityLiveTemplatesSettings"), Configurable.NoScroll {
+    override fun getId(): String {
+        return "RiderUnityLiveTemplatesSettings"
+    }
+}
