@@ -22,6 +22,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity ([#1325](https://github.com/JetBrains/resharper-unity/pull/1325))
 - Rider: Clear on Play now supported in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
 - Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) ([#888](https://github.com/JetBrains/resharper-unity/issues/888))
+- Avoid editing EditorInstance.json for Unity 2017.1+, since it does it itself ([#1356](https://github.com/JetBrains/resharper-unity/pull/1356))
 
 ### Fixed
 
