@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Xaml.Impl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
@@ -111,6 +112,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
+                    }
+
+                    if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All))
+                    {
+                        if (method.ReturnType.IsImplicitlyConvertibleTo(TypeFactory.CreateTypeByCLRName(KnownTypes.SettingsProvider, method.Module),
+                            new XamlWinRTTypeConversionRule(method.Module)))
+                        {
+                            flags = ImplicitUseKindFlags.Access;
+                            return true;
+                        }
                     }
 
                     break;
