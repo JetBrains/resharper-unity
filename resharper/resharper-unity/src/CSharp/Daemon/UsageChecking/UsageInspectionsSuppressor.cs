@@ -114,14 +114,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                         return true;
                     }
 
-                    if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All))
+                    if (IsSettingsProvider(method))
                     {
-                        if (method.ReturnType.IsImplicitlyConvertibleTo(TypeFactory.CreateTypeByCLRName(KnownTypes.SettingsProvider, method.Module),
-                            new XamlWinRTTypeConversionRule(method.Module)))
-                        {
-                            flags = ImplicitUseKindFlags.Access;
-                            return true;
-                        }
+                        flags = ImplicitUseKindFlags.Access;
+                        return true;
                     }
 
                     break;
@@ -136,6 +132,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             }
 
             flags = ImplicitUseKindFlags.Default; // Value not used if we return false
+            return false;
+        }
+
+        private static bool IsSettingsProvider(IMethod method)
+        {
+            if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All))
+            {
+                if (method.ReturnType.IsImplicitlyConvertibleTo(TypeFactory.CreateTypeByCLRName(KnownTypes.SettingsProvider, method.Module),
+                    new XamlWinRTTypeConversionRule(method.Module)))
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
