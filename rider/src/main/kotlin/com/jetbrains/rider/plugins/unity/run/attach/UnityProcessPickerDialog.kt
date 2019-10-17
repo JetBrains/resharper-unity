@@ -90,25 +90,22 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     }
 
     override fun show() {
+        val lifetimeDefinition = project.defineNestedLifetime()
         object : Task.Backgroundable(project, "Getting list of Unity processes...") {
             override fun run(indicator: ProgressIndicator) {
-                val lifetimeDefinition = project.defineNestedLifetime()
-                try {
-                    UnityProcessListener({
-                        synchronized(listModelLock) {
-                            listModel.addElement(it)
-                        }
-                    }, {
-                        synchronized(listModelLock) {
-                            listModel.removeElement(it)
-                        }
-                    }, lifetimeDefinition.lifetime)
-                } finally {
-                    lifetimeDefinition.terminate()
-                }
+                UnityProcessListener({
+                    synchronized(listModelLock) {
+                        listModel.addElement(it)
+                    }
+                }, {
+                    synchronized(listModelLock) {
+                        listModel.removeElement(it)
+                    }
+                }, lifetimeDefinition.lifetime)
             }
         }.queue()
         super.show()
+        lifetimeDefinition.terminate()
     }
 
     private fun enterCustomIp() {
