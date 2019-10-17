@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         {
             try
             {
-                return ctx.Session.Evaluators.GetEvaluator(ctx).Evaluate(ctx, expression).Value;
+                return ctx.Session.Evaluators.Evaluate(ctx, expression).Value;
             }
             catch (Exception e)
             {
