@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
         private static bool IsSettingsProvider(IMethod method)
         {
-            if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All))
+            if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All) && method.IsStatic)
             {
                 if (method.ReturnType.IsImplicitlyConvertibleTo(TypeFactory.CreateTypeByCLRName(KnownTypes.SettingsProvider, method.Module),
                     new XamlWinRTTypeConversionRule(method.Module)))
