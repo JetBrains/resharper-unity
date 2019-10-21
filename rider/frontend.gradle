@@ -123,6 +123,10 @@ tasks.withType(PrepareSandboxTask).configureEach {
         into "$intellij.pluginName/EditorPlugin"
     })
 
+    from(unityeditorplugin_full_path, {
+        into "$intellij.pluginName/EditorPlugin"
+    })
+
     from(unityeditorplugin_net46_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
