@@ -1,0 +1,5 @@
+{
+    "field1" : true,
+    "field2" : false,
+    "field  3" : [5, 4, 3, 2, "1", null]
+}

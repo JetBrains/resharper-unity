@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Json.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;

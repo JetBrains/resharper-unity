@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.Json.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Json.Psi.Resolve;
 using JetBrains.ReSharper.Psi;

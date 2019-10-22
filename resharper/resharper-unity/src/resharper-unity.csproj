@@ -124,7 +124,19 @@
     <EmbeddedResource Remove="**\Rider\**" />
     <None Remove="**\Rider\**" />
   </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="JsonNew\**" />
+        <EmbeddedResource Remove="JsonNew\**" />
+        <None Remove="JsonNew\**" />
+    </ItemGroup>
   <ItemGroup>
+  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="AsmdefNew\**" />
+        <EmbeddedResource Remove="AsmdefNew\**" />
+        <None Remove="AsmdefNew\**" />
+    </ItemGroup>
+    <ItemGroup>
     <!-- Format definitions can't compile on Mac/Linux due to missing PresentationCore dependencies -->
     <Compile Remove="**\VisualStudio\**\*FormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
