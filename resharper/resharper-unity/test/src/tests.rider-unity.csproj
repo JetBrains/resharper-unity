@@ -23,4 +23,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\rider-unity.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="JsonNew\Daemon" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Json\**" />
+    <EmbeddedResource Remove="Json\**" />
+    <None Remove="Json\**" />
+  </ItemGroup>
 </Project>

@@ -74,15 +74,25 @@
     <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
-    <!-- AsmDef/JSON "language" -->
-    <ErrorsGen Include="Json\Daemon\Errors\AsmDefErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.Json.Daemon.Errors</Namespace>
-      <OutputFile>Json\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
+    <!-- JsonNew "language" -->
+    <PsiLanguageNames Include="JsonNew">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="JsonNew\Psi\Parsing\JsonNew.lex" />
+    <None Remove="JsonNew\Psi\Parsing\JsonNew_lex.depends" />
+    <Compile Update="JsonNew\Psi\Parsing\JsonNew_lex.cs">
+      <DependentUpon>JsonNew.lex</DependentUpon>
+    </Compile>
+    <TokenGenerator Include="JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.xml">
+      <OutputFile>JsonNew\Psi\Parsing\TokenNodeTypes\JsonNewTokenNodeTypes.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <ParserGen Include="JsonNew\Psi\Parsing\JsonNew.psi" />
+    <!-- AsmDefNew/JsonNew "language" -->
+    <ErrorsGen Include="AsmDefNew\Daemon\Errors\AsmDefErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Daemon.Errors</Namespace>
+      <OutputFile>AsmDefNew\Daemon\Errors\AsmDefNewErrors.generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
-    <Compile Update="Json\Daemon\Errors\AsmDefErrors.generated.cs">
-      <DependentUpon>AsmDefErrors.xml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <!-- Resources - api.xml, icons -->
   <ItemGroup>
@@ -122,6 +132,14 @@
     <None Remove="**\VisualStudio\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Json\**" />
+    <EmbeddedResource Remove="Json\**" />
+    <None Remove="Json\**" />
+    </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="JsonNew\ProjectModel" />
   </ItemGroup>
 </Project>
