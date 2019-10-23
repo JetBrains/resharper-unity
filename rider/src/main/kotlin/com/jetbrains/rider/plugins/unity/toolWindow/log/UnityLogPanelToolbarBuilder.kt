@@ -3,8 +3,9 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAwareAction
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
-import com.jetbrains.rider.plugins.unity.actions.*
+import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
+import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderAction
 import java.awt.BorderLayout
@@ -54,7 +55,7 @@ object UnityLogPanelToolbarBuilder {
             add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
             addAll(consoleActionsList)
             add(mainSplitterToggleAction)
-            add(UnityPluginShowSettingsAction())
+            add(ActionManager.getInstance().getAction(UnityPluginShowSettingsAction.actionId))
         }
 
         return create(actionGroup, BorderLayout.WEST, false)

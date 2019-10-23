@@ -59,3 +59,4 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
 
 fun Project.isUnityGeneratedProject() = UnityProjectDiscoverer.getInstance(this).isUnityGeneratedProject
 fun Project.isUnityProject()= UnityProjectDiscoverer.getInstance(this).isUnityProject
+fun Project.isUnityProjectFolder()= UnityProjectDiscoverer.getInstance(this).isUnityProjectFolder

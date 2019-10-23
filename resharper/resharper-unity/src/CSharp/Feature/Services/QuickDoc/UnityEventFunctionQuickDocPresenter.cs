@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 element, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.All,
                 XmlDocHtmlUtil.CrefManager, myTheming);
             var title = DeclaredElementPresenter.Format(presentationLanguage,
-                DeclaredElementPresenter.FULL_NESTED_NAME_PRESENTER, element);
+                DeclaredElementPresenter.FULL_NESTED_NAME_PRESENTER, element).Text;
 
             return new QuickDocTitleAndText(text, title);
         }

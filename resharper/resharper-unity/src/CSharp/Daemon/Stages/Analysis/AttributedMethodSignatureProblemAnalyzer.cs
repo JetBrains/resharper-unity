@@ -14,7 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             typeof(InvalidStaticModifierWarning),
             typeof(InvalidReturnTypeWarning),
             typeof(InvalidTypeParametersWarning),
-            typeof(InvalidParametersWarning)
+            typeof(InvalidParametersWarning),
+            typeof(IncorrectSignatureWarning)
         })]
     public class AttributedMethodSignatureProblemAnalyzer : MethodSignatureProblemAnalyzerBase<IAttribute>
     {

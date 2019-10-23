@@ -8,6 +8,9 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 
 class UnityPluginShowSettingsAction : DumbAwareAction() {
+    companion object {
+        val actionId = "ShowUnitySettingsInRider"
+    }
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project?: return
         ShowSettingsUtil.getInstance().showSettingsDialog(project, "Unity Engine")

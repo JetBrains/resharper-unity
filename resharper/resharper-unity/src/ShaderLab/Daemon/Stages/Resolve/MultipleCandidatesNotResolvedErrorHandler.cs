@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Resolve
                 foreach (var candidate in candidates)
                 {
                     result.Add(Environment.NewLine + "  " + DeclaredElementPresenter.Format(ShaderLabLanguage.Instance,
-                                   ShaderLabDeclaredElementPresenterStyles.CANDIDATE_PRESENTER, candidate));
+                                   ShaderLabDeclaredElementPresenterStyles.CANDIDATE_PRESENTER, candidate).Text);
                 }
                 result.Sort();
                 var message = result.AggregateString("");
