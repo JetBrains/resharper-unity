@@ -180,6 +180,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Parsing
                 Done(mark, ElementType.JSON_NEW_LITERAL_EXPRESSION);
                 return true;
             }
+
+            if (GetTokenType() == JsonNewTokenNodeTypes.SINGLE_QUOTED_STRING)
+            {
+                Advance();
+                myBuilder.Error(mark, GetExpectedMessage("Double quoted string"));
+                return true;
+            }
             
             myBuilder.Drop(mark);
 
