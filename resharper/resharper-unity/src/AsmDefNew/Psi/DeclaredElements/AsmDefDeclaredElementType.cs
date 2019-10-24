@@ -3,7 +3,7 @@ using JetBrains.ProjectModel.Resources;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements;
 using JetBrains.UI.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.DeclaredElements
 {
     public class AsmDefDeclaredElementType : JsonNewDeclaredElementType
     {

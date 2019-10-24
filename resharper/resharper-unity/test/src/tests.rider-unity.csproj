@@ -24,12 +24,12 @@
     <ProjectReference Include="..\..\src\rider-unity.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="JsonNew\Daemon" />
+    <Compile Remove="AsmDef\**" />
+    <EmbeddedResource Remove="AsmDef\**" />
+    <None Remove="AsmDef\**" />
   </ItemGroup>
-
   <ItemGroup>
-    <Compile Remove="Json\**" />
-    <EmbeddedResource Remove="Json\**" />
-    <None Remove="Json\**" />
+    <Folder Include="AsmDefCommon\Feature" />
+    <Folder Include="AsmDefCommon\Feature\Services\Intentions" />
   </ItemGroup>
 </Project>

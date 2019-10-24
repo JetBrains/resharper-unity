@@ -20,4 +20,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-yaml.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="JsonNew\**" />
+    <EmbeddedResource Remove="JsonNew\**" />
+    <None Remove="JsonNew\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="AsmDefNew\**" />
+    <EmbeddedResource Remove="AsmDefNew\**" />
+    <None Remove="AsmDefNew\**" />
+  </ItemGroup>
 </Project>

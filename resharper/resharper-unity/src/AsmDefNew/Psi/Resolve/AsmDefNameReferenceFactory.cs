@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Resolve
 {
     public class AsmDefNameReferenceFactory : IReferenceFactory
     {

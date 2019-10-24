@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Resolve
 {
     // Creates references from the "references" array to the "name" declaration
     [ReferenceProviderFactory]

@@ -1,5 +1,4 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.AsmdefNew;
 using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;

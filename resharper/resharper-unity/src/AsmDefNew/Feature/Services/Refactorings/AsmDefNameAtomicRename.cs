@@ -6,7 +6,7 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Feature.Services.Util;
-using JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;

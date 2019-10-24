@@ -1,6 +1,6 @@
 ﻿using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure;
-using JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;

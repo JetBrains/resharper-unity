@@ -3,8 +3,8 @@ using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.DeclaredElements;
-using JetBrains.ReSharper.Plugins.Unity.Common.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -15,7 +15,7 @@ using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches
 {
     [PsiComponent]
     public class AsmDefNameCache : SimpleICache<AsmDefCacheItem>

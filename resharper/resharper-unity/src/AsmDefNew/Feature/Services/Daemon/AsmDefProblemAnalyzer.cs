@@ -1,6 +1,5 @@
 ﻿using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.AsmdefNew;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
