@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -9,13 +10,13 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.DataStructures;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.DeclaredElements
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.DeclaredElements
 {
     // The string literal value of the "name" JSON property doesn't have an IDeclaration, so it also doesn't have an
     // IDeclaredElement, so we have to create our own.
     // If we derive from JavaScriptDeclaredElementBase, then the JS reference searcher will consider us.
     // If we don't, then we'd need to create a references searcher just for these elements
-    public class AsmDefNameDeclaredElement : JsonNewDeclaredElementBase, IDeclaredElement
+    public class AsmDefNameDeclaredElement : JsonNewDeclaredElementBase, IAsmDefDeclaredElement
     {
         public AsmDefNameDeclaredElement(string name, IPsiSourceFile sourceFile, int declarationOffset)
             : base(sourceFile.GetPsiServices())
@@ -27,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.DeclaredElements
 
         public IPsiSourceFile SourceFile { get; }
         public int DeclarationOffset { get; }
+
         public int NavigationOffset => DeclarationOffset + 1; // Skip quote
 
         public override IList<IDeclaration> GetDeclarationsIn(IPsiSourceFile sourceFile)

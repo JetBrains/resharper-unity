@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefCommon.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -12,7 +13,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Resolve
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Resolve
 {
     public class AsmDefNameReference : CheckedReferenceBase<IJsonNewLiteralExpression>, ICompletableReference,
         IReferenceFromStringLiteral
@@ -57,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.Resolve
         public override IReference BindTo(IDeclaredElement element)
         {
             var factory = JsonNewElementFactory.GetInstance(myOwner.GetPsiModule());
-            var literalExpression = (IJsonNewLiteralExpression) factory.CreateStringLiteral(element.ShortName);
+            var literalExpression = factory.CreateStringLiteral(element.ShortName);
 
             using (WriteLockCookie.Create(myOwner.IsPhysical()))
             {

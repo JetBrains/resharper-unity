@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew
+namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew
 {
     public static class Extensions
     {
@@ -18,8 +18,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew
         {
             if (node is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
             {
-                var key = JsonNewMemberNavigator.GetByValue(literal)?.Key;
+                var member = JsonNewMemberNavigator.GetByValue(literal);
+                var key = member?.Key;
 
+                var file = JsonNewFileNavigator.GetByValue(JsonNewObjectNavigator.GetByMember(member));
+                if (file == null)
+                    return false;
+                
                 if (key == "name")
                     return true;
             }
@@ -32,10 +37,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmdefNew
         {
             if (node is IJsonNewLiteralExpression literal && literal.ConstantValueType == ConstantValueTypes.String)
             {
-                var file = node.GetContainingFile();
                 var arrayLiteral = JsonNewArrayNavigator.GetByValue(literal);
-                var key = JsonNewMemberNavigator.GetByValue(arrayLiteral)?.Key;
+                var member = JsonNewMemberNavigator.GetByValue(arrayLiteral);
+                var key = member?.Key;
 
+                var file = JsonNewFileNavigator.GetByValue(JsonNewObjectNavigator.GetByMember(member));
+                if (file == null)
+                    return false;
+                
                 if (key == "references")
                     return true;
             }

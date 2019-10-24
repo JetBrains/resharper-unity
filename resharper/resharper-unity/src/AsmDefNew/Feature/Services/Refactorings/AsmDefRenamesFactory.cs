@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
-using JetBrains.ReSharper.Plugins.Unity.AsmdefNew.Psi.DeclaredElements;
+using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.DeclaredElements;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Feature.Services.Refactorings

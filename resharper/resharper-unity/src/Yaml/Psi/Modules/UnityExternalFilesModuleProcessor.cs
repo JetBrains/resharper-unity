@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             // Do nothing
         }
 
-        public void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
+        public virtual void OnUnityProjectAdded(Lifetime projectLifetime, IProject project)
         {
             // For project model access
             myLocks.AssertReadAccessAllowed();

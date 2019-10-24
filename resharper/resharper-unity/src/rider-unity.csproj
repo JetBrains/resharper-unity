@@ -132,14 +132,11 @@
     <None Remove="**\VisualStudio\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Json\**" />
-    <EmbeddedResource Remove="Json\**" />
-    <None Remove="Json\**" />
+    <Compile Remove="AsmDef\**" />
+    <EmbeddedResource Remove="AsmDef\**" />
+    <None Remove="AsmDef\**" />
     </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="JsonNew\ProjectModel" />
   </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
         }
 
         public override string PresentableName { get; }
-        protected override IDeclaredElementPresenter DefaultPresenter => null;
+        protected override IDeclaredElementPresenter DefaultPresenter => JsonNewDeclaredElementPresenter.Instance;
         public override IconId GetImage() => myIconId;
         public override bool IsPresentable(PsiLanguageType language) => language.Is<JsonNewLanguage>();
     }
