@@ -56,10 +56,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             //   It can be recognised by a folder called `CSharp60Support` or `CSharp70Support`
             //   in the root of the project
             //   (https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration)
-            // * Note that since Unity 2017.2, we've been special-cased in the Unity csproj generation
-            //   and we've been getting v4.5 for old runtime and default values (4.7.1) for new. So where
-            //   it says 3.5 below, that depends on the version of Unity. Older versions will give us 3.5,
-            //   newer versions 4.5. We don't need this special case, so hopefully it will be removed in 2018.3
             //
             // Scenarios:
             // * No VSTU installed (including Unity 5.5)
@@ -68,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             //   .csproj has NO `LangVersion`. `TargetFrameworkVersion` will be `v3.5`
             // * Later versions of VSTU
             //   `LangVersion` is correctly set to "4". `TargetFrameworkVersion` will be `v3.5`
-            //   OR `LangVersion` is set to "6" or "latest". `TargetFrameworkVersion` will be `v4.7.1`
+            //   OR `LangVersion` is set to "6" or "latest".
             // * VSTU for 5.5
             //   `LangVersion` is set to "default". `TargetFrameworkVersion` will be `v3.5` or `v4.6`
             //   Note that "default" for VS"15" or Rider will be C# 7.0!
@@ -81,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             //   Look for `CSharp60Support` or `CSharp70Support` folders
             //
             // Actions:
-            // If `LangVersion` is missing or "default"
+            // * If `LangVersion` is missing or "default"
             // then override based on `TargetFrameworkVersion` or presence of `CSharp60Support`/`CSharp70Support`
             // else do nothing
             //
@@ -95,8 +91,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             // * `LangVersion` can be conditionally specified, which makes checking for "default" awkward
             // * If Unity3dRider + CSharp60Support are both installed, last write wins
             //   Order of post-processing is non-deterministic, so Rider's LangVersion might be removed
-            // * Unity3dRider can set `TargetFrameworkVersion` to `v4.5` on non-Windows machines to fix
-            //   an issue resolving System.Linq
+            #endregion
+
+            #region Explanation "Avoid C# 8"
+            // Unity 2018.x+ set LangVersion to `newest`
+            // MSBuild 16 treats `newest` as C# 8. Re# and Rider start suggesting it.
+            
             #endregion
 
             var languageLevel = ReSharperSettingsCSharpLanguageLevel.Default;
@@ -114,6 +114,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                         ? ReSharperSettingsCSharpLanguageLevel.CSharp60
                         : ReSharperSettingsCSharpLanguageLevel.CSharp40;
                 }
+            }
+
+            if (IsLangVersionLatest(project))
+            {
+                var appPath = myUnityProjectFileCache.GetAppPath(project);
+                var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
+                var dllPath = contentPath.Combine(@"Tools\Roslyn\Microsoft.CodeAnalysis.dll");
+                
+                if (dllPath.ExistsFile) 
+                    languageLevel = ReSharperSettingsCSharpLanguageLevel.CSharp73; // todo: fix, when Api JetBrains.ReSharper.Psi.CSharp.Impl.CSharpLanguageLevelProjectProperty.GetLanguageVersion is ready
             }
 
             // Always set a value. It's either the overridden value, or Default, which resets to whatever is in the
@@ -140,6 +150,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                 }
             }
             return true;
+        }
+        
+        private bool IsLangVersionLatest(IProject project)
+        {
+            foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations)
+            {
+                if (configuration is ICSharpProjectConfiguration csharpConfiguration)
+                {
+                    if (csharpConfiguration.LanguageVersion == CSharpLanguageVersion.Latest)
+                        return true;
+                }
+            }
+            return false;
         }
 
         private bool IsTargetFrameworkAtLeast46(IProject project)
