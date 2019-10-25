@@ -13,6 +13,4 @@ object UnityAttachPresentationGroup : XAttachProcessPresentationGroup {
     override fun getOrder(): Int = 3
     override fun getGroupName(): String = "Local Unity processes"
     override fun compare(p1: ProcessInfo, p2: ProcessInfo) = p1.pid.compareTo(p2.pid)
-    override fun getProcessDisplayText(project: Project, process: ProcessInfo, userData: UserDataHolder) = process.executableDisplayName
-    override fun getProcessIcon(project: Project, process: ProcessInfo, userData: UserDataHolder) = UnityIcons.Icons.UnityLogo
 }
