@@ -18,7 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public List<FileSystemPath> GetPossibleMonoPaths()
         {
-            var possibleApplicationPaths = UnityInstallationFinder.GetPossibleApplicationPaths();
+            var possibleApplicationPaths = UnityInstallationFinder.GetPossibleInstallationInfos()
+                .Where(a => a.Version.Major < 2019).Select(a => a.Path).ToArray(); // skip new Unity because it doesn't have old mono runtime and Rider would definitely require msbuild
             switch (PlatformUtil.RuntimePlatform)
             {
                 // dotTrace team uses these constants to detect unity's mono. 

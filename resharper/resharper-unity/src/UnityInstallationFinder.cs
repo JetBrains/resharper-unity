@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return FileSystemPath.Empty;
         }
 
-        private static List<UnityInstallationInfo> GetPossibleInstallationInfos()
+        public static List<UnityInstallationInfo> GetPossibleInstallationInfos()
         {
             var installations = GetPossibleApplicationPaths();
             return installations.Select(path =>
