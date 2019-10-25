@@ -15,6 +15,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       var connectionLifetime = modelAndLifetime.Lifetime;
       
       modelValue.GetCompilationResult.Set(_ => !EditorUtility.scriptCompilationFailed);
+
+      CompiledAssembliesTracker.Init(modelAndLifetime);
       
       modelValue.UnitTestLaunch.Advise(connectionLifetime, launch =>
       {

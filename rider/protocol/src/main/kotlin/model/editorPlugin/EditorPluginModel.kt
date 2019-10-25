@@ -108,6 +108,11 @@ object EditorPluginModel: Root() {
         +"Normal"
     }
 
+    val CompiledAssembly = structdef {
+        field("name", string)
+        field("outputPath", string)
+    }
+
     init {
         property("play", bool)
         property("pause", bool)
@@ -134,6 +139,7 @@ object EditorPluginModel: Root() {
         call("updateUnityPlugin", string, bool)
         call("refresh", RefreshType, void)
         call("getCompilationResult", void, bool)
+        sink("compiledAssemblies", immutableList(CompiledAssembly))
 
         property("unitTestLaunch", UnitTestLaunch)
         source("runUnitTestLaunch", void)
