@@ -11,13 +11,13 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
-    internal class UnityRiderUnitTestAlternateProjectOutputProvider : DefaultRiderUnitTestAlternateProjectOutputProvider
+    internal class UnityRiderAlternateProjectOutputProvider : DefaultRiderAlternateProjectOutputProvider
     {
         private readonly IShellLocks myShellLocks;
 
         private volatile IDictionary<string, FileSystemPath> myProjectNameToOutputFilePathMap;
 
-        public UnityRiderUnitTestAlternateProjectOutputProvider(Lifetime lifetime, UnityEditorProtocol editorProtocol, IShellLocks shellLocks) : base(lifetime)
+        public UnityRiderAlternateProjectOutputProvider(Lifetime lifetime, UnityEditorProtocol editorProtocol, IShellLocks shellLocks) : base(lifetime)
         {
             myShellLocks = shellLocks;
 
