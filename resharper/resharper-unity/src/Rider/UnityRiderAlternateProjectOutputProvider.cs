@@ -33,6 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
+        public override bool ProjectCanHaveAlternateOutput(IProject project)
+        {
+            myShellLocks.AssertReadAccessAllowed();
+            return project.IsUnityProject();
+        }
+
         public override bool TryGetProjectOutputFilePath(IProject project, out FileSystemPath outputFilePath)
         {
             myShellLocks.AssertReadAccessAllowed();
