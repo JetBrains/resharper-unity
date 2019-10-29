@@ -18,12 +18,14 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Changed
 
+- Rider: Return support for .asmdef files ([RIDER-30018](https://youtrack.jetbrains.com/issue/RIDER-30018), [#1373](https://github.com/JetBrains/resharper-unity/pull/1373))
 - Rider: Improve display of count of merged log items ([#1296](https://github.com/JetBrains/resharper-unity/issues/1296), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
 - Rider: Status bar icon will show when Unity Editor is paused ([#1227](https://github.com/JetBrains/resharper-unity/issues/1227), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
 - Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity ([#1325](https://github.com/JetBrains/resharper-unity/pull/1325))
 - Rider: Clear on Play now supported in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
 - Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) ([#888](https://github.com/JetBrains/resharper-unity/issues/888))
-- Avoid editing EditorInstance.json for Unity 2017.1+, since it does it itself ([#1356](https://github.com/JetBrains/resharper-unity/pull/1356))
+- Unity Editor: Don't create `EditorInstance.json` for Unity 2017.1+, since it does it itself ([#1356](https://github.com/JetBrains/resharper-unity/pull/1356))
+- Unity Editor: Reduce size of pre-compiled editor plugin for Unity 20192.2+ to help AppDomain restart performance ([#1367](https://github.com/JetBrains/resharper-unity/pull/1367))
 
 ### Fixed
 
@@ -40,6 +42,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Fixed
 * Fix issues with completion of Unity event functions ([RIDER-33167](https://youtrack.jetbrains.com/issue/RIDER-33167), [#1326](https://github.com/JetBrains/resharper-unity/pull/1326))
+- Fix exception building caches ([DEXP-481931](https://youtrack.jetbrains.com/issue/DEXP-481931), [#1355](https://github.com/JetBrains/resharper-unity/pull/1355))
 * Rider: Fix missing "Install Mono" notification ([#1329](https://github.com/JetBrains/resharper-unity/pull/1329))
 
 
