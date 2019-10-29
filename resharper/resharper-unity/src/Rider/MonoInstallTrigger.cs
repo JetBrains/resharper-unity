@@ -6,6 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Host.Features.Runtime;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -14,9 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class MonoInstallTrigger
     {
         public MonoInstallTrigger(Lifetime lifetime, ILogger logger, ISolutionLoadTasksScheduler scheduler,
-            ISolution solution, UnitySolutionTracker unitySolutionTracker, UnityHost host)
+            ISolution solution, UnitySolutionTracker unitySolutionTracker, UnityHost host,
+            NotificationsModel notificationsModel)
         {
-            if (PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX)
+            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                 return;
 
             scheduler.EnqueueTask(new SolutionLoadTask("Check mono runtime", SolutionLoadTaskKinds.AfterDone, () =>
@@ -53,8 +55,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     if (!installedValidMono)
                     {
-                        solution.Locks.ExecuteOrQueue(lifetime, "Show install mono dialog",
+                        if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+                            solution.Locks.ExecuteOrQueue(lifetime, "Show install mono dialog",
                             () => { host.PerformModelAction(model => model.ShowInstallMonoDialog()); });
+                        else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Linux)
+                        {
+                            var notification = new NotificationModel("Mono 5.16+ is required.",
+                                "Project requires new Mono with MSBuild for C# 7.3 support.", true,
+                                RdNotificationEntryType.WARN);
+                            notificationsModel.Notification(notification);
+                        }
                     }
                 });
             }));
