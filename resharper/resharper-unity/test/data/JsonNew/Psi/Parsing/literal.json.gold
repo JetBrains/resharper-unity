@@ -1,0 +1,5 @@
+﻿Language: PsiLanguageType:JSON_NEW
+IJsonNewFile
+  IJsonNewLiteralExpression
+    JsonNewGenericTokenNode(type:NUMERIC_LITERAL, text:213213)
+

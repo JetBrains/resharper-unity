@@ -1,0 +1,22 @@
+{
+    "a" : 5,
+    "b"    : {
+        "c" : [1, 2, 3],
+        "d" : {
+            "long Literal": "x",
+            "data1" : 5,
+            "data2   "      : 12321321,
+            "data7": {}
+        }
+    },
+    "c" : {},
+    /* commeent */
+    // comment
+    "object" : {
+        "field1" : [],
+        // test
+        "field2" : null,
+        "field3" : true,
+        "field4" : false
+    }
+}

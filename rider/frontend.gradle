@@ -78,6 +78,7 @@ def annotationsTo = 'Extensions/com.intellij.resharper.unity/annotations'
 
 def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
 def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
+def unityeditorplugin_net46_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Net46/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll"
 
 tasks.withType(PrepareSandboxTask).configureEach {
     // Default dependsOn includes the standard Java build/jar task
@@ -105,6 +106,7 @@ tasks.withType(PrepareSandboxTask).configureEach {
     doLast {
         assert file(unityeditorplugin_path).exists()
         assert file(unityeditorplugin_full_path).exists()
+        assert file(unityeditorplugin_net46_path).exists()
 
         dllFiles.forEach({ f ->
             def file = file("$f")
@@ -122,6 +124,10 @@ tasks.withType(PrepareSandboxTask).configureEach {
     })
 
     from(unityeditorplugin_full_path, {
+        into "$intellij.pluginName/EditorPlugin"
+    })
+
+    from(unityeditorplugin_net46_path, {
         into "$intellij.pluginName/EditorPlugin"
     })
 
