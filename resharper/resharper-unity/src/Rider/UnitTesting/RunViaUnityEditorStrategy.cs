@@ -25,6 +25,7 @@ using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
+using Status = JetBrains.Platform.Unity.EditorPluginModel.Status;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting

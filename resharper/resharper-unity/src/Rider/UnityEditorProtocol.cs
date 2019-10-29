@@ -16,6 +16,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
+using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
