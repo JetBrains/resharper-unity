@@ -30,10 +30,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly RiderPathProvider ourRiderPathProvider;
     public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
     private static readonly UnityEventCollector ourLogEventCollector;
-    private static bool ourInitialized;
-    private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
-    internal static string SlnFile;
-    
+
     // This an entry point
     static PluginEntryPoint()
     {
@@ -99,6 +96,12 @@ namespace JetBrains.Rider.Unity.Editor
       return OpenAssetHandler.CallRider(args);
     }
 
+    private static bool ourInitialized;
+
+    private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
+
+    internal static string SlnFile;
+
     public static bool IsRiderDefaultEditor()
     {
         // When Unity is started by Rider tests
@@ -137,9 +140,8 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
       {
-        var executingAssembly = Assembly.GetExecutingAssembly();
-        var location = executingAssembly.Location;
-        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+        var location = Assembly.GetExecutingAssembly().Location;
+        Debug.Log($"Rider plugin initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
       }
 
       var list = new List<ProtocolInstance>();
