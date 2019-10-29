@@ -1,5 +1,6 @@
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
+using JetBrains.Rd.Tasks;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
