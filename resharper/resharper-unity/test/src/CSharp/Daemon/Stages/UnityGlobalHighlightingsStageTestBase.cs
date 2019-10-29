@@ -19,14 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages
     [Category("Daemon"), Category("PerformanceCriticalCode")]
     public abstract class UnityGlobalHighlightingsStageTestBase : BaseTestWithSingleProject
     {
-        private const string ProductGoldSuffix =
-#if RIDER
-                "rider"
-#else
-                "resharper"
-#endif
-            ;
-        protected sealed override string RelativeTestDataPath=> $@"{RelativeTestDataRoot}\{ProductGoldSuffix}";
+        protected sealed override string RelativeTestDataPath=> $@"{RelativeTestDataRoot}\{Utils.ProductGoldSuffix}";
         protected abstract string RelativeTestDataRoot { get; }
         protected override void DoTest(Lifetime lifetime, IProject project)
         {

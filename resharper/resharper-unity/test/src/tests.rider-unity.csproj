@@ -23,4 +23,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\rider-unity.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="AsmDef\**" />
+    <EmbeddedResource Remove="AsmDef\**" />
+    <None Remove="AsmDef\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AsmDefCommon\Feature" />
+    <Folder Include="AsmDefCommon\Feature\Services\Intentions" />
+  </ItemGroup>
 </Project>

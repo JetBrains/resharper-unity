@@ -77,12 +77,12 @@
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
     <!-- AsmDef/JSON "language" -->
-    <ErrorsGen Include="Json\Daemon\Errors\AsmDefErrors.xml">
-      <Namespace>JetBrains.ReSharper.Plugins.Unity.Json.Daemon.Errors</Namespace>
-      <OutputFile>Json\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
+    <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
+      <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
       <Mode>ERRORS</Mode>
     </ErrorsGen>
-    <Compile Update="Json\Daemon\Errors\AsmDefErrors.generated.cs">
+    <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
       <DependentUpon>AsmDefErrors.xml</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -124,7 +124,17 @@
     <EmbeddedResource Remove="**\Rider\**" />
     <None Remove="**\Rider\**" />
   </ItemGroup>
-  <ItemGroup>
+    <ItemGroup>
+        <Compile Remove="JsonNew\**" />
+        <EmbeddedResource Remove="JsonNew\**" />
+        <None Remove="JsonNew\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="AsmdefNew\**" />
+        <EmbeddedResource Remove="AsmdefNew\**" />
+        <None Remove="AsmdefNew\**" />
+    </ItemGroup>
+    <ItemGroup>
     <!-- Format definitions can't compile on Mac/Linux due to missing PresentationCore dependencies -->
     <Compile Remove="**\VisualStudio\**\*FormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
@@ -135,5 +145,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AsmDefCommon\Daemon\ContextHighlighters" />
   </ItemGroup>
 </Project>
