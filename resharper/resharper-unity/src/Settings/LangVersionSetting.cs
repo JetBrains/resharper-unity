@@ -82,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             //   Look for `CSharp60Support` or `CSharp70Support` folders
             //
             // Actions:
-            // * If `LangVersion` is missing or "default"
+            // If `LangVersion` is missing or "default"
             // then override based on `TargetFrameworkVersion` or presence of `CSharp60Support`/`CSharp70Support`
             // else do nothing
             //
