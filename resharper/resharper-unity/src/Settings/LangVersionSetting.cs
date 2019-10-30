@@ -99,8 +99,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             #endregion
 
             #region Explanation "Avoid C# 8"
-            // Unity 2018.x+ set LangVersion to `newest`
+            // Unity 2018.x+ sets LangVersion to `newest`
             // MSBuild 16 treats `newest` as C# 8. Re# and Rider start suggesting it.
+            // Actions:
+            // Set LangVersion matching Roslyn bundled in Unity
             
             #endregion
 
