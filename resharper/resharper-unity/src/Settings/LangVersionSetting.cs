@@ -123,12 +123,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
             if (IsLangVersionLatest(project))
             {
-                var appPath = myUnityProjectFileCache.GetAppPath(project);
-                var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
-                var dllPath = contentPath.Combine(@"Tools\Roslyn\Microsoft.CodeAnalysis.dll");
+                if (project.Location.CombineWithShortName("CSharp80Support").ExistsDirectory) // https://forum.unity.com/threads/would-the-roslyn-compiler-compile-c-8-0-preview.598069/
+                    languageLevel = ReSharperSettingsCSharpLanguageLevel.CSharp80;
+                else
+                {
+                    var appPath = myUnityProjectFileCache.GetAppPath(project);
+                    var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
+                    var dllPath = contentPath.Combine(@"Tools\Roslyn\Microsoft.CodeAnalysis.dll");
 
-                if (dllPath.ExistsFile)
-                    languageLevel = myLanguageLevelProjectProperty.GetLatestAvailableLanguageLevel(dllPath.Directory).ToSettingsLanguageLevel();
+                    if (dllPath.ExistsFile)
+                        languageLevel = myLanguageLevelProjectProperty.GetLatestAvailableLanguageLevel(dllPath.Directory).ToSettingsLanguageLevel();   
+                }
             }
 
             // Always set a value. It's either the overridden value, or Default, which resets to whatever is in the
