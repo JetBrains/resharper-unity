@@ -265,6 +265,8 @@
 </ul>
 <em>Fixed:</em>
 <ul>
+  <li>Rider: Fix Clear on Play in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
+  <li>Unity window should get focus, when Rider is showing usages in it ([#1344](https://github.com/JetBrains/resharper-unity/pull/1344)</li>
   <li>Unity Editor: Fix exception calling <tt>EditorApplication.isPlaying</tt> on wrong thread (<a href="https://github.com/JetBrains/resharper-unity/pull/1308">#1308</a>)</li>
 </ul>
 </p>
