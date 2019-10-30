@@ -14,13 +14,22 @@
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="AsyncBridge.Net35, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b3b1c0202c0d6a87">
+      <HintPath>..\lib\AsyncBridge.Net35.dll</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Lifetimes">
       <HintPath>..\lib\JetBrains.Lifetimes.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.RdFramework">
       <HintPath>..\lib\JetBrains.RdFramework.dll</HintPath>
     </Reference>
+    <Reference Include="System.Threading, Version=1.0.2856.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\lib\System.Threading.dll</HintPath>
+    </Reference>
   </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
   </ItemGroup>
