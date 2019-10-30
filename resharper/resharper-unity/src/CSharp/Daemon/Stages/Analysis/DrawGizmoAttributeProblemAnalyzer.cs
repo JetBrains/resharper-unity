@@ -11,7 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         HighlightingTypes = new[]
         {
             typeof(InvalidStaticModifierWarning), typeof(InvalidReturnTypeWarning),
-            typeof(InvalidTypeParametersWarning), typeof(InvalidParametersWarning)
+            typeof(InvalidTypeParametersWarning), typeof(InvalidParametersWarning),
+            typeof(IncorrectSignatureWarning), typeof(ParameterNotDerivedFromComponentWarning)
         })]
     public class DrawGizmoAttributeProblemAnalyzer : MethodSignatureProblemAnalyzerBase<IAttribute>
     {
