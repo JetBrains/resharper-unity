@@ -8,6 +8,8 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.CSharp;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.Util;
 
@@ -19,14 +21,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         private readonly ISettingsSchema mySettingsSchema;
         private readonly ILogger myLogger;
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
+        private readonly ILanguageLevelProjectProperty<CSharpLanguageLevel, CSharpLanguageVersion> myLanguageLevelProjectProperty;
         private static readonly Version ourVersion46 = new Version(4, 6);
 
         public LangVersionSetting(ISettingsSchema settingsSchema, ILogger logger,
-                                  UnityProjectFileCacheProvider unityProjectFileCache)
+                                  UnityProjectFileCacheProvider unityProjectFileCache,
+                                  ILanguageLevelProjectProperty<CSharpLanguageLevel, CSharpLanguageVersion> languageLevelProjectProperty)
         {
             mySettingsSchema = settingsSchema;
             myLogger = logger;
             myUnityProjectFileCache = unityProjectFileCache;
+            myLanguageLevelProjectProperty = languageLevelProjectProperty;
         }
 
         public void InitialiseProjectSettings(Lifetime projectLifetime, IProject project,
@@ -121,9 +126,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                 var appPath = myUnityProjectFileCache.GetAppPath(project);
                 var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
                 var dllPath = contentPath.Combine(@"Tools\Roslyn\Microsoft.CodeAnalysis.dll");
-                
-                if (dllPath.ExistsFile) 
-                    languageLevel = ReSharperSettingsCSharpLanguageLevel.CSharp73; // todo: fix, when Api JetBrains.ReSharper.Psi.CSharp.Impl.CSharpLanguageLevelProjectProperty.GetLanguageVersion is ready
+
+                if (dllPath.ExistsFile)
+                    languageLevel = myLanguageLevelProjectProperty.GetLatestAvailableLanguageLevel(dllPath.Directory).ToSettingsLanguageLevel();
             }
 
             // Always set a value. It's either the overridden value, or Default, which resets to whatever is in the
