@@ -14,6 +14,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 - Rider: Add support for play mode tests ([#1293](https://github.com/JetBrains/resharper-unity/issues/1293), [RIDER-19513](https://youtrack.jetbrains.com/issue/RIDER-19513))
 - Rider: Show prompt to set Rider as default external editor when Unity is started by Rider ([#1127](https://github.com/JetBrains/resharper-unity/issues/1127), [#1270](https://github.com/JetBrains/resharper-unity/pull/1270))
+- Rider: Add Unity specific Live Templates settings page ([#1351](https://github.com/JetBrains/resharper-unity/pull/1351))
 
 ### Changed
 
@@ -22,6 +23,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity ([#1325](https://github.com/JetBrains/resharper-unity/pull/1325))
 - Rider: Clear on Play now supported in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
 - Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) ([#888](https://github.com/JetBrains/resharper-unity/issues/888))
+- Avoid editing EditorInstance.json for Unity 2017.1+, since it does it itself ([#1356](https://github.com/JetBrains/resharper-unity/pull/1356))
 
 ### Fixed
 

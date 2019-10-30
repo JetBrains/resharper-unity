@@ -563,6 +563,9 @@ namespace JetBrains.Rider.Unity.Editor
     // file itself. We'll always overwrite, just to be sure it's up to date. The file contents are exactly the same
     private static void InitializeEditorInstanceJson()
     {
+      if (UnityUtils.UnityVersion >= new Version(2017, 1))
+        return;
+    
       ourLogger.Verbose("Writing Library/EditorInstance.json");
 
       var editorInstanceJsonPath = Path.GetFullPath("Library/EditorInstance.json");

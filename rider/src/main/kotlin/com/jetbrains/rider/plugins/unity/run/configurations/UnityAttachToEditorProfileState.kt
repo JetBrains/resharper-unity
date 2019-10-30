@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RuntimeConfigurationError
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.runners.ExecutionEnvironment
@@ -26,6 +25,7 @@ import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
+import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.util.idea.application
 import com.jetbrains.rider.util.idea.getComponent
@@ -61,9 +61,9 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
         return super.execute(executor, runner, workerProcessHandler)
     }
 
-    override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<GeneralCommandLine> {
+    override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
 
-        val result = AsyncPromise<GeneralCommandLine>()
+        val result = AsyncPromise<WorkerRunInfo>()
         application.executeOnPooledThread {
             try {
                 if (!remoteConfiguration.updatePidAndPort()) {

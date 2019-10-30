@@ -1,0 +1,20 @@
+﻿Language: PsiLanguageType:JSON_NEW
+IJsonNewFile
+  IJsonNewArray
+    JsonNewFixedLengthTokenNode(type:LBRACKET, text:[)
+    IJsonNewLiteralExpression
+      JsonNewGenericTokenNode(type:NUMERIC_LITERAL, text:1)
+    JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+    JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+    IJsonNewLiteralExpression
+      JsonNewGenericTokenNode(type:NUMERIC_LITERAL, text:2)
+    JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+    JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+    IJsonNewLiteralExpression
+      JsonNewKeywordTokenNode(type:TRUE_KEYWORD, text:true)
+    JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+    JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+    IJsonNewLiteralExpression
+      JsonNewKeywordTokenNode(type:NULL_KEYWORD, text:null)
+    JsonNewFixedLengthTokenNode(type:RBRACKET, text:])
+

@@ -1,0 +1,8 @@
+﻿{
+  "name": |"MyAssembly"|(0)
+}
+
+------------------------------------------------
+0: File name should match the name of the assembly
+QUICKFIXES:
+Rename file to match assembly name
