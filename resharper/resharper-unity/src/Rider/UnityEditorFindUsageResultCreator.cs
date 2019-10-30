@@ -117,15 +117,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public static void CreateRequestAndShow([NotNull]  UnityEditorProtocol editor, UnityHost host, Lifetime lifetime, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
             [NotNull] string anchor, IPsiSourceFile sourceFile, bool needExpand = false)
         {
+            FindUsageResultElement request;
+            using (ReadLockCookie.Create())
+            {
+                request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile, needExpand);
+            }
+            
             host.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result.Advise(lifetime,
                 result =>
                 {
-                    using (ReadLockCookie.Create())
-                    {
-                        var request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile,
-                            needExpand);
-                        editor.UnityModel.Value.ShowGameObjectOnScene.Fire(request.ConvertToUnityModel());
-                    }
+                    editor.UnityModel.Value.ShowGameObjectOnScene.Fire(request.ConvertToUnityModel());
                 }));
         }
         
@@ -217,12 +218,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     if (myConsumer.Result.Count != 0)
                     {
+                        if (myEditorProtocol.UnityModel.Value == null) return;
+
                         myUnityHost.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result
                             .Advise(myComponentLifetime,
                                 result =>
                                 {
-                                    if (myEditorProtocol.UnityModel.Value == null) return;
-                                    
                                     var model = myEditorProtocol.UnityModel.Value;
                                     if (mySelected != null)
                                         model.ShowGameObjectOnScene.Fire(mySelected.ConvertToUnityModel());
