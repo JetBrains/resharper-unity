@@ -98,7 +98,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 
             // Track the lifetime of all projects, so we can pass it to the handler later
             myProjects.Projects.View(myLifetime,
-                (projectLifetime, project) => myAllProjectLifetimes.Add(projectLifetime, project, projectLifetime));
+                (projectLifetime, project) =>
+                {
+                    myAllProjectLifetimes.Add(projectLifetime, project, projectLifetime);
+                    if (HasUnityReferenceOrFlavour(project))
+                        myUnityProjects.Add(projectLifetime, project);
+                });
 
             var unityProjectLifetimes = myAllProjectLifetimes.Where(pair => HasUnityReferenceOrFlavour(pair.Key)).ToList();
             if (unityProjectLifetimes.Count == 0)
@@ -123,12 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 foreach (var (project, lifetime) in unityProjectLifetimes)
                 {
-                    if (!myUnityProjects.Contains(project))
-                    {
-                        myUnityProjects.Add(lifetime, project);
-                    }
-                    
-                    handler.OnUnityProjectAdded(lifetime, project);
+                   handler.OnUnityProjectAdded(lifetime, project);
                 }
             }
         }
@@ -151,8 +151,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                     if (HasUnityReferenceOrFlavour(project))
                     {
                         Assertion.Assert(myAllProjectLifetimes.ContainsKey(project), "project is not added");
-                        if (!myAllProjectLifetimes.TryGetValue(project, out var projectLifetime))
+                        if (myAllProjectLifetimes.TryGetValue(project, out var projectLifetime))
+                        {
                             newUnityProjects.Add(JetKeyValuePair.Of(project, projectLifetime));
+                            if (!myUnityProjects.Contains(project))
+                                myUnityProjects.Add(projectLifetime, project);
+                        }
                     }
                 }
             }
