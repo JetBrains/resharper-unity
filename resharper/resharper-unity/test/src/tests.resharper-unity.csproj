@@ -30,6 +30,16 @@
         <EmbeddedResource Remove="**\Rider\**" />
         <None Remove="**\Rider\**" />
     </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="JsonNew\**" />
+        <EmbeddedResource Remove="JsonNew\**" />
+        <None Remove="JsonNew\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="AsmDefNew\**" />
+        <EmbeddedResource Remove="AsmDefNew\**" />
+        <None Remove="AsmDefNew\**" />
+    </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity.csproj" />
   </ItemGroup>

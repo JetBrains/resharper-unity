@@ -19,6 +19,7 @@
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
 
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
+    <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
 
     <!-- This has to be first, as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
     <lang.documentationProvider language="C#" implementationClass="com.jetbrains.rider.plugins.unity.quickDoc.UnityDocumentationProvider"
@@ -32,7 +33,7 @@
 
     <!-- ShaderLab support -->
     <fileType name="ShaderLab" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType" language="ShaderLab" extensions="shader"/>
-    <lang.altEnter language="ShaderLab" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
+    <lang.altEnter language="ShaderLab" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
     <lang.parserDefinition language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabParserDefinition" />
     <lang.syntaxHighlighterFactory language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabSyntaxHighlighterProvider" />
     <backend.markup.adapterFactory language="ShaderLab" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
@@ -53,19 +54,16 @@
     <completion.contributor language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
 
     <!-- asmdef support -->
-    <fileType name="AsmDef" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType" language="AsmDef" extensions="asmdef"/>
-    <lang.altEnter language="AsmDef" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
-    <lang.documentationProvider language="AsmDef" implementationClass="com.jetbrains.rdclient.quickDoc.FrontendDocumentationProvider"/>
-    <lang.parserDefinition language="AsmDef" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefParserDefinition" />
-    <lang.syntaxHighlighterFactory language="AsmDef" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefSyntaxHighlighterProvider" />
-    <backend.actions.support language="AsmDef" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
-    <backend.markup.adapterFactory language="AsmDef" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
-    <backend.typedHandler language="AsmDef" implementationClass="com.jetbrains.rdclient.editorActions.FrontendTypedHandler"/>
-    <completion.contributor language="AsmDef" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <fileType name="AsmDef" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType" language="JSON" extensions="asmdef"/>
+    <lang.altEnter language="JSON" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
+    <backend.actions.support language="JSON" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
+    <backend.markup.adapterFactory language="JSON" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
+    <completion.contributor language="JSON" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
+    <quoteHandler fileType="AsmDef" className="com.intellij.json.JsonQuoteHandler"/>
 
     <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;prefab;asset"/>
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlIconProvider" />
-    <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperAltEnterActionHandler" />
+    <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
     <lang.parserDefinition language="UnityYaml" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlParserDefinition" />
     <backend.actions.support language="UnityYaml" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
@@ -203,6 +201,10 @@
     <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
   </extensions>
 
+  <extensions defaultExtensionNs="JavaScript">
+    <JsonSchema.ProviderFactory implementation="com.jetbrains.rider.plugins.unity.asmdef.AsmDefJsonSchemeProviderFactory"/>
+  </extensions>
+
 
   <description><![CDATA[
 <p>Adds support for the Unity engine.</p>
@@ -249,18 +251,24 @@
 <strong>New in 2019.3</strong>
 <em>Added:</em>
 <ul>
+  <li>Rider: Add support for play mode tests (<a href="https://github.com/JetBrains/resharper-unity/issues/1293">#1293</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-19513">RIDER-19513</a>)</li>
   <li>Rider: Show prompt to set Rider as default external editor when Unity is started by Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/1127">#1127<a/>), <a href="https://github.com/JetBrains/resharper-unity/pull/1270">#1270</a>)</li>
+  <li>Rider: Add Unity specific Live Templates settings page (<a href="https://github.com/JetBrains/resharper-unity/pull/1351">#1351</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
-  <li>Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) (<a href="https://github.com/JetBrains/resharper-unity/issues/888">#888<a/>)</li>
+  <li>Rider: Improve display of count of merged log items (<a href="https://github.com/JetBrains/resharper-unity/issues/1296">#1296</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
+  <li>Rider: Status bar icon will show when Unity Editor is paused (<a href="https://github.com/JetBrains/resharper-unity/issues/1227">#1227</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
+  <li>Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1325">#1325</a>)</li>
+  <li>Rider: Clear on Play now supported in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
+  <li>Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) (<a href="https://github.com/JetBrains/resharper-unity/issues/888">#888</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
-  <li>Rider: Fix Clear on Play in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
+  <li>Unity Editor: Fix exception calling <tt>EditorApplication.isPlaying</tt> on wrong thread (<a href="https://github.com/JetBrains/resharper-unity/pull/1308">#1308</a>)</li>
 </ul>
 </p>
-<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/192/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
+<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/193/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
 ]]>
   </change-notes>
 </idea-plugin>

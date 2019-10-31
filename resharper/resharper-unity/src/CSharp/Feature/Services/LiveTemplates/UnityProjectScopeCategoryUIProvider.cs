@@ -13,16 +13,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
     [ScopeCategoryUIProvider(Priority = Priority, ScopeFilter = ScopeFilter.Project)]
     public class UnityProjectScopeCategoryUIProvider : ScopeCategoryUIProvider
     {
+        static UnityProjectScopeCategoryUIProvider()
+        {
+            // These get added to a static dictionary, so they can be referenced by name from templates
+            // We're using Unity_CSharp instead of just CSharp, because that's set up to use the C#
+            // template scope icon instead of the C# file icon - see RIDER-9903
+            TemplateImage.Register("UnityCSharp", PsiCSharpThemedIcons.Csharp.Id);
+            TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
+            TemplateImage.Register("UnityAsmDef", PsiJavaScriptThemedIcons.Json.Id);
+        }
+        
         // Needs to be less than other priorities in R#'s built in ScopeCategoryUIProvider
         // to push it to the end of the list
         private const int Priority = -200;
-
-        // These get added to a static dictionary, so they can be referenced by name from templates
-        // We're using Unity_CSharp instead of just CSharp, because that's set up to use the C#
-        // template scope icon instead of the C# file icon - see RIDER-9903
-        public static TemplateImage Unity_CSharp = TemplateImage.Register("UnityCSharp", PsiCSharpThemedIcons.Csharp.Id);
-        public static TemplateImage Unity_ShaderLab = TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
-        public static TemplateImage Unity_AsmDef = TemplateImage.Register("UnityAsmDef", PsiJavaScriptThemedIcons.Json.Id);
 
         public UnityProjectScopeCategoryUIProvider()
             : base(LogoThemedIcons.UnityLogo.Id)

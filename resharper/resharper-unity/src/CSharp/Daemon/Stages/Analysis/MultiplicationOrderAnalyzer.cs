@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var parent = expression.GetContainingParenthesizedExpression()?.Parent as ICSharpExpression;
             if (GetMulOperation(expression) != null || GetMulOperation(parent) == null)
                 return;
-            
+
             if (IsMatrixType(expression.GetExpressionType()))
             {
                 var count = 0;
@@ -63,6 +63,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                         break;
                     }
                 }
+
+                // incomplete expression
+                if (scalar == null)
+                    return;
+
                 if (count > 1)
                 {
                     Assertion.Assert(scalar != null, "scalar != null");
@@ -75,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             if (expression is IMultiplicativeExpression mul && mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK)
                 return mul;
-            
+
             return null;
         }
 

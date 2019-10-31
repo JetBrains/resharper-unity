@@ -18,15 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
     {
         protected abstract string RelativeTestDataRoot { get; }
 
-        private const string ProductGoldSuffix =
-#if RIDER
-                "rider"
-#else
-                "resharper"
-#endif
-            ;
-
-        protected sealed override string RelativeTestDataPath => $@"{RelativeTestDataRoot}\{ProductGoldSuffix}";
+        protected sealed override string RelativeTestDataPath => $@"{RelativeTestDataRoot}\{Utils.ProductGoldSuffix}";
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)

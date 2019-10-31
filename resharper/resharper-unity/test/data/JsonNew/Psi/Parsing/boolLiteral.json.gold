@@ -1,0 +1,5 @@
+﻿Language: PsiLanguageType:JSON_NEW
+IJsonNewFile
+  IJsonNewLiteralExpression
+    JsonNewKeywordTokenNode(type:TRUE_KEYWORD, text:true)
+
