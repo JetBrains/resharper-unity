@@ -57,10 +57,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             // * Unity prior to 5.5 uses an old mono compiler that only supports C# 4
             // * Unity 5.5 and later adds C# 6 support as an option. This is enabled by setting
             //   the API compatibility level to NET_4_6
-            // * The CSharp60Support plugin replaces the compiler with either C# 6 or C# 7.0
-            //   It can be recognised by a folder called `CSharp60Support` or `CSharp70Support`
+            // * The CSharp60Support plugin replaces the compiler with either C# 6 or C# 7.0 or 8.0
+            //   It can be recognised by a folder called `CSharp60Support` or `CSharp70Support` or `CSharp80Support`
             //   in the root of the project
             //   (https://bitbucket.org/alexzzzz/unity-c-5.0-and-6.0-integration)
+            // * Note that since Unity 2017.2 till 2018.3, we've been special-cased in the Unity csproj generation
+            //   and we've been getting v4.5 for old runtime and default values (4.7.1) for new. So where
+            //   it says 3.5 below, that depends on the version of Unity. Older versions will give us 3.5,
+            //   newer versions 4.5.
             //
             // Scenarios:
             // * No VSTU installed (including Unity 5.5)
@@ -80,11 +84,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             //   .csproj has NO `LangVersion`
             //   `TargetFrameworkVersion` is NOT accurate (support for C# 6 is not dependent on/trigger by .net 4.6)
             //   Look for `CSharp60Support` or `CSharp70Support` folders
+            // * Unity 2018.x+. LangVersion is `latest`. MSBuild 16 treats `newest` as C# 8. Re# and Rider start suggesting it.
             //
             // Actions:
-            // If `LangVersion` is missing or "default"
+            // * If `LangVersion` is missing or "default"
             // then override based on `TargetFrameworkVersion` or presence of `CSharp60Support`/`CSharp70Support`
             // else do nothing
+            // * If `LangVersion` is "latest"
+            // then override based on `CSharp80Support` presence or LangVersion matching Roslyn bundled in Unity
             //
             // Notes:
             // * Unity and VSTU have two separate .csproj routines. VSTU adds extra references,
@@ -96,14 +103,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             // * `LangVersion` can be conditionally specified, which makes checking for "default" awkward
             // * If Unity3dRider + CSharp60Support are both installed, last write wins
             //   Order of post-processing is non-deterministic, so Rider's LangVersion might be removed
-            #endregion
-
-            #region Explanation "Avoid C# 8"
-            // Unity 2018.x+ sets LangVersion to `newest`
-            // MSBuild 16 treats `newest` as C# 8. Re# and Rider start suggesting it.
-            // Actions:
-            // Set LangVersion matching Roslyn bundled in Unity
-            
             #endregion
 
             var languageLevel = ReSharperSettingsCSharpLanguageLevel.Default;
