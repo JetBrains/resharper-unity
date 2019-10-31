@@ -99,7 +99,7 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             if (SystemInfo.isWindows) {
                 val id = model.unityProcessId.valueOrNull
                 if (id != null && id > 0)
-                    task.set(user32.AllowSetForegroundWindow(id))
+                    task.set(user32!!.AllowSetForegroundWindow(id))
                 else
                     logger.warn("unityProcessId is null or 0")
             }
@@ -120,7 +120,7 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
         fun AllowSetForegroundWindow(id:Int) : Boolean
     }
 
-    private val user32 = Native.load("user32", User32::class.java)
+    private val user32 = if (SystemInfo.isWindows) Native.load("user32", User32::class.java) else null
 }
 
 fun Project.isConnectedToEditor() = UnityHost.getInstance(this).sessionInitialized.valueOrDefault(false)
