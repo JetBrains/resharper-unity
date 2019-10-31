@@ -4,7 +4,9 @@ import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
 import com.intellij.xdebugger.XDebuggerManager
@@ -26,11 +28,13 @@ import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorR
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.getComponent
+import com.sun.jna.Native
+import com.sun.jna.win32.StdCallLibrary
 import java.awt.Frame
 
 class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComponent(project) {
     val model = project.solution.rdUnityModel
-
+    private val logger = Logger.getInstance(UnityHost::class.java)
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
 
@@ -89,11 +93,34 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             }
             task
         }
+
+        model.allowSetForegroundWindow.set { _, _ ->
+            val task = RdTask<Boolean>()
+            if (SystemInfo.isWindows) {
+                val id = model.unityProcessId.valueOrNull
+                if (id != null && id > 0)
+                    task.set(user32.AllowSetForegroundWindow(id))
+                else
+                    logger.warn("unityProcessId is null or 0")
+            }
+            else
+                task.set(true)
+
+            task
+        }
+
     }
 
     companion object {
         fun getInstance(project: Project) = project.getComponent<UnityHost>()
     }
+
+    @Suppress("FunctionName")
+    private interface User32 : StdCallLibrary {
+        fun AllowSetForegroundWindow(id:Int) : Boolean
+    }
+
+    private val user32 = Native.load("user32", User32::class.java)
 }
 
 fun Project.isConnectedToEditor() = UnityHost.getInstance(this).sessionInitialized.valueOrDefault(false)

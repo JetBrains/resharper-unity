@@ -1,7 +1,8 @@
-using System;
-using System.Reflection;
+using System.Diagnostics;
+using System.Linq;
 using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
+using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,7 +20,10 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
         {
           MainThreadDispatcher.Instance.Queue(() =>
           {
+            ExpandMinimizedUnityWindow();
+            
             EditorUtility.FocusProjectWindow();
+
             if (findUsagesResult.IsPrefab)
             {
               ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
@@ -59,6 +63,25 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
           });  
         }
       });
+    }
+
+    private static void ExpandMinimizedUnityWindow()
+    {
+      if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      {
+        var topLevelWindows = User32Dll.GetTopLevelWindowHandles();
+        var windowHandles = topLevelWindows
+          .Where(hwnd => User32Dll.GetWindowProcessId(hwnd) == Process.GetCurrentProcess().Id).ToArray();
+
+        foreach (var windowHandle in windowHandles)
+        {
+          if (User32Dll.IsIconic(windowHandle))
+          {
+            User32Dll.ShowWindow(windowHandle, 9);
+            User32Dll.SetForegroundWindow(windowHandle);
+          }
+        }
+      }
     }
   }
 }
