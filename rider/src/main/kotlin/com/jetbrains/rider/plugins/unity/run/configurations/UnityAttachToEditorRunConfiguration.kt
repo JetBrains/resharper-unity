@@ -1,10 +1,7 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.execution.configurations.RunProfileState
-import com.intellij.execution.configurations.RuntimeConfigurationError
-import com.intellij.execution.configurations.WithoutOwnBeforeRunSteps
+import com.intellij.execution.configurations.*
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
@@ -13,14 +10,14 @@ import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAc
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
+import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
 import org.jdom.Element
 
-class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttachToEditorFactory, val play: Boolean = false)
+class UnityAttachToEditorRunConfiguration(project: Project, factory: ConfigurationFactory, val play: Boolean = false)
     : DotNetRemoteConfiguration(project, factory, "Attach To Unity Editor"),
     RunConfigurationWithSuppressedDefaultRunAction,
     RemoteConfiguration,
@@ -35,12 +32,10 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
     override var port: Int = -1
     override var address: String = "127.0.0.1"
     var pid: Int? = null
-    var isUserSelectedPid = false
 
     override fun clone(): RunConfiguration {
         val configuration = super.clone() as UnityAttachToEditorRunConfiguration
         configuration.pid = pid
-        configuration.isUserSelectedPid = isUserSelectedPid
         return configuration
     }
 
@@ -77,57 +72,28 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: UnityAttach
 
         val processList = OSProcessUtil.getProcessList()
 
-        // We might have a pid from a previous run, but the editor might have died
-        pid = if (isUserSelectedPid) {
-            checkValidEditorInstance(pid, processList) ?: findUnityEditorInstance(processList)
-        } else {
-            findUnityEditorInstance(processList)
-        }
-
-        if (pid == null)
-            return false
-
+        // Try to reuse the previous process ID, if it's still valid, then fall back to finding the process
+        // automatically. Theoretically, there is a tiny chance the previous process has died, and the process ID has
+        // been recycled for a new process that just happens to be a Unity process. Practically, this is not likely
+        pid = checkValidEditorInstance(pid, processList) ?: findUnityEditorInstanceFromEditorInstanceJson(processList) ?: return false
         port = convertPidToDebuggerPort(pid!!)
         return true
     }
 
-    private fun findUnityEditorInstance(processList: Array<ProcessInfo>): Int? {
-        isUserSelectedPid = false
-        return findUnityEditorInstanceFromEditorInstanceJson(processList)
-            ?: findUnityEditorInstanceFromProcesses(processList)
-    }
-
     private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
-        val (status, editorInstanceJson) = EditorInstanceJson.load(project)
-        if (status == EditorInstanceJsonStatus.Valid && editorInstanceJson != null) {
-            return checkValidEditorInstance(editorInstanceJson.process_id, processList)
+        val editorInstanceJson = EditorInstanceJson.getInstance(project)
+        if (editorInstanceJson.validateStatus(processList) == EditorInstanceJsonStatus.Valid) {
+            return editorInstanceJson.contents!!.process_id
         }
 
         return null
     }
 
     private fun checkValidEditorInstance(pid: Int?, processList: Array<ProcessInfo>): Int? {
-        if (pid != null) {
-            // Look for processes, if it exists and has the correct name, return it unchanged,
-            // else return invalidValue. Do not throw, as we'll attempt to recover
-            if (processList.any { it.pid == pid && UnityRunUtil.isUnityEditorProcess(it) })
-                return pid
+        if (pid != null && UnityRunUtil.isValidUnityEditorProcess(pid, processList)) {
+            return pid
         }
         return null
-    }
-
-    private fun findUnityEditorInstanceFromProcesses(processList: Array<ProcessInfo>): Int? {
-
-        val pids = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
-            .map { it.pid }
-
-        if (pids.isEmpty()) {
-            return null
-        } else if (pids.size > 1) {
-            throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please select from the list or open the project in Unity.")
-        }
-
-        return pids[0]
     }
 
     override fun checkConfiguration() {

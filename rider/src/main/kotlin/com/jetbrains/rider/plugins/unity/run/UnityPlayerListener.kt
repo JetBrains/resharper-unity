@@ -1,7 +1,8 @@
-package com.jetbrains.rider.plugins.unity.run.attach
+package com.jetbrains.rider.plugins.unity.run
 
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
@@ -9,10 +10,12 @@ import java.net.*
 import java.util.*
 import java.util.regex.Pattern
 
-class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, private val onPlayerRemoved: (UnityPlayer) -> Unit, lifetime: Lifetime) {
+class UnityPlayerListener(private val project: Project,
+                          private val onPlayerAdded: (UnityPlayer) -> Unit,
+                          private val onPlayerRemoved: (UnityPlayer) -> Unit, lifetime: Lifetime) {
 
     companion object {
-        private val logger = Logger.getInstance(UnityProcessListener::class.java)
+        private val logger = Logger.getInstance(UnityPlayerListener::class.java)
 
         // E.g.:
         // [IP] 10.211.55.4 [Port] 55376 [Flags] 3 [Guid] 1410689715 [EditorId] 1006284310 [Version] 1048832 [Id] WindowsPlayer(PARALLELS) [Debug] 1 [PackageName] WindowsPlayer [ProjectName] GemShader is awesome
@@ -35,7 +38,7 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
         // * [PackageName] %s - the type of the player, e.g. `iPhonePlayer` or `WindowsPlayer`. Could be used as as a
         //                      "type" field. This is not present in all messages, so I guess it was added in a specific
         //                      version of Unity, but don't know which
-        // * [ProjectName] %s - same as PlayerSettings.productName. Added in Unity 2019.2
+        // * [ProjectName] %s - same as PlayerSettings.productName. Added in Unity 2019.3a6
         @Suppress("RegExpRepeatedSpace")
         private val unityPlayerDescriptorRegex = Pattern.compile("""\[IP]\s(?<ip>.*)
 \s\[Port]\s(?<port>\d+)
@@ -89,19 +92,29 @@ class UnityProcessListener(private val onPlayerAdded: (UnityPlayer) -> Unit, pri
             }
         }
 
-        refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
-            refreshUnityPlayersList()
-        }
-
-        OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }.map { processInfo ->
-            val port = convertPidToDebuggerPort(processInfo.pid)
-            UnityPlayer.createEditorPlayer("127.0.0.1", port, "${processInfo.executableName} (pid: ${processInfo.pid})", null)
-        }.forEach {
-            onPlayerAdded(it)
-        }
+        addLocalProcesses()
+        refreshTimer = startAddingPlayers()
 
         lifetime.onTermination {
             close()
+        }
+    }
+
+    private fun addLocalProcesses() {
+        val unityProcesses = OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }
+        val projectNames = UnityRunUtil.getUnityProcessProjectNames(unityProcesses, project)
+        unityProcesses.map { processInfo ->
+            val projectName = projectNames[processInfo.pid]
+            val port = convertPidToDebuggerPort(processInfo.pid)
+            UnityPlayer.createEditorPlayer("127.0.0.1", port, processInfo.executableName, processInfo.pid, projectName)
+        }.forEach {
+            onPlayerAdded(it)
+        }
+    }
+
+    private fun startAddingPlayers(): Timer {
+        return kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
+            refreshUnityPlayersList()
         }
     }
 
