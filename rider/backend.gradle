@@ -201,7 +201,7 @@ task runNunit {
 }
 
 task publishCiBackendArtifacts {
-    inputs.file(packReSharperPlugin.outputs)
+    inputs.files(packReSharperPlugin.outputs)
 
     doLast {
         buildServer.publishArtifact(packReSharperPlugin.outputs.files.singleFile)

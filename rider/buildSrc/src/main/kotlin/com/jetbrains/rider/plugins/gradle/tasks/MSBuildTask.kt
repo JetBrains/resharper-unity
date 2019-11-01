@@ -18,7 +18,7 @@ import java.lang.IllegalStateException
 open class MSBuildTask: DefaultTask() {
 
     @InputFile
-    var buildFile: RegularFileProperty = project.layout.fileProperty()
+    val buildFile: RegularFileProperty = project.objects.fileProperty()
 
     @TaskAction
     fun build() {
