@@ -253,6 +253,7 @@
 <ul>
   <li>Rider: Add support for play mode tests (<a href="https://youtrack.jetbrains.com/issue/RIDER-19513">RIDER-19513</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1293">#1293</a>)</li>
   <li>Rider: Show prompt to set Rider as default external editor when Unity is started by Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/1127">#1127<a/>), <a href="https://github.com/JetBrains/resharper-unity/pull/1270">#1270</a>)</li>
+  <li>Rider: Show prompt for Linux users to install Mono 5.16+ (<a href="https://github.com/JetBrains/resharper-unity/issues/1375">#1375</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1383">#1383</a>)</li>
   <li>Rider: Add Unity specific Live Templates settings page (<a href="https://github.com/JetBrains/resharper-unity/pull/1351">#1351</a>)</li>
   <li>Rider: Add project name to "Attach to Unity Process" and "Attach to Unity Editor" run configuration dialogs (<a href="https://github.com/JetBrains/resharper-unity/issues/1009">#1009</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-31184">RIDER-31184</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Rider: Add support for Clear on Play now in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
@@ -267,12 +268,12 @@
   <li>Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1325">#1325</a>)</li>
   <li>Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) (<a href="https://github.com/JetBrains/resharper-unity/issues/888">#888</a>)</li>
   <li>Unity Editor: Don't create <tt>EditorInstance.json</tt> for Unity 2017.1+, since it does it itself (<a href="https://github.com/JetBrains/resharper-unity/pull/1356">#1356</a>)</li>
-  <li>Unity Editor: Reduce size of pre-compiled editor plugin for Unity 20192.2+ to help AppDomain restart performance (<a href="https://github.com/JetBrains/resharper-unity/pull/1367">#1367</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
   <li>Rider: Fix race condition preventing "Attach to Unity Process" dialog from always listing players (<a href="https://youtrack.jetbrains.com/issue/RIDER-34039">RIDER-34039</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Rider: Prevent "Attach to Unity Process" attempting to attach to the same process multiple times (<a href="https://github.com/JetBrains/resharper-unity/issues/1129">#1129</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
+  <li>Unity Editor: Stop suggesting C# 8 features when using a new msbuild from Mono (<a href="https://github.com/JetBrains/resharper-unity/issues/1379">#1379</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1380">#1380</a>)</li>
   <li>Unity Editor: Fix exception calling <tt>EditorApplication.isPlaying</tt> on wrong thread (<a href="https://github.com/JetBrains/resharper-unity/pull/1308">#1308</a>)</li>
 </ul>
 </p>
