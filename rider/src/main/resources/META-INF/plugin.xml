@@ -254,9 +254,11 @@
   <li>Rider: Add support for play mode tests (<a href="https://github.com/JetBrains/resharper-unity/issues/1293">#1293</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-19513">RIDER-19513</a>)</li>
   <li>Rider: Show prompt to set Rider as default external editor when Unity is started by Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/1127">#1127<a/>), <a href="https://github.com/JetBrains/resharper-unity/pull/1270">#1270</a>)</li>
   <li>Rider: Add Unity specific Live Templates settings page (<a href="https://github.com/JetBrains/resharper-unity/pull/1351">#1351</a>)</li>
+  <li>Rider: Add project name to "Attach to Unity Process" and "Attach to Unity Editor" run configuration dialogs (<a href="https://github.com/JetBrains/resharper-unity/issues/1009">#1009</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-31184">RIDER-31184</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Rider: Improve UX of "Attach to Unity Process" dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/1278">#1278</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Rider: Improve display of count of merged log items (<a href="https://github.com/JetBrains/resharper-unity/issues/1296">#1296</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
   <li>Rider: Status bar icon will show when Unity Editor is paused (<a href="https://github.com/JetBrains/resharper-unity/issues/1227">#1227</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
   <li>Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1325">#1325</a>)</li>
@@ -265,6 +267,8 @@
 </ul>
 <em>Fixed:</em>
 <ul>
+  <li>Rider: Fix race condition preventing "Attach to Unity Process" dialog from always listing players (<a href="https://youtrack.jetbrains.com/issue/RIDER-34039">RIDER-34039</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
+  <li>Rider: Prevent "Attach to Unity Process" attempting to attach to the same process multiple times (<a href="https://github.com/JetBrains/resharper-unity/issues/1129">#1129</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Unity Editor: Fix exception calling <tt>EditorApplication.isPlaying</tt> on wrong thread (<a href="https://github.com/JetBrains/resharper-unity/pull/1308">#1308</a>)</li>
 </ul>
 </p>
