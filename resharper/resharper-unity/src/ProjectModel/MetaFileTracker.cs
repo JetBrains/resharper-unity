@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
@@ -196,10 +196,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 myLogger.Trace("*** resharper-unity: Item removed {0}", change.OldLocation);
 
-                // Only delete the meta file if the original file or folder is missing
-                if (change.OldLocation.Exists != FileSystemPath.Existence.Missing)
-                    return;
-
                 var metaFile = GetMetaFile(change.OldLocation);
                 if (!metaFile.ExistsFile)
                     return;
@@ -210,7 +206,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                     RenameMetaFile(metaFile, newMetaFile, " via add/remove");
                 }
                 else
+                {
+                    // Only delete the meta file if the original file or folder is missing
+                    if (change.OldLocation.Exists != FileSystemPath.Existence.Missing)
+                        return;
+                    
                     DeleteMetaFile(metaFile);
+                }
 
                 myMetaFileTracker.myLastAddedItem = null;
             }
