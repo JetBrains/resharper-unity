@@ -4,8 +4,11 @@ using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Tasks;
+using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Host.Features.Runtime;
+using JetBrains.ReSharper.Host.Features.Settings;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -14,9 +17,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class MonoInstallTrigger
     {
         public MonoInstallTrigger(Lifetime lifetime, ILogger logger, ISolutionLoadTasksScheduler scheduler,
-            ISolution solution, UnitySolutionTracker unitySolutionTracker, UnityHost host)
+            ISolution solution, UnitySolutionTracker unitySolutionTracker, UnityHost host,
+            NotificationsModel notificationsModel)
         {
-            if (PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX)
+            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                 return;
 
             scheduler.EnqueueTask(new SolutionLoadTask("Check mono runtime", SolutionLoadTaskKinds.AfterDone, () =>
@@ -51,10 +55,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             return false;
                         });
 
-                    if (!installedValidMono)
-                    {
+                    if (installedValidMono) return;
+                    
+                    if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                         solution.Locks.ExecuteOrQueue(lifetime, "Show install mono dialog",
                             () => { host.PerformModelAction(model => model.ShowInstallMonoDialog()); });
+                    else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Linux)
+                    {
+                        var notification = new NotificationModel("Mono 5.16+ is required.",
+                            "<html>Project requires new Mono with MSBuild for new C# language features support.<br>" +
+                            RiderContextNotificationHelper.MakeOpenSettingsLink(
+                                WellKnownSettingPages.Environment,
+                                "Install the latest Mono")
+                            + ".<br>" +
+                            "If a Mono runtime is available in a non-standard location, please " +
+                            RiderContextNotificationHelper.MakeOpenSettingsLink(
+                                WellKnownSettingPages.ToolsetAndBuild,
+                                "specify the custom runtime location in settings")
+                            + ".</html>"
+                                
+                            , true,
+                            RdNotificationEntryType.WARN);
+                        notificationsModel.Notification(notification);
                     }
                 });
             }));
