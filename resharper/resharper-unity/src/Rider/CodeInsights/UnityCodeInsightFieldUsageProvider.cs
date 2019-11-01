@@ -54,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
         private readonly ITooltipManager myTooltipManager;
         private readonly TextControlManager myTextControlManager;
+        private readonly UnityEditorProtocol myProtocol;
         public override string ProviderId => "Unity serialized field";
         public override string DisplayName => "Unity serialized field";
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
@@ -63,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public UnityCodeInsightFieldUsageProvider(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
             UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneDataLocalCache sceneDataCache,
-            ITooltipManager tooltipManager, TextControlManager textControlManager)
+            ITooltipManager tooltipManager, TextControlManager textControlManager, UnityEditorProtocol protocol)
             : base(unitySolutionTracker, host, bulbMenu)
         {
             myLifetime = lifetime;
@@ -74,6 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             myUnitySceneDataLocalCache = sceneDataCache;
             myTooltipManager = tooltipManager;
             myTextControlManager = textControlManager;
+            myProtocol = protocol;
         }
         
         private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
@@ -177,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
                             var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
                             
-                            UnityEditorFindUsageResultCreator.CreateRequestAndShow(myUnityHost, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
+                            UnityEditorFindUsageResultCreator.CreateRequestAndShow(myProtocol, myUnityHost, myLifetime, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
                                 value.Value.MonoBehaviour, value.File);
                         });
                     });
