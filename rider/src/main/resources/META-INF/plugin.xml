@@ -61,6 +61,7 @@
     <completion.contributor language="JSON" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
     <quoteHandler fileType="AsmDef" className="com.intellij.json.JsonQuoteHandler"/>
 
+    <!-- YAML asset support -->
     <fileType name="UnityYaml" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType" language="UnityYaml" extensions="meta;unity;prefab;asset"/>
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlIconProvider" />
     <lang.altEnter language="UnityYaml" implementationClass="com.jetbrains.rider.intentions.altEnter.ReSharperBulbMenuModelFactory" />
@@ -68,6 +69,12 @@
     <backend.actions.support language="UnityYaml" implementationClass="com.jetbrains.rider.actions.RiderActionSupportPolicy" />
     <backend.markup.adapterFactory language="UnityYaml" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
     <backend.typedHandler language="UnityYaml" implementationClass="com.jetbrains.rdclient.editorActions.FrontendTypedHandler"/>
+
+    <!-- UXML support -->
+    <fileType name="UXML" language="UXML" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType" extensions="uxml" />
+    <lang.parserDefinition language="UXML" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileParserDefinition"/>
+    <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
+    <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
 
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
 
