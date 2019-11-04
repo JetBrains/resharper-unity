@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         public const string AssetsFolder = "Assets";
         public const string ProjectSettingsFolder = "ProjectSettings";
-        
+
         public static bool HasUnityReference([NotNull] this ISolution solution)
         {
             var tracker = solution.GetComponent<UnityReferencesTracker>();
@@ -33,8 +33,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static bool IsUnityGeneratedProject([CanBeNull] this IProject project)
         {
-            // TODO: This doesn't work for Packages folder or 'file:' based packages
-            return project != null && project.HasSubItems(AssetsFolder) && IsUnityProject(project);
+            if (project == null)
+                return false;
+            
+            // This works for Assets for local Packages folders and for 'file:' based packages
+            if (project.ProjectFileLocation.IsAbsolute)
+            {
+                return project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory && IsUnityProject(project);
+            }
+            // for our tests // todo: refactor tests so they also check logic below
+            return project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
         public static bool HasUnityFlavour([CanBeNull] this IProject project)
         {
