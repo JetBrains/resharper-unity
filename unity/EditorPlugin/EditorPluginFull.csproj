@@ -14,6 +14,9 @@
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
   </ItemGroup>
   <ItemGroup>
+    <ILRepackInputAssemblies Include="../lib/*.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="AsyncBridge.Net35, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b3b1c0202c0d6a87">
       <HintPath>..\lib\AsyncBridge.Net35.dll</HintPath>
     </Reference>
