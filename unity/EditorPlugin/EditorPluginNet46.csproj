@@ -18,9 +18,6 @@
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll" />
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll" />
   </ItemGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugType>Full</DebugType>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="AssetPostprocessors\CsprojAssetPostprocessor.cs" />
     <Compile Remove="AssetPostprocessors\PdbAssetPostprocessor.cs" />
