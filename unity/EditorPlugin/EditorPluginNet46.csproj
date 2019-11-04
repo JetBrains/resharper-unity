@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <AssemblyName>JetBrains.Rider.Unity.Editor.Plugin.Net46</AssemblyName>
+    <RootNamespace>JetBrains.Rider.Unity.Editor</RootNamespace>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>UNITY_2017_3;RIDER_EDITOR_PLUGIN</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.RdFramework" Version="193.20191030.267" />
+    <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
+  </ItemGroup>
+  <ItemGroup>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll" />
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="AssetPostprocessors\CsprojAssetPostprocessor.cs" />
+    <Compile Remove="AssetPostprocessors\PdbAssetPostprocessor.cs" />
+    <Compile Remove="AssetPostprocessors\SlnAssetPostprocessor.cs" />
+    <Compile Remove="RiderMenu.cs" />
+  </ItemGroup>
+</Project>

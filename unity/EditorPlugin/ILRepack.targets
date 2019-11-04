@@ -2,7 +2,6 @@
   <ItemGroup>
     <!-- Note that EditorPlugin.csproj adds Newtonsoft.Json.dll -->
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-    <ILRepackInputAssemblies Include="../lib/*.dll" />
   </ItemGroup>
   <PropertyGroup>
     <ILRepackOutputAssembly>$(OutputPath)$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
