@@ -33,8 +33,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static bool IsUnityGeneratedProject([CanBeNull] this IProject project)
         {
+            if (project == null)
+                return false;
+            
+            if (!project.ProjectFileLocation.IsAbsolute && IsUnityProject(project)) return true; // True in tests
+            
             // This works for Assets for local Packages folders and for 'file:' based packages
-            return project != null && project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory  && IsUnityProject(project);
+            return project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory  && IsUnityProject(project);
         }
         public static bool HasUnityFlavour([CanBeNull] this IProject project)
         {
