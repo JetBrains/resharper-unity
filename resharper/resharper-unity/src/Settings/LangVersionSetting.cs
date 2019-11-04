@@ -130,10 +130,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                 {
                     var appPath = myUnityProjectFileCache.GetAppPath(project);
                     var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
-                    var roslynDir = contentPath.Combine(@"Tools\Roslyn");
-
-                    if (roslynDir.ExistsDirectory)
-                        languageLevel = myLanguageLevelProjectProperty.GetLatestAvailableLanguageLevel(roslynDir).ToSettingsLanguageLevel();   
+                    if (!contentPath.IsNullOrEmpty())
+                    {
+                        var roslynDir = contentPath.Combine(@"Tools\Roslyn");
+                        if (roslynDir.ExistsDirectory)
+                            languageLevel = myLanguageLevelProjectProperty.GetLatestAvailableLanguageLevel(roslynDir).ToSettingsLanguageLevel();
+                    }
                 }
             }
 
