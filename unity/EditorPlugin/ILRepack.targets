@@ -1,11 +1,11 @@
 ﻿<Project>
   <ItemGroup>
+    <!-- Note that EditorPlugin.csproj adds Newtonsoft.Json.dll -->
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-    <ILRepackInputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll" />
     <ILRepackInputAssemblies Include="../lib/*.dll" />
   </ItemGroup>
   <PropertyGroup>
-    <ILRepackOutputAssembly>../build/$(AssemblyName)/Assets/Plugins/Editor/JetBrains/$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
+    <ILRepackOutputAssembly>$(OutputPath)$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
   </PropertyGroup>
   <Target Name="RiderILRepack" AfterTargets="Build" Inputs="@(ILRepackInputAssemblies)" Outputs="$(ILRepackOutputAssembly)">
     <ItemGroup>
