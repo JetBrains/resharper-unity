@@ -5,6 +5,7 @@
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
   <depends>com.intellij.modules.rider</depends>
+  <depends>com.intellij.css</depends>
   <depends optional="true" config-file="PluginYamlPluginPart.xml">org.jetbrains.plugins.yaml</depends>
   <depends optional="true" config-file="PluginAppenderPluginPart.xml">rider.intellij.plugin.appender</depends>
 
@@ -75,6 +76,14 @@
     <lang.parserDefinition language="UXML" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileParserDefinition"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
+
+    <!-- USS support -->
+    <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileType" extensions="uss" />
+    <lang.parserDefinition language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileParserDefinition"/>
+    <lang.syntaxHighlighter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssSyntaxHighlighter" />
+    <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileBreadcrumbsProvider" />
+    <css.elementDescriptorProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.UssCssElementDescriptorProvider" order="first" />
+    <applicationService serviceImplementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.UssCssElementDescriptorFactory" />
 
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
