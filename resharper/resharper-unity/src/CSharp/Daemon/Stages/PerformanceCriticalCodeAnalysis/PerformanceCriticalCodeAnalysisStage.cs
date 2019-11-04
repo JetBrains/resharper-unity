@@ -160,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             if (element == null)
                 return false;
-            var id = mySwa.GetElementId(element, true);
+            var id = mySwa.GetElementId(element);
             
             if (!id.HasValue)
                 return false;
