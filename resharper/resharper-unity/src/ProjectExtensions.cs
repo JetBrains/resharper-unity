@@ -36,10 +36,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (project == null)
                 return false;
             
-            if (!project.ProjectFileLocation.IsAbsolute && IsUnityProject(project)) return true; // True in tests
-            
             // This works for Assets for local Packages folders and for 'file:' based packages
-            return project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory  && IsUnityProject(project);
+            // check IsAbsolute for our tests
+            return (!project.ProjectFileLocation.IsAbsolute ||
+                    project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory)
+                   && IsUnityProject(project);
         }
         public static bool HasUnityFlavour([CanBeNull] this IProject project)
         {
