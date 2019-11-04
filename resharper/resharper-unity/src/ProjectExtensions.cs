@@ -37,10 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 return false;
             
             // This works for Assets for local Packages folders and for 'file:' based packages
-            // check IsAbsolute for our tests
-            return (!project.ProjectFileLocation.IsAbsolute ||
-                    project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory)
-                   && IsUnityProject(project);
+            if (project.ProjectFileLocation.IsAbsolute)
+            {
+                return project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory && IsUnityProject(project);
+            }
+            // for our tests
+            return project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
         public static bool HasUnityFlavour([CanBeNull] this IProject project)
         {
