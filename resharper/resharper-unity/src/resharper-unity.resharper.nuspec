@@ -34,6 +34,10 @@
 - And much more!
 </description>
 <releaseNotes>
+Fixed:
+- Fix moving .meta file during "Move to Folder" refactoring (#1370, #1389)
+- Fix orphan .meta file during "Safe Delete" refactoring (#856, #1389)
+- Fix correctly keeping .meta files up to date in Packages folder (#1231, #1389)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
