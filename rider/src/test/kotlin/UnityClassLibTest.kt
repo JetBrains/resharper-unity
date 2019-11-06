@@ -14,7 +14,7 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
     private val editorGoldFile: File
         get() = File(testCaseGoldDirectory, "${testMethod.name}_opened")
 
-    @Test
+    @Test(enabled = false)
     fun testUnityClassLibraryTemplate() {
         val params = OpenSolutionParams()
         params.restoreNuGetPackages = true //it's always true in getAndOpenSolution
