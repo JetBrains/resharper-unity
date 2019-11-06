@@ -15,6 +15,7 @@ import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -150,7 +151,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     }
 
     private val listPanel = JPanel(MigLayout("ins 0, gap 0, flowy, novisualpadding, fill", "", "[][min!]")).apply {
-        add(eventList, "grow, wmin 0")
+        add(JBScrollPane(eventList), "grow, wmin 0")
         add(searchTextField, "growx")
     }
 
