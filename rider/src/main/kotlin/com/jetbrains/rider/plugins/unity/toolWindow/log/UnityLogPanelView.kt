@@ -15,6 +15,7 @@ import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -35,10 +36,7 @@ import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.swing.Icon
-import javax.swing.JMenuItem
-import javax.swing.JPanel
-import javax.swing.JPopupMenu
+import javax.swing.*
 import javax.swing.event.DocumentEvent
 
 class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel) {
@@ -150,7 +148,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     }
 
     private val listPanel = JPanel(MigLayout("ins 0, gap 0, flowy, novisualpadding, fill", "", "[][min!]")).apply {
-        add(eventList, "grow, wmin 0")
+        add(JBScrollPane(eventList).apply { horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER }, "grow, wmin 0")
         add(searchTextField, "growx")
     }
 
@@ -206,7 +204,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 //        if (logModel.selectedItem == null) {
 //            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
 //        }
-        // since we do not follow new items which appear, it makes sence to auto-select first one. RIDER-19937
+        // since we do not follow new items which appear, it makes sense to auto-select first one. RIDER-19937
         if (eventList.itemsCount == 1)
             eventList.selectedIndex = 0
     }

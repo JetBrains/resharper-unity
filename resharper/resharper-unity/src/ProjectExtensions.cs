@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             {
                 return project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory && IsUnityProject(project);
             }
-            // for our tests // todo: refactor tests so they also check logic below
+            // for our tests // todo: refactor tests so they also check logic above
             return project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
         public static bool HasUnityFlavour([CanBeNull] this IProject project)
