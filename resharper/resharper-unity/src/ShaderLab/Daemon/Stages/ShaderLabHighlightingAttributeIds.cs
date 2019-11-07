@@ -1,4 +1,4 @@
-using JetBrains.ReSharper.Feature.Services.Daemon.IdeaAttributes;
+using JetBrains.ReSharper.Feature.Services.Daemon.Attributes.Idea;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages;
 using JetBrains.TextControl.DocumentMarkup;
 
