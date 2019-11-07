@@ -646,5 +646,3 @@ namespace JetBrains.Rider.Unity.Editor
     }
   }
 }
-
-// Developed with JetBrains Rider =)
