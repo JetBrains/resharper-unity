@@ -21,7 +21,6 @@ class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<Unity
 
     override fun checkEditorData(configuration: UnityAttachToEditorRunConfiguration) {
         configuration.pid = viewModel.pid.value
-        configuration.isUserSelectedPid = viewModel.isUserSelectedPid.value
     }
 
     override fun resetEditorFrom(configuration: UnityAttachToEditorRunConfiguration) {

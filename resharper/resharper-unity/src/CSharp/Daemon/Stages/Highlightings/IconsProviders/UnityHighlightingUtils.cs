@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (usageChecker == null)
                 return false;
 
-            var id = swa.GetElementId(element, true);
+            var id = swa.GetElementId(element);
             if (!id.HasValue)
                 return false;
 

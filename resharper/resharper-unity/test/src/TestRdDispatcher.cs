@@ -1,7 +1,6 @@
 ﻿
 using JetBrains.Collections.Viewable;
 using JetBrains.Rd;
-using JetBrains.Rd.Reflection;
 #if RIDER
 using JetBrains.Application;
 using JetBrains.Application.Components;
@@ -31,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
         }
 
-        public MyProtocol(IShellLocks locks, IPolymorphicTypesCatalog typesCatalog, Lifetime lifetime)
+        public MyProtocol(IShellLocks locks, ITypesRegistrar typesCatalog, Lifetime lifetime)
             : base(locks, typesCatalog, lifetime)
         {
         }

@@ -11,7 +11,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.15.3" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
+  </ItemGroup>
+  <ItemGroup>
+    <ILRepackInputAssemblies Include="../lib/*.dll" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="AsyncBridge.Net35, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b3b1c0202c0d6a87">
@@ -33,11 +36,4 @@
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
   </ItemGroup>
-  <!-- The ILRepack.targets file is automatically imported if it exists
-       AND we are in Release. But we require it for Debug builds, too,
-       as it's a required artifact for the backend plugin -->
-  <PropertyGroup>
-    <ILRepackTargetsFile>$(MSBuildThisFileDirectory)ILRepackFull.targets</ILRepackTargetsFile>
-  </PropertyGroup>
-  <Import Project="$(ILRepackTargetsFile)" Condition="'$(Configuration)' != 'Release'" />
 </Project>

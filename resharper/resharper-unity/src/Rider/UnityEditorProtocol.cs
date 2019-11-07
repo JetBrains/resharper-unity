@@ -186,19 +186,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
 
                     // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
-                    myHost.PerformModelAction(t => t.ShowGameObjectOnScene.Advise(lf, v => editor.ShowGameObjectOnScene.Fire(v.ConvertToUnityModel())));
                     myHost.PerformModelAction(t => t.ShowFileInUnity.Advise(lf, v => editor.ShowFileInUnity.Fire(v)));
                     myHost.PerformModelAction(t => t.ShowPreferences.Advise(lf, v =>
                     {
-                        if (t.UnityProcessId.HasValue())
-                            UnityFocusUtil.FocusUnity(t.UnityProcessId.Value);
-
                         editor.ShowPreferences.Fire();
                     }));
-
-                    // pass all references to Unity TODO temp workaround, replace with async api
-                    myHost.PerformModelAction(t => t.FindUsageResults.Advise(lf, v =>editor.FindUsageResults.Fire(v.ConvertToUnityModel())));
-
+                    
                     editor.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
                     editor.PlayerLogPath.Advise(lifetime,
