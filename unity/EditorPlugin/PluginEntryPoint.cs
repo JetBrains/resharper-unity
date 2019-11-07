@@ -37,6 +37,9 @@ namespace JetBrains.Rider.Unity.Editor
     // This an entry point
     static PluginEntryPoint()
     {
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return;
+      
       PluginSettings.InitLog(); // init log before doing any logging
       ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap
 

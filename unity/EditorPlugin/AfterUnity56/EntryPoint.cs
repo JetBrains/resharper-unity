@@ -9,6 +9,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
   {
     static EntryPoint()
     {
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return;
+      
       PluginEntryPoint.OnModelInitialization += UnitTesting.Initialization.OnModelInitializationHandler;
       PluginEntryPoint.OnModelInitialization += Navigation.Initialization.OnModelInitializationHandler;
       AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
