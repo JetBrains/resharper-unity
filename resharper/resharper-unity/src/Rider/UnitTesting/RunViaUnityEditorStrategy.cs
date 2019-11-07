@@ -15,6 +15,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Host.Features.UnitTesting;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
@@ -31,7 +32,7 @@ using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
     [SolutionComponent]
-    public class RunViaUnityEditorStrategy : IUnitTestRunStrategy
+    public class RunViaUnityEditorStrategy : IExternalRunnerUnitTestRunStrategy
     {
         private static readonly Key<TaskCompletionSource<bool>> ourCompletionSourceKey =
             new Key<TaskCompletionSource<bool>>("RunViaUnityEditorStrategy.TaskCompletionSource");
@@ -380,6 +381,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public void Abort(IUnitTestRun run)
         {
             Cancel(run);
+        }
+
+        public int? TryGetRunnerProcessId()
+        {
+            return myUnityHost.GetValue(m => m.UnityProcessId.Maybe.HasValue ? m.UnityProcessId.Value : (int?)null);
         }
 
         private class UnityRuntimeEnvironment : IRuntimeEnvironment
