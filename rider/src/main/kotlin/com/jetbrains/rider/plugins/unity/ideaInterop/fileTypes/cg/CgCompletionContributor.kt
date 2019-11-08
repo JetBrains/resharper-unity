@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg
 
 import com.intellij.codeInsight.completion.*
+import com.intellij.codeInsight.lookup.LookupFocusDegree
 import com.intellij.codeInsight.lookup.impl.LookupImpl
 import com.intellij.codeInsight.lookup.impl.LookupManagerImpl
 import com.intellij.openapi.Disposable
@@ -28,7 +29,8 @@ class CgCompletionContributor : WordCompletionContributor() {
             return
 
         val lookup = LookupManagerImpl.getActiveLookup(parameters.editor) as? LookupImpl ?: return
-        lookup.focusDegree = LookupImpl.FocusDegree.SEMI_FOCUSED
+
+        lookup.lookupFocusDegree = LookupFocusDegree.SEMI_FOCUSED
 
         addWordCompletionVariants(result, parameters, emptySet<String>())
     }

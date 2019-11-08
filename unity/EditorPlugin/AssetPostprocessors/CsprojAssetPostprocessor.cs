@@ -28,6 +28,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     static CsprojAssetPostprocessor()
     {
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return;
+      
       ourApiCompatibilityLevel = GetApiCompatibilityLevel();
     }
     
@@ -45,6 +48,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     [UsedImplicitly]
     public static string OnGeneratedCSProject(string path, string contents)
     {
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return contents;
+      
       try
       {
         ourLogger.Verbose("Post-processing {0} (in memory)", path);
@@ -73,6 +79,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // This method is for pre-2018.1, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return;
+      
       if (UnityUtils.UnityVersion >= new Version(2018, 1))
         return;
 

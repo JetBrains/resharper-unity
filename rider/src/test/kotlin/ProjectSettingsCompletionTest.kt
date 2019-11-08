@@ -147,7 +147,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
         CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
-        CodeInsightSettings.getInstance().SELECT_AUTOPOPUP_SUGGESTIONS_BY_CHARS = true
+        CodeInsightSettings.getInstance().isSelectAutopopupSuggestionsByChars = true
         CodeInsightSettings.getInstance().AUTO_POPUP_JAVADOC_INFO = false
 
         //all tests were written with this setting which default was changed only in 18.3
