@@ -65,7 +65,7 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
             assertNotNull(password, "System.getenv(\"password\") is null.")
             args.addAll(arrayOf("-username", login, "-password", password))
         }
-        return StartUnityAction.startUnity(appPath, project, args.toTypedArray())
+        return StartUnityAction.startUnity(project, *args.toTypedArray())
     }
 
     fun waitFirstScriptCompilation() {
