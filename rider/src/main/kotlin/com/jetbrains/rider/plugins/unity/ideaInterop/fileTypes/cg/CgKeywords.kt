@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.CustomHighlighterTokenType
 import com.intellij.psi.tree.IElementType
-import com.jetbrains.rider.ideaInterop.RiderTextAttributeKeys
+import com.jetbrains.rider.colors.RiderLanguageTextAttributeKeys
 
 class CgKeywords(isMultilineCommentEnabled: Boolean) {
     val appdata = listOf("appdata_base", "appdata_full", "appdata_img", "appdata_tan")
@@ -65,9 +65,9 @@ class CgKeywords(isMultilineCommentEnabled: Boolean) {
     }
 
     val tokenToHighlightMap: Map<IElementType, TextAttributesKey> = mapOf(
-        CustomHighlighterTokenType.KEYWORD_1 to RiderTextAttributeKeys.CLASS_IDENTIFIER,
-        CustomHighlighterTokenType.KEYWORD_2 to RiderTextAttributeKeys.KEYWORD,
-        CustomHighlighterTokenType.KEYWORD_3 to RiderTextAttributeKeys.KEYWORD,
+        CustomHighlighterTokenType.KEYWORD_1 to RiderLanguageTextAttributeKeys.CLASS,
+        CustomHighlighterTokenType.KEYWORD_2 to RiderLanguageTextAttributeKeys.KEYWORD,
+        CustomHighlighterTokenType.KEYWORD_3 to RiderLanguageTextAttributeKeys.KEYWORD,
         CustomHighlighterTokenType.KEYWORD_4 to DefaultLanguageHighlighterColors.CONSTANT
     )
 }
