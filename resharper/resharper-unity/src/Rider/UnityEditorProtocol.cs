@@ -10,7 +10,6 @@ using JetBrains.Collections.Viewable;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rd;
@@ -45,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
-        public readonly ViewableProperty<EditorPluginModel> UnityModel = new ViewableProperty<EditorPluginModel>(null);
+        public readonly ViewableProperty<BackendUnityModel> UnityModel = new ViewableProperty<BackendUnityModel>(null);
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
@@ -67,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) => 
+            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) =>
             {
                 if (!args) return;
 
@@ -143,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
-                
+
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
@@ -152,9 +151,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         new Identities(IdKind.Client), myDispatcher, wire, lf);
 
                     protocol.ThrowErrorOnOutOfSyncModels = false;
-                    
+
                     protocol.OutOfSyncModels.Advise(lf, e =>
                     {
+                        // TODO: We should also check that currently running Rider is the current external editor in Unity
+                        // Unity will use the plugin (and therefore model) of the selected external editor, not necessarily the running instance
                         var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
                         var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
                         if (!isEnabled)
@@ -162,7 +163,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
                         }
                     });
-                    var editor = new EditorPluginModel(lf, protocol);
+
+                    var editor = CreateBackendUnityModel(lf, protocol);
                     editor.IsBackendConnected.Set(rdVoid => true);
 
                     if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
@@ -191,7 +193,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         editor.ShowPreferences.Fire();
                     }));
-                    
+
                     editor.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
                     editor.PlayerLogPath.Advise(lifetime,
@@ -242,34 +244,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return (ScriptCompilationDuringPlay) mode;
         }
 
-        private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel editor)
+        private void BindPluginPathToSettings(Lifetime lf, BackendUnityModel unityEditor)
         {
             var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
             myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Change.Advise(lf,
                 val =>
                 {
                     if (val.HasNew && val.New)
-                        editor.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir()
+                        unityEditor.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir()
                             .Combine(PluginPathsProvider.FullPluginDllFile).FullPath);
-                    editor.FullPluginPath.SetValue(string.Empty);
+                    unityEditor.FullPluginPath.SetValue(string.Empty);
                 });
         }
 
-        private void TrackActivity(EditorPluginModel editor, Lifetime lf)
+        private void TrackActivity(BackendUnityModel unityEditor, Lifetime lf)
         {
-            if (!editor.ApplicationVersion.HasValue())
-                editor.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
+            if (!unityEditor.ApplicationVersion.HasValue())
+                unityEditor.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
             else
-                myUsageStatistics.TrackActivity("UnityVersion", editor.ApplicationVersion.Value);
-            if (!editor.ScriptingRuntime.HasValue())
-                editor.ScriptingRuntime.Advise(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
+                myUsageStatistics.TrackActivity("UnityVersion", unityEditor.ApplicationVersion.Value);
+            if (!unityEditor.ScriptingRuntime.HasValue())
+                unityEditor.ScriptingRuntime.Advise(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
             else
-                myUsageStatistics.TrackActivity("ScriptingRuntime", editor.ScriptingRuntime.Value.ToString());
+                myUsageStatistics.TrackActivity("ScriptingRuntime", unityEditor.ScriptingRuntime.Value.ToString());
         }
 
-        private void SubscribeToOpenFile([NotNull] EditorPluginModel editor)
+        private void SubscribeToOpenFile([NotNull] BackendUnityModel unityEditor)
         {
-            editor.OpenFileLineCol.Set(args =>
+            unityEditor.OpenFileLineCol.Set(args =>
             {
                 var result = false;
                 mySolution.Locks.ExecuteWithReadLock(() =>
@@ -305,14 +307,73 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private void SubscribeToLogs(Lifetime lifetime, EditorPluginModel editor)
+        private void SubscribeToLogs(Lifetime lifetime, BackendUnityModel model)
         {
-            editor.Log.Advise(lifetime, entry =>
+            model.Log.Advise(lifetime, entry =>
             {
                 myLogger.Verbose(entry.Time + " " + entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
-                var logEntry = new EditorLogEntry((int)entry.Type, (int)entry.Mode, entry.Time, entry.Message, entry.StackTrace);
+                var type = GetLogEventType(entry.Type);
+                var mode = GetLogEventMode(entry.Mode);
+                var logEntry = new EditorLogEntry(type, mode, entry.Time, entry.Message, entry.StackTrace);
                 myHost.PerformModelAction(m => m.OnUnityLogEvent(logEntry));
             });
+        }
+
+        private static LogEventType GetLogEventType(RdLogEventType type)
+        {
+            switch (type)
+            {
+                case RdLogEventType.Error:
+                    return LogEventType.Error;
+                case RdLogEventType.Warning:
+                    return LogEventType.Warning;
+                case RdLogEventType.Message:
+                    return LogEventType.Message;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        private static LogEventMode GetLogEventMode(RdLogEventMode mode)
+        {
+            switch (mode)
+            {
+                case RdLogEventMode.Edit:
+                    return LogEventMode.Edit;
+                case RdLogEventMode.Play:
+                    return LogEventMode.Play;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+            }
+        }
+
+        private static BackendUnityModel CreateBackendUnityModel(Lifetime lifetime, IProtocol protocol)
+        {
+            // See below
+            return new EditorPluginModel(lifetime, protocol);
+        }
+
+        // This class is only here for backwards compatibility. Please use BackendUnityModel in user code.
+        //
+        // The original names for the protocol models were "RdUnityModel" and "EditorPluginModel". These were renamed to
+        // "FrontendBackendModel" and "BackendUnityModel" respectively, to make it easier to tell what they did, and who
+        // they talked to.
+        // But the names of models are important, and act as keys. If both sides are expecting different names, the
+        // protocol will connect correctly, but the models won't sync - because they're different models.
+        // Renaming the frontend <-> backend model is not a problem, as we control both sides of the contract
+        // Renaming the backend <-> Unity model is trickier, because we can't fully control updating the Unity side. If
+        // Unity loads an older plugin, the names won't match, the models won't sync and while it looks like
+        // everything's ok, nothing actually works - we don't even get "model out of sync" errors.
+        //
+        // This class allows us to use the old name in the protocol, but still use BackendUnityModel in code. Note that
+        // the namespace isn't used. Any changes between the models themselves will give us "model out of sync errors",
+        // as before.
+        private class EditorPluginModel : BackendUnityModel
+        {
+            public EditorPluginModel(Lifetime lifetime, IProtocol protocol)
+                : base(lifetime, protocol)
+            {
+            }
         }
     }
 

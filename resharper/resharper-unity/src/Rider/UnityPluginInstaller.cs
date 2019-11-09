@@ -14,10 +14,10 @@ using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -68,9 +68,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
 
-            unityHost.PerformModelAction(rdUnityModel =>
+            unityHost.PerformModelAction(frontendBackendModel =>
             {
-                rdUnityModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
+                frontendBackendModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
                 {
                     myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.InstallEditorPlugin", () =>
                     {
@@ -243,7 +243,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        public bool TryCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
+        private bool TryCopyFiles([NotNull] UnityPluginDetector.InstallationInfo installation, out FileSystemPath installedPath)
         {
             installedPath = null;
             try

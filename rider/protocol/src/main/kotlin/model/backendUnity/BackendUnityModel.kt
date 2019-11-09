@@ -1,17 +1,18 @@
-package model.editorPlugin
+package model.backendUnity
 
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 
 @Suppress("unused")
-object EditorPluginModel: Root() {
+object BackendUnityModel: Root() {
 
-    var RdOpenFileArgs = structdef {
+    private val RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
         field("col", int)
     }
-    val RdLogEvent = structdef {
+
+    private val RdLogEvent = structdef {
         field("time", long)
         field("type", RdLogEventType)
         field("mode", RdLogEventMode)
@@ -19,12 +20,12 @@ object EditorPluginModel: Root() {
         field("stackTrace", string)
     }
 
-    val RdFindUsageResult = structdef {
+    private val RdFindUsageResult = structdef {
         field("target", string)
         field("elements", array(RdFindUsageResultElement))
     }
 
-    val RdFindUsageResultElement = structdef {
+    private val RdFindUsageResultElement = structdef {
         field("isPrefab", bool)
         field("expandInTreeView", bool)
         field("filePath", string)
@@ -33,50 +34,51 @@ object EditorPluginModel: Root() {
         field("rootIndices", array(int))
     }
 
-
-    val RdLogEventType = enum {
+    private val RdLogEventType = enum {
         +"Error"
         +"Warning"
         +"Message"
     }
 
-    val RdLogEventMode = enum {
+    private val RdLogEventMode = enum {
         +"Edit"
         +"Play"
     }
 
-    val TestResult = structdef {
+    private val TestResult = structdef {
         field("testId", string)
         field("projectName", string)
         field("output", string)
         field("duration", int)
-        field("status", enum {
-            +"Pending"
-            +"Running"
-            +"Inconclusive"
-            +"Ignored"
-            +"Success"
-            +"Failure"
-        })
+        field("status", TestResultStatus)
         field("parentId", string)
     }
 
-    val RunResult = structdef {
+    private val TestResultStatus = enum {
+        +"Pending"
+        +"Running"
+        +"Inconclusive"
+        +"Ignored"
+        +"Success"
+        +"Failure"
+    }
+
+    private val RunResult = structdef {
         field("passed", bool)
     }
 
-    val TestMode = enum {
+    private val TestMode = enum {
         +"Both"
         +"Edit"
         +"Play"
     }
 
-    val TestFilter = structdef{
+    private val TestFilter = structdef{
         field("assemblyName", string)
         field("testNames", immutableList(string))
     }
 
-    val UnitTestLaunch = classdef {
+    private val UnitTestLaunch = classdef {
         field("testFilters", immutableList(TestFilter))
         field("testGroups", immutableList(string))
         field("testCategories", immutableList(string))
@@ -86,7 +88,7 @@ object EditorPluginModel: Root() {
         call("abort", void, bool)
     }
 
-    val UnityEditorState = enum {
+    private val UnityEditorState = enum {
         +"Disconnected"
         +"Idle"
         +"Play"
@@ -94,7 +96,7 @@ object EditorPluginModel: Root() {
         +"Refresh"
     }
 
-    val RefreshType = enum {
+    private val RefreshType = enum {
         +"ForceRequestScriptReload"
         +"Force"
         +"Normal"

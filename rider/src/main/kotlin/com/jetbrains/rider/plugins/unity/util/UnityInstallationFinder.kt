@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -52,11 +52,11 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     private fun getApplicationContentsPathFromProtocol(): Path? {
-        return project.solution.rdUnityModel.applicationContentsPath.valueOrNull?.let { Paths.get(it) }
+        return project.solution.frontendBackendModel.applicationContentsPath.valueOrNull?.let { Paths.get(it) }
     }
 
     private fun tryGetApplicationPathFromProtocol(): Path? {
-        return project.solution.rdUnityModel.applicationPath.valueOrNull?.let { Paths.get(it) }
+        return project.solution.frontendBackendModel.applicationPath.valueOrNull?.let { Paths.get(it) }
     }
 
     fun getApplicationVersion(): String? {
@@ -64,6 +64,6 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     private fun tryGetApplicationVersionFromProtocol(): String? {
-        return project.solution.rdUnityModel.applicationVersion.valueOrNull
+        return project.solution.frontendBackendModel.applicationVersion.valueOrNull
     }
 }

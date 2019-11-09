@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.UnitTestLaunchPreference
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import javax.swing.JComponent
 
@@ -28,7 +28,7 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
             override fun update(e: AnActionEvent) {
                 val project = e.project ?: return
 
-                val currentPreference = project.solution.rdUnityModel.unitTestPreference.value
+                val currentPreference = project.solution.frontendBackendModel.unitTestPreference.value
                 e.presentation.text = getLauncherDescription(currentPreference)
 
                 e.presentation.description = getLauncherDescription(currentPreference)
@@ -47,7 +47,7 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
     override fun update(e: AnActionEvent) {
 
         val project = e.project ?: return
-        val currentPreference = project.solution.rdUnityModel.unitTestPreference.value
+        val currentPreference = project.solution.frontendBackendModel.unitTestPreference.value
         e.presentation.text = getLauncherDescription(currentPreference)
 
         e.presentation.description = getLauncherDescription(currentPreference)

@@ -4,7 +4,6 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model;
@@ -22,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             IThreading locks, UnitySolutionTracker unitySolutionTracker)
         {
             State = new Property<UnityEditorState>(lifetime, "UnityEditorPlugin::ConnectionState", UnityEditorState.Disconnected);
-            
+
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
                 return;
 

@@ -2,19 +2,19 @@ using System;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rd.Tasks;
+using JetBrains.Rider.Model;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
-using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
+using TestResult = JetBrains.Rider.Model.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public class UnityEditorTestLauncher
   {
     private readonly UnitTestLaunch myLaunch;
-    
+
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     private static string RunnerAddListener = "AddListener";
 
@@ -29,13 +29,13 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       var success = TryLaunchUnitTestsInternal();
       if (success)
         return;
-      
+
       // old way running tests works only for EditMode tests
       if (myLaunch.TestMode != TestMode.Edit)
       {
         return;
       }
-      
+
       // old way
       TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
     }
@@ -88,14 +88,14 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           string testEditorAssemblyProperties =  testEditorAssembly.GetTypes().Select(a=>a.Name).Aggregate((a, b)=> a+ ", " + b);
           throw new NullReferenceException($"Could not find {launcherTypeString} among {testEditorAssemblyProperties}");
         }
-        
+
         var filterType = testEngineAssembly.GetType("UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter");
         if (filterType == null)
         {
           string testEngineAssemblyProperties = testEngineAssembly.GetTypes().Select(a=>a.Name).Aggregate((a, b)=> a+ ", " + b);
           throw new NullReferenceException($"Could not find \"UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter\" among {testEngineAssemblyProperties}");
         }
-        
+
         var filter = Activator.CreateInstance(filterType);
         var fieldInfo = filter.GetType().GetField("testNames", BindingFlags.Instance | BindingFlags.Public);
         fieldInfo = fieldInfo??filter.GetType().GetField("names", BindingFlags.Instance | BindingFlags.Public);
@@ -172,7 +172,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         {
           if (!(test is TestMethod)) return;
           ourLogger.Verbose("TestStarted : {0}", test.FullName);
-          var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running,
+          var tResult = new TestResult(TestEventsSender.GetIdFromNUnitTest(test), test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, TestResultStatus.Running,
             TestEventsSender.GetIdFromNUnitTest(test.Parent));
           TestEventsSender.TestStarted(myLaunch, tResult);
         }))
@@ -260,7 +260,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     private static bool AdviseTestFinished(object runner, string fieldName, Action<ITestResult> callback)
     {
       var mTestFinishedEventMethodInfo = runner.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-      
+
       if (mTestFinishedEventMethodInfo == null)
       {
         ourLogger.Verbose("Could not find m_TestFinishedEvent via reflection");
@@ -280,7 +280,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       addListenerMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(callback)});
       return true;
     }
-    
+
     private void SupportAbort(object runner)
     {
       var unityTestAssemblyRunnerField =

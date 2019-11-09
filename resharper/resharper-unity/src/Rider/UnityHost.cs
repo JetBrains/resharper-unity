@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityHost
     {
         private readonly bool myIsInTests;
-        private readonly RdUnityModel myModel;
+        private readonly FrontendBackendModel myModel;
 
         public UnityHost(ISolution solution, bool isInTests = false)
         {
@@ -17,10 +17,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (myIsInTests)
                 return;
 
-            myModel = solution.GetProtocolSolution().GetRdUnityModel();
+            myModel = solution.GetProtocolSolution().GetFrontendBackendModel();
         }
 
-        public void PerformModelAction(Action<RdUnityModel> action)
+        public void PerformModelAction(Action<FrontendBackendModel> action)
         {
             if (myIsInTests)
                 return;
@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             action(myModel);
         }
 
-        public T GetValue<T>(Func<RdUnityModel, T> getter)
+        public T GetValue<T>(Func<FrontendBackendModel, T> getter)
         {
             return getter(myModel);
         }

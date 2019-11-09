@@ -1,11 +1,11 @@
-package model.rider
+package model.frontendBackend
 
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 
 @Suppress("unused")
-object RdUnityModel : Ext(SolutionModel.Solution) {
+object FrontendBackendModel : Ext(SolutionModel.Solution) {
     private val UnitTestLaunchPreference = enum {
         +"NUnit"
         +"EditMode"
@@ -40,6 +40,19 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("rootIndices", array(int))
     }
 
+    // Keep this in sync with the enum in BackendUnityModel
+    private val LogEventType = enum {
+        +"Error"
+        +"Warning"
+        +"Message"
+    }
+
+    // Keep this in sync with the enum in BackendUnityModel
+    private val LogEventMode = enum {
+        +"Edit"
+        +"Play"
+    }
+
     init {
         sink("activateRider", void)
         sink("activateUnityLogView", void)
@@ -72,8 +85,8 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("externalDocContext", string)
 
         sink("onUnityLogEvent", structdef("editorLogEntry") {
-            field("type", int)
-            field("mode", int)
+            field("type", LogEventType)
+            field("mode", LogEventMode)
             field("ticks", long)
             field("message", string)
             field("stackTrace", string)

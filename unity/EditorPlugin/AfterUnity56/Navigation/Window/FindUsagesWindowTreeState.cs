@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
@@ -9,17 +9,16 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
   [Serializable]
   internal class FindUsagesWindowTreeState : TreeViewState
   {
-    [SerializeField] 
+    [SerializeField]
     public List<SceneElement> SceneElements = new List<SceneElement>();
 
-    [SerializeField] 
+    [SerializeField]
     public List<PrefabElement> PrefabElements = new List<PrefabElement>();
-    
+
     public FindUsagesWindowTreeState()
     {
-      
     }
-    
+
     public FindUsagesWindowTreeState(RdFindUsageResultElement[] requests)
     {
       foreach (var request in requests)

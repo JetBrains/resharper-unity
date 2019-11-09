@@ -19,10 +19,10 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rider.model.EditorLogEntry
+import com.jetbrains.rider.model.LogEventMode
+import com.jetbrains.rider.model.LogEventType
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -174,7 +174,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     }
 
     private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
-        .filter { it is ToggleUseSoftWrapsToolbarAction }.toList())
+        .filterIsInstance<ToggleUseSoftWrapsToolbarAction>().toList())
 
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
@@ -185,21 +185,20 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
-    private fun addToList(newEvent: RdLogEvent) {
+    private fun addToList(newEvent: EditorLogEntry) {
         if (logModel.mergeSimilarItems.value) {
-            val existing = eventList.riderModel.elements().toList()
-                .filter {
-                    it.message == newEvent.message && it.stackTrace == newEvent.stackTrace &&
-                        it.mode == newEvent.mode && it.type == newEvent.type
-                }.singleOrNull()
+            val existing = eventList.riderModel.elements().toList().singleOrNull {
+                it.message == newEvent.message && it.stackTrace == newEvent.stackTrace &&
+                    it.mode == newEvent.mode && it.type == newEvent.type
+            }
             if (existing == null)
-                eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
+                eventList.riderModel.addElement(LogPanelItem(newEvent.ticks, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
             else {
                 val index = eventList.riderModel.indexOf(existing)
                 eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count + 1), index)
             }
         } else
-            eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
+            eventList.riderModel.addElement(LogPanelItem(newEvent.ticks, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
         // on big amount of logs it causes frontend hangs
 //        if (logModel.selectedItem == null) {
 //            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
@@ -232,19 +231,19 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         logModel.onAdded.advise(lifetime) { addToList(it) }
         logModel.onChanged.advise(lifetime) { item ->
             data class LogItem(
-                val type: RdLogEventType,
-                val mode: RdLogEventMode,
+                val type: LogEventType,
+                val mode: LogEventMode,
                 val message: String,
                 val stackTrace: String)
 
             if (logModel.mergeSimilarItems.value) {
                 val list = item
                     .groupBy { LogItem(it.type, it.mode, it.message, it.stackTrace) }
-                    .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
+                    .mapValues { LogPanelItem(it.value.first().ticks, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
                     .values.toList()
                 refreshList(list)
             } else {
-                val list = item.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace, 1) }
+                val list = item.map { LogPanelItem(it.ticks, it.type, it.mode, it.message, it.stackTrace, 1) }
                 refreshList(list)
             }
         }

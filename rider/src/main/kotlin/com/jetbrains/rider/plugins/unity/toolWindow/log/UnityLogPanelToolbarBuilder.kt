@@ -3,9 +3,9 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAwareAction
+import com.jetbrains.rider.model.LogEventMode
+import com.jetbrains.rider.model.LogEventType
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderAction
 import java.awt.BorderLayout
@@ -25,12 +25,12 @@ object UnityLogPanelToolbarBuilder {
     }
 
     fun createLeftToolbar(model: UnityLogPanelModel, mainSplitterToggleAction: DumbAwareAction, consoleActionsList : List<AnAction>): JPanel {
-        fun createType(type: RdLogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
+        fun createType(type: LogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
         }
 
-        fun createMode(mode: RdLogEventMode) = object : ToggleAction("Show/Hide '$mode' mode", "", mode.getIcon()) {
+        fun createMode(mode: LogEventMode) = object : ToggleAction("Show/Hide '$mode' mode", "", mode.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.modeFilters.getShouldBeShown(mode)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
         }
@@ -44,12 +44,12 @@ object UnityLogPanelToolbarBuilder {
 
         val actionGroup = DefaultActionGroup().apply {
             addSeparator("Mode filters")
-            add(createMode(RdLogEventMode.Edit))
-            add(createMode(RdLogEventMode.Play))
+            add(createMode(LogEventMode.Edit))
+            add(createMode(LogEventMode.Play))
             addSeparator("Type filters")
-            add(createType(RdLogEventType.Error))
-            add(createType(RdLogEventType.Warning))
-            add(createType(RdLogEventType.Message))
+            add(createType(LogEventType.Error))
+            add(createType(LogEventType.Warning))
+            add(createType(LogEventType.Message))
             addSeparator("Other")
             add(collapseall())
             add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })

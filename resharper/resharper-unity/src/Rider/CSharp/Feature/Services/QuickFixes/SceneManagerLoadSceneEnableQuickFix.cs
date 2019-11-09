@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
@@ -14,6 +13,7 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Model;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
         {
             myWarning = warning;
         }
-        
+
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
             var sceneName = myWarning.SceneName;
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 var sceneRecord = scene as IBlockMappingNode;
                 if (sceneRecord == null)
                     continue;
-                
+
                 var path = GetUnityScenePathRepresentation(
                     (sceneRecord.Entries[1].Content.Value as IPlainScalarNode).NotNull("PlainScalarNode:1").Text.GetText());
                 var simple = path.Split('/').Last();
@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                             LowLevelModificationUtil.AddChild(isEnabledPlaneScalarNode.Text, text);
                     }
                 }
-                
+
                 solution.GetComponent<IDaemon>().Invalidate();
                 solution.GetComponent<UnityRefresher>().Refresh(RefreshType.Normal);
             }
@@ -74,12 +74,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
         }
 
         public override string Text => "Enable scene in build settings";
-        
+
         public override bool IsAvailable(IUserDataHolder cache)
         {
             if (!myWarning.Argument.IsValid())
                 return false;
-            
+
             var unityModule = GetUnityModule(myWarning.Argument.GetSolution());
             if (unityModule == null)
                 return false;

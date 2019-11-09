@@ -1,16 +1,16 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
+import com.jetbrains.rider.model.LogEventMode
+import com.jetbrains.rider.model.LogEventType
 import icons.UnityIcons
 
-fun RdLogEventType.getIcon() = when (this) {
-    RdLogEventType.Error -> UnityIcons.Ide.Error
-    RdLogEventType.Warning -> UnityIcons.Ide.Warning
-    RdLogEventType.Message -> UnityIcons.Ide.Info
+fun LogEventType.getIcon() = when (this) {
+    LogEventType.Error -> UnityIcons.Ide.Error
+    LogEventType.Warning -> UnityIcons.Ide.Warning
+    LogEventType.Message -> UnityIcons.Ide.Info
 }
 
-fun RdLogEventMode.getIcon() = when (this) {
-    RdLogEventMode.Edit -> UnityIcons.Actions.FilterEditModeMessages
-    RdLogEventMode.Play -> UnityIcons.Actions.FilterPlayModeMessages
+fun LogEventMode.getIcon() = when (this) {
+    LogEventMode.Edit -> UnityIcons.Actions.FilterEditModeMessages
+    LogEventMode.Play -> UnityIcons.Actions.FilterPlayModeMessages
 }

@@ -6,7 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.vfs.VfsUtil
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import icons.UnityIcons
 import com.jetbrains.rider.projectView.solution
 import java.io.File
@@ -19,7 +19,7 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction("Open Unity Editor
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val f = project.solution.rdUnityModel.editorLogPath.valueOrNull
+        val f = project.solution.frontendBackendModel.editorLogPath.valueOrNull
         if (f!=null)
         {
             val vf = VfsUtil.findFileByIoFile(File(f), true)
@@ -52,7 +52,7 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction("Open Unity Player
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val f = project.solution.rdUnityModel.playerLogPath.valueOrNull
+        val f = project.solution.frontendBackendModel.playerLogPath.valueOrNull
         if (f!=null)
         {
             val vf = VfsUtil.findFileByIoFile(File(f), true)

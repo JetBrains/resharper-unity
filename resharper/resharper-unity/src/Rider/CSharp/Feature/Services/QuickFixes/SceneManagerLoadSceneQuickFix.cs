@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -26,6 +25,7 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Web.WebConfig;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Model;
 using JetBrains.Text;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
         {
             myWarning = warning;
         }
-        
+
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
             var sceneName = myWarning.SceneName;
@@ -55,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             var correspondingFiles = GetCorrespondingSourceFiles(sceneName, unityModule).ToArray();
             foreach (var (file, unityPath) in correspondingFiles)
             {
-                yield return new LoadSceneFixBulbAction(myWarning.Argument, correspondingFiles.Length > 1, 
+                yield return new LoadSceneFixBulbAction(myWarning.Argument, correspondingFiles.Length > 1,
                     unityPath, solution.GetComponent<MetaFileGuidCache>().GetAssetGuid(file), unityModule).ToQuickFixIntention();
             }
         }
@@ -64,12 +64,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
         {
             if (!myWarning.Argument.IsValid())
                 return false;
-            
+
             return GetEditorBuildSettings(GetUnityModule(myWarning.Argument.GetSolution())) != null;
         }
 
         private IEnumerable<(IPsiSourceFile file, string unityPath)> GetCorrespondingSourceFiles(string scene, UnityExternalFilesPsiModule psiModule)
-        {         
+        {
             var files = psiModule.SourceFiles;
             if (IsScenePath(scene))
             {
@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                     var psiPath = psiSourceFile.GetLocation();
                     if (!psiPath.NameWithoutExtension.Equals(sceneName))
                         return false;
-                    
+
                     return GetUnityPathFor(psiSourceFile).Equals(scene);
                 }
 
@@ -118,14 +118,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 myGuid = guid;
                 myUnityModule = unityModule;
             }
-            
+
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 var editorBuildSettings = GetEditorBuildSettings(myUnityModule);
                 Assertion.Assert(editorBuildSettings != null, "editorBuildSettings != null");
                 var yamlFile = editorBuildSettings.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
                 Assertion.Assert(yamlFile != null, "yamlFile != null");
-                
+
                 var scenesNode = GetSceneCollection(yamlFile);
 
                 using (WriteLockCookie.Create(yamlFile.IsPhysical()))
@@ -148,13 +148,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                         .CreateStringLiteralExpression(mySceneName));
 
                 solution.GetComponent<IDaemon>().Invalidate();
-            
+
                 solution.GetComponent<UnityRefresher>().Refresh(RefreshType.Normal);
                 return null;
             }
 
             public override string Text => $"Add '{mySceneName}' to build settings";
-            
+
             private IBlockSequenceNode CreateBlockSequenceNode(string sceneName, string guid, IPsiModule module)
             {
                 // TODO yaml psi factory?

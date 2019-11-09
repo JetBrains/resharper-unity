@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEngine;
 
@@ -14,10 +14,10 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!PluginSettings.LogEventsCollectorEnabled)
         return;
-      
-      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
-      if (eventInfo == null)
-        eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
+
+      // LogMessageReceivedThreaded is Unity 2017.x+
+      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public) ??
+                      typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
 
       if (eventInfo != null)
       {
@@ -75,7 +75,7 @@ namespace JetBrains.Rider.Unity.Editor
       AddEvent?.Invoke(this, e);
     }
   }
-  
+
   public class UnityEventLogSender
   {
     public UnityEventLogSender(UnityEventCollector collector)
@@ -88,7 +88,7 @@ namespace JetBrains.Rider.Unity.Editor
         ProcessQueue((UnityEventCollector)col);
       };
     }
-    
+
     private void ProcessQueue(UnityEventCollector collector)
     {
       RdLogEvent element;
@@ -97,7 +97,7 @@ namespace JetBrains.Rider.Unity.Editor
         SendLogEvent(element);
       }
     }
-    
+
     private void SendLogEvent(RdLogEvent logEvent)
     {
       MainThreadDispatcher.Instance.Queue(() =>
@@ -109,7 +109,7 @@ namespace JetBrains.Rider.Unity.Editor
             modelWithLifetime.Model.Log(logEvent);
           }
         }
-      });  
+      });
     }
   }
 }

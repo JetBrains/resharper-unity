@@ -10,7 +10,6 @@ using JetBrains.Core;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Access;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
@@ -25,8 +24,7 @@ using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-using Status = JetBrains.Platform.Unity.EditorPluginModel.Status;
-using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
+using UnitTestLaunch = JetBrains.Rider.Model.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
@@ -35,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     {
         private static readonly Key<TaskCompletionSource<bool>> ourCompletionSourceKey =
             new Key<TaskCompletionSource<bool>>("RunViaUnityEditorStrategy.TaskCompletionSource");
-        
+
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
         private readonly UnityEditorProtocol myEditorProtocol;
@@ -51,9 +49,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
 
         public RunViaUnityEditorStrategy(ISolution solution,
-            IUnitTestResultManager unitTestResultManager, 
+            IUnitTestResultManager unitTestResultManager,
             UnityEditorProtocol editorProtocol,
-            NUnitTestProvider unitTestProvider, 
+            NUnitTestProvider unitTestProvider,
             IUnitTestElementIdFactory idFactory,
             ISolutionSaver riderSolutionSaver,
             UnityRefresher unityRefresher,
@@ -210,7 +208,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     await TaskEx.Delay(TimeSpan.FromMilliseconds(10), lifetimeDef.Lifetime);
                 }
             });
-            
+
             var lifetimeDefinition = lifetime.CreateNested();
             await refreshTask.ContinueWith(task =>
             {
@@ -231,7 +229,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         });
                     });
             }, locks.Tasks.UnguardedMainThreadScheduler);
-                
+
             while (lifetimeDefinition.Lifetime.IsAlive)
             {
                 await TaskEx.Delay(TimeSpan.FromMilliseconds(50), lifetimeDefinition.Lifetime);
@@ -240,28 +238,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
         {
-            var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
-            
+            var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
+
             var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
             var tests = InitElementsMap(unitTestElements);
             var emptyList = new List<string>();
 
             var mode = TestMode.Edit;
-            if (rdUnityModel.UnitTestPreference.HasValue())
+            if (frontendBackendModel.UnitTestPreference.HasValue())
             {
-                mode = rdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
+                mode = frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
                     ? TestMode.Play
-                    : TestMode.Edit;    
+                    : TestMode.Edit;
             }
-              
+
             var launch = new UnitTestLaunch(tests, emptyList, emptyList, mode);
             return launch;
         }
-        
+
         private void SubscribeResults(IUnitTestRun firstRun, Lifetime connectionLifetime, TaskCompletionSource<bool> tcs, UnitTestLaunch launch)
         {
             mySolution.Locks.AssertMainThread();
-        
+
             launch.TestResult.AdviseNotNull(connectionLifetime, result =>
             {
                 var unitTestElement = GetElementById(result.ProjectName, result.TestId);
@@ -274,47 +272,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
                     var project = parent.Id.Project;
                     var targetFrameworkId = parent.Id.TargetFrameworkId;
-                    
+
                     var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
                     unitTestElement = new NUnitRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
                     firstRun.AddDynamicElement(unitTestElement);
                     myElements.Add(myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId), unitTestElement);
                 }
-                
+
                 switch (result.Status)
                 {
-                    case Status.Pending:
-                        myUnitTestResultManager.MarkPending(unitTestElement,
-                            firstRun.Launch.Session);
+                    case TestResultStatus.Pending:
+                        myUnitTestResultManager.MarkPending(unitTestElement, firstRun.Launch.Session);
                         break;
-                    case Status.Running:
-                        myUnitTestResultManager.TestStarting(unitTestElement,
-                            firstRun.Launch.Session);
+                    case TestResultStatus.Running:
+                        myUnitTestResultManager.TestStarting(unitTestElement, firstRun.Launch.Session);
                         break;
-                    case Status.Success:
-                    case Status.Failure:
-                    case Status.Ignored:
-                    case Status.Inconclusive:
+                    case TestResultStatus.Success:
+                    case TestResultStatus.Failure:
+                    case TestResultStatus.Ignored:
+                    case TestResultStatus.Inconclusive:
                         string message = result.Status.ToString();
                         TaskResult taskResult = TaskResult.Inconclusive;
-                        if (result.Status == Status.Failure)
+                        if (result.Status == TestResultStatus.Failure)
                             taskResult = TaskResult.Error;
-                        else if (result.Status == Status.Ignored)
+                        else if (result.Status == TestResultStatus.Ignored)
                             taskResult = TaskResult.Skipped;
-                        else if (result.Status == Status.Success)
+                        else if (result.Status == TestResultStatus.Success)
                             taskResult = TaskResult.Success;
-                            
+
                         myUnitTestResultManager.TestOutput(unitTestElement, firstRun.Launch.Session, result.Output, TaskOutputType.STDOUT);
                         myUnitTestResultManager.TestDuration(unitTestElement, firstRun.Launch.Session, TimeSpan.FromMilliseconds(result.Duration));
-                        myUnitTestResultManager.TestFinishing(unitTestElement,
-                            firstRun.Launch.Session, message, taskResult);
+                        myUnitTestResultManager.TestFinishing(unitTestElement, firstRun.Launch.Session, message, taskResult);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(
                             $"Unknown test result from the protocol: {result.Status}");
                 }
             });
-            
+
             launch.RunResult.Advise(connectionLifetime, result =>
             {
                 tcs.SetResult(true);
@@ -339,18 +334,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private List<TestFilter> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
             var elements = unitTestElements
-                .Where(unitTestElement => unitTestElement is NUnitTestElement || 
+                .Where(unitTestElement => unitTestElement is NUnitTestElement ||
                                           unitTestElement is NUnitRowTestElement).ToArray();
             foreach (var unitTestElement in elements)
             {
                 myElements[unitTestElement.Id] = unitTestElement;
-            }    
+            }
             var filters = elements
                 .GroupBy(
-                p => p.Id.Project.Name, 
+                p => p.Id.Project.Name,
                 p => p.Id.Id,
                 (key, g) => new TestFilter(key, g.ToList()));
-            
+
             return filters.ToList();
         }
 

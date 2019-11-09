@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.ex.AnActionListener
 import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.update.AbstractCommonUpdateAction
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
 class VcsPullTracker(project: Project) : ProjectComponent, Disposable {
@@ -25,7 +25,7 @@ class VcsPullTracker(project: Project) : ProjectComponent, Disposable {
             super.afterActionPerformed(action, dataContext, event)
 
             if (action is AbstractCommonUpdateAction) {
-                project.solution.rdUnityModel.refresh.fire(false)
+                project.solution.frontendBackendModel.refresh.fire(false)
             }
         }
     }

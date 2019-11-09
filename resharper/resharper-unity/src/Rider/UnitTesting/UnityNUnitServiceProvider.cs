@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     {
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
-        private readonly RdUnityModel myRdUnityModel;
+        private readonly FrontendBackendModel myModel;
 
         public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
             IUnitTestElementIdFactory idFactory, IUnitTestElementManager elementManager, NUnitTestProvider provider,
@@ -33,8 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
-            
-            myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
+
+            myModel = solution.GetProtocolSolution().GetFrontendBackendModel();
             myEditorProtocol = editorProtocol;
             myUnityEditorStrategy = runViaUnityEditorStrategy;
         }
@@ -45,10 +45,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 return base.GetRunStrategy(element);
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605
-            if (!myRdUnityModel.UnitTestPreference.HasValue() ||
-                (myRdUnityModel.UnitTestPreference.HasValue() && myRdUnityModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit))
+            if (!myModel.UnitTestPreference.HasValue() ||
+                (myModel.UnitTestPreference.HasValue() && myModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit))
                 return myUnityEditorStrategy;
-            
+
             return base.GetRunStrategy(element);
 
         }

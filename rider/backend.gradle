@@ -119,7 +119,7 @@ task restoreUnityEditorPluginPackages(type: nugetRestore.class) {
 task buildReSharperHostPlugin(type: MSBuildTask) {
     group restoreReSharperHostPluginPackages
     description 'Builds the full ReSharper backend plugin solution'
-    dependsOn restoreReSharperHostPluginPackages, generateModel
+    dependsOn restoreReSharperHostPluginPackages, generateModels
 
     buildFile = backend.resharperHostPluginSolution
 }
@@ -127,7 +127,7 @@ task buildReSharperHostPlugin(type: MSBuildTask) {
 task buildUnityEditorPlugin(type: MSBuildTask) {
     group backendGroup
     description 'Builds the Unity editor plugin'
-    dependsOn restoreUnityEditorPluginPackages, generateModel
+    dependsOn restoreUnityEditorPluginPackages, generateModels
 
     buildFile = backend.unityPluginSolution
 }

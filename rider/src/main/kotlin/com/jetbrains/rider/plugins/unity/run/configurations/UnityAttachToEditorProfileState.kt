@@ -16,7 +16,7 @@ import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -48,9 +48,9 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                             logger.info("Pass value to backend, which will push Unity to enter play mode.")
                             lt.bracket(opening = {
                                 // pass value to backend, which will push Unity to enter play mode.
-                                executionEnvironment.project.solution.rdUnityModel.play.set(true)
+                                executionEnvironment.project.solution.frontendBackendModel.play.set(true)
                             }, terminationAction = {
-                                executionEnvironment.project.solution.rdUnityModel.play.set(false)
+                                executionEnvironment.project.solution.frontendBackendModel.play.set(false)
                             })
                         }
                     }

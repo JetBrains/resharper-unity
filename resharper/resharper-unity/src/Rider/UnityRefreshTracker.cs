@@ -8,7 +8,6 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rd.Tasks;
@@ -146,7 +145,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-                
+
                 // Rgc.Guarded - beware RIDER-15577
                 myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherGroupingEvent",
                     TimeSpan.FromMilliseconds(500),
@@ -154,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         refresher.Refresh(RefreshType.Normal);
                     });
-                
+
                 host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force =>
                     {
                         if (force)
@@ -174,18 +173,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     logger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
                     myGroupingEvent.FireIncoming();
                 });
-                
+
                 fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });
         }
-        
+
         private void FileSystemChange(FileSystemChange fileSystemChange)
         {
             var visitor = new Visitor(this);
             foreach (var fileSystemChangeDelta in fileSystemChange.Deltas)
                 fileSystemChangeDelta.Accept(visitor);
         }
-        
+
         private void AdviseFileAddedOrDeleted(FileSystemChangeDelta delta)
         {
             if (delta.NewPath.ExtensionNoDot == "cs")

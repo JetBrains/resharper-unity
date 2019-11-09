@@ -3,80 +3,75 @@ def hashBaseDir = new File(repoRoot, "rider/build/rdgen")
 
 // TODO: Think about adding an msbuild task for rdgen
 
-task generateRiderModel(type: tasks.getByName('rdgen').class) {
-    def csOutput = new File(repoRoot, "resharper/resharper-unity/src/Rider/RdUnityProtocol")
-    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
+task generateFrontendBackendModel(type: tasks.getByName('rdgen').class) {
+    def backendCsOutput = new File(repoRoot, "resharper/resharper-unity/src/Rider/Model")
+    def frontendKtOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/model")
 
     // NOTE: classpath is evaluated lazily, at execution time, because it comes from the unzipped
     // intellij SDK, which is extracted in afterEvaluate
     params {
         verbose = true
         classpath { backend.getRiderModelJar() }
-        sources "$modelDir/rider"
-        hashFolder = "$hashBaseDir/rider"
-        packages = "model.rider"
+        sources "$modelDir/frontendBackend"
+        hashFolder = "$hashBaseDir/frontendBackend"
+        packages = "model.frontendBackend"
 
+        // Standard JVM namespace for all built in models is com.jetbrains.rider.model
         generator {
             language = "kotlin"
             transform = "asis"
-            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
             namespace = "com.jetbrains.rider.model"
-            directory = "$ktOutput"
+            directory = "$frontendKtOutput"
+            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
         }
 
+        // Standard C# namespace for all built in models is JetBrains.Rider.Model
         generator {
             language = "csharp"
             transform = "reversed"
-            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
             namespace = "JetBrains.Rider.Model"
-            directory = "$csOutput"
+            directory = "$backendCsOutput"
+            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
         }
     }
 }
 
-task generateEditorPluginModel(type: tasks.getByName('rdgen').class) {
-    def backendCsOutput = new File(repoRoot, "resharper/resharper-unity/src/Rider/RdEditorProtocol")
-    def unityEditorCsOutput = new File(repoRoot, "unity/EditorPlugin/NonUnity/RdEditorProtocol")
-    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol")
+task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
+    def backendCsOutput = new File(repoRoot, "resharper/resharper-unity/src/Rider/Model")
+    def unityEditorCsOutput = new File(repoRoot, "unity/EditorPlugin/Model")
 
     params {
         verbose = true
         classpath { backend.getRiderModelJar() }
-        sources "$modelDir/editorPlugin"
-        hashFolder = "$hashBaseDir/editorPlugin"
-        packages = "model.editorPlugin"
+        sources "$modelDir/backendUnity"
+        hashFolder = "$hashBaseDir/backendUnity"
+        packages = "model.backendUnity"
 
+        // Standard C# namespace for all built in models is JetBrains.Rider.Model
         generator {
             language = "csharp"
             transform = "asis"
-            namespace = "JetBrains.Platform.Unity.EditorPluginModel"
-            root = "model.editorPlugin.EditorPluginModel"
+            namespace = "JetBrains.Rider.Model"
             directory = "$backendCsOutput"
+            root = "model.backendUnity.BackendUnityModel"
         }
 
+        // Standard C# namespace for all built in models is JetBrains.Rider.Model
         generator {
             language = "csharp"
             transform = "reversed"
-            namespace = "JetBrains.Platform.Unity.EditorPluginModel"
-            root = "model.editorPlugin.EditorPluginModel"
+            namespace = "JetBrains.Rider.Model"
             directory = "$unityEditorCsOutput"
-        }
-
-        generator {
-            language = "kotlin"
-            transform = "asis"
-            namespace = "com.jetbrains.rider.plugins.unity.editorPlugin.model"
-            root = "model.editorPlugin.EditorPluginModel"
-            directory = "$ktOutput"
+            root = "model.backendUnity.BackendUnityModel"
         }
     }
 }
 
-task generateModel {
+task generateModels {
     group = 'protocol'
     description = 'Generates protocol models.'
-    dependsOn generateRiderModel, generateEditorPluginModel
+    dependsOn generateFrontendBackendModel, generateBackendUnityModel
 }
 
-jar.dependsOn generateModel
+jar.dependsOn generateModels
 // Make sure the dotnet build tasks depend on model, too

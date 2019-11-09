@@ -1,13 +1,12 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
-import java.util.function.Predicate
+import com.jetbrains.rider.model.EditorLogEntry
+import com.jetbrains.rider.model.LogEventMode
+import com.jetbrains.rider.model.LogEventType
 
 class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
     private val lock = Object()
@@ -18,22 +17,22 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
         private var showWarnings = true
         private var showMessages = true
 
-        fun getShouldBeShown(type: RdLogEventType) = when (type) {
-            RdLogEventType.Error -> showErrors
-            RdLogEventType.Warning -> showWarnings
-            RdLogEventType.Message -> showMessages
+        fun getShouldBeShown(type: LogEventType) = when (type) {
+            LogEventType.Error -> showErrors
+            LogEventType.Warning -> showWarnings
+            LogEventType.Message -> showMessages
         }
 
-        fun setShouldBeShown(type: RdLogEventType, value: Boolean) = when (type) {
-            RdLogEventType.Error -> {
+        fun setShouldBeShown(type: LogEventType, value: Boolean) = when (type) {
+            LogEventType.Error -> {
                 synchronized(lock) { showErrors = value }
                 onChanged.fire()
             }
-            RdLogEventType.Warning -> {
+            LogEventType.Warning -> {
                 synchronized(lock) { showWarnings = value }
                 onChanged.fire()
             }
-            RdLogEventType.Message -> {
+            LogEventType.Message -> {
                 synchronized(lock) { showMessages = value }
                 onChanged.fire()
             }
@@ -46,17 +45,17 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
         private var showEdit = true
         private var showPlay = true
 
-        fun getShouldBeShown(mode: RdLogEventMode) = when (mode) {
-            RdLogEventMode.Edit -> showEdit
-            RdLogEventMode.Play -> showPlay
+        fun getShouldBeShown(mode: LogEventMode) = when (mode) {
+            LogEventMode.Edit -> showEdit
+            LogEventMode.Play -> showPlay
         }
 
-        fun setShouldBeShown(mode: RdLogEventMode, value: Boolean) = when (mode) {
-            RdLogEventMode.Edit -> {
+        fun setShouldBeShown(mode: LogEventMode, value: Boolean) = when (mode) {
+            LogEventMode.Edit -> {
                 synchronized(lock) { showEdit = value }
                 onChanged.fire()
             }
-            RdLogEventMode.Play -> {
+            LogEventMode.Play -> {
                 synchronized(lock) { showPlay = value }
                 onChanged.fire()
             }
@@ -81,7 +80,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
     }
 
     inner class Events {
-        val allEvents = ArrayList<RdLogEvent>()
+        val allEvents = ArrayList<EditorLogEntry>()
 
         fun clear() {
             synchronized(lock) { allEvents.clear() }
@@ -93,7 +92,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
         fun clearBefore(time:Long) {
             var changed = false
             synchronized(lock) {
-                changed = allEvents.removeIf { t -> t.time < time }
+                changed = allEvents.removeIf { t -> t.ticks < time }
             }
 
             if (changed)
@@ -107,28 +106,28 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
             }
         }
 
-        fun addEvent(event: RdLogEvent) {
+        fun addEvent(entry: EditorLogEntry) {
             synchronized(lock) {
                 if (allEvents.count() > maxItemsCount)
                 {
                     clear()
                 }
-                allEvents.add(event)
+                allEvents.add(entry)
             }
 
-            if (isVisibleEvent(event))
-                onAdded.fire(event)
+            if (isVisibleEvent(entry))
+                onAdded.fire(entry)
         }
 
         val onChanged = Signal.Void()
     }
 
-    private fun isVisibleEvent(event: RdLogEvent):Boolean
+    private fun isVisibleEvent(event: EditorLogEntry):Boolean
     {
         return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode) && textFilter.getShouldBeShown(event.message)
     }
 
-    private fun getVisibleEvents(): List<RdLogEvent> {
+    private fun getVisibleEvents(): List<EditorLogEntry> {
         synchronized(lock) {
             return events.allEvents
                 .filter { isVisibleEvent(it) }
@@ -141,8 +140,8 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
     val events = Events()
     val mergeSimilarItems = Property(false)
 
-    val onAdded = Signal<RdLogEvent>()
-    val onChanged = Signal<List<RdLogEvent>>()
+    val onAdded = Signal<EditorLogEntry>()
+    val onChanged = Signal<List<EditorLogEntry>>()
     val onCleared = Signal.Void()
 
     fun fire() = onChanged.fire(getVisibleEvents())

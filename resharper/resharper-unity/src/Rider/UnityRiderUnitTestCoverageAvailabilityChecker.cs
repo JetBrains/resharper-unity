@@ -21,11 +21,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (tracker.IsUnityProject.HasValue() && !tracker.IsUnityProject.Value)
                 return HostProviderAvailability.Available;
 
-            var rdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
-            if (rdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.NUnit)
-                return HostProviderAvailability.Available;
-
-            return HostProviderAvailability.Nonexistent;
+            var frontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
+            return frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.NUnit
+                ? HostProviderAvailability.Available
+                : HostProviderAvailability.Nonexistent;
         }
     }
 }

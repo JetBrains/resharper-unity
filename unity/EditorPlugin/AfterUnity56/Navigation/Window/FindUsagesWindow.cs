@@ -1,5 +1,5 @@
 using System;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,10 +13,10 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 
     [SerializeField]
     public bool IsDirty = false;
-    
+
     [SerializeField]
     public string Target = null;
-    
+
     [NonSerialized]
     private FindUsagesTreeView myTreeView;
 
@@ -43,7 +43,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       myTreeView.Reload();
       myTreeView.Repaint();
     }
-    
+
     void OnEnable ()
     {
       if (myTreeViewState == null)
@@ -53,15 +53,15 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 
       myTreeView = new FindUsagesTreeView(myTreeViewState);
     }
-    
+
     public void OnInspectorUpdate()
-    {     
+    {
       var count = SceneManager.sceneCount;
       for (int i = 0; i < count; i++)
       {
-        if (SceneManager.GetSceneAt(i).isDirty) 
-          IsDirty = true; 
-      } 
+        if (SceneManager.GetSceneAt(i).isDirty)
+          IsDirty = true;
+      }
       Repaint();
     }
 

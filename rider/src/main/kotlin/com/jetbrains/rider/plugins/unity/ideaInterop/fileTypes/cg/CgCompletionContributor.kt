@@ -7,16 +7,15 @@ import com.intellij.codeInsight.lookup.impl.LookupManagerImpl
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.util.Disposer
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rider.model.frontendBackendModel
 
 class CgCompletionContributor : WordCompletionContributor() {
 
     override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
         // TODO: this is temporary solution until we get proper completion up and running on backend
         val project = parameters.editor.project ?: return
-        val isEnabled = project.solution.rdUnityModel.enableShaderLabHippieCompletion.valueOrDefault(false)
+        val isEnabled = project.solution.frontendBackendModel.enableShaderLabHippieCompletion.valueOrDefault(false)
         if (!(isEnabled && (parameters.completionType == CompletionType.BASIC)))
             return
 

@@ -25,7 +25,7 @@ class UnityToolWindowManager(project: Project,
             }
         }
 
-        host.logSignal.advise(componentLifetime) { message ->
+        host.onLogEvent.advise(componentLifetime) { message ->
             val context = unityToolWindowFactory.getOrCreateContext()
 
             context.addEvent(message)
