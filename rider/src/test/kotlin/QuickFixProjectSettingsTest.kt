@@ -21,7 +21,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
     override val editorGoldFile: File
         get() = File(testCaseGoldDirectory,  testMethod.name)
 
-    @Test(enabled = false)
+    @Test
     fun testAddToBuildSettings() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
@@ -34,7 +34,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         writeProjectSettingsToGold()
     }
 
-    @Test(enabled = false)
+    @Test
     fun testEnableSceneAtBuildSettings() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
@@ -47,7 +47,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         writeProjectSettingsToGold()
     }
 
-    @Test(enabled = false)
+    @Test
     fun testSpecifyFullSceneName() {
         doTestWithDumpDocument {
             withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {

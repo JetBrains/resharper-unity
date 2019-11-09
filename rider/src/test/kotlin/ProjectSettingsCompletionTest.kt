@@ -41,7 +41,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Psi.Caches",
             "JetBrains.ReSharper.Psi.Files")
 
-    @Test(enabled = false)
+    @Test
     fun testScene_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             typeWithLatency("\"")
@@ -57,7 +57,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun testInput_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "InputCompletionTest.cs") {
             typeWithLatency("\"")
@@ -86,7 +86,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         "\"MainCamera\"",
         "\"GameController\"")
 
-    @Test(enabled = false)
+    @Test
     fun testTag_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -112,7 +112,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         "\"PostProcessing\"",
         "\"TransparentFX\"")
 
-    @Test(enabled = false)
+    @Test
     fun testLayer_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -125,7 +125,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun testLayer_CompletionAfterModification() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")

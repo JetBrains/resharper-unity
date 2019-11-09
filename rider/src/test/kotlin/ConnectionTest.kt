@@ -30,7 +30,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
         VfsRootAccess.allowRootAccess(getUnityPath())
     }
 
-    @Test
+    // @Test
     fun installAndCheckConnectionAfterUnityStart() {
 
         val process = startUnity(false)
@@ -52,7 +52,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
         }
     }
 
-    @Test
+    // @Test
     fun installAndCheckConnectionBeforeUnityStart() {
         installPlugin()
         val process = startUnity(false)
@@ -73,7 +73,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
         }
     }
 
-    @Test
+    // @Test
     fun checkExternalEditor() {
         installPlugin()
         val process = startUnity(true)
@@ -100,7 +100,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
         }
     }
 
-    @Test
+    // @Test
     fun checkLog() {
         installPlugin()
         val process = startUnity(true)
