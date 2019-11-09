@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 var existingRule = GetUnitySerializedFieldRule(settingsStore, entry);
                 var newRule = new ClrUserDefinedNamingRule(existingRule.Descriptor,
-                    new NamingPolicy(existingRule.Policy.ExtraRules, existingRule.Policy.NamingRule, args.New));
+                    new NamingPolicy(existingRule.Policy.ExtraRules.ToIReadOnlyList(), existingRule.Policy.NamingRule, args.New));
                 SetUnitySerializedFieldRule(settingsStore, entry, newRule);
             });
 
