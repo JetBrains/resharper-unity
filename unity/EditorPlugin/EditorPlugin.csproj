@@ -15,8 +15,12 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ILRepackInputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll" />
-    <ILRepackInputAssemblies Include="../lib/*.dll" />
+    <ILRepackInputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll">
+      <Visible>false</Visible>
+    </ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="../lib/*.dll">
+      <Visible>false</Visible>
+    </ILRepackInputAssemblies>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="AfterUnity56\**" />
