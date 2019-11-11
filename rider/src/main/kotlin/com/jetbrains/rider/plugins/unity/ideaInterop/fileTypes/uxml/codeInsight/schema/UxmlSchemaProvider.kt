@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema
 
 import com.intellij.openapi.module.Module
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.ModificationTracker
@@ -12,13 +13,16 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.xml.XmlFile
 import com.intellij.xml.XmlSchemaProvider
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.projectDir
+import java.nio.file.Paths
 
-class UxmlSchemaProvider: XmlSchemaProvider() {
+class UxmlSchemaProvider: XmlSchemaProvider(), DumbAware {
     private val SCHEMAS_FILE_MAP_KEY: Key<MutableMap<String, CachedValue<XmlFile>>> = Key.create("UXML_SCHEMAS_FILE_MAP_KEY")
 
     override fun isAvailable(file: XmlFile): Boolean {
-        return file.name.endsWith(".uxml", true)
+        // Add schemas for any XML file type in a Unity project. This means schemas will resolve inside the .xsd files too
+        return file.project.isUnityProject()
     }
 
     override fun getSchema(url: String, module: Module?, baseFile: PsiFile): XmlFile? {
@@ -50,13 +54,17 @@ class UxmlSchemaProvider: XmlSchemaProvider() {
 
     override fun getAvailableNamespaces(file: XmlFile, tagName: String?): MutableSet<String> {
         // For the given XmlFile, what namespaces do we know about?
-        if (!file.name.endsWith(".uxml", true)) {
-            return mutableSetOf()
+        // The schemas are named after the namespace
+        return getSchemas(file.project).keys
+    }
+
+    override fun getLocations(namespace: String, context: XmlFile): MutableSet<String>? {
+        val schemas = getSchemas(context.project)
+        if (schemas.containsKey(namespace)) {
+            return mutableSetOf(Paths.get(context.project.projectDir.canonicalPath, "UIElementsSchema", "$namespace.xsd").toUri().toString())
         }
 
-        // The schemas are named after the namespace
-        val project = file.project
-        return getSchemas(project).keys
+        return null
     }
 
     private fun getSchemas(project: Project): MutableMap<String, CachedValue<XmlFile>> {
