@@ -21,6 +21,7 @@ import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
+import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.isUxmlFile
 import com.jetbrains.rider.projectDir
@@ -129,9 +130,11 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
             } else {
                 // This is either an exception in UxmlSchemaGenerator, an exception in the protocol, or we're unable to
                 // find the UxmlSchemaGenerator class via reflection.
-                panel.text("Unable to generate schema.")
-                link?.setText( "Try again")
+                panel.text("Unable to generate schema. Please check the Unity Console for errors.")
+                link?.setHyperlinkText("Try again")
                 link?.isVisible = true
+
+                UnityToolWindowFactory.show(project)
             }
         }
     }

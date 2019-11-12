@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using JetBrains.Diagnostics;
+using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -10,6 +11,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool GenerateSchema()
     {
+      ourLogger.Verbose("Generating UXML schema");
+
       // This type was first introduced in 2019.1
       var generator = Type.GetType("UnityEditor.UIElements.UxmlSchemaGenerator,UnityEditor");
       if (generator == null)
@@ -34,11 +37,15 @@ namespace JetBrains.Rider.Unity.Editor
 
       try
       {
+        ourLogger.Verbose("Found reflection types, starting to generate UXML schema");
         updateSchemaFiles.Invoke(null, null);
+        ourLogger.Verbose("Successfully generated UXML schema");
         return true;
       }
       catch (Exception e)
       {
+        Debug.Log("Error trying to generate UIElementsSchema");
+        Debug.LogException(e);
         ourLogger.Error(e, "Error trying to generate UIElementsSchema");
         return false;
       }
