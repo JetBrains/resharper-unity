@@ -258,7 +258,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             var result = GetAssetGuidAndPropertyName(solution, declaredElement);
             if (!result.HasValue)
+            {
+                base.AddHighlighting(consumer, element, declaredElement, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
+            }
 
             var guid = result.Value.guid;
             var propertyName = result.Value.propertyName;

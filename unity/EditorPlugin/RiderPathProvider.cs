@@ -21,6 +21,9 @@ namespace JetBrains.Rider.Unity.Editor
     /// <returns>May return null, if nothing found.</returns>
     public string GetActualRider(string externalEditor, string[] allFoundPaths)
     {
+      if (PluginEntryPoint.ourTestModeEnabled)
+        return "riderTestPath";
+      
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
