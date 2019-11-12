@@ -52,13 +52,13 @@ class UxmlSchemaProvider: XmlSchemaProvider(), DumbAware {
         return schema.value
     }
 
-    override fun getAvailableNamespaces(file: XmlFile, tagName: String?): MutableSet<String> {
+    override fun getAvailableNamespaces(file: XmlFile, tagName: String?): Set<String> {
         // For the given XmlFile, what namespaces do we know about?
         // The schemas are named after the namespace
         return getSchemas(file.project).keys
     }
 
-    override fun getLocations(namespace: String, context: XmlFile): MutableSet<String>? {
+    override fun getLocations(namespace: String, context: XmlFile): Set<String>? {
         val schemas = getSchemas(context.project)
         if (schemas.containsKey(namespace)) {
             return mutableSetOf(Paths.get(context.project.projectDir.canonicalPath, "UIElementsSchema", "$namespace.xsd").toUri().toString())

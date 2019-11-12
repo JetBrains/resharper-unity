@@ -17,7 +17,7 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("Cannot find type: UnityEditor.UIElements.UxmlSchemaGenerator. Trying obsolete API");
 
         // The schema generator was first introduced in experimental namespace in 2018.2
-        generator = Type.GetType("UnityEditor.UIElements.UxmlSchemaGenerator,UnityEditor");
+        generator = Type.GetType("UnityEditor.Experimental.UIElements.UxmlSchemaGenerator,UnityEditor");
         if (generator == null)
         {
           ourLogger.Warn("Cannot find UxmlSchemaGenerator type");
