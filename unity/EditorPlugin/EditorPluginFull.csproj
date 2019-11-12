@@ -10,27 +10,20 @@
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.RdFramework" Version="193.20191030.267" />
     <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
   </ItemGroup>
   <ItemGroup>
-    <ILRepackInputAssemblies Include="../lib/*.dll" />
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll" />
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll" />
+    <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll" />
+    <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll" />
+    
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="AsyncBridge.Net35, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b3b1c0202c0d6a87">
-      <HintPath>..\lib\AsyncBridge.Net35.dll</HintPath>
-    </Reference>
-    <Reference Include="JetBrains.Lifetimes">
-      <HintPath>..\lib\JetBrains.Lifetimes.dll</HintPath>
-    </Reference>
-    <Reference Include="JetBrains.RdFramework">
-      <HintPath>..\lib\JetBrains.RdFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading, Version=1.0.2856.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\lib\System.Threading.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  
   <ItemGroup>
     <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
   </ItemGroup>
+  
 </Project>
