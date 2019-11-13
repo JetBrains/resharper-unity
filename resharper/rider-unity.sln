@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rider-yaml", "resharper-yam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.rider-yaml", "resharper-yaml\test\src\tests.rider-yaml.csproj", "{AEF66645-4022-4032-A6D9-D770BC034E55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginNet46", "..\unity\EditorPlugin\EditorPluginNet46.csproj", "{D0CC632D-652A-4BCB-8314-DB0E28867CAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{AEF66645-4022-4032-A6D9-D770BC034E55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEF66645-4022-4032-A6D9-D770BC034E55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEF66645-4022-4032-A6D9-D770BC034E55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0CC632D-652A-4BCB-8314-DB0E28867CAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0CC632D-652A-4BCB-8314-DB0E28867CAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0CC632D-652A-4BCB-8314-DB0E28867CAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0CC632D-652A-4BCB-8314-DB0E28867CAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,5 +91,6 @@ Global
 		{31338488-0C08-43C2-884F-A38485E2FA2F} = {5B475CDF-F046-4823-A994-BD5261058461}
 		{891CF6EE-9537-48F9-9F2E-A526FAE66E8A} = {5B475CDF-F046-4823-A994-BD5261058461}
 		{AEF66645-4022-4032-A6D9-D770BC034E55} = {5B475CDF-F046-4823-A994-BD5261058461}
+		{D0CC632D-652A-4BCB-8314-DB0E28867CAB} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
 	EndGlobalSection
 EndGlobal
