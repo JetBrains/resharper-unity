@@ -131,12 +131,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static bool ShouldHandleChange(ProjectItemChange change)
             {
                 // String comparisons, treat as expensive if we're doing this very frequently
-                return BelongsToProject(change) && !IsItemMetaFile(change);
+                return BelongsToRealProject(change) && !IsItemMetaFile(change);
             }
 
-            private static bool BelongsToProject(ProjectModelChange change)
+            private static bool BelongsToRealProject(ProjectModelChange change)
             {
-                return change.ProjectModelElement is IProjectFile;
+                var projectFile = change.ProjectModelElement as IProjectFile;
+                var project = projectFile?.GetProject();
+                if (project == null)
+                    return false;
+                if (project.IsMiscFilesProject())
+                    return false;
+                return true;
             }
 
             private static bool IsItemMetaFile(ProjectItemChange change)
