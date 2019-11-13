@@ -4,6 +4,7 @@ using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.Feature.HighlightingEye;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -14,7 +15,7 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
     RegisterConfigurableSeverity(
         PerformanceInvocationHighlighting.SEVERITY_ID,
         UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
-        UnityHighlightingGroupIds.Unity,
+        UnityHighlightingGroupIds.UnityPerformance,
         PerformanceInvocationHighlighting.TITLE,
         PerformanceInvocationHighlighting.DESCRIPTION,
         Severity.HINT
@@ -22,7 +23,7 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
     RegisterConfigurableSeverity(
         PerformanceNullComparisonHighlighting.SEVERITY_ID,
         UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
-        UnityHighlightingGroupIds.Unity,
+        UnityHighlightingGroupIds.UnityPerformance,
         PerformanceNullComparisonHighlighting.TITLE,
         PerformanceNullComparisonHighlighting.DESCRIPTION,
         Severity.HINT
@@ -30,11 +31,16 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
     RegisterConfigurableSeverity(
         PerformanceCameraMainHighlighting.SEVERITY_ID,
         UnityHighlightingCompoundGroupNames.PerformanceCriticalCode,
-        UnityHighlightingGroupIds.Unity,
+        UnityHighlightingGroupIds.UnityPerformance,
         PerformanceCameraMainHighlighting.TITLE,
         PerformanceCameraMainHighlighting.DESCRIPTION,
         Severity.HINT
-    )
+    ),
+    RegisterConfigurableHighlightingsGroup(
+        UnityHighlightingGroupIds.UnityPerformance,
+        "Unity Performance Inspections",
+        HighlightingEyeGroupKind.UnityPerformanceKind
+        )
 ]
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
