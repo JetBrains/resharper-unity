@@ -10,6 +10,8 @@
     <ItemGroup>
       <SearchDirectories Include="$(OutputPath)" />
     </ItemGroup>
-    <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(ILRepackInputAssemblies)" LibraryPath="@(SearchDirectories)" OutputFile="$(ILRepackOutputAssembly)" />
+    <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(ILRepackInputAssemblies)" 
+              LibraryPath="@(SearchDirectories)" 
+              OutputFile="$(ILRepackOutputAssembly)" />
   </Target>
 </Project>
