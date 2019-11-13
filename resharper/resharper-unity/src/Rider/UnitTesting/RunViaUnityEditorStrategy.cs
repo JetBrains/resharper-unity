@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
@@ -34,8 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     [SolutionComponent]
     public class RunViaUnityEditorStrategy : IExternalRunnerUnitTestRunStrategy
     {
-        private static readonly Key<TaskCompletionSource<bool>> ourCompletionSourceKey =
-            new Key<TaskCompletionSource<bool>>("RunViaUnityEditorStrategy.TaskCompletionSource");
+        private static readonly Key<CancellationTokenSource> ourCancellationTokenSourceKey =
+            new Key<CancellationTokenSource>("RunViaUnityEditorStrategy.CancellationTokenSource");
         
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
@@ -47,9 +48,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly NotificationsModel myNotificationsModel;
         private readonly UnityHost myUnityHost;
         private readonly ILogger myLogger;
+        private readonly Lifetime myLifetime;
 
         private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private readonly WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
+
+        private readonly object myCurrentLaunchesTaskAccess = new object();
+        private Task myCurrentLaunchesTask = Task.CompletedTask;
 
         public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager, 
@@ -60,7 +65,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             UnityRefresher unityRefresher,
             NotificationsModel notificationsModel,
             UnityHost unityHost,
-            ILogger logger
+            ILogger logger,
+            Lifetime lifetime
             )
         {
             mySolution = solution;
@@ -73,6 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myNotificationsModel = notificationsModel;
             myUnityHost = unityHost;
             myLogger = logger;
+            myLifetime = lifetime;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
         }
 
@@ -100,27 +107,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         Task IUnitTestRunStrategy.Run(IUnitTestRun run)
         {
-            var key = run.Launch.GetData(ourLaunchedInUnityKey);
-            if (key != null)
+            lock (myCurrentLaunchesTaskAccess)
             {
-                return Task.FromResult(false);
+                var key = run.Launch.GetData(ourLaunchedInUnityKey);
+                if (key != null)
+                {
+                    return Task.FromResult(false);
+                }
+
+                run.Launch.PutData(ourLaunchedInUnityKey, "smth");
+
+                var cancellationTs = new CancellationTokenSource();
+                run.Lifetime.OnTermination(cancellationTs.Cancel);
+                run.PutData(ourCancellationTokenSourceKey, cancellationTs);
+
+                var newLaunchTask = myCurrentLaunchesTask.ContinueWith(_ => Run(run), cancellationTs.Token).Unwrap();
+                myCurrentLaunchesTask = Task.WhenAll(myCurrentLaunchesTask, newLaunchTask);
+
+                return newLaunchTask;
             }
+        }
 
+        private Task Run(IUnitTestRun run)
+        {
             var tcs = new TaskCompletionSource<bool>();
-            run.Launch.PutData(ourLaunchedInUnityKey, "smth");
-            run.PutData(ourCompletionSourceKey, tcs);
-
+            
             var hostId = run.HostController.HostId;
             switch (hostId)
             {
                 case WellKnownHostProvidersIds.DebugProviderId:
-                    mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "AttachDebuggerToUnityEditor", () =>
+                    mySolution.Locks.ExecuteOrQueueEx(myLifetime, "AttachDebuggerToUnityEditor", () =>
                     {
-                        var task = myUnityHost.GetValue(model =>
-                            model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
-                        task.Result.AdviseNotNull(run.Lifetime, result =>
+                        if (!run.Lifetime.IsAlive)
                         {
-                            if (!result.Result)
+                            tcs.SetCanceled();
+                            return;
+                        }
+
+                        var task = myUnityHost.GetValue(model => model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
+                        task.Result.AdviseNotNull(myLifetime, result =>
+                        {
+                            if (!run.Lifetime.IsAlive)
+                                tcs.SetCanceled();
+                            else if (!result.Result)
                                 tcs.SetException(new Exception("Unable to attach debugger."));
                             else
                                 RefreshAndRunTask(run, tcs);
@@ -139,10 +168,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private void RefreshAndRunTask(IUnitTestRun run, TaskCompletionSource<bool> tcs)
         {
             myLogger.Verbose("Before calling Refresh.");
-            Refresh(mySolution.Locks, run.Lifetime).GetAwaiter().OnCompleted(() =>
+            Refresh(mySolution.Locks, myLifetime).GetAwaiter().OnCompleted(() =>
             {
-                mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "Check compilation", () =>
+                mySolution.Locks.ExecuteOrQueueEx(myLifetime, "Check compilation", () =>
                 {
+                    if (!run.Lifetime.IsAlive)
+                    {
+                        tcs.SetCanceled();
+                        return;
+                    }
+
                     if (myEditorProtocol.UnityModel.Value == null)
                     {
                         myLogger.Verbose("Unity Editor connection unavailable.");
@@ -151,9 +186,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     }
 
                     var task = myEditorProtocol.UnityModel.Value.GetCompilationResult.Start(Unit.Instance);
-                    task.Result.AdviseNotNull(run.Lifetime, result =>
+                    task.Result.AdviseNotNull(myLifetime, result =>
                     {
-                        if (!result.Result)
+                        if (!run.Lifetime.IsAlive)
+                            tcs.SetCanceled();
+                        else if (!result.Result)
                         {
                             tcs.SetException(new Exception("There are errors during compilation in Unity."));
 
@@ -170,15 +207,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         else
                         {
                             var launch = SetupLaunch(run);
-                            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "ExecuteRunUT", () =>
+                            mySolution.Locks.ExecuteOrQueueEx(myLifetime, "ExecuteRunUT", () =>
                             {
+                                if (!run.Lifetime.IsAlive)
+                                {
+                                    tcs.SetCanceled();
+                                    return;
+                                }
+
                                 if (myEditorProtocol.UnityModel.Value == null)
                                 {
                                     tcs.SetException(new Exception("Unity Editor connection unavailable."));
                                     return;
                                 }
 
-                                myEditorProtocol.UnityModel.ViewNotNull(run.Lifetime, (lt, model) =>
+                                var waitForRunFinishedLifetime = Lifetime.Define(myLifetime);
+                                tcs.Task.ContinueWith(_ => waitForRunFinishedLifetime.Terminate(), myLifetime);
+
+                                myEditorProtocol.UnityModel.ViewNotNull(waitForRunFinishedLifetime.Lifetime, (lt, model) =>
                                 {
                                     // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                                     model.UnitTestLaunch.SetValue(launch);
@@ -369,12 +415,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public void Cancel(IUnitTestRun run)
         {
-            mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "CancellingUnitTests", () =>
+            mySolution.Locks.ExecuteOrQueueEx(myLifetime, "CancellingUnitTests", () =>
             {
                 var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
-                if (launchProperty != null && launchProperty.HasValue())
-                    launchProperty.Value?.Abort.Start(Unit.Instance);
-                run.GetData(ourCompletionSourceKey).NotNull().SetCanceled();
+                var launch = launchProperty?.Maybe.ValueOrDefault;
+                if (launch != null && launch.SessionId == run.Launch.Session.Id)
+                    launch.Abort.Start(Unit.Instance);
+                run.GetData(ourCancellationTokenSourceKey).NotNull().Cancel();
             });
         }
 
