@@ -5,7 +5,7 @@ UIElements was introduced as experimental in 2017.1. The first proper version wa
 * 2017.1
   * First introduced, in the `UnityEngine.Experimental.UIElements` namespace, in `UnityEngine.dll`
   * Editor support in `UnityEditor.Experimental.UIElements` namespace, in `UnityEditor.dll`
-  * No support for UXML or USS
+  * No support for UXML, but does support USS
   * [Documentation for 2017.1](https://docs.unity3d.com/2017.1/Documentation/Manual/UIElements.html)
 * 2017.4
   * Types are still in `UnityEngine.Experimental.UIElements` namespace, but moved to `UnityEngine.UIElementsModule.dll`

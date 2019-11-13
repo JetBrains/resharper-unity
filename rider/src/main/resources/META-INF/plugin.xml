@@ -5,6 +5,7 @@
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
   <depends>com.intellij.modules.rider</depends>
+  <depends>com.intellij.css</depends>
   <depends optional="true" config-file="PluginYamlPluginPart.xml">org.jetbrains.plugins.yaml</depends>
   <depends optional="true" config-file="PluginAppenderPluginPart.xml">rider.intellij.plugin.appender</depends>
 
@@ -75,6 +76,18 @@
     <lang.parserDefinition language="UXML" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileParserDefinition"/>
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
+
+    <!-- USS support -->
+    <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileType" extensions="uss" />
+    <lang.parserDefinition language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileParserDefinition"/>
+    <lang.syntaxHighlighter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssSyntaxHighlighter" />
+    <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileBreadcrumbsProvider" />
+    <css.elementDescriptorProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.UssCssElementDescriptorProvider" order="first" />
+    <applicationService serviceImplementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.UssCssElementDescriptorFactory" />
+    <css.cssInspectionFilter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.inspections.UssCssInspectionFilter"/>
+    <css.cssIntentionFilter language="USS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css.inspections.UssCssIntentionFilter"/>
+    <!-- Override the CSS documentation for USS files -->
+    <lang.documentationProvider language="CSS" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssDocumentationProvider" order="first"/>
 
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
@@ -261,6 +274,7 @@
 <ul>
   <li>Rider: Add support for play mode tests (<a href="https://youtrack.jetbrains.com/issue/RIDER-19513">RIDER-19513</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1293">#1293</a>)</li>
   <li>Rider: Add syntax highlighting, schema generation and validation of UXML files (<a href="https://github.com/JetBrains/resharper-unity/pull/1399">#1399</a>)></li>
+  <li>Rider: Add syntax highlighting, validation and completion for USS files (<a href="https://github.com/JetBrains/resharper-unity/issues/957">#957</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-20576">RIDER-20576</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1402">#1402</a>)</li>
   <li>Rider: Show prompt to set Rider as default external editor when Unity is started by Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/1127">#1127<a/>), <a href="https://github.com/JetBrains/resharper-unity/pull/1270">#1270</a>)</li>
   <li>Rider: Show prompt for Linux users to install Mono 5.16+ (<a href="https://github.com/JetBrains/resharper-unity/issues/1375">#1375</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1383">#1383</a>)</li>
   <li>Rider: Add Unity specific Live Templates settings page (<a href="https://github.com/JetBrains/resharper-unity/pull/1351">#1351</a>)</li>
