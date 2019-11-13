@@ -76,13 +76,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             // Note that this method is called recursively, for projects, folders and files
             public override void VisitItemDelta(ProjectItemChange change)
             {
-                if (change.ProjectModelElement is IProject)
-                    VisitProjectDelta(change);
+                if (change.ProjectModelElement is IProject project)
+                    VisitProjectDelta(change, project);
                 else
                     VisitFileOrFolderDelta(change);
             }
 
-            private void VisitProjectDelta(ProjectItemChange projectChange)
+            private void VisitProjectDelta(ProjectItemChange projectChange, IProject project)
             {
                 // When a project is reloaded, we get a removal notification for it and all of its
                 // files, followed by a load of addition notifications. If we don't handle this
@@ -90,6 +90,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 // So ignore any project removal messages. We can safely ignore them, as a) Unity will
                 // never do this, and b) you can't delete a project from Visual Studio/Rider, only remove it
                 if (projectChange.IsRemoved)
+                    return;
+                
+                // Don't recurse if this project isn't a Unity project. Note that we don't do this
+                // for the IsRemoved case above, as the project doesn't have a solution at that point,
+                // and IsUnityProject will throw
+                if (!project.IsUnityProject())
                     return;
 
                 base.VisitItemDelta(projectChange);
