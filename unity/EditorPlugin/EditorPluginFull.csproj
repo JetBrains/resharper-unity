@@ -10,18 +10,26 @@
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    
     <PackageReference Include="JetBrains.RdFramework" Version="193.20191030.267" />
     <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
   </ItemGroup>
   <ItemGroup>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll" />
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll" />
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll" />
-    <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll" />
-    <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll" />
-    <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll" />
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll">
+      <Visible>false</Visible>
+    </ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll">
+      <Visible>false</Visible>
+    </ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll">
+      <Visible>false</Visible>
+    </ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll">
+      <Visible>false</Visible>
+    </ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll">
+      <Visible>false</Visible>
+    </ILRepackInputAssemblies>
   </ItemGroup>
   
   <ItemGroup>

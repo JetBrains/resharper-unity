@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) => 
+            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) =>
             {
                 if (!args) return;
 
@@ -143,7 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
-                
+
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
@@ -152,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         new Identities(IdKind.Client), myDispatcher, wire, lf);
 
                     protocol.ThrowErrorOnOutOfSyncModels = false;
-                    
+
                     protocol.OutOfSyncModels.Advise(lf, e =>
                     {
                         var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
@@ -191,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         editor.ShowPreferences.Fire();
                     }));
-                    
+
                     editor.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
                     editor.PlayerLogPath.Advise(lifetime,
@@ -207,6 +207,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
                     editor.ScriptCompilationDuringPlay.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ScriptCompilationDuringPlay.Set(ConvertToScriptCompilationEnum(s))));
+
+                    myHost.PerformModelAction(rd =>
+                    {
+                        rd.GenerateUIElementsSchema.Set((l, u) =>
+                            editor.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
+                    });
 
                     BindPluginPathToSettings(lf, editor);
 

@@ -4,6 +4,12 @@ import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 
+// frontend <-> backend model, from point of view of frontend, meaning:
+// Sink is a one-way signal the frontend subscribes to
+// Source is a one-way signal the frontend fires
+// Property and Signal are two-way and can be updated/fired on both ends
+// Call is an RPC method (with return value) that is called by the frontend/implemented by the backend
+// Callback is an RPC method (with return value) that is implemented by the frontend/called by the backend
 @Suppress("unused")
 object RdUnityModel : Ext(SolutionModel.Solution) {
     private val UnitTestLaunchPreference = enum {
@@ -95,5 +101,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         sink("onEditorModelOutOfSync", void)
         callback("attachDebuggerToUnityEditor", void, bool)
         callback("allowSetForegroundWindow", void, bool)
+
+        call("generateUIElementsSchema", void, bool)
     }
 }
