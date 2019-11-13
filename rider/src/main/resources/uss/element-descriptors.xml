@@ -90,7 +90,7 @@
   </named-value>
 
   <!-- In alphabetical ordering (see uss-properties.json) -->
-  <property id="align-content" declared-in="" initial="flex-start"> <!-- 2017.1-2019.3 -->
+  <property id="align-content" declared-in="0" initial="flex-start"> <!-- 2017.1-2019.3 -->
     <group type="or">
       <name value="flex-start"/>
       <name value="flex-end"/>
@@ -250,7 +250,6 @@
          Applies to flex-grow (float), flex-shrink (float), flex-basis (float | keyword) -->
     <!-- Using <float> to mean <length> | <number> -->
     <!-- 2019.1-2019.2 unset | none | [ auto (<float>) (<float>)? ] | <float> <float>? <float>? | <float> auto -->
-    <name value="whatever"/>
     <group type="or">
       <name value="none"/>
       <group type="any">
