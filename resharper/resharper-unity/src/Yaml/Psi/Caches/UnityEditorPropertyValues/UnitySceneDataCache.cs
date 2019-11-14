@@ -26,12 +26,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     public class UnitySceneDataCache : SimpleICache<UnitySceneData>
     {
         private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
+        private readonly MetaFileGuidCache myMetaFileGuidCache;
 
         public UnitySceneDataCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
-            UnitySceneDataLocalCache unitySceneDataLocalCache)
+            UnitySceneDataLocalCache unitySceneDataLocalCache, MetaFileGuidCache metaFileGuidCache)
             : base(lifetime, persistentIndexManager, UnitySceneData.Marshaller)
         {
             myUnitySceneDataLocalCache = unitySceneDataLocalCache;
+            myMetaFileGuidCache = metaFileGuidCache;
         }
         
         protected override bool IsApplicable(IPsiSourceFile sourceFile)

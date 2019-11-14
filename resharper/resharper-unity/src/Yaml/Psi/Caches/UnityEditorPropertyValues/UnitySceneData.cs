@@ -22,32 +22,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         // of method/property setter short name to all the asset guids where it's used. These usages will always be the
         // most derived type. If we get all (inherited) members of each usage, we can match to see if a given method
         // (potentially declared on a base type) is being used as an event handler
-        public readonly OneToSetMap<string, string> ShortNameToAssetGuid;
+        public readonly OneToSetMap<string, FileID> ShortNameToScriptFileId;
+        public readonly OneToSetMap<string, string> ScriptMapping;
         public readonly SceneHierarchy SceneHierarchy;
 
         public static readonly IUnsafeMarshaller<UnitySceneData> Marshaller = new UniversalMarshaller<UnitySceneData>(Read, Write);
         
-        private UnitySceneData(OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue> propertiesData,OneToSetMap<string, string> eventHandlers, SceneHierarchy sceneHierarchy)
+        private UnitySceneData(OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue> propertiesData, OneToSetMap<string, FileID> eventHandlers, OneToSetMap<string, string> scriptMapping, SceneHierarchy sceneHierarchy)
         {
             PropertiesData = propertiesData;
             SceneHierarchy = sceneHierarchy;
-            ShortNameToAssetGuid = eventHandlers;
+            ShortNameToScriptFileId = eventHandlers;
+            ScriptMapping = scriptMapping;
         }
         
         private static UnitySceneData Read(UnsafeReader reader)
         {
-            return new UnitySceneData(PropertiesDataMarshaller.Unmarshal(reader), EventHandlersMarshaller.Unmarshal(reader), SceneHierarchy.Read(reader));
+            return new UnitySceneData(PropertiesDataMarshaller.Unmarshal(reader), EventHandlersMarshaller.Unmarshal(reader),
+                ScriptToGuidMarshaller.Unmarshal(reader), SceneHierarchy.Read(reader));
         }
 
         private static void Write(UnsafeWriter writer, UnitySceneData value)
         {
             PropertiesDataMarshaller.Marshal(writer, value.PropertiesData);
-            EventHandlersMarshaller.Marshal(writer, value.ShortNameToAssetGuid);
+            EventHandlersMarshaller.Marshal(writer, value.ShortNameToScriptFileId);
+            ScriptToGuidMarshaller.Marshal(writer, value.ScriptMapping);
             value.SceneHierarchy.WriteTo(writer);
         }
         
         
-        private static IUnsafeMarshaller<OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>> PropertiesDataMarshaller = 
+        private static readonly IUnsafeMarshaller<OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>> PropertiesDataMarshaller = 
             UnsafeMarshallers
                 .GetOneToManyMapMarshaller<MonoBehaviourProperty, MonoBehaviourPropertyValue,
                     IList<MonoBehaviourPropertyValue>, OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>>
@@ -60,7 +64,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     n => new OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>(n)
                 );
 
-        private static IUnsafeMarshaller<OneToSetMap<string, string>> EventHandlersMarshaller = 
+        private static IUnsafeMarshaller<OneToSetMap<string, FileID>> EventHandlersMarshaller = 
+            UnsafeMarshallers
+                .GetOneToManyMapMarshaller<string, FileID, ISet<FileID>, OneToSetMap<string, FileID>>
+                (
+                    UnsafeMarshallers.UnicodeStringMarshaller,
+                    new UniversalMarshaller<FileID>(FileID.ReadFrom, FileID.WriteTo), 
+                    n => new OneToSetMap<string, FileID>(n)
+                );
+        
+        private static IUnsafeMarshaller<OneToSetMap<string, string>> ScriptToGuidMarshaller = 
             UnsafeMarshallers
                 .GetOneToManyMapMarshaller<string, string, ISet<string>, OneToSetMap<string, string>>
                 (
@@ -78,9 +91,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             var unityPropertyValueCacheItem = new OneToListMap<MonoBehaviourProperty, MonoBehaviourPropertyValue>();
             var sceneHierarchy = new SceneHierarchy();
             
-            var anchorToGuid = new Dictionary<string, string>();
             var anchorToEventHandler = new OneToSetMap<string, string>();
-            var eventHandlerToGuid = new OneToSetMap<string, string>();
+            var scriptMapping = new OneToSetMap<string, string>();
+            var eventHandlerToScriptTarget = new OneToSetMap<string, FileID>();
             
             foreach (var document in file.DocumentsEnumerable)
             {
@@ -94,41 +107,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 {
                     var simpleValues = new Dictionary<string, string>();
                     var referenceValues = new Dictionary<string, FileID>();
-                    var targetToMethods = new OneToSetMap<string, string>();
-                    UnitySceneDataUtil.ExtractSimpleAndReferenceValues(buffer, simpleValues, referenceValues, targetToMethods);
+                    UnitySceneDataUtil.ExtractSimpleAndReferenceValues(buffer, simpleValues, referenceValues, eventHandlerToScriptTarget);
 
                     FillProperties(simpleValues, referenceValues, unityPropertyValueCacheItem);
+                    FillScriptMapping(simpleValues, referenceValues, scriptMapping);
 
                     sceneHierarchy.AddSceneHierarchyElement(simpleValues, referenceValues);
-
-                    var anchor = simpleValues.GetValueSafe("&anchor");
-                    var fileId = referenceValues.GetValueSafe(UnityYamlConstants.ScriptProperty);
-                    if (anchor != null && fileId != null)
-                        anchorToGuid[anchor] = fileId.guid;
-
-                    foreach (var key in targetToMethods.Keys)
-                    {
-                        anchorToEventHandler.AddRange(key, targetToMethods[key]);
-                    }
-                    
-                }
-            }
-
-            foreach (var (anchor, shortNames) in anchorToEventHandler)
-            {
-                var guid = anchorToGuid.GetValueSafe(anchor);
-                if (guid == null)
-                    continue;
-                foreach (var shortName in shortNames)
-                {
-                    eventHandlerToGuid.Add(shortName, guid);
                 }
             }
             
             if (unityPropertyValueCacheItem.Count == 0 && sceneHierarchy.Elements.Count == 0)
                 return null;
 
-            return new UnitySceneData(unityPropertyValueCacheItem, eventHandlerToGuid, sceneHierarchy);
+            return new UnitySceneData(unityPropertyValueCacheItem, eventHandlerToScriptTarget, scriptMapping, sceneHierarchy);
+        }
+
+        private static void FillScriptMapping(Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues, OneToSetMap<string, string> scriptMapping)
+        {
+            var anchor = simpleValues.GetValueSafe("&anchor");
+            if (referenceValues.TryGetValue(UnityYamlConstants.ScriptProperty, out var fileID))
+            {
+                scriptMapping.Add(anchor, fileID.guid);
+            }
         }
 
         private static void FillProperties(Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues,
@@ -176,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             "m_PrefabAsset",
             "m_Enabled",
             "m_EditorHideFlags",
-            "m_Script",
+            UnityYamlConstants.ScriptProperty,
             UnityYamlConstants.NameProperty,
             "m_EditorClassIdentifier"
         };

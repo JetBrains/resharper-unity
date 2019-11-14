@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     internal static class UnitySceneDataUtil
     {
         private static StringSearcher ourStringSearcher = new StringSearcher("m_PersistentCalls:", true);
-        public static void ExtractSimpleAndReferenceValues(IBuffer buffer, Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues, OneToSetMap<string, string> targetToMethod)
+        public static void ExtractSimpleAndReferenceValues(IBuffer buffer, Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues, OneToSetMap<string, FileID> eventHandlerToScriptTarget)
         {
             // special field for accessing anchor id
             simpleValues["&anchor"] = GetAnchorFromBuffer(buffer);
@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                                 var chameleonBuffer = ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd));
                                 if (ourStringSearcher.Find(chameleonBuffer, 0, Math.Min(chameleonBuffer.Length, 150)) > 0)
                                 {
-                                    FillTargetAndMethod(chameleonBuffer, targetToMethod);
+                                    FillTargetAndMethod(chameleonBuffer, eventHandlerToScriptTarget);
                                 }
                                 else
                                 {
@@ -191,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return null;
         }
 
-        private static void FillTargetAndMethod(IBuffer buffer, OneToSetMap<string, string> targetToMethod)
+        private static void FillTargetAndMethod(IBuffer buffer, OneToSetMap<string, FileID> eventHandlerToScriptTarget)
         {
             var lexer = new YamlLexer(buffer, false, false);
             lexer.Start();
@@ -199,8 +199,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             
             TokenNodeType currentToken;
 
-            string currentTarget = null;
-            var methods = new HashSet<string>();
+            FileID currentTarget = null;
+            string currentMethod = null;
             
             while ((currentToken = lexer.TokenType) != null)
             {
@@ -214,23 +214,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                     {
                         if (text.Equals("m_Target"))
                         {
-                            if (currentTarget != null)
-                                targetToMethod.AddRange(currentTarget, methods);
+                            if (currentMethod != null && currentTarget != null)
+                                eventHandlerToScriptTarget.Add(currentMethod, currentTarget);
 
-                            methods.Clear();
                             lexer.Advance();
-                            var result = GetFileId(buffer, lexer);
-                            if (result != null)
-                                currentTarget = result.fileID;
+                            currentTarget = GetFileId(buffer, lexer);
                         }
                         else if (text.Equals("m_MethodName"))
                         {
                             Assertion.Assert(currentTarget != null, "currentTarget != null");
                             lexer.Advance();
-                            var id = GetPrimitiveValue(buffer, lexer);
-                            
-                            if (id != null)
-                                methods.Add(id);
+                            currentMethod = GetPrimitiveValue(buffer, lexer);
                         }
                     }
                 }
@@ -238,8 +232,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
             }
             
-            if (currentTarget != null)
-                targetToMethod.AddRange(currentTarget, methods);
+            if (currentMethod != null && currentTarget != null)
+                eventHandlerToScriptTarget.Add(currentMethod, currentTarget);
         }
         
         public static void SkipWhitespace(YamlLexer lexer)

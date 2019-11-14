@@ -32,7 +32,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private readonly OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement> mySceneElements
             = new OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement>();
         
-        private readonly OneToCompactCountingSet<string, string> myShortNameToAssetGuid = new OneToCompactCountingSet<string, string>();
+        private readonly OneToCompactCountingSet<string, (IPsiSourceFile sourceFile, FileID id)> myShortNameToScriptTarget = 
+            new OneToCompactCountingSet<string, (IPsiSourceFile sourceFile, FileID id)>();
+
+        private readonly Dictionary<IPsiSourceFile, OneToSetMap<string, string>> myScriptMapping =
+            new Dictionary<IPsiSourceFile, OneToSetMap<string, string>>();
 
         public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetPropertyValues(string guid, string propertyName)
         {
@@ -112,13 +116,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 mySceneElements.Add(new SceneElementId(sourceFile, id), element);
             }
 
-            foreach (var (name, guids) in sceneData.ShortNameToAssetGuid)
+            foreach (var (name, ids) in sceneData.ShortNameToScriptFileId)
             {
-                foreach (var guid in guids)
+                foreach (var id in ids)
                 {
-                    myShortNameToAssetGuid.Add(name, guid);
+                    myShortNameToScriptTarget.Add(name, (sourceFile, id));
                 }
             }
+            
+            myScriptMapping.Add(sourceFile, sceneData.ScriptMapping);
         }
 
         public bool IsEventHandler([NotNull] IMethod declaredElement)
@@ -129,9 +135,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             if (sourceFiles.Count != 1)
                 return false;
 
-            foreach (var assetGuid in myShortNameToAssetGuid.GetValues(declaredElement.ShortName))
+            foreach (var (sourceFile, scriptAnchor) in myShortNameToScriptTarget.GetValues(declaredElement.ShortName))
             {
-                var invokedType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(mySolution, assetGuid);
+                var scriptAnchorSourceFile = GetSourceFileWithPointedYamlDocument(sourceFile, scriptAnchor, myGuidCache);
+                var guid = GetScriptGuid(scriptAnchorSourceFile, scriptAnchor.fileID);
+                if (guid == null)
+                    continue;
+                
+                var invokedType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(mySolution, guid);
                 if (invokedType != null)
                 {
                     var members = invokedType.GetAllClassMembers(declaredElement.ShortName);
@@ -144,6 +155,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// FileId is reference to some object in Unity asset file. If guid property is defined in asset file, 
+        /// FileId references some object in another Unity asset file which could be resovled by this guid ant MetaFileGuidCache
+        /// </summary>
+        public static IPsiSourceFile GetSourceFileWithPointedYamlDocument(IPsiSourceFile containingFile, FileID id, MetaFileGuidCache guidCache)
+        {
+            var module = (containingFile.PsiModule as UnityExternalFilesPsiModule).NotNull("module != null");
+            var guid = id.guid;
+            if (guid != null)
+            {
+                var path = guidCache.GetAssetFilePathsFromGuid(guid).FirstOrDefault();
+                if (path == null)
+                    return null;
+
+                if (!module.TryGetFileByPath(path, out var sourceFile))
+                    return null;
+
+                return sourceFile;
+            }
+            else
+            {
+                return containingFile;
+            }
+        }
+        
+        public string GetScriptGuid(IPsiSourceFile file, string id)
+        {
+            return myScriptMapping[file].GetValuesSafe(id).FirstOrDefault();
         }
         
         public void Remove(IPsiSourceFile sourceFile, UnitySceneData sceneData)
@@ -163,13 +204,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 mySceneElements.Remove(new SceneElementId(sourceFile, id), element);
             }
             
-            foreach (var (name, guids) in sceneData.ShortNameToAssetGuid)
+            foreach (var (name, ids) in sceneData.ShortNameToScriptFileId)
             {
-                foreach (var guid in guids)
+                foreach (var id in ids)
                 {
-                    myShortNameToAssetGuid.Remove(name, guid);
+                    myShortNameToScriptTarget.Remove(name, (sourceFile, id));
                 }
             }
+
+            myScriptMapping.Remove(sourceFile);
         }
         
         public void ProcessSceneHierarchyFromComponentToRoot(IYamlDocument startComponent, IUnityCachedSceneProcessorConsumer consumer)
@@ -364,5 +407,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 }
             }
         }
+        
     }
 }

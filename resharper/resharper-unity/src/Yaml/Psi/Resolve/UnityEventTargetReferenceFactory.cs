@@ -54,13 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (methodNameMapEntry.Key.MatchesPlainScalarText("m_MethodName") &&
                 callsMapEntry.Key.MatchesPlainScalarText("m_Calls"))
             {
-                // If we have a guid, that means this event handler exists inside another asset. That asset might be
-                // a .dll, in which case we don't want to add a reference (the primary purpose of these references
-                // is to enable Find Usages of methods, not navigation *from* YAML). Or it might be e.g. a prefab.
-                // This would be a reference to a prefab that contains a MonoScript asset that has the method
-                // TODO: Create an index of other assets that we could target
                 var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Content.Value.AsFileID();
-                if (fileID != null && !fileID.IsNullReference && fileID.guid == null)
+                if (fileID != null && !fileID.IsNullReference)
                 {
                     var text = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Mode"))?.Content.Value
                         .GetPlainScalarText();
