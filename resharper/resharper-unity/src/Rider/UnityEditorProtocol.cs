@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
@@ -43,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IThreading myThreading;
         private readonly UnityVersion myUnityVersion;
         private readonly NotificationsModel myNotificationsModel;
+        private readonly IHostProductInfo myHostProductInfo;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -54,7 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
             ISettingsStore settingsStore, JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
             UnitySolutionTracker unitySolutionTracker, IThreading threading,
-            UnityVersion unityVersion, NotificationsModel notificationsModel)
+            UnityVersion unityVersion, NotificationsModel notificationsModel,
+            IHostProductInfo hostProductInfo)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
@@ -66,6 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myThreading = threading;
             myUnityVersion = unityVersion;
             myNotificationsModel = notificationsModel;
+            myHostProductInfo = hostProductInfo;
             myHost = host;
             myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
@@ -173,10 +177,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }
                         else
                         {
-                            var current = Environment.GetEnvironmentVariable("RESHARPER_REPORT_VERSION");
-                            var text = !string.IsNullOrEmpty(current) ? $" to {current}" : string.Empty;
-                            var notification = new NotificationModel("Advanced Unity integration features are unavailable.", 
-                                $"Please update External Editor{text} in Unity Preferences.",
+                            var notification = new NotificationModel("Advanced Unity integration is unavailable.", 
+                                $"Please update External Editor to {myHostProductInfo.VersionMarketingString} in Unity Preferences.",
                                 true, RdNotificationEntryType.WARN);
                             mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify", () => myNotificationsModel.Notification(notification));
                         }
