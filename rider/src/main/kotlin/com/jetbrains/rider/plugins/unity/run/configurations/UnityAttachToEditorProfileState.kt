@@ -67,7 +67,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
         application.executeOnPooledThread {
             try {
                 if (!remoteConfiguration.updatePidAndPort()) {
-
+                    logger.trace("Do not found Unity, starting new Unity Editor")
                     val model = UnityHost.getInstance(project).model
                     if (UnityInstallationFinder.getInstance(project).getApplicationPath() == null ||
                         model.hasUnityReference.hasTrueValue && !UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
@@ -86,6 +86,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                     Thread.sleep(2000)
                 }
                 UIUtil.invokeLaterIfNeeded {
+                    logger.trace("Connecting to Unity Editor with port: $port")
                     super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
                 }
             }

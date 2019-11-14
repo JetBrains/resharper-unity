@@ -34,13 +34,13 @@ namespace JetBrains.Rider.Unity.Editor
     private static bool ourInitialized;
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     internal static string SlnFile;
-    
+
     // This an entry point
     static PluginEntryPoint()
     {
       if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
         return;
-      
+
       PluginSettings.InitLog(); // init log before doing any logging
       ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap
 
@@ -112,7 +112,7 @@ namespace JetBrains.Rider.Unity.Editor
         bool isEnabled = !string.IsNullOrEmpty(defaultApp) &&
                          Path.GetFileName(defaultApp).ToLower().Contains("rider") &&
                          !UnityEditorInternal.InternalEditorUtility.inBatchMode;
-        
+
         return isEnabled;
     }
 
@@ -167,7 +167,7 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("Deleting Library/ProtocolInstance.json");
         File.Delete(protocolInstanceJsonPath);
       };
-      
+
       PlayModeSavedState = GetPlayModeState();
 
       ourInitialized = true;
@@ -177,7 +177,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (ourInitialized)
         return;
-      
+
       ResetDefaultFileExtensions();
 
       // process csproj files once per Unity process
@@ -187,7 +187,7 @@ namespace JetBrains.Rider.Unity.Editor
         // "Must set an output directory through SetCompileScriptsOutputDirectory before compiling"
         EditorApplication.update += SyncSolutionOnceCallBack;
       }
-      
+
       SetupAssemblyReloadEvents();
     }
 
@@ -266,7 +266,7 @@ namespace JetBrains.Rider.Unity.Editor
               }
               PlayModeSavedState = newPlayModeState;
             }
-          }); 
+          });
         }
       };
 
@@ -318,7 +318,8 @@ namespace JetBrains.Rider.Unity.Editor
             model.ScriptCompilationDuringPlay.Set((int)PluginSettings.AssemblyReloadSettings);
 
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
-          
+          AdviseGenerateUISchema(model);
+
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
@@ -330,6 +331,11 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
+    }
+
+    private static void AdviseGenerateUISchema(EditorPluginModel model)
+    {
+      model.GenerateUIElementsSchema.Set(_ => UIElementsSupport.GenerateSchema());
     }
 
     private static void AdviseShowPreferences(EditorPluginModel model, Lifetime connectionLifetime, ILog log)
@@ -349,7 +355,7 @@ namespace JetBrains.Rider.Unity.Editor
               {
                 // 2018+
                 var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
-                
+
                 if (method == null)
                 {
                   log.Error("'OpenUserPreferences' was not found");
@@ -364,7 +370,7 @@ namespace JetBrains.Rider.Unity.Editor
                 // 5.5, 2017 ...
                 type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
                 var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
-                
+
                 if (method == null)
                 {
                   log.Error("'ShowPreferencesWindow' was not found");
@@ -392,7 +398,7 @@ namespace JetBrains.Rider.Unity.Editor
         {
           return UnityEditorState.Pause;
         }
-        
+
         if (EditorApplication.isPlaying)
         {
           return UnityEditorState.Play;
@@ -442,10 +448,10 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(() =>
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
-          
+
           if (isPlaying)
             model.ClearOnPlay(DateTime.UtcNow.Ticks);
-          
+
           if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
@@ -564,7 +570,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (UnityUtils.UnityVersion >= new Version(2017, 1))
         return;
-    
+
       ourLogger.Verbose("Writing Library/EditorInstance.json");
 
       var editorInstanceJsonPath = Path.GetFullPath("Library/EditorInstance.json");
@@ -604,12 +610,12 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!PluginEntryPoint.IsRiderDefaultEditor())
         return false;
-      
+
       // if (UnityUtils.UnityVersion >= new Version(2019, 2)
       //   return false;
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
     }
-    
+
     /// <summary>
     /// Called when Unity is about to open an asset. This method is new for 2019.2
     /// </summary>
@@ -618,7 +624,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!PluginEntryPoint.IsRiderDefaultEditor())
         return false;
-      
+
       if (UnityUtils.UnityVersion < new Version(2019, 2))
         return false;
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, column);

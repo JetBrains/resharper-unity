@@ -15,7 +15,29 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     /// <summary>
-    /// Returns RiderPath, if it exists
+    /// If external editor is Rider and exists, it would be returned
+    /// Otherwise, first of allFoundPaths would be returned
+    /// </summary>
+    /// <param name="externalEditor"></param>
+    /// <returns>May return null, if nothing found.</returns>
+    public string ValidateAndReturnActualRider(string externalEditor)
+    {
+      if (!string.IsNullOrEmpty(externalEditor))
+      {
+        var alreadySetPath = new FileInfo(externalEditor).FullName;
+        if (RiderPathExist(alreadySetPath, myPluginSettings.OperatingSystemFamilyRider))
+        {
+          return alreadySetPath;
+        }
+      }
+      
+      var paths = RiderPathLocator.GetAllFoundPaths(myPluginSettings.OperatingSystemFamilyRider);
+      return paths.FirstOrDefault();
+    }
+    
+    /// <summary>
+    /// If external editor is Rider, exists and is contained in the list of allFoundPaths, it would be returned
+    /// Otherwise, first of allFoundPaths would be returned
     /// </summary>
     /// <param name="externalEditor"></param>
     /// <param name="allFoundPaths"></param>
