@@ -63,7 +63,6 @@ intellij {
     instrumentCode = false
 
     plugins = [ 'rider-plugins-appender', 'CSS' ]
-    useProductionClassLoaderInTests = true
 }
 
 
