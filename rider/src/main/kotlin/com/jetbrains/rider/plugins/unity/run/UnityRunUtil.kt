@@ -47,6 +47,7 @@ object UnityRunUtil {
             && !name.contains("UnityCrashHandler")
             && !name.contains("UnityPackageManager")
             && !name.contains("Unity.Licensing.Client")
+            && !name.contains("UnityDownloadAssistant")
             && !name.contains("unityhub", true)
         logger.trace("Checking Unity Process, result: $result")
         return result
