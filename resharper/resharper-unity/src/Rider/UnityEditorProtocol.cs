@@ -34,6 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityEditorProtocol
     {
+        private readonly JetHashSet<FileSystemPath> myPluginInstallations;
+
         private readonly Lifetime myComponentLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
         private readonly ILogger myLogger;
@@ -59,6 +61,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityVersion unityVersion, NotificationsModel notificationsModel,
             IHostProductInfo hostProductInfo)
         {
+            myPluginInstallations = new JetHashSet<FileSystemPath>();
+            
             myComponentLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
@@ -163,8 +167,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     protocol.ThrowErrorOnOutOfSyncModels = false;
 
-                    protocol.OutOfSyncModels.Advise(lf, e =>
+                    protocol.OutOfSyncModels.AdviseOnce(lf, e =>
                     {
+                        if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
+                            return;
+                        
+                        myPluginInstallations.Add(mySolution.SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
+                        
                         var appVersion = myUnityVersion.GetActualVersionForSolution();
                         if (appVersion < new Version(2019, 2))
                         {
