@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 
                             , true,
                             RdNotificationEntryType.WARN);
-                        solution.Locks.ExecuteOrQueueEx(lifetime, "MonoInstallTrigger.Notify", () => notificationsModel.Notification(notification));
+                        solution.Locks.ExecuteOrQueue(lifetime, "MonoInstallTrigger.Notify", () => notificationsModel.Notification(notification));
                     }
                 });
             }));
