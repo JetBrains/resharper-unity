@@ -94,6 +94,16 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_prefabs_2018")
+    fun findEventHandlerPrefabs_2018(caseName: String, groups: Array<String>?) {
+        disableAllGroups()
+        groups?.forEach { group -> setGroupingEnabled(group, true) }
+
+        doTest(17, 18)
+    }
+
+
+    @Test(dataProvider = "findUsagesGrouping")
     @TestEnvironment(solution = "FindUsages_02_2018")
     fun findScript_02_2018(caseName: String, groups: Array<String>?) {
         disableAllGroups()
