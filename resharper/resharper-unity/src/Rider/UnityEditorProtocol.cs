@@ -186,7 +186,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }
                         else
                         {
-                            var notification = new NotificationModel("Advanced Unity integration is unavailable.", 
+                            var notification = new NotificationModel("Advanced Unity integration is unavailable", 
                                 $"Please update External Editor to {myHostProductInfo.VersionMarketingString} in Unity Preferences.",
                                 true, RdNotificationEntryType.WARN);
                             mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify", () => myNotificationsModel.Notification(notification));
