@@ -21,6 +21,7 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Notifications;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
@@ -40,6 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISolution mySolution;
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
         private readonly IThreading myThreading;
+        private readonly UnityVersion myUnityVersion;
+        private readonly NotificationsModel myNotificationsModel;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -50,7 +53,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
             ISettingsStore settingsStore, JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
-            UnitySolutionTracker unitySolutionTracker, IThreading threading)
+            UnitySolutionTracker unitySolutionTracker, IThreading threading,
+            UnityVersion unityVersion, NotificationsModel notificationsModel)
         {
             myComponentLifetime = lifetime;
             myLogger = logger;
@@ -60,6 +64,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myPluginPathsProvider = pluginPathsProvider;
             myUsageStatistics = usageStatistics;
             myThreading = threading;
+            myUnityVersion = unityVersion;
+            myNotificationsModel = notificationsModel;
             myHost = host;
             myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
@@ -155,11 +161,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     protocol.OutOfSyncModels.Advise(lf, e =>
                     {
-                        var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-                        var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
-                        if (!isEnabled)
+                        var appVersion = myUnityVersion.GetActualVersionForSolution();
+                        if (appVersion < new Version(2019, 2))
                         {
-                            myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
+                            var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+                            var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
+                            if (!isEnabled)
+                            {
+                                myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
+                            }
+                        }
+                        else
+                        {
+                            var current = Environment.GetEnvironmentVariable("RESHARPER_REPORT_VERSION");
+                            var text = !string.IsNullOrEmpty(current) ? $" to {current}" : string.Empty;
+                            var notification = new NotificationModel("Advanced Unity integration features are unavailable.", 
+                                $"Please update External Editor{text} in Unity Preferences.",
+                                true, RdNotificationEntryType.WARN);
+                            mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify", () => myNotificationsModel.Notification(notification));
                         }
                     });
                     var editor = new EditorPluginModel(lf, protocol);
