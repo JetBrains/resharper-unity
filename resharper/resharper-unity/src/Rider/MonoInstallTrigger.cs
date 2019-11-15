@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             () => { host.PerformModelAction(model => model.ShowInstallMonoDialog()); });
                     else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Linux)
                     {
-                        var notification = new NotificationModel("Mono 5.16+ is required.",
+                        var notification = new NotificationModel("Mono 5.16+ is required",
                             "<html>Project requires new Mono with MSBuild for new C# language features support.<br>" +
                             RiderContextNotificationHelper.MakeOpenSettingsLink(
                                 WellKnownSettingPages.Environment,
@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 
                             , true,
                             RdNotificationEntryType.WARN);
-                        notificationsModel.Notification(notification);
+                        solution.Locks.ExecuteOrQueue(lifetime, "MonoInstallTrigger.Notify", () => notificationsModel.Notification(notification));
                     }
                 });
             }));
