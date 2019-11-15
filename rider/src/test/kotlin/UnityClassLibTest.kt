@@ -5,7 +5,6 @@ import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import org.testng.annotations.Ignore
 import org.testng.annotations.Test
 import java.io.File
 
@@ -16,7 +15,6 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         get() = File(testCaseGoldDirectory, "${testMethod.name}_opened")
 
     @Test
-    @Ignore //TODO: (KS) Temporary, just for build. Remove this later
     fun testUnityClassLibraryTemplate() {
         val params = OpenSolutionParams()
         params.restoreNuGetPackages = true //it's always true in getAndOpenSolution
