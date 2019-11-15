@@ -11,7 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
@@ -52,18 +52,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public override bool IsAvailableFor(IDeclaredElement declaredElement, ElementId? elementId)
         {
-            if (!elementId.HasValue)
+            if (!elementId.HasValue || declaredElement == null)
                 return false;
 
+            if (!declaredElement.GetSolution().GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled.Value)
+                return false;
+                
+            if (!declaredElement.GetSolution().GetComponent<AssetSerializationMode>().IsForceText)
+                return false;
+            
             if (declaredElement is IMethod method)
             {
-                if (!method.GetSolution().GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled.Value)
-                    return false;
-                
-                if (!method.GetSolution().GetComponent<AssetSerializationMode>().IsForceText)
-                    return false;
-
-                var cache = method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>();
+                var cache = method.GetSolution().GetComponent<UnitySceneDataLocalCache>();
                 return cache.IsEventHandler(method);
             }
 

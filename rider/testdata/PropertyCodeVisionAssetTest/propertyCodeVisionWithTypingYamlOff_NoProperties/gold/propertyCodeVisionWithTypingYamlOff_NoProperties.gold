@@ -1,0 +1,84 @@
+before change
+Inline 381 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=366, endOffset=380) Serializable
+    Hidden
+Inline 412 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=400, endOffset=411) Serializable
+    Hidden
+Inline 494 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=477, endOffset=493) Serializable
+    Hidden
+Inline 579 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=558, endOffset=573) Serializable
+    Hidden
+Inline 654 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=645, endOffset=653) Serializable
+    Hidden
+Inline 734 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=725, endOffset=733) Serializable
+    Hidden
+Inline 757 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=752, endOffset=756) Serializable
+    Hidden
+Block 142 BlockLensListRenderer
+Top
+    Visible
+        Text RdTextRange(startOffset=155, endOffset=167) Script
+        Text RdTextRange(startOffset=155, endOffset=167) 1 usage
+    Hidden
+after change
+Inline 381 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=366, endOffset=380) Serializable
+    Hidden
+Inline 412 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=400, endOffset=411) Serializable
+    Hidden
+Inline 494 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=477, endOffset=493) Serializable
+    Hidden
+Inline 580 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=558, endOffset=573) Serializable
+    Hidden
+Inline 655 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=646, endOffset=654) Serializable
+    Hidden
+Inline 735 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=726, endOffset=734) Serializable
+    Hidden
+Inline 758 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=753, endOffset=757) Serializable
+    Hidden
+Block 142 BlockLensListRenderer
+Top
+    Visible
+        Text RdTextRange(startOffset=155, endOffset=167) Script
+        Text RdTextRange(startOffset=155, endOffset=167) 1 usage
+    Hidden

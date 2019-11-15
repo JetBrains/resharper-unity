@@ -1,4 +1,9 @@
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -35,8 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             // If it's a reference to something other than MonoBehaviour, it shouldn't be a resolve error
             // E.g. setting the property on a light map when an event fires
-            if (!IsMonoBehaviourReference())
-                return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.IGNORABLE);
+            
+            // TODO it is not true for prefabs
+//            if (!IsMonoBehaviourReference())
+//                return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.IGNORABLE);
 
             var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
             if (!resolveResultWithInfo.Result.IsEmpty)
@@ -54,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var assetGuid = GetScriptAssetGuid();
+            var assetGuid = GetScriptAssetGuid(myOwner.GetSolution().GetComponent<UnitySceneDataLocalCache>(), myOwner.GetSolution().GetComponent<MetaFileGuidCache>());
             var targetType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(myOwner.GetSolution(), assetGuid);
             if (targetType == null)
                 return EmptySymbolTable.INSTANCE;
@@ -102,12 +109,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         // necessarily the guid of the script asset that *declares* the method (property setter is a method). The method
         // might be declared on a base type, or might be a virtual override
         [CanBeNull]
-        public string GetScriptAssetGuid()
+        public string GetScriptAssetGuid(UnitySceneDataLocalCache cache, MetaFileGuidCache guidCache)
         {
-            var yamlFile = (IYamlFile) myOwner.GetContainingFile();
-            var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);
-            var fileID = document.GetUnityObjectPropertyValue(UnityYamlConstants.ScriptProperty).AsFileID();
-            return fileID?.guid;
+            return cache.GetScriptGuid(UnitySceneDataLocalCache.GetSourceFileWithPointedYamlDocument(myOwner.GetSourceFile(), myFileId, guidCache), myFileId.fileID);
         }
     }
 }

@@ -4,16 +4,24 @@ import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.BeforeMethod
+import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 import java.io.File
 
 class QuickFixProjectSettingsTest : RefactoringsTestBase() {
 
+    lateinit var unityDll : File
+
+    @BeforeSuite(alwaysRun = true)
+    fun getUnityDll() {
+        unityDll = downloadUnityDll()
+    }
+
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
     override val editorGoldFile: File
         get() = File(testCaseGoldDirectory,  testMethod.name)
 
-    @Test(enabled = false)
+    @Test
     fun testAddToBuildSettings() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
@@ -26,7 +34,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         writeProjectSettingsToGold()
     }
 
-    @Test(enabled = false)
+    @Test
     fun testEnableSceneAtBuildSettings() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             FrontendTextControlHost.getInstance(project!!)
@@ -39,7 +47,7 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
         writeProjectSettingsToGold()
     }
 
-    @Test(enabled = false)
+    @Test
     fun testSpecifyFullSceneName() {
         doTestWithDumpDocument {
             withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
@@ -65,6 +73,6 @@ class QuickFixProjectSettingsTest : RefactoringsTestBase() {
 
     @BeforeMethod
     fun InitializeEnvironement() {
-        CopyUnityDll(project, activeSolutionDirectory)
+        copyUnityDll(unityDll, project, activeSolutionDirectory)
     }
 }

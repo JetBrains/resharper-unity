@@ -336,7 +336,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 
       if (yy_buffer_index + 2 < yy_eof_pos)
       {
-        if (Buffer[yy_buffer_index] == '-' && Buffer[yy_buffer_index  + 1] == ' ')
+        if (Buffer[yy_buffer_index] == '-' && (Buffer[yy_buffer_index  + 1] == ' ' || 
+                                               Buffer[yy_buffer_index  + 1] == '\r' ||
+                                               Buffer[yy_buffer_index  + 1] == '\n' ))
         {
           currentLineIndent += 2;
         }

@@ -18,16 +18,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class PerformanceCriticalCodeCallGraphAnalyzer : CallGraphAnalyzerBase
     {
+        private readonly UnityApi myUnityApi;
         public static readonly string MarkId = "Unity.PerformanceCriticalContext";
         private static readonly ISet<string> ourKnownHotMonoBehaviourMethods = new HashSet<string>()
         {
             "Update", "LateUpdate", "FixedUpdate",
         };
 
-        public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, 
+        public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, UnityApi unityApi,
             UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker)
             : base(MarkId, new CallerToCalleeCallGraphPropagator(solution, MarkId))
         {
+            myUnityApi = unityApi;
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
@@ -43,11 +45,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 } else
                 if (ourKnownHotMonoBehaviourMethods.Contains(methodDeclaration.DeclaredName))
                 {
-                    var containingTypeDeclaration = methodDeclaration.GetContainingTypeDeclaration();
+                    var containingTypeDeclaration = methodDeclaration.GetContainingTypeDeclaration()?.DeclaredElement;
 
-                    if (containingTypeDeclaration != null &&
-                        containingTypeDeclaration.SuperTypes.Any(t => t.GetClrName().Equals(KnownTypes.MonoBehaviour)))
+                    if (myUnityApi.IsDescendantOfMonoBehaviour(containingTypeDeclaration))
+                    {
                         result.Add(containingFunction);
+                    }
                 }
             }
 

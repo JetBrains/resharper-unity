@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using JetBrains.Diagnostics;
 
@@ -43,6 +44,9 @@ namespace JetBrains.Rider.Unity.Editor
     /// <returns>May return null, if nothing found.</returns>
     public string GetActualRider(string externalEditor, string[] allFoundPaths)
     {
+      if (Environment.GetCommandLineArgs().Contains("-riderTests"))
+        return "riderTestPath";
+      
       if (!string.IsNullOrEmpty(externalEditor))
       {
         var alreadySetPath = new FileInfo(externalEditor).FullName;
