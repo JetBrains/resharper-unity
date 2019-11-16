@@ -1,4 +1,4 @@
-﻿# 58 ITEMS #
+﻿# 62 ITEMS #
 
 + RuntimeInitializeOnLoadMethodAttribute
 OnCaptureResourceCreatedCallback (in UnityEngine.XR.WSA.WebCam.PhotoCapture)
@@ -14,6 +14,7 @@ OnDeserializingAttribute (in System.Runtime.Serialization)
 OnDevicesChangedHandler (in UnityEditor.Hardware.Usb)
 OnEditModeStartFunc (in UnityEditorInternal.EditMode)
 OnEditModeStopFunc (in UnityEditorInternal.EditMode)
+OnGUIDelegate (in UnityEditor.LightingExplorerTableColumn)
 OnNavMeshPreUpdate (in UnityEngine.AI.NavMesh)
 OnOpenAssetAttribute (in UnityEditor.Callbacks)
 OnPhotoModeStartedCallback (in UnityEngine.XR.WSA.WebCam.PhotoCapture)
@@ -38,6 +39,9 @@ AndroidShowActivityIndicatorOnLoading (in UnityEditor)
 CriticalHandleMinusOneIsInvalid (in Microsoft.Win32.SafeHandles)
 CriticalHandleZeroOrMinusOneIsInvalid (in Microsoft.Win32.SafeHandles)
 DeallocateOnJobCompletionAttribute (in Unity.Collections)
+IOnInspectorGUI (in UnityEditor.Experimental.TerrainAPI)
+IOnPaint (in UnityEditor.Experimental.TerrainAPI)
+IOnSceneGUI (in UnityEditor.Experimental.TerrainAPI)
 InitializeOnLoadAttribute (in UnityEditor)
 InitializeOnLoadMethodAttribute (in UnityEditor)
 NativeContainerIsAtomicWriteOnlyAttribute (in Unity.Collections.LowLevel.Unsafe)
@@ -59,7 +63,7 @@ XboxOneLoggingLevel (in UnityEditor)
 XboxOnePackageUpdateGranularity (in UnityEditor)
 iOSShowActivityIndicatorOnLoading (in UnityEditor)
 # AUTOMATIC #
-# 58 ITEMS #
+# 62 ITEMS #
 
 + RuntimeInitializeOnLoadMethodAttribute
 OnCaptureResourceCreatedCallback (in UnityEngine.XR.WSA.WebCam.PhotoCapture)
@@ -75,6 +79,7 @@ OnDeserializingAttribute (in System.Runtime.Serialization)
 OnDevicesChangedHandler (in UnityEditor.Hardware.Usb)
 OnEditModeStartFunc (in UnityEditorInternal.EditMode)
 OnEditModeStopFunc (in UnityEditorInternal.EditMode)
+OnGUIDelegate (in UnityEditor.LightingExplorerTableColumn)
 OnNavMeshPreUpdate (in UnityEngine.AI.NavMesh)
 OnOpenAssetAttribute (in UnityEditor.Callbacks)
 OnPhotoModeStartedCallback (in UnityEngine.XR.WSA.WebCam.PhotoCapture)
@@ -99,6 +104,9 @@ AndroidShowActivityIndicatorOnLoading (in UnityEditor)
 CriticalHandleMinusOneIsInvalid (in Microsoft.Win32.SafeHandles)
 CriticalHandleZeroOrMinusOneIsInvalid (in Microsoft.Win32.SafeHandles)
 DeallocateOnJobCompletionAttribute (in Unity.Collections)
+IOnInspectorGUI (in UnityEditor.Experimental.TerrainAPI)
+IOnPaint (in UnityEditor.Experimental.TerrainAPI)
+IOnSceneGUI (in UnityEditor.Experimental.TerrainAPI)
 InitializeOnLoadAttribute (in UnityEditor)
 InitializeOnLoadMethodAttribute (in UnityEditor)
 NativeContainerIsAtomicWriteOnlyAttribute (in Unity.Collections.LowLevel.Unsafe)

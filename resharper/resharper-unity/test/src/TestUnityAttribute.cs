@@ -27,8 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         Unity2017_4,
         Unity2018_1,
         Unity2018_2,
+        Unity2018_3,
 
-        DefaultTestVersion = Unity2018_2
+        DefaultTestVersion = Unity2018_3
     }
     // ReSharper restore InconsistentNaming
 
@@ -106,6 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                     case UnityVersion.Unity2017_4: return "UNITY_2017_4";
                     case UnityVersion.Unity2018_1: return "UNITY_2018_1";
                     case UnityVersion.Unity2018_2: return "UNITY_2018_2";
+                    case UnityVersion.Unity2018_3: return "UNITY_2018_3";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -125,6 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 case UnityVersion.Unity2017_4: return "2017.4.0";
                 case UnityVersion.Unity2018_1: return "2018.1.0";
                 case UnityVersion.Unity2018_2: return "2018.2.0";
+                case UnityVersion.Unity2018_3: return "2018.3.0";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unityVersion), unityVersion, null);
             }

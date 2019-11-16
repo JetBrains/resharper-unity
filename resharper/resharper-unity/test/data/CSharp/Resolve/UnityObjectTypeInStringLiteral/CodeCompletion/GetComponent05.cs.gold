@@ -1,4 +1,4 @@
-﻿# 354 ITEMS #
+﻿# 363 ITEMS #
 
 + ADBannerView
 + ADInterstitialAd
@@ -8,6 +8,7 @@ Accessibility
 Advertisements
 Analytics
 + AnchoredJoint2D
+Android
 + AndroidInput
 + AndroidJNI
 + AndroidJNIHelper
@@ -34,6 +35,7 @@ Assertions
 + AssetBundle
 + AssetBundleCreateRequest
 + AssetBundleManifest
++ AssetBundleRecompressOperation
 + AssetBundleRequest
 + AsyncOperation
 Audio
@@ -115,12 +117,12 @@ Diagnostics
 + DynamicGI
 + EdgeCollider2D
 + Effector2D
-+ EllipsoidParticleEmitter
 + Event
 + EventProvider
 Events
 + ExcludeFromObjectFactoryAttribute
 + ExcludeFromPresetAttribute
++ ExecuteAlways
 + ExecuteInEditMode
 + ExitGUIException
 Experimental
@@ -151,12 +153,15 @@ Experimental
 + GeometryUtility
 + Gizmos
 + Gradient
++ GradientUsageAttribute
 + Graphics
 + Grid
 + GridBrushBase
 + GridLayout
 + Gyroscope
 + Handheld
++ HashUnsafeUtilities
++ HashUtilities
 + HeaderAttribute
 + HelpURLAttribute
 + HideInInspector
@@ -187,6 +192,7 @@ Jobs
 + LineRenderer
 + LineUtility
 + LocalNotification
++ LocalizationAsset
 + LocationService
 + Logger
 + MasterServer
@@ -195,9 +201,9 @@ Jobs
 + Mesh
 + MeshCollider
 + MeshFilter
-+ MeshParticleEmitter
 + MeshRenderer
 + Microphone
++ MinAttribute
 + MissingComponentException
 + MissingReferenceException
 + MonoBehaviour
@@ -211,16 +217,16 @@ Networking
 + Object
 + OcclusionArea
 + OcclusionPortal
-+ ParticleAnimator
-+ ParticleEmitter
 + ParticlePhysicsExtensions
-+ ParticleRenderer
 + ParticleSystem
++ ParticleSystemForceField
 + ParticleSystemRenderer
 + PhysicMaterial
 + Physics
 + Physics2D
 + PhysicsMaterial2D
++ PhysicsSceneExtensions
++ PhysicsSceneExtensions2D
 + PhysicsUpdateBehaviour2D
 + Ping
 + PlatformEffector2D
@@ -302,8 +308,10 @@ StyleSheets
 + TerrainCollider
 + TerrainData
 + TerrainExtensions
++ TerrainLayer
 + TextAreaAttribute
 + TextAsset
+TextCore
 + TextEditor
 + TextGenerator
 + TextMesh
@@ -322,6 +330,7 @@ Tilemaps
 + TreePrototype
 + Types
 U2D
+UIR
 + UISystemProfilerApi
 + UnassignedReferenceException
 + UnityAPICompatibilityVersionAttribute
@@ -355,7 +364,7 @@ iOS
 + iPhoneUtils
 tvOS
 # AUTOMATIC #
-# 354 ITEMS #
+# 363 ITEMS #
 
 + ADBannerView
 + ADInterstitialAd
@@ -365,6 +374,7 @@ Accessibility
 Advertisements
 Analytics
 + AnchoredJoint2D
+Android
 + AndroidInput
 + AndroidJNI
 + AndroidJNIHelper
@@ -391,6 +401,7 @@ Assertions
 + AssetBundle
 + AssetBundleCreateRequest
 + AssetBundleManifest
++ AssetBundleRecompressOperation
 + AssetBundleRequest
 + AsyncOperation
 Audio
@@ -472,12 +483,12 @@ Diagnostics
 + DynamicGI
 + EdgeCollider2D
 + Effector2D
-+ EllipsoidParticleEmitter
 + Event
 + EventProvider
 Events
 + ExcludeFromObjectFactoryAttribute
 + ExcludeFromPresetAttribute
++ ExecuteAlways
 + ExecuteInEditMode
 + ExitGUIException
 Experimental
@@ -508,12 +519,15 @@ Experimental
 + GeometryUtility
 + Gizmos
 + Gradient
++ GradientUsageAttribute
 + Graphics
 + Grid
 + GridBrushBase
 + GridLayout
 + Gyroscope
 + Handheld
++ HashUnsafeUtilities
++ HashUtilities
 + HeaderAttribute
 + HelpURLAttribute
 + HideInInspector
@@ -544,6 +558,7 @@ Jobs
 + LineRenderer
 + LineUtility
 + LocalNotification
++ LocalizationAsset
 + LocationService
 + Logger
 + MasterServer
@@ -552,9 +567,9 @@ Jobs
 + Mesh
 + MeshCollider
 + MeshFilter
-+ MeshParticleEmitter
 + MeshRenderer
 + Microphone
++ MinAttribute
 + MissingComponentException
 + MissingReferenceException
 + MonoBehaviour
@@ -568,16 +583,16 @@ Networking
 + Object
 + OcclusionArea
 + OcclusionPortal
-+ ParticleAnimator
-+ ParticleEmitter
 + ParticlePhysicsExtensions
-+ ParticleRenderer
 + ParticleSystem
++ ParticleSystemForceField
 + ParticleSystemRenderer
 + PhysicMaterial
 + Physics
 + Physics2D
 + PhysicsMaterial2D
++ PhysicsSceneExtensions
++ PhysicsSceneExtensions2D
 + PhysicsUpdateBehaviour2D
 + Ping
 + PlatformEffector2D
@@ -659,8 +674,10 @@ StyleSheets
 + TerrainCollider
 + TerrainData
 + TerrainExtensions
++ TerrainLayer
 + TextAreaAttribute
 + TextAsset
+TextCore
 + TextEditor
 + TextGenerator
 + TextMesh
@@ -679,6 +696,7 @@ Tilemaps
 + TreePrototype
 + Types
 U2D
+UIR
 + UISystemProfilerApi
 + UnassignedReferenceException
 + UnityAPICompatibilityVersionAttribute

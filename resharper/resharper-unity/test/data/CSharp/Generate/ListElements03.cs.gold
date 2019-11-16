@@ -4,23 +4,26 @@
  2: OnGeneratedCSProjectFiles():System.Void
  3: OnGeneratedSlnSolution(System.String,System.String):System.String
  4: OnPostprocessAllAssets(System.String[],System.String[],System.String[],System.String[]):System.Void
- 5: OnPostprocessAssetbundleNameChanged(System.String,System.String,System.String):System.Void
- 6: OnPostprocessAudio(UnityEngine.AudioClip):System.Void
- 7: OnPostprocessCubemap(UnityEngine.Cubemap):System.Void
- 8: OnPostprocessGameObjectWithUserProperties(UnityEngine.GameObject,System.String[],System.Object[]):System.Void
- 9: OnPostprocessMaterial(UnityEngine.Material):System.Void
- 10: OnPostprocessModel(UnityEngine.GameObject):System.Void
- 11: OnPostprocessSpeedTree(UnityEngine.GameObject):System.Void
- 12: OnPostprocessSprites(UnityEngine.Texture2D,UnityEngine.Sprite[]):System.Void
- 13: OnPostprocessTexture(UnityEngine.Texture2D):System.Void
- 14: OnPreGeneratingCSProjectFiles():System.Boolean
- 15: OnPreprocessAnimation():System.Void
- 16: OnPreprocessAssembly(System.String):System.Void
- 17: OnPreprocessAsset():System.Void
- 18: OnPreprocessAudio():System.Void
- 19: OnPreprocessModel():System.Void
- 20: OnPreprocessSpeedTree():System.Void
- 21: OnPreprocessTexture():System.Void
+ 5: OnPostprocessAnimation(UnityEngine.GameObject,UnityEngine.AnimationClip):System.Void
+ 6: OnPostprocessAssetbundleNameChanged(System.String,System.String,System.String):System.Void
+ 7: OnPostprocessAudio(UnityEngine.AudioClip):System.Void
+ 8: OnPostprocessCubemap(UnityEngine.Cubemap):System.Void
+ 9: OnPostprocessGameObjectWithAnimatedUserProperties(UnityEngine.GameObject,UnityEditor.EditorCurveBinding[]):System.Void
+ 10: OnPostprocessGameObjectWithUserProperties(UnityEngine.GameObject,System.String[],System.Object[]):System.Void
+ 11: OnPostprocessMaterial(UnityEngine.Material):System.Void
+ 12: OnPostprocessMeshHierarchy(UnityEngine.GameObject):System.Void
+ 13: OnPostprocessModel(UnityEngine.GameObject):System.Void
+ 14: OnPostprocessSpeedTree(UnityEngine.GameObject):System.Void
+ 15: OnPostprocessSprites(UnityEngine.Texture2D,UnityEngine.Sprite[]):System.Void
+ 16: OnPostprocessTexture(UnityEngine.Texture2D):System.Void
+ 17: OnPreGeneratingCSProjectFiles():System.Boolean
+ 18: OnPreprocessAnimation():System.Void
+ 19: OnPreprocessAssembly(System.String):System.Void
+ 20: OnPreprocessAsset():System.Void
+ 21: OnPreprocessAudio():System.Void
+ 22: OnPreprocessModel():System.Void
+ 23: OnPreprocessSpeedTree():System.Void
+ 24: OnPreprocessTexture():System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;

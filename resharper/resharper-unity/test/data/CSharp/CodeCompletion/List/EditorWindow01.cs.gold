@@ -1,4 +1,4 @@
-﻿# 1031 ITEMS #
+﻿# 1072 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -65,7 +65,6 @@ ActionOnDotNetUnhandledException
 ActiveEditorTracker
 AddComponentMenu
 AdditionalCanvasShaderChannels
-AlphabeticalSort
 AnchoredJoint2D
 AndroidActivityIndicatorStyle
 AndroidArchitecture
@@ -130,7 +129,9 @@ AssemblyReloadEvents
 AssetBundle
 AssetBundleBuild
 AssetBundleCreateRequest
+AssetBundleLoadResult
 AssetBundleManifest
+AssetBundleRecompressOperation
 AssetBundleRequest
 AssetDatabase
 AssetDeleteResult
@@ -139,6 +140,7 @@ AssetModificationProcessor
 AssetMoveResult
 AssetPostprocessor
 AssetPreview
+AssetSettingsProvider
 AssetStatus
 AssetStoreAsset
 AssetsItem
@@ -180,7 +182,6 @@ AvatarIKHint
 AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
-BaseHierarchySort
 BatteryStatus
 BeforeRenderOrderAttribute
 Behaviour
@@ -197,7 +198,9 @@ Bounds
 BoundsInt
 BoxCollider
 BoxCollider2D
+BoxcastCommand
 BuildAssetBundleOptions
+BuildCompression
 BuildOptions
 BuildPipeline
 BuildPlayerOptions
@@ -224,6 +227,7 @@ CanvasRenderer
 CapsuleCollider
 CapsuleCollider2D
 CapsuleDirection2D
+CapsulecastCommand
 CharacterController
 CharacterInfo
 CharacterJoint
@@ -256,6 +260,8 @@ CombineInstance
 Compass
 Component
 CompositeCollider2D
+CompressionLevel
+CompressionType
 ComputeBuffer
 ComputeBufferType
 ComputeShader
@@ -299,6 +305,7 @@ Debug
 DecoratorDrawer
 DefaultAsset
 DefaultExecutionOrder
+DefaultLightingExplorerExtension
 DelayedAttribute
 DepthTextureMode
 DetailPrototype
@@ -342,13 +349,13 @@ EditorWindow
 Effector2D
 EffectorForceMode2D
 EffectorSelection2D
-EllipsoidParticleEmitter
 Event
 EventModifiers
 EventProvider
 EventType
 ExcludeFromObjectFactoryAttribute
 ExcludeFromPresetAttribute
+ExecuteAlways
 ExecuteInEditMode
 ExitGUIException
 ExportPackageOptions
@@ -409,6 +416,7 @@ Gradient
 GradientAlphaKey
 GradientColorKey
 GradientMode
+GradientUsageAttribute
 Graphics
 GraphicsJobMode
 Grid
@@ -417,6 +425,7 @@ GridBrushBase
 GridBrushEditor
 GridBrushEditorBase
 GridLayout
+GridPaintSortingAttribute
 GridPalette
 GridSelection
 Gyroscope
@@ -424,6 +433,8 @@ Handheld
 HandleUtility
 Handles
 Hash128
+HashUnsafeUtilities
+HashUtilities
 HeadDof
 HeaderAttribute
 Help
@@ -447,16 +458,19 @@ HumanPose
 HumanPoseHandler
 HumanTemplate
 HumanTrait
+IAnimationClipSource
 IAudioEffectPlugin
 IAudioEffectPluginGUI
 ICanvasRaycastFilter
 IExposedPropertyTable
 IHVImageFormatImporter
 IHasCustomMenu
+ILightingExplorerExtension
 ILogHandler
 ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
+ITerrainLayerCustomUI
 IconDrawStyle
 IconKind
 Il2CppCompilerConfiguration
@@ -471,6 +485,7 @@ InitializeOnLoadAttribute
 InitializeOnLoadMethodAttribute
 Input
 InspectorMode
+InteractionMode
 Joint
 Joint2D
 JointAngleLimits2D
@@ -506,6 +521,9 @@ LightShadowCasterMode
 LightShadows
 LightType
 LightingDataAsset
+LightingExplorerExtensionAttribute
+LightingExplorerTab
+LightingExplorerTableColumn
 LightmapBakeQuality
 LightmapBakeType
 LightmapData
@@ -530,11 +548,13 @@ LocationServiceStatus
 LogType
 Logger
 MacFullscreenMode
+ManagedStrippingLevel
 MasterServer
 MasterServerEvent
 MatchTargetWeightMask
 Material
 MaterialEditor
+MaterialEditorExtensions
 MaterialGlobalIlluminationFlags
 MaterialProperty
 MaterialPropertyBlock
@@ -549,12 +569,12 @@ Mesh
 MeshCollider
 MeshColliderCookingOptions
 MeshFilter
-MeshParticleEmitter
 MeshRenderer
 MeshTopology
 MeshUtility
 MessageType
 Microphone
+MinAttribute
 MissingComponentException
 MissingReferenceException
 MixedLightingMode
@@ -572,6 +592,7 @@ ModelImporterMaterialName
 ModelImporterMaterialSearch
 ModelImporterMeshCompression
 ModelImporterNormalCalculationMode
+ModelImporterNormalSmoothingSource
 ModelImporterNormals
 ModelImporterTangentSpaceMode
 ModelImporterTangents
@@ -607,24 +628,25 @@ OcclusionPortal
 OperatingSystemFamily
 PS4BuildSubtarget
 PS4HardwareTarget
-PSP2BuildSubtarget
 PackageInfo
-ParticleAnimator
 ParticleCollisionEvent
-ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
+ParticleSystemAnimationTimeMode
 ParticleSystemAnimationType
 ParticleSystemCollisionMode
 ParticleSystemCollisionQuality
 ParticleSystemCollisionType
+ParticleSystemCullingMode
 ParticleSystemCurveMode
 ParticleSystemCustomData
 ParticleSystemCustomDataMode
 ParticleSystemEmissionType
 ParticleSystemEmitterVelocityMode
+ParticleSystemForceField
+ParticleSystemForceFieldShape
+ParticleSystemGameObjectFilter
 ParticleSystemGradientMode
 ParticleSystemInheritVelocityMode
 ParticleSystemMeshShapeType
@@ -633,6 +655,7 @@ ParticleSystemOverlapAction
 ParticleSystemRenderMode
 ParticleSystemRenderSpace
 ParticleSystemRenderer
+ParticleSystemRingBufferMode
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
 ParticleSystemShapeTextureChannel
@@ -657,6 +680,10 @@ Physics2D
 PhysicsDebugWindow
 PhysicsJobOptions2D
 PhysicsMaterial2D
+PhysicsScene
+PhysicsScene2D
+PhysicsSceneExtensions
+PhysicsSceneExtensions2D
 PhysicsUpdateBehaviour2D
 PhysicsVisualizationSettings
 Ping
@@ -678,7 +705,10 @@ PopupWindow
 PopupWindowContent
 Pose
 PostProcessAttribute
+PrefabAssetType
+PrefabInstanceStatus
 PrefabType
+PrefabUnpackMode
 PrefabUtility
 PreferBinarySerialization
 PreferenceItem
@@ -789,6 +819,12 @@ SerializedObject
 SerializedProperty
 SerializedPropertyType
 SessionState
+SettingsProvider
+SettingsProviderAttribute
+SettingsProviderGroupAttribute
+SettingsScope
+SettingsScopes
+SettingsService
 Shader
 ShaderData
 ShaderGUI
@@ -820,6 +856,7 @@ SpaceAttribute
 SparseTexture
 SpeedTreeImporter
 SphereCollider
+SpherecastCommand
 SplashScreenStyle
 SplatPrototype
 SpringJoint
@@ -863,6 +900,8 @@ TerrainChangedFlags
 TerrainCollider
 TerrainData
 TerrainExtensions
+TerrainLayer
+TerrainLayerUtility
 TerrainRenderFlags
 TexGenMode
 TextAlignment
@@ -878,7 +917,8 @@ Texture
 Texture2D
 Texture2DArray
 Texture3D
-TextureCompressionQuality
+TextureCompressionQuality (in UnityEditor)
+TextureCompressionQuality (in UnityEngine)
 TextureFormat
 TextureImporter
 TextureImporterAlphaSource
@@ -910,7 +950,6 @@ TouchType
 TrackedReference
 TrailRenderer
 Transform
-TransformSort
 TransformUtils
 TransparencySortMode
 Tree
@@ -968,6 +1007,7 @@ WaitUntil
 WaitWhile
 WebCamDevice
 WebCamFlags
+WebCamKind
 WebCamTexture
 WebGLCompressionFormat
 WebGLExceptionSupport
@@ -1023,6 +1063,7 @@ AOT
 JetBrains
 Microsoft
 System
+TreeEditor
 Unity
 UnityEditor
 UnityEditorInternal
@@ -1032,7 +1073,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 1031 ITEMS #
+# 1072 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -1099,7 +1140,6 @@ ActionOnDotNetUnhandledException
 ActiveEditorTracker
 AddComponentMenu
 AdditionalCanvasShaderChannels
-AlphabeticalSort
 AnchoredJoint2D
 AndroidActivityIndicatorStyle
 AndroidArchitecture
@@ -1164,7 +1204,9 @@ AssemblyReloadEvents
 AssetBundle
 AssetBundleBuild
 AssetBundleCreateRequest
+AssetBundleLoadResult
 AssetBundleManifest
+AssetBundleRecompressOperation
 AssetBundleRequest
 AssetDatabase
 AssetDeleteResult
@@ -1173,6 +1215,7 @@ AssetModificationProcessor
 AssetMoveResult
 AssetPostprocessor
 AssetPreview
+AssetSettingsProvider
 AssetStatus
 AssetStoreAsset
 AssetsItem
@@ -1214,7 +1257,6 @@ AvatarIKHint
 AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
-BaseHierarchySort
 BatteryStatus
 BeforeRenderOrderAttribute
 Behaviour
@@ -1231,7 +1273,9 @@ Bounds
 BoundsInt
 BoxCollider
 BoxCollider2D
+BoxcastCommand
 BuildAssetBundleOptions
+BuildCompression
 BuildOptions
 BuildPipeline
 BuildPlayerOptions
@@ -1258,6 +1302,7 @@ CanvasRenderer
 CapsuleCollider
 CapsuleCollider2D
 CapsuleDirection2D
+CapsulecastCommand
 CharacterController
 CharacterInfo
 CharacterJoint
@@ -1290,6 +1335,8 @@ CombineInstance
 Compass
 Component
 CompositeCollider2D
+CompressionLevel
+CompressionType
 ComputeBuffer
 ComputeBufferType
 ComputeShader
@@ -1333,6 +1380,7 @@ Debug
 DecoratorDrawer
 DefaultAsset
 DefaultExecutionOrder
+DefaultLightingExplorerExtension
 DelayedAttribute
 DepthTextureMode
 DetailPrototype
@@ -1376,13 +1424,13 @@ EditorWindow
 Effector2D
 EffectorForceMode2D
 EffectorSelection2D
-EllipsoidParticleEmitter
 Event
 EventModifiers
 EventProvider
 EventType
 ExcludeFromObjectFactoryAttribute
 ExcludeFromPresetAttribute
+ExecuteAlways
 ExecuteInEditMode
 ExitGUIException
 ExportPackageOptions
@@ -1443,6 +1491,7 @@ Gradient
 GradientAlphaKey
 GradientColorKey
 GradientMode
+GradientUsageAttribute
 Graphics
 GraphicsJobMode
 Grid
@@ -1451,6 +1500,7 @@ GridBrushBase
 GridBrushEditor
 GridBrushEditorBase
 GridLayout
+GridPaintSortingAttribute
 GridPalette
 GridSelection
 Gyroscope
@@ -1458,6 +1508,8 @@ Handheld
 HandleUtility
 Handles
 Hash128
+HashUnsafeUtilities
+HashUtilities
 HeadDof
 HeaderAttribute
 Help
@@ -1481,16 +1533,19 @@ HumanPose
 HumanPoseHandler
 HumanTemplate
 HumanTrait
+IAnimationClipSource
 IAudioEffectPlugin
 IAudioEffectPluginGUI
 ICanvasRaycastFilter
 IExposedPropertyTable
 IHVImageFormatImporter
 IHasCustomMenu
+ILightingExplorerExtension
 ILogHandler
 ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
+ITerrainLayerCustomUI
 IconDrawStyle
 IconKind
 Il2CppCompilerConfiguration
@@ -1505,6 +1560,7 @@ InitializeOnLoadAttribute
 InitializeOnLoadMethodAttribute
 Input
 InspectorMode
+InteractionMode
 Joint
 Joint2D
 JointAngleLimits2D
@@ -1540,6 +1596,9 @@ LightShadowCasterMode
 LightShadows
 LightType
 LightingDataAsset
+LightingExplorerExtensionAttribute
+LightingExplorerTab
+LightingExplorerTableColumn
 LightmapBakeQuality
 LightmapBakeType
 LightmapData
@@ -1564,11 +1623,13 @@ LocationServiceStatus
 LogType
 Logger
 MacFullscreenMode
+ManagedStrippingLevel
 MasterServer
 MasterServerEvent
 MatchTargetWeightMask
 Material
 MaterialEditor
+MaterialEditorExtensions
 MaterialGlobalIlluminationFlags
 MaterialProperty
 MaterialPropertyBlock
@@ -1583,12 +1644,12 @@ Mesh
 MeshCollider
 MeshColliderCookingOptions
 MeshFilter
-MeshParticleEmitter
 MeshRenderer
 MeshTopology
 MeshUtility
 MessageType
 Microphone
+MinAttribute
 MissingComponentException
 MissingReferenceException
 MixedLightingMode
@@ -1606,6 +1667,7 @@ ModelImporterMaterialName
 ModelImporterMaterialSearch
 ModelImporterMeshCompression
 ModelImporterNormalCalculationMode
+ModelImporterNormalSmoothingSource
 ModelImporterNormals
 ModelImporterTangentSpaceMode
 ModelImporterTangents
@@ -1641,24 +1703,25 @@ OcclusionPortal
 OperatingSystemFamily
 PS4BuildSubtarget
 PS4HardwareTarget
-PSP2BuildSubtarget
 PackageInfo
-ParticleAnimator
 ParticleCollisionEvent
-ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
+ParticleSystemAnimationTimeMode
 ParticleSystemAnimationType
 ParticleSystemCollisionMode
 ParticleSystemCollisionQuality
 ParticleSystemCollisionType
+ParticleSystemCullingMode
 ParticleSystemCurveMode
 ParticleSystemCustomData
 ParticleSystemCustomDataMode
 ParticleSystemEmissionType
 ParticleSystemEmitterVelocityMode
+ParticleSystemForceField
+ParticleSystemForceFieldShape
+ParticleSystemGameObjectFilter
 ParticleSystemGradientMode
 ParticleSystemInheritVelocityMode
 ParticleSystemMeshShapeType
@@ -1667,6 +1730,7 @@ ParticleSystemOverlapAction
 ParticleSystemRenderMode
 ParticleSystemRenderSpace
 ParticleSystemRenderer
+ParticleSystemRingBufferMode
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
 ParticleSystemShapeTextureChannel
@@ -1691,6 +1755,10 @@ Physics2D
 PhysicsDebugWindow
 PhysicsJobOptions2D
 PhysicsMaterial2D
+PhysicsScene
+PhysicsScene2D
+PhysicsSceneExtensions
+PhysicsSceneExtensions2D
 PhysicsUpdateBehaviour2D
 PhysicsVisualizationSettings
 Ping
@@ -1712,7 +1780,10 @@ PopupWindow
 PopupWindowContent
 Pose
 PostProcessAttribute
+PrefabAssetType
+PrefabInstanceStatus
 PrefabType
+PrefabUnpackMode
 PrefabUtility
 PreferBinarySerialization
 PreferenceItem
@@ -1823,6 +1894,12 @@ SerializedObject
 SerializedProperty
 SerializedPropertyType
 SessionState
+SettingsProvider
+SettingsProviderAttribute
+SettingsProviderGroupAttribute
+SettingsScope
+SettingsScopes
+SettingsService
 Shader
 ShaderData
 ShaderGUI
@@ -1854,6 +1931,7 @@ SpaceAttribute
 SparseTexture
 SpeedTreeImporter
 SphereCollider
+SpherecastCommand
 SplashScreenStyle
 SplatPrototype
 SpringJoint
@@ -1897,6 +1975,8 @@ TerrainChangedFlags
 TerrainCollider
 TerrainData
 TerrainExtensions
+TerrainLayer
+TerrainLayerUtility
 TerrainRenderFlags
 TexGenMode
 TextAlignment
@@ -1912,7 +1992,8 @@ Texture
 Texture2D
 Texture2DArray
 Texture3D
-TextureCompressionQuality
+TextureCompressionQuality (in UnityEditor)
+TextureCompressionQuality (in UnityEngine)
 TextureFormat
 TextureImporter
 TextureImporterAlphaSource
@@ -1944,7 +2025,6 @@ TouchType
 TrackedReference
 TrailRenderer
 Transform
-TransformSort
 TransformUtils
 TransparencySortMode
 Tree
@@ -2002,6 +2082,7 @@ WaitUntil
 WaitWhile
 WebCamDevice
 WebCamFlags
+WebCamKind
 WebCamTexture
 WebGLCompressionFormat
 WebGLExceptionSupport
@@ -2057,6 +2138,7 @@ AOT
 JetBrains
 Microsoft
 System
+TreeEditor
 Unity
 UnityEditor
 UnityEditorInternal

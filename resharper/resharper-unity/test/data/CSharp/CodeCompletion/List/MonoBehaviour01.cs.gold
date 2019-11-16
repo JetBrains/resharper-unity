@@ -1,4 +1,4 @@
-﻿# 765 ITEMS #
+﻿# 789 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -40,6 +40,7 @@ private OnMouseUp() { ... }
 private OnMouseUpAsButton() { ... }
 private OnNetworkInstantiate(NetworkMessageInfo) { ... }
 private OnParticleCollision(GameObject) { ... }
+private OnParticleSystemStopped() { ... }
 private OnParticleTrigger() { ... }
 private OnPlayerConnected(NetworkPlayer) { ... }
 private OnPlayerDisconnected(NetworkPlayer) { ... }
@@ -157,7 +158,9 @@ ArmDof
 AssemblyIsEditorAssembly
 AssetBundle
 AssetBundleCreateRequest
+AssetBundleLoadResult
 AssetBundleManifest
+AssetBundleRecompressOperation
 AssetBundleRequest
 AssetModificationProcessor
 AsyncOperation
@@ -205,6 +208,8 @@ Bounds
 BoundsInt
 BoxCollider
 BoxCollider2D
+BoxcastCommand
+BuildCompression
 BuoyancyEffector2D
 Cache
 CacheIndex
@@ -221,6 +226,7 @@ CanvasRenderer
 CapsuleCollider
 CapsuleCollider2D
 CapsuleDirection2D
+CapsulecastCommand
 CharacterController
 CharacterInfo
 CharacterJoint
@@ -249,6 +255,8 @@ CombineInstance
 Compass
 Component
 CompositeCollider2D
+CompressionLevel
+CompressionType
 ComputeBuffer
 ComputeBufferType
 ComputeShader
@@ -300,13 +308,13 @@ EdgeCollider2D
 Effector2D
 EffectorForceMode2D
 EffectorSelection2D
-EllipsoidParticleEmitter
 Event
 EventModifiers
 EventProvider
 EventType
 ExcludeFromObjectFactoryAttribute
 ExcludeFromPresetAttribute
+ExecuteAlways
 ExecuteInEditMode
 ExitGUIException
 ExposedPropertyResolver
@@ -354,6 +362,7 @@ Gradient
 GradientAlphaKey
 GradientColorKey
 GradientMode
+GradientUsageAttribute
 Graphics
 Grid
 GridBrushBase
@@ -361,6 +370,8 @@ GridLayout
 Gyroscope
 Handheld
 Hash128
+HashUnsafeUtilities
+HashUtilities
 HeadDof
 HeaderAttribute
 HelpURLAttribute
@@ -378,6 +389,7 @@ HumanPartDof
 HumanPose
 HumanPoseHandler
 HumanTrait
+IAnimationClipSource
 ICanvasRaycastFilter
 IExposedPropertyTable
 ILogHandler
@@ -433,6 +445,7 @@ LineRenderer
 LineTextureMode
 LineUtility
 LocalNotification
+LocalizationAsset
 LocationInfo
 LocationService
 LocationServiceStatus
@@ -450,10 +463,10 @@ Mesh
 MeshCollider
 MeshColliderCookingOptions
 MeshFilter
-MeshParticleEmitter
 MeshRenderer
 MeshTopology
 Microphone
+MinAttribute
 MissingComponentException
 MissingReferenceException
 MixedLightingMode
@@ -479,22 +492,24 @@ Object
 OcclusionArea
 OcclusionPortal
 OperatingSystemFamily
-ParticleAnimator
 ParticleCollisionEvent
-ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
+ParticleSystemAnimationTimeMode
 ParticleSystemAnimationType
 ParticleSystemCollisionMode
 ParticleSystemCollisionQuality
 ParticleSystemCollisionType
+ParticleSystemCullingMode
 ParticleSystemCurveMode
 ParticleSystemCustomData
 ParticleSystemCustomDataMode
 ParticleSystemEmissionType
 ParticleSystemEmitterVelocityMode
+ParticleSystemForceField
+ParticleSystemForceFieldShape
+ParticleSystemGameObjectFilter
 ParticleSystemGradientMode
 ParticleSystemInheritVelocityMode
 ParticleSystemMeshShapeType
@@ -503,6 +518,7 @@ ParticleSystemOverlapAction
 ParticleSystemRenderMode
 ParticleSystemRenderSpace
 ParticleSystemRenderer
+ParticleSystemRingBufferMode
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
 ParticleSystemShapeTextureChannel
@@ -525,6 +541,10 @@ Physics
 Physics2D
 PhysicsJobOptions2D
 PhysicsMaterial2D
+PhysicsScene
+PhysicsScene2D
+PhysicsSceneExtensions
+PhysicsSceneExtensions2D
 PhysicsUpdateBehaviour2D
 Ping
 Plane
@@ -636,6 +656,7 @@ Space
 SpaceAttribute
 SparseTexture
 SphereCollider
+SpherecastCommand
 SplatPrototype
 SpringJoint
 SpringJoint2D
@@ -665,6 +686,7 @@ TerrainChangedFlags
 TerrainCollider
 TerrainData
 TerrainExtensions
+TerrainLayer
 TerrainRenderFlags
 TexGenMode
 TextAlignment
@@ -726,6 +748,7 @@ WaitUntil
 WaitWhile
 WebCamDevice
 WebCamFlags
+WebCamKind
 WebCamTexture
 WeightedMode
 WheelCollider
@@ -757,6 +780,7 @@ AOT
 JetBrains
 Microsoft
 System
+TreeEditor
 Unity
 UnityEditor
 UnityEditorInternal
@@ -766,7 +790,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 765 ITEMS #
+# 789 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -808,6 +832,7 @@ private OnMouseUp() { ... }
 private OnMouseUpAsButton() { ... }
 private OnNetworkInstantiate(NetworkMessageInfo) { ... }
 private OnParticleCollision(GameObject) { ... }
+private OnParticleSystemStopped() { ... }
 private OnParticleTrigger() { ... }
 private OnPlayerConnected(NetworkPlayer) { ... }
 private OnPlayerDisconnected(NetworkPlayer) { ... }
@@ -925,7 +950,9 @@ ArmDof
 AssemblyIsEditorAssembly
 AssetBundle
 AssetBundleCreateRequest
+AssetBundleLoadResult
 AssetBundleManifest
+AssetBundleRecompressOperation
 AssetBundleRequest
 AssetModificationProcessor
 AsyncOperation
@@ -973,6 +1000,8 @@ Bounds
 BoundsInt
 BoxCollider
 BoxCollider2D
+BoxcastCommand
+BuildCompression
 BuoyancyEffector2D
 Cache
 CacheIndex
@@ -989,6 +1018,7 @@ CanvasRenderer
 CapsuleCollider
 CapsuleCollider2D
 CapsuleDirection2D
+CapsulecastCommand
 CharacterController
 CharacterInfo
 CharacterJoint
@@ -1017,6 +1047,8 @@ CombineInstance
 Compass
 Component
 CompositeCollider2D
+CompressionLevel
+CompressionType
 ComputeBuffer
 ComputeBufferType
 ComputeShader
@@ -1068,13 +1100,13 @@ EdgeCollider2D
 Effector2D
 EffectorForceMode2D
 EffectorSelection2D
-EllipsoidParticleEmitter
 Event
 EventModifiers
 EventProvider
 EventType
 ExcludeFromObjectFactoryAttribute
 ExcludeFromPresetAttribute
+ExecuteAlways
 ExecuteInEditMode
 ExitGUIException
 ExposedPropertyResolver
@@ -1122,6 +1154,7 @@ Gradient
 GradientAlphaKey
 GradientColorKey
 GradientMode
+GradientUsageAttribute
 Graphics
 Grid
 GridBrushBase
@@ -1129,6 +1162,8 @@ GridLayout
 Gyroscope
 Handheld
 Hash128
+HashUnsafeUtilities
+HashUtilities
 HeadDof
 HeaderAttribute
 HelpURLAttribute
@@ -1146,6 +1181,7 @@ HumanPartDof
 HumanPose
 HumanPoseHandler
 HumanTrait
+IAnimationClipSource
 ICanvasRaycastFilter
 IExposedPropertyTable
 ILogHandler
@@ -1201,6 +1237,7 @@ LineRenderer
 LineTextureMode
 LineUtility
 LocalNotification
+LocalizationAsset
 LocationInfo
 LocationService
 LocationServiceStatus
@@ -1218,10 +1255,10 @@ Mesh
 MeshCollider
 MeshColliderCookingOptions
 MeshFilter
-MeshParticleEmitter
 MeshRenderer
 MeshTopology
 Microphone
+MinAttribute
 MissingComponentException
 MissingReferenceException
 MixedLightingMode
@@ -1247,22 +1284,24 @@ Object
 OcclusionArea
 OcclusionPortal
 OperatingSystemFamily
-ParticleAnimator
 ParticleCollisionEvent
-ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
+ParticleSystemAnimationTimeMode
 ParticleSystemAnimationType
 ParticleSystemCollisionMode
 ParticleSystemCollisionQuality
 ParticleSystemCollisionType
+ParticleSystemCullingMode
 ParticleSystemCurveMode
 ParticleSystemCustomData
 ParticleSystemCustomDataMode
 ParticleSystemEmissionType
 ParticleSystemEmitterVelocityMode
+ParticleSystemForceField
+ParticleSystemForceFieldShape
+ParticleSystemGameObjectFilter
 ParticleSystemGradientMode
 ParticleSystemInheritVelocityMode
 ParticleSystemMeshShapeType
@@ -1271,6 +1310,7 @@ ParticleSystemOverlapAction
 ParticleSystemRenderMode
 ParticleSystemRenderSpace
 ParticleSystemRenderer
+ParticleSystemRingBufferMode
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
 ParticleSystemShapeTextureChannel
@@ -1293,6 +1333,10 @@ Physics
 Physics2D
 PhysicsJobOptions2D
 PhysicsMaterial2D
+PhysicsScene
+PhysicsScene2D
+PhysicsSceneExtensions
+PhysicsSceneExtensions2D
 PhysicsUpdateBehaviour2D
 Ping
 Plane
@@ -1404,6 +1448,7 @@ Space
 SpaceAttribute
 SparseTexture
 SphereCollider
+SpherecastCommand
 SplatPrototype
 SpringJoint
 SpringJoint2D
@@ -1433,6 +1478,7 @@ TerrainChangedFlags
 TerrainCollider
 TerrainData
 TerrainExtensions
+TerrainLayer
 TerrainRenderFlags
 TexGenMode
 TextAlignment
@@ -1494,6 +1540,7 @@ WaitUntil
 WaitWhile
 WebCamDevice
 WebCamFlags
+WebCamKind
 WebCamTexture
 WeightedMode
 WheelCollider
@@ -1525,6 +1572,7 @@ AOT
 JetBrains
 Microsoft
 System
+TreeEditor
 Unity
 UnityEditor
 UnityEditorInternal
