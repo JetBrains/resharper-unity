@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
 
         // General rule: Keep the default version at the latest LTS Unity version (.4)
         // If you need a newer version for a specific test, use [TestUnity(UnityVersion.Unity2019_1)], etc.
-        DefaultTestVersion = Unity2019_2
+        DefaultTestVersion = Unity2018_4
     }
     // ReSharper restore InconsistentNaming
 
