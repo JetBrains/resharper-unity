@@ -1,4 +1,4 @@
-﻿# 348 ITEMS #
+﻿# 354 ITEMS #
 
 + ADBannerView
 + ADInterstitialAd
@@ -45,6 +45,7 @@ Audio
 + AudioHighPassFilter
 + AudioListener
 + AudioLowPassFilter
++ AudioRenderer
 + AudioReverbFilter
 + AudioReverbZone
 + AudioSettings
@@ -52,6 +53,7 @@ Audio
 + Avatar
 + AvatarBuilder
 + AvatarMask
++ BeforeRenderOrderAttribute
 + Behaviour
 + BillboardAsset
 + BillboardRenderer
@@ -60,7 +62,6 @@ Bindings
 + BoxCollider
 + BoxCollider2D
 + BuoyancyEffector2D
-CSSLayout
 + Caching
 + Camera
 + Canvas
@@ -74,7 +75,6 @@ CSSLayout
 + Cloth
 + ClusterInput
 + ClusterNetwork
-Collections
 + Collider
 + Collider2D
 + Collision
@@ -119,6 +119,8 @@ Diagnostics
 + Event
 + EventProvider
 Events
++ ExcludeFromObjectFactoryAttribute
++ ExcludeFromPresetAttribute
 + ExecuteInEditMode
 + ExitGUIException
 Experimental
@@ -127,6 +129,7 @@ Experimental
 + Flare
 + FlareLayer
 + Font
++ FrameTimingManager
 + FrictionJoint2D
 + GL
 + GUI
@@ -163,11 +166,13 @@ Experimental
 + HumanPoseHandler
 + HumanTrait
 + ImageConversion
++ ImageEffectAfterScale
 + ImageEffectAllowedInSceneView
 + ImageEffectOpaque
 + ImageEffectTransformsToLDR
 + Input
 Internal
+Jobs
 + Joint
 + Joint2D
 + JsonUtility
@@ -199,8 +204,6 @@ Internal
 + Motion
 + MovieTexture
 + MultilineAttribute
-+ NScreenBridge
-+ NativeClassAttribute
 + Network
 + NetworkView
 Networking
@@ -242,6 +245,7 @@ Profiling
 + RectTransformUtility
 + ReflectionProbe
 + RelativeJoint2D
++ RemoteConfigSettings
 + RemoteNotification
 + RemoteSettings
 + RenderSettings
@@ -256,7 +260,7 @@ Rendering
 + Rigidbody2D
 + RuntimeAnimatorController
 + RuntimeInitializeOnLoadMethodAttribute
-+ SamsungTV
++ ScalableBufferManager
 SceneManagement
 + Screen
 + ScreenCapture
@@ -289,6 +293,7 @@ Sprites
 + StackTraceUtility
 + StateMachineBehaviour
 + StaticBatchingUtility
++ StreamingController
 StyleSheets
 + SurfaceEffector2D
 + SystemInfo
@@ -308,7 +313,6 @@ StyleSheets
 + Texture3D
 Tilemaps
 + Time
-Tizen
 + TooltipAttribute
 + TouchScreenKeyboard
 + TrackedReference
@@ -342,14 +346,16 @@ WSA
 Windows
 XR
 + YieldInstruction
+Yoga
 iOS
 + iPhone
 + iPhoneInput
 + iPhoneKeyboard
 + iPhoneSettings
 + iPhoneUtils
+tvOS
 # AUTOMATIC #
-# 348 ITEMS #
+# 354 ITEMS #
 
 + ADBannerView
 + ADInterstitialAd
@@ -396,6 +402,7 @@ Audio
 + AudioHighPassFilter
 + AudioListener
 + AudioLowPassFilter
++ AudioRenderer
 + AudioReverbFilter
 + AudioReverbZone
 + AudioSettings
@@ -403,6 +410,7 @@ Audio
 + Avatar
 + AvatarBuilder
 + AvatarMask
++ BeforeRenderOrderAttribute
 + Behaviour
 + BillboardAsset
 + BillboardRenderer
@@ -411,7 +419,6 @@ Bindings
 + BoxCollider
 + BoxCollider2D
 + BuoyancyEffector2D
-CSSLayout
 + Caching
 + Camera
 + Canvas
@@ -425,7 +432,6 @@ CSSLayout
 + Cloth
 + ClusterInput
 + ClusterNetwork
-Collections
 + Collider
 + Collider2D
 + Collision
@@ -470,6 +476,8 @@ Diagnostics
 + Event
 + EventProvider
 Events
++ ExcludeFromObjectFactoryAttribute
++ ExcludeFromPresetAttribute
 + ExecuteInEditMode
 + ExitGUIException
 Experimental
@@ -478,6 +486,7 @@ Experimental
 + Flare
 + FlareLayer
 + Font
++ FrameTimingManager
 + FrictionJoint2D
 + GL
 + GUI
@@ -514,11 +523,13 @@ Experimental
 + HumanPoseHandler
 + HumanTrait
 + ImageConversion
++ ImageEffectAfterScale
 + ImageEffectAllowedInSceneView
 + ImageEffectOpaque
 + ImageEffectTransformsToLDR
 + Input
 Internal
+Jobs
 + Joint
 + Joint2D
 + JsonUtility
@@ -550,8 +561,6 @@ Internal
 + Motion
 + MovieTexture
 + MultilineAttribute
-+ NScreenBridge
-+ NativeClassAttribute
 + Network
 + NetworkView
 Networking
@@ -593,6 +602,7 @@ Profiling
 + RectTransformUtility
 + ReflectionProbe
 + RelativeJoint2D
++ RemoteConfigSettings
 + RemoteNotification
 + RemoteSettings
 + RenderSettings
@@ -607,7 +617,7 @@ Rendering
 + Rigidbody2D
 + RuntimeAnimatorController
 + RuntimeInitializeOnLoadMethodAttribute
-+ SamsungTV
++ ScalableBufferManager
 SceneManagement
 + Screen
 + ScreenCapture
@@ -640,6 +650,7 @@ Sprites
 + StackTraceUtility
 + StateMachineBehaviour
 + StaticBatchingUtility
++ StreamingController
 StyleSheets
 + SurfaceEffector2D
 + SystemInfo
@@ -659,7 +670,6 @@ StyleSheets
 + Texture3D
 Tilemaps
 + Time
-Tizen
 + TooltipAttribute
 + TouchScreenKeyboard
 + TrackedReference
@@ -693,9 +703,11 @@ WSA
 Windows
 XR
 + YieldInstruction
+Yoga
 iOS
 + iPhone
 + iPhoneInput
 + iPhoneKeyboard
 + iPhoneSettings
 + iPhoneUtils
+tvOS

@@ -23,8 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Genera
         public void ListElements10() { DoNamedTest(); }
         [Test] public void ListElements11() { DoNamedTest(); }
         [Test] public void ListElements12() { DoNamedTest(); }
-        [Test] public void ListElements13() { DoNamedTest(); }
-        [Test] public void ListElements14() { DoNamedTest(); }
+        [Test, TestUnity(UnityVersion.Unity2017_4)] public void ListElements13() { DoNamedTest(); }
+        [Test, TestUnity(UnityVersion.Unity2017_4)] public void ListElements14() { DoNamedTest(); }
         [Test] public void ListElements15() { DoNamedTest(); }
         [Test] public void ListElements16() { DoNamedTest(); }
         [Test] public void ListElements17() { DoNamedTest(); }

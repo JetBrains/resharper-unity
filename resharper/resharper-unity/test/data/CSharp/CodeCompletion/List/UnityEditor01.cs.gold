@@ -1,4 +1,4 @@
-﻿# 1044 ITEMS #
+﻿# 1085 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -122,10 +122,13 @@ AdditionalCanvasShaderChannels
 AlphabeticalSort
 AnchoredJoint2D
 AndroidActivityIndicatorStyle
+AndroidArchitecture
 AndroidBlitType
 AndroidBuildSubtarget
 AndroidBuildSystem
 AndroidBuildType
+AndroidETC2Fallback
+AndroidETC2FallbackOverride
 AndroidGamepadSupportLevel
 AndroidInput
 AndroidJNI
@@ -172,6 +175,7 @@ Application
 ApplicationInstallMode
 ApplicationSandboxType
 AreaEffector2D
+ArmDof
 ArrayUtility
 AscentCalculationMode
 AspectRatio
@@ -211,6 +215,7 @@ AudioImporterLoadType
 AudioImporterSampleSettings
 AudioListener
 AudioLowPassFilter
+AudioRenderer
 AudioReverbFilter
 AudioReverbPreset
 AudioReverbZone
@@ -231,11 +236,13 @@ AvatarMaskBodyPart
 AvatarTarget
 BaseHierarchySort
 BatteryStatus
+BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
 BitStream
 BlendWeights
+BodyDof
 BodyPart
 BoneState
 BoneWeight
@@ -261,6 +268,8 @@ CalendarUnit
 CallbackOrderAttribute
 Camera
 CameraClearFlags
+CameraEditor
+CameraEditorUtils
 CameraType
 CanEditMultipleObjects
 Canvas
@@ -278,6 +287,7 @@ ClipAnimationMaskType
 Cloth
 ClothSkinningCoefficient
 ClothSphereColliderPair
+CloudProjectSettings
 ClusterInput
 ClusterInputType
 ClusterNetwork
@@ -326,6 +336,7 @@ Cursor
 CursorLockMode
 CursorMode
 CustomEditor
+CustomEditorForRenderPipelineAttribute
 CustomGridBrushAttribute
 CustomPreviewAttribute
 CustomPropertyDrawer
@@ -357,9 +368,12 @@ DrawCameraMode
 DrawGizmo
 DrivenRectTransformTracker
 DrivenTransformProperties
+DurationUnit
 DynamicGI
 EdgeCollider2D
 Editor
+EditorAnalytics
+EditorAnalyticsSessionInfo
 EditorApplication
 EditorBehaviorMode
 EditorBuildSettings
@@ -387,6 +401,8 @@ Event
 EventModifiers
 EventProvider
 EventType
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
 ExecuteInEditMode
 ExitGUIException
 ExportPackageOptions
@@ -397,6 +413,7 @@ ExternalVersionControl
 FFTWindow
 FileUtil
 FilterMode
+FingerDof
 FixedJoint
 FixedJoint2D
 Flare
@@ -409,8 +426,12 @@ FontStyle
 FontTextureCase
 ForceMode
 ForceMode2D
+ForceReserializeAssetsOptions
+FrameTiming
+FrameTimingManager
 FrictionJoint2D
 FrustumPlanes
+FullScreenMode
 FullScreenMovieControlMode
 FullScreenMovieScalingMode
 GL
@@ -457,6 +478,7 @@ Handheld
 HandleUtility
 Handles
 Hash128
+HeadDof
 HeaderAttribute
 Help
 HelpURLAttribute
@@ -474,6 +496,7 @@ HumanBodyBones
 HumanBone
 HumanDescription
 HumanLimit
+HumanPartDof
 HumanPose
 HumanPoseHandler
 HumanTemplate
@@ -490,7 +513,9 @@ IMECompositionMode
 ISerializationCallbackReceiver
 IconDrawStyle
 IconKind
+Il2CppCompilerConfiguration
 ImageConversion
+ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
@@ -516,18 +541,22 @@ JointTranslationLimits2D
 JsonUtility
 KeyCode
 Keyframe
+L10n
 LOD
 LODFadeMode
 LODGroup
 LODUtility
 LayerMask
+LegDof
 LensFlare
 Light
+LightBakingOutput
 LightEditor
 LightProbeGroup
 LightProbeProxyVolume
 LightProbes
 LightRenderMode
+LightShadowCasterMode
 LightShadows
 LightType
 LightingDataAsset
@@ -543,11 +572,12 @@ LightmappingMode
 LightmapsMode
 LightmapsModeLegacy
 LineAlignment
+LineEndingsMode
 LineRenderer
 LineTextureMode
 LineUtility
 LocalNotification
-LocalizationDatabase
+LocalizationAsset
 LocationInfo
 LocationService
 LocationServiceStatus
@@ -571,6 +601,7 @@ MenuCommand
 MenuItem
 Mesh
 MeshCollider
+MeshColliderCookingOptions
 MeshFilter
 MeshParticleEmitter
 MeshRenderer
@@ -580,6 +611,7 @@ MessageType
 Microphone
 MissingComponentException
 MissingReferenceException
+MixedLightingMode
 MobileTextureSubtarget
 ModelImporter
 ModelImporterAnimationCompression
@@ -588,6 +620,8 @@ ModelImporterClipAnimation
 ModelImporterGenerateAnimations
 ModelImporterGenerateMaterials
 ModelImporterHumanoidOversampling
+ModelImporterIndexFormat
+ModelImporterMaterialLocation
 ModelImporterMaterialName
 ModelImporterMaterialSearch
 ModelImporterMeshCompression
@@ -605,8 +639,6 @@ MovieImporter
 MovieTexture
 MultilineAttribute
 NPOTSupport
-NScreenBridge
-NativeClassAttribute
 Network
 NetworkConnectionError
 NetworkDisconnection
@@ -620,6 +652,7 @@ NetworkView
 NetworkViewID
 NotificationServices
 Object
+ObjectFactory
 ObjectNames
 ObjectPreview
 ObjectReferenceKeyframe
@@ -628,15 +661,12 @@ OcclusionPortal
 OperatingSystemFamily
 PS4BuildSubtarget
 PS4HardwareTarget
-PSMBuildSubtarget
 PSP2BuildSubtarget
 PackageInfo
-Particle
 ParticleAnimator
 ParticleCollisionEvent
 ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderMode
 ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
@@ -659,6 +689,7 @@ ParticleSystemRenderSpace
 ParticleSystemRenderer
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
+ParticleSystemShapeTextureChannel
 ParticleSystemShapeType
 ParticleSystemSimulationSpace
 ParticleSystemSortMode
@@ -666,16 +697,19 @@ ParticleSystemStopAction
 ParticleSystemStopBehavior
 ParticleSystemSubEmitterProperties
 ParticleSystemSubEmitterType
+ParticleSystemTrailMode
 ParticleSystemTrailTextureMode
 ParticleSystemTriggerEventType
 ParticleSystemVertexStream
 ParticleSystemVertexStreams
+PatchExtents
 PauseState
 PhysicMaterial
 PhysicMaterialCombine
 Physics
 Physics2D
 PhysicsDebugWindow
+PhysicsJobOptions2D
 PhysicsMaterial2D
 PhysicsUpdateBehaviour2D
 PhysicsVisualizationSettings
@@ -684,6 +718,8 @@ PivotMode
 PivotRotation
 Plane
 PlatformEffector2D
+PlatformIcon
+PlatformIconKind
 PlayMode
 PlayModeStateChange
 PlayerPrefs
@@ -716,6 +752,7 @@ PropertyAttribute
 PropertyDrawer
 PropertyModification
 PropertyName
+ProvisioningProfileType
 QualityLevel
 QualitySettings
 Quaternion
@@ -728,6 +765,7 @@ RangeAttribute
 RangeInt
 Ray
 Ray2D
+RaycastCommand
 RaycastHit
 RaycastHit2D
 Rect
@@ -737,6 +775,7 @@ RectTransform
 RectTransformUtility
 ReflectionProbe
 RelativeJoint2D
+RemoteConfigSettings
 RemoteNotification
 RemoteNotificationType
 RemoteSettings
@@ -773,9 +812,9 @@ RuntimeAnimatorController
 RuntimeInitializeLoadType
 RuntimeInitializeOnLoadMethodAttribute
 RuntimePlatform
-SamsungTV
 SaveAssetsProcessor
 SaveType
+ScalableBufferManager
 ScaleMode
 SceneAsset
 SceneModeUtility
@@ -805,8 +844,11 @@ SerializedProperty
 SerializedPropertyType
 SessionState
 Shader
+ShaderData
 ShaderGUI
 ShaderImporter
+ShaderIncludePathAttribute
+ShaderInfo
 ShaderUtil
 ShaderVariantCollection
 ShadowProjection
@@ -847,7 +889,9 @@ SpriteMetaData
 SpritePackerMode
 SpritePackingMode
 SpritePackingRotation
+SpriteRect
 SpriteRenderer
+SpriteSortPoint
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
@@ -859,10 +903,8 @@ StaticOcclusionCullingVisualization
 StatusQueryOptions
 StereoRenderingPath
 StereoTargetEyeMask
+StreamingController
 StrippingLevel
-SubstanceArchive
-SubstanceImporter
-SupportedRenderingFeatures
 SurfaceEffector2D
 SystemInfo
 SystemLanguage
@@ -905,14 +947,12 @@ TextureImporterPlatformSettings
 TextureImporterRGBMMode
 TextureImporterSettings
 TextureImporterShape
+TextureImporterSingleChannelComponent
 TextureImporterType
 TextureResizeAlgorithm
 TextureWrapMode
 ThreadPriority
 Time
-TizenActivityIndicatorStyle
-TizenOSVersion
-TizenShowActivityIndicatorOnLoading
 Tool
 Tools
 TooltipAttribute
@@ -985,17 +1025,17 @@ WebCamFlags
 WebCamTexture
 WebGLCompressionFormat
 WebGLExceptionSupport
+WebGLLinkerTarget
+WeightedMode
 WheelCollider
 WheelFrictionCurve
 WheelHit
 WheelJoint2D
-WiiUBuildDebugLevel
-WiiUBuildOutput
-WiiUTVResolution
 WindZone
 WindZoneMode
 WrapMode
 XboxBuildSubtarget
+XboxOneDeployDrive
 XboxOneDeployMethod
 XboxOneEncryptionLevel
 XboxOneLoggingLevel
@@ -1011,6 +1051,7 @@ iOSLaunchScreenType
 iOSSdkVersion
 iOSShowActivityIndicatorOnLoading
 iOSStatusBarStyle
+iOSSystemGestureDeferMode
 iOSTargetDevice
 iOSTargetOSVersion
 iOSTargetResolution
@@ -1035,8 +1076,8 @@ tvOSTargetOSVersion
 AOT
 JetBrains
 Microsoft
-SimpleJson
 System
+Unity
 UnityEditor
 UnityEditorInternal
 UnityEngine
@@ -1045,7 +1086,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 1044 ITEMS #
+# 1085 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -1169,10 +1210,13 @@ AdditionalCanvasShaderChannels
 AlphabeticalSort
 AnchoredJoint2D
 AndroidActivityIndicatorStyle
+AndroidArchitecture
 AndroidBlitType
 AndroidBuildSubtarget
 AndroidBuildSystem
 AndroidBuildType
+AndroidETC2Fallback
+AndroidETC2FallbackOverride
 AndroidGamepadSupportLevel
 AndroidInput
 AndroidJNI
@@ -1219,6 +1263,7 @@ Application
 ApplicationInstallMode
 ApplicationSandboxType
 AreaEffector2D
+ArmDof
 ArrayUtility
 AscentCalculationMode
 AspectRatio
@@ -1258,6 +1303,7 @@ AudioImporterLoadType
 AudioImporterSampleSettings
 AudioListener
 AudioLowPassFilter
+AudioRenderer
 AudioReverbFilter
 AudioReverbPreset
 AudioReverbZone
@@ -1278,11 +1324,13 @@ AvatarMaskBodyPart
 AvatarTarget
 BaseHierarchySort
 BatteryStatus
+BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
 BitStream
 BlendWeights
+BodyDof
 BodyPart
 BoneState
 BoneWeight
@@ -1308,6 +1356,8 @@ CalendarUnit
 CallbackOrderAttribute
 Camera
 CameraClearFlags
+CameraEditor
+CameraEditorUtils
 CameraType
 CanEditMultipleObjects
 Canvas
@@ -1325,6 +1375,7 @@ ClipAnimationMaskType
 Cloth
 ClothSkinningCoefficient
 ClothSphereColliderPair
+CloudProjectSettings
 ClusterInput
 ClusterInputType
 ClusterNetwork
@@ -1373,6 +1424,7 @@ Cursor
 CursorLockMode
 CursorMode
 CustomEditor
+CustomEditorForRenderPipelineAttribute
 CustomGridBrushAttribute
 CustomPreviewAttribute
 CustomPropertyDrawer
@@ -1404,9 +1456,12 @@ DrawCameraMode
 DrawGizmo
 DrivenRectTransformTracker
 DrivenTransformProperties
+DurationUnit
 DynamicGI
 EdgeCollider2D
 Editor
+EditorAnalytics
+EditorAnalyticsSessionInfo
 EditorApplication
 EditorBehaviorMode
 EditorBuildSettings
@@ -1434,6 +1489,8 @@ Event
 EventModifiers
 EventProvider
 EventType
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
 ExecuteInEditMode
 ExitGUIException
 ExportPackageOptions
@@ -1444,6 +1501,7 @@ ExternalVersionControl
 FFTWindow
 FileUtil
 FilterMode
+FingerDof
 FixedJoint
 FixedJoint2D
 Flare
@@ -1456,8 +1514,12 @@ FontStyle
 FontTextureCase
 ForceMode
 ForceMode2D
+ForceReserializeAssetsOptions
+FrameTiming
+FrameTimingManager
 FrictionJoint2D
 FrustumPlanes
+FullScreenMode
 FullScreenMovieControlMode
 FullScreenMovieScalingMode
 GL
@@ -1504,6 +1566,7 @@ Handheld
 HandleUtility
 Handles
 Hash128
+HeadDof
 HeaderAttribute
 Help
 HelpURLAttribute
@@ -1521,6 +1584,7 @@ HumanBodyBones
 HumanBone
 HumanDescription
 HumanLimit
+HumanPartDof
 HumanPose
 HumanPoseHandler
 HumanTemplate
@@ -1537,7 +1601,9 @@ IMECompositionMode
 ISerializationCallbackReceiver
 IconDrawStyle
 IconKind
+Il2CppCompilerConfiguration
 ImageConversion
+ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
@@ -1563,18 +1629,22 @@ JointTranslationLimits2D
 JsonUtility
 KeyCode
 Keyframe
+L10n
 LOD
 LODFadeMode
 LODGroup
 LODUtility
 LayerMask
+LegDof
 LensFlare
 Light
+LightBakingOutput
 LightEditor
 LightProbeGroup
 LightProbeProxyVolume
 LightProbes
 LightRenderMode
+LightShadowCasterMode
 LightShadows
 LightType
 LightingDataAsset
@@ -1590,11 +1660,12 @@ LightmappingMode
 LightmapsMode
 LightmapsModeLegacy
 LineAlignment
+LineEndingsMode
 LineRenderer
 LineTextureMode
 LineUtility
 LocalNotification
-LocalizationDatabase
+LocalizationAsset
 LocationInfo
 LocationService
 LocationServiceStatus
@@ -1618,6 +1689,7 @@ MenuCommand
 MenuItem
 Mesh
 MeshCollider
+MeshColliderCookingOptions
 MeshFilter
 MeshParticleEmitter
 MeshRenderer
@@ -1627,6 +1699,7 @@ MessageType
 Microphone
 MissingComponentException
 MissingReferenceException
+MixedLightingMode
 MobileTextureSubtarget
 ModelImporter
 ModelImporterAnimationCompression
@@ -1635,6 +1708,8 @@ ModelImporterClipAnimation
 ModelImporterGenerateAnimations
 ModelImporterGenerateMaterials
 ModelImporterHumanoidOversampling
+ModelImporterIndexFormat
+ModelImporterMaterialLocation
 ModelImporterMaterialName
 ModelImporterMaterialSearch
 ModelImporterMeshCompression
@@ -1652,8 +1727,6 @@ MovieImporter
 MovieTexture
 MultilineAttribute
 NPOTSupport
-NScreenBridge
-NativeClassAttribute
 Network
 NetworkConnectionError
 NetworkDisconnection
@@ -1667,6 +1740,7 @@ NetworkView
 NetworkViewID
 NotificationServices
 Object
+ObjectFactory
 ObjectNames
 ObjectPreview
 ObjectReferenceKeyframe
@@ -1675,15 +1749,12 @@ OcclusionPortal
 OperatingSystemFamily
 PS4BuildSubtarget
 PS4HardwareTarget
-PSMBuildSubtarget
 PSP2BuildSubtarget
 PackageInfo
-Particle
 ParticleAnimator
 ParticleCollisionEvent
 ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderMode
 ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
@@ -1706,6 +1777,7 @@ ParticleSystemRenderSpace
 ParticleSystemRenderer
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
+ParticleSystemShapeTextureChannel
 ParticleSystemShapeType
 ParticleSystemSimulationSpace
 ParticleSystemSortMode
@@ -1713,16 +1785,19 @@ ParticleSystemStopAction
 ParticleSystemStopBehavior
 ParticleSystemSubEmitterProperties
 ParticleSystemSubEmitterType
+ParticleSystemTrailMode
 ParticleSystemTrailTextureMode
 ParticleSystemTriggerEventType
 ParticleSystemVertexStream
 ParticleSystemVertexStreams
+PatchExtents
 PauseState
 PhysicMaterial
 PhysicMaterialCombine
 Physics
 Physics2D
 PhysicsDebugWindow
+PhysicsJobOptions2D
 PhysicsMaterial2D
 PhysicsUpdateBehaviour2D
 PhysicsVisualizationSettings
@@ -1731,6 +1806,8 @@ PivotMode
 PivotRotation
 Plane
 PlatformEffector2D
+PlatformIcon
+PlatformIconKind
 PlayMode
 PlayModeStateChange
 PlayerPrefs
@@ -1763,6 +1840,7 @@ PropertyAttribute
 PropertyDrawer
 PropertyModification
 PropertyName
+ProvisioningProfileType
 QualityLevel
 QualitySettings
 Quaternion
@@ -1775,6 +1853,7 @@ RangeAttribute
 RangeInt
 Ray
 Ray2D
+RaycastCommand
 RaycastHit
 RaycastHit2D
 Rect
@@ -1784,6 +1863,7 @@ RectTransform
 RectTransformUtility
 ReflectionProbe
 RelativeJoint2D
+RemoteConfigSettings
 RemoteNotification
 RemoteNotificationType
 RemoteSettings
@@ -1820,9 +1900,9 @@ RuntimeAnimatorController
 RuntimeInitializeLoadType
 RuntimeInitializeOnLoadMethodAttribute
 RuntimePlatform
-SamsungTV
 SaveAssetsProcessor
 SaveType
+ScalableBufferManager
 ScaleMode
 SceneAsset
 SceneModeUtility
@@ -1852,8 +1932,11 @@ SerializedProperty
 SerializedPropertyType
 SessionState
 Shader
+ShaderData
 ShaderGUI
 ShaderImporter
+ShaderIncludePathAttribute
+ShaderInfo
 ShaderUtil
 ShaderVariantCollection
 ShadowProjection
@@ -1894,7 +1977,9 @@ SpriteMetaData
 SpritePackerMode
 SpritePackingMode
 SpritePackingRotation
+SpriteRect
 SpriteRenderer
+SpriteSortPoint
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
@@ -1906,10 +1991,8 @@ StaticOcclusionCullingVisualization
 StatusQueryOptions
 StereoRenderingPath
 StereoTargetEyeMask
+StreamingController
 StrippingLevel
-SubstanceArchive
-SubstanceImporter
-SupportedRenderingFeatures
 SurfaceEffector2D
 SystemInfo
 SystemLanguage
@@ -1952,14 +2035,12 @@ TextureImporterPlatformSettings
 TextureImporterRGBMMode
 TextureImporterSettings
 TextureImporterShape
+TextureImporterSingleChannelComponent
 TextureImporterType
 TextureResizeAlgorithm
 TextureWrapMode
 ThreadPriority
 Time
-TizenActivityIndicatorStyle
-TizenOSVersion
-TizenShowActivityIndicatorOnLoading
 Tool
 Tools
 TooltipAttribute
@@ -2032,17 +2113,17 @@ WebCamFlags
 WebCamTexture
 WebGLCompressionFormat
 WebGLExceptionSupport
+WebGLLinkerTarget
+WeightedMode
 WheelCollider
 WheelFrictionCurve
 WheelHit
 WheelJoint2D
-WiiUBuildDebugLevel
-WiiUBuildOutput
-WiiUTVResolution
 WindZone
 WindZoneMode
 WrapMode
 XboxBuildSubtarget
+XboxOneDeployDrive
 XboxOneDeployMethod
 XboxOneEncryptionLevel
 XboxOneLoggingLevel
@@ -2058,6 +2139,7 @@ iOSLaunchScreenType
 iOSSdkVersion
 iOSShowActivityIndicatorOnLoading
 iOSStatusBarStyle
+iOSSystemGestureDeferMode
 iOSTargetDevice
 iOSTargetOSVersion
 iOSTargetResolution
@@ -2082,8 +2164,8 @@ tvOSTargetOSVersion
 AOT
 JetBrains
 Microsoft
-SimpleJson
 System
+Unity
 UnityEditor
 UnityEditorInternal
 UnityEngine

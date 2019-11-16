@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         Unity2018_1,
         Unity2018_2,
 
-        DefaultTestVersion = Unity2017_2
+        DefaultTestVersion = Unity2018_2
     }
     // ReSharper restore InconsistentNaming
 

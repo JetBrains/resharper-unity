@@ -1,4 +1,4 @@
-﻿# 742 ITEMS #
+﻿# 765 ITEMS #
 
 A
 ADBannerView
@@ -43,6 +43,7 @@ Application
 ApplicationInstallMode
 ApplicationSandboxType
 AreaEffector2D
+ArmDof
 AssemblyIsEditorAssembly
 AssetBundle
 AssetBundleCreateRequest
@@ -62,6 +63,7 @@ AudioEchoFilter
 AudioHighPassFilter
 AudioListener
 AudioLowPassFilter
+AudioRenderer
 AudioReverbFilter
 AudioReverbPreset
 AudioReverbZone
@@ -81,11 +83,13 @@ AvatarMaskBodyPart
 AvatarTarget
 + private Awake() { ... }
 BatteryStatus
+BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
 BitStream
 BlendWeights
+BodyDof
 BoneWeight
 BoundingSphere
 Bounds
@@ -181,6 +185,7 @@ Display
 DistanceJoint2D
 DrivenRectTransformTracker
 DrivenTransformProperties
+DurationUnit
 DynamicGI
 EdgeCollider2D
 Effector2D
@@ -191,12 +196,15 @@ Event
 EventModifiers
 EventProvider
 EventType
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
 ExecuteInEditMode
 ExitGUIException
 ExposedPropertyResolver
 ExposedReference<>
 FFTWindow
 FilterMode
+FingerDof
 FixedJoint
 FixedJoint2D
 + private FixedUpdate() { ... }
@@ -208,8 +216,11 @@ Font
 FontStyle
 ForceMode
 ForceMode2D
+FrameTiming
+FrameTimingManager
 FrictionJoint2D
 FrustumPlanes
+FullScreenMode
 FullScreenMovieControlMode
 FullScreenMovieScalingMode
 GL
@@ -242,6 +253,7 @@ GridLayout
 Gyroscope
 Handheld
 Hash128
+HeadDof
 HeaderAttribute
 HelpURLAttribute
 HideFlags
@@ -254,6 +266,7 @@ HumanBodyBones
 HumanBone
 HumanDescription
 HumanLimit
+HumanPartDof
 HumanPose
 HumanPoseHandler
 HumanTrait
@@ -264,6 +277,7 @@ ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
 ImageConversion
+ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
@@ -291,12 +305,15 @@ LODFadeMode
 LODGroup
 + private LateUpdate() { ... }
 LayerMask
+LegDof
 LensFlare
 Light
+LightBakingOutput
 LightProbeGroup
 LightProbeProxyVolume
 LightProbes
 LightRenderMode
+LightShadowCasterMode
 LightShadows
 LightType
 LightmapBakeType
@@ -325,6 +342,7 @@ Mathf
 Matrix4x4
 Mesh
 MeshCollider
+MeshColliderCookingOptions
 MeshFilter
 MeshParticleEmitter
 MeshRenderer
@@ -333,14 +351,13 @@ Microphone
 Microsoft
 MissingComponentException
 MissingReferenceException
+MixedLightingMode
 MonoBehaviour
 Motion
 MotionVectorGenerationMode
 MovieTexture
 MultilineAttribute
 NPOTSupport
-NScreenBridge
-NativeClassAttribute
 Network
 NetworkConnectionError
 NetworkDisconnection
@@ -419,12 +436,10 @@ private OnRectTransformDimensionsChange() { ... }
 + private OnValidate() { ... }
 + private OnWillRenderObject() { ... }
 OperatingSystemFamily
-Particle
 ParticleAnimator
 ParticleCollisionEvent
 ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderMode
 ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
@@ -447,6 +462,7 @@ ParticleSystemRenderSpace
 ParticleSystemRenderer
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
+ParticleSystemShapeTextureChannel
 ParticleSystemShapeType
 ParticleSystemSimulationSpace
 ParticleSystemSortMode
@@ -454,14 +470,17 @@ ParticleSystemStopAction
 ParticleSystemStopBehavior
 ParticleSystemSubEmitterProperties
 ParticleSystemSubEmitterType
+ParticleSystemTrailMode
 ParticleSystemTrailTextureMode
 ParticleSystemTriggerEventType
 ParticleSystemVertexStream
 ParticleSystemVertexStreams
+PatchExtents
 PhysicMaterial
 PhysicMaterialCombine
 Physics
 Physics2D
+PhysicsJobOptions2D
 PhysicsMaterial2D
 PhysicsUpdateBehaviour2D
 Ping
@@ -498,6 +517,7 @@ RangeAttribute
 RangeInt
 Ray
 Ray2D
+RaycastCommand
 RaycastHit
 RaycastHit2D
 Rect
@@ -507,6 +527,7 @@ RectTransform
 RectTransformUtility
 ReflectionProbe
 RelativeJoint2D
+RemoteConfigSettings
 RemoteNotification
 RemoteNotificationType
 RemoteSettings
@@ -541,7 +562,7 @@ RuntimeAnimatorController
 RuntimeInitializeLoadType
 RuntimeInitializeOnLoadMethodAttribute
 RuntimePlatform
-SamsungTV
+ScalableBufferManager
 ScaleMode
 Screen
 ScreenCapture
@@ -559,7 +580,6 @@ ShadowQuality
 ShadowResolution
 ShadowmaskMode
 SharedBetweenAnimatorsAttribute
-SimpleJson
 SkeletonBone
 SkinQuality
 SkinnedMeshRenderer
@@ -586,6 +606,7 @@ SpriteMeshType
 SpritePackingMode
 SpritePackingRotation
 SpriteRenderer
+SpriteSortPoint
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
@@ -593,6 +614,7 @@ StackTraceUtility
 StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
+StreamingController
 SurfaceEffector2D
 System
 SystemInfo
@@ -623,7 +645,6 @@ TextureFormat
 TextureWrapMode
 ThreadPriority
 Time
-TizenActivityIndicatorStyle
 TooltipAttribute
 Touch
 TouchPhase
@@ -643,6 +664,7 @@ UILineInfo
 UISystemProfilerApi
 UIVertex
 UnassignedReferenceException
+Unity
 UnityAPICompatibilityVersionAttribute
 UnityEditor
 UnityEditorInternal
@@ -671,6 +693,7 @@ WaitWhile
 WebCamDevice
 WebCamFlags
 WebCamTexture
+WeightedMode
 WheelCollider
 WheelFrictionCurve
 WheelHit
@@ -744,7 +767,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 742 ITEMS #
+# 765 ITEMS #
 
 A
 ADBannerView
@@ -789,6 +812,7 @@ Application
 ApplicationInstallMode
 ApplicationSandboxType
 AreaEffector2D
+ArmDof
 AssemblyIsEditorAssembly
 AssetBundle
 AssetBundleCreateRequest
@@ -808,6 +832,7 @@ AudioEchoFilter
 AudioHighPassFilter
 AudioListener
 AudioLowPassFilter
+AudioRenderer
 AudioReverbFilter
 AudioReverbPreset
 AudioReverbZone
@@ -827,11 +852,13 @@ AvatarMaskBodyPart
 AvatarTarget
 + private Awake() { ... }
 BatteryStatus
+BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
 BitStream
 BlendWeights
+BodyDof
 BoneWeight
 BoundingSphere
 Bounds
@@ -927,6 +954,7 @@ Display
 DistanceJoint2D
 DrivenRectTransformTracker
 DrivenTransformProperties
+DurationUnit
 DynamicGI
 EdgeCollider2D
 Effector2D
@@ -937,12 +965,15 @@ Event
 EventModifiers
 EventProvider
 EventType
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
 ExecuteInEditMode
 ExitGUIException
 ExposedPropertyResolver
 ExposedReference<>
 FFTWindow
 FilterMode
+FingerDof
 FixedJoint
 FixedJoint2D
 + private FixedUpdate() { ... }
@@ -954,8 +985,11 @@ Font
 FontStyle
 ForceMode
 ForceMode2D
+FrameTiming
+FrameTimingManager
 FrictionJoint2D
 FrustumPlanes
+FullScreenMode
 FullScreenMovieControlMode
 FullScreenMovieScalingMode
 GL
@@ -988,6 +1022,7 @@ GridLayout
 Gyroscope
 Handheld
 Hash128
+HeadDof
 HeaderAttribute
 HelpURLAttribute
 HideFlags
@@ -1000,6 +1035,7 @@ HumanBodyBones
 HumanBone
 HumanDescription
 HumanLimit
+HumanPartDof
 HumanPose
 HumanPoseHandler
 HumanTrait
@@ -1010,6 +1046,7 @@ ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
 ImageConversion
+ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
@@ -1037,12 +1074,15 @@ LODFadeMode
 LODGroup
 + private LateUpdate() { ... }
 LayerMask
+LegDof
 LensFlare
 Light
+LightBakingOutput
 LightProbeGroup
 LightProbeProxyVolume
 LightProbes
 LightRenderMode
+LightShadowCasterMode
 LightShadows
 LightType
 LightmapBakeType
@@ -1071,6 +1111,7 @@ Mathf
 Matrix4x4
 Mesh
 MeshCollider
+MeshColliderCookingOptions
 MeshFilter
 MeshParticleEmitter
 MeshRenderer
@@ -1079,14 +1120,13 @@ Microphone
 Microsoft
 MissingComponentException
 MissingReferenceException
+MixedLightingMode
 MonoBehaviour
 Motion
 MotionVectorGenerationMode
 MovieTexture
 MultilineAttribute
 NPOTSupport
-NScreenBridge
-NativeClassAttribute
 Network
 NetworkConnectionError
 NetworkDisconnection
@@ -1165,12 +1205,10 @@ private OnRectTransformDimensionsChange() { ... }
 + private OnValidate() { ... }
 + private OnWillRenderObject() { ... }
 OperatingSystemFamily
-Particle
 ParticleAnimator
 ParticleCollisionEvent
 ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderMode
 ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
@@ -1193,6 +1231,7 @@ ParticleSystemRenderSpace
 ParticleSystemRenderer
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
+ParticleSystemShapeTextureChannel
 ParticleSystemShapeType
 ParticleSystemSimulationSpace
 ParticleSystemSortMode
@@ -1200,14 +1239,17 @@ ParticleSystemStopAction
 ParticleSystemStopBehavior
 ParticleSystemSubEmitterProperties
 ParticleSystemSubEmitterType
+ParticleSystemTrailMode
 ParticleSystemTrailTextureMode
 ParticleSystemTriggerEventType
 ParticleSystemVertexStream
 ParticleSystemVertexStreams
+PatchExtents
 PhysicMaterial
 PhysicMaterialCombine
 Physics
 Physics2D
+PhysicsJobOptions2D
 PhysicsMaterial2D
 PhysicsUpdateBehaviour2D
 Ping
@@ -1244,6 +1286,7 @@ RangeAttribute
 RangeInt
 Ray
 Ray2D
+RaycastCommand
 RaycastHit
 RaycastHit2D
 Rect
@@ -1253,6 +1296,7 @@ RectTransform
 RectTransformUtility
 ReflectionProbe
 RelativeJoint2D
+RemoteConfigSettings
 RemoteNotification
 RemoteNotificationType
 RemoteSettings
@@ -1287,7 +1331,7 @@ RuntimeAnimatorController
 RuntimeInitializeLoadType
 RuntimeInitializeOnLoadMethodAttribute
 RuntimePlatform
-SamsungTV
+ScalableBufferManager
 ScaleMode
 Screen
 ScreenCapture
@@ -1305,7 +1349,6 @@ ShadowQuality
 ShadowResolution
 ShadowmaskMode
 SharedBetweenAnimatorsAttribute
-SimpleJson
 SkeletonBone
 SkinQuality
 SkinnedMeshRenderer
@@ -1332,6 +1375,7 @@ SpriteMeshType
 SpritePackingMode
 SpritePackingRotation
 SpriteRenderer
+SpriteSortPoint
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
@@ -1339,6 +1383,7 @@ StackTraceUtility
 StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
+StreamingController
 SurfaceEffector2D
 System
 SystemInfo
@@ -1369,7 +1414,6 @@ TextureFormat
 TextureWrapMode
 ThreadPriority
 Time
-TizenActivityIndicatorStyle
 TooltipAttribute
 Touch
 TouchPhase
@@ -1389,6 +1433,7 @@ UILineInfo
 UISystemProfilerApi
 UIVertex
 UnassignedReferenceException
+Unity
 UnityAPICompatibilityVersionAttribute
 UnityEditor
 UnityEditorInternal
@@ -1417,6 +1462,7 @@ WaitWhile
 WebCamDevice
 WebCamFlags
 WebCamTexture
+WeightedMode
 WheelCollider
 WheelFrictionCurve
 WheelHit

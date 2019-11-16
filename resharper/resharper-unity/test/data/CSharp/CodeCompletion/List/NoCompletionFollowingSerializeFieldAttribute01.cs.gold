@@ -1,4 +1,4 @@
-﻿# 674 ITEMS #
+﻿# 697 ITEMS #
 
 + abstract
 async
@@ -85,6 +85,7 @@ Application
 ApplicationInstallMode
 ApplicationSandboxType
 AreaEffector2D
+ArmDof
 AssemblyIsEditorAssembly
 AssetBundle
 AssetBundleCreateRequest
@@ -104,6 +105,7 @@ AudioEchoFilter
 AudioHighPassFilter
 AudioListener
 AudioLowPassFilter
+AudioRenderer
 AudioReverbFilter
 AudioReverbPreset
 AudioReverbZone
@@ -122,11 +124,13 @@ AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
 BatteryStatus
+BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
 BitStream
 BlendWeights
+BodyDof
 BoneWeight
 BoundingSphere
 Bounds
@@ -222,6 +226,7 @@ Display
 DistanceJoint2D
 DrivenRectTransformTracker
 DrivenTransformProperties
+DurationUnit
 DynamicGI
 EdgeCollider2D
 Effector2D
@@ -232,12 +237,15 @@ Event
 EventModifiers
 EventProvider
 EventType
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
 ExecuteInEditMode
 ExitGUIException
 ExposedPropertyResolver
 ExposedReference<>
 FFTWindow
 FilterMode
+FingerDof
 FixedJoint
 FixedJoint2D
 Flare
@@ -248,8 +256,11 @@ Font
 FontStyle
 ForceMode
 ForceMode2D
+FrameTiming
+FrameTimingManager
 FrictionJoint2D
 FrustumPlanes
+FullScreenMode
 FullScreenMovieControlMode
 FullScreenMovieScalingMode
 GL
@@ -282,6 +293,7 @@ GridLayout
 Gyroscope
 Handheld
 Hash128
+HeadDof
 HeaderAttribute
 HelpURLAttribute
 HideFlags
@@ -294,6 +306,7 @@ HumanBodyBones
 HumanBone
 HumanDescription
 HumanLimit
+HumanPartDof
 HumanPose
 HumanPoseHandler
 HumanTrait
@@ -304,6 +317,7 @@ ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
 ImageConversion
+ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
@@ -329,12 +343,15 @@ LOD
 LODFadeMode
 LODGroup
 LayerMask
+LegDof
 LensFlare
 Light
+LightBakingOutput
 LightProbeGroup
 LightProbeProxyVolume
 LightProbes
 LightRenderMode
+LightShadowCasterMode
 LightShadows
 LightType
 LightmapBakeType
@@ -363,6 +380,7 @@ Mathf
 Matrix4x4
 Mesh
 MeshCollider
+MeshColliderCookingOptions
 MeshFilter
 MeshParticleEmitter
 MeshRenderer
@@ -370,14 +388,13 @@ MeshTopology
 Microphone
 MissingComponentException
 MissingReferenceException
+MixedLightingMode
 MonoBehaviour
 Motion
 MotionVectorGenerationMode
 MovieTexture
 MultilineAttribute
 NPOTSupport
-NScreenBridge
-NativeClassAttribute
 Network
 NetworkConnectionError
 NetworkDisconnection
@@ -394,12 +411,10 @@ Object
 OcclusionArea
 OcclusionPortal
 OperatingSystemFamily
-Particle
 ParticleAnimator
 ParticleCollisionEvent
 ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderMode
 ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
@@ -422,6 +437,7 @@ ParticleSystemRenderSpace
 ParticleSystemRenderer
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
+ParticleSystemShapeTextureChannel
 ParticleSystemShapeType
 ParticleSystemSimulationSpace
 ParticleSystemSortMode
@@ -429,14 +445,17 @@ ParticleSystemStopAction
 ParticleSystemStopBehavior
 ParticleSystemSubEmitterProperties
 ParticleSystemSubEmitterType
+ParticleSystemTrailMode
 ParticleSystemTrailTextureMode
 ParticleSystemTriggerEventType
 ParticleSystemVertexStream
 ParticleSystemVertexStreams
+PatchExtents
 PhysicMaterial
 PhysicMaterialCombine
 Physics
 Physics2D
+PhysicsJobOptions2D
 PhysicsMaterial2D
 PhysicsUpdateBehaviour2D
 Ping
@@ -473,6 +492,7 @@ RangeAttribute
 RangeInt
 Ray
 Ray2D
+RaycastCommand
 RaycastHit
 RaycastHit2D
 Rect
@@ -482,6 +502,7 @@ RectTransform
 RectTransformUtility
 ReflectionProbe
 RelativeJoint2D
+RemoteConfigSettings
 RemoteNotification
 RemoteNotificationType
 RemoteSettings
@@ -515,7 +536,7 @@ RuntimeAnimatorController
 RuntimeInitializeLoadType
 RuntimeInitializeOnLoadMethodAttribute
 RuntimePlatform
-SamsungTV
+ScalableBufferManager
 ScaleMode
 Screen
 ScreenCapture
@@ -559,12 +580,14 @@ SpriteMeshType
 SpritePackingMode
 SpritePackingRotation
 SpriteRenderer
+SpriteSortPoint
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
 StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
+StreamingController
 SurfaceEffector2D
 SystemInfo
 SystemLanguage
@@ -594,7 +617,6 @@ TextureFormat
 TextureWrapMode
 ThreadPriority
 Time
-TizenActivityIndicatorStyle
 TooltipAttribute
 Touch
 TouchPhase
@@ -637,6 +659,7 @@ WaitWhile
 WebCamDevice
 WebCamFlags
 WebCamTexture
+WeightedMode
 WheelCollider
 WheelFrictionCurve
 WheelHit
@@ -665,8 +688,8 @@ jvalue
 AOT
 JetBrains
 Microsoft
-SimpleJson
 System
+Unity
 UnityEditor
 UnityEditorInternal
 UnityEngine
@@ -675,7 +698,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 674 ITEMS #
+# 697 ITEMS #
 
 + abstract
 async
@@ -762,6 +785,7 @@ Application
 ApplicationInstallMode
 ApplicationSandboxType
 AreaEffector2D
+ArmDof
 AssemblyIsEditorAssembly
 AssetBundle
 AssetBundleCreateRequest
@@ -781,6 +805,7 @@ AudioEchoFilter
 AudioHighPassFilter
 AudioListener
 AudioLowPassFilter
+AudioRenderer
 AudioReverbFilter
 AudioReverbPreset
 AudioReverbZone
@@ -799,11 +824,13 @@ AvatarMask
 AvatarMaskBodyPart
 AvatarTarget
 BatteryStatus
+BeforeRenderOrderAttribute
 Behaviour
 BillboardAsset
 BillboardRenderer
 BitStream
 BlendWeights
+BodyDof
 BoneWeight
 BoundingSphere
 Bounds
@@ -899,6 +926,7 @@ Display
 DistanceJoint2D
 DrivenRectTransformTracker
 DrivenTransformProperties
+DurationUnit
 DynamicGI
 EdgeCollider2D
 Effector2D
@@ -909,12 +937,15 @@ Event
 EventModifiers
 EventProvider
 EventType
+ExcludeFromObjectFactoryAttribute
+ExcludeFromPresetAttribute
 ExecuteInEditMode
 ExitGUIException
 ExposedPropertyResolver
 ExposedReference<>
 FFTWindow
 FilterMode
+FingerDof
 FixedJoint
 FixedJoint2D
 Flare
@@ -925,8 +956,11 @@ Font
 FontStyle
 ForceMode
 ForceMode2D
+FrameTiming
+FrameTimingManager
 FrictionJoint2D
 FrustumPlanes
+FullScreenMode
 FullScreenMovieControlMode
 FullScreenMovieScalingMode
 GL
@@ -959,6 +993,7 @@ GridLayout
 Gyroscope
 Handheld
 Hash128
+HeadDof
 HeaderAttribute
 HelpURLAttribute
 HideFlags
@@ -971,6 +1006,7 @@ HumanBodyBones
 HumanBone
 HumanDescription
 HumanLimit
+HumanPartDof
 HumanPose
 HumanPoseHandler
 HumanTrait
@@ -981,6 +1017,7 @@ ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
 ImageConversion
+ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
@@ -1006,12 +1043,15 @@ LOD
 LODFadeMode
 LODGroup
 LayerMask
+LegDof
 LensFlare
 Light
+LightBakingOutput
 LightProbeGroup
 LightProbeProxyVolume
 LightProbes
 LightRenderMode
+LightShadowCasterMode
 LightShadows
 LightType
 LightmapBakeType
@@ -1040,6 +1080,7 @@ Mathf
 Matrix4x4
 Mesh
 MeshCollider
+MeshColliderCookingOptions
 MeshFilter
 MeshParticleEmitter
 MeshRenderer
@@ -1047,14 +1088,13 @@ MeshTopology
 Microphone
 MissingComponentException
 MissingReferenceException
+MixedLightingMode
 MonoBehaviour
 Motion
 MotionVectorGenerationMode
 MovieTexture
 MultilineAttribute
 NPOTSupport
-NScreenBridge
-NativeClassAttribute
 Network
 NetworkConnectionError
 NetworkDisconnection
@@ -1071,12 +1111,10 @@ Object
 OcclusionArea
 OcclusionPortal
 OperatingSystemFamily
-Particle
 ParticleAnimator
 ParticleCollisionEvent
 ParticleEmitter
 ParticlePhysicsExtensions
-ParticleRenderMode
 ParticleRenderer
 ParticleSystem
 ParticleSystemAnimationMode
@@ -1099,6 +1137,7 @@ ParticleSystemRenderSpace
 ParticleSystemRenderer
 ParticleSystemScalingMode
 ParticleSystemShapeMultiModeValue
+ParticleSystemShapeTextureChannel
 ParticleSystemShapeType
 ParticleSystemSimulationSpace
 ParticleSystemSortMode
@@ -1106,14 +1145,17 @@ ParticleSystemStopAction
 ParticleSystemStopBehavior
 ParticleSystemSubEmitterProperties
 ParticleSystemSubEmitterType
+ParticleSystemTrailMode
 ParticleSystemTrailTextureMode
 ParticleSystemTriggerEventType
 ParticleSystemVertexStream
 ParticleSystemVertexStreams
+PatchExtents
 PhysicMaterial
 PhysicMaterialCombine
 Physics
 Physics2D
+PhysicsJobOptions2D
 PhysicsMaterial2D
 PhysicsUpdateBehaviour2D
 Ping
@@ -1150,6 +1192,7 @@ RangeAttribute
 RangeInt
 Ray
 Ray2D
+RaycastCommand
 RaycastHit
 RaycastHit2D
 Rect
@@ -1159,6 +1202,7 @@ RectTransform
 RectTransformUtility
 ReflectionProbe
 RelativeJoint2D
+RemoteConfigSettings
 RemoteNotification
 RemoteNotificationType
 RemoteSettings
@@ -1192,7 +1236,7 @@ RuntimeAnimatorController
 RuntimeInitializeLoadType
 RuntimeInitializeOnLoadMethodAttribute
 RuntimePlatform
-SamsungTV
+ScalableBufferManager
 ScaleMode
 Screen
 ScreenCapture
@@ -1236,12 +1280,14 @@ SpriteMeshType
 SpritePackingMode
 SpritePackingRotation
 SpriteRenderer
+SpriteSortPoint
 SpriteTileMode
 StackTraceLogType
 StackTraceUtility
 StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
+StreamingController
 SurfaceEffector2D
 SystemInfo
 SystemLanguage
@@ -1271,7 +1317,6 @@ TextureFormat
 TextureWrapMode
 ThreadPriority
 Time
-TizenActivityIndicatorStyle
 TooltipAttribute
 Touch
 TouchPhase
@@ -1314,6 +1359,7 @@ WaitWhile
 WebCamDevice
 WebCamFlags
 WebCamTexture
+WeightedMode
 WheelCollider
 WheelFrictionCurve
 WheelHit
@@ -1342,8 +1388,8 @@ jvalue
 AOT
 JetBrains
 Microsoft
-SimpleJson
 System
+Unity
 UnityEditor
 UnityEditorInternal
 UnityEngine

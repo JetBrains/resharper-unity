@@ -1,15 +1,17 @@
-﻿# 5 ITEMS #
+﻿# 6 ITEMS #
 
 + GameObject
 GUILayoutOption
 ComponentGuaranteesOptions (in System.Runtime.Versioning)
 GameObjectRecorder (in UnityEditor.Experimental.Animations)
 GameObjectUtility (in UnityEditor)
+TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)
 # AUTOMATIC #
-# 5 ITEMS #
+# 6 ITEMS #
 
 + GameObject
 GUILayoutOption
 ComponentGuaranteesOptions (in System.Runtime.Versioning)
 GameObjectRecorder (in UnityEditor.Experimental.Animations)
 GameObjectUtility (in UnityEditor)
+TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)
