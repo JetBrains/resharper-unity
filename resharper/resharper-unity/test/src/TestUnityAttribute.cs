@@ -28,8 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         Unity2018_1,
         Unity2018_2,
         Unity2018_3,
+        Unity2018_4,
 
-        DefaultTestVersion = Unity2018_3
+        // General rule: Keep the default version at the latest LTS Unity version (.4)
+        DefaultTestVersion = Unity2018_4
     }
     // ReSharper restore InconsistentNaming
 
@@ -108,6 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                     case UnityVersion.Unity2018_1: return "UNITY_2018_1";
                     case UnityVersion.Unity2018_2: return "UNITY_2018_2";
                     case UnityVersion.Unity2018_3: return "UNITY_2018_3";
+                    case UnityVersion.Unity2018_4: return "UNITY_2018_4";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -118,6 +121,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             switch (unityVersion)
             {
+                // Note that the .0 here doesn't mean e.g. Unity 2018.1.0f1, it's just the package number. The actual
+                // revision used is irrelevant, as we're interested in resolving the API, not in minor fixes
                 case UnityVersion.Unity54: return "5.4.0";
                 case UnityVersion.Unity55: return "5.5.0";
                 case UnityVersion.Unity56: return "5.6.0";
@@ -128,6 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 case UnityVersion.Unity2018_1: return "2018.1.0";
                 case UnityVersion.Unity2018_2: return "2018.2.0";
                 case UnityVersion.Unity2018_3: return "2018.3.0";
+                case UnityVersion.Unity2018_4: return "2018.4.0";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unityVersion), unityVersion, null);
             }
