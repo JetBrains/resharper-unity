@@ -62,7 +62,7 @@ intellij {
     downloadSources = false
     instrumentCode = false
 
-    plugins = [ 'rider-plugins-appender' ]
+    plugins = [ 'rider-plugins-appender', 'CSS' ]
 }
 
 

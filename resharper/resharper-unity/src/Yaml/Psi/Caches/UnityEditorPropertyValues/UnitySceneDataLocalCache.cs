@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -7,6 +8,8 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
@@ -14,11 +17,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     [SolutionComponent]
     public class UnitySceneDataLocalCache
     {
+        private readonly ISolution mySolution;
         private readonly MetaFileGuidCache myGuidCache;
         private readonly IShellLocks myShellLocks;
 
-        public UnitySceneDataLocalCache(MetaFileGuidCache guidCache, IShellLocks shellLocks)
+        public UnitySceneDataLocalCache(ISolution solution, MetaFileGuidCache guidCache, IShellLocks shellLocks)
         {
+            mySolution = solution;
             myGuidCache = guidCache;
             myShellLocks = shellLocks;
         }
@@ -26,6 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private readonly PropertyValueLocalCache myPropertyValueLocalCache = new PropertyValueLocalCache();
         private readonly OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement> mySceneElements
             = new OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement>();
+        
+        private readonly OneToCompactCountingSet<string, (IPsiSourceFile sourceFile, FileID id)> myShortNameToScriptTarget = 
+            new OneToCompactCountingSet<string, (IPsiSourceFile sourceFile, FileID id)>();
+
+        private readonly Dictionary<IPsiSourceFile, OneToSetMap<string, string>> myScriptMapping =
+            new Dictionary<IPsiSourceFile, OneToSetMap<string, string>>();
 
         public IEnumerable<MonoBehaviourPropertyValueWithLocation> GetPropertyValues(string guid, string propertyName)
         {
@@ -104,8 +115,78 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             {
                 mySceneElements.Add(new SceneElementId(sourceFile, id), element);
             }
+
+            foreach (var (name, ids) in sceneData.ShortNameToScriptFileId)
+            {
+                foreach (var id in ids)
+                {
+                    myShortNameToScriptTarget.Add(name, (sourceFile, id));
+                }
+            }
+            
+            myScriptMapping.Add(sourceFile, sceneData.ScriptMapping);
         }
 
+        public bool IsEventHandler([NotNull] IMethod declaredElement)
+        {
+            var sourceFiles = declaredElement.GetSourceFiles();
+
+            // The methods and property setters that we are interested in will only have a single source file
+            if (sourceFiles.Count != 1)
+                return false;
+
+            foreach (var (sourceFile, scriptAnchor) in myShortNameToScriptTarget.GetValues(declaredElement.ShortName))
+            {
+                var scriptAnchorSourceFile = GetSourceFileWithPointedYamlDocument(sourceFile, scriptAnchor, myGuidCache);
+                var guid = GetScriptGuid(scriptAnchorSourceFile, scriptAnchor.fileID);
+                if (guid == null)
+                    continue;
+                
+                var invokedType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(mySolution, guid);
+                if (invokedType != null)
+                {
+                    var members = invokedType.GetAllClassMembers(declaredElement.ShortName);
+                    foreach (var member in members)
+                    {
+                        if (Equals(member.Element, declaredElement))
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// FileId is reference to some object in Unity asset file. If guid property is defined in asset file, 
+        /// FileId references some object in another Unity asset file which could be resovled by this guid ant MetaFileGuidCache
+        /// </summary>
+        public static IPsiSourceFile GetSourceFileWithPointedYamlDocument(IPsiSourceFile containingFile, FileID id, MetaFileGuidCache guidCache)
+        {
+            var module = (containingFile.PsiModule as UnityExternalFilesPsiModule).NotNull("module != null");
+            var guid = id.guid;
+            if (guid != null)
+            {
+                var path = guidCache.GetAssetFilePathsFromGuid(guid).FirstOrDefault();
+                if (path == null)
+                    return null;
+
+                if (!module.TryGetFileByPath(path, out var sourceFile))
+                    return null;
+
+                return sourceFile;
+            }
+            else
+            {
+                return containingFile;
+            }
+        }
+        
+        public string GetScriptGuid(IPsiSourceFile file, string id)
+        {
+            return myScriptMapping[file].GetValuesSafe(id).FirstOrDefault();
+        }
+        
         public void Remove(IPsiSourceFile sourceFile, UnitySceneData sceneData)
         {
             myShellLocks.AssertMainThread();
@@ -122,6 +203,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             {
                 mySceneElements.Remove(new SceneElementId(sourceFile, id), element);
             }
+            
+            foreach (var (name, ids) in sceneData.ShortNameToScriptFileId)
+            {
+                foreach (var id in ids)
+                {
+                    myShortNameToScriptTarget.Remove(name, (sourceFile, id));
+                }
+            }
+
+            myScriptMapping.Remove(sourceFile);
         }
         
         public void ProcessSceneHierarchyFromComponentToRoot(IYamlDocument startComponent, IUnityCachedSceneProcessorConsumer consumer)
@@ -316,5 +407,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 }
             }
         }
+        
     }
 }

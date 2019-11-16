@@ -151,5 +151,7 @@ object EditorPluginModel: Root() {
 
         property("ScriptCompilationDuringPlay", int)
         sink("clearOnPlay", long)
+
+        call("generateUIElementsSchema", void, bool)
     }
 }

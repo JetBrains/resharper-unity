@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -13,6 +14,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Text;
 using JetBrains.Util;
@@ -24,12 +26,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     public class UnitySceneDataCache : SimpleICache<UnitySceneData>
     {
         private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
+        private readonly MetaFileGuidCache myMetaFileGuidCache;
 
-        public UnitySceneDataCache(Lifetime lifetime, MetaFileGuidCache metaFileGuidCache, IPersistentIndexManager persistentIndexManager,
-            UnitySceneDataLocalCache unitySceneDataLocalCache)
+        public UnitySceneDataCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
+            UnitySceneDataLocalCache unitySceneDataLocalCache, MetaFileGuidCache metaFileGuidCache)
             : base(lifetime, persistentIndexManager, UnitySceneData.Marshaller)
         {
             myUnitySceneDataLocalCache = unitySceneDataLocalCache;
+            myMetaFileGuidCache = metaFileGuidCache;
         }
         
         protected override bool IsApplicable(IPsiSourceFile sourceFile)

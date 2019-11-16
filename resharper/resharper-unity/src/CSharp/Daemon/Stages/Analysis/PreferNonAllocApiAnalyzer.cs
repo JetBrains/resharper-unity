@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         private static readonly IDictionary<string, string> ourPhysics2DKnownMethods =
             new Dictionary<string, string>()
             {
-                {"LinecastAll", "CapsuleCastNonAlloc"},
+                {"LinecastAll", "LinecastNonAlloc"},
                 {"RaycastAll", "RaycastNonAlloc"},
                 {"CircleCastAll", "CircleCastNonAlloc"},
                 {"BoxCastAll", "BoxCastNonAlloc"},

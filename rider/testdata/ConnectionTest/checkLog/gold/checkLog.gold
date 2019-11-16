@@ -1,0 +1,3 @@
+Message, Edit, #Test#, UnityEngine.Debug:Log(Object)
+<>c:<.cctor>b__1_0() (at Assets/WriteToLog.cs:14)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions()

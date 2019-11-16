@@ -27,13 +27,18 @@ object UnityRunUtil {
     private val logger = Logger.getInstance(UnityRunUtil::class.java)
 
     fun isUnityEditorProcess(processInfo: ProcessInfo): Boolean {
+        logger.trace("Checking Unity Process: isUnityEditorProcess")
         val name = processInfo.executableDisplayName
+        logger.trace("Checking Unity Process, name: $name")
         var execPathName = ""
         if (processInfo.executableCannonicalPath.isPresent)
             execPathName = Paths.get(processInfo.executableCannonicalPath.get()).fileName.toString() // for the case of symlink
-        return (name.startsWith("Unity", true)
-                || name.contains("Unity.app")
-                || execPathName.equals("Unity", true))
+
+        logger.trace("Checking Unity Process, execPathName: $execPathName")
+
+        val result = (name.startsWith("Unity", true)
+            || name.contains("Unity.app")
+            || execPathName.equals("Unity", true))
             && !name.contains("UnityDebug")
             && !name.contains("UnityShader")
             && !name.contains("UnityHelper")
@@ -42,10 +47,15 @@ object UnityRunUtil {
             && !name.contains("UnityCrashHandler")
             && !name.contains("UnityPackageManager")
             && !name.contains("Unity.Licensing.Client")
+            && !name.contains("UnityDownloadAssistant")
             && !name.contains("unityhub", true)
+        logger.trace("Checking Unity Process, result: $result")
+        return result
     }
 
     fun isValidUnityEditorProcess(pid: Int, processList: Array<out ProcessInfo>): Boolean {
+        logger.trace("Checking Unity Process, current pid: $pid")
+        logger.trace("Checking Unity Process, processCount: ${processList.count()}")
         return processList.any { it.pid == pid && isUnityEditorProcess(it) }
     }
 

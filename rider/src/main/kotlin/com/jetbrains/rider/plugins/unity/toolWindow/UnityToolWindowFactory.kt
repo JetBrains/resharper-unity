@@ -21,8 +21,12 @@ class UnityToolWindowFactory(project: Project,
     : LifetimedProjectComponent(project) {
 
     companion object {
-        const val TOOLWINDOW_ID = "Unity"
+        const val TOOL_WINDOW_ID = "Unity"
         const val ACTION_PLACE = "Unity"
+
+        fun show(project: Project) {
+            ToolWindowManager.getInstance(project)?.getToolWindow(TOOL_WINDOW_ID)?.show(null)
+        }
     }
 
     private val lock = Object()
@@ -35,7 +39,7 @@ class UnityToolWindowFactory(project: Project,
     }
 
     private fun create(): UnityToolWindowContext {
-        val toolWindow = toolWindowManager.registerToolWindow(TOOLWINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
+        val toolWindow = toolWindowManager.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
 
         if (toolWindow is ToolWindowEx) {
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
@@ -48,7 +52,7 @@ class UnityToolWindowFactory(project: Project,
         contentManager.addContentManagerListener(object : ContentManagerAdapter() {
             override fun contentRemoved(event: ContentManagerEvent) {
                 context = null
-                toolWindowManager.unregisterToolWindow(TOOLWINDOW_ID)
+                toolWindowManager.unregisterToolWindow(TOOL_WINDOW_ID)
             }
         })
         toolWindow.title = ""
