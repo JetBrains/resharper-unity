@@ -1,4 +1,4 @@
-using UnityEditor;
+﻿using UnityEditor;
 
 public static class A 
 {
@@ -8,3 +8,5 @@ public static class A
         return null;
     }
 }
+---------------------------------------------------------
+

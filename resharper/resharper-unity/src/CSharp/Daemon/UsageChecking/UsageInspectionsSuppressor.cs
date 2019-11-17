@@ -140,8 +140,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
         {
             if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All) && method.IsStatic)
             {
-                if (method.ReturnType.IsImplicitlyConvertibleTo(TypeFactory.CreateTypeByCLRName(KnownTypes.SettingsProvider, method.Module),
-                    new XamlWinRTTypeConversionRule(method.Module)))
+                var typeElement = (method.ReturnType as IDeclaredType)?.GetTypeElement();
+                if(typeElement != null && typeElement.DerivesFrom(KnownTypes.SettingsProvider))
                 {
                     return true;
                 }
