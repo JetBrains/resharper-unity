@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi.JavaScript.Util.Literals;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -10,7 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 {
     internal static class UnitySceneDataUtil
     {
-        public static void ExtractSimpleAndReferenceValues(IBuffer buffer, Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues)
+        private static StringSearcher ourStringSearcher = new StringSearcher("m_PersistentCalls:", true);
+        public static void ExtractSimpleAndReferenceValues(IBuffer buffer, Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues, OneToSetMap<string, FileID> eventHandlerToScriptTarget)
         {
             // special field for accessing anchor id
             simpleValues["&anchor"] = GetAnchorFromBuffer(buffer);
@@ -64,10 +67,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                                     referenceValues[key] = result;
                             } else if (YamlTokenType.CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT.Equals(currentToken))
                             {
-                                // sometimes, FileId is multiline
-                                var result = GetFileId(ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd)));
-                                if (result != null)
-                                    referenceValues[key] = result;
+                                var chameleonBuffer = ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd));
+                                if (ourStringSearcher.Find(chameleonBuffer, 0, Math.Min(chameleonBuffer.Length, 150)) > 0)
+                                {
+                                    FillTargetAndMethod(chameleonBuffer, eventHandlerToScriptTarget);
+                                }
+                                else
+                                {
+                                    // sometimes, FileId is multiline
+                                    var result = GetFileId(chameleonBuffer);
+                                    if (result != null)
+                                        referenceValues[key] = result;
+                                }
                             }
                             else
                             {
@@ -88,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 }
             }
         }
-        
+
         public static string GetPrimitiveValue(IBuffer buffer, YamlLexer lexer)
         {
             SkipWhitespace(lexer);
@@ -180,6 +191,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return null;
         }
 
+        private static void FillTargetAndMethod(IBuffer buffer, OneToSetMap<string, FileID> eventHandlerToScriptTarget)
+        {
+            var lexer = new YamlLexer(buffer, false, false);
+            lexer.Start();
+            
+            
+            TokenNodeType currentToken;
+
+            FileID currentTarget = null;
+            string currentMethod = null;
+            
+            while ((currentToken = lexer.TokenType) != null)
+            {
+                if (currentToken == YamlTokenType.NS_PLAIN_ONE_LINE_IN)
+                {
+                    var text = buffer.GetText(new TextRange(lexer.TokenStart, lexer.TokenEnd));
+                    lexer.Advance();
+                    SkipWhitespace(lexer);
+                    currentToken = lexer.TokenType;
+                    if (currentToken == YamlTokenType.COLON)
+                    {
+                        if (text.Equals("m_Target"))
+                        {
+                            if (currentMethod != null && currentTarget != null)
+                                eventHandlerToScriptTarget.Add(currentMethod, currentTarget);
+
+                            lexer.Advance();
+                            currentTarget = GetFileId(buffer, lexer);
+                        }
+                        else if (text.Equals("m_MethodName"))
+                        {
+                            Assertion.Assert(currentTarget != null, "currentTarget != null");
+                            lexer.Advance();
+                            currentMethod = GetPrimitiveValue(buffer, lexer);
+                        }
+                    }
+                }
+                lexer.Advance();
+
+            }
+            
+            if (currentMethod != null && currentTarget != null)
+                eventHandlerToScriptTarget.Add(currentMethod, currentTarget);
+        }
+        
         public static void SkipWhitespace(YamlLexer lexer)
         {
             while (true)

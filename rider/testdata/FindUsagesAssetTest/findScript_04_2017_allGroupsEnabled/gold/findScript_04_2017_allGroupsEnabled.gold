@@ -1,0 +1,21 @@
+Search target
+    NewBehaviourScript
+Found usages  (3 usages found)
+    <Assembly-CSharp>  (1 usage found)
+        Assets  (1 usage found)
+            NewBehaviourScript.cs  (1 usage found)
+                NewBehaviourScript  (1 usage found)
+                    Start()  (1 usage found)
+                        [244, Assets/NewBehaviourScript.cs] (10: 27)  gameObject.AddComponent<NewBehaviourScript>();
+    <Miscellaneous Files>  (2 usages found)
+        scene.unity  (2 usages found)
+            Prefab  (1 usage found)
+                Element0  (1 usage found)
+                    Element1  (1 usage found)
+                        NewBehaviourScript (Script)  (1 usage found)
+                            [12836, Assets/scene.unity] (424: 38)  m_Script: {fileID: 11500000, guid: d62add12657408a4883f4b863a1389d6, type: 3}
+            Prefab_NewName  (1 usage found)
+                Element0  (1 usage found)
+                    Element1  (1 usage found)
+                        NewBehaviourScript (Script)  (1 usage found)
+                            [23593, Assets/scene.unity] (834: 38)  m_Script: {fileID: 11500000, guid: d62add12657408a4883f4b863a1389d6, type: 3}

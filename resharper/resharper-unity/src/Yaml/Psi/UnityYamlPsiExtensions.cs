@@ -39,14 +39,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         public void WriteTo(UnsafeWriter writer)
-        {
-            writer.Write(guid);
-            writer.Write(fileID);
+        { 
+            WriteTo(writer, this);
         }
 
         public static FileID ReadFrom(UnsafeReader reader)
         {
             return new FileID(reader.ReadString(), reader.ReadString());
+        }
+        
+        public static void WriteTo(UnsafeWriter writer, FileID value)
+        {
+            writer.Write(value.guid);
+            writer.Write(value.fileID);
         }
         
         protected bool Equals(FileID other)

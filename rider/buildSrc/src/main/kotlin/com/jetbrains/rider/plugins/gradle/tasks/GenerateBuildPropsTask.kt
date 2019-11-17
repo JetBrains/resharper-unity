@@ -14,7 +14,10 @@ open class GenerateBuildPropsTask: DefaultTask() {
     @Input
     var packagesDirectory: Any? = null
 
+    @Input
     var packageName: String = ""
+
+    @Input
     var msBuildParameter: String = ""
 
     @Input

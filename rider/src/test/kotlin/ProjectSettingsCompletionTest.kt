@@ -9,10 +9,19 @@ import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
+import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 import java.io.File
 
 class ProjectSettingsCompletionTest : BaseTestWithSolution() {
+
+    lateinit var unityDll : File
+
+    @BeforeSuite(alwaysRun = true)
+    fun getUnityDll() {
+        unityDll = downloadUnityDll()
+    }
+
     override fun getSolutionDirectoryName(): String = "ProjectSettingsTestData"
 
     override val traceCategories: List<String>
@@ -32,7 +41,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
             "JetBrains.ReSharper.Psi.Caches",
             "JetBrains.ReSharper.Psi.Files")
 
-    @Test(enabled = false)
+    @Test
     fun testScene_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "SceneCompletionTest.cs") {
             typeWithLatency("\"")
@@ -48,7 +57,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun testInput_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "InputCompletionTest.cs") {
             typeWithLatency("\"")
@@ -77,7 +86,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         "\"MainCamera\"",
         "\"GameController\"")
 
-    @Test(enabled = false)
+    @Test
     fun testTag_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "TagCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -103,7 +112,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         "\"PostProcessing\"",
         "\"TransparentFX\"")
 
-    @Test(enabled = false)
+    @Test
     fun testLayer_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -116,7 +125,7 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun testLayer_CompletionAfterModification() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "LayerCompletionTest1.cs") {
             typeWithLatency("\"")
@@ -147,12 +156,12 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
         TestModeFlags.set(CompletionAutoPopupHandler.ourTestingAutopopup, true)
 
         CodeInsightSettings.getInstance().COMPLETION_CASE_SENSITIVE = CodeInsightSettings.NONE
-        CodeInsightSettings.getInstance().SELECT_AUTOPOPUP_SUGGESTIONS_BY_CHARS = true
+        CodeInsightSettings.getInstance().isSelectAutopopupSuggestionsByChars = true
         CodeInsightSettings.getInstance().AUTO_POPUP_JAVADOC_INFO = false
 
         //all tests were written with this setting which default was changed only in 18.3
         RiderCodeCompletionExtraSettings.instance.allowToCompleteWithWhitespace = true
-        CopyUnityDll(project, activeSolutionDirectory)
+        copyUnityDll(unityDll, project, activeSolutionDirectory)
     }
 
     // debug only

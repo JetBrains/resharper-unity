@@ -4,6 +4,6 @@ public class Test
 {
     public void Method(GameObject go)
     {
-        go.GetComponent("Unity{caret}");
+        go.GetComponent("Unit{caret}");
     }
 }

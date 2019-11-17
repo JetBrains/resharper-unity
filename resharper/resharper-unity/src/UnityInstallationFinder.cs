@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public static FileSystemPath GetApplicationContentsPath(FileSystemPath applicationPath)
         {
-            if (applicationPath.IsEmpty)
+            if (applicationPath.IsNullOrEmpty())
                 return applicationPath;
 
             AssertApplicationPath(applicationPath);

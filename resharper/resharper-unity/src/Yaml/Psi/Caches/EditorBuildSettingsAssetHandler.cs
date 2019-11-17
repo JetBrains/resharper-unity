@@ -49,11 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                     if (path == null || !isEnabled.HasValue)
                         continue;
                     
-                    if (isEnabled.Value)
-                    {
-                        cacheItem.Scenes.SceneNamesFromBuildSettings.Add(path);
-                    }
-                    else
+                    cacheItem.Scenes.SceneNamesFromBuildSettings.Add(path);
+                    if (!isEnabled.Value)
                     {
                         cacheItem.Scenes.DisabledSceneNamesFromBuildSettings.Add(path);
                     }

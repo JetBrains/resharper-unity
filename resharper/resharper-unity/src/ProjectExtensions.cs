@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using JetBrains.Annotations;
-using JetBrains.Metadata.Utils;
+﻿using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
-using JetBrains.Util.Dotnet.TargetFrameworkIds;
-using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
@@ -13,23 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         public const string AssetsFolder = "Assets";
         public const string ProjectSettingsFolder = "ProjectSettings";
-
-        private static readonly AssemblyNameInfo ourUnityEngineReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine", null);
-        private static readonly AssemblyNameInfo ourUnityEditorReferenceName = AssemblyNameInfoFactory.Create2("UnityEditor", null);
-
-        // Unity 2017.3 has refactored UnityEngine into modules. Generated projects will still
-        // reference UnityEngine.dll as well as the new module assemblies. But non-generated
-        // projects (with output copied to Assets) can now reference the modules. Transitive
-        // dependencies mean that these projects will reference either UnityEngine.CoreModule or
-        // UnityEngine.SharedInternalsModule. Best practice is still to reference UnityEngine.dll,
-        // but we need to cater for all sorts of projects.
-        private static readonly AssemblyNameInfo ourUnityEngineCoreModuleReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine.CoreModule", null);
-        private static readonly AssemblyNameInfo ourUnityEngineSharedInternalsModuleReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine.SharedInternalsModule", null);
-
-        public static readonly ICollection<AssemblyNameInfo> UnityReferenceNames = new List<AssemblyNameInfo>()
-        {
-            ourUnityEditorReferenceName, ourUnityEngineReferenceName, ourUnityEngineCoreModuleReferenceName, ourUnityEngineSharedInternalsModuleReferenceName
-        };
 
         public static bool HasUnityReference([NotNull] this ISolution solution)
         {
@@ -42,29 +21,32 @@ namespace JetBrains.ReSharper.Plugins.Unity
         /// </summary>
         public static bool IsUnityProject([CanBeNull] this IProject project)
         {
+            if (project == null || !project.IsValid())
+                return false;
             // Only VSTU adds the Unity project flavour. Unity + Rider don't, so we have to look at references
-            return project != null && (project.HasFlavour<UnityProjectFlavor>() || project.IsValid() && ReferencesUnity(project));
+            if (HasUnityFlavour(project))
+                return true;
+
+            var referenceTracker = project.GetComponent<UnityReferencesTracker>();
+            return referenceTracker.IsUnityProject(project);
         }
 
         public static bool IsUnityGeneratedProject([CanBeNull] this IProject project)
         {
-            // TODO: This doesn't work for Packages folder or 'file:' based packages
-            return project != null && project.HasSubItems(AssetsFolder) && IsUnityProject(project);
+            if (project == null)
+                return false;
+            
+            // This works for Assets for local Packages folders and for 'file:' based packages
+            if (project.ProjectFileLocation.IsAbsolute)
+            {
+                return project.ProjectFileLocation.Directory.Combine(AssetsFolder).ExistsDirectory && IsUnityProject(project);
+            }
+            // for our tests // todo: refactor tests so they also check logic above
+            return project.HasSubItems(AssetsFolder) && IsUnityProject(project);
         }
-
-        private static bool ReferencesUnity(IProject project)
+        public static bool HasUnityFlavour([CanBeNull] this IProject project)
         {
-            var targetFrameworkId = project.GetCurrentTargetFrameworkId();
-            return ReferencesAssembly(project, targetFrameworkId, ourUnityEngineReferenceName)
-                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEditorReferenceName)
-                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEngineCoreModuleReferenceName)
-                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEngineSharedInternalsModuleReferenceName);
-        }
-
-        private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
-        {
-            return ReferencedAssembliesService.IsProjectReferencingAssemblyByName(project,
-                targetFrameworkId, name, out _);
+            return project != null && project.HasFlavour<UnityProjectFlavor>();
         }
     }
 }

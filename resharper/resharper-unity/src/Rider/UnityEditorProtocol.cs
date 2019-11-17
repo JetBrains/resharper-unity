@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
@@ -16,10 +17,12 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
+using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Notifications;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
@@ -31,6 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityEditorProtocol
     {
+        private readonly JetHashSet<FileSystemPath> myPluginInstallations;
+
         private readonly Lifetime myComponentLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
         private readonly ILogger myLogger;
@@ -39,6 +44,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISolution mySolution;
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
         private readonly IThreading myThreading;
+        private readonly UnityVersion myUnityVersion;
+        private readonly NotificationsModel myNotificationsModel;
+        private readonly IHostProductInfo myHostProductInfo;
         private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
@@ -49,8 +57,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
             ISettingsStore settingsStore, JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
-            UnitySolutionTracker unitySolutionTracker, IThreading threading)
+            UnitySolutionTracker unitySolutionTracker, IThreading threading,
+            UnityVersion unityVersion, NotificationsModel notificationsModel,
+            IHostProductInfo hostProductInfo)
         {
+            myPluginInstallations = new JetHashSet<FileSystemPath>();
+            
             myComponentLifetime = lifetime;
             myLogger = logger;
             myDispatcher = dispatcher;
@@ -59,6 +71,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myPluginPathsProvider = pluginPathsProvider;
             myUsageStatistics = usageStatistics;
             myThreading = threading;
+            myUnityVersion = unityVersion;
+            myNotificationsModel = notificationsModel;
+            myHostProductInfo = hostProductInfo;
             myHost = host;
             myBoundSettingsStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
             mySessionLifetimes = new SequentialLifetimes(lifetime);
@@ -66,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) => 
+            unitySolutionTracker.IsUnityProject.View(lifetime, (lf, args) =>
             {
                 if (!args) return;
 
@@ -142,7 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
-                
+
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
@@ -151,14 +166,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         new Identities(IdKind.Client), myDispatcher, wire, lf);
 
                     protocol.ThrowErrorOnOutOfSyncModels = false;
-                    
-                    protocol.OutOfSyncModels.Advise(lf, e =>
+
+                    protocol.OutOfSyncModels.AdviseOnce(lf, e =>
                     {
-                        var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-                        var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
-                        if (!isEnabled)
+                        if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
+                            return;
+                        
+                        myPluginInstallations.Add(mySolution.SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
+                        
+                        var appVersion = myUnityVersion.GetActualVersionForSolution();
+                        if (appVersion < new Version(2019, 2))
                         {
-                            myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
+                            var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+                            var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
+                            if (!isEnabled)
+                            {
+                                myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
+                            }
+                        }
+                        else
+                        {
+                            var notification = new NotificationModel("Advanced Unity integration is unavailable", 
+                                $"Please update External Editor to {myHostProductInfo.VersionMarketingString} in Unity Preferences.",
+                                true, RdNotificationEntryType.WARN);
+                            mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify", () => myNotificationsModel.Notification(notification));
                         }
                     });
                     var editor = new EditorPluginModel(lf, protocol);
@@ -185,18 +216,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
 
                     // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
-                    myHost.PerformModelAction(t => t.ShowGameObjectOnScene.Advise(lf, v => editor.ShowGameObjectOnScene.Fire(v.ConvertToUnityModel())));
                     myHost.PerformModelAction(t => t.ShowFileInUnity.Advise(lf, v => editor.ShowFileInUnity.Fire(v)));
                     myHost.PerformModelAction(t => t.ShowPreferences.Advise(lf, v =>
                     {
-                        if (t.UnityProcessId.HasValue())
-                            UnityFocusUtil.FocusUnity(t.UnityProcessId.Value);
-
                         editor.ShowPreferences.Fire();
                     }));
-
-                    // pass all references to Unity TODO temp workaround, replace with async api
-                    myHost.PerformModelAction(t => t.FindUsageResults.Advise(lf, v =>editor.FindUsageResults.Fire(v.ConvertToUnityModel())));
 
                     editor.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
@@ -213,6 +237,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
                     editor.ScriptCompilationDuringPlay.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ScriptCompilationDuringPlay.Set(ConvertToScriptCompilationEnum(s))));
+
+                    myHost.PerformModelAction(rd =>
+                    {
+                        rd.GenerateUIElementsSchema.Set((l, u) =>
+                            editor.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
+                    });
 
                     BindPluginPathToSettings(lf, editor);
 

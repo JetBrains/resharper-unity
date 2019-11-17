@@ -13,7 +13,7 @@ CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 NAMESPACE-expression: fileDefaultNamespace()
 ---
 
-# Behaviour C# Script
+# Mono Behaviour
 
 ```
 $HEADER$namespace $NAMESPACE$ {

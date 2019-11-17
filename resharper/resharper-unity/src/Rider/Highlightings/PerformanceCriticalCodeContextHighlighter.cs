@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 var usageChecker = swa.UsageChecker;
                 if (usageChecker == null)
                     return;
-                var elementId = swa.GetElementId(declaredElement, true);
+                var elementId = swa.GetElementId(declaredElement);
                 if (!elementId.HasValue)
                     return;
 

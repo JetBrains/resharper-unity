@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 using (mySolution.GetComponent<VfsListener>().PauseChanges())
                 {
-                    await myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
+                    await myEditorProtocol.UnityModel.Value.Refresh.Start(force).AsTask();
                 }
                 myLogger.Verbose(
                     $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Finished");
@@ -112,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var list = new List<string> {solFolder.FullPath};
                 myLogger.Verbose($"RefreshPaths.StartAsTask Started.");
-                await solution.GetFileSystemModel().RefreshPaths.StartAsTask(new RdRefreshRequest(list, true));
+                await solution.GetFileSystemModel().RefreshPaths.Start(new RdRefreshRequest(list, true)).AsTask();
                 myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
 
                 myLogger.Verbose($"lifetimeDef.Terminate");

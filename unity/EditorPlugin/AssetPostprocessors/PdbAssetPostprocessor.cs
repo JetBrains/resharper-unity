@@ -19,6 +19,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
     {
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return;
+      
       try
       {
         var toBeConverted = importedAssets.Where(a => 

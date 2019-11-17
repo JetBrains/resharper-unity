@@ -28,6 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
     [TestCase("BinarySerialization")]
     [TestFileExtension(".asset")]
     public void TestBinarySerialization(string name) => DoOneTest(name);
+    
+    [TestCase("TagManager")]
+    [TestFileExtension(".asset")]
+    public void TestUnityTagManager(string name) => DoOneTest(name);
 
 
     protected override CaretPositionsProcessor CreateCaretPositionProcessor(FileSystemPath temporaryDirectory)

@@ -9,6 +9,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Xaml.Impl;
 using JetBrains.Util;
@@ -224,7 +225,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
                 return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
-            return method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>().IsEventHandler(method);
+            return method.GetSolution().GetComponent<UnitySceneDataLocalCache>().IsEventHandler(method);
         }
     }
 }

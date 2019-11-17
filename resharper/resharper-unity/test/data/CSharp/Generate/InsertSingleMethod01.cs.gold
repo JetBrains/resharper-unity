@@ -43,30 +43,31 @@
  41: OnMouseUpAsButton():System.Void
  42: OnNetworkInstantiate(UnityEngine.NetworkMessageInfo):System.Void
  43: OnParticleCollision(UnityEngine.GameObject):System.Void
- 44: OnParticleTrigger():System.Void
- 45: OnPlayerConnected(UnityEngine.NetworkPlayer):System.Void
- 46: OnPlayerDisconnected(UnityEngine.NetworkPlayer):System.Void
- 47: OnPostRender():System.Void
- 48: OnPreCull():System.Void
- 49: OnPreRender():System.Void
- 50: OnRectTransformDimensionsChange():System.Void
- 51: OnRenderImage(UnityEngine.RenderTexture,UnityEngine.RenderTexture):System.Void
- 52: OnRenderObject():System.Void
- 53: OnSerializeNetworkView(UnityEngine.BitStream,UnityEngine.NetworkMessageInfo):System.Void
- 54: OnServerInitialized():System.Void
- 55: OnTransformChildrenChanged():System.Void
- 56: OnTransformParentChanged():System.Void
- 57: OnTriggerEnter(UnityEngine.Collider):System.Void
- 58: OnTriggerEnter2D(UnityEngine.Collider2D):System.Void
- 59: OnTriggerExit(UnityEngine.Collider):System.Void
- 60: OnTriggerExit2D(UnityEngine.Collider2D):System.Void
- 61: OnTriggerStay(UnityEngine.Collider):System.Void
- 62: OnTriggerStay2D(UnityEngine.Collider2D):System.Void
- 63: OnValidate():System.Void
- 64: OnWillRenderObject():System.Void
- 65: Reset():System.Void
- 66: Start():System.Void
- 67: Update():System.Void
+ 44: OnParticleSystemStopped():System.Void
+ 45: OnParticleTrigger():System.Void
+ 46: OnPlayerConnected(UnityEngine.NetworkPlayer):System.Void
+ 47: OnPlayerDisconnected(UnityEngine.NetworkPlayer):System.Void
+ 48: OnPostRender():System.Void
+ 49: OnPreCull():System.Void
+ 50: OnPreRender():System.Void
+ 51: OnRectTransformDimensionsChange():System.Void
+ 52: OnRenderImage(UnityEngine.RenderTexture,UnityEngine.RenderTexture):System.Void
+ 53: OnRenderObject():System.Void
+ 54: OnSerializeNetworkView(UnityEngine.BitStream,UnityEngine.NetworkMessageInfo):System.Void
+ 55: OnServerInitialized():System.Void
+ 56: OnTransformChildrenChanged():System.Void
+ 57: OnTransformParentChanged():System.Void
+ 58: OnTriggerEnter(UnityEngine.Collider):System.Void
+ 59: OnTriggerEnter2D(UnityEngine.Collider2D):System.Void
+ 60: OnTriggerExit(UnityEngine.Collider):System.Void
+ 61: OnTriggerExit2D(UnityEngine.Collider2D):System.Void
+ 62: OnTriggerStay(UnityEngine.Collider):System.Void
+ 63: OnTriggerStay2D(UnityEngine.Collider2D):System.Void
+ 64: OnValidate():System.Void
+ 65: OnWillRenderObject():System.Void
+ 66: Reset():System.Void
+ 67: Start():System.Void
+ 68: Update():System.Void
 
 // ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnDestroy():System.Void}

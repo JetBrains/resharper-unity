@@ -13,15 +13,8 @@
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.RdFramework" Version="193.20191030.267" />
     <PackageReference Include="JetBrains.Unity.Libs.5.5.0f3" Version="2017.7.21" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="JetBrains.Lifetimes">
-      <HintPath>..\lib\JetBrains.Lifetimes.dll</HintPath>
-    </Reference>
-    <Reference Include="JetBrains.RdFramework">
-      <HintPath>..\lib\JetBrains.RdFramework.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

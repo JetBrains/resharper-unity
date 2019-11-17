@@ -330,8 +330,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 // completion marker) then we have an incomplete method declaration and we're good to complete at this
                 // position
                 var declarationText = methodDeclaration.GetText();
-                if (declarationText.StartsWith("__") || declarationText.EndsWith("__"))
+                if (declarationText.StartsWith("__") || declarationText.EndsWith("__") ||
+                    declarationText.Contains(SyntheticComments.CodeCompletionIdentifierToken))
+                {
                     return true;
+                }
 
                 if (identifier == methodDeclaration.NameIdentifier)
                     return true;

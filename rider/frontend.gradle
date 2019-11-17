@@ -20,6 +20,11 @@ compileTestKotlin {
     }
 }
 
+runIde {
+    // Match Rider's default heap size of 1.5Gb (default for runIde is 512Mb)
+    maxHeapSize = "1500m"
+}
+
 intellij {
     pluginName 'rider-unity'
     type 'RD'
@@ -57,7 +62,7 @@ intellij {
     downloadSources = false
     instrumentCode = false
 
-    plugins = [ 'rider-plugins-appender' ]
+    plugins = [ 'rider-plugins-appender', 'CSS' ]
 }
 
 
@@ -73,11 +78,14 @@ def debuggerDllFiles = [
     "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
 ]
 
-def annotationsFrom = '../resharper/resharper-unity/src/annotations'
-def annotationsTo = 'Extensions/com.intellij.resharper.unity/annotations'
-
-def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
-def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
+def unityEditorDllFiles = [
+    "../unity/build/EditorPlugin/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll",
+    "../unity/build/EditorPlugin/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb",
+    "../unity/build/EditorPluginFull/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
+    "../unity/build/EditorPluginFull/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
+    "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
+    "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
+]
 
 tasks.withType(PrepareSandboxTask).configureEach {
     // Default dependsOn includes the standard Java build/jar task
@@ -100,12 +108,7 @@ tasks.withType(PrepareSandboxTask).configureEach {
     // Frontend:
     // Copy projectTemplates to `rider-unity/projectTemplates`
 
-    // Assert these files exist?
-
     doLast {
-        assert file(unityeditorplugin_path).exists()
-        assert file(unityeditorplugin_full_path).exists()
-
         dllFiles.forEach({ f ->
             def file = file("$f")
             if (!file.exists()) throw new RuntimeException("File $file does not exist")
@@ -115,30 +118,19 @@ tasks.withType(PrepareSandboxTask).configureEach {
             def file = file("$f")
             if (!file.exists()) throw new RuntimeException("File $file does not exist")
         })
+
+        unityEditorDllFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists() && !f.endsWith("pdb")) throw new RuntimeException("File $file does not exist")
+        })
     }
 
-    from(unityeditorplugin_path, {
-        into "$intellij.pluginName/EditorPlugin"
-    })
+    dllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/dotnet" }) })
+    debuggerDllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/dotnetDebuggerWorker" }) })
+    unityEditorDllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/EditorPlugin" }) })
 
-    from(unityeditorplugin_full_path, {
-        into "$intellij.pluginName/EditorPlugin"
-    })
-
-    dllFiles.forEach({ f ->
-        def file = file(f)
-        from(file, { into "$intellij.pluginName/dotnet" })
-    })
-
-    debuggerDllFiles.forEach({ f ->
-        def file = file(f)
-        from(file, { into "$intellij.pluginName/dotnetDebuggerWorker" })
-    })
-
-    from(annotationsFrom, { into "$intellij.pluginName/dotnet/$annotationsTo" })
-    into("$intellij.pluginName/projectTemplates") {
-        from 'projectTemplates'
-    }
+    from('../resharper/resharper-unity/src/annotations', { into "$intellij.pluginName/dotnet/Extensions/com.intellij.resharper.unity/annotations" })
+    from('projectTemplates', { into "$intellij.pluginName/projectTemplates" })
 }
 
 // It might be better to make it top-level task that is called separately, e.g. gradle buildPlugin nunit

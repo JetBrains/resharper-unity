@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns="urn:schemas-jetbrains-com:css-xml">
+
+  <!-- See the readme.md in src/main/kotlin/com/jetbrains/rider/plugins/unity/ideaInterop/fileTypes/uss/readme.md -->
+
+  <!-- It would be nice to use declared-in and obsolete-in attributes, but these are CSS versions, and will return
+       UNKNOWN if not a valid CSS version -->
+
+  <!-- Notes:
+       * The code reads `inherit`, but it's not used or supported anywhere
+       * USS's <length> is not the same as CSS's <length. USS does not require a unit. When specified it has to be `px`
+       * USS will also treat a `px` <length> as a float, which means it can be applied to a property that should only
+         accept <number>. This implementation detail is ignored in this file
+       * Initial values in this file are for latest version, and have not been looked at in previous versions
+       * 2017.1-2019.1 had `unset` for all properties - enums, color, float, resource, etc. It was removed in 2019.2
+         2019.1 reduced the set of properties that could use `unset`
+       * 2019.1 introduced `initial` as a global keyword. It is processed before attempting to apply the property value
+       * Technically, the code is more lax in its validation than is expected.
+         * The code has the idea of "float" and "length"
+         * The code to read a "float" will just read a float value. This can be <number> or <length> - there is nothing
+           to indicate which it should be
+         * The code to read a "length" will read a keyword or a float value. Technically, this means the value could be
+           [ auto | none | initial | unset | <length> | <number ]. There is nothing to indicate what it should be
+         * The 2019.3 code introduces more exact syntax for validation, e.g. "<length> | <percentage>" or "<length> | <percentage> | auto"
+         * This means you can write USS that parses just fine, but is being used incorrectly, e.g. `auto` on `border-top-width`
+         * This file uses the stricter syntax
+       -->
+
+  <named-value id="global-keywords" declared-in="0">
+    <name value="initial" />
+  </named-value>
+  <named-value id="length" declared-in="0">
+    <group type="or">
+      <number/>
+      <length/>
+    </group>
+  </named-value>
+  <named-value id="dimension" declared-in="0">
+    <!-- 2017.3-2019.2 <length> -->
+    <!-- Note that the code will technically allow reading keywords here ( auto | none | unset ). They can be read, but
+         they are not correct -->
+    <group type="or">
+      <inline id="length" inline="yes"/>
+      <percentage/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </named-value>
+  <named-value id="dimension-auto" declared-in="0">
+    <!-- 2017.3-2018.4 <length>
+         2019.1-2019.2 <length> | auto -->
+    <group type="or">
+      <inline id="length" inline="yes"/>
+      <percentage />
+      <name value="auto" />
+      <inline id="global-keywords" inline="yes" />
+    </group>
+  </named-value>
+  <named-value id="dimension-none" declared-in="0">
+    <!-- 2017.3-2018.4 <length>
+         2019.1-2019.2 <length> | none -->
+    <group type="or">
+      <inline id="length" inline="yes"/>
+      <percentage />
+      <name value="none" />
+      <inline id="global-keywords" inline="yes" />
+    </group>
+  </named-value>
+  <named-value id="color" declared-in="0">
+    <group type="or">
+      <color />
+      <invoke id="rgb" />
+      <invoke id="rgba" />
+      <inline id="global-keywords" inline="yes" />
+    </group>
+  </named-value>
+  <named-value id="asset" declared-in="0">
+    <group type="or">
+      <uri/>
+      <invoke id="resource"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </named-value>
+  <named-value id="asset-none" declared-in="0">
+    <group type="or">
+      <uri/>
+      <invoke id="resource"/>
+      <name value="none"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </named-value>
+
+  <!-- In alphabetical ordering (see uss-properties.json) -->
+  <property id="align-content" declared-in="0" initial="flex-start"> <!-- 2017.1-2019.3 -->
+    <group type="or">
+      <name value="flex-start"/>
+      <name value="flex-end"/>
+      <name value="center"/>
+      <name value="stretch"/>
+      <name value="auto"/>
+      <inline id="global-keywords" inline="yes" />
+    </group>
+  </property>
+  <property id="align-items" declared-in="0" initial="stretch"> <!-- 2017.1-2019.3 -->
+    <group type="or">
+      <name value="flex-start"/>
+      <name value="flex-end"/>
+      <name value="center"/>
+      <name value="stretch"/>
+      <name value="auto"/>
+      <inline id="global-keywords" inline="yes" />
+    </group>
+  </property>
+  <property id="align-self" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
+    <group type="or">
+      <name value="flex-start"/>
+      <name value="flex-end"/>
+      <name value="center"/>
+      <name value="stretch"/>
+      <name value="auto"/>
+      <inline id="global-keywords" inline="yes" />
+    </group>
+  </property>
+  <property id="background-color" declared-in="0" initial="clear"> <!-- 2017.1-2019.3 -->
+    <inline id="color" inline="yes" />
+  </property>
+  <property id="background-image" declared-in="0" initial="default"> <!-- 2017.1-2019.3 -->
+    <inline id="asset-none" inline="yes" />
+  </property>
+  <property id="border-bottom-color" declared-in="0" initial="clear"> <!-- 2019.3 -->
+    <inline id="color" inline="yes" />
+  </property>
+  <property id="border-bottom-left-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
+    <inline id="dimension" inline="yes" />
+  </property>
+  <property id="border-bottom-right-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
+    <inline id="dimension" inline="yes" />
+  </property>
+  <property id="border-bottom-width" declared-in="0" initial="0"> <!-- 2017.2-2019.3 -->
+    <group type="or">
+      <inline id="length" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="border-color" declared-in="0"> <!-- 2017.1-2019.3 -->
+    <!-- 2017.1-2019.2 <color>{1} -->
+    <inline id="color" inline="yes" max="4"/>
+  </property>
+  <property id="border-left-color" declared-in="0" initial="clear"> <!-- 2019.3 -->
+    <inline id="color" inline="yes"/>
+  </property>
+  <property id="border-left-width" declared-in="0" initial="0"> <!-- 2017.2-2019.3 -->
+    <group type="or">
+      <inline id="length" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="border-radius" declared-in="0"> <!-- 2017.1-2019.3 -->
+    <!-- 2017.1-2018.4 <length>{1} -->
+    <!-- 2019.1-2019.3 <length>{1,4} -->
+    <group type="or" max="4">
+      <inline id="length" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="border-right-color" declared-in="0" initial="clear"> <!-- 2019.3 -->
+    <inline id="color" inline="yes"/>
+  </property>
+  <property id="border-right-width" declared-in="0" initial="0"> <!-- 2017.2-2019.3 -->
+    <group type="or">
+      <inline id="length" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="border-top-color" declared-in="0" initial="clear"> <!-- 2019.3 -->
+    <inline id="color" inline="yes"/>
+  </property>
+  <property id="border-top-left-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
+    <inline id="dimension" inline="yes"/>
+  </property>
+  <property id="border-top-right-radius" declared-in="0" initial="0"> <!-- 2017.3-2019.3 -->
+    <inline id="dimension" inline="yes"/>
+  </property>
+  <property id="border-top-width" declared-in="0" initial="0"> <!-- 2017.2-2019.3 -->
+    <group type="or">
+      <inline id="length" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="border-width" declared-in="0" initial="0"> <!-- 2017.1. Removed in 2017.2-2017.4. 2019.1-2019.3 -->
+    <!-- 2017.1 <length> -->
+    <!-- 2019.1-2019.2 (<length> | <number>){4} (brought back as shorthand) -->
+    <group type="or" max="4">
+      <inline id="length" inline="yes"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="bottom" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
+    <inline id="dimension-auto" inline="yes"/>
+  </property>
+  <property id="color" declared-in="0" initial="#000000"> <!-- 2018.3-2019.3 -->
+    <inline id="color" inline="yes"/>
+  </property>
+  <property id="cursor" declared-in="0" initial="default"> <!-- 2018.1-2019.3 -->
+    <!-- [ <resource> | <url> ] [<number>? <number>?] | enum -->
+    <group type="or">
+      <group type="and">
+        <group type="or">
+          <invoke id="resource"/>
+          <uri/>
+        </group>
+        <group type="and">
+          <number/>
+          <number min="0"/>
+        </group>
+      </group>
+      <group type="or">
+        <name value="arrow"/>
+        <name value="text"/>
+        <name value="resize-vertical"/>
+        <name value="resize-horizontal"/>
+        <name value="link"/>
+        <name value="slide-arrow"/>
+        <name value="resize-up-right"/>
+        <name value="resize-up-left"/>
+        <name value="move-arrow"/>
+        <name value="rotate-arrow"/>
+        <name value="scale-arrow"/>
+        <name value="arrow-plus"/>
+        <name value="arrow-minus"/>
+        <name value="pan"/>
+        <name value="orbit"/>
+        <name value="zoom"/>
+        <name value="fps"/>
+        <name value="split-resize-up-down"/>
+        <name value="split-resize-left-right"/>
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="display" declared-in="0" initial="flex"> <!-- 2019.1-2019.3 -->
+    <group type="or">
+      <name value="flex"/>
+      <name value="none"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="flex" declared-in="0"> <!-- 2017.1-2019.3 -->
+    <!-- 2017.1-2018.2 <length> -->
+    <!-- 2018.3-2018.4 unset | none | auto (<length> | <number>)? (<length> | <number>)?
+         Applies to flex-grow (float), flex-shrink (float), flex-basis (float | keyword) -->
+    <!-- Using <float> to mean <length> | <number> -->
+    <!-- 2019.1-2019.2 unset | none | [ auto (<float>) (<float>)? ] | <float> <float>? <float>? | <float> auto -->
+    <group type="or">
+      <name value="none"/>
+      <group type="any">
+        <group>
+          <number/> <!-- flex-grow -->
+          <number min="0"/> <!-- flex-shrink? -->
+        </group>
+        <inline id="dimension-auto" inline="yes"/> <!-- flex-basis -->
+      </group>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="flex-basis" declared-in="0" initial="auto"> <!-- 2018.1-2019.3 -->
+    <inline id="dimension-auto" inline="yes"/>
+  </property>
+  <property id="flex-direction" declared-in="0" initial="column"> <!-- 2017.1-2019.3 -->
+    <group type="or">
+      <name value="column"/>
+      <name value="row"/>
+      <name value="column-reverse"/>
+      <name value="row-reverse"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="flex-grow" declared-in="0" initial="0"> <!-- 2018.1-2019.3 -->
+    <group type="or">
+      <number/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="flex-shrink" declared-in="0" initial="1"> <!-- 2018.1-2019.3 -->
+    <group type="or">
+      <number/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="flex-wrap" declared-in="0" initial="nowrap"> <!-- 2017.1-2019.3 -->
+    <group type="or">
+      <name value="nowrap"/>
+      <name value="wrap"/>
+      <name value="wrap-reverse"/> <!-- 2018.3+ -->
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="font-size" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension" inline="yes"/>
+  </property>
+  <property id="height" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-auto"/>
+  </property>
+  <property id="justify-content" declared-in="0" initial="flex-start"> <!-- 2017.1-2019.3 -->
+    <group type="or">
+      <name value="flex-start"/>
+      <name value="flex-end"/>
+      <name value="center"/>
+      <name value="space-between"/>
+      <name value="space-around"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="left" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
+    <inline id="dimension-auto" inline="yes"/>
+  </property>
+  <property id="margin" declared-in="0"> <!-- 2019.1-2019.3 -->
+    <inline id="dimension-auto" max="4"/>
+  </property>
+  <property id="margin-bottom" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-auto"/>
+  </property>
+  <property id="margin-left" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-auto"/>
+  </property>
+  <property id="margin-right" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-auto"/>
+  </property>
+  <property id="margin-top" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-auto"/>
+  </property>
+  <property id="max-height" declared-in="0" initial="none"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-none"/>
+  </property>
+  <property id="max-width" declared-in="0" initial="none"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-none"/>
+  </property>
+  <property id="min-height" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-auto"/>
+  </property>
+  <property id="min-width" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-auto"/>
+  </property>
+  <property id="opacity" declared-in="0" initial="1"> <!-- 2017.1-2019.3 -->
+    <!-- Technically the code will read <length> here, but that is not correct -->
+    <group type="or">
+      <number/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="overflow" declared-in="0" initial="visible"> <!-- 2017.1-2019.3 -->
+    <group type="or">
+      <name value="visible"/>
+      <name value="hidden"/>
+      <name value="scroll"/> <!-- Not in 2018.3 -->
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-overflow-clip-box" declared-in="0" initial="padding-box"> <!-- 2019.3 -->
+    <group type="or">
+      <name value="padding-box"/>
+      <name value="content-box"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="padding" declared-in="0"> <!-- 2019.1-2019.3 -->
+    <inline id="dimension" inline="yes" max="4"/>
+  </property>
+  <property id="padding-bottom" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension" inline="yes"/>
+  </property>
+  <property id="padding-left" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension" inline="yes"/>
+  </property>
+  <property id="padding-right" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension" inline="yes"/>
+  </property>
+  <property id="padding-top" declared-in="0" initial="0"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension" inline="yes"/>
+  </property>
+  <property id="position" declared-in="0" initial="relative"> <!-- 2018.3-2019.3 -->
+    <group type="or">
+      <name value="relative"/>
+      <name value="absolute"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="right" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
+    <inline id="dimension-auto" inline="yes"/>
+  </property>
+  <property id="top" declared-in="0" initial="auto"> <!-- 2018.3-2019.3 -->
+    <inline id="dimension-auto" inline="yes"/>
+  </property>
+  <property id="-unity-background-image-tint-color" declared-in="0" initial="#ffffff"> <!-- 2019.1-2019.3 -->
+    <inline id="color" inline="yes"/>
+  </property>
+  <property id="-unity-background-scale-mode" declared-in="0" initial="stretch-to-fill"> <!-- 2018.3-2019.3 -->
+    <!-- 2018.3-2018.4 <integer> -->
+    <group type="or">
+      <name value="stretch-to-fill"/>
+      <name value="scale-and-crop"/>
+      <name value="scale-to-fit"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-font" declared-in="0" initial="default"> <!-- 2018.3-2019.3 -->
+    <inline id="asset" inline="yes"/>
+  </property>
+  <property id="-unity-font-style" declared-in="0" initial="normal"> <!-- 2018.3-2019.3 -->
+    <group type="or">
+      <name value="normal"/>
+      <name value="italic"/>
+      <name value="bold"/>
+      <name value="bold-and-italic"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-slice-bottom" declared-in="0" initial="0"> <!-- 2018.3-2019.3 -->
+    <group type="or">
+      <integer/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-slice-left" declared-in="0" initial="0"> <!-- 2018.3-2019.3 -->
+    <group type="or">
+      <integer/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-slice-right" declared-in="0" initial="0"> <!-- 2018.3-2019.3 -->
+    <group type="or">
+      <integer/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-slice-top" declared-in="0" initial="0"> <!-- 2018.3-2019.3 -->
+    <group type="or">
+      <integer/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="-unity-text-align" declared-in="0" initial="upper-left"> <!-- 2018.3-2091.3 -->
+    <group type="or">
+      <name value="upper-left"/>
+      <name value="middle-left"/>
+      <name value="lower-left"/>
+      <name value="upper-center"/>
+      <name value="middle-center"/>
+      <name value="lower-center"/>
+      <name value="upper-right"/>
+      <name value="middle-right"/>
+      <name value="lower-right"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="visibility" declared-in="0" initial="visible"> <!-- 2018.2-2019.3 -->
+    <group type="or">
+      <name value="visible"/>
+      <name value="hidden"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="white-space" declared-in="0" initial="normal"> <!-- 2019.1-2091.3 -->
+    <group type="or">
+      <name value="normal"/>
+      <name value="nowrap"/>
+      <inline id="global-keywords" inline="yes"/>
+    </group>
+  </property>
+  <property id="width" declared-in="0" initial="auto"> <!-- 2017.1-2019.3 -->
+    <inline id="dimension-auto" inline="yes"/>
+  </property>
+
+  <!-- Functions -->
+  <function id="rgb" declared-in="0">
+    <group>
+      <separator>
+        <text value="," min="0"/>
+      </separator>
+      <group type="or" name="&lt;red&gt;" tooltip="red value of color">
+        <integer/>
+        <percentage/>
+      </group>
+      <group type="or" name="&lt;green&gt;" tooltip="green value of color">
+        <integer/>
+        <percentage/>
+      </group>
+      <group type="or" name="&lt;blue&gt;" tooltip="blue value of color">
+        <integer/>
+        <percentage/>
+      </group>
+    </group>
+  </function>
+  <function id="rgba" declared-in="0">
+    <group>
+      <separator>
+        <text value="," min="0"/>
+      </separator>
+      <group type="or" name="&lt;red&gt;" tooltip="red value of color">
+        <integer/>
+        <percentage/>
+      </group>
+      <group type="or" name="&lt;green&gt;" tooltip="green value of color">
+        <integer/>
+        <percentage/>
+      </group>
+      <group type="or" name="&lt;blue&gt;" tooltip="blue value of color">
+        <integer/>
+        <percentage/>
+      </group>
+      <group type="or" name="&lt;alpha&gt;" tooltip="alpha value of color">
+        <integer/>
+        <percentage/>
+      </group>
+    </group>
+  </function>
+  <function id="resource" declared-in="0">
+    <string/>
+  </function>
+
+  <!-- Deprecated properties. Unity will silently mapped these to their new names. No longer supported in 2019.3 -->
+  <!-- border-left 2017.1-2018.2 - <length>  -> border-left-width (2018.3) -->
+  <!-- border-top 2017.1-2018.2 - <length> -> border-top-width (2018.3) -->
+  <!-- border-right 2017.1-2018.2 - <length> -> border-right-width (2018.3) -->
+  <!-- border-bottom 2017.1-2018.2 - <length> -> border-bottom-width (2018.3) -->
+  <!-- font 2017.1-2018.2 - resource() -> -unity-font (2018.3) -->
+  <!-- font-style 2017.1-2018.2 -> -unity-font-style (2018.3) -->
+  <!-- position-type 2017.1-2018.2 - relative | absolute | manual -> -unity-position (2018.3) -->
+  <!-- -unity-position 2018.3 - relative | absolute | manual -->
+  <!-- position-top 2017.1-2018.2 - <length> -> top (2018.3) -->
+  <!-- position-bottom 2017.1-2018.3 - <length> -> bottom (2018.3) -->
+  <!-- position-left 2017.1-2018.3 - <length> -> left (2018.3) -->
+  <!-- position-right 2017.1-2018.3 - <length> -> right (2018.3) -->
+  <!-- text-alignment 2017.1-2018.2 -> -unity-text-align (2018.3) -->
+  <!-- text-clipping 2017.1-2018.2 - overflow | clip -> -unity-clipping (2018.3) -->
+  <!-- -unity-clipping 2018.3 - overflow | clip -->
+  <!-- text-color 2017.1-2018.2 - <color> (not rgb, unless ExCss handles it) -> color (2018.3) -->
+  <!-- word-wrap 2017.1-2018.2 - true | false -> -unity-word-wrap (2018.3) -->
+  <!-- -unity-word-wrap 2018.3 - true | false -->
+  <!-- background-size 2017.1-2018.2 - <integer> -->
+  <!-- slice-left 2017.1-2018.2 - <integer> -> -unity-slice-left (2018.3) -->
+  <!-- slice-top 2017.1-2018.2 - <integer> -> -unity-slice-top (2018.3) -->
+  <!-- slice-bottom 2017.1-2018.2 - <integer> -> -unity-slice-bottom (2018.3) -->
+  <!-- slice-right 2017.1-2018.2 - <integer> -> -unity-slice-right (2018.3) -->
+
+  <!-- Note that 2017.1 has custom properties.8A1y unknown property is added to dictionary. Doesn't appear to have a typ -->
+
+  <!-- Pseudo classes -->
+  <!-- https://docs.unity3d.com/Manual/UIE-USS-Selectors.html -->
+  <pseudo-class id="hover" declared-in="0" tooltip="The cursor is hovering over the visual element."/>
+  <pseudo-class id="active" declared-in="0" tooltip="The visual element is being interacted with." />
+  <pseudo-class id="inactive" declared-in="0" tooltip="The visual element is no longer being interacted with." />
+  <pseudo-class id="focus" declared-in="0" tooltip="The visual element has focus." />
+  <!-- The documentation also lists selected ("unused") -->
+  <pseudo-class id="disabled" declared-in="0" tooltip="The visual element is set to enabled == false." />
+  <pseudo-class id="enabled" declared-in="0" tooltip="The visual element is set to enabled == true." />
+  <pseudo-class id="checked" declared-in="0" tooltip="The visual element is a Toggle element and it is checked." />
+</definitions>

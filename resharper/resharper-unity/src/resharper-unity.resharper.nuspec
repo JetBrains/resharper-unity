@@ -34,6 +34,21 @@
 - And much more!
 </description>
 <releaseNotes>
+Added:
+
+- Update API information to 2019.3.0b11 (#1412)
+
+Changed:
+
+- Improve performance parsing YAML scenes (#1408)
+
+Fixed:
+- Fix overridden Update methods not acting as performance critical context (RIDER-33934, #1408)
+- Fix Quick Fix incorrectly converting LinecastAll to CapsuleCastNonAlloc instead of LinecastNonAlloc (#1324, RIDER-33442, #1408)
+- Fix finding usages of methods used as event handler from prefab (#1331, #1408)
+- Fix moving .meta file during "Move to Folder" refactoring (#1370, #1389)
+- Fix orphan .meta file during "Safe Delete" refactoring (#856, #1389)
+- Fix correctly keeping .meta files up to date in Packages folder (#1231, #1389)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
