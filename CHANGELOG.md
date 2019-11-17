@@ -12,11 +12,14 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Added
 
+- Update API information to 2019.3.0b11 ([#1412](https://github.com/JetBrains/resharper-unity/pull/1412))
 - Rider: Add support for play mode tests ([#1293](https://github.com/JetBrains/resharper-unity/issues/1293), [RIDER-19513](https://youtrack.jetbrains.com/issue/RIDER-19513))
 - Rider: Add syntax highlighting, schema generation and validation of UXML files ([#1399](https://github.com/JetBrains/resharper-unity/pull/1399))
 - Rider: Add syntax highlighting, validation and completion for USS files ([#957](https://github.com/JetBrains/resharper-unity/issues/957), [RIDER-20576](https://youtrack.jetbrains.com/issue/RIDER-20576), [#1402](https://github.com/JetBrains/resharper-unity/pull/1402))
+- Rider: Add Unity performance options to new inspection control panel ([#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
 - Rider: Show prompt to set Rider as default external editor when Unity is started by Rider ([#1127](https://github.com/JetBrains/resharper-unity/issues/1127), [#1270](https://github.com/JetBrains/resharper-unity/pull/1270))
 - Rider: Show prompt for Linux users to install Mono 5.16+ ([#1375](https://github.com/JetBrains/resharper-unity/issues/1375), [#1383](https://github.com/JetBrains/resharper-unity/pull/1383))
+- Rider: Show prompt if currently selected external editor does not match current Rider ([RIDER-35297](https://youtrack.jetbrains.com/issue/RIDER-35297), [#1409](https://github.com/JetBrains/resharper-unity/pull/1409))
 - Rider: Add Unity specific Live Templates settings page ([#1351](https://github.com/JetBrains/resharper-unity/pull/1351))
 - Rider: Add project name to "Attach to Unity Process" and "Attach to Unity Editor" run configuration dialogs ([#1009](https://github.com/JetBrains/resharper-unity/issues/1009), [#RIDER-31184](https://youtrack.jetbrains.com/issue/RIDER-31184), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Add support for Clear on Play now in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
@@ -24,6 +27,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Changed
 
+- Improve performance parsing YAML scenes ([#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
 - Rider: Return support for .asmdef files ([RIDER-30018](https://youtrack.jetbrains.com/issue/RIDER-30018), [#1373](https://github.com/JetBrains/resharper-unity/pull/1373))
 - Rider: Improve UX of "Attach to Unity Process" dialog ([#1278](https://github.com/JetBrains/resharper-unity/issues/1278), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Improve display of count of merged log items ([#1296](https://github.com/JetBrains/resharper-unity/issues/1296), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
@@ -35,6 +39,9 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Fixed
 
+- Fix overridden `Update` methods not acting as performance critical context ([RIDER-33934](https://youtrack.jetbrains.com/issue/RIDER-33934), [#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
+- Fix Quick Fix incorrectly converting `LinecastAll` to `CapsuleCastNonAlloc` instead of `LinecastNonAlloc` ([#1324](https://github.com/JetBrains/resharper-unity/issues/1324), [RIDER-33442](https://youtrack.jetbrains.com/issue/RIDER-33443), [#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
+- Fix finding usages of methods used as event handler from prefab ([#1331](https://github.com/JetBrains/resharper-unity/issues/1331), [#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
 - Fix moving `.meta` file during "Move to Folder" refactoring ([#1370](https://github.com/JetBrains/resharper-unity/issues/1370), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
 - Fix orphan `.meta` file during "Safe Delete" refactoring ([#856](https://github.com/JetBrains/resharper-unity/issues/856), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
 - Fix correctly keeping `.meta` files up to date in `Packages` folder ([#1231](https://github.com/JetBrains/resharper-unity/issues/1231), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
