@@ -1,15 +1,21 @@
-﻿# 5 ITEMS #
+﻿# 8 ITEMS #
 
 + GameObject
 GUILayoutOption
+ParticleSystemGameObjectFilter
+AddedGameObject (in UnityEditor.SceneManagement)
 ComponentGuaranteesOptions (in System.Runtime.Versioning)
-GameObjectRecorder (in UnityEditor.Experimental.Animations)
+GameObjectRecorder (in UnityEditor.Animations)
 GameObjectUtility (in UnityEditor)
+TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)
 # AUTOMATIC #
-# 5 ITEMS #
+# 8 ITEMS #
 
 + GameObject
 GUILayoutOption
+ParticleSystemGameObjectFilter
+AddedGameObject (in UnityEditor.SceneManagement)
 ComponentGuaranteesOptions (in System.Runtime.Versioning)
-GameObjectRecorder (in UnityEditor.Experimental.Animations)
+GameObjectRecorder (in UnityEditor.Animations)
 GameObjectUtility (in UnityEditor)
+TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)

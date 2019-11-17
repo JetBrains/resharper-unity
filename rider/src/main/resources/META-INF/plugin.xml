@@ -272,11 +272,14 @@
 <strong>New in 2019.3</strong>
 <em>Added:</em>
 <ul>
+  <li>Update API information to 2019.3.0b11 (<a href="https://github.com/JetBrains/resharper-unity/pull/1412">#1412</a>)</li>
   <li>Rider: Add support for play mode tests (<a href="https://youtrack.jetbrains.com/issue/RIDER-19513">RIDER-19513</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1293">#1293</a>)</li>
   <li>Rider: Add syntax highlighting, schema generation and validation of UXML files (<a href="https://github.com/JetBrains/resharper-unity/pull/1399">#1399</a>)></li>
   <li>Rider: Add syntax highlighting, validation and completion for USS files (<a href="https://github.com/JetBrains/resharper-unity/issues/957">#957</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-20576">RIDER-20576</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1402">#1402</a>)</li>
+  <li>Rider: Add Unity performance options to new inspection control panel (<a href="https://github.com/JetBrains/resharper-unity/pull/1408">#1408</a>)</li>
   <li>Rider: Show prompt to set Rider as default external editor when Unity is started by Rider (<a href="https://github.com/JetBrains/resharper-unity/issues/1127">#1127<a/>), <a href="https://github.com/JetBrains/resharper-unity/pull/1270">#1270</a>)</li>
   <li>Rider: Show prompt for Linux users to install Mono 5.16+ (<a href="https://github.com/JetBrains/resharper-unity/issues/1375">#1375</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1383">#1383</a>)</li>
+  <li>Rider: Show prompt if currently selected external editor does not match current Rider (<a href="https://youtrack.jetbrains.com/issue/RIDER-35297">RIDER-35297</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1409">#1409</a>)</li>
   <li>Rider: Add Unity specific Live Templates settings page (<a href="https://github.com/JetBrains/resharper-unity/pull/1351">#1351</a>)</li>
   <li>Rider: Add project name to "Attach to Unity Process" and "Attach to Unity Editor" run configuration dialogs (<a href="https://github.com/JetBrains/resharper-unity/issues/1009">#1009</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-31184">RIDER-31184</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Rider: Add support for Clear on Play now in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
@@ -284,6 +287,7 @@
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Improve performance parsing YAML scenes (<a href="https://github.com/JetBrains/resharper-unity/pull/1408">#1408</a>)</li>
   <li>Rider: Return support for .asmdef files (<a href="https://youtrack.jetbrains.com/issue/RIDER-30018">RIDER-30018</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1373">#1373</a>)</li>
   <li>Rider: Improve UX of "Attach to Unity Process" dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/1278">#1278</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Rider: Improve display of count of merged log items (<a href="https://github.com/JetBrains/resharper-unity/issues/1296">#1296</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
@@ -295,6 +299,9 @@
 </ul>
 <em>Fixed:</em>
 <ul>
+  <li>Fix overridden <tt>Update</tt> methods not acting as performance critical context (<a href="https://youtrack.jetbrains.com/issue/RIDER-33934">RIDER-33934</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1408">#1408</a>)</li>
+  <li>Fix Quick Fix incorrectly converting <tt>LinecastAll</tt> to <tt>CapsuleCastNonAlloc</tt> instead of <tt>LinecastNonAlloc</tt> (<a href="https://github.com/JetBrains/resharper-unity/issues/1324">#1324</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-33443">RIDER-33443</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1408">#1408</a>)</li>
+  <li>Fix finding usages of methods used as event handler from prefab (<a href="https://github.com/JetBrains/resharper-unity/issues/1331">#1331</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1408">#1408</a>)</li>
   <li>Fix moving <tt>.meta</tt> file during "Move to Folder" refactoring (<a href="https://github.com/JetBrains/resharper-unity/issues/1370">#1370</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1389">#1389</a>)</li>
   <li>Fix orphan <tt>.meta</tt> file during "Safe Delete" refactoring (<a href="https://github.com/JetBrains/resharper-unity/issues/856">#856</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1389">#1389</a>)</li>
   <li>Fix correctly keeping <tt>.meta</tt> files up to date in <tt>Packages</tt> folder (<a href="https://github.com/JetBrains/resharper-unity/issues/1231">#1231</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1389">#1389</a>)</li>
