@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var node = Reference?.GetTreeNode().NotNull("node != null");
             var provider = new MemberSignatureProvider(node.GetPsiServices(), CSharpLanguage.Instance);
             var predefinedType = node.GetPsiModule().GetPredefinedType();
-            var signature = provider.CreateFromTypes(predefinedType.IEnumerator, new IDeclaredType[] {}, node.GetSourceFile());
+            var signature = provider.CreateFromTypes(predefinedType.IEnumerator, GetParameterTypes(), node.GetSourceFile());
             
             return new CreateMethodDeclarationContext
             {
@@ -68,6 +68,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                 AccessRights = AccessRights.PRIVATE,
                 Target = GetTarget()
             };
+        }
+
+        private IDeclaredType[] GetParameterTypes()
+        {
+            var node = Reference.GetTreeNode();
+            var argument = CSharpArgumentNavigator.GetByValue(node as ICSharpLiteralExpression);
+            var argumentList = ArgumentListNavigator.GetByArgument(argument);
+            var invocation = InvocationExpressionNavigator.GetByArgumentList(argumentList);
+            if (invocation?.Reference?.Resolve().DeclaredElement?.ShortName
+                    .Equals("StartCoroutine") == true && argumentList?.Arguments.Count > 1)
+            {
+                var secondArgument = argumentList.NotNull("argumentList != null").Arguments[1];
+                if (secondArgument.Value.Type() is IDeclaredType type)
+                {
+                    return new[] {type};
+                }
+            }
+            
+            return new IDeclaredType[] { };
         }
     }
 }
