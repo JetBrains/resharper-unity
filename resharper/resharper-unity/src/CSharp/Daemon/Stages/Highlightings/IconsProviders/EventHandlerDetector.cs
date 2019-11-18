@@ -30,15 +30,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             mySceneDataCache = sceneDataCache;
         }
 
-        public override IDeclaredElement Analyze(IDeclaration element, IHighlightingConsumer consumer,
+        public override IDeclaredElement Analyze(IDeclaration treeNode, IHighlightingConsumer consumer,
             DaemonProcessKind kind)
         {
-            var declaredElement = element is IPropertyDeclaration
-                ? ((IProperty) element.DeclaredElement)?.Setter
-                : element.DeclaredElement as IMethod;
-            if (declaredElement != null && mySceneDataCache.IsEventHandler(declaredElement))
+            var declaredElement = treeNode.DeclaredElement;
+            var method = declaredElement as IMethod;
+            if (method is IAccessor)
+                return null;
+
+            if (declaredElement is IProperty property)
+                method = property.Setter;
+
+            if (method != null && mySceneDataCache.IsEventHandler(method))
             {
-                AddHighlighting(consumer, element as ICSharpDeclaration, "Event handler", "Unity event handler",  kind);
+                AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
                 return declaredElement;
             }
 
