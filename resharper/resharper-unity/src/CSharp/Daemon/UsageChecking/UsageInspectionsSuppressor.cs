@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Xaml.Impl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
@@ -114,6 +115,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                         return true;
                     }
 
+                    if (IsSettingsProvider(method))
+                    {
+                        flags = ImplicitUseKindFlags.Access;
+                        return true;
+                    }
+
                     break;
 
                 case IField field when unityApi.IsSerialisedField(field) || unityApi.IsInjectedField(field):
@@ -126,6 +133,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             }
 
             flags = ImplicitUseKindFlags.Default; // Value not used if we return false
+            return false;
+        }
+
+        private static bool IsSettingsProvider(IMethod method)
+        {
+            if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All) && method.IsStatic)
+            {
+                var typeElement = (method.ReturnType as IDeclaredType)?.GetTypeElement();
+                if(typeElement != null && typeElement.DerivesFrom(KnownTypes.SettingsProvider))
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 

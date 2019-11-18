@@ -13,6 +13,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 ### Added
 
 - Update API information to 2019.3.0b11 ([#1412](https://github.com/JetBrains/resharper-unity/pull/1412))
+- Methods with the `[SettingsProvider]` attribute are now marked as implicitly used ([#1225](https://github.com/JetBrains/resharper-unity/issues/1225), [#1362](https://github.com/JetBrains/resharper-unity/pull/1362))
 - Rider: Add support for play mode tests ([#1293](https://github.com/JetBrains/resharper-unity/issues/1293), [RIDER-19513](https://youtrack.jetbrains.com/issue/RIDER-19513))
 - Rider: Add syntax highlighting, schema generation and validation of UXML files ([#1399](https://github.com/JetBrains/resharper-unity/pull/1399))
 - Rider: Add syntax highlighting, validation and completion for USS files ([#957](https://github.com/JetBrains/resharper-unity/issues/957), [RIDER-20576](https://youtrack.jetbrains.com/issue/RIDER-20576), [#1402](https://github.com/JetBrains/resharper-unity/pull/1402))
