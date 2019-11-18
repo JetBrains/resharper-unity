@@ -17,13 +17,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                                                                  IClrTypeName attributeTypeName,
                                                                  [NotNull] AttributeValue[] attributeValues,
                                                                  IPsiModule module,
-                                                                 CSharpElementFactory elementFactory)
+                                                                 CSharpElementFactory elementFactory, bool allowMultiply = false)
         {
             if (fieldDeclaration == null) return null;
 
             // TODO: Should we do this check here?
             var existingAttribute = GetAttribute(fieldDeclaration, attributeTypeName);
-            if (existingAttribute != null) return null;
+            if (existingAttribute != null && !allowMultiply) return null;
 
             var attribute = CreateAttribute(attributeTypeName, attributeValues, module, elementFactory);
             if (attribute != null)
