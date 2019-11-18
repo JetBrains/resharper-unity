@@ -12,9 +12,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 {
-    public class CSharpQuickFixAfterSwaTestBase<TQuickFix> : CSharpQuickFixTestBase<TQuickFix> where TQuickFix : IQuickFix
+    public abstract class CSharpQuickFixAfterSwaTestBase<TQuickFix> : CSharpQuickFixTestBase<TQuickFix> where TQuickFix : IQuickFix
     {
-        
         protected override void DoTestSolution(params string[] fileSet)
         {
             using (TestPresentationMap.Cookie())

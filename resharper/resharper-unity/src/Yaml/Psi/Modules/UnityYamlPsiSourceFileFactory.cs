@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myDocumentManager = documentManager;
         }
 
-        public IPsiProjectFile CreatePsiProjectFile(IPsiModule psiModule, IProjectFile projectFile)
+        public IPsiSourceFile CreatePsiProjectFile(IPsiModule psiModule, IProjectFile projectFile)
         {
             var file = new UnityYamlAssetPsiSourceFile(projectFile, myProjectFileExtensions, myProjectFileTypeCoordinator,
                 psiModule, projectFile.Location, Memoize(PropertiesFactory), myDocumentManager, UniversalModuleReferenceContext.Instance);

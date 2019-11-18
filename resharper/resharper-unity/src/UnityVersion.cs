@@ -85,6 +85,24 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetVersionForTests(mySolution);
         }
 
+        [NotNull]
+        public FileSystemPath GetActualAppPathForSolution()
+        {
+            if (mySolution.IsVirtualSolution())
+                return FileSystemPath.Empty;
+
+            foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
+            {
+                if (project.IsUnityProject())
+                {
+                    var path = myUnityProjectFileCache.GetAppPath(project);
+                    if (path != null)
+                        return path;
+                }
+            }
+            return FileSystemPath.Empty;
+        }
+
         [CanBeNull]
         private Version TryGetApplicationPathFromEditorInstanceJson(FileSystemPath editorInstanceJsonPath)
         {
@@ -194,35 +212,51 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
         }
 
-        public static Version GetVersionFromInfoPlist(FileSystemPath infoPlistPath)
+        public static Version GetVersionByAppPath(FileSystemPath appPath)
         {
-            if (!infoPlistPath.ExistsFile)
+            if (appPath == null || appPath.Exists == FileSystemPath.Existence.Missing)
                 return null;
-            
-            var docs = XDocument.Load(infoPlistPath.FullPath);
-            var keyValuePairs = docs.Descendants("dict")
-                .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"), (k, v) => new { Key = k, Value = v }))
-                .GroupBy(x => x.Key.Value).Select(g => g.First()) // avoid exception An item with the same key has already been added.
-                .ToDictionary(i => i.Key.Value, i => i.Value.Value);
-            return Parse(keyValuePairs["CFBundleVersion"]);
-        }
 
-        public static Version ReadUnityVersionFromExe(FileSystemPath exePath)
-        {
             Version version = null;
             ourLogger.CatchWarn(() => // RIDER-23674
             {
-                version = new Version(new Version(FileVersionInfo.GetVersionInfo(exePath.FullPath).FileVersion)
-                    .ToString(3));
-                
-                var resource = new VersionResource();
-                resource.LoadFrom(exePath.FullPath);
-                var unityVersionList = resource.Resources.Values.OfType<StringFileInfo>()
-                    .Where(c => c.Default.Strings.Keys.Any(b => b == "Unity Version")).ToArray();
-                if (unityVersionList.Any())
+                switch (PlatformUtil.RuntimePlatform)
                 {
-                    var unityVersion = unityVersionList.First().Default.Strings["Unity Version"].StringValue;
-                    version = Parse(unityVersion);
+                    case PlatformUtil.Platform.Windows:
+
+                        version = new Version(new Version(FileVersionInfo.GetVersionInfo(appPath.FullPath).FileVersion)
+                            .ToString(3));
+
+                        var resource = new VersionResource();
+                        resource.LoadFrom(appPath.FullPath);
+                        var unityVersionList = resource.Resources.Values.OfType<StringFileInfo>()
+                            .Where(c => c.Default.Strings.Keys.Any(b => b == "Unity Version")).ToArray();
+                        if (unityVersionList.Any())
+                        {
+                            var unityVersion = unityVersionList.First().Default.Strings["Unity Version"].StringValue;
+                            version = Parse(unityVersion);
+                        }
+
+                        break;
+                    case PlatformUtil.Platform.MacOsX:
+                        var infoPlistPath = appPath.Combine("Contents/Info.plist");
+                        if (infoPlistPath.ExistsFile)
+                        {
+                            var docs = XDocument.Load(infoPlistPath.FullPath);
+                            var keyValuePairs = docs.Descendants("dict")
+                                .SelectMany(d => d.Elements("key").Zip(d.Elements().Where(e => e.Name != "key"),
+                                    (k, v) => new {Key = k, Value = v}))
+                                .GroupBy(x => x.Key.Value)
+                                .Select(g =>
+                                    g.First()) // avoid exception An item with the same key has already been added.
+                                .ToDictionary(i => i.Key.Value, i => i.Value.Value);
+                            version = Parse(keyValuePairs["CFBundleVersion"]);
+                        }
+
+                        break;
+                    case PlatformUtil.Platform.Linux:
+                        version = Parse(appPath.FullPath); // parse from path
+                        break;
                 }
             });
             return version;

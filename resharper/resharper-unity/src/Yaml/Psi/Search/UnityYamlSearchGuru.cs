@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public IEnumerable<string> BuzzWordFilter(IDeclaredElement searchFor, IEnumerable<string> containsWords) =>
             containsWords;
 
-        public bool IsAvaliable(SearchPattern pattern) => (pattern & SearchPattern.FIND_USAGES) != 0;
+        public bool IsAvailable(SearchPattern pattern) => (pattern & SearchPattern.FIND_USAGES) != 0;
 
         // Return a context object for the item being searched for, or null if the element isn't interesting.
         // CanContainReferences isn't called if we return null. Do the work once here, then use it multiple times for
@@ -65,6 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 return GetElementId("m_Script", "11500000", guid);
             }
 
+            // See RIDER-27684. This allows Unity to use private methods as event handlers
             if (myUnityApi.IsPotentialEventHandler(element as IMethod)
                 || myUnityApi.IsPotentialEventHandler(element as IProperty))
             {
@@ -76,10 +77,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 var shortName = element is IMethod ? element.ShortName : (element as IProperty)?.Setter?.ShortName;
                 if (shortName == null)
                     return null;
-
-                var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
-                if (guid == null)
-                    return null;
+                
+                // In previous version we check that file should contain guid which relates to file
+                // where method is located. It is not true, consider an example:
+                // class A : B {} - guid_1
+                // class B : MonoBehaviour - guid_2
+                // { public void Test(){}}
+                // Let's add button, which will use script A and method Test
+                // In previous version we require that yaml file with button should contain guid_2,
+                // but it contains only guid_1
+                // [TODO] We could find derived classes' guids and add them to filter
 
                 // Searching for an event handler method requires matching something like
                 // Event handlers are in the form:
@@ -93,7 +100,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 // MonoBehaviour:
                 //   ...
                 //   m_Script: {fileID: 11500000, guid: $guid, type: 3}
-                return GetElementId("m_PersistentCalls", "m_MethodName", "11500000", guid, shortName);
+                
+                // In some cases 1150000 is not presented...
+                //   m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3} Why?? Do not know
+                return GetElementId("m_PersistentCalls", "m_MethodName", shortName);
             }
 
             return new UnityYamlSearchGuruId(JetHashSet<IPsiSourceFile>.Empty);

@@ -9,7 +9,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
 {
-  public abstract class YamlTokenBase : BindedToBufferLeafElement, IYamlTreeNode, ITokenNode
+  public abstract class YamlTokenBase : BoundToBufferLeafElement, IYamlTreeNode, ITokenNode
   {
     protected YamlTokenBase(NodeType nodeType, IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
       : base(nodeType, buffer, startOffset, endOffset)

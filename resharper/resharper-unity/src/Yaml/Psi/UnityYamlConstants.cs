@@ -25,6 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public static readonly string PrefabInstanceProperty2017 = "m_PrefabInternal";
         public static readonly string TransformParentProperty = "m_TransformParent";
         public static readonly string ModificationProperty = "m_Modification";
+        public static readonly string Components = "m_Component";
+        public static readonly string Children = "m_Children";
         public static readonly string ModificationsProperty = "m_Modifications";
         
         // prefab modifications

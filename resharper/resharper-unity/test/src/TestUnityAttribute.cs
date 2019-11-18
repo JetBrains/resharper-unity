@@ -11,7 +11,7 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework.Utils;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
-using NuGet;
+using PackageDependency = NuGet.Packaging.Core.PackageDependency;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
@@ -27,8 +27,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         Unity2017_4,
         Unity2018_1,
         Unity2018_2,
+        Unity2018_3,
+        Unity2018_4,
+        Unity2019_1,
+        Unity2019_2,
 
-        DefaultTestVersion = Unity2017_2
+        // General rule: Keep the default version at the latest LTS Unity version (.4)
+        // If you need a newer version for a specific test, use [TestUnity(UnityVersion.Unity2019_1)], etc.
+        DefaultTestVersion = Unity2018_4
     }
     // ReSharper restore InconsistentNaming
 
@@ -71,6 +77,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             {
                 if (myVersion == UnityVersion.Unity54)
                     throw new InvalidOperationException("Network libs not available for Unity 5.4");
+                if ((int) myVersion > (int) UnityVersion.Unity2018_4)
+                    throw new InvalidOperationException("Network libs no longer supported in Unity 2019.1+");
                 yield return $"resharper-unity.testlibs.networking/{version}";
             }
         }
@@ -106,6 +114,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                     case UnityVersion.Unity2017_4: return "UNITY_2017_4";
                     case UnityVersion.Unity2018_1: return "UNITY_2018_1";
                     case UnityVersion.Unity2018_2: return "UNITY_2018_2";
+                    case UnityVersion.Unity2018_3: return "UNITY_2018_3";
+                    case UnityVersion.Unity2018_4: return "UNITY_2018_4";
+                    case UnityVersion.Unity2019_1: return "UNITY_2019_1";
+                    case UnityVersion.Unity2019_2: return "UNITY_2019_2";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -116,6 +128,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             switch (unityVersion)
             {
+                // Note that the .0 here doesn't mean e.g. Unity 2018.1.0f1, it's just the package number. The actual
+                // revision used is irrelevant, as we're interested in resolving the API, not in minor fixes
                 case UnityVersion.Unity54: return "5.4.0";
                 case UnityVersion.Unity55: return "5.5.0";
                 case UnityVersion.Unity56: return "5.6.0";
@@ -125,6 +139,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 case UnityVersion.Unity2017_4: return "2017.4.0";
                 case UnityVersion.Unity2018_1: return "2018.1.0";
                 case UnityVersion.Unity2018_2: return "2018.2.0";
+                case UnityVersion.Unity2018_3: return "2018.3.0";
+                case UnityVersion.Unity2018_4: return "2018.4.0";
+                case UnityVersion.Unity2019_1: return "2019.1.0";
+                case UnityVersion.Unity2019_2: return "2019.2.0";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unityVersion), unityVersion, null);
             }

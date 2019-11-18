@@ -6,9 +6,187 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
-## 2019.1
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap13-rtm...191)
+## 2019.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192...net193)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/29?closed=1)
+
+### Added
+
+- Update API information to 2019.3.0b11 ([#1412](https://github.com/JetBrains/resharper-unity/pull/1412))
+- Methods with the `[SettingsProvider]` attribute are now marked as implicitly used ([#1225](https://github.com/JetBrains/resharper-unity/issues/1225), [#1362](https://github.com/JetBrains/resharper-unity/pull/1362))
+- Rider: Add support for play mode tests ([#1293](https://github.com/JetBrains/resharper-unity/issues/1293), [RIDER-19513](https://youtrack.jetbrains.com/issue/RIDER-19513))
+- Rider: Add syntax highlighting, schema generation and validation of UXML files ([#1399](https://github.com/JetBrains/resharper-unity/pull/1399))
+- Rider: Add syntax highlighting, validation and completion for USS files ([#957](https://github.com/JetBrains/resharper-unity/issues/957), [RIDER-20576](https://youtrack.jetbrains.com/issue/RIDER-20576), [#1402](https://github.com/JetBrains/resharper-unity/pull/1402))
+- Rider: Add Unity performance options to new inspection control panel ([#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
+- Rider: Show prompt to set Rider as default external editor when Unity is started by Rider ([#1127](https://github.com/JetBrains/resharper-unity/issues/1127), [#1270](https://github.com/JetBrains/resharper-unity/pull/1270))
+- Rider: Show prompt for Linux users to install Mono 5.16+ ([#1375](https://github.com/JetBrains/resharper-unity/issues/1375), [#1383](https://github.com/JetBrains/resharper-unity/pull/1383))
+- Rider: Show prompt if currently selected external editor does not match current Rider ([RIDER-35297](https://youtrack.jetbrains.com/issue/RIDER-35297), [#1409](https://github.com/JetBrains/resharper-unity/pull/1409))
+- Rider: Add Unity specific Live Templates settings page ([#1351](https://github.com/JetBrains/resharper-unity/pull/1351))
+- Rider: Add project name to "Attach to Unity Process" and "Attach to Unity Editor" run configuration dialogs ([#1009](https://github.com/JetBrains/resharper-unity/issues/1009), [#RIDER-31184](https://youtrack.jetbrains.com/issue/RIDER-31184), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
+- Rider: Add support for Clear on Play now in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
+- Unity Editor: Bring Unity Editor to foreground when Rider is showing Unity asset usages ([#1344](https://github.com/JetBrains/resharper-unity/pull/1344))
+
+### Changed
+
+- Improve performance parsing YAML scenes ([#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
+- Rider: Return support for .asmdef files ([RIDER-30018](https://youtrack.jetbrains.com/issue/RIDER-30018), [#1373](https://github.com/JetBrains/resharper-unity/pull/1373))
+- Rider: Improve UX of "Attach to Unity Process" dialog ([#1278](https://github.com/JetBrains/resharper-unity/issues/1278), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
+- Rider: Improve display of count of merged log items ([#1296](https://github.com/JetBrains/resharper-unity/issues/1296), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
+- Rider: Status bar icon will show when Unity Editor is paused ([#1227](https://github.com/JetBrains/resharper-unity/issues/1227), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
+- Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity ([#1325](https://github.com/JetBrains/resharper-unity/pull/1325))
+- Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) ([#888](https://github.com/JetBrains/resharper-unity/issues/888))
+- Unity Editor: Don't create `EditorInstance.json` for Unity 2017.1+, since it does it itself ([#1356](https://github.com/JetBrains/resharper-unity/pull/1356))
+- Unity Editor: Reduce size of pre-compiled editor plugin for Unity 20192.2+ to help AppDomain restart performance ([#1367](https://github.com/JetBrains/resharper-unity/pull/1367), [#1390](https://github.com/JetBrains/resharper-unity/pull/1390))
+
+### Fixed
+
+- Fix overridden `Update` methods not acting as performance critical context ([RIDER-33934](https://youtrack.jetbrains.com/issue/RIDER-33934), [#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
+- Fix Quick Fix incorrectly converting `LinecastAll` to `CapsuleCastNonAlloc` instead of `LinecastNonAlloc` ([#1324](https://github.com/JetBrains/resharper-unity/issues/1324), [RIDER-33442](https://youtrack.jetbrains.com/issue/RIDER-33443), [#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
+- Fix finding usages of methods used as event handler from prefab ([#1331](https://github.com/JetBrains/resharper-unity/issues/1331), [#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
+- Fix moving `.meta` file during "Move to Folder" refactoring ([#1370](https://github.com/JetBrains/resharper-unity/issues/1370), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
+- Fix orphan `.meta` file during "Safe Delete" refactoring ([#856](https://github.com/JetBrains/resharper-unity/issues/856), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
+- Fix correctly keeping `.meta` files up to date in `Packages` folder ([#1231](https://github.com/JetBrains/resharper-unity/issues/1231), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
+- Rider: Fix race condition preventing "Attach to Unity Process" dialog from always listing players ([RIDER-34039](https://youtrack.jetbrains.com/issue/RIDER-34039), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
+- Rider: Prevent "Attach to Unity Process" attempting to attach to the same process multiple times ([#1129](https://github.com/JetBrains/resharper-unity/issues/1129), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
+- Rider: Fix auto-scroll of Unity log view ([#1393](https://github.com/JetBrains/resharper-unity/issues/1393), [#1394](https://github.com/JetBrains/resharper-unity/pull/1394))
+- Unity Editor: Stop suggesting C# 8 features when using a new msbuild from Mono ([#1379](https://github.com/JetBrains/resharper-unity/issues/1379), [#1380](https://github.com/JetBrains/resharper-unity/pull/1380))
+- Unity Editor: Avoid all initialisation when started in batch mode ([#1396](https://github.com/JetBrains/resharper-unity/pull/1396))
+- Unity Editor: Fix exception calling `EditorApplication.isPlaying` on wrong thread ([#1308](https://github.com/JetBrains/resharper-unity/pull/1308))
+
+
+
+## 2019.2.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap9-rtm-2019.2.2...192)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/31?closed=1)
+
+### Changed
+* Use platform native line endings in generated `.meta` files. Works better with Perforce ([#1323](https://github.com/JetBrains/resharper-unity/pull/1323))
+
+### Fixed
+* Fix issues with completion of Unity event functions ([RIDER-33167](https://youtrack.jetbrains.com/issue/RIDER-33167), [#1326](https://github.com/JetBrains/resharper-unity/pull/1326))
+- Fix exception building caches ([DEXP-481931](https://youtrack.jetbrains.com/issue/DEXP-481931), [#1355](https://github.com/JetBrains/resharper-unity/pull/1355))
+* Rider: Fix missing "Install Mono" notification ([#1329](https://github.com/JetBrains/resharper-unity/pull/1329))
+
+- Rider: Fix Clear on Play in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
+- Unity window should get focus, when Rider is showing usages in it ([#1344](https://github.com/JetBrains/resharper-unity/pull/1344)
+
+
+## 2019.2.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192-eap9-rtm-2019.2.2)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/30?closed=1)
+
+### Added
+- Rider: Suggest files and folders to be ignored by version control ([RIDER-31206](https://youtrack.jetbrains.com/issue/RIDER-31206), [#1276](https://github.com/JetBrains/resharper-unity/pull/1276))
+
+### Changed
+- Suppress warning when using `CollisionFlags` in a bitwise operation ([RIDER-28661](https://youtrack.jetbrains.com/issue/RIDER-28661), [#1289](https://github.com/JetBrains/resharper-unity/pull/1289))
+- Rider: Show notification that Unity isn't running when clicking Code Vision to find Unity usages ([#1275](https://github.com/JetBrains/resharper-unity/pull/1275))
+- Rider: Ignore Unity.Licensing.Client in list of Unity processes to debug ([#1283](https://github.com/JetBrains/resharper-unity/issues/1283), [#1284](https://github.com/JetBrains/resharper-unity/pull/1284))
+- Rider: Files in read only packages no longer shown as "ignored" in Unity Explorer ([#1288](https://github.com/JetBrains/resharper-unity/pull/1288))
+- Unity Editor: Improve performance on AppDomain reloads ([#1291](https://github.com/JetBrains/resharper-unity/pull/1291))
+
+### Fixed
+- Fix exception when pasting code ([RIDER-31338](https://youtrack.jetbrains.com/issue/RIDER-31338), [#1280](https://github.com/JetBrains/resharper-unity/pull/1280))
+- Rider: Fix fetching list of Unity editors and players on UI thread ([RIDER-31585](https://youtrack.jetbrains.com/issue/RIDER-31585))
+- Unity Editor: Fix exception running tests with older test framework packages ([#1273](https://github.com/JetBrains/resharper-unity/pull/1273))
+
+
+
+## 2019.2.1
+Bundled with Rider 2019.2.1
+* [No changes](https://github.com/JetBrains/resharper-unity/compare/192-eap7-rtm-2019.2.0...192-eap8-rtm-2019.2.1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/192-eap8-rtm-2019.2.1)
+
+
+
+## 2019.2 - 2019-08-08
+For Rider and ReSharper 2019.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap11-rtm-2019.1.3...192-eap7-rtm-2019.2.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/22?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/192-eap7-rtm-2019.2.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2019.2.0.72)
+
+### Added
+- Add completion and inspections for scenes, tags, layers and inputs ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+- Add quick fix which specifies scene name when several scenes with the same name are present in build settings ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+- Add new file and live templates ([#1201](https://github.com/JetBrains/resharper-unity/pull/1201))
+- Add context action to generate event function in any Unity type ([#1209](https://github.com/JetBrains/resharper-unity/pull/1209))
+- Add context actions to add Inspector attributes `Space`, `Header` and `Tooltip` to serialised fields ([#1244](https://github.com/JetBrains/resharper-unity/pull/1244))
+- Add context actions to initialise component field or property in `Start` or `Awake` ([#356](https://github.com/JetBrains/resharper-unity/356), [#608](https://github.com/JetBrains/resharper-unity/issues/608), [#1259](https://github.com/JetBrains/resharper-unity/pull/1259))
+- Add context action to add `RequireComponent` attribute for component field ([#608](https://github.com/JetBrains/resharper-unity/issues/608), [#1259](https://github.com/JetBrains/resharper-unity/pull/1259))
+- Add Find Unity Usages of Symbol to Navigate To menu ([#1209](https://github.com/JetBrains/resharper-unity/pull/1209))
+- Add inspection for duplicate shortcut items in a menu attribute ([#1246](https://github.com/JetBrains/resharper-unity/pull/1246))
+- Rider: Add Inspector values as part of serialised field Code Vision ([#1226](https://github.com/JetBrains/resharper-unity/pull/1226))
+- Rider: Add quick fix to add or enable scenes to build settings ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
+- Rider: Add "Show in Unity" action to Unity YAML file notifications ([#1236](https://github.com/JetBrains/resharper-unity/pull/1236))
+- Unity Editor: Correctly detect Rider installed via snap ([#1215](https://github.com/JetBrains/resharper-unity/pull/1215))
+
+### Changed
+- Improve performance of YAML based asset parsing ([#1226](https://github.com/JetBrains/resharper-unity/pull/1226), [RIDER-30186](https://youtrack.jetbrains.com/issue/RIDER-30186), [#1256](https://github.com/JetBrains/resharper-unity/pull/1256))
+- Generate event function body according to settings ([#1236](https://github.com/JetBrains/resharper-unity/pull/1236))
+- Classes implementing editor interfaces no longer marked as unused ([#686](https://github.com/JetBrains/resharper-unity/issues/686), [#1167](https://github.com/JetBrains/resharper-unity/pull/1167))
+- Remove syntax errors in ShaderLab files from Solution Wide Error Analysis ([#1268](https://github.com/JetBrains/resharper-unity/pull/1268))
+- Rider: Show asset usage count in Code Vision ([#1209](https://github.com/JetBrains/resharper-unity/pull/1209))
+- Rider: Show event function method summary docs in Code Vision tooltip ([#1206](https://github.com/JetBrains/resharper-unity/pull/1206))
+- Rider: Improve handling of `[UnityTest]` attribute ([#1224](https://github.com/JetBrains/resharper-unity/pull/1224))
+- Rider: Notification about saving during play mode moved from startup to first modification in play mode ([#1263](https://github.com/JetBrains/resharper-unity/pull/1263))
+- Unity Editor: Improve performance of editor plugin reload ([#1197](https://github.com/JetBrains/resharper-unity/issues/1197), [#1221](https://github.com/JetBrains/resharper-unity/pull/1221))
+
+### Fixed
+- Fix filtering of event function code completion in ReSharper ([#1245](https://github.com/JetBrains/resharper-unity/issues/1245), [DEXP-454736](https://youtrack.jetbrains.com/issue/DEXP-454736), [#1255](https://github.com/JetBrains/resharper-unity/pull/1255))
+- Fix error parsing ShaderLab properties with empty parameter list ([#1267](https://github.com/JetBrains/resharper-unity/pull/1267))
+- Rider: Disable automatic cleanup of Unity messages in Rider ([RIDER-26880](https://youtrack.jetbrains.com/issue/RIDER-26880), [#1217](https://github.com/JetBrains/resharper-unity/pull/1217))
+- Rider: Fix presentation of unit tests with similar name ([#526](https://github.com/JetBrains/resharper-unity/issues/526), [#1214](https://github.com/JetBrains/resharper-unity/pull/1214))
+- Rider: Fix exception checking process ID in Unity run configuration ([RIDER-28743](https://youtrack.jetbrains.com/issue/RIDER-28743), [#1223](https://github.com/JetBrains/resharper-unity/pull/1223))
+- Rider: Fix focus issues when opening a file and Rider is minimised ([#1100](https://github.com/JetBrains/resharper-unity/issues/1100), [#1262](https://github.com/JetBrains/resharper-unity/pull/1262))
+- Unity Editor: Fix generation of MDB files ([#1155](https://github.com/JetBrains/resharper-unity/issues/1155), [#1182](https://github.com/JetBrains/resharper-unity/pull/1182))
+- Unity Editor: Fix double refresh of assets on save all ([#1253](https://github.com/JetBrains/resharper-unity/issues/1253), [#1254](https://github.com/JetBrains/resharper-unity/pull/1254))
+
+
+
+## 2019.1.3 - 2019-07-10
+Bundled with Rider 2019.1.3. No release for ReSharper
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap10-rtm-2019.1.2...191-eap11-rtm-2019.1.3)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/191-eap11-rtm-2019.1.3)
+
+### Fixed
+- Rider: Ignore "unityhub" Ubuntu process in debug dialog ([#1210](https://github.com/JetBrains/resharper-unity/pull/1210))
+
+
+
+## 2019.1.2 - 2019-06-06
+Bundled with Rider 2019.1.2. No release for ReSharper
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap9-rtm-2019.1.1...191-eap10-rtm-2019.1.2)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/28?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/191-eap10-rtm-2019.1.2)
+
+### Added
+- Rider: Added support for the Rider integration package used by Unity 2019.2+. No longer copies Rider plugin to Assets folder, and is loaded directly from the Rider installation folder ([#1176](https://github.com/JetBrains/resharper-unity/pull/1176))
+
+### Fixed
+- Fix parse errors in YAML for strings that begin with quotes, braces or tildes ([#1169](https://github.com/JetBrains/resharper-unity/issues/1169), [RIDER-27475](https://youtrack.jetbrains.com/issue/RIDER-27475), [#1192](https://github.com/JetBrains/resharper-unity/pull/1192))
+- Fix errors in scene files for unresolved methods ([RIDER-27445](https://youtrack.jetbrains.com/issue/RIDER-27445), [#1178](https://github.com/JetBrains/resharper-unity/1178), [#1174](https://github.com/JetBrains/resharper-unity/pull/1174))
+- Fix rename of script components not being able to update correctly ([#1196](https://github.com/JetBrains/resharper-unity/pull/1196))
+- Rider: Fix Code Vision usage counter not always correct for methods used in scene files ([RIDER-27684](https://youtrack.jetbrains.com/issue/RIDER-27684), [#1178](https://github.com/JetBrains/resharper-unity/1178), [#1174](https://github.com/JetBrains/resharper-unity/pull/1174))
+- Rider: Fix high CPU usage on Linux ([#1163](https://github.com/JetBrains/resharper-unity/issues/1163), [#1171](https://github.com/JetBrains/resharper-unity/1171))
+- Rider: Fix issue with switching to play mode when debugging ([RIDER-26857](https://youtrack.jetbrains.com/issue/RIDER-26857), [#1202](https://github.com/JetBrains/resharper-unity/pull/1202))
+- Rider: Fix Code Vision flickering when typing inside method ([#1203](https://github.com/JetBrains/resharper-unity/pull/1203))
+
+
+
+## 2019.1.1 - 2019-05-02
+Bundled with Rider 2019.1.1
+* [No changes](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...191-eap9-rtm-2019.1.1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/191-eap9-rtm-2019.1.1)
+
+
+
+## 2019.1 - 2019-04-30
+For Rider and ReSharper 2019.1
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap13-rtm...191-eap8-rtm-2019.1.0)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/22?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/191-eap8-rtm-2019.1.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2019.1.0.76)
 
 ### Added
 - Add rename of methods and properties used in text base assets ([#1140](https://github.com/JetBrains/resharper-unity/pull/1140))
@@ -28,7 +206,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Add Unity toolbar dropdown menu for class libraries ([#1109](https://github.com/JetBrains/resharper-unity/pull/1109))
 - Rider: Refresh assets in Unity after VCS pull completes ([#947](https://github.com/JetBrains/resharper-unity/issues/947), [#1085](https://github.com/JetBrains/resharper-unity/pull/1085))
 - Rider: Add project name to list of debuggable players (Unity 2019.2 only) ([#1114](https://github.com/JetBrains/resharper-unity/pull/1114))
-- Rider: Add all package folders to find in files index ([#1122](https://github.com/JetBrains/resharper-unity/pull/1120))
+- Rider: Add all package folders to find in files index ([#1120](https://github.com/JetBrains/resharper-unity/pull/1120))
 - Rider: Add icon for marketplace ([RIDER-25040](https://youtrack.jetbrains.com/issue/RIDER-25040), [#1122](https://github.com/JetBrains/resharper-unity/pull/1122))
 - Rider: Add icon for git based packages ([RIDER-24093](https://youtrack.jetbrains.com/issue/RIDER-24093), [#1122](https://github.com/JetBrains/resharper-unity/pull/1122))
 - Rider: Show warnings when trying to manually edit Unity asset or project files ([RIDER-23145](https://youtrack.jetbrains.com/issue/RIDER-23145), [#1135](https://github.com/JetBrains/resharper-unity/pull/1135))
@@ -39,6 +217,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - No longer creates a `.sln.DotSettings.user` file when YAML size heuristic is applied ([#1087](https://github.com/JetBrains/resharper-unity/pull/1087))
 - Treat `AddComponent(Type)` as an expensive operation ([#1044](https://github.com/JetBrains/resharper-unity/issues/1044), [#1109](https://github.com/JetBrains/resharper-unity/pull/1109))
 - Include Unity YAML files in Solution Wide Error Analysis ([#1118](https://github.com/JetBrains/resharper-unity/pull/1118))
+- Updated API to 2019.2.0a9 ([#1055](https://github.com/JetBrains/resharper-unity/issues/1055), [#1056](https://github.com/JetBrains/resharper-unity/pull/1056))
 - Rider: Refresh assets before running unit tests ([#1070](https://github.com/JetBrains/resharper-unity/issues/1070), [#1078](https://github.com/JetBrains/resharper-unity/pull/1078))
 - Rider: Run configuration will start Unity if not already running ([#1086](https://github.com/JetBrains/resharper-unity/pull/1086))
 - Rider: Improve navigation from log viewer to code ([#367](https://github.com/JetBrains/resharper-unity/issues/367), [#1071](https://github.com/JetBrains/resharper-unity/pull/1071))
@@ -63,6 +242,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Fix spelling mistake in issue suppression comment ([#1083](https://github.com/JetBrains/resharper-unity/issues/1083), [#1109](https://github.com/JetBrains/resharper-unity/pull/1109))
 - Fix validation exceptions ([RIDER-26102](https://youtrack.jetbrains.com/issue/RIDER-26102), [RIDER-26109](https://youtrack.jetbrains.com/issue/RIDER-26109), [RIDER-26103](https://youtrack.jetbrains.com/issue/RIDER-26103), [#1108](https://github.com/JetBrains/resharper-unity/pull/1108))
 - Fix exception when project contains empty YAML file ([RIDER-25787](https://youtrack.jetbrains.com/issue/RIDER-25787), [#1124](https://github.com/JetBrains/resharper-unity/pull/1124))
+- Fix parse error in YAML files with multiline text containing single quotes ([RIDER-26849](https://youtrack.jetbrains.com./issue/RIDER-26849), [#1145](https://github.com/JetBrains/resharper-unity/pull/1145))
+- Fix parse error in ShaderLab attribute values ([RIDER-26909](https://youtrack.jetbains.com/issue/RIDER-26909), [#857](https://github.com/JetBrains/resharper-unity/issues/857), [#1149](https://github.com/JetBrains/resharper-unity/pull/1149))
+- Fix invalid references to scripts or event handlers in read only/referenced packages ([RIDER-27009](https://youtrack.jetbrains.com/issue/RIDER-27009), [#1153](https://github.com/JetBrains/resharper-unity/pull/1153))
+- Fix rename of `MonoBehaviour` based classes being blocked by reported conflicts ([RIDER-27053](https://youtrack.jetbrains.com/issue/RIDER-27053), [#1153](https://github.com/JetBrains/resharper-unity/pull/1153))
 - Rider: Fix minor UI annoyances in "Attach to Unity process" dialog ([#1114](https://github.com/JetBrains/resharper-unity/pull/1114))
 - Rider: Show packages from correct per-project cache in Unity Explorer
 - Rider: Correctly handle file/git based packages in Unity Explorer ([RIDER-25971](https://youtrack.jetbrains.com/issue/RIDER-25971), [#1095](https://github.com/JetBrains/resharper-unity/issue/1095) [#1099](https://github.com/JetBrains/resharper-unity/pull/1099))
@@ -76,20 +259,26 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Unity Editor: Use unique name for log file ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Don't call Unity API in batch mode ([#1020](https://github.com/JetBrains/resharper-unity/pull/1020))
 - Unity Editor: Fix exception during Unity shutdown ([RIDER-19688](https://youtrack.jetbrains.com/issue/RIDER-19688), [#979](https://github.com/JetBrains/resharper-unity/pull/979))
-- Rider: Fix Rider extra reloading projects on calling Refresh from Rider, applies to Unity pre-2018 ([#1116](https://github.com/JetBrains/resharper-unity/pull/1116) 
+- Rider: Fix Rider extra reloading projects on calling Refresh from Rider, applies to Unity pre-2018 ([#1116](https://github.com/JetBrains/resharper-unity/pull/1116)
 - Unity Editor: Fix issue connecting to editor when Rider was not default editor at startup ([RIDER-26142](https://youtrack.jetbrains.com/issue/RIDER-26142), [#1111](https://github.com/JetBrains/resharper-unity/pull/1111))
 
-## 2018.3.3
+
+
+## 2018.3.3 - 2019-01-11
+For Rider 2018.3.3. No release necessary for ReShaprer
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap12-rtm...183-eap13-rtm)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap13-rtm)
 
 ### Fixed
 - Unity Editor: Fix finding install path from JetBrains Toolbox ([RIDER-24173](https://youtrack.jetbrains.com/issue/RIDER-24173), [#1024](https://github.com/JetBrains/resharper-unity/pull/1024))
 
 
 
-## 2018.3.2
+## 2018.3.2 - 2019-01-30
+For Rider 2018.3.2. No release necessary for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap11-rtm...183-eap12-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/26?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap12-rtm)
 
 ### Added
 - Unity editor: Add extra logging for switching to play mode and background refresh of assets (#987)
@@ -109,11 +298,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.3 for ReSharper - 2013-01-17
-* For ReSharper 2018.3
-* Based on work in progress 2018.3.2 for Rider
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap11-rtm...183-eap11-rtm-resharper)
+For ReSharper 2018.3 (Based on work in progress 2018.3.2 for Rider)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap12-2018.2.3...183-eap11-rtm-resharper)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/26?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap11-rtm-resharper)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2018.3.0.1092)
 
 ### Added
 - Add parsing of method and class usage from scene, prefab and asset files (#263, [RIDER-7460](https://youtrack.jetbrains.com/issue/RIDER-7460), #870, #873, #903, #921, [RIDER-21907](https://youtrack.jetbrains.com/issue/RIDER-21907), [RIDER-21897](https://youtrack.jetbrains.com/issue/RIDER-21897), #943, #949)
@@ -164,7 +353,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.3.1 - 2018-12-26
-* For Rider 2018.3.1. Not released for ReSharper
+For Rider 2018.3.1. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap10-rtm...183-eap11-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/23?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap11-rtm)
@@ -180,7 +369,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.3 - 2018-12-17
-* For Rider 2018.3. Not released for ReSharper
+For Rider 2018.3. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap12-2018.2.3...183-eap10-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/19?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap10-rtm)
@@ -259,11 +448,12 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Unity editor: Fix adding reference to `UnityEditor.iOS.Extensions.Xcode.dll` for Unity installed from Hub (#843)
 
 
+
 ## 2018.2.3 - 2018-09-13
-* For Rider 2018.2.3. Not released for ReSharper
+For Rider 2018.2.3. No changes for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap11-2018.2.2...182-eap12-2018.2.3)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/24?closed=1)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap12-2018.2.3)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap12-2018.2.3)
 
 ## Added
 - Unity editor: Disable plugin when Unity is in batch mode (#776, [RIDER-19688](https://youtrack.jetbrains.com/issue/RIDER-19688))
@@ -271,10 +461,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.2.2 - 2018-09-11
-* For Rider 2018.2.2. Not released for ReSharper
+For Rider 2018.2.2. No changes for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap10-2018.2.1...182-eap11-2018.2.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/21?closed=1)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap11-2018.2.2)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap11-2018.2.2)
 
 ### Added
 - Rider: Add an action to the Unity toolbar to manually install the editor plugin (#765)
@@ -296,11 +486,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.2 for ReSharper - 2018-09-02
-* For ReSharper 2018.2
-* This is based on the 2018.2.1 release for Rider
+For ReSharper 2018.2 (Based on Rider 2018.2.1. Release notes include everything in Rider 2018.2 and Rider 2018.2.1)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap9-rtm…182-eap9-rtm-resharper)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/16?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap9-rtm-resharper)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2018.2.0.653)
 
 ### Added
 - Add support for `.asmdef` files (#283)
@@ -316,13 +506,6 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add `sprop` and `sfield` Live Templates (#565)
 - Mark potential event handler methods and property setters as in use (#625, [RIDER-17276](https://youtrack.jetbrains.com/issue/RIDER-17276))
 - Add ShaderLab colour scheme settings page ([RIDER-17305](https://youtrack.jetbrains.com/issue/RIDER-17305))
-- Rider: Add Packages node to Unity Explorer (#476, #629)
-- Rider: Add Scratches node to Unity Explorer (#629)
-- Rider: Open editor and player log from Unity Log View tool window (#575)
-- Rider: Add text filter to Unity Log View (#599)
-- Rider: Add collapsing similar log items to Unity Log View (#512)
-- Rider: Add ShaderLab colour scheme settings page ([RIDER-17305](https://youtrack.jetbrains.com/issue/RIDER-17305))
-- Rider: Add Attach to Unity Process action to Unity actions dropdown
 
 ### Changed
 - Updated to ReSharper 2018.2
@@ -333,31 +516,16 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Serialised field Context Action and Quick Fixes work correctly with multiple field declarations (#586)
 - Don't show incorrect "always false" warning for "this == null" in Unity types (#368)
 - Remove highlighted background for Cg blocks in ShaderLab files ([RIDER-16438](https://youtrack.jetbrains.com/issue/RIDER-16438))
-- Rider: Updated icons for run configurations ([RIDER-18576](https://youtrack.jetbrains.com/issue/RIDER-18576), #694)
-- Rider: Advanced integration feature (play/pause, etc.) available in all solutions in a Unity project folder (#581)
 
 ### Fixed
 - Fix ShaderLab highlighting of keywords ([RIDER-17287](https://youtrack.jetbrains.com/issue/RIDER-17287))
 - Fix rename's "find in text" renaming non-text elements in ShaderLab files
 - Fix Unity specific inspections not showing in Solution Wide Errors tool window (#680)
-- Rider: Fix ShaderLab highlighting of keywords ([RIDER-17287](https://youtrack.jetbrains.com/issue/RIDER-17287))
-- Rider: Fix list of Unity players in Attach to Unity Process dialog (#634, #650, [RIDER-17130](https://youtrack.jetbrains.com/issue/RIDER-17130))
-- Rider: Use correct IP address when attaching debugging to remote player (#650, [RIDER-17130](https://youtrack.jetbrains.com/issue/RIDER-17130))
-- Rider: Fixed showing tool windows after hiding for Unity projects
-- Rider: Fix incorrect connection icon shown when Unity is in play mode ([RIDER-15758](https://youtrack.jetbrains.com/issue/RIDER-15758)">)
-- Rider: Enable editing of Unity specific Live Templates (#654)
-- Rider: Prevent editor plugin being installed each time project is loaded (#656)
-- Rider: Show a notification if the project is incorrectly opened as a folder (#658)
-- Rider: Show a meaningful message when trying to run Unity tests under dotCover ([RIDER-17815](https://youtrack.jetbrains.com/issue/RIDER-17815))
-- Unity editor: Add option to disable reloading assemblies during Play mode. Only for Unity 2018.1 and below (#520)
-- Unity editor: Only write `.csproj` file to disk if it's changed (requires Unity 2018.1+)
-- Unity editor: Fix crash with Unity 5.6.x (#660)
-- Unity editor: Support Roslyn compiler response files (`csc.rsp`) (#690)
 
 
 
 ## 2018.2.1 - 2018-08-30
-* For Rider 2018.2.1. Not released for ReSharper
+For Rider 2018.2.1. No changes for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap9-rtm...182-eap10-2018.2.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/20?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap10-2018.2.1)
@@ -369,8 +537,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.2 - 2018-08-23
-* For Rider 2018.2. Not released for ReSharper
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-2018.1.2-rtm...182-eap9-rtm)
+For Rider 2018.2. Not released for ReSharper
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-eap15-2018.1.4-rtm...182-eap9-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/16?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap9-rtm)
 
@@ -426,11 +594,25 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 
+## 2018.1.4
+Bundled with Rider 2018.1.4
+* [No changes](https://github.com/JetBrains/resharper-unity/compare/wave12-eap14-2018.1.3-rtm...wave12-eap15-2018.1.4-rtm)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap15-2018.1.4-rtm)
+
+
+
+## 2018.1.3
+Bundled with Rider 2018.1.3
+* [No changes](https://github.com/JetBrains/resharper-unity/compare/wave12-2018.1.2-rtm...wave12-eap14-2018.1.3-rtm)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap14-2018.1.3-rtm)
+
+
+
 ## 2018.1.2 - 2018-05-28
-* For Rider 2018.1.2. Not released for ReSharper
+For Rider 2018.1.2. No changes for ReSharper
 * Note that there are no changes to the plugin bundled with Rider 2018.1.3 or 2018.1.4
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-2018.1.1-rtm…wave12-2018.1.2-rtm)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap13-2018.1.2-rtm)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap13-2018.1.2-rtm)
 
 ### Fixed
 - Unity editor: Don't fail to parse version numbers with no minor part
@@ -440,7 +622,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.1.1 - 2018-05-25
-* For Rider 2018.1.1. Not released for ReSharper
+For Rider 2018.1.1. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-eap9-rtm...wave12-2018.1.1-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/17?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap12-2018.1.1-rtm)
@@ -484,9 +666,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.1.0.380 for ReSharper - 2018-06-16
-* For ReSharper 2018.1 and ReSharper 2018.1.2
+For ReSharper 2018.1 and ReSharper 2018.1.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-eap9-rtm...wave12-2018.1-api-fix)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-2018.1-api-fix)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2018.1.0.380)
 
 ### Fixed
 - Fix a breaking API change in ReSharper 2018.1.2 (#584)
@@ -494,10 +677,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2018.1 - 2018-04-18
-* For Rider and ReSharper 2018.1
+For Rider and ReSharper 2018.1
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave11-rider-2017.3.2...wave12-eap9-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/14?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap9-rtm)
+* ReSharper release unlisted due to breaking API change in ReSharper 2018.1.2
 
 ### Added
 - Add inspections for null coalescing and null propagation operators (#342, #35, #148)
@@ -530,9 +714,15 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 
+## 2017.3.2
+Bundled with Rider 2017.3.2
+* [No changes](https://github.com/JetBrains/resharper-unity/compare/wave11-rider-2017.3.1...wave11-rider-2017.3.2)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave11-rider-2017.3.2)
+
+
+
 ## 2017.3.1 - 2018-02-06
-* For Rider 2017.3.1. Not released for ReSharper
-* Note that there are no changes to the plugin bundled with Rider 2017.3.2
+For Rider 2017.3.1. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.3-rider...wave11-rider-2017.3.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/15?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave11-rider-2017.3.1)
@@ -555,13 +745,14 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 
-## 2017.3 for Rider and 2.1.3 for ReSharper - 2017-12-22
-* Bundled with Rider 2017.3. Released as 2.1.3 for ReSharper.
+## 2017.3 - 2017-12-22
+Bundled with Rider 2017.3. Released as 2.1.3 for ReSharper.
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/a14a3d50fa72b6c37a05184af56c6fefcb772f98...v2.1.3-resharper) (SHA is equivalent to `2.1.2.1739` on `master`)
 * [Commits (rider changes)](https://github.com/JetBrains/resharper-unity/compare/v2.1.3-resharper...v2.1.3-rider)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/13?closed=1)
 * [GitHub release (resharper)](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.3-resharper)
 * [GitHub release (rider)](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.3-rider)
+* [ReSharper release (2.1.3)](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2.1.3.4208)
 
 ### Added
 - Add Context Action to convert auto-property to property with serialized backing field (#195, #302)
@@ -590,9 +781,9 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2.1.2.1739 - 2017-11-15
-* For Rider 2017.2.1
+For Rider 2017.2.1
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.2...2.1.2.1739)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/2.1.2.1739)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/2.1.2.1739)
 
 ### Added
 - Rider: Add syntax highlighting for `.compute` files ([RIDER-11221](https://youtrack.jetbrains.com/issue/RIDER-11221))
@@ -601,11 +792,12 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Improve reliability of attaching debugger to Unity Editor (#262, #268)
 
 
+
 ## 2.1.2 for ReSharper 2017.2 - 2017-10-09
-* For ReSharper 2017.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.1...v2.1.2-resharper)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/12?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.2-resharper)
+* [ReSharper release (2019-10-17)](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2.1.2.1505)
 
 ### Added
 - Support Unity API up to 2017.3.0b3 (#218)
@@ -614,6 +806,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add colour highlighting and editing to ShaderLab
 - Add icons for ShaderLab files and run configurations
 - Show event function descriptions in generate dialog (#225, [RIDER-4904](https://youtrack.jetbrains.com/issue/RIDER-4904))
+- Add annotations for modularised UnityEngine assemblies (#207)
 
 ### Changed
 - Updated to ReSharper 2017.2
@@ -623,15 +816,14 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 ### Fixed
 - Fix code completion and generation not working with newer versions of Unity (#219, #245)
 - Fix parsing of 2DArray in ShaderLab files ([RIDER-9786](https://youtrack.jetbrains.com/issue/RIDER-9786))
+* Fix parsing errors in ShaderLab files ([RIDER-8917](https://youtrack.jetbrains.com/issue/RIDER-8917), [RIDER-8914](https://youtrack.jetbrains.com/issue/RIDER-8914))
 
 
 
 ## 2.1.2 for Rider 2017.2 - 2017-10-09
-* For Rider 2017.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.1...v2.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/12?closed=1)
-* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.2-resharper)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.2)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.2)
 
 ### Added
 - Support Unity API up to 2017.3.0b3 (#218)
@@ -650,9 +842,9 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2.1.1 - 2017-09-16
-* For Rider 2017.2 EAP2. Not released for ReSharper
+For Rider 2017.2 EAP2. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.0...v2.1.1)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.1)
 
 ### Added
 - Show event function descriptions in generate dialog (#225, [RIDER-4904](https://youtrack.jetbrains.com/issue/RIDER-4904))
@@ -664,9 +856,9 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2.1.0 - 2017-09-04 (approximately)
-* For Rider 2017.2 EAP1. Not released for ReSharper
+For Rider 2017.2 EAP1. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.4...v2.1.0) (Due to branching strategy, this list contains commits from previous releases)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.0)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.0)
 
 ### Added
 - Add annotations for modularised UnityEngine assemblies (#207)
@@ -674,31 +866,39 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2.0.4 - 2017-09-04
-2.0.4.2575 for Rider 2017.1.2 - RD-171.4456.3568. Not released for ReSharper
+For Rider 2017.1.2 (RD-171.4456.3568 + 2.0.4.2575). Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.3...v2.0.4)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.4)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.4)
 
 ### Changed
-* Fix parsing errors in ShaderLab files ([RIDER-8917](https://youtrack.jetbrains.com/issue/RIDER-8917), [RIDER-8914](https://youtrack.jetbrains.com/issue/RIDER-8914))
-* ShaderLab syntax fixes ([RIDER-8917](https://youtrack.jetbrains.com/issue/RIDER-8917), [RIDER-8914](https://youtrack.jetbrains.com/issue/RIDER-8914))
 * Rider: Change completion in shader files to be semi-focussed
+
+### Fixed
+* Fix parsing errors in ShaderLab files ([RIDER-8917](https://youtrack.jetbrains.com/issue/RIDER-8917), [RIDER-8914](https://youtrack.jetbrains.com/issue/RIDER-8914))
 
 
 
 ## 2.0.3-resharper - 2017-08-31
-* For ReSharper 2017.2
+For ReSharper 2017.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.0-resharper...v2.0.3-resharper)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.3-resharper)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2.0.3.314)
 
 ### Changed
 - Updated to ReSharper 2017.2 (#193)
 
+### Fixed
+- Parse pre-processor directives in ShaderLab (#186)
+- Correctly handle property attributes in shader file (#187)
+- Parse CGINCLUDE blocks at any point in shader file (#188, #189, #206)
+- Parse property reference for BlendOp ([RIDER-8386](https://youtrack.jetbrains.com/issue/RIDER-8386))
+
 
 
 ## 2.0.3 - 2017-08-31
-* For Rider 2017.1.1 (RD-171-4456.2813 + 2.0.3.2540)
+For Rider 2017.1.1 (RD-171.4456.2813 + 2.0.3.2540)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.2...a89dce7c8ba66cd8d6d86bb3dd1c7a82544fe21f) (SHA is equivalent to `v2.0.3`. Possibly tagged wrong branch?)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.3)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.3)
 
 ### Fixed
 - Parse pre-processor directives in ShaderLab (#186)
@@ -709,10 +909,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2.0.0 for ReSharper - 2017-08-29
-* For ReSharper 2017.1
-* Based on work in progress 2.0.3 for Rider 2017.1
+For ReSharper 2017.1 (Based on work in progress 2.0.3 for Rider 2017.1)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.0...v2.0.2-resharper)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.0-resharper)
+* [ReSharper release (2017-08-31)](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2.0.0)
 
 ### Added
 - Support for ShaderLab files. Syntax highlighting, error highlighting, commenting, bracket matching, folding
@@ -729,9 +929,9 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2.0.2 - 2017-08-03
-* For Rider 2017.1 RTM. Not released for ReSharper
+For Rider 2017.1 RTM. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.0...v2.0.2)
-* [Tag](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.2)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.2)
 
 ### Added
 - Add ability to disable advanced ShaderLab syntax (#183)
@@ -741,7 +941,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 2.0.0 - 2017-07-14
-* For Rider 2017.1 RC. Not released for ReSharper
+For Rider 2017.1 RC. Not released for ReSharper
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.9.1...v2.0.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/5?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.0)
@@ -760,7 +960,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.9.2 - 2017-08-15
-* For Rider 2017.1 EAP23. Not released for ReSharper
+For Rider 2017.1 EAP23. Not released for ReSharper
 * Not tagged. Don't know commit, so might not even have been released. This is based on Milestone. Might actually be merged in to 2.0.0
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/10?closed=1)
 
@@ -771,10 +971,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.9.1 - 2017-06-29
-* For ReSharper 2017.1 and Rider 2017.1 EAP23
+For ReSharper 2017.1 and Rider 2017.1 EAP23
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.9.0...v1.9.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/9?closed=1)
-* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.9.0)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.9.1)
 * [ReSharper release (2017-07-21)](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.9.1)
 
 ### Added
@@ -789,7 +989,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.9.0 - 2017-06-15
-* For ReSharper 2017.1 and Rider 2017.1 EAP22
+For ReSharper 2017.1 and Rider 2017.1 EAP22
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.8.0...v1.9.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/11?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.9.0)
@@ -810,7 +1010,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.8.0 - 2017-05-18
-* For ReSharper 2017.1 and Rider 2017.1 EAP22
+For ReSharper 2017.1 and Rider 2017.1 EAP22
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.7.0...v1.8.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/8?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.8.0)
@@ -836,10 +1036,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.7.0 - 2017-04-05
-* For ReSharper 2017.1 (and early EAP version of Rider)
+For ReSharper 2017.1 (and early EAP version of Rider)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.6.2...v1.7.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/7?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.7.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.7.0)
 
 ### Added
 - Treats `Assertion.Assert` as assertion methods (#129)
@@ -853,9 +1054,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.6.2 - 2017-03-22
-* For ReSharper 2016.3 and Rider EAP19
+For ReSharper 2016.3 and Rider EAP19
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.6.1...v1.6.2)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.6.2)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.6.2)
 
 ### Changed
 - Updated to Rider EAP19
@@ -864,9 +1066,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.6.1 - 2017-03-08
-* For ReSharper 2016.3 and Rider EAP18
+For ReSharper 2016.3 and Rider EAP18
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.6.0...v1.6.1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.6.1)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.6.1)
 
 ### Fixed
 - Fix nasty bug that will delete and recreate all `.meta` files when reloading projects. Sorry! (#118)
@@ -874,10 +1077,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.6.0 - 2017-03-01
-* For ReSharper 2016.3 and Rider EAP18
+For ReSharper 2016.3 and Rider EAP18
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.5.1-rider...v1.6.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/6?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.6.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.6.0)
 
 ### Added
 - Correctly update .meta files when creating, renaming or refactoring (#56, #61)
@@ -895,7 +1099,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.5.1-rider - 2017-02-17
-* For Rider EAP17
+For Rider EAP17
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.5.0-rider...v1.5.1-rider)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.5.1-rider)
 
@@ -915,10 +1119,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.5.0 - 2016-12-30
-* For ReSharper 2016.3
+For ReSharper 2016.3
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.4.0...v1.5.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/4?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.5.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.5.0)
 
 ### Added
 - Updated to ReSharper 2016.3 (#80, #90)
@@ -940,10 +1145,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.4.0 - 2016-11-18
-* For ReSharper 2016.2
+For ReSharper 2016.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.3.0...v1.4.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/3?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.4.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.4.0)
 
 ### Added
 - String formatting inspections for Unity logging methods
@@ -965,10 +1171,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.3.0 - 2016-09-26
-* For ReSharper 2016.2
+For ReSharper 2016.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.2.1...v1.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/2?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.3.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.3.0)
 
 ### Added
 - Expanded generate code to all Unity class messages, not just `MonoBehaviour` (#20, #29, #44)
@@ -984,9 +1191,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.2.1 - 2016-04-16
-* For ReSharper 2016.1
+For ReSharper 2016.1
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.2.0...v1.2.1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.2.1)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.2.1)
 
 ### Changed
 - Updated to ReSharper 2016.1
@@ -994,9 +1202,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.2.0 - 2015-11-16
-* For ReSharper 10
+For ReSharper 10
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.1.2...v1.2.0)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.2.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.2.0)
 
 ### Added
 - Suppress naming consistency warnings on message handlers
@@ -1007,9 +1216,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.1.2 - 2015-11-06
-* For ReSharper 10
+For ReSharper 10
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.0.0...v1.1.2)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.1.2)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.1.2)
 
 ### Changed
 - Updated to ReSharper 10
@@ -1017,9 +1227,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 
 ## 1.0.0 - 2015-10-16
-* For ReSharper 9.2. Initial release
+For ReSharper 9.2. Initial release
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/81b6bc5...v1.0.0)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.0.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.0.0)
 
 ### Added
 - Marks `MonoBehaviour` classes, fields and methods as in use

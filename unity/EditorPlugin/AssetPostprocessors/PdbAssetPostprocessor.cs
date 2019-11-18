@@ -19,9 +19,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPath)
     {
-      if (!PluginEntryPoint.Enabled)
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
         return;
-
+      
       try
       {
         var toBeConverted = importedAssets.Where(a => 
@@ -31,9 +31,16 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
           .ToArray();
         foreach (var asset in toBeConverted)
         {
-          var pdb = Path.ChangeExtension(asset, ".pdb");
+          var dllPath = Path.GetFullPath(asset);
+          if (!AssemblyIsInAppDomain(dllPath)) continue;
+          var pdb = Path.ChangeExtension(dllPath, ".pdb");
           if (!IsPortablePdb(pdb))
-            ConvertSymbolsForAssembly(asset);
+          {
+            ConvertSymbolsForAssembly(dllPath);
+            var mdbFile = Path.ChangeExtension(dllPath, ".dll.mdb");
+            if (new FileInfo(mdbFile).Exists)
+              AssetDatabase.ImportAsset(mdbFile);
+          }
           else
             ourLogger.Verbose("mdb generation for Portable pdb is not supported. {0}", pdb);
         }
@@ -43,6 +50,23 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         // unhandled exception kills editor
         Debug.LogError(e);
       }
+    }
+
+    private static bool AssemblyIsInAppDomain(string dllPath)
+    {
+      // managed dll is present here
+      return AppDomain.CurrentDomain.GetAssemblies().Any(a =>
+      {
+        var result = false;
+        try
+        {
+          result = a.Location == dllPath; // dynamic modules throw on asking Location
+        }
+        catch { 
+          // ignored
+        }
+        return result;
+      });
     }
 
     private static Type ourPdb2MdbDriver;
@@ -96,7 +120,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         target.Write(buffer, 0, count);
     }
 
-    private static void ConvertSymbolsForAssembly(string asset)
+    private static void ConvertSymbolsForAssembly(string dllPath)
     {
       if (Pdb2MdbDriver == null)
       {
@@ -111,7 +135,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return;
       }
 
-      var strArray = new[] { Path.GetFullPath(asset) };
+      var strArray = new[] { dllPath };
       method.Invoke(null, new object[] { strArray });
     }
     

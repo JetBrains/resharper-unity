@@ -3,6 +3,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Serialization;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
@@ -35,6 +36,48 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public override string ToString()
         {
             return $"FileID: {fileID}, {guid ?? "<no guid>"}";
+        }
+
+        public void WriteTo(UnsafeWriter writer)
+        { 
+            WriteTo(writer, this);
+        }
+
+        public static FileID ReadFrom(UnsafeReader reader)
+        {
+            return new FileID(reader.ReadString(), reader.ReadString());
+        }
+        
+        public static void WriteTo(UnsafeWriter writer, FileID value)
+        {
+            writer.Write(value.guid);
+            writer.Write(value.fileID);
+        }
+        
+        protected bool Equals(FileID other)
+        {
+            return string.Equals(guid, other.guid) && string.Equals(fileID, other.fileID);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((FileID) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((guid != null ? guid.GetHashCode() : 0) * 397) ^ (fileID != null ? fileID.GetHashCode() : 0);
+            }
+        }
+
+        public FileID WithGuid(string newGuid)
+        {
+            return new FileID(newGuid, fileID);
         }
     }
     // ReSharper restore InconsistentNaming
@@ -88,6 +131,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 if (fileID == "0")
                     return FileID.Null;
                 var guid = flowMappingNode.FindMapEntryBySimpleKey("guid")?.Value.AsString();
+
+                if (guid == null && fileID == null)
+                    return null;
+                
                 return new FileID(guid, fileID);
             }
 
@@ -98,7 +145,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         [CanBeNull]
         public static INode GetUnityObjectPropertyValue([CanBeNull] this IYamlDocument document, [NotNull] string key)
         {
-            return FindRootBlockMapEntries(document).FindMapEntryBySimpleKey(key)?.Value;
+            return FindRootBlockMapEntries(document).FindMapEntryBySimpleKey(key)?.Content.Value;
         }
 
         // This will open the Body chameleon
@@ -130,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         [CanBeNull]
-        private static INodeProperties GetDocumentBlockNodeProperties([CanBeNull] INode documentBlockNode)
+        public static INodeProperties GetDocumentBlockNodeProperties([CanBeNull] INode documentBlockNode)
         {
             // Careful. This will open chameleons
             if (documentBlockNode is IBlockSequenceNode sequenceNode)
@@ -142,12 +189,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         // This will open the Body chameleon
         [CanBeNull]
-        private static IBlockMappingNode FindRootBlockMapEntries([CanBeNull] this IYamlDocument document)
+        public static IBlockMappingNode FindRootBlockMapEntries([CanBeNull] this IYamlDocument document)
         {
             // A YAML document is a block mapping node with a single entry. The key is usually the type of the object,
             // while the value is another block mapping node. Those entries are the properties of the Unity object
             var rootBlockMappingNode = document?.Body.BlockNode as IBlockMappingNode;
-            return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Value as IBlockMappingNode;
+            return rootBlockMappingNode?.EntriesEnumerable.FirstOrDefault()?.Content.Value as IBlockMappingNode;
+        }
+
+        public static string GetAnchor(this IYamlDocument document)
+        {
+            var properties = GetDocumentBlockNodeProperties(document.Body.BlockNode);
+            return properties?.AnchorProperty?.Text?.GetText();
+        }
+        
+        public static INode GetValue(this IBlockMappingNode document, string key)
+        {
+            return document?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText(key))?.Content?.Value;
         }
     }
 }

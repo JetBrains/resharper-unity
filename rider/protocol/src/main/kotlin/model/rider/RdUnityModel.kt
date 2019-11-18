@@ -4,6 +4,12 @@ import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 
+// frontend <-> backend model, from point of view of frontend, meaning:
+// Sink is a one-way signal the frontend subscribes to
+// Source is a one-way signal the frontend fires
+// Property and Signal are two-way and can be updated/fired on both ends
+// Call is an RPC method (with return value) that is called by the frontend/implemented by the backend
+// Callback is an RPC method (with return value) that is implemented by the frontend/called by the backend
 @Suppress("unused")
 object RdUnityModel : Ext(SolutionModel.Solution) {
     private val UnitTestLaunchPreference = enum {
@@ -16,6 +22,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"Disconnected"
         +"ConnectedIdle"
         +"ConnectedPlay"
+        +"ConnectedPause"
         +"ConnectedRefresh"
     }
 
@@ -56,10 +63,12 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("playerLogPath", string)
 
         property("play", bool)
+        sink("clearOnPlay", long)
         property("pause", bool)
 
         source("step", void)
         source("refresh", bool)
+        source("showPreferences", void)
 
         property("sessionInitialized", bool)
 
@@ -81,17 +90,18 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("hasUnityReference", bool)
 
         sink("startUnity", void)
-        property("scriptChangesDuringPlayTabName", string.nullable)
         sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
-        source("setScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
+        property("ScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
 
-        signal("findUsageResults", FindUsageResult)
-        signal("showGameObjectOnScene", FindUsageResultElement)
+        signal("showFileInUnity", string)
         property("unityProcessId", int)
 
         sink("onEditorModelOutOfSync", void)
         callback("attachDebuggerToUnityEditor", void, bool)
+        callback("allowSetForegroundWindow", void, bool)
+
+        call("generateUIElementsSchema", void, bool)
     }
 }

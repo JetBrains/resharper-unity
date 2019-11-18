@@ -19,7 +19,7 @@ namespace JetBrains.Rider.Unity.Editor
       
       if (!PluginEntryPoint.IsLoadedFromAssets())
       {
-        ourLogger.Verbose($"Plugin was not loaded from Assets.");
+        ourLogger.Verbose($"AdditionalPluginsInstaller disabled. Plugin was not loaded from Assets.");
         return;
       }
 

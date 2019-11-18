@@ -3,8 +3,8 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.impl.CheckableRunConfigurationEditor
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.defineNestedLifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
-import com.jetbrains.rdclient.util.idea.defineNestedLifetime
 
 class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<UnityAttachToEditorRunConfiguration>(),
         CheckableRunConfigurationEditor<UnityAttachToEditorRunConfiguration> {
@@ -21,7 +21,6 @@ class UnityAttachToEditorSettingsEditor(project: Project) : SettingsEditor<Unity
 
     override fun checkEditorData(configuration: UnityAttachToEditorRunConfiguration) {
         configuration.pid = viewModel.pid.value
-        configuration.isUserSelectedPid = viewModel.isUserSelectedPid.value
     }
 
     override fun resetEditorFrom(configuration: UnityAttachToEditorRunConfiguration) {

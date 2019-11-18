@@ -2,16 +2,17 @@
 IYamlFile
   IYamlDocument
     ChameleonDocumentBody
-      ChameleonBlockMappingNode
+      IBlockMappingNode
         IBlockMappingEntry
           IPlainScalarNode
             YamlTokenType+GenericTokenElement(0,3)(type:NS_PLAIN, text:key)
           YamlTokenType+FixedTokenElement(3,1)(type:COLON, text::)
-          Whitespace(4,4)(type:WHITESPACE, text:    ) spaces: "    "
-          Comment(8,9)(type:COMMENT, text:# Comment) comment: "# Comment"
-          NewLine(17,1)(type:NEW_LINE, text:\n) spaces: "\n"
-          YamlTokenType+GenericTokenElement(18,2)(type:INDENT, text:  )
-          IPlainScalarNode
-            YamlTokenType+GenericTokenElement(20,5)(type:NS_PLAIN, text:value)
-          NewLine(25,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          IContentNode
+            Whitespace(4,4)(type:WHITESPACE, text:    ) spaces: "    "
+            Comment(8,9)(type:COMMENT, text:# Comment) comment: "# Comment"
+            NewLine(17,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(18,2)(type:INDENT, text:  )
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(20,5)(type:NS_PLAIN, text:value)
+            NewLine(25,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

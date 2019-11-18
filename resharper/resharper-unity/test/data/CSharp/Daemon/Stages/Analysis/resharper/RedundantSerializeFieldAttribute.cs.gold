@@ -14,11 +14,11 @@ public class ||Test|(0)|(1) : MonoBehaviour
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): Unity Gutter Icon: Unity scripting component
+(1): Unity Gutter Icon: Unity script
 (2): ReSharper Unity Implicitly Used Identifier: 
-(3): Unity Gutter Icon: This field is initialised by Unity
+(3): Unity Gutter Icon: This field is initialized from Inspector
 (4): ReSharper Unity Implicitly Used Identifier: 
-(5): Unity Gutter Icon: This field is initialised by Unity
+(5): Unity Gutter Icon: This field is initialized from Inspector
 (6): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (7): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (8): ReSharper Dead Code: Redundant 'SerializeField' attribute

@@ -3,6 +3,7 @@ using JetBrains.Application.UI.PopupLayout;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 
@@ -10,12 +11,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     public class UnityEditorOccurrence : ReferenceOccurrence
     {
-        private readonly IUnityYamlReference myUnityEventTargetReference;
         public UnityEditorOccurrence([NotNull] IUnityYamlReference unityEventTargetReference, IDeclaredElement element,
             OccurrenceType occurrenceType)
             : base(unityEventTargetReference, element, occurrenceType)
         {
-            myUnityEventTargetReference = unityEventTargetReference;
         }
 
         public override bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
@@ -25,7 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return base.Navigate(solution, windowContext, transferFocus, tabOptions);
             
             var findRequestCreator = solution.GetComponent<UnityEditorFindUsageResultCreator>();
-            findRequestCreator.CreateRequestToUnity(myUnityEventTargetReference, true);
+            var reference = PrimaryReference as IUnityYamlReference;
+            if (reference == null)
+                return true;
+            findRequestCreator.CreateRequestToUnity(reference, true);
             return true;
         }
     }

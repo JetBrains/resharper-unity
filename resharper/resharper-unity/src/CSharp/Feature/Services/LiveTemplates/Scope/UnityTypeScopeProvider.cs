@@ -4,6 +4,8 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.LiveTemplates;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -15,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         public UnityTypeScopeProvider()
         {
             Creators.Add(TryToCreate<MustBeInUnityType>);
+            Creators.Add(TryToCreate<MustBeInUnityCSharpFile>);
         }
 
         public override IEnumerable<ITemplateScopePoint> ProvideScopePoints(TemplateAcceptanceContext context)
@@ -33,13 +36,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 yield break;
 
             var psiFile = sourceFile.GetPrimaryPsiFile();
-            var element = psiFile?.FindTokenAt(caretOffset - prefix.Length);
-            var typeDeclaration = element?.GetContainingNode<ITypeDeclaration>();
-            if (typeDeclaration == null)
+            if (psiFile == null)
                 yield break;
 
+            if (psiFile.Language.Is<CSharpLanguage>())
+                yield return new MustBeInUnityCSharpFile();
+
+            var element = psiFile.FindTokenAt(caretOffset - prefix.Length);
+            var typeDeclaration = element?.GetContainingNode<ITypeDeclaration>();
+
             var unityApi = context.Solution.GetComponent<UnityApi>();
-            if (unityApi.IsUnityType(typeDeclaration.DeclaredElement))
+            if (unityApi.IsUnityType(typeDeclaration?.DeclaredElement))
                 yield return new MustBeInUnityType();
         }
     }

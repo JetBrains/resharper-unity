@@ -1,9 +1,15 @@
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
@@ -13,11 +19,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class UnityEventTargetReference : CheckedReferenceBase<IPlainScalarNode>, IUnityYamlReference
     {
+        private readonly EventHandlerArgumentMode myMode;
+        private readonly string myType;
         private readonly FileID myFileId;
 
-        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, FileID fileId)
+        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, EventHandlerArgumentMode mode, string type, FileID fileId)
             : base(owner)
         {
+            myMode = mode;
+            myType = type;
             myFileId = fileId;
         }
 
@@ -30,30 +40,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             // If it's a reference to something other than MonoBehaviour, it shouldn't be a resolve error
             // E.g. setting the property on a light map when an event fires
-            if (!IsMonoBehaviourReference())
-                return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.IGNORABLE);
+            
+            // TODO it is not true for prefabs
+//            if (!IsMonoBehaviourReference())
+//                return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.IGNORABLE);
 
             var resolveResultWithInfo = CheckedReferenceImplUtil.Resolve(this, GetReferenceSymbolTable(true));
             if (!resolveResultWithInfo.Result.IsEmpty)
                 return resolveResultWithInfo;
 
-            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
+            // TODO: Support references to scripts/event handlers in external packages
+            // Surprisingly, it's possible to have a reference to a script asset defined in a read-only package. We
+            // don't know anything about these assets, because read-only packages are not part of the C# project
+            // structure - they are compiled and added as assembly references. So we don't currently have a way to map
+            // an asset GUID back to a compiled class.
+            // See also UnityEventTargetReference
+//            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.NOT_RESOLVED);
+            return new ResolveResultWithInfo(EmptyResolveResult.Instance, ResolveErrorType.IGNORABLE);
         }
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var assetGuid = GetScriptAssetGuid();
+            var assetGuid = GetScriptAssetGuid(myOwner.GetSolution().GetComponent<UnitySceneDataLocalCache>(), myOwner.GetSolution().GetComponent<MetaFileGuidCache>());
             var targetType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(myOwner.GetSolution(), assetGuid);
             if (targetType == null)
                 return EmptySymbolTable.INSTANCE;
 
-            var symbolTable =
-                ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, myOwner.GetPsiModule());
+            var symbolTable = ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, myOwner.GetPsiModule());
 
             if (useReferenceName)
             {
                 var name = GetName();
-                return symbolTable.Filter(name, new ExactNameFilter(name));
+                return symbolTable.Filter(name, IsMethodFilter.INSTANCE, OverriddenFilter.INSTANCE, new ExactNameFilter(name),
+                    new StaticFilter(new NonStaticAccessContext(myOwner)), new EventHandlerSymbolFilter(myMode, myType, targetType.Module));
             }
 
             return symbolTable;
@@ -69,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             using (WriteLockCookie.Create(myOwner.IsPhysical()))
             {
-                var text = YamlTokenType.NS_PLAIN_ONE_LINE.Create(element.ShortName);
+                var text = YamlTokenType.NS_PLAIN_ONE_LINE_IN.Create(element.ShortName);
                 if (myOwner.Text != null)
                     LowLevelModificationUtil.ReplaceChildRange(myOwner.Text, myOwner.Text, text);
                 else
@@ -90,12 +109,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         // necessarily the guid of the script asset that *declares* the method (property setter is a method). The method
         // might be declared on a base type, or might be a virtual override
         [CanBeNull]
-        public string GetScriptAssetGuid()
+        public string GetScriptAssetGuid(UnitySceneDataLocalCache cache, MetaFileGuidCache guidCache)
         {
-            var yamlFile = (IYamlFile) myOwner.GetContainingFile();
-            var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);
-            var fileID = document.GetUnityObjectPropertyValue("m_Script").AsFileID();
-            return fileID?.guid;
+            return cache.GetScriptGuid(UnitySceneDataLocalCache.GetSourceFileWithPointedYamlDocument(myOwner.GetSourceFile(), myFileId, guidCache), myFileId.fileID);
         }
     }
 }

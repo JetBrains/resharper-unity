@@ -57,7 +57,7 @@ public class ||Derived|(13)|(14) : Base
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): Unity Gutter Icon: Unity scripting component
+(1): Unity Gutter Icon: Unity script
 (2): ReSharper Unity Implicitly Used Identifier: 
 (3): Unity Gutter Icon: Unity event function
 
@@ -81,25 +81,25 @@ Awake is called when the script instance is being loaded.
 If OnAudioFilterRead is implemented, Unity will insert a custom filter into the audio DSP chain.
 (12): ReSharper Warning: Incorrect method parameters. Expected '(float[] data, int channels)'
 (13): ReSharper Unity Implicitly Used Identifier: 
-(14): Unity Gutter Icon: Unity scripting component
+(14): Unity Gutter Icon: Unity script
 (15): ReSharper Unity Implicitly Used Identifier: 
-(16): ReSharper Hides: Hides method from class 'Base'(click to navigate)
+(16): ReSharper Hides: Hides method from class 'Base' (click to navigate)
 (17): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (18): ReSharper Unity Implicitly Used Identifier: 
-(19): ReSharper Hides: Hides method from class 'Base'(click to navigate)
+(19): ReSharper Hides: Hides method from class 'Base' (click to navigate)
 (20): Unity Gutter Icon: Unity event function
 
 This function is called when the object becomes enabled and active.
 (21): ReSharper Unity Implicitly Used Identifier: 
-(22): ReSharper Hides: Hides method from class 'Base'(click to navigate)
+(22): ReSharper Hides: Hides method from class 'Base' (click to navigate)
 (23): Unity Gutter Icon: Unity event function
 
 Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
 (24): ReSharper Unity Implicitly Used Identifier: 
-(25): ReSharper Hides: Hides Unity event function from class 'Base'(click to navigate)
+(25): ReSharper Hides: Hides Unity event function from class 'Base' (click to navigate)
 (26): Unity Gutter Icon: Unity event function
 
 Awake is called when the script instance is being loaded.

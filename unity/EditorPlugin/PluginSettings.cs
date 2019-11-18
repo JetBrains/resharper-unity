@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Diagnostics.Internal;
 using JetBrains.Lifetimes;
@@ -13,7 +14,6 @@ namespace JetBrains.Rider.Unity.Editor
   public interface IPluginSettings
   {
     OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
-    string RiderPath { get; set; }
   }
 
   public enum AssemblyReloadSettings
@@ -104,6 +104,12 @@ namespace JetBrains.Rider.Unity.Editor
       }
       set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
     }
+    
+    public static bool UseLatestRiderFromToolbox
+    {
+      get { return EditorPrefs.GetBool("UseLatestRiderFromToolbox", true); }
+      set { EditorPrefs.SetBool("UseLatestRiderFromToolbox", value); }
+    }
 
     private static string TargetFrameworkVersionDefault = "4.6";
 
@@ -145,28 +151,11 @@ namespace JetBrains.Rider.Unity.Editor
       set { EditorPrefs.SetBool("RiderInitializedOnce", value); }
     }
 
-    private static string RiderPathInternal
-    {
-      get { return EditorPrefs.GetString("Rider_RiderPath", null); }
-      set { EditorPrefs.SetString("Rider_RiderPath", value); }
-    }
-    
     public static bool LogEventsCollectorEnabled
     {
       get { return EditorPrefs.GetBool("Rider_LogEventsCollectorEnabled", true); }
       private set { EditorPrefs.SetBool("Rider_LogEventsCollectorEnabled", value); }
     }
-
-
-    private static GUIStyle ourVersionInfoStyle = new GUIStyle()
-    {
-      normal = new GUIStyleState()
-      {
-        textColor = new Color(0, 0, 0, .6f),
-      }, 
-      margin = new RectOffset(4, 4, 4, 4),
-    };
-    
 
     /// <summary>
     /// Preferences menu layout
@@ -181,33 +170,33 @@ namespace JetBrains.Rider.Unity.Editor
       EditorGUILayout.BeginVertical();
 
       var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
-      var paths = alternatives.Select(a => a.Path).ToArray();
-      if (alternatives.Any())
+      if (alternatives.Any()) // from known locations
       {
-        var index = Array.IndexOf(paths, RiderPathInternal);
-        var alts = alternatives.Select(s => s.Presentation).ToArray();
-        RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
-        EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
+        var paths = alternatives.Select(a => a.Path).ToList();
+        var externalEditor = EditorPrefsWrapper.ExternalScriptEditor;
+        var alts = alternatives.Select(s => s.Presentation).ToList();
 
-        if (EditorGUILayout.Toggle(new GUIContent("Make Rider default editor:"), PluginEntryPoint.Enabled))
+        if (!paths.Contains(externalEditor))
         {
-          EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
+          paths.Add(externalEditor);
+          alts.Add(externalEditor);
+        }
 
-          // make sure the plugin was initialized first.
-          // this can happen in case "Rider" was set as the default scripting app only after this plugin was imported.
-          PluginEntryPoint.Init();
-          
-          EditorGUILayout.HelpBox("Unchecking will restore default external editor", MessageType.None);
-        }
-        else
-        {
-          EditorPrefsWrapper.ExternalScriptEditor = string.Empty;
-          EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
-        }
+        var index = paths.IndexOf(externalEditor);
+        
+        
+        var result = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts.ToArray())];
+        
+        EditorPrefsWrapper.ExternalScriptEditor = result;
       }
       
-      GUI.enabled = PluginEntryPoint.Enabled;
+      if (PluginEntryPoint.IsRiderDefaultEditor() && !RiderPathProvider.RiderPathExist(EditorPrefsWrapper.ExternalScriptEditor, SystemInfoRiderPlugin.operatingSystemFamily))
+      {
+        EditorGUILayout.HelpBox($"Rider is selected as preferred ExternalEditor, but doesn't exist on disk {EditorPrefsWrapper.ExternalScriptEditor}", MessageType.Warning);
+      }
 
+      UseLatestRiderFromToolbox = EditorGUILayout.Toggle(new GUIContent("Update Rider to latest version"),  UseLatestRiderFromToolbox);
+      
       GUILayout.BeginVertical();
       LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider:"), LogEventsCollectorEnabled);
 
@@ -321,7 +310,14 @@ namespace JetBrains.Rider.Unity.Editor
       
       GUILayout.FlexibleSpace();
       var version = Assembly.GetExecutingAssembly().GetName().Version;
-      GUILayout.Label("Plugin version: " + version, ourVersionInfoStyle);
+      GUILayout.Label("Plugin version: " + version, new GUIStyle()
+      {
+        normal = new GUIStyleState()
+        {
+          textColor = new Color(0, 0, 0, .6f),
+        }, 
+        margin = new RectOffset(4, 4, 4, 4),
+      });
       
       GUILayout.EndHorizontal();
       
@@ -350,12 +346,6 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     public OperatingSystemFamilyRider OperatingSystemFamilyRider => SystemInfoRiderPlugin.operatingSystemFamily;
-
-    string IPluginSettings.RiderPath
-    {
-      get { return RiderPathInternal; }
-      set { RiderPathInternal = value; }
-    }
 
     internal static class SystemInfoRiderPlugin
     {
@@ -387,6 +377,5 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
     }
-
   }
 }

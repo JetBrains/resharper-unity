@@ -131,6 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
     [TestCase("SingleQuotedCharacters")]
     [TestCase("SingleQuotedImplicitKeys")]
     [TestCase("SingleQuotedLines")]
+    [TestCase("SingleQuotedLinesWithSingleQuotedCharacters")]
 
     // 7.3.3 Plain style
     [TestCase("PlainCharacters")]
@@ -154,6 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
 
     // 7.5 Flow Nodes
     [TestCase("FlowContent")]
+    [TestCase("FlowContentMultiline")]
     [TestCase("FlowNodes")]
 
     // 8 Block Styles

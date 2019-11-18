@@ -1,0 +1,42 @@
+before change
+Inline 381 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=366, endOffset=380) "42"
+    Hidden
+Inline 412 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=400, endOffset=411) "Hello from Unity Editor!"
+    Hidden
+Inline 494 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=477, endOffset=493) Sphere_a
+    Hidden
+Inline 579 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=558, endOffset=573) Unchanged
+    Hidden
+Inline 654 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=645, endOffset=653) Changed in 1 asset
+    Hidden
+Inline 734 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=725, endOffset=733) Changed in 2 assets
+    Hidden
+Inline 757 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=752, endOffset=756) Serializable
+    Hidden
+Block 142 BlockLensListRenderer
+Top
+    Visible
+        Text RdTextRange(startOffset=155, endOffset=167) 3 asset usages
+        Text RdTextRange(startOffset=155, endOffset=167) 4 usages
+    Hidden

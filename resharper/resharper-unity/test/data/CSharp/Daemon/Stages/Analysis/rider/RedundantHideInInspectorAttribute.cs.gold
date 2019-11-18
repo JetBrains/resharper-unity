@@ -1,39 +1,38 @@
 ﻿using System;
 using UnityEngine;
 
-public class ||Test|(0)|(1) : MonoBehaviour
+public class |Test|(0) : MonoBehaviour
 {
-    [|HideInInspector|(2)] private int Redundant1;
-    [|HideInInspector|(3)] [NonSerialized] private int NotRedundant2;
-    [|HideInInspector|(4)] [|SerializeField|(5)] private static int Redundant3;
-    [|HideInInspector|(6)] [|SerializeField|(7)] private const int Redundant3 = 42;
-    [|HideInInspector|(8)] [|SerializeField|(9)] private readonly int Redundant3 = 42;
+    [|HideInInspector|(1)] private int Redundant1;
+    [|HideInInspector|(2)] [NonSerialized] private int NotRedundant2;
+    [|HideInInspector|(3)] [|SerializeField|(4)] private static int Redundant3;
+    [|HideInInspector|(5)] [|SerializeField|(6)] private const int Redundant3 = 42;
+    [|HideInInspector|(7)] [|SerializeField|(8)] private readonly int Redundant3 = 42;
 }
 
 public class Boring
 {
-    [|HideInInspector|(10)] public int Redundant1;
-    [|HideInInspector|(11)] private int Redundant2;
-    [|HideInInspector|(12)] private static int Redundant3;
-    [|HideInInspector|(13)] [|SerializeField|(14)] private const int Redundant4 = 42;
-    [|HideInInspector|(15)] [|SerializeField|(16)] private readonly int Redundant3 = 42;
+    [|HideInInspector|(9)] public int Redundant1;
+    [|HideInInspector|(10)] private int Redundant2;
+    [|HideInInspector|(11)] private static int Redundant3;
+    [|HideInInspector|(12)] [|SerializeField|(13)] private const int Redundant4 = 42;
+    [|HideInInspector|(14)] [|SerializeField|(15)] private readonly int Redundant3 = 42;
 }
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): UnityCodeInsights: 
+(1): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (2): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (3): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(4): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(5): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(6): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(7): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(8): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(9): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(4): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(5): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(6): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(7): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(8): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(9): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (10): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (11): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (12): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(13): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(14): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(15): ReSharper Dead Code: Redundant 'HideInInspector' attribute
-(16): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(13): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(14): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(15): ReSharper Dead Code: Redundant 'SerializeField' attribute

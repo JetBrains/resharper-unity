@@ -12,7 +12,7 @@
 - Code completion of event function declarations in a class.
 - Use Generate Code to create event functions, with parameters, or start typing for automatic completion.
 - Highlights Unity event functions and serializable fields and marks as implicitly used by Unity.
-- Supports Unity API 5.0 - 2018.3, plus undocumented functions.
+- Supports Unity API 5.0 - 2019.3, plus undocumented functions.
 - Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explanations.
 - Performance indicators to avoid known code patterns that affect performance.
 - Parse class and method usage from scene, prefab and assets.
@@ -36,38 +36,22 @@
 <releaseNotes>
 Added:
 
-- Add rename of methods and properties used in text base assets (#1140)
-- Add inspection and quick fix to avoid inefficient order of multiplication operations (#1031)
-- Add warning for string literal use in Animator.ResetTrigger (RIDER-24421, #1035)
-- Add support for marking ECS types and fields as "in use" (#1010, #1036)
-- Add gutter icon indicator for event function that "hides" a private event function in a base class (RIDER-14698, #1081)
-- Add Unity version to error report environment details (#1103)
-- Add ability to find similar issues for performance indicators (#1109)
+- Update API information to 2019.3.0b11 (#1412)
+- Methods with the [SettingsProvider] attribute are now marked as implicitly used (#1225, #1362)
 
 Changed:
 
-- Performance critical context now works cross files (#1037)
-- Event functions can be grouped by base classes in Generate dialog (#810, #1081)
-- No longer creates a .sln.DotSettings.user file when YAML size heuristic is applied (#1087)
-- Treat AddComponent(Type) as an expensive operation (#1044, #1109)
-- Include Unity YAML files in Solution Wide Error Analysis (#1118)
+- Improve performance parsing YAML scenes (#1408)
 
 Fixed:
+- Fix overridden Update methods not acting as performance critical context (RIDER-33934, #1408)
+- Fix Quick Fix incorrectly converting LinecastAll to CapsuleCastNonAlloc instead of LinecastNonAlloc (#1324, RIDER-33442, #1408)
+- Fix finding usages of methods used as event handler from prefab (#1331, #1408)
+- Fix moving .meta file during "Move to Folder" refactoring (#1370, #1389)
+- Fix orphan .meta file during "Safe Delete" refactoring (#856, #1389)
+- Fix correctly keeping .meta files up to date in Packages folder (#1231, #1389)
 
-- Event handler completion no longer matches on parameter types, only method names (RIDER-22944, #1081)
-- No longer shows code completion after [SerializeField] attribute (RIDER-22943, #1081)
-- Correctly resolves generated code when there is a namespace called System in the current context (RIDER-22605, #1081)
-- Correctly handle code generation of event functions that are implemented as virtual methods (RIDER-17104, #603, #879, #1081)
-- Correctly update name of existing method declaration with code completion (RIDER-9555, RIDER-14037, #0181)
-- Only show event function completion in classes, not structs or interfaces (RIDER-14147, #420, #1081)
-- Respect existing access modifier in code completion (RIDER-15290, #1081)
-- Remove incorrect method signature warning if method is implementing a virtual method (#876, #1081)
-- Fix spelling mistake in issue suppression comment (#1083, #1109)
-- Fix validation exceptions (RIDER-26102, RIDER-26109, RIDER-26103, #1108)
-
-
-
-See CHANGELOG.md in the project repo for more details and history.
+See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
@@ -75,7 +59,7 @@ See CHANGELOG.md in the project repo for more details and history.
     <copyright>Copyright 2019 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[191.0]" />
+      <dependency id="Wave" version="[193.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>

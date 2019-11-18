@@ -2,7 +2,7 @@
 IYamlFile
   IYamlDocument
     ChameleonDocumentBody
-      ChameleonBlockMappingNode
+      IBlockMappingNode
         INodeProperties
           IVerbatimTagProperty
             YamlTokenType+FixedTokenElement(0,2)(type:BANG_LT, text:!<)
@@ -14,15 +14,16 @@ IYamlFile
             YamlTokenType+GenericTokenElement(25,3)(type:NS_PLAIN, text:foo)
           Whitespace(28,1)(type:WHITESPACE, text: ) spaces: " "
           YamlTokenType+FixedTokenElement(29,1)(type:COLON, text::)
-          NewLine(30,1)(type:NEW_LINE, text:\n) spaces: "\n"
-          YamlTokenType+GenericTokenElement(31,2)(type:INDENT, text:  )
-          IPlainScalarNode
-            INodeProperties
-              IVerbatimTagProperty
-                YamlTokenType+FixedTokenElement(33,2)(type:BANG_LT, text:!<)
-                YamlTokenType+GenericTokenElement(35,4)(type:NS_URI_CHARS, text:!bar)
-                YamlTokenType+FixedTokenElement(39,1)(type:GT, text:>)
-            Whitespace(40,1)(type:WHITESPACE, text: ) spaces: " "
-            YamlTokenType+GenericTokenElement(41,3)(type:NS_PLAIN, text:baz)
-          NewLine(44,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          IContentNode
+            NewLine(30,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(31,2)(type:INDENT, text:  )
+            IPlainScalarNode
+              INodeProperties
+                IVerbatimTagProperty
+                  YamlTokenType+FixedTokenElement(33,2)(type:BANG_LT, text:!<)
+                  YamlTokenType+GenericTokenElement(35,4)(type:NS_URI_CHARS, text:!bar)
+                  YamlTokenType+FixedTokenElement(39,1)(type:GT, text:>)
+              Whitespace(40,1)(type:WHITESPACE, text: ) spaces: " "
+              YamlTokenType+GenericTokenElement(41,3)(type:NS_PLAIN, text:baz)
+            NewLine(44,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

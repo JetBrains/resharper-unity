@@ -1,0 +1,96 @@
+﻿Language: PsiLanguageType:JSON_NEW
+IJsonNewFile
+  IJsonNewObject
+    JsonNewFixedLengthTokenNode(type:LBRACE, text:{)
+    JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+    JsonNewWhitespaceTokenNode(type:WHITESPACE, text:    )
+    IJsonNewMember
+      JsonNewGenericTokenNode(type:DOUBLE_QUOTED_STRING, text:"field1")
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      JsonNewFixedLengthTokenNode(type:COLON, text::)
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      IJsonNewLiteralExpression
+        JsonNewKeywordTokenNode(type:TRUE_KEYWORD, text:true)
+    JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+    JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+    JsonNewWhitespaceTokenNode(type:WHITESPACE, text:    )
+    IJsonNewMember
+      JsonNewGenericTokenNode(type:DOUBLE_QUOTED_STRING, text:"field2")
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      JsonNewFixedLengthTokenNode(type:COLON, text::)
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      IJsonNewObject
+        JsonNewFixedLengthTokenNode(type:LBRACE, text:{)
+        JsonNewFixedLengthTokenNode(type:RBRACE, text:})
+    JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+    JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+    JsonNewWhitespaceTokenNode(type:WHITESPACE, text:    )
+    IJsonNewMember
+      JsonNewGenericTokenNode(type:DOUBLE_QUOTED_STRING, text:"field3")
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      JsonNewFixedLengthTokenNode(type:COLON, text::)
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      IJsonNewObject
+        JsonNewFixedLengthTokenNode(type:LBRACE, text:{)
+        JsonNewFixedLengthTokenNode(type:RBRACE, text:})
+    JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+    JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+    JsonNewWhitespaceTokenNode(type:WHITESPACE, text:    )
+    IJsonNewMember
+      JsonNewGenericTokenNode(type:DOUBLE_QUOTED_STRING, text:"field4")
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      JsonNewFixedLengthTokenNode(type:COLON, text::)
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      IJsonNewObject
+        JsonNewFixedLengthTokenNode(type:LBRACE, text:{)
+        JsonNewFixedLengthTokenNode(type:RBRACE, text:})
+    JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+    JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+    JsonNewWhitespaceTokenNode(type:WHITESPACE, text:    )
+    IJsonNewMember
+      JsonNewGenericTokenNode(type:DOUBLE_QUOTED_STRING, text:"field5")
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      JsonNewFixedLengthTokenNode(type:COLON, text::)
+      JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+      IJsonNewObject
+        JsonNewFixedLengthTokenNode(type:LBRACE, text:{)
+        JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+        JsonNewWhitespaceTokenNode(type:WHITESPACE, text:        )
+        IJsonNewMember
+          JsonNewGenericTokenNode(type:DOUBLE_QUOTED_STRING, text:"field5_a")
+          JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+          JsonNewFixedLengthTokenNode(type:COLON, text::)
+          JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+          IJsonNewArray
+            JsonNewFixedLengthTokenNode(type:LBRACKET, text:[)
+            JsonNewFixedLengthTokenNode(type:RBRACKET, text:])
+        JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+        JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+        JsonNewWhitespaceTokenNode(type:WHITESPACE, text:        )
+        IJsonNewMember
+          JsonNewGenericTokenNode(type:DOUBLE_QUOTED_STRING, text:"field5_b")
+          JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+          JsonNewFixedLengthTokenNode(type:COLON, text::)
+          JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+          IJsonNewLiteralExpression
+            JsonNewKeywordTokenNode(type:TRUE_KEYWORD, text:true)
+        JsonNewFixedLengthTokenNode(type:COMMA, text:,)
+        JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+        JsonNewWhitespaceTokenNode(type:WHITESPACE, text:        )
+        IJsonNewMember
+          JsonNewGenericTokenNode(type:DOUBLE_QUOTED_STRING, text:"field5_c")
+          JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+          JsonNewFixedLengthTokenNode(type:COLON, text::)
+          JsonNewWhitespaceTokenNode(type:WHITESPACE, text: )
+          IJsonNewObject
+            JsonNewFixedLengthTokenNode(type:LBRACE, text:{)
+            JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+            JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+            JsonNewWhitespaceTokenNode(type:WHITESPACE, text:        )
+            JsonNewFixedLengthTokenNode(type:RBRACE, text:})
+        JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+        JsonNewWhitespaceTokenNode(type:WHITESPACE, text:    )
+        JsonNewFixedLengthTokenNode(type:RBRACE, text:})
+    JsonNewNewLineTokenNode(type:NEW_LINE, text:\n)
+    JsonNewFixedLengthTokenNode(type:RBRACE, text:})
+

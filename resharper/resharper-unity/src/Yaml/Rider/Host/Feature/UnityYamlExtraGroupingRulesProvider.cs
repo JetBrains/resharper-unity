@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Rider.Model;
@@ -20,14 +21,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class UnityYamlExtraGroupingRulesProvider : IRiderExtraGroupingRulesProvider
     {
         // IconHost is optional so that we don't fail if we're in tests
-        public UnityYamlExtraGroupingRulesProvider(UnitySceneProcessor sceneProcessor = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
+        public UnityYamlExtraGroupingRulesProvider(UnitySceneDataLocalCache sceneDataCache = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
         {
             if (unitySolutionTracker != null && unitySolutionTracker.IsUnityProject.HasValue() && unitySolutionTracker.IsUnityProject.Value
-                && iconHost != null && sceneProcessor != null)
+                && iconHost != null && sceneDataCache != null)
             {
                 ExtraRules = new IRiderUsageGroupingRule[]
                 {
-                    new GameObjectUsageGroupingRule(sceneProcessor, iconHost),
+                    new GameObjectUsageGroupingRule(sceneDataCache, iconHost),
                     new ComponentUsageGroupingRule(iconHost)
                 };
             }
@@ -80,12 +81,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     // The priorities here put us after directory, file, namespace, type and member
     public class GameObjectUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {
-        [NotNull] private readonly UnitySceneProcessor mySceneProcessor;
+        [NotNull] private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
 
-        public GameObjectUsageGroupingRule([NotNull] UnitySceneProcessor sceneProcessor, [NotNull] IconHost iconHost)
+        public GameObjectUsageGroupingRule([NotNull] UnitySceneDataLocalCache unitySceneDataLocalCache, [NotNull] IconHost iconHost)
             : base("Unity Game Object", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
         {
-            mySceneProcessor = sceneProcessor;
+            myUnitySceneDataLocalCache = unitySceneDataLocalCache;
         }
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
@@ -95,9 +96,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 if (occurrence is ReferenceOccurrence referenceOccurrence &&
                     referenceOccurrence.PrimaryReference is IUnityYamlReference reference)
                 {
-                    return CreateModel(
-                        UnityObjectPsiUtil.GetGameObjectPathFromComponent(mySceneProcessor,
-                            reference.ComponentDocument));
+                    var document = reference.ComponentDocument;
+                    var sourceFile = document.GetSourceFile();
+                    if (sourceFile == null  || !sourceFile.IsValid())
+                        return EmptyModel();
+                    
+                    var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(document.GetTextAsBuffer());
+                    if (anchor == null)
+                        return EmptyModel();
+                    
+                    return CreateModel(UnityObjectPsiUtil.GetGameObjectPathFromComponent(myUnitySceneDataLocalCache, sourceFile, anchor));
                 }
             }
 

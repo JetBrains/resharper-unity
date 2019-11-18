@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.Rider.Model;

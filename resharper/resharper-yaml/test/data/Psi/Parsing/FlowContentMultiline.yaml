@@ -1,0 +1,35 @@
+- the quick brown fox jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs
+  the {0} brown fox jumped over the lazy dogs
+- the quick brown fox jumped over the lazy dogs
+  "the quick brown fox jumped over the lazy dogs"
+  "the quick brown fox" jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs
+  'the quick brown fox jumped over the lazy dogs'
+  'the quick brown fox' jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs
+  {0} quick brown fox
+  the {0} quick brown fox
+- "the quick brown fox jumped over the lazy dogs
+  the \"quick\" brown fox jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs"
+- 'the quick brown fox jumped over the lazy dogs
+  the ''quick'' brown fox jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs
+  the quick brown fox jumped over the lazy dogs'
+- the
+  - quick
+  - brown
+  - fox
+- what about
+  :starting with a colon?
+- and how
+  about a :colon in the middle
+- or perhaps:
+  different colon:
+- ~~~ tildes!
+

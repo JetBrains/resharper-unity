@@ -4,7 +4,7 @@ public class Foo
 {
     public void Method(GameObject o)
     {
-        if (|o.tag != "Whatever"|(0)) { }
+        if (|o.tag != |"Whatever"|(0)|(1)) { }
     }
 }
 
@@ -12,3 +12,5 @@ public class Foo
 0: Explicit string comparison is inefficient, use 'CompareTag' instead
 QUICKFIXES:
 Convert to 'CompareTag'
+1: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
+NO QUICKFIXES

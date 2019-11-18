@@ -1,3 +1,5 @@
+using JetBrains.Application.Environment;
+using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -15,17 +17,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
     {
         private readonly ResolveHighlighterRegistrar myRegistrar;
         private readonly ConfigurableIdentifierHighlightingStageService myIdentifierHighlightingStageService;
+        private readonly bool myInternalMode;
 
-        public IdentifierHighlightingStage(ResolveHighlighterRegistrar registrar, ConfigurableIdentifierHighlightingStageService identifierHighlightingStageService)
+        public IdentifierHighlightingStage(ResolveHighlighterRegistrar registrar, ConfigurableIdentifierHighlightingStageService identifierHighlightingStageService,
+            RunsProducts.ProductConfigurations productConfigurations)
         {
             myRegistrar = registrar;
             myIdentifierHighlightingStageService = identifierHighlightingStageService;
+            myInternalMode = productConfigurations.IsInternalMode();
         }
 
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, IShaderLabFile file)
         {
-            return new IdentifierHighlighterProcess(process, myRegistrar, settings, processKind, file, myIdentifierHighlightingStageService);
+            return new IdentifierHighlighterProcess(process, myRegistrar, settings, processKind, file, myIdentifierHighlightingStageService, myInternalMode);
         }
 
         protected override bool IsSupported(IPsiSourceFile sourceFile)

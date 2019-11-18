@@ -26,32 +26,52 @@ namespace JetBrains.Rider.Unity.Editor
   [InitializeOnLoad]
   public static class PluginEntryPoint
   {
+    public static bool ourTestModeEnabled = false;
     private static readonly IPluginSettings ourPluginSettings;
-    private static readonly RiderPathLocator ourRiderPathLocator;
+    private static readonly RiderPathProvider ourRiderPathProvider;
     public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
     private static readonly UnityEventCollector ourLogEventCollector;
+    private static bool ourInitialized;
+    private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
+    internal static string SlnFile;
 
     // This an entry point
     static PluginEntryPoint()
     {
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return;
+
       PluginSettings.InitLog(); // init log before doing any logging
       ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap
 
       ourPluginSettings = new PluginSettings();
-      ourRiderPathLocator = new RiderPathLocator(ourPluginSettings);
-      var riderPath = ourRiderPathLocator.GetDefaultRiderApp(EditorPrefsWrapper.ExternalScriptEditor,
-        RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
-      if (string.IsNullOrEmpty(riderPath))
-        return;
+      ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
 
-      AddRiderToRecentlyUsedScriptApp(riderPath);
-      if (!PluginSettings.RiderInitializedOnce)
+      if (IsLoadedFromAssets()) // old mechanism, when EditorPlugin was copied to Assets folder
       {
-        EditorPrefsWrapper.ExternalScriptEditor = riderPath;
-        PluginSettings.RiderInitializedOnce = true;
-      }
+        ourTestModeEnabled = Environment.GetCommandLineArgs().Contains("-riderTests");
+        
+        var riderPath = ourRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
+          RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
+        if (!string.IsNullOrEmpty(riderPath))
+        {
+          AddRiderToRecentlyUsedScriptApp(riderPath);
+          if (IsRiderDefaultEditor() && PluginSettings.UseLatestRiderFromToolbox)
+          {
+            EditorPrefsWrapper.ExternalScriptEditor = riderPath;
+          }
+        }
 
-      if (Enabled)
+        if (!PluginSettings.RiderInitializedOnce)
+        {
+          EditorPrefsWrapper.ExternalScriptEditor = riderPath;
+          PluginSettings.RiderInitializedOnce = true;
+        }
+
+        InitForPluginLoadedFromAssets();
+        Init();
+      }
+      else
       {
         Init();
       }
@@ -85,25 +105,15 @@ namespace JetBrains.Rider.Unity.Editor
       return OpenAssetHandler.CallRider(args);
     }
 
-    private static bool ourInitialized;
-
-    private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
-
-    internal static string SlnFile;
-
-    public static bool Enabled
+    public static bool IsRiderDefaultEditor()
     {
-      get
-      {
-        // When Unity is started by Rider tests
-        string[] args = Environment.GetCommandLineArgs ();
-        if (args.Contains("-riderTests"))
-          return true;
-        
         // Regular check
         var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
-        return !string.IsNullOrEmpty(defaultApp) && Path.GetFileName(defaultApp).ToLower().Contains("rider") && !UnityEditorInternal.InternalEditorUtility.inBatchMode;
-      }
+        bool isEnabled = !string.IsNullOrEmpty(defaultApp) &&
+                         Path.GetFileName(defaultApp).ToLower().Contains("rider") &&
+                         !UnityEditorInternal.InternalEditorUtility.inBatchMode;
+
+        return isEnabled;
     }
 
     public static void Init()
@@ -112,20 +122,10 @@ namespace JetBrains.Rider.Unity.Editor
         return;
 
       var projectDirectory = Directory.GetParent(Application.dataPath).FullName;
-
       var projectName = Path.GetFileName(projectDirectory);
       SlnFile = Path.GetFullPath($"{projectName}.sln");
 
       InitializeEditorInstanceJson();
-      ResetDefaultFileExtensions();
-
-      // process csproj files once per Unity process
-      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
-      {
-        // Perform on next editor frame update, so we avoid this exception:
-        // "Must set an output directory through SetCompileScriptsOutputDirectory before compiling"
-        EditorApplication.update += SyncSolutionOnceCallBack;
-      }
 
       var lifetimeDefinition = Lifetime.Define(Lifetime.Eternal);
       var lifetime = lifetimeDefinition.Lifetime;
@@ -137,7 +137,11 @@ namespace JetBrains.Rider.Unity.Editor
       });
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
-        Debug.Log($"Rider plugin initialized. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+      {
+        var executingAssembly = Assembly.GetExecutingAssembly();
+        var location = executingAssembly.Location;
+        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+      }
 
       var list = new List<ProtocolInstance>();
       CreateProtocolAndAdvise(lifetime, list, new DirectoryInfo(Directory.GetCurrentDirectory()).Name);
@@ -153,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathLocator, ourPluginSettings, SlnFile);
+      OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
       File.WriteAllText(protocolInstanceJsonPath, ProtocolInstance.ToJson(list));
@@ -165,9 +169,26 @@ namespace JetBrains.Rider.Unity.Editor
       };
 
       PlayModeSavedState = GetPlayModeState();
-      SetupAssemblyReloadEvents();
 
       ourInitialized = true;
+    }
+
+    internal static void InitForPluginLoadedFromAssets()
+    {
+      if (ourInitialized)
+        return;
+
+      ResetDefaultFileExtensions();
+
+      // process csproj files once per Unity process
+      if (!RiderScriptableSingleton.Instance.CsprojProcessedOnce)
+      {
+        // Perform on next editor frame update, so we avoid this exception:
+        // "Must set an output directory through SetCompileScriptsOutputDirectory before compiling"
+        EditorApplication.update += SyncSolutionOnceCallBack;
+      }
+
+      SetupAssemblyReloadEvents();
     }
 
     private static void SyncSolutionOnceCallBack()
@@ -214,7 +235,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (EditorApplication.isPaused)
         return PlayModeState.Paused;
-      if (EditorApplication.isPlaying)
+      if (EditorApplication.isPlaying || EditorApplication.isPlayingOrWillChangePlaymode)
         return PlayModeState.Playing;
       return PlayModeState.Stopped;
     }
@@ -226,23 +247,26 @@ namespace JetBrains.Rider.Unity.Editor
       EditorApplication.playmodeStateChanged += () =>
 #pragma warning restore 618
       {
-        var newPlayModeState = GetPlayModeState();
-        if (PlayModeSavedState != newPlayModeState)
+        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
         {
-          if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
+          MainThreadDispatcher.Instance.Queue(() =>
           {
-            if (newPlayModeState == PlayModeState.Playing)
+            var newPlayModeState = GetPlayModeState();
+            if (PlayModeSavedState != newPlayModeState)
             {
-              ourLogger.Info("LockReloadAssemblies");
-              EditorApplication.LockReloadAssemblies();
+              if (newPlayModeState == PlayModeState.Playing)
+              {
+                ourLogger.Info("LockReloadAssemblies");
+                EditorApplication.LockReloadAssemblies();
+              }
+              else if (newPlayModeState == PlayModeState.Stopped)
+              {
+                ourLogger.Info("UnlockReloadAssemblies");
+                EditorApplication.UnlockReloadAssemblies();
+              }
+              PlayModeSavedState = newPlayModeState;
             }
-            else if (newPlayModeState == PlayModeState.Stopped)
-            {
-              ourLogger.Info("UnlockReloadAssemblies");
-              EditorApplication.UnlockReloadAssemblies();
-            }
-          }
-          PlayModeSavedState = newPlayModeState;
+          });
         }
       };
 
@@ -280,7 +304,6 @@ namespace JetBrains.Rider.Unity.Editor
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
           InitEditorLogPath(model);
-          AdviseScriptCompilationDuringPlay(model, connectionLifetime);
 
           model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
           model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
@@ -289,10 +312,13 @@ namespace JetBrains.Rider.Unity.Editor
           model.ApplicationVersion.SetValue(UnityUtils.UnityApplicationVersion);
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
-          if (UnityUtils.UnityVersion >= new Version(2018, 2) && EditorPrefsWrapper.ScriptChangesDuringPlayOptions == 0)
-            model.ScriptChangesDuringPlayTabName.Set("General");
-          else if (UnityUtils.UnityVersion < new Version(2018, 2) && PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAndContinuePlaying)
-            model.ScriptChangesDuringPlayTabName.Set("Rider");
+          if (UnityUtils.UnityVersion >= new Version(2018, 2))
+            model.ScriptCompilationDuringPlay.Set(EditorPrefsWrapper.ScriptChangesDuringPlayOptions);
+          else
+            model.ScriptCompilationDuringPlay.Set((int)PluginSettings.AssemblyReloadSettings);
+
+          AdviseShowPreferences(model, connectionLifetime, ourLogger);
+          AdviseGenerateUISchema(model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -307,22 +333,72 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static void AdviseScriptCompilationDuringPlay(EditorPluginModel model, Lifetime lifetime)
+    private static void AdviseGenerateUISchema(EditorPluginModel model)
     {
-      model.SetScriptCompilationDuringPlay.Advise(lifetime,
-        scriptCompilationDuringPlay =>
+      model.GenerateUIElementsSchema.Set(_ => UIElementsSupport.GenerateSchema());
+    }
+
+    private static void AdviseShowPreferences(EditorPluginModel model, Lifetime connectionLifetime, ILog log)
+    {
+      model.ShowPreferences.Advise(connectionLifetime, result =>
+      {
+        if (result != null)
         {
-          if (UnityUtils.UnityVersion >= new Version(2018, 2))
-            EditorPrefsWrapper.ScriptChangesDuringPlayOptions = scriptCompilationDuringPlay;
-          else
-            PluginSettings.AssemblyReloadSettings = (AssemblyReloadSettings) scriptCompilationDuringPlay;
-        });
+          MainThreadDispatcher.Instance.Queue(() =>
+          {
+            try
+            {
+              var tab = UnityUtils.UnityVersion >= new Version(2018, 2) ? "_General" : "Rider";
+
+              var type = typeof(SceneView).Assembly.GetType("UnityEditor.SettingsService");
+              if (type != null)
+              {
+                // 2018+
+                var method = type.GetMethod("OpenUserPreferences", BindingFlags.Static | BindingFlags.Public);
+
+                if (method == null)
+                {
+                  log.Error("'OpenUserPreferences' was not found");
+                }
+                else
+                {
+                  method.Invoke(null, new object[] {$"Preferences/{tab}"});
+                }
+              }
+              else
+              {
+                // 5.5, 2017 ...
+                type = typeof(SceneView).Assembly.GetType("UnityEditor.PreferencesWindow");
+                var method = type?.GetMethod("ShowPreferencesWindow", BindingFlags.Static | BindingFlags.NonPublic);
+
+                if (method == null)
+                {
+                  log.Error("'ShowPreferencesWindow' was not found");
+                }
+                else
+                {
+                  method.Invoke(null, null);
+                }
+              }
+            }
+            catch (Exception ex)
+            {
+              log.Error("Show preferences " + ex);
+            }
+          });
+        }
+      });
     }
 
     private static void AdviseEditorState(EditorPluginModel modelValue)
     {
       modelValue.GetUnityEditorState.Set(rdVoid =>
       {
+        if (EditorApplication.isPaused)
+        {
+          return UnityEditorState.Pause;
+        }
+
         if (EditorApplication.isPlaying)
         {
           return UnityEditorState.Play;
@@ -372,6 +448,10 @@ namespace JetBrains.Rider.Unity.Editor
         MainThreadDispatcher.Instance.Queue(() =>
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
+
+          if (isPlaying)
+            model.ClearOnPlay(DateTime.UtcNow.Ticks);
+
           if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
@@ -481,13 +561,16 @@ namespace JetBrains.Rider.Unity.Editor
       editorPluginModel.PlayerLogPath.SetValue(playerLogPath);
     }
 
-    internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), $"{DateTime.Now:yyyy-MM-ddT-HH-mm-ss}.log");
+    internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
     internal static OnOpenAssetHandler OpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
     // file itself. We'll always overwrite, just to be sure it's up to date. The file contents are exactly the same
     private static void InitializeEditorInstanceJson()
     {
+      if (UnityUtils.UnityVersion >= new Version(2017, 1))
+        return;
+
       ourLogger.Verbose("Writing Library/EditorInstance.json");
 
       var editorInstanceJsonPath = Path.GetFullPath("Library/EditorInstance.json");
@@ -525,18 +608,24 @@ namespace JetBrains.Rider.Unity.Editor
     [OnOpenAsset]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (!Enabled) // || UnityUtils.UnityVersion >= new Version(2019, 2)
+      if (!PluginEntryPoint.IsRiderDefaultEditor())
         return false;
+
+      // if (UnityUtils.UnityVersion >= new Version(2019, 2)
+      //   return false;
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
     }
-    
+
     /// <summary>
     /// Called when Unity is about to open an asset. This method is new for 2019.2
     /// </summary>
     //[OnOpenAsset] // todo: restore, when we move this code to package, otherwise when OnOpenedAsset is called, there is a LogError in older Unity
     static bool OnOpenedAsset(int instanceID, int line, int column)
     {
-      if (!Enabled || UnityUtils.UnityVersion < new Version(2019, 2))
+      if (!PluginEntryPoint.IsRiderDefaultEditor())
+        return false;
+
+      if (UnityUtils.UnityVersion < new Version(2019, 2))
         return false;
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, column);
     }
@@ -561,5 +650,3 @@ namespace JetBrains.Rider.Unity.Editor
     }
   }
 }
-
-// Developed with JetBrains Rider =)

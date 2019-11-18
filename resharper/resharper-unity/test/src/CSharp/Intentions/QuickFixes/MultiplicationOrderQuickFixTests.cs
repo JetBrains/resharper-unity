@@ -19,6 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void Available02() { DoNamedTest(); }
         [Test] public void UnavailableBrackets() { DoNamedTest(); }
         [Test] public void UnavailableGoodOrder() { DoNamedTest(); }
+        
+        [Test] public void UnavailableDiv() { DoNamedTest(); }
 
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -35,5 +37,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
+        [Test] public void Test03() { DoNamedTest(); }
     }
 }

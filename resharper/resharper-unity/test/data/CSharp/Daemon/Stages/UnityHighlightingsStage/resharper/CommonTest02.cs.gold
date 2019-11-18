@@ -36,7 +36,7 @@ namespace DefaultNamespace
 }
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): Unity Gutter Icon: Unity scripting component
+(1): Unity Gutter Icon: Unity script
 (2): ReSharper Dead Code: Redundant Unity event function
 (3): ReSharper Unity Implicitly Used Identifier: 
 (4): Unity Gutter Icon: Unity event function

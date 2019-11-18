@@ -14,8 +14,8 @@ import com.jetbrains.rd.util.reactive.whenTrue
 class DefaultRunConfigurationGenerator(project: Project, runManager: RunManager, unityProjectDiscoverer: UnityProjectDiscoverer) : LifetimedProjectComponent(project) {
 
     companion object {
-        val ATTACH_CONFIGURATION_NAME = "Attach to Unity Editor"
-        val ATTACH_AND_PLAY_CONFIGURATION_NAME = "Attach to Unity Editor & Play"
+        const val ATTACH_CONFIGURATION_NAME = "Attach to Unity Editor"
+        const val ATTACH_AND_PLAY_CONFIGURATION_NAME = "Attach to Unity Editor & Play"
     }
 
     init {

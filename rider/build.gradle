@@ -3,9 +3,9 @@ import com.jetbrains.rider.plugins.gradle.buildServer.BuildServerKt
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
     id 'org.jetbrains.intellij' // Version comes from buildSrc
-    id 'com.jetbrains.rdgen' version '0.191.54'
+    id 'com.jetbrains.rdgen' version '0.193.100'
     id 'com.ullink.nuget' version '2.18'
     id 'com.ullink.nunit' version '1.14'
 }
@@ -15,7 +15,7 @@ ext.repoRoot = project.file("..")
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 ext.bundledRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
 
-
+buildSearchableOptions.enabled = BuildConfiguration == "Release"
 
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
@@ -32,7 +32,7 @@ dependencies {
 }
 
 wrapper {
-    gradleVersion = '4.10'
+    gradleVersion = '5.6.2'
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 

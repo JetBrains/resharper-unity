@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
@@ -19,17 +20,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
 {
     public class ParseBuiltinShadersTests : ThirdPartyShaderTests
     {
+        private const string SHADER_FOLDER_NAME = "builtin_shaders-5.6.2f1";
+
         // NOTE: Requires downloading builtin shaders from Unity, and copying to
-        // test\data\psi\shaderLab\parsing\external\bultin_shaders-5.6.2f1
-        protected override string ShaderFolderName => "builtin_shaders-5.6.2f1";
+        // test\data\psi\shaderLab\parsing\external\builtin_shaders-5.6.2f1
+        protected override string ShaderFolderName => SHADER_FOLDER_NAME;
+
+        [TestCaseSource(nameof(GetThirdPartyShadersSource), new object[] {SHADER_FOLDER_NAME})]
+        public void TestThirdPartyShaders(string name) => DoOneTest(name);
     }
 
     public class ParseMixedRealityToolkitShadersTests : ThirdPartyShaderTests
     {
+        private const string SHADER_FOLDER_NAME = "MixedRealityToolkit-Unity";
+
         // NOTE: Requires cloning - https://github.com/Microsoft/MixedRealityToolkit-Unity
         // File names might be too long for Windows to handle. If so, just copy .shader
         // files into `test\data\psi\shaderLab\parsing\external\MixedRealityToolkit-Unity`
-        protected override string ShaderFolderName => "MixedRealityToolkit-Unity";
+        protected override string ShaderFolderName => SHADER_FOLDER_NAME;
+
+        [TestCaseSource(nameof(GetThirdPartyShadersSource), new object[] {SHADER_FOLDER_NAME})]
+        public void TestThirdPartyShaders(string name) => DoOneTest(name);
     }
 
     [Explicit]
@@ -37,26 +48,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Psi.Parsing
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public abstract class ThirdPartyShaderTests : BaseTestWithSingleProject
     {
+        private const string RELATIVE_TEST_DATA_PATH_BASE = @"ShaderLab\Psi\Parsing\External\";
+
         // NOTE: Requires downloading the built in shaders from Unity
-        protected override string RelativeTestDataPath => @"ShaderLab\Psi\Parsing\External\" + ShaderFolderName;
+        protected override string RelativeTestDataPath => RELATIVE_TEST_DATA_PATH_BASE + ShaderFolderName;
         protected abstract string ShaderFolderName { get; }
 
-        [TestCaseSource(nameof(ThirdPartyShadersSource))]
-        public void TestThirdPartyShaders(string name) => DoOneTest(name);
-
-        public IEnumerable<string> ThirdPartyShadersSource
+        protected static IEnumerable<string> GetThirdPartyShadersSource(string shaderFolderName)
         {
-            get
-            {
-                TestUtil.SetHomeDir(GetType().Assembly);
+            var assembly = typeof(ThirdPartyShaderTests).Assembly;
+            TestUtil.SetHomeDir(assembly);
 
-                var path = TestDataPath;
-                foreach (var file in path.GetChildFiles("*.shader", PathSearchFlags.RecurseIntoSubdirectories))
-                    yield return file.MakeRelativeTo(path).ChangeExtension(string.Empty).FullPath;
-            }
+            var path = TestUtil.GetTestDataPathBase(assembly) / RELATIVE_TEST_DATA_PATH_BASE / shaderFolderName;
+            foreach (var file in path.GetChildFiles("*.shader", PathSearchFlags.RecurseIntoSubdirectories))
+                yield return file.MakeRelativeTo(path).ChangeExtension(string.Empty).FullPath;
         }
 
-        protected override void DoTest(IProject testProject)
+        protected override void DoTest(Lifetime lifetime, IProject testProject)
         {
             var projectFile = testProject.GetAllProjectFiles().FirstNotNull();
             Assert.NotNull(projectFile);

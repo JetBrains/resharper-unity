@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options
             return entity;
         }
 
-        protected void Header([NotNull] RichText text)
+        protected void Header([NotNull] string text)
         {
             WithIndent(AddHeader(text));
         }

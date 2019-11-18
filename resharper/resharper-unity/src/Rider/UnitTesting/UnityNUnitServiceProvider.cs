@@ -1,14 +1,11 @@
 ﻿using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Extentions;
 using JetBrains.Collections.Viewable;
-using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.UnitTestFramework;
-using JetBrains.ReSharper.UnitTestFramework.DotNetCore;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit;
@@ -20,32 +17,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     [SolutionComponent]
     public class UnityNUnitServiceProvider : NUnitServiceProvider
     {
+        private readonly UnityEditorProtocol myEditorProtocol;
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
         private readonly RdUnityModel myRdUnityModel;
-        private readonly ViewableProperty<EditorPluginModel> myEditorModel;
 
         public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
             IUnitTestElementIdFactory idFactory, IUnitTestElementManager elementManager, NUnitTestProvider provider,
             ISettingsStore settingsStore, ISettingsOptimization settingsOptimization, ISettingsCache settingsCache,
-            UnitTestingCachingService cachingService, IDotNetCoreSdkResolver dotNetCoreSdkResolver,
+            UnitTestingCachingService cachingService, INUnitTestParametersProvider testParametersProvider,
             UnityEditorProtocol editorProtocol,
             RunViaUnityEditorStrategy runViaUnityEditorStrategy,
             NUnitOutOfProcessUnitTestRunStrategy nUnitOutOfProcessUnitTestRunStrategy)
             : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settingsStore,
-                settingsOptimization, settingsCache, cachingService, dotNetCoreSdkResolver, nUnitOutOfProcessUnitTestRunStrategy)
+                settingsOptimization, settingsCache, cachingService, nUnitOutOfProcessUnitTestRunStrategy, testParametersProvider)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
             
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
-
-            myEditorModel = editorProtocol.UnityModel;
+            myEditorProtocol = editorProtocol;
             myUnityEditorStrategy = runViaUnityEditorStrategy;
         }
 
         public override IUnitTestRunStrategy GetRunStrategy(IUnitTestElement element)
         {
-            if (myEditorModel.Value == null)
+            if (myEditorProtocol.UnityModel.Value == null)
                 return base.GetRunStrategy(element);
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605

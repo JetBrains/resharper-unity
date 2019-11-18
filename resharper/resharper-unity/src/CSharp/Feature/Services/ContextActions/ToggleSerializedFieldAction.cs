@@ -96,8 +96,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     AttributeUtil.RemoveAttributeFromAllDeclarations(myFieldDeclaration, KnownTypes.SerializeField);
                     if (myFieldDeclaration.GetAccessRights() == AccessRights.PUBLIC)
                     {
-                        AttributeUtil.AddAttributeToAllDeclarations(myFieldDeclaration,
-                            PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, myModule, myElementFactory);
+                        AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
+                            PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, EmptyArray<AttributeValue>.Instance, myModule,
+                            myElementFactory);
                     }
                 }
                 else
@@ -111,8 +112,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                         PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS);
                     if (myFieldDeclaration.GetAccessRights() != AccessRights.PUBLIC)
                     {
-                        AttributeUtil.AddAttributeToAllDeclarations(myFieldDeclaration, KnownTypes.SerializeField,
-                            myModule, myElementFactory);
+                        AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
+                            KnownTypes.SerializeField, EmptyArray<AttributeValue>.Instance, myModule, myElementFactory);
                     }
                 }
 

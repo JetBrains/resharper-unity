@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -12,8 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class UnityEventTargetReferenceFactory : IReferenceFactory
     {
-        private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName", true);
-        private static readonly StringSearcher ourMonoBehaviourTagSearcher = new StringSearcher("!u!114", true);
+        private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName:", true);
 
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
@@ -40,11 +40,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             //       m_CallState: 2
             //   m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
             //     Culture=neutral, PublicKeyToken=null
-            var methodNameMapEntry = BlockMappingEntryNavigator.GetByValue(methodNameValue);
+            var methodNameMapEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(methodNameValue));
             var callMapNode = BlockMappingNodeNavigator.GetByEntrie(methodNameMapEntry);
             var callsSequenceEntry = SequenceEntryNavigator.GetByValue(callMapNode);
             var callsSequenceNode = BlockSequenceNodeNavigator.GetByEntrie(callsSequenceEntry);
-            var callsMapEntry = BlockMappingEntryNavigator.GetByValue(callsSequenceNode);
+            var callsMapEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(callsSequenceNode));
 
             // callsMapEntry should be "m_Calls" (and contain a value that is a sequence node). If it's not null,
             // everything else is also not null
@@ -54,15 +54,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (methodNameMapEntry.Key.MatchesPlainScalarText("m_MethodName") &&
                 callsMapEntry.Key.MatchesPlainScalarText("m_Calls"))
             {
-                // If we have a guid, that means this event handler exists inside another asset. That asset might be
-                // a .dll, in which case we don't want to add a reference (the primary purpose of these references
-                // is to enable Find Usages of methods, not navigation *from* YAML). Or it might be e.g. a prefab.
-                // This would be a reference to a prefab that contains a MonoScript asset that has the method
-                // TODO: Create an index of other assets that we could target
-                var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Value.AsFileID();
-                if (fileID != null && !fileID.IsNullReference && fileID.guid == null)
+                var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Content.Value.AsFileID();
+                if (fileID != null && !fileID.IsNullReference)
                 {
-                    var reference = new UnityEventTargetReference(methodNameValue, fileID);
+                    var text = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Mode"))?.Content.Value
+                        .GetPlainScalarText();
+
+                    var argMode = EventHandlerArgumentMode.Unknown;
+                    if (int.TryParse(text, out var mode))
+                    {
+                        if (1 <= mode && mode <= 6)
+                            argMode = (EventHandlerArgumentMode) mode;
+                    }
+                    
+                    var arguments = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Arguments"))?.Content.Value as IBlockMappingNode;
+                    var typeNameRecord = arguments?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_ObjectArgumentAssemblyTypeName"))?.Content.Value;
+                    var type = typeNameRecord?.GetPlainScalarText()?.Split(',').FirstOrDefault();
+                    if (type.IsNullOrEmpty() && mode == 1)
+                        type = null;
+
+                    var reference = new UnityEventTargetReference(methodNameValue, argMode, type, fileID);
                     return new ReferenceCollection(reference);
                 }
             }
@@ -89,20 +100,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             // on the child nodes.
             // Then we search the buffer, potentially twice. We'll limit the tag searcher to the first 100 characters of
             // the buffer
-            var buffer = document.Body.GetTextAsBuffer();
+            var buffer = document.GetTextAsBuffer();
             return CanContainReference(buffer);
         }
 
         public static bool CanContainReference(IBuffer bodyBuffer)
         {
-            return ourMonoBehaviourTagSearcher.Find(bodyBuffer, 0, Math.Min(100, bodyBuffer.Length)) >= 0 &&
-                   ourMethodNameSearcher.Find(bodyBuffer) >= 0;
+            return ourMethodNameSearcher.Find(bodyBuffer) >= 0;
         }
 
         public static bool CanHaveReference([CanBeNull] ITreeNode element)
         {
             var methodNameValue = element as IPlainScalarNode;
-            var methodNameEntry = BlockMappingEntryNavigator.GetByValue(methodNameValue);
+            var methodNameEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(methodNameValue));
             return methodNameValue != null && (methodNameEntry?.Key.MatchesPlainScalarText("m_MethodName") ?? false);
         }
     }

@@ -1,13 +1,12 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
-import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
-import com.intellij.openapi.extensions.Extensions
+import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
@@ -18,6 +17,8 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
@@ -25,26 +26,26 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
-import com.jetbrains.rider.unitTesting.panels.RiderUnitTestSessionPanel
 import com.jetbrains.rider.util.idea.application
-import com.jetbrains.rd.util.lifetime.Lifetime
+import net.miginfocom.swing.MigLayout
 import java.awt.BorderLayout
 import java.awt.Component
+import java.awt.Font
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.swing.Icon
-import javax.swing.JMenuItem
-import javax.swing.JPopupMenu
+import javax.swing.*
 import javax.swing.event.DocumentEvent
 
-class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel, unityHost: UnityHost) {
+class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
-        .filters(*Extensions.getExtensions<Filter>(AnalyzeStacktraceUtil.EP_NAME.name, project))
+        .filters(AnalyzeStacktraceUtil.EP_NAME.getExtensions(project))
         .console as ConsoleViewImpl
+
+    private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
 
     private val eventList = UnityLogPanelEventList(lifetime).apply {
         addListSelectionListener {
@@ -57,7 +58,25 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                     val format = SimpleDateFormat("[HH:mm:ss:SSS] ")
                     format.timeZone = TimeZone.getDefault()
                     console.print(format.format(date), ConsoleViewContentType.NORMAL_OUTPUT)
-                    console.print(selectedValue.message + "\n", ConsoleViewContentType.NORMAL_OUTPUT)
+
+                    val tokens = tokenizer.tokenize(selectedValue.message)
+                    for (token in tokens) {
+                        if (!token.used) {
+                            var style = ConsoleViewContentType.NORMAL_OUTPUT.attributes
+
+                            if (token.bold && token.italic)
+                                style = TextAttributes(token.color, null, null, null, Font.BOLD or Font.ITALIC)
+                            else if (token.bold)
+                                style = TextAttributes(token.color, null, null, null, Font.BOLD)
+                            else if (token.italic)
+                                style = TextAttributes(token.color, null, null, null, Font.ITALIC)
+                            else if (token.color != null)
+                                style = TextAttributes(token.color, null, null, null, Font.PLAIN)
+
+                            console.print(token.token, ConsoleViewContentType("UnityLog", style))
+                        }
+                    }
+                    console.print("\n", ConsoleViewContentType.NORMAL_OUTPUT)
                     console.print(selectedValue.stackTrace, ConsoleViewContentType.NORMAL_OUTPUT)
                     console.scrollTo(0)
                 }
@@ -81,13 +100,8 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         }.installOn(this)
 
-        var prevVal: Boolean? = null
-
-        unityHost.play.advise(lifetime) {
-            if (it && prevVal == false) {
-                logModel.events.clear()
-            }
-            prevVal = it
+        UnityHost.getInstance(project).model.clearOnPlay.adviseNotNull(lifetime) {
+            logModel.events.clearBefore(it)
         }
     }
 
@@ -116,7 +130,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             logModel.selectedItem = null
         }
         goToList = {
-            if (eventList.model.size>0) {
+            if (eventList.model.size > 0) {
                 eventList.selectedIndex = 0
                 IdeFocusManager.getInstance(project).requestFocus(eventList, false)
                 true
@@ -133,9 +147,9 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
     }
 
-    private val listPanel = RiderUI.boxPanel {
-        add(JBScrollPane(eventList))
-        add(searchTextField, "growx, pushx")
+    private val listPanel = JPanel(MigLayout("ins 0, gap 0, flowy, novisualpadding, fill", "", "[][min!]")).apply {
+        add(JBScrollPane(eventList).apply { horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER }, "grow, wmin 0")
+        add(searchTextField, "growx")
     }
 
     private val mainSplitter = JBSplitter().apply {
@@ -165,33 +179,32 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
     fun getMainSplitterIcon(invert: Boolean = false): Icon? = when (mainSplitterOrientation.value xor invert) {
-        true -> com.intellij.icons.AllIcons.Actions.SplitHorizontally
-        false -> com.intellij.icons.AllIcons.Actions.SplitVertically
+        true -> AllIcons.Actions.SplitHorizontally
+        false -> AllIcons.Actions.SplitVertically
     }
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
     private fun addToList(newEvent: RdLogEvent) {
-        if (logModel.mergeSimilarItems.value)
-        {
+        if (logModel.mergeSimilarItems.value) {
             val existing = eventList.riderModel.elements().toList()
-                .filter { it.message == newEvent.message && it.stackTrace==newEvent.stackTrace &&
-                    it.mode == newEvent.mode && it.type ==newEvent.type}.singleOrNull()
+                .filter {
+                    it.message == newEvent.message && it.stackTrace == newEvent.stackTrace &&
+                        it.mode == newEvent.mode && it.type == newEvent.type
+                }.singleOrNull()
             if (existing == null)
-                eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
-            else
-            {
+                eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
+            else {
                 val index = eventList.riderModel.indexOf(existing)
-                eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count+1), index)
+                eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count + 1), index)
             }
-        }
-        else
-            eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode,newEvent.message, newEvent.stackTrace,1))
+        } else
+            eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
         // on big amount of logs it causes frontend hangs
 //        if (logModel.selectedItem == null) {
 //            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
 //        }
-        // since we do not follow new items which appear, it makes sence to auto-select first one. RIDER-19937
+        // since we do not follow new items which appear, it makes sense to auto-select first one. RIDER-19937
         if (eventList.itemsCount == 1)
             eventList.selectedIndex = 0
     }
@@ -224,17 +237,14 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 val message: String,
                 val stackTrace: String)
 
-            if (logModel.mergeSimilarItems.value)
-            {
+            if (logModel.mergeSimilarItems.value) {
                 val list = item
                     .groupBy { LogItem(it.type, it.mode, it.message, it.stackTrace) }
                     .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
                     .values.toList()
                 refreshList(list)
-            }
-            else
-            {
-                val list = item.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace,1) }
+            } else {
+                val list = item.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace, 1) }
                 refreshList(list)
             }
         }

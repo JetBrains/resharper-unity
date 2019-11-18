@@ -2,51 +2,50 @@
 
 namespace DefaultNamespace
 {
-    public class ||CommonTest|(0)|(1) : MonoBehaviour
+    public class |CommonTest|(0) : MonoBehaviour
     {
         private RigidBody2D myRigidBody2D;
 
-        |public void ||Start|(3)|(4)() 
+        |public void ||Start|(2)|(3)() 
         {
 
-        }|(2)
+        }|(1)
 
-        |public void |Test|(6)()
+        |public void |Test|(5)()
         {
-        }|(5)
+        }|(4)
             
-        |public void ||Update|(8)|(9)()
+        |public void ||Update|(7)|(8)()
         {
             if (myRigidBody2D == null)
             {
-                myRigidBody2D = |GetComponent|(10)<RigidBody2D>();
+                myRigidBody2D = |GetComponent|(9)<RigidBody2D>();
             }
 
             Test();
             IndirectCostly();
             OnTriggerEnter2D(null);
 
-        }|(7)
+        }|(6)
 
-        ||void ||OnTriggerEnter2D|(13)|(14)(Collider2D collision)
+        ||void ||OnTriggerEnter2D|(12)|(13)(Collider2D collision)
         {
 
-        }|(11)|(12)
+        }|(10)|(11)
     }
 }
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): UnityCodeInsights: 
-(2): ReSharper Dead Code: Redundant Unity event function
-(3): ReSharper Unity Implicitly Used Identifier: 
-(4): UnityCodeInsights: 
-(5): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(6): UnityCodeInsights: 
-(7): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(8): ReSharper Unity Implicitly Used Identifier: 
-(9): UnityCodeInsights: 
-(10): ReSharper Unity Expensive Method Invocation: Expensive method invocation
-(11): ReSharper Unity Performance Critical Line Marker: Performance critical context
-(12): ReSharper Dead Code: Redundant Unity event function
-(13): ReSharper Unity Implicitly Used Identifier: 
-(14): UnityCodeInsights: 
+(1): ReSharper Dead Code: Redundant Unity event function
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): UnityCodeInsights: 
+(4): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(5): UnityCodeInsights: 
+(6): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(7): ReSharper Unity Implicitly Used Identifier: 
+(8): UnityCodeInsights: 
+(9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(10): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(11): ReSharper Dead Code: Redundant Unity event function
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): UnityCodeInsights: 

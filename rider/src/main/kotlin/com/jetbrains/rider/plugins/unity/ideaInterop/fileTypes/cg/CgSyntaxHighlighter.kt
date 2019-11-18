@@ -1,9 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg
 
-import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.psi.tree.IElementType
 import com.jetbrains.rider.ideaInterop.fileTypes.RiderDummySyntaxHighlighter
-import com.jetbrains.rider.ideaInterop.fileTypes.RiderTableBasedSyntaxHighlighter
 
 class CgSyntaxHighlighter : RiderDummySyntaxHighlighter(CgLanguage)
 

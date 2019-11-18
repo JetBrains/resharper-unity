@@ -1,9 +1,8 @@
 using System;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
-using JetBrains.Collections.Viewable;
 using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.CallGraph;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
@@ -25,17 +24,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         protected readonly SolutionAnalysisService Swa;
         private readonly UnitySolutionTracker mySolutionTracker;
         protected readonly CallGraphActivityTracker Tracker;
+        protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtension;
         protected readonly PerformanceCriticalCodeCallGraphAnalyzer PerformanceAnalyzer;
         protected readonly ExpensiveCodeCallGraphAnalyzer ExpensiveAnalyzer;
 
         public PerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa,
             UnitySolutionTracker solutionTracker, CallGraphActivityTracker tracker,
+            CallGraphSwaExtensionProvider callGraphSwaExtension,
             PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
             ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer)
         {
             Swa = swa;
             mySolutionTracker = solutionTracker;
             Tracker = tracker;
+            CallGraphSwaExtension = callGraphSwaExtension;
             PerformanceAnalyzer = performanceAnalyzer;
             ExpensiveAnalyzer = expensiveAnalyzer;
         }
@@ -57,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         protected virtual IDaemonStageProcess GetProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            return new PerformanceCriticalCodeAnalysisProcess(process, file, Swa, Tracker, PerformanceAnalyzer, ExpensiveAnalyzer);
+            return new PerformanceCriticalCodeAnalysisProcess(process, file, CallGraphSwaExtension, Swa, Tracker, PerformanceAnalyzer, ExpensiveAnalyzer);
         }
         
         protected override bool IsSupported(IPsiSourceFile sourceFile)
@@ -71,21 +73,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
     internal class PerformanceCriticalCodeAnalysisProcess : CSharpDaemonStageProcessBase
     {
+        private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
         [NotNull] private readonly SolutionAnalysisService mySwa;
         private readonly CallGraphActivityTracker myTracker;
-        private readonly int myPerformanceAnalyzerId;
-        private readonly int myExpensiveAnalyzerId;
+        private readonly CallGraphAnalyzerId myPerformanceAnalyzerId;
+        private readonly CallGraphAnalyzerId myExpensiveAnalyzerId;
         private readonly bool myLineMarkerEnabled;
 
-        public PerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file,
+        public PerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             [NotNull] SolutionAnalysisService swa, CallGraphActivityTracker tracker, [NotNull] PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
             [NotNull] ExpensiveCodeCallGraphAnalyzer expensiveCodeCallGraphAnalyzer)
             : base(process, file)
         {
+            myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             mySwa = swa;
             myTracker = tracker;
-            myPerformanceAnalyzerId = performanceAnalyzer.AnalyzerId;
-            myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.AnalyzerId;
+            myPerformanceAnalyzerId = performanceAnalyzer.Id;
+            myExpensiveAnalyzerId = expensiveCodeCallGraphAnalyzer.Id;
 
             myLineMarkerEnabled = DaemonProcess.ContextBoundSettingsStore.GetValue((UnitySettings key) =>
                 key.PerformanceHighlightingMode) == PerformanceHighlightingMode.Always;
@@ -152,17 +156,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         }
 
 
-        private bool IsMarked(IGlobalUsageChecker usageChecker, int analyzerId,  IDeclaredElement element)
+        private bool IsMarked(IGlobalUsageChecker usageChecker, CallGraphAnalyzerId analyzerId,  IDeclaredElement element)
         {
             if (element == null)
                 return false;
-            var id = mySwa.GetElementId(element, true);
+            var id = mySwa.GetElementId(element);
             
             if (!id.HasValue)
                 return false;
 
             return myTracker.RegisterCallGraphQueryTime(() =>
-                usageChecker.IsMarkedByCallGraphAnalyzer(analyzerId, id.Value, true));
+                myCallGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(analyzerId, id.Value, true));
         }
 
         protected virtual void HighlightHotMethod(IDeclaration node, IHighlightingConsumer consumer)

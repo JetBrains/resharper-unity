@@ -25,6 +25,7 @@ using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
+using Status = JetBrains.Platform.Unity.EditorPluginModel.Status;
 using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
@@ -89,7 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return false;
         }
 
-        public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project, TargetFrameworkId targetFrameworkId)
+        public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project, TargetFrameworkId targetFrameworkId,
+            IUnitTestElement element)
         {
             var targetPlatform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
             return new UnityRuntimeEnvironment(targetPlatform);
@@ -263,13 +265,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             launch.TestResult.AdviseNotNull(connectionLifetime, result =>
             {
                 var unitTestElement = GetElementById(result.ProjectName, result.TestId);
-                if (unitTestElement == null) //https://youtrack.jetbrains.com/issue/RIDER-15849
-                {
-                    var name = result.ParentId.Substring(result.ParentId.LastIndexOf(".", StringComparison.Ordinal) + 1);
-                    var brackets = result.TestId.Substring(result.ParentId.Length);
-                    var newID = result.ParentId+"."+name+brackets;
-                    unitTestElement = GetElementById(result.ProjectName, newID);
-                }
                 if (unitTestElement == null)
                 {
                     // add dynamic tests
@@ -344,8 +339,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private List<TestFilter> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
         {
             var elements = unitTestElements
-                .Where(unitTestElement => unitTestElement is NUnitTestElement || unitTestElement is NUnitRowTestElement ||
-                                                                             unitTestElement is UnityTestElement).ToArray();
+                .Where(unitTestElement => unitTestElement is NUnitTestElement || 
+                                          unitTestElement is NUnitRowTestElement).ToArray();
             foreach (var unitTestElement in elements)
             {
                 myElements[unitTestElement.Id] = unitTestElement;

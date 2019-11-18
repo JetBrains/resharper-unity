@@ -16,9 +16,6 @@ namespace JetBrains.Rider.Unity.Editor
     public static void MenuOpenProject()
     {
       // method can be called via commandline
-      if (!PluginEntryPoint.Enabled)
-        return; 
-      
       // Force the project files to be sync
       UnityUtils.SyncSolution();
 
@@ -29,8 +26,6 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
     public static bool ValidateMenuOpenProject()
     {
-      if (!PluginEntryPoint.Enabled)
-        return false;
       var model = PluginEntryPoint.UnityModels.FirstOrDefault(a => a.Lifetime.IsAlive);
       if (model == null)
         return true;
@@ -49,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor
     [MenuItem("Assets/Sync C# Project", true, 1001)]
     private static bool ValidateMenuSyncProject()
     {
-      return PluginEntryPoint.Enabled;
+      return true;
     }
   }
 }

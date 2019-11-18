@@ -4,7 +4,6 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -51,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.IsLanguageSupported<YamlLanguage>() && (
+            return sf.IsLanguageSupported<UnityYamlLanguage>() && (
                        sf.Name.EndsWith("cs.meta", StringComparison.InvariantCultureIgnoreCase) ||
                        sf.Name.EndsWith("unity.meta", StringComparison.InvariantCultureIgnoreCase) ||
                        sf.Name.EndsWith("prefab.meta", StringComparison.InvariantCultureIgnoreCase)
@@ -63,16 +62,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             if (!IsApplicable(sourceFile))
                 return null;
 
-            if (!(sourceFile.GetDominantPsiFile<YamlLanguage>() is IYamlFile yamlFile))
+            if (!(sourceFile.GetDominantPsiFile<UnityYamlLanguage>() is IYamlFile yamlFile))
                 return null;
 
             // Note that this opens the document body chameleon, but we don't care for .meta files. They're lightweight
             var document = yamlFile.Documents.FirstOrDefault();
+
             if (document?.Body.BlockNode is IBlockMappingNode blockMappingNode)
             {
                 foreach (var entry in blockMappingNode.Entries)
                 {
-                    if (entry.Key?.CompareBufferText("guid") == true && entry.Value is IPlainScalarNode valueScalarNode)
+                    if (entry.Key?.CompareBufferText("guid") == true && entry.Content.Value is IPlainScalarNode valueScalarNode)
                     {
                         var guid = valueScalarNode.Text?.GetText();
                         if (guid != null)

@@ -21,7 +21,7 @@ IYamlFile
           NewLine(37,1)(type:NEW_LINE, text:\n) spaces: "\n"
         ISequenceEntry
           YamlTokenType+FixedTokenElement(38,1)(type:MINUS, text:-)
-          ChameleonBlockMappingNode
+          IBlockMappingNode
             Whitespace(39,1)(type:WHITESPACE, text: ) spaces: " "
             INodeProperties
               IShorthandTagProperty
@@ -38,9 +38,11 @@ IYamlFile
                 YamlTokenType+GenericTokenElement(67,3)(type:NS_PLAIN, text:foo)
               Whitespace(70,1)(type:WHITESPACE, text: ) spaces: " "
               YamlTokenType+FixedTokenElement(71,1)(type:COLON, text::)
-              Whitespace(72,1)(type:WHITESPACE, text: ) spaces: " "
-              IPlainScalarNode
-                YamlTokenType+GenericTokenElement(73,3)(type:NS_PLAIN, text:bar)
-              NewLine(76,1)(type:NEW_LINE, text:\n) spaces: "\n"
-              NewLine(77,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              ChameleonMapEntryContent
+                Whitespace(72,1)(type:WHITESPACE, text: ) spaces: " "
+                IPlainScalarNode
+                  YamlTokenType+GenericTokenElement(73,3)(type:NS_PLAIN, text:bar)
+                NewLine(76,1)(type:NEW_LINE, text:\n) spaces: "\n"
+                NewLine(77,1)(type:NEW_LINE, text:\n) spaces: "\n"
+                IEmptyScalarNode
 

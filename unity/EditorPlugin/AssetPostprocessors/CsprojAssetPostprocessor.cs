@@ -28,7 +28,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     
     static CsprojAssetPostprocessor()
     {
-      if (!PluginEntryPoint.Enabled)
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
         return;
       
       ourApiCompatibilityLevel = GetApiCompatibilityLevel();
@@ -48,9 +48,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     [UsedImplicitly]
     public static string OnGeneratedCSProject(string path, string contents)
     {
-      if (!PluginEntryPoint.Enabled)
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
         return contents;
-
+      
       try
       {
         ourLogger.Verbose("Post-processing {0} (in memory)", path);
@@ -79,11 +79,15 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // This method is for pre-2018.1, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!PluginEntryPoint.Enabled || UnityUtils.UnityVersion >= new Version(2018, 1))
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return;
+      
+      if (UnityUtils.UnityVersion >= new Version(2018, 1))
         return;
 
       try
       {
+        ourLogger.Verbose("Post-processing {0} (old version)");
         // get only csproj files, which are mentioned in sln
         var lines = SlnAssetPostprocessor.GetCsprojLinesInSln();
         var currentDirectory = Directory.GetCurrentDirectory();
@@ -131,20 +135,20 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       var projectContentElement = doc.Root;
       XNamespace xmlns = projectContentElement.Name.NamespaceName; // do not use var
 
-      var changed = FixTargetFrameworkVersion(projectContentElement, xmlns);
-      changed |= FixUnityEngineReference(projectContentElement, xmlns);
-      changed |= FixSystemXml(projectContentElement, xmlns);
-      changed |= SetLangVersion(projectContentElement, xmlns);
-      changed |= SetProjectFlavour(projectContentElement, xmlns);
-      changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns);
-      changed |= TrySetHintPathsForSystemAssemblies(projectContentElement, xmlns);
-      changed |= FixImplicitReferences(projectContentElement, xmlns);
-      changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns);
-      changed |= AddMicrosoftCSharpReference(projectContentElement, xmlns);
+      var changed = FixTargetFrameworkVersion(projectContentElement, xmlns); // no need for new Unity
+      changed |= FixUnityEngineReference(projectContentElement, xmlns); // no need for new Unity
+      changed |= FixSystemXml(projectContentElement, xmlns); // hopefully not needed
+      changed |= SetLangVersion(projectContentElement, xmlns); // reimplemented in package
+      changed |= SetProjectFlavour(projectContentElement, xmlns); // hopefully not needed
+      changed |= SetManuallyDefinedCompilerSettings(projectFile, projectContentElement, xmlns); // hopefully not needed
+      changed |= TrySetHintPathsForSystemAssemblies(projectContentElement, xmlns); // no need for new Unity
+      changed |= FixImplicitReferences(projectContentElement, xmlns); // no need for new Unity
+      changed |= AvoidGetReferenceAssemblyPathsCall(projectContentElement, xmlns); // reimplemeted
+      changed |= AddMicrosoftCSharpReference(projectContentElement, xmlns); // not needed
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Xcode.dll", projectContentElement, xmlns);
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
-      changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns);
-      changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns);
+      changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns); // already exists
+      changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns); // no need
       
       return changed;
     }

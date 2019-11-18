@@ -21,7 +21,7 @@ public class Boring
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): Unity Gutter Icon: Unity scripting component
+(1): Unity Gutter Icon: Unity script
 (2): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (3): ReSharper Dead Code: Redundant 'HideInInspector' attribute
 (4): ReSharper Dead Code: Redundant 'HideInInspector' attribute

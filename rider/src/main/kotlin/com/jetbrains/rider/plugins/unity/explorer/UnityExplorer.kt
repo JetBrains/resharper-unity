@@ -39,8 +39,28 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         }
     }
 
-    var myShowHiddenItems = false
-    var myShowProjectNames = true
+    var showHiddenItems = false
+        private set(value) { field = value }
+
+    var showProjectNames = true
+        private set(value) { field = value }
+
+    fun hasPackagesRoot(): Boolean {
+        // The tree's model is cached, while this.model.root.children isn't. This is important in that it reflects the
+        // current state of the model before it's had a chance to be invalidated. Note that `tree` isn't valid until the
+        // component has been created, so it will be null if the pane is hidden
+        if (this.tree == null) {
+            return false
+        }
+        val root = tree.model.root
+        val count = tree.model.getChildCount(root)
+        for (i in 0..count) {
+            if (tree.model.getChild(root, i) is PackagesRoot) {
+                return true
+            }
+        }
+        return false
+    }
 
     override fun isInitiallyVisible() = project.isUnityProject()
 
@@ -57,16 +77,16 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
-        JDOMExternalizerUtil.writeField(element, ShowHiddenItemsOption, myShowHiddenItems.toString())
-        JDOMExternalizerUtil.writeField(element, ShowProjectNamesOption, myShowProjectNames.toString())
+        JDOMExternalizerUtil.writeField(element, ShowHiddenItemsOption, showHiddenItems.toString())
+        JDOMExternalizerUtil.writeField(element, ShowProjectNamesOption, showProjectNames.toString())
     }
 
     override fun readExternal(element: Element) {
         super.readExternal(element)
         var option = JDOMExternalizerUtil.readField(element, ShowHiddenItemsOption)
-        myShowHiddenItems = option != null && java.lang.Boolean.parseBoolean(option)
+        showHiddenItems = option != null && java.lang.Boolean.parseBoolean(option)
         option = JDOMExternalizerUtil.readField(element, ShowProjectNamesOption)
-        myShowProjectNames = option == null || java.lang.Boolean.parseBoolean(option)
+        showProjectNames = option == null || java.lang.Boolean.parseBoolean(option)
     }
 
     override fun getTitle() = Title
@@ -100,12 +120,12 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         : ToggleAction("Show Hidden Files", "Show all files, including .meta files", AllIcons.Actions.ShowHiddens), DumbAware {
 
         override fun isSelected(event: AnActionEvent): Boolean {
-            return myShowHiddenItems
+            return showHiddenItems
         }
 
         override fun setSelected(event: AnActionEvent, flag: Boolean) {
-            if (myShowHiddenItems != flag) {
-                myShowHiddenItems = flag
+            if (showHiddenItems != flag) {
+                showHiddenItems = flag
                 updateFromRoot(false)
             }
         }
@@ -120,12 +140,12 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         : ToggleAction("Show Project Names", "Show names of owning projects next to folders", AllIcons.Actions.ListFiles), DumbAware {
 
         override fun isSelected(event: AnActionEvent): Boolean {
-            return myShowProjectNames
+            return showProjectNames
         }
 
         override fun setSelected(event: AnActionEvent, flag: Boolean) {
-            if (myShowProjectNames != flag) {
-                myShowProjectNames = flag
+            if (showProjectNames != flag) {
+                showProjectNames = flag
                 updateFromRoot(false)
             }
         }

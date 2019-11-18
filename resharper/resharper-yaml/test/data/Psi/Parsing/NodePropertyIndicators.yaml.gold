@@ -2,32 +2,34 @@
 IYamlFile
   IYamlDocument
     ChameleonDocumentBody
-      ChameleonBlockMappingNode
+      IBlockMappingNode
         IBlockMappingEntry
           IPlainScalarNode
             YamlTokenType+GenericTokenElement(0,8)(type:NS_PLAIN, text:anchored)
           YamlTokenType+FixedTokenElement(8,1)(type:COLON, text::)
-          Whitespace(9,1)(type:WHITESPACE, text: ) spaces: " "
-          IPlainScalarNode
-            INodeProperties
-              IShorthandTagProperty
-                IPrimaryTagHandle
-                  YamlTokenType+FixedTokenElement(10,1)(type:BANG, text:!)
-                YamlTokenType+GenericTokenElement(11,5)(type:NS_TAG_CHARS, text:local)
-              Whitespace(16,1)(type:WHITESPACE, text: ) spaces: " "
-              IAnchorProperty
-                YamlTokenType+FixedTokenElement(17,1)(type:AMP, text:&)
-                YamlTokenType+GenericTokenElement(18,6)(type:NS_ANCHOR_NAME, text:anchor)
-            Whitespace(24,1)(type:WHITESPACE, text: ) spaces: " "
-            YamlTokenType+GenericTokenElement(25,5)(type:NS_PLAIN, text:value)
-          NewLine(30,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          IContentNode
+            Whitespace(9,1)(type:WHITESPACE, text: ) spaces: " "
+            IPlainScalarNode
+              INodeProperties
+                IShorthandTagProperty
+                  IPrimaryTagHandle
+                    YamlTokenType+FixedTokenElement(10,1)(type:BANG, text:!)
+                  YamlTokenType+GenericTokenElement(11,5)(type:NS_TAG_CHARS, text:local)
+                Whitespace(16,1)(type:WHITESPACE, text: ) spaces: " "
+                IAnchorProperty
+                  YamlTokenType+FixedTokenElement(17,1)(type:AMP, text:&)
+                  YamlTokenType+GenericTokenElement(18,6)(type:NS_ANCHOR_NAME, text:anchor)
+              Whitespace(24,1)(type:WHITESPACE, text: ) spaces: " "
+              YamlTokenType+GenericTokenElement(25,5)(type:NS_PLAIN, text:value)
+            NewLine(30,1)(type:NEW_LINE, text:\n) spaces: "\n"
         IBlockMappingEntry
           IPlainScalarNode
             YamlTokenType+GenericTokenElement(31,5)(type:NS_PLAIN, text:alias)
           YamlTokenType+FixedTokenElement(36,1)(type:COLON, text::)
-          Whitespace(37,1)(type:WHITESPACE, text: ) spaces: " "
-          IAliasNode
-            YamlTokenType+FixedTokenElement(38,1)(type:ASTERISK, text:*)
-            YamlTokenType+GenericTokenElement(39,6)(type:NS_ANCHOR_NAME, text:anchor)
-          NewLine(45,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          IContentNode
+            Whitespace(37,1)(type:WHITESPACE, text: ) spaces: " "
+            IAliasNode
+              YamlTokenType+FixedTokenElement(38,1)(type:ASTERISK, text:*)
+              YamlTokenType+GenericTokenElement(39,6)(type:NS_ANCHOR_NAME, text:anchor)
+            NewLine(45,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

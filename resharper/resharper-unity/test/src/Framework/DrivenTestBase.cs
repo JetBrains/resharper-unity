@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.DataContext;
 using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.DataContext;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.ExpressionSelection;
@@ -52,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Framework
             return converter.Invoke(value);
         }
 
-        protected override void DoTest(IProject testProject)
+        protected override void DoTest(Lifetime lifetime, IProject testProject)
         {
             CreateTestExecuter().ExecuteTest(testProject);
         }

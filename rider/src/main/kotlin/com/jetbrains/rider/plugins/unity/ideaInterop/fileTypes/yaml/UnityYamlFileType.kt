@@ -5,8 +5,8 @@ import icons.UnityIcons
 
 object UnityYamlFileType : RiderLanguageFileTypeBase(UnityYamlLanguage) {
     override fun getDefaultExtension() = "unity"
-    override fun getDescription() = "Unity YAML file"
+    override fun getDescription() = "Unity asset file"
     override fun getIcon() = UnityIcons.FileTypes.UnityYaml
-    override fun getName() = "Unity YAML"
+    override fun getName() = "UnityYaml"
 }
 

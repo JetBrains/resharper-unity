@@ -7,18 +7,12 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="JetBrains.Platform.RdCore35">
-      <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
-    </Reference>
-    <Reference Include="JetBrains.Platform.RdFramework35">
-      <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\EditorPlugin\EditorPlugin.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.RdFramework" Version="193.20191030.267" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
     <PackageReference Include="xunit" Version="1.9.2" />
   </ItemGroup>

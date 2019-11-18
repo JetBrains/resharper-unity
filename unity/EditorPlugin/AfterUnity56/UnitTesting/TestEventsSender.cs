@@ -1,5 +1,6 @@
 using System;
-using System.Linq;
+using System.Collections;
+using System.Reflection;
 using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
@@ -11,45 +12,100 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public class TestEventsSender
   {
-    private readonly UnitTestLaunch myUnitTestLaunch;
     private static readonly ILog ourLogger = Log.GetLog(typeof(TestEventsSender).Name);
-
-    internal TestEventsSender(TestEventsCollector collector, UnitTestLaunch unitTestLaunch)
-    {
-      myUnitTestLaunch = unitTestLaunch;
-      ProcessQueue(collector);
-      collector.Clear();
-
-      collector.ClearEvent();
-      collector.AddEvent += (col, _) =>
-      {
-        ProcessQueue((TestEventsCollector)col);
-      };
-    }
     
-    private void ProcessQueue(TestEventsCollector collector)
-    {
-      if (!collector.DelayedEvents.Any())
-        return;
-
-      foreach (var myEvent in collector.DelayedEvents)
+    internal TestEventsSender(UnitTestLaunch unitTestLaunch)
+    { 
+      var assembly = RiderPackageInterop.GetAssembly();
+      if (assembly == null)
       {
-        switch (myEvent.myType)
-        {
-          case EventType.RunFinished:
-            RunFinished(myUnitTestLaunch);
-            break;
-          case EventType.TestFinished:
-            TestFinished(myUnitTestLaunch, GetTestResult(myEvent.Event));
-            break;
-          case EventType.TestStarted:
-            var tResult = new TestResult(myEvent.Event.myID, myEvent.Event.myAssemblyName,string.Empty, 0, Status.Running, myEvent.Event.myParentID);
-            TestStarted(myUnitTestLaunch, tResult);
-            break;
-        }        
+        ourLogger.Error("EditorPlugin assembly is null.");
+        return;
       }
 
-      collector.Clear();
+      var data = assembly.GetType("Packages.Rider.Editor.UnitTesting.CallbackData");
+      if (data == null) return;
+
+      ProcessQueue(data, unitTestLaunch);
+
+      SubscribeToChanged(assembly, data, unitTestLaunch);
+    }
+
+    private static void SubscribeToChanged(Assembly assembly, Type data, UnitTestLaunch unitTestLaunch)
+    {
+      var eventInfo = data.GetEvent("Changed");
+      
+      if (eventInfo != null)
+      {
+        var handler = new EventHandler((sender, e) => { ProcessQueue(data, unitTestLaunch); });
+        eventInfo.AddEventHandler(handler.Target, handler);
+        AppDomain.CurrentDomain.DomainUnload += (EventHandler) ((_, __) =>
+        {
+          eventInfo.RemoveEventHandler(handler.Target, handler);
+        });
+      }
+      else
+      {
+        ourLogger.Error("Changed event subscription failed.");
+      }
+    }
+    
+    private static void ProcessQueue(Type data, UnitTestLaunch unitTestLaunch)
+    {
+      if (!unitTestLaunch.IsBound)
+        return;
+      
+      var baseType = data.BaseType;
+      if (baseType == null) return;
+      var instance = baseType.GetProperty("instance");
+      if (instance == null) return;
+      var instanceVal = instance.GetValue(null, new object[]{});
+
+      var listField = data.GetField("events");
+      if (listField == null) return;
+      var list = listField.GetValue(instanceVal);
+
+      var events = (IEnumerable) list;
+      
+      foreach (var ev in events)
+      {
+        var type = (int)ev.GetType().GetField("type").GetValue(ev);
+        var id = (string)ev.GetType().GetField("id").GetValue(ev);
+        var assemblyName = (string)ev.GetType().GetField("assemblyName").GetValue(ev);
+        var output = (string)ev.GetType().GetField("output").GetValue(ev);
+        var resultState = (int)ev.GetType().GetField("testStatus").GetValue(ev);
+        var duration = (double)ev.GetType().GetField("duration").GetValue(ev);
+        var parentId = (string)ev.GetType().GetField("parentId").GetValue(ev);
+        
+        switch (type)
+        {
+          case 0: // TestStarted
+          {
+            var tResult = new TestResult(id, assemblyName,string.Empty, 0, Status.Running, parentId);
+            TestStarted(unitTestLaunch, tResult);
+            break;
+          }
+          case 1: // TestFinished
+          {
+            var status = GetStatus(new ResultState((TestStatus)resultState));
+
+            var testResult = new TestResult(id, assemblyName, output, (int) TimeSpan.FromMilliseconds(duration).TotalMilliseconds, 
+              status, parentId);
+            TestFinished(unitTestLaunch, testResult);
+            break;
+          }
+          case 2: // RunFinished
+            RunFinished(unitTestLaunch);
+            break;
+          default:
+            ourLogger.Error("Unexpected TestEvent type.");
+            break;
+        }
+      }
+      
+      var clearMethod = data.GetMethod("Clear");
+      if (clearMethod == null) return;      
+      clearMethod.Invoke(instanceVal, new object[] {});
     }
     
     public static void RunFinished(UnitTestLaunch launch)
@@ -67,34 +123,34 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       launch.TestResult(testResult);
     }
 
-    internal static TestResult GetTestResult(TestInternalEvent tEvent)
+    internal static TestResult GetTestResult(ITestResult testResult)
     {
-      return new TestResult(tEvent.myID, tEvent.myAssemblyName, tEvent.myOutput, tEvent.myDuration, tEvent.myStatus, tEvent.myParentID);
-    }
-
-    internal static TestInternalEvent GetTestResult(ITestResult testResult)
-    {
-      //ourLogger.Verbose("TestFinished : {0}, result : {1}", test.FullName, testResult.ResultState);
       var id = GetIdFromNUnitTest(testResult.Test);
       var assemblyName = testResult.Test.TypeInfo.Assembly.GetName().Name;
 
       var output = ExtractOutput(testResult);
-      Status status;
-      if (Equals(testResult.ResultState, ResultState.Success))
-        status = Status.Success;
-      else if (Equals(testResult.ResultState, ResultState.Ignored))
-        status = Status.Ignored;
-      else if (Equals(testResult.ResultState, ResultState.Inconclusive) ||
-               Equals(testResult.ResultState, ResultState.Skipped))
-        status = Status.Inconclusive;
-      else
-        status = Status.Failure;
-      return new TestInternalEvent(id, assemblyName, output,
+      var status = GetStatus(testResult.ResultState);
+      return new TestResult( id, assemblyName, output,
         (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
         status, GetIdFromNUnitTest(testResult.Test.Parent));
     }
 
-    internal static string ExtractOutput(ITestResult testResult)
+    private static Status GetStatus(ResultState resultState)
+    {
+      Status status;
+      if (Equals(resultState, ResultState.Success))
+        status = Status.Success;
+      else if (Equals(resultState, ResultState.Ignored))
+        status = Status.Ignored;
+      else if (Equals(resultState, ResultState.Inconclusive) ||
+               Equals(resultState, ResultState.Skipped))
+        status = Status.Inconclusive;
+      else
+        status = Status.Failure;
+      return status;
+    }
+
+    private static string ExtractOutput(ITestResult testResult)
     {
       var stringBuilder = new StringBuilder();
       if (testResult.Message != null)
@@ -128,10 +184,37 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       if (testMethod == null)
       {
         ourLogger.Verbose("{0} is not a TestMethod ", test.FullName);
-        return test.FullName;
+        return GetUniqueName(test);
       }
 
-      return test.FullName;
+      return GetUniqueName(test);
+    }
+
+    // analog of UnityEngine.TestRunner.NUnitExtensions.TestExtensions.GetUniqueName
+    // I believe newer nunit has improved parameters presentation compared to the one used in Unity.
+    // https://github.com/nunit/nunit/blob/d56424858f97e19a5fe64905e42adf798ca655d1/src/NUnitFramework/framework/Internal/TestNameGenerator.cs#L223
+    // so once Unity updates its nunit, this hack would not be needed anymore
+    private static string GetUniqueName(ITest test)
+    {
+      string str = test.FullName;
+      if (HasChildIndex(test))
+      {
+        int childIndex = GetChildIndex(test);
+        if (childIndex >= 0)
+          str += childIndex;
+      }
+      
+      return str;
+    }
+
+    private static int GetChildIndex(ITest test)
+    {
+      return (int) test.Properties["childIndex"][0];
+    }
+
+    private static bool HasChildIndex(ITest test)
+    {
+      return test.Properties["childIndex"].Count > 0;
     }
   }
 }

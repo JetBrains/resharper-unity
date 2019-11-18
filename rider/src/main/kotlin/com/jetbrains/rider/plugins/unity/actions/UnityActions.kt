@@ -9,11 +9,11 @@ class PlayInUnityAction : ToggleAction() {
 
     override fun isSelected(e: AnActionEvent):Boolean {
         val unityHost = e.getHost() ?: return false
-        return unityHost.play.valueOrDefault(false)
+        return unityHost.model.play.valueOrDefault(false)
     }
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
-        e.getHost()?.play?.set(value)
+        e.getHost()?.model?.play?.set(value)
     }
 
     override fun update(e: AnActionEvent) {
@@ -26,16 +26,16 @@ class PauseInUnityAction : ToggleAction() {
 
     override fun isSelected(e: AnActionEvent):Boolean {
         val unityHost = e.getHost() ?: return false
-        return unityHost.pause.valueOrDefault(false)
+        return unityHost.model.pause.valueOrDefault(false)
     }
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
-        e.getHost()?.pause?.set(value)
+        e.getHost()?.model?.pause?.set(value)
     }
 
     override fun update(e: AnActionEvent) {
         e.handleUpdateForUnityConnection {
-            it.play.valueOrDefault(false)
+            it.model.play.valueOrDefault(false)
         }
         super.update(e)
     }
@@ -49,7 +49,7 @@ class StepInUnityAction : AnAction() {
 
     override fun update(e: AnActionEvent) {
         e.handleUpdateForUnityConnection {
-            it.play.valueOrDefault(false)
+            it.model.play.valueOrDefault(false)
         }
     }
 }

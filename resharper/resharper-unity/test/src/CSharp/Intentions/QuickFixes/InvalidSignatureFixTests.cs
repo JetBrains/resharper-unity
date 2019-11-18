@@ -18,13 +18,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
         [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
 
-        private readonly string[] myAddMissingParametersSource = {"000", "010", "011", "100", "101", "110" };
-        private readonly string[] myReorderParametersSource = {"132", "213", "231", "312", "321"};
+        private static readonly string[] ourAddMissingParametersSource = {"000", "010", "011", "100", "101", "110" };
+        private static readonly string[] ourReorderParametersSource = {"132", "213", "231", "312", "321"};
 
-        [TestCaseSource(nameof(myAddMissingParametersSource))]
+        [TestCaseSource(nameof(ourAddMissingParametersSource))]
         [Test] public void AddMissingParameterThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
 
-        [TestCaseSource(nameof(myReorderParametersSource))]
+        [TestCaseSource(nameof(ourReorderParametersSource))]
         [Test] public void ReorderParametersThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
     }
 
@@ -42,13 +42,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
         [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
 
-        private readonly string[] myAddMissingParametersSource = {"000", "010", "011", "100", "101", "110" };
-        private readonly string[] myReorderParametersSource = {"132", "213", "231", "312", "321"};
+        private static readonly string[] ourAddMissingParametersSource = {"000", "010", "011", "100", "101", "110" };
+        private static readonly string[] ourReorderParametersSource = {"132", "213", "231", "312", "321"};
 
-        [TestCaseSource(nameof(myAddMissingParametersSource))]
+        [TestCaseSource(nameof(ourAddMissingParametersSource))]
         [Test] public void AddMissingParameterThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
 
-        [TestCaseSource(nameof(myReorderParametersSource))]
+        [TestCaseSource(nameof(ourReorderParametersSource))]
         [Test] public void ReorderParametersThreeParameters(string id) { DoOneTest($"{TestMethodName}_{id}"); }
     }
 }

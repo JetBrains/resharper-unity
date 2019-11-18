@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.CallGraph;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
@@ -16,25 +16,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class VSPerformanceCriticalCodeAnalysisStage : PerformanceCriticalCodeAnalysisStage
     {
         public VSPerformanceCriticalCodeAnalysisStage(SolutionAnalysisService swa, UnitySolutionTracker solutionTracker, CallGraphActivityTracker tracker, PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
-            ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer)
-            : base(swa, solutionTracker, tracker, performanceAnalyzer, expensiveAnalyzer)
+            ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider)
+            : base(swa, solutionTracker, tracker, callGraphSwaExtensionProvider, performanceAnalyzer, expensiveAnalyzer)
         {
         }
         
         protected override IDaemonStageProcess GetProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            return new VSPerformanceCriticalCodeAnalysisProcess(process, file, Swa, Tracker, PerformanceAnalyzer, ExpensiveAnalyzer);
+            return new VSPerformanceCriticalCodeAnalysisProcess(process, file, CallGraphSwaExtension, Swa,  Tracker, PerformanceAnalyzer, ExpensiveAnalyzer);
         }
     }
 
     // ReSharper disable once InconsistentNaming
     internal class VSPerformanceCriticalCodeAnalysisProcess : PerformanceCriticalCodeAnalysisProcess
     {
-        public VSPerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file, 
+        public VSPerformanceCriticalCodeAnalysisProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file, CallGraphSwaExtensionProvider swaExtensionProvider,
             [NotNull] SolutionAnalysisService swa, [NotNull] CallGraphActivityTracker tracker, [NotNull]PerformanceCriticalCodeCallGraphAnalyzer performanceAnalyzer,
             ExpensiveCodeCallGraphAnalyzer expensiveAnalyzer)
-            : base(process, file, swa, tracker, performanceAnalyzer, expensiveAnalyzer)
+            : base(process, file, swaExtensionProvider, swa, tracker, performanceAnalyzer, expensiveAnalyzer)
         {
         }
 

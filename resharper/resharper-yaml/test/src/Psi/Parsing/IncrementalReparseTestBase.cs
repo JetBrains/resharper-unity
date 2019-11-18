@@ -6,6 +6,7 @@ using JetBrains.Application.Components;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Application.UI.ActionsRevised.Handlers;
 using JetBrains.Application.UI.ActionSystem.Text;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
@@ -87,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
       }
     }
 
-    protected override void DoTest(IProject testProject)
+    protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
       var positionsToCheck = GetCaretPositions().DefaultIfEmpty(GetCaretPosition()).ToList();
       Assert.IsNotEmpty(positionsToCheck, "Nothing to check - put {caret} where necessary");
@@ -106,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
 
       try
       {
-        var textControl = OpenTextControl();
+        var textControl = OpenTextControl(lifetime);
         {
           using (CompilationContextCookie.GetOrCreate(testProject.GetResolveContext()))
           {

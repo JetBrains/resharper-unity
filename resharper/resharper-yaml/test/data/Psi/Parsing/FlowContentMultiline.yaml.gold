@@ -1,0 +1,136 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(0,1)(type:MINUS, text:-)
+          Whitespace(1,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(2,45)(type:NS_PLAIN, text:the quick brown fox jumped over the lazy dogs)
+            NewLine(47,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(48,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(50,45)(type:NS_PLAIN, text:the quick brown fox jumped over the lazy dogs)
+            NewLine(95,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(96,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(98,45)(type:NS_PLAIN, text:the quick brown fox jumped over the lazy dogs)
+            NewLine(143,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(144,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(146,43)(type:NS_PLAIN, text:the {0} brown fox jumped over the lazy dogs)
+          NewLine(189,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(190,1)(type:MINUS, text:-)
+          Whitespace(191,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(192,45)(type:NS_PLAIN, text:the quick brown fox jumped over the lazy dogs)
+            NewLine(237,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(238,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(240,47)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"the quick brown fox jumped over the lazy dogs")
+            NewLine(287,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(288,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(290,21)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"the quick brown fox")
+            Whitespace(311,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(312,25)(type:NS_PLAIN, text:jumped over the lazy dogs)
+            NewLine(337,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(338,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(340,45)(type:NS_PLAIN, text:the quick brown fox jumped over the lazy dogs)
+            NewLine(385,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(386,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(388,47)(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'the quick brown fox jumped over the lazy dogs')
+            NewLine(435,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(436,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(438,21)(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'the quick brown fox')
+            Whitespace(459,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(460,25)(type:NS_PLAIN, text:jumped over the lazy dogs)
+            NewLine(485,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(486,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(488,45)(type:NS_PLAIN, text:the quick brown fox jumped over the lazy dogs)
+            NewLine(533,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(534,2)(type:INDENT, text:  )
+            YamlTokenType+FixedTokenElement(536,1)(type:LBRACE, text:{)
+            YamlTokenType+GenericTokenElement(537,1)(type:NS_PLAIN, text:0)
+            YamlTokenType+FixedTokenElement(538,1)(type:RBRACE, text:})
+            Whitespace(539,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(540,15)(type:NS_PLAIN, text:quick brown fox)
+            NewLine(555,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(556,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(558,23)(type:NS_PLAIN, text:the {0} quick brown fox)
+          NewLine(581,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(582,1)(type:MINUS, text:-)
+          Whitespace(583,1)(type:WHITESPACE, text: ) spaces: " "
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(584,243)(type:C_DOUBLE_QUOTED_MULTILINE, text:"the quick brown fox jumped over the lazy dogs\n  the \"quick\" brown fox jumped over the lazy dogs\n )
+          NewLine(827,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(828,1)(type:MINUS, text:-)
+          Whitespace(829,1)(type:WHITESPACE, text: ) spaces: " "
+          ISingleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(830,243)(type:C_SINGLE_QUOTED_MULTILINE, text:'the quick brown fox jumped over the lazy dogs\n  the ''quick'' brown fox jumped over the lazy dogs\n )
+          NewLine(1073,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(1074,1)(type:MINUS, text:-)
+          Whitespace(1075,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(1076,3)(type:NS_PLAIN, text:the)
+            NewLine(1079,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(1080,2)(type:INDENT, text:  )
+            YamlTokenType+FixedTokenElement(1082,1)(type:MINUS, text:-)
+            Whitespace(1083,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(1084,5)(type:NS_PLAIN, text:quick)
+            NewLine(1089,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(1090,2)(type:INDENT, text:  )
+            YamlTokenType+FixedTokenElement(1092,1)(type:MINUS, text:-)
+            Whitespace(1093,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(1094,5)(type:NS_PLAIN, text:brown)
+            NewLine(1099,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(1100,2)(type:INDENT, text:  )
+            YamlTokenType+FixedTokenElement(1102,1)(type:MINUS, text:-)
+            Whitespace(1103,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(1104,3)(type:NS_PLAIN, text:fox)
+          NewLine(1107,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(1108,1)(type:MINUS, text:-)
+          Whitespace(1109,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(1110,10)(type:NS_PLAIN, text:what about)
+            NewLine(1120,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(1121,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(1123,23)(type:NS_PLAIN, text::starting with a colon?)
+          NewLine(1146,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(1147,1)(type:MINUS, text:-)
+          Whitespace(1148,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(1149,7)(type:NS_PLAIN, text:and how)
+            NewLine(1156,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(1157,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(1159,28)(type:NS_PLAIN, text:about a :colon in the middle)
+          NewLine(1187,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(1188,1)(type:MINUS, text:-)
+          Whitespace(1189,1)(type:WHITESPACE, text: ) spaces: " "
+          IBlockMappingNode
+            IBlockMappingEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(1190,10)(type:NS_PLAIN, text:or perhaps)
+              YamlTokenType+FixedTokenElement(1200,1)(type:COLON, text::)
+              IContentNode
+                IEmptyScalarNode
+                NewLine(1201,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(1202,2)(type:INDENT, text:  )
+            IBlockMappingEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(1204,15)(type:NS_PLAIN, text:different colon)
+              YamlTokenType+FixedTokenElement(1219,1)(type:COLON, text::)
+              IContentNode
+                IEmptyScalarNode
+                NewLine(1220,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(1221,1)(type:MINUS, text:-)
+          Whitespace(1222,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(1223,11)(type:NS_PLAIN, text:~~~ tildes!)
+          NewLine(1234,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          NewLine(1235,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

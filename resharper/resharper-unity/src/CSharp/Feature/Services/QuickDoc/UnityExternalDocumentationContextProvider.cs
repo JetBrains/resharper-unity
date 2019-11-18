@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
         {
             var moduleName = element.Module.Name;
             if (moduleName.StartsWith("UnityEngine") || moduleName.StartsWith("UnityEditor"))
-                return DeclaredElementPresenter.Format(KnownLanguage.ANY, MSDN_STYLE, element);
+                return DeclaredElementPresenter.Format(KnownLanguage.ANY, MSDN_STYLE, element).Text;
             return string.Empty;
         }
 

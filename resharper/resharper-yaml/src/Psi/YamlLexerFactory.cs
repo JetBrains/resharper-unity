@@ -13,8 +13,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi
       // (possibly terrain data) and
       if (IsBinaryBuffer(buffer))
         return new YamlBinaryLexer(buffer);
-      return new YamlLexer(buffer);
+      return GetDefaultLexer(buffer);
     }
+
+    protected virtual ILexer GetDefaultLexer(IBuffer buffer) => new YamlLexer(buffer, true, false);
 
     private bool IsBinaryBuffer(IBuffer buffer)
     {

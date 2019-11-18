@@ -51,3 +51,5 @@ fun isGeneratedUnityFile(file: VirtualFile): Boolean {
     val extension = file.extension
     return extension.equals("csproj", true) || extension.equals("sln", true)
 }
+
+fun isUxmlFile(file: VirtualFile) = file.extension.equals("uxml", true)

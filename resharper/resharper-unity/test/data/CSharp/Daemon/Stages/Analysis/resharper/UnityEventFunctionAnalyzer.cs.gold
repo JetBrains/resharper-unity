@@ -92,14 +92,14 @@ public class ||AllWrong|(34)|(35) : AssetPostprocessor
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): Unity Gutter Icon: Unity scripting component
+(1): Unity Gutter Icon: Unity script
 (2): ReSharper Unity Implicitly Used Identifier: 
 (3): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (4): ReSharper Unity Implicitly Used Identifier: 
-(5): Unity Gutter Icon: Unity scripting component
+(5): Unity Gutter Icon: Unity script
 (6): ReSharper Unity Implicitly Used Identifier: 
 (7): Unity Gutter Icon: Unity event function
 
@@ -111,7 +111,7 @@ This function can be a coroutine.
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
 (10): ReSharper Unity Implicitly Used Identifier: 
-(11): Unity Gutter Icon: Unity scripting component
+(11): Unity Gutter Icon: Unity script
 (12): ReSharper Unity Implicitly Used Identifier: 
 (13): Unity Gutter Icon: Unity event function
 
@@ -131,7 +131,7 @@ This function can be a coroutine.
 
 Callback for setting up animation IK (inverse kinematics).
 (20): ReSharper Unity Implicitly Used Identifier: 
-(21): Unity Gutter Icon: Unity scripting component
+(21): Unity Gutter Icon: Custom Unity type
 (22): ReSharper Unity Implicitly Used Identifier: 
 (23): Unity Gutter Icon: Unity event function
 
@@ -143,16 +143,16 @@ This callback is used by UnityVS to take over project generation from Unity
 (26): ReSharper Unity Implicitly Used Identifier: 
 (27): Unity Gutter Icon: Unity event function
 (28): ReSharper Unity Implicitly Used Identifier: 
-(29): Unity Gutter Icon: Unity scripting component
+(29): Unity Gutter Icon: Custom Unity type
 (30): ReSharper Unity Implicitly Used Identifier: 
-(31): Unity Gutter Icon: Unity scripting component
+(31): Unity Gutter Icon: Unity script
 (32): ReSharper Unity Implicitly Used Identifier: 
 (33): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
 (34): ReSharper Unity Implicitly Used Identifier: 
-(35): Unity Gutter Icon: Unity scripting component
+(35): Unity Gutter Icon: Custom Unity type
 (36): ReSharper Unity Implicitly Used Identifier: 
 (37): Unity Gutter Icon: Unity event function
 

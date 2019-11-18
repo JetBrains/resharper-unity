@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         {
             try
             {
-                return ctx.Session.Evaluators.GetEvaluator(ctx).Evaluate(ctx, expression).Value;
+                return ctx.Session.Evaluators.Evaluate(ctx, expression).Value;
             }
             catch (Exception e)
             {
@@ -58,11 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                                                        IDebuggerValueOwner<Value> parentSource, Value gameObject)
         {
             var componentsSource = new GameObjectComponentsSource(ctx, parentSource, gameObject);
-            componentsSource.Connect();
             var componentsObjectValue = InitialiseObjectValues(componentsSource);
 
             var childrenSource = new GameObjectChildrenSource(ctx, parentSource, gameObject);
-            childrenSource.Connect();
             var childrenObjectValue = InitialiseObjectValues(childrenSource);
 
             return new[] {componentsObjectValue, childrenObjectValue};
@@ -72,7 +70,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                                                   Value scene)
         {
             var rootObjectsSource = new SceneRootObjectsSource(ctx, parentSource, scene);
-            rootObjectsSource.Connect();
             var rootObjectsValue = InitialiseObjectValues(rootObjectsSource);
             return new[] {rootObjectsValue};
         }
@@ -86,7 +83,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                 return EmptyArray<ObjectValue>.Instance;
 
             var objectValueSource = new EntityComponentDataSource(ctx, parentSource, entity, entityManager);
-            objectValueSource.Connect();
             var objectValue = InitialiseObjectValues(objectValueSource);
 
             return new[] {objectValue};
@@ -97,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             // ReSharper disable ArgumentsStyleNamedExpression
             // Displayed in the debugger as "objectValueSource.Name = {typeName} value"
             var objectValue = ObjectValue.CreateObject(objectValueSource, new ObjectPath(objectValueSource.Name),
-                typeName: string.Empty, value: string.Empty,
+                TypePresentation.Null, value: string.Empty, 
                 ObjectValueFlags.Group | ObjectValueFlags.ReadOnly | ObjectValueFlags.NoRefresh, null);
             objectValue.ChildSelector = string.Empty;
             return objectValue;

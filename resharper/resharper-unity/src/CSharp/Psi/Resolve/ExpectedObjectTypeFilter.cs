@@ -35,18 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve
                 return !myMustBeClass;
 
             if (myKind == ExpectedObjectTypeReferenceKind.Component)
-            {
-                // User components must derive from MonoBehaviour, but built in components only have to derive from
-                // Component. A built in component will be something that isn't an asset, which means it's come from
-                // one of the UnityEngine assemblies, or UnityEditor.dll. Another check might be that the referenced
-                // module lives in Assets, but packages makes a mess of that (referenced packages are compiled and
-                // referenced from Library or local packages can include a dll as an asset, external to the project)
-                myIsBuiltin = typeElement.IsBuiltInUnityClass();
-                if (myIsBuiltin)
-                    return typeElement.DerivesFrom(KnownTypes.Component);
-
-                return typeElement.DerivesFrom(KnownTypes.MonoBehaviour);
-            }
+                return typeElement.IsUnityComponent(out myIsBuiltin);
 
             return typeElement.DerivesFrom(KnownTypes.ScriptableObject);
         }

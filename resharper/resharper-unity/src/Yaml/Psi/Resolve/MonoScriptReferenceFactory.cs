@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         // If the document contains "m_Script: {fileID: 11500000, guid:", it's a reference to a class. This is fragile
         // if Unity starts to format its files differently, but I think this is ok
         private static readonly StringSearcher ourScriptReferenceStringSearcher =
-            new StringSearcher("m_Script: {fileID: 11500000, guid:", true);
+            new StringSearcher("m_Script:", true);
 
         public ReferenceCollection GetReferences(ITreeNode element, ReferenceCollection oldReferences)
         {
@@ -28,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             // m_Script: {fileID: 11500000, guid: xxx, type: x}
             var guidEntry = FlowMapEntryNavigator.GetByValue(guidValue);
             var flowIDMap = FlowMappingNodeNavigator.GetByEntrie(guidEntry);
-            var blockMappingEntry = BlockMappingEntryNavigator.GetByValue(flowIDMap);
+            var blockMappingEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(flowIDMap));
 
             if (guidEntry?.Key.MatchesPlainScalarText("guid") == true
                 && blockMappingEntry?.Key.MatchesPlainScalarText("m_Script") == true)
@@ -51,11 +52,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             var guidValue = element as IPlainScalarNode;
             var guidEntry = FlowMapEntryNavigator.GetByValue(guidValue);
             var flowIDMap = FlowMappingNodeNavigator.GetByEntrie(guidEntry);
-            var blockMappingEntry = BlockMappingEntryNavigator.GetByValue(flowIDMap);
+            var blockMappingEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(flowIDMap));
             return guidEntry?.Key.MatchesPlainScalarText("guid") == true
                    && blockMappingEntry?.Key.MatchesPlainScalarText("m_Script") == true;
         }
+        
+        public static bool CanContainReference([NotNull] IYamlDocument document)
+        {
+            var buffer = document.GetTextAsBuffer();
+            return CanContainReference(buffer);
+        }
 
+        
         public static bool CanContainReference(IBuffer bodyBuffer)
         {
             return ourScriptReferenceStringSearcher.Find(bodyBuffer) >= 0;

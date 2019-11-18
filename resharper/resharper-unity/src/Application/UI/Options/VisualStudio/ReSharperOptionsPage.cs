@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
 
             Header("Text based assets");
             CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
-                "Parse text based asset files for implicit script usages");
+                "Parse text based asset files for implicit script usages (requires re-opening solution)");
 
             if (productConfigurations.IsInternalMode())
             {

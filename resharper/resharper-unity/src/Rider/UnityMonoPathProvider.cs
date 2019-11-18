@@ -21,6 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var possibleApplicationPaths = UnityInstallationFinder.GetPossibleApplicationPaths();
             switch (PlatformUtil.RuntimePlatform)
             {
+                // dotTrace team uses these constants to detect unity's mono. 
+                // If you want change any constant, please notify dotTrace team
                 case PlatformUtil.Platform.MacOsX:
                 {
                     var monoFolders = possibleApplicationPaths.Select(a => a.Combine("Contents/MonoBleedingEdge")).ToList();

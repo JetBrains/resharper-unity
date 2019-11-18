@@ -11,10 +11,11 @@ IYamlFile
               IPlainScalarNode
                 YamlTokenType+GenericTokenElement(2,3)(type:NS_PLAIN, text:sun)
               YamlTokenType+FixedTokenElement(5,1)(type:COLON, text::)
-              Whitespace(6,1)(type:WHITESPACE, text: ) spaces: " "
-              IPlainScalarNode
-                YamlTokenType+GenericTokenElement(7,6)(type:NS_PLAIN, text:yellow)
-              NewLine(13,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              IContentNode
+                Whitespace(6,1)(type:WHITESPACE, text: ) spaces: " "
+                IPlainScalarNode
+                  YamlTokenType+GenericTokenElement(7,6)(type:NS_PLAIN, text:yellow)
+                NewLine(13,1)(type:NEW_LINE, text:\n) spaces: "\n"
         ISequenceEntry
           YamlTokenType+FixedTokenElement(14,1)(type:MINUS, text:-)
           Whitespace(15,1)(type:WHITESPACE, text: ) spaces: " "
@@ -27,10 +28,11 @@ IYamlFile
                   IPlainScalarNode
                     YamlTokenType+GenericTokenElement(18,5)(type:NS_PLAIN, text:earth)
                   YamlTokenType+FixedTokenElement(23,1)(type:COLON, text::)
-                  Whitespace(24,1)(type:WHITESPACE, text: ) spaces: " "
-                  IPlainScalarNode
-                    YamlTokenType+GenericTokenElement(25,4)(type:NS_PLAIN, text:blue)
-                  NewLine(29,1)(type:NEW_LINE, text:\n) spaces: "\n"
+                  IContentNode
+                    Whitespace(24,1)(type:WHITESPACE, text: ) spaces: " "
+                    IPlainScalarNode
+                      YamlTokenType+GenericTokenElement(25,4)(type:NS_PLAIN, text:blue)
+                    NewLine(29,1)(type:NEW_LINE, text:\n) spaces: "\n"
               YamlTokenType+GenericTokenElement(30,2)(type:INDENT, text:  )
               YamlTokenType+FixedTokenElement(32,1)(type:COLON, text::)
               Whitespace(33,1)(type:WHITESPACE, text: ) spaces: " "
@@ -39,8 +41,9 @@ IYamlFile
                   IPlainScalarNode
                     YamlTokenType+GenericTokenElement(34,4)(type:NS_PLAIN, text:moon)
                   YamlTokenType+FixedTokenElement(38,1)(type:COLON, text::)
-                  Whitespace(39,1)(type:WHITESPACE, text: ) spaces: " "
-                  IPlainScalarNode
-                    YamlTokenType+GenericTokenElement(40,5)(type:NS_PLAIN, text:white)
-                  NewLine(45,1)(type:NEW_LINE, text:\n) spaces: "\n"
+                  IContentNode
+                    Whitespace(39,1)(type:WHITESPACE, text: ) spaces: " "
+                    IPlainScalarNode
+                      YamlTokenType+GenericTokenElement(40,5)(type:NS_PLAIN, text:white)
+                    NewLine(45,1)(type:NEW_LINE, text:\n) spaces: "\n"
 

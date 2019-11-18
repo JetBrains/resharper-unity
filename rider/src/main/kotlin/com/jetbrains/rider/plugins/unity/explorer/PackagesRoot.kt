@@ -8,8 +8,8 @@ import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.packageManager.PackageData
-import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
+import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
@@ -96,7 +96,7 @@ class PackagesRoot(project: Project, private val packageManager: PackageManager)
 }
 
 class PackageNode(project: Project, private val packageManager: PackageManager, packageFolder: VirtualFile, private val packageData: PackageData)
-    : UnityExplorerNode(project, packageFolder, listOf(), false), Comparable<AbstractTreeNode<*>> {
+    : UnityExplorerNode(project, packageFolder, listOf(), false, !packageData.source.isEditable()), Comparable<AbstractTreeNode<*>> {
 
     init {
         icon = when (packageData.source) {
@@ -117,7 +117,7 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
         presentation.addNonIndexedMark(myProject, virtualFile)
 
         // Note that this might also set the tooltip if we have too many projects underneath
-        if (UnityExplorer.getInstance(myProject).myShowProjectNames)
+        if (UnityExplorer.getInstance(myProject).showProjectNames)
             addProjects(presentation)
 
         val existingTooltip = presentation.tooltip ?: ""
@@ -159,7 +159,7 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = super.calculateChildren()
 
-        if (!packageData.details.dependencies.isEmpty()) {
+        if (packageData.details.dependencies.isNotEmpty()) {
             children.add(0, DependenciesRoot(project!!, packageManager, packageData))
         }
 
@@ -305,7 +305,7 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
-        if (!UnityExplorer.getInstance(project!!).myShowHiddenItems) {
+        if (!UnityExplorer.getInstance(project!!).showHiddenItems) {
             return arrayListOf()
         }
         return super.calculateChildren()
@@ -316,14 +316,14 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
     }
 
     override fun canNavigateToSource(): Boolean {
-        if (UnityExplorer.getInstance(project!!).myShowHiddenItems) {
+        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
             return super.canNavigateToSource()
         }
         return true
     }
 
     override fun navigate(requestFocus: Boolean) {
-        if (UnityExplorer.getInstance(project!!).myShowHiddenItems) {
+        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
             return super.navigate(requestFocus)
         }
 

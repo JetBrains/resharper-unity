@@ -22,5 +22,8 @@
 
     [Header(Header Text)] 
     [Toggle] _Toggle("Toggle label text", Float) = 0.0
+
+    [KeywordEnum(6 Frames Layout, Latitude Longitude Layout)] _Mapping("Mapping", Float) = 1
+    [Enum(360 Degrees, 0, 180 Degrees, 1)] _ImageType("Image Type", Float) = 0
   }
 }

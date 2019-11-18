@@ -1,5 +1,6 @@
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
+using JetBrains.Rd.Tasks;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
@@ -18,9 +19,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       
       modelValue.UnitTestLaunch.Advise(connectionLifetime, launch =>
       {
-        var collector = TestEventsCollector.Instance;
-        ourLogger.Verbose("TestEventsCollectorInstance: " + collector.GetInstanceID()+" DelayedEvents.Count:"+ collector.DelayedEvents.Count);
-        new TestEventsSender(collector, launch);
+        new TestEventsSender(launch);
       });
       
       modelValue.RunUnitTestLaunch.Advise(connectionLifetime, () =>

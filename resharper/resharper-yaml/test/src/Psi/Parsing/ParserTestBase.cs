@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Components;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -24,10 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests.Psi.Parsing
   public abstract class ParserTestBase<TLanguage> : BaseTestWithTextControl
     where TLanguage : PsiLanguageType
   {
-    protected override void DoTest(IProject testProject)
+    protected override void DoTest(Lifetime lifetime, IProject testProject)
     {
       ShellInstance.GetComponent<TestIdGenerator>().Reset();
-      var textControl = OpenTextControl();
+      var textControl = OpenTextControl(lifetime);
       {
         ExecuteWithGold(textControl.Document, sw =>
         {

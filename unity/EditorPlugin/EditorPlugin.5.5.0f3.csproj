@@ -4,7 +4,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>UNITY_5_5</DefineConstants>
+    <DefineConstants>UNITY_5_5;RIDER_EDITOR_PLUGIN</DefineConstants>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
@@ -13,15 +13,8 @@
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.RdFramework" Version="193.20191030.267" />
     <PackageReference Include="JetBrains.Unity.Libs.5.5.0f3" Version="2017.7.21" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="JetBrains.Platform.RdCore35">
-      <HintPath>..\lib\JetBrains.Platform.RdCore35.dll</HintPath>
-    </Reference>
-    <Reference Include="JetBrains.Platform.RdFramework35">
-      <HintPath>..\lib\JetBrains.Platform.RdFramework35.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 IYamlFile
   IYamlDocument
     ChameleonDocumentBody
-      ChameleonBlockMappingNode
+      IBlockMappingNode
         IBlockMappingEntry
           YamlTokenType+FixedTokenElement(0,1)(type:QUESTION, text:?)
           Whitespace(1,1)(type:WHITESPACE, text: ) spaces: " "

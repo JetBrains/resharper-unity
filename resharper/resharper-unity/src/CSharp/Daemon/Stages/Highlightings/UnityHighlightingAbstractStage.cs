@@ -20,16 +20,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {
     public abstract class UnityHighlightingAbstractStage : CSharpDaemonStageBase
     {
-        protected readonly IEnumerable<IUnityDeclarationHiglightingProvider> HiglightingProviders;
+        protected readonly IEnumerable<IUnityDeclarationHighlightingProvider> HiglightingProviders;
         protected readonly UnityApi API;
-        protected readonly UnityHighlightingContributor UnityHighlightingContributor;
+        private readonly UnityCommonIconProvider myCommonIconProvider;
 
-        public UnityHighlightingAbstractStage(IEnumerable<IUnityDeclarationHiglightingProvider> higlightingProviders, UnityApi api,
-            UnityHighlightingContributor unityHighlightingContributor)
+        public UnityHighlightingAbstractStage(IEnumerable<IUnityDeclarationHighlightingProvider> higlightingProviders, UnityApi api, UnityCommonIconProvider  commonIconProvider)
         {
             HiglightingProviders = higlightingProviders;
             API = api;
-            UnityHighlightingContributor = unityHighlightingContributor;
+            myCommonIconProvider = commonIconProvider;
         }
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
@@ -37,34 +36,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             if (!file.GetProject().IsUnityProject())
                 return null;
             
-            return new UnityHighlightingProcess(process, file, HiglightingProviders, API, UnityHighlightingContributor, processKind);
+            return new UnityHighlightingProcess(process, file, HiglightingProviders, API, myCommonIconProvider, processKind);
         }
     }
     
     public class UnityHighlightingProcess : CSharpDaemonStageProcessBase
     {
-        private readonly IEnumerable<IUnityDeclarationHiglightingProvider> myHiglightingProviders;
+        private readonly IEnumerable<IUnityDeclarationHighlightingProvider> myHiglightingProviders;
         private readonly UnityApi myAPI;
-        private readonly UnityHighlightingContributor myUnityHighlightingContributor;
+        private readonly UnityCommonIconProvider myCommonIconProvider;
         private readonly DaemonProcessKind myProcessKind;
         private readonly ISet<IDeclaredElement> myMarkedDeclarations = new HashSet<IDeclaredElement>();
         private readonly JetHashSet<IMethod> myEventFunctions;
 
         public UnityHighlightingProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file,
-            IEnumerable<IUnityDeclarationHiglightingProvider> higlightingProviders, UnityApi api,
-            UnityHighlightingContributor unityHighlightingContributor, DaemonProcessKind processKind) : base(process, file)
+            IEnumerable<IUnityDeclarationHighlightingProvider> higlightingProviders, UnityApi api, UnityCommonIconProvider commonIconProvider,
+            DaemonProcessKind processKind) : base(process, file)
         {
             myHiglightingProviders = higlightingProviders;
             myAPI = api;
-            myUnityHighlightingContributor = unityHighlightingContributor;
+            myCommonIconProvider = commonIconProvider;
             myProcessKind = processKind;
 
             myEventFunctions = DaemonProcess.CustomData.GetData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey)
-                ?.Where(t => t.IsValid()).ToJetHashSet();
+                ?.Where(t => t != null && t.IsValid()).ToJetHashSet();
             
-            // TODO : VisibleDaemonDocument do not clean custom data for document, fix it in sdk
-            if (processKind == DaemonProcessKind.GLOBAL_WARNINGS)
-                DaemonProcess.CustomData.PutData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey, new JetHashSet<IMethod>());
+            DaemonProcess.CustomData.PutData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey, myEventFunctions);
                 
         }
 
@@ -83,8 +80,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                 if (myEventFunctions != null && myEventFunctions.Contains(declaredElement))
                 {
                     var method = (declaredElement as IMethod).NotNull("method != null");
-                    myUnityHighlightingContributor.AddUnityImplicitHighlightingForEventFunction(highlightingConsumer,  method,
-                       myAPI.GetUnityEventFunction(method), myProcessKind);
+                    var eventFunction = myAPI.GetUnityEventFunction(method);
+                    if (eventFunction == null) // happens after event function refactoring 
+                        continue;
+                    
+                    myCommonIconProvider.AddEventFunctionHighlighting(highlightingConsumer, method, eventFunction,
+                        "Event function", myProcessKind);
                     myMarkedDeclarations.Add(method);
                 }
                 else
@@ -92,8 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
                     if (myMarkedDeclarations.Contains(declaredElement))
                         continue;
                     
-                    myUnityHighlightingContributor.AddHighlighting(highlightingConsumer, declaration,
-                        "Frequently called code", "Frequently called", myProcessKind, true);
+                    myCommonIconProvider.AddFrequentlyCalledMethodHighlighting(highlightingConsumer, declaration,
+                        "Frequently called", "Frequently called code", myProcessKind);
                 }
             }
             

@@ -6,20 +6,18 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=EditorEntryPoint, ValidateFileName=True
-scopes: InUnityCSharpProject
+scopes: InUnityCSharpEditorFolder
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 NAMESPACE-expression: fileDefaultNamespace()
 ---
 
-# Editor EntryPoint C# script.
+# Editor EntryPoint C# script
 
 ```
-$HEADER$using UnityEditor;
-
-namespace $NAMESPACE$ {
-    [InitializeOnLoad]
+$HEADER$namespace $NAMESPACE$ {
+    [UnityEditor.InitializeOnLoad]
     public static class $CLASS$
     {
         static $CLASS$()

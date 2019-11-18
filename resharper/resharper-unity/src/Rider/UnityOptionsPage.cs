@@ -74,8 +74,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             Header("Text based assets");
             CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
-                "Parse text based asset files for script and event handler usages");
-
+                "Parse text based asset files for script and event handler usages (requires re-opening solution)");
+            CheckBox((UnitySettings s) => s.EnableInspectorPropertiesEditor,
+                "Show Inspector values in the editor");
+            
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
                 "Enable simple word-based completion in ShaderLab files");
@@ -135,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 var existingRule = GetUnitySerializedFieldRule(settingsStore, entry);
                 var newRule = new ClrUserDefinedNamingRule(existingRule.Descriptor,
-                    new NamingPolicy(existingRule.Policy.ExtraRules, existingRule.Policy.NamingRule, args.New));
+                    new NamingPolicy(existingRule.Policy.ExtraRules.ToIReadOnlyList(), existingRule.Policy.NamingRule, args.New));
                 SetUnitySerializedFieldRule(settingsStore, entry, newRule);
             });
 

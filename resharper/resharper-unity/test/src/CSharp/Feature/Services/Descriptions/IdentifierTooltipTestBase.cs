@@ -2,6 +2,7 @@
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -30,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descri
             });
         }
 
-        protected override void DoTest(IProject testProject)
+        protected override void DoTest(Lifetime lifetime, IProject testProject)
         {
             testProject.GetSolution().GetPsiServices().Files.CommitAllDocuments();
             var textControl = OpenTextControl(TestLifetime);

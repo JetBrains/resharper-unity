@@ -11,7 +11,7 @@ abstract class RiderUnityLogViewAction(text:String, description:String, icon: Ic
         e.presentation.apply {
             val dataContext = e.dataContext
             val tw = PlatformDataKeys.TOOL_WINDOW.getData(dataContext)
-            isVisible = tw != null && tw.stripeTitle == UnityToolWindowFactory.TOOLWINDOW_ID
+            isVisible = tw != null && tw.stripeTitle == UnityToolWindowFactory.TOOL_WINDOW_ID
         }
     }
 }

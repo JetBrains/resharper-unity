@@ -38,7 +38,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             // TODO: Not sure if this would be better handled in a .dotSettings file
             var pos = 0;
             AddToQuickList(mountPoint, myProjectMainPoint, "MonoBehaviour", ++pos, "5ff5ac38-7207-4256-91ae-b5436552db13");
+            AddToQuickList(mountPoint, myProjectMainPoint, "ScriptableObject", ++pos, "1404A333-DA7C-47AC-8CB5-7C944DD1422D");
+            AddToQuickList(mountPoint, myProjectMainPoint, "StateMachineBehaviour", ++pos, "AFA01340-773E-488A-93D6-E19540AE2F1B");
             AddToQuickList(mountPoint, myProjectMainPoint, "PlayModeTest", ++pos, "0bcdbc13-d26e-4512-9750-fb930f532e88");
+            AddToQuickList(mountPoint, myProjectMainPoint, "CustomEditor", ++pos, "2E5D288C-A209-41EE-93B2-7CACDCAE18C6");
+            AddToQuickList(mountPoint, myProjectMainPoint, "EditorWindow", ++pos, "CA9DFEEA-D5B5-4DDC-933F-8D618D71538E");
+            AddToQuickList(mountPoint, myProjectMainPoint, "PropertyDrawer", ++pos, "7901AA8B-4060-4763-8FD5-B7B5384FABAA");
+            AddToQuickList(mountPoint, myProjectMainPoint, "ScriptableWizard", ++pos, "E1BD73A0-0145-4A1A-B4AA-7744144744AF");
+            AddToQuickList(mountPoint, myProjectMainPoint, "AssetPostprocessor", ++pos, "B669492E-B3A6-4F98-9998-9AF480374340");
             AddToQuickList(mountPoint, myProjectMainPoint, "EditModeTest", ++pos, "7b7fa2c7-0ee5-4d4f-bb1f-ddbeacdbfc94");
             AddToQuickList(mountPoint, myProjectMainPoint, "StandardSurfaceShader", ++pos, "4b8178a2-8110-4068-a788-43b8227564e5");
             AddToQuickList(mountPoint, myProjectMainPoint, "UnlitShader", ++pos, "fdbd3ad2-8db2-466a-a934-4ce25cb40564");

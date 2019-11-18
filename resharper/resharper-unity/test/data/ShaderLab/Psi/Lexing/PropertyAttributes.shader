@@ -30,7 +30,6 @@ Shader "MyShader"
         [Header(Unterminated] _GlossMap2 ("Gloss Map 2", 3D) = "gloss" {}
 
         // Invalid characters
-        [Header(2 is invalid)] _Color7 ("Seventh Color") = (1,1,1,1)
         [Header("This is not allowed")] _Color8("Eighth Color") = (1,1,1,1)
         [Header(This is wrong!!!!!^$%!)] _Color9("Ninth Color") = (1,1,1,1)
 
@@ -40,5 +39,10 @@ Shader "MyShader"
         [NoScaleOffset, Header(Something)] _RefractTex ("Refraction Texture", Cube) = "" {}
         [Header(Argument value), invalid attribute name] _Color6 ("Sixth Color, Color) = (1,1,1,1)
         [Header(Something with spaces, second argument)] _Color3 ("Third Color", Color) = (1,1,1,1)
+
+        [KeywordEnum(6 Frames Layout, Latitude Longitude Layout)] _Mapping("Mapping", Float) = 1
+        [Enum(360 Degrees, 0, 180 Degrees, 1)] _ImageType("Image Type", Float) = 0
+
+        [PowerSlider(3.0)] _Shininess ("Shininess", Range (0.01, 1)) = 0.08
     }
 }

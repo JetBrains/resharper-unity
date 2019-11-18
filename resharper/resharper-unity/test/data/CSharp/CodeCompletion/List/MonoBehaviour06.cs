@@ -1,4 +1,3 @@
-// ${FILTERS:IntelliSense_FilterMethods}
 using UnityEngine;
 
 public class A : MonoBehaviour

@@ -1,17 +1,19 @@
-﻿# 6 ITEMS #
+﻿# 7 ITEMS #
 
 + NonSerialized (in System)
 NotNull (in JetBrains.Annotations)
 DebuggerNonUserCode (in System.Diagnostics)
-NotFiniteNumberException (in System)
-SoapNonNegativeInteger (in System.Runtime.Remoting.Metadata.W3cXsd2001)
-SoapNonPositiveInteger (in System.Runtime.Remoting.Metadata.W3cXsd2001)
+NativeContainerIsAtomicWriteOnly (in Unity.Collections.LowLevel.Unsafe)
+NativeContainerIsReadOnly (in Unity.Collections.LowLevel.Unsafe)
+NativeContainerSupportsDeallocateOnJobCompletion (in Unity.Collections.LowLevel.Unsafe)
+NativeSetClassTypeToNullOnSchedule (in Unity.Collections.LowLevel.Unsafe)
 # AUTOMATIC #
-# 6 ITEMS #
+# 7 ITEMS #
 
 + NonSerialized (in System)
 NotNull (in JetBrains.Annotations)
 DebuggerNonUserCode (in System.Diagnostics)
-NotFiniteNumberException (in System)
-SoapNonNegativeInteger (in System.Runtime.Remoting.Metadata.W3cXsd2001)
-SoapNonPositiveInteger (in System.Runtime.Remoting.Metadata.W3cXsd2001)
+NativeContainerIsAtomicWriteOnly (in Unity.Collections.LowLevel.Unsafe)
+NativeContainerIsReadOnly (in Unity.Collections.LowLevel.Unsafe)
+NativeContainerSupportsDeallocateOnJobCompletion (in Unity.Collections.LowLevel.Unsafe)
+NativeSetClassTypeToNullOnSchedule (in Unity.Collections.LowLevel.Unsafe)

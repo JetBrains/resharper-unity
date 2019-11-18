@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
@@ -134,7 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
             return BulbActionUtils.ExecuteHotspotSession(hotspotsRegistry, actualArgument.GetDocumentRange());
         }
-
+        
 
         private static string GetUniqueName([NotNull]IInvocationExpression invocationExpression,[NotNull] string baseName)
         {

@@ -7,6 +7,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
@@ -16,7 +17,7 @@ using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
-    public class UnityExternalFilesPsiModule : UserDataHolder, IPsiModuleOnFileSystemPaths
+    public class UnityExternalFilesPsiModule : UserDataHolder, IPsiModuleOnFileSystemPaths, IResourceModule
     {
         [NotNull] private readonly ISolution mySolution;
         private readonly string myPersistentId;
@@ -32,6 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             Name = moduleName;
             TargetFrameworkId = targetFrameworkId;
             mySourceFiles = new CompactMap<FileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>>();
+            
+            PutData(DaemonEnablePolicy.EnableSwaForMiscModuleKey, true);
         }
 
         public IPsiServices GetPsiServices() => mySolution.GetPsiServices();

@@ -19,28 +19,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public readonly IProperty<UnityEditorState> State;
 
         public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol,
-            IShellLocks locks, UnitySolutionTracker unitySolutionTracker)
+            IThreading locks, UnitySolutionTracker unitySolutionTracker)
         {
             State = new Property<UnityEditorState>(lifetime, "UnityEditorPlugin::ConnectionState", UnityEditorState.Disconnected);
             
-            editorProtocol.UnityModel.View(lifetime, (lt, model) =>
-            {
-                if (!unitySolutionTracker.IsUnityProjectFolder.HasTrueValue()) // avoid recurring checks for non-unity projects
-                    return;
+            if (locks.Dispatcher.IsAsyncBehaviorProhibited)
+                return;
 
+            unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
+            {
                 //check connection between backend and unity editor
-                locks.QueueRecurring(lt, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
+                locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
                 {
+                    var model = editorProtocol.UnityModel.Value;
                     if (model == null)
-                        State.Value = UnityEditorState.Disconnected;
+                    {
+                        State.SetValue(UnityEditorState.Disconnected);
+                    }
                     else
                     {
-                        var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
-                        rdTask?.Result.Advise(lt, result =>
+                        try
                         {
-                            State.Value = result.Result;
-                            logger.Trace($"myIsConnected = {State.Value}");
-                        });
+                            var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
+                            rdTask?.Result.Advise(lifetime, result =>
+                            {
+                                State.SetValue(result.Result);
+                                logger.Trace($"myIsConnected = {State.Value}");
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            e.Data.Add("UnityModel", editorProtocol.UnityModel.Value);
+                            throw;
+                        }
                     }
 
                     logger.Trace($"Sending connection state. State: {State.Value}");
@@ -59,6 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return EditorState.ConnectedIdle;
                 case UnityEditorState.Play:
                     return EditorState.ConnectedPlay;
+                case UnityEditorState.Pause:
+                    return EditorState.ConnectedPause;
                 case UnityEditorState.Refresh:
                     return EditorState.ConnectedRefresh;
                 default:

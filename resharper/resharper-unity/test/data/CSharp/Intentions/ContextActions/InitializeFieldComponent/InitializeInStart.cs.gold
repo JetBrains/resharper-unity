@@ -1,0 +1,11 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+  public Collider2D Colli{caret}der;
+
+  private void Start()
+  {
+    Collider = GetComponent<Collider2D>();
+  }
+}

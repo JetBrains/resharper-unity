@@ -10,10 +10,10 @@ using Mono.Debugging.Soft;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 {
-    public abstract class SyntheticGroupObjectValueSourceBase : RemoteFrameObject, IObjectValueSource<SoftEvaluationContext>
+    public abstract class SyntheticGroupObjectValueSourceBase : IObjectValueSource<SoftEvaluationContext>
     {
         private readonly ILogger myLogger;
-        private readonly IExpressionEvaluator<SoftEvaluationContext, TypeMirror, Value> myExpressionEvaluator;
+        private readonly IExpressionEvaluators<SoftEvaluationContext, TypeMirror, Value> myExpressionEvaluator;
 
         protected SyntheticGroupObjectValueSourceBase(SoftEvaluationContext context,
                                                       IDebuggerHierarchicalObject parentSource, string name,
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             Name = name;
 
             Adaptor = context.Session.Adapter;
-            myExpressionEvaluator = context.Session.Evaluators.GetEvaluator(context);
+            myExpressionEvaluator = context.Session.Evaluators;
         }
 
         public SoftEvaluationContext Context { get; }
@@ -70,6 +70,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         {
             throw new NotSupportedException();
         }
+
+        IEvaluationContext IObjectValueSource.Context => Context;
 
         protected ValueReference<SoftEvaluationContext, TypeMirror, Value> Evaluate(string expression)
         {

@@ -119,7 +119,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
         ShowUtil.ShowUsageOnScene(sceneElement.FilePath, sceneElement.FileName, sceneElement.Path, sceneElement.RootIndices);
       
       if (request is PrefabElement prefabElement)
-        ShowUtil.ShowPrefabUsage(prefabElement.FilePath, prefabElement.Path);
+        ShowUtil.ShowFileUsage(prefabElement.FilePath);
     }
   }
 }

@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Metadata.Reader.API;
+using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Xaml.Impl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
@@ -14,6 +20,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor
     {
         private readonly ILogger myLogger;
+
+        private readonly List<IClrTypeName> myImplicitlyUsedInterfaces = new List<IClrTypeName>()
+        {
+            new ClrTypeName("UnityEditor.Build.IPreprocessBuild"),
+            new ClrTypeName("UnityEditor.Build.IPostprocessBuild"),
+            new ClrTypeName("UnityEditor.Build.IProcessScene"),
+            new ClrTypeName("UnityEditor.Build.IProcessSceneWithReport"),
+            new ClrTypeName("UnityEditor.Build.IActiveBuildTargetChanged"),
+            new ClrTypeName("UnityEditor.Build.IFilterBuildAssemblies"),
+            new ClrTypeName("UnityEditor.Build.IPostBuildPlayerScriptDLLs"),
+            new ClrTypeName("UnityEditor.Build.IPostprocessBuildWithReport"),
+            new ClrTypeName("UnityEditor.Build.IPreprocessBuildWithReport"),
+            new ClrTypeName("UnityEditor.Build.IPreprocessShaders"),
+            new ClrTypeName("UnityEditor.Build.IOrderedCallback"),
+        };
 
         public UsageInspectionsSuppressor(ILogger logger)
         {
@@ -49,10 +70,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 
+
+                case ITypeElement typeElement when IsImplicitlyUsedInterfaceType(typeElement):
+                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                    return true;
+
                 case ITypeElement typeElement when unityApi.IsSerializableType(typeElement):
                     // TODO: We should only really mark it as in use if it's actually used somewhere
                     // That is, it should be used as a field in a Unity type, or another serializable type
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                    return true;
+
+                case IMethod method when IsImplicitlyUsedInterfaceMethod(method):
+                    flags = ImplicitUseKindFlags.Access;
                     return true;
 
                 case IMethod method:
@@ -84,21 +114,97 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                         flags = ImplicitUseKindFlags.Access;
                         return true;
                     }
+
+                    if (IsSettingsProvider(method))
+                    {
+                        flags = ImplicitUseKindFlags.Access;
+                        return true;
+                    }
+
                     break;
 
                 case IField field when unityApi.IsSerialisedField(field) || unityApi.IsInjectedField(field):
-                    // comment for serialized field:
-                    // Public fields gets exposed to the Unity Editor and assigned from the UI.
-                    // But it still should be checked if the field is ever accessed from the code.
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
-                
-                case IProperty property when IsEventHandler(unityApi, property.Setter):
+
+                case IProperty property when IsEventHandler(unityApi, property.Setter) || IsImplicitlyUsedInterfaceProperty(property):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
             }
 
-            flags = ImplicitUseKindFlags.Default;   // Value not used if we return false
+            flags = ImplicitUseKindFlags.Default; // Value not used if we return false
+            return false;
+        }
+
+        private static bool IsSettingsProvider(IMethod method)
+        {
+            if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All) && method.IsStatic)
+            {
+                var typeElement = (method.ReturnType as IDeclaredType)?.GetTypeElement();
+                if(typeElement != null && typeElement.DerivesFrom(KnownTypes.SettingsProvider))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsImplicitlyUsedInterfaceMethod(IMethod method)
+        {
+            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
+            {
+                var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, method.Module).GetTypeElement();
+
+                if (type == null)
+                    return false;
+                
+                foreach (var overridableMemberInstance in method.GetRootSuperMembers())
+                {
+                    if (type.GetClrName().ShortName == overridableMemberInstance.DeclaringType.GetClrName().ShortName)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsImplicitlyUsedInterfaceProperty(IProperty property)
+        {
+            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
+            {
+                var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, property.Module).GetTypeElement();
+
+                if (type == null)
+                    continue;
+                
+                foreach (var overridableMemberInstance in property.GetRootSuperMembers())
+                {
+                    if (type.GetClrName().ShortName == overridableMemberInstance.DeclaringType.GetClrName().ShortName)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsImplicitlyUsedInterfaceType(ITypeElement typeElement)
+        {
+            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
+            {
+                var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, typeElement.Module).GetTypeElement();
+
+                if (type == null)
+                    return false;
+                
+                if (typeElement.DerivesFrom(type.GetClrName()))
+                    return true;
+            }
+
             return false;
         }
 
@@ -117,10 +223,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             // TODO: These two are usually used together. Consider combining in some way
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
-                return unityApi.IsPotentialEventHandler(method);
+                return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
-            return method.GetSolution().GetComponent<UnityEventHandlerReferenceCache>().IsEventHandler(method);
+            return method.GetSolution().GetComponent<UnitySceneDataLocalCache>().IsEventHandler(method);
         }
     }
 }
-

@@ -1,0 +1,7 @@
+﻿using UnityEngine;
+
+[RequireComponent(typeof(Collider2D))]
+public class Foo : MonoBehaviour
+{
+  public Collider2D Colli{caret}der;
+}

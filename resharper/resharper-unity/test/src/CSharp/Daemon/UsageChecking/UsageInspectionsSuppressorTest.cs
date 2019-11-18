@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
@@ -16,13 +17,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
         [Test] public void MonoBehaviourMethods01() { DoNamedTest(); }
         [Test] public void MonoBehaviourFields01() { DoNamedTest(); }
         [Test] public void SerializableClassFields01() { DoNamedTest(); }
+        [Test] public void PreprocessBuildInterface01() { DoNamedTest(); }
+        [Test] public void PreprocessBuildInterface02() { DoNamedTest(); }
+        [Test] public void SettingsProviderAttribute01() { DoNamedTest(); }
 
-        protected override void DoTest(IProject project)
+        protected override void DoTest(Lifetime lifetime, IProject project)
         {
             myOnProjectStarted?.Invoke(project);
             try
             {
-                base.DoTest(project);
+                base.DoTest(lifetime, project);
             }
             finally
             {
@@ -30,29 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
             }
 
             myOnProjectStarted = myOnProjectFinished = null;
-        }
-
-        [Test]
-        public void PotentialEventHandlerMethodsYamlDisabled()
-        {
-            // TODO: Support testing when YAML is enabled
-            // It's currently enabled by default, but nothing is processed, because the PSI module is disabled to work
-            // around a R# issue
-            var oldValue = false;
-            myOnProjectStarted = project =>
-            {
-                var yamlSupport = project.GetSolution().GetComponent<UnityYamlSupport>();
-                oldValue = yamlSupport.IsUnityYamlParsingEnabled.Value;
-                yamlSupport.IsUnityYamlParsingEnabled.Value = false;
-            };
-
-            myOnProjectFinished = project =>
-            {
-                var yamlSupport = project.GetSolution().GetComponent<UnityYamlSupport>();
-                yamlSupport.IsUnityYamlParsingEnabled.Value = oldValue;
-            };
-
-            DoNamedTest();
         }
 
         [Test]

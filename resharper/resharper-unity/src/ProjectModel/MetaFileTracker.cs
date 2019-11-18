@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using JetBrains.Application.changes;
 using JetBrains.Application.Progress;
@@ -21,16 +21,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private readonly ILogger myLogger;
         private IProjectItem myLastAddedItem;
 
-        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger, ISolutionLoadTasksScheduler solutionLoadTasksScheduler)
+        public MetaFileTracker(Lifetime lifetime, ChangeManager changeManager, ISolution solution, ILogger logger, 
+            ISolutionLoadTasksScheduler solutionLoadTasksScheduler,
+            UnitySolutionTracker unitySolutionTracker)
         {
             mySolution = solution;
             myLogger = logger;
-            
+
             solutionLoadTasksScheduler.EnqueueTask(new SolutionLoadTask("AdviseForChanges", SolutionLoadTaskKinds.AfterDone,
                 () =>
                 {
+                    if (!unitySolutionTracker.IsUnityGeneratedProject.Value)
+                        return;
+                    
                     changeManager.RegisterChangeProvider(lifetime, this);
-                    changeManager.AddDependency(lifetime, this, solution);        
+                    changeManager.AddDependency(lifetime, this, solution);
                 }));
         }
 
@@ -86,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 // never do this, and b) you can't delete a project from Visual Studio/Rider, only remove it
                 if (projectChange.IsRemoved)
                     return;
-
+                
                 // Don't recurse if this project isn't a Unity project. Note that we don't do this
                 // for the IsRemoved case above, as the project doesn't have a solution at that point,
                 // and IsUnityProject will throw
@@ -132,20 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static bool ShouldHandleChange(ProjectItemChange change)
             {
                 // String comparisons, treat as expensive if we're doing this very frequently
-                return IsAsset(change) && !IsItemMetaFile(change);
-            }
-
-            private static bool IsAsset(ProjectItemChange change)
-            {
-                var rootFolder = GetRootFolder(change.OldParentFolder);
-                return rootFolder != null && string.Compare(rootFolder.Name, ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase) == 0;
-            }
-
-            private static IProjectFolder GetRootFolder(IProjectItem item)
-            {
-                while (item?.ParentFolder != null && item.ParentFolder.Kind != ProjectItemKind.PROJECT)
-                    item = item.ParentFolder;
-                return item as IProjectFolder;
+                return !IsItemMetaFile(change);
             }
 
             private static bool IsItemMetaFile(ProjectItemChange change)
@@ -196,10 +188,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             {
                 myLogger.Trace("*** resharper-unity: Item removed {0}", change.OldLocation);
 
-                // Only delete the meta file if the original file or folder is missing
-                if (change.OldLocation.Exists != FileSystemPath.Existence.Missing)
-                    return;
-
                 var metaFile = GetMetaFile(change.OldLocation);
                 if (!metaFile.ExistsFile)
                     return;
@@ -210,7 +198,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                     RenameMetaFile(metaFile, newMetaFile, " via add/remove");
                 }
                 else
+                {
                     DeleteMetaFile(metaFile);
+                }
 
                 myMetaFileTracker.myLastAddedItem = null;
             }
@@ -239,7 +229,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 {
                     var guid = Guid.NewGuid();
                     var timestamp = (long)(DateTime.UtcNow - ourUnixTime).TotalSeconds;
-                    DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2\r\nguid: {guid:N}\r\ntimeCreated: {timestamp}"));
+                    DoUnderTransaction("Unity::CreateMetaFile", () => path.WriteAllText($"fileFormatVersion: 2{Environment.NewLine}guid: {guid:N}{Environment.NewLine}timeCreated: {timestamp}"));
                     myLogger.Info("*** resharper-unity: Meta added {0}", path);
                 }
                 catch (Exception e)

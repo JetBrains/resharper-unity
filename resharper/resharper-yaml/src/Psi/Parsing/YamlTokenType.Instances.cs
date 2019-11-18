@@ -12,11 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     public const int NS_ANCHOR_NAME_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 6;
     public const int NS_DEC_DIGIT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 7;
     public const int NS_PLAIN_MULTI_LINE_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 8;
-    public const int NS_PLAIN_ONE_LINE_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 9;
-    public const int NS_TAG_CHARS_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 10;
-    public const int NS_URI_CHARS_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 11;
-    public const int NS_WORD_CHARS_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 12;
-    public const int SCALAR_TEXT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 13;
+    public const int NS_PLAIN_ONE_LINE_IN_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 9;
+    public const int NS_PLAIN_ONE_LINE_OUT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 10;
+    public const int NS_TAG_CHARS_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 11;
+    public const int NS_URI_CHARS_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 12;
+    public const int NS_WORD_CHARS_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 13;
+    public const int SCALAR_TEXT_NODE_TYPE_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 14;
+    public const int CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_INDENT_INDEX = LAST_GENERATED_TOKEN_TYPE_INDEX + 15;
 
 
 
@@ -41,8 +43,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     public static readonly TokenNodeType NS_WORD_CHARS = new GenericTokenNodeType("NS_WORD_CHARS", NS_WORD_CHARS_NODE_TYPE_INDEX, "NS_WORD_CHARS");
     public static readonly TokenNodeType NS_URI_CHARS = new GenericTokenNodeType("NS_URI_CHARS", NS_URI_CHARS_NODE_TYPE_INDEX, "NS_URI_CHARS");
     public static readonly TokenNodeType NS_TAG_CHARS = new GenericTokenNodeType("NS_TAG_CHARS", NS_TAG_CHARS_NODE_TYPE_INDEX, "NS_TAG_CHARS");
-    public static readonly TokenNodeType NS_PLAIN_ONE_LINE = new GenericTokenNodeType("NS_PLAIN", NS_PLAIN_ONE_LINE_NODE_TYPE_INDEX, "NS_PLAIN");
-    public static readonly TokenNodeType NS_PLAIN_MULTI_LINE = new GenericTokenNodeType("NS_PLAIN", NS_PLAIN_MULTI_LINE_NODE_TYPE_INDEX, "NS_PLAIN");
+    // These node types have the same text to help with testing. Changing the text doesn't help much, but would require updating ALL gold files
+    public static readonly TokenNodeType NS_PLAIN_ONE_LINE_IN = new GenericTokenNodeType("NS_PLAIN", NS_PLAIN_ONE_LINE_IN_NODE_TYPE_INDEX, "NS_PLAIN_IN");
+    public static readonly TokenNodeType NS_PLAIN_ONE_LINE_OUT = new GenericTokenNodeType("NS_PLAIN", NS_PLAIN_ONE_LINE_OUT_NODE_TYPE_INDEX, "NS_PLAIN_OUT");
+    public static readonly TokenNodeType NS_PLAIN_MULTI_LINE = new GenericTokenNodeType("NS_PLAIN", NS_PLAIN_MULTI_LINE_NODE_TYPE_INDEX, "NS_PLAIN_MULTI_LINE");
     public static readonly TokenNodeType NS_ANCHOR_NAME = new GenericTokenNodeType("NS_ANCHOR_NAME", NS_ANCHOR_NAME_NODE_TYPE_INDEX, "NS_ANCHOR_NAME");
     public static readonly TokenNodeType C_SINGLE_QUOTED_SINGLE_LINE = new GenericTokenNodeType("C_SINGLE_QUOTED_SINGLE_LINE", C_SINGLE_QUOTED_SINGLE_LINE_NODE_TYPE_INDEX, "C_SINGLE_QUOTED_SINGLE_LINE");
     public static readonly TokenNodeType C_SINGLE_QUOTED_MULTI_LINE = new GenericTokenNodeType("C_SINGLE_QUOTED_MULTILINE", C_SINGLE_QUOTED_MULTI_LINE_NODE_TYPE_INDEX, "C_SINGLE_QUOTED_MULTILINE");
@@ -50,5 +54,33 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing
     public static readonly TokenNodeType C_DOUBLE_QUOTED_MULTI_LINE = new GenericTokenNodeType("C_DOUBLE_QUOTED_MULTILINE", C_DOUBLE_QUOTED_MULTI_LINE_NODE_TYPE_INDEX, "C_DOUBLE_QUOTED_MULTILINE");
     public static readonly TokenNodeType NS_DEC_DIGIT = new GenericTokenNodeType("NS_DEC_DIGIT", NS_DEC_DIGIT_NODE_TYPE_INDEX, "NS_DEC_DIGIT");
     public static readonly TokenNodeType SCALAR_TEXT = new GenericTokenNodeType("SCALAR_TEXT", SCALAR_TEXT_NODE_TYPE_INDEX, "SCALAR_TEXT");
+
+    
+    public static readonly TokenNodeType CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_ANY_INDENT = GetChameleonTokenNodeTypeWithIndentInternal(-1);
+
+    private static ChameleonTokenNodeType GetChameleonTokenNodeTypeWithIndentInternal(int indent)
+    {
+      return new ChameleonTokenNodeType("CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_INDENT", indent, CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_INDENT_INDEX, "CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_INDENT");
+    }
+
+    // reuse the most popular indents
+    private static readonly ChameleonTokenNodeType[] CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_INDENT =
+      new ChameleonTokenNodeType[]
+      {
+        GetChameleonTokenNodeTypeWithIndentInternal(0), GetChameleonTokenNodeTypeWithIndentInternal(1),
+        GetChameleonTokenNodeTypeWithIndentInternal(2), GetChameleonTokenNodeTypeWithIndentInternal(3),
+        GetChameleonTokenNodeTypeWithIndentInternal(4), GetChameleonTokenNodeTypeWithIndentInternal(5),
+        GetChameleonTokenNodeTypeWithIndentInternal(6), GetChameleonTokenNodeTypeWithIndentInternal(7),
+        GetChameleonTokenNodeTypeWithIndentInternal(8), GetChameleonTokenNodeTypeWithIndentInternal(9),
+        GetChameleonTokenNodeTypeWithIndentInternal(10),
+      };
+
+    public static TokenNodeType GetChameleonMapEntryValueWithIndent(int indent)
+    {
+      if (indent <= 10)
+        return CHAMELEON_BLOCK_MAPPING_ENTRY_CONTENT_WITH_INDENT[indent];
+
+      return GetChameleonTokenNodeTypeWithIndentInternal(indent);
+    }
   }
 }

@@ -386,6 +386,81 @@ IShaderLabFile
             IScalarPropertyValue
               ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0.0)
           NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPropertyDeclaration
+            IAttribute
+              ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:KeywordEnum)
+              IAttributeParameters
+                ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                IAttributeParameterValues
+                  IStringAttributeParameterValue
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:6 Frames Layout)
+                  ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  IStringAttributeParameterValue
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:Latitude Longitude Layout)
+                ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_Mapping)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Mapping")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
+          Whitespace(type:WHITESPACE, text:    ) spaces: "    "
+          IPropertyDeclaration
+            IAttribute
+              ShaderLabTokenType+FixedTokenElement(type:LBRACK, text:[)
+              IShaderLabIdentifier
+                Identifier(type:IDENTIFIER, text:Enum)
+              IAttributeParameters
+                ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+                IAttributeParameterValues
+                  IStringAttributeParameterValue
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:360 Degrees)
+                  ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  INumberAttributeParameterValue
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+                  ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  IStringAttributeParameterValue
+                    ShaderLabTokenType+GenericTokenElement(type:UNQUOTED_STRING_LITERAL, text:180 Degrees)
+                  ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+                  Whitespace(type:WHITESPACE, text: ) spaces: " "
+                  INumberAttributeParameterValue
+                    ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:1)
+                ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+              ShaderLabTokenType+FixedTokenElement(type:RBRACK, text:])
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IShaderLabIdentifier
+              Identifier(type:IDENTIFIER, text:_ImageType)
+            ShaderLabTokenType+FixedTokenElement(type:LPAREN, text:()
+            ShaderLabTokenType+GenericTokenElement(type:STRING_LITERAL, text:"Image Type")
+            ShaderLabTokenType+FixedTokenElement(type:COMMA, text:,)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ISimplePropertyType
+              ShaderLabTokenType+KeywordTokenElement(type:FLOAT_KEYWORD, text:Float)
+            ShaderLabTokenType+FixedTokenElement(type:RPAREN, text:))
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            ShaderLabTokenType+FixedTokenElement(type:EQUALS, text:=)
+            Whitespace(type:WHITESPACE, text: ) spaces: " "
+            IScalarPropertyValue
+              ShaderLabTokenType+GenericTokenElement(type:NUMERIC_LITERAL, text:0)
+          NewLine(type:NEW_LINE, text:\n) spaces: "\n"
           Whitespace(type:WHITESPACE, text:  ) spaces: "  "
           ShaderLabTokenType+FixedTokenElement(type:RBRACE, text:})
       NewLine(type:NEW_LINE, text:\n) spaces: "\n"

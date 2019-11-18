@@ -27,9 +27,9 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     [UsedImplicitly]
     public static string OnGeneratedSlnSolution(string path, string content)
     {
-      if (!PluginEntryPoint.Enabled)
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
         return content;
-
+      
       try
       {
         ourLogger.Verbose("Post-processing {0} (in memory)", path);
@@ -54,14 +54,20 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     // This method is for pre-2018.1, and is called after the file has been written to disk
     public static void OnGeneratedCSProjectFiles()
     {
-      if (!PluginEntryPoint.Enabled || UnityUtils.UnityVersion >= new Version(2018, 1))
+      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+        return;
+      
+      if (UnityUtils.UnityVersion >= new Version(2018, 1))
         return;
 
       try
       {
         var slnFile = PluginEntryPoint.SlnFile;
         if (!File.Exists(slnFile))
+        {
+          ourLogger.Verbose(".sln file was not found");
           return;
+        }
 
         ourLogger.Verbose("Post-processing {0}", slnFile);
         var originalText = File.ReadAllText(slnFile);

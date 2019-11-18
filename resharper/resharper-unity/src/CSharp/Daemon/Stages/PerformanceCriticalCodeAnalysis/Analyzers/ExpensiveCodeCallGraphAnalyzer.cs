@@ -1,7 +1,7 @@
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CallGraph;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -16,8 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public const string MarkId = "Unity.ExpensiveCode";
 
         public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
-            UnitySolutionTracker unitySolutionTracker, ICallGraphAnalyzersProvider provider)
-            : base(lifetime, provider, MarkId, new CalleeToCallerCallGraphPropagator(solution, MarkId))
+            UnitySolutionTracker unitySolutionTracker)
+            : base(MarkId, new CalleeToCallerCallGraphPropagator(solution, MarkId))
         {
             Enabled.Value = unitySolutionTracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);

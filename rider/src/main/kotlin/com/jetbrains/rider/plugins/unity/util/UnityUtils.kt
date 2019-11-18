@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.project.Project
+import com.intellij.util.Restarter
 
 fun convertPidToDebuggerPort(port: Int) = convertPidToDebuggerPort(port.toLong())
 
@@ -16,5 +17,11 @@ fun addPlayModeArguments(args : MutableList<String>) {
 fun getUnityWithProjectArgs(project: Project) : MutableList<String> {
     val finder = UnityInstallationFinder.getInstance(project)
     val args = mutableListOf(finder.getApplicationPath().toString(), "-projectPath", project.basePath.toString())
-    return args;
+    val riderPath = Restarter.getIdeStarter()?.path
+    if (riderPath!=null)
+    {
+        val originArgs = mutableListOf("-riderPath", riderPath)
+        args.addAll(originArgs)
+    }
+    return args
 }

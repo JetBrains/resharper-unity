@@ -55,27 +55,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         /// <summary>
         /// Calls Refresh in Unity, and RefreshPaths in vfs. If called multiple times while already running, schedules itself again
         /// </summary>
-        /// <param name="force"></param>
-        public async void Refresh(RefreshType force)
+        /// <param name="refreshType"></param>
+        public async void Refresh(RefreshType refreshType)
         {
             myLocks.AssertMainThread();
             if (myEditorProtocol.UnityModel.Value == null)
                 return;
 
-            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&
-                force == RefreshType.Normal)
+            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && refreshType == RefreshType.Normal)
                 return;
 
             if (myIsRunning)
             {
-                myLogger.Verbose($"Secondary execution with {force} type saved.");
-                myRefreshType = force;
+                myLogger.Verbose($"Secondary execution with {refreshType} type saved.");
+                myRefreshType = refreshType;
                 return;
             }
 
             myIsRunning = true;
 
-            await RefreshInternal(force);
+            await RefreshInternal(refreshType);
 
             myIsRunning = false;
 
@@ -99,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 using (mySolution.GetComponent<VfsListener>().PauseChanges())
                 {
-                    await myEditorProtocol.UnityModel.Value.Refresh.StartAsTask(force);
+                    await myEditorProtocol.UnityModel.Value.Refresh.Start(force).AsTask();
                 }
                 myLogger.Verbose(
                     $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Finished");
@@ -113,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var list = new List<string> {solFolder.FullPath};
                 myLogger.Verbose($"RefreshPaths.StartAsTask Started.");
-                await solution.GetFileSystemModel().RefreshPaths.StartAsTask(new RdRefreshRequest(list, true));
+                await solution.GetFileSystemModel().RefreshPaths.Start(new RdRefreshRequest(list, true)).AsTask();
                 myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
 
                 myLogger.Verbose($"lifetimeDef.Terminate");
@@ -129,6 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
+        private readonly UnityRefresher myRefresher;
         private readonly ILogger myLogger;
         private GroupingEvent myGroupingEvent;
 
@@ -138,6 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
+            myRefresher = refresher;
             myLogger = logger;
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -145,23 +146,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
+                
+                // Rgc.Guarded - beware RIDER-15577
+                myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherGroupingEvent",
+                    TimeSpan.FromMilliseconds(500),
+                    Rgc.Guarded, () =>
+                    {
+                        refresher.Refresh(RefreshType.Normal);
+                    });
+                
                 host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force =>
                     {
-                        refresher.Refresh(force ? RefreshType.ForceRequestScriptReload : RefreshType.Normal);
+                        if (force)
+                            refresher.Refresh(RefreshType.ForceRequestScriptReload);
+                        else
+                            myGroupingEvent.FireIncoming();
                     }));
             });
 
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-
-                // Rgc.Guarded - beware RIDER-15577
-                myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "UnityRefresherOnSaveEvent",
-                    TimeSpan.FromMilliseconds(500),
-                    Rgc.Guarded, () =>
-                    {
-                        refresher.Refresh(RefreshType.Normal);
-                    });
 
                 var protocolSolution = solution.GetProtocolSolution();
                 protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
@@ -179,6 +184,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var visitor = new Visitor(this);
             foreach (var fileSystemChangeDelta in fileSystemChange.Deltas)
                 fileSystemChangeDelta.Accept(visitor);
+        }
+        
+        private void AdviseFileAddedOrDeleted(FileSystemChangeDelta delta)
+        {
+            if (delta.NewPath.ExtensionNoDot == "cs")
+            {
+                myLogger.Verbose($"fileSystemTracker.AdviseDirectoryChanges {delta.ChangeType}, {delta.NewPath}, {delta.OldPath}");
+                myGroupingEvent.FireIncoming();
+            }
         }
 
         private class Visitor : RecursiveFileSystemChangeDeltaVisitor
@@ -208,15 +222,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-            }
-        }
-
-        private void AdviseFileAddedOrDeleted(FileSystemChangeDelta delta)
-        {
-            if (delta.NewPath.ExtensionNoDot == "cs")
-            {
-                myLogger.Verbose($"fileSystemTracker.AdviseDirectoryChanges {delta.ChangeType}, {delta.NewPath}, {delta.OldPath}");
-                myGroupingEvent.FireIncoming();
             }
         }
     }

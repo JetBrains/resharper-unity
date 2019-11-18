@@ -1,4 +1,5 @@
-﻿using JetBrains.ProjectModel;
+﻿using JetBrains.Annotations;
+using JetBrains.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel
 {
@@ -15,7 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.ProjectModel
         public const string HLSLINC_EXTENSION = ".hlslinc";
         public const string GLSLINC_EXTENSION = ".glslinc";
 
-        public new static readonly CgProjectFileType Instance = null;
+        [CanBeNull, UsedImplicitly]
+        public new static CgProjectFileType Instance { get; private set; }
 
         public CgProjectFileType()
             : base(Name, "Cg", new[] {CG_EXTENSION, COMPUTE_EXTENSION, HLSL_EXTENSION, GLSL_EXTENSION, HLSLINC_EXTENSION, GLSLINC_EXTENSION})

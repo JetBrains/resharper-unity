@@ -3,6 +3,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -28,23 +29,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private static void NotifyFrontend(UnityHost host, UnityVersion unityVersion)
         {
             var version = unityVersion.GetActualVersionForSolution();
-            var info = UnityInstallationFinder.GetApplicationInfo(version);
-            if (info == null)
-                return;
+            var applicationPath = unityVersion.GetActualAppPathForSolution();
+
+            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX && !applicationPath.ExistsDirectory
+                || PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX && !applicationPath.ExistsFile)
+            {
+                var info = UnityInstallationFinder.GetApplicationInfo(version);
+                if (info == null)
+                    return;
+                applicationPath = info.Path;
+                version = info.Version;
+            }
 
             host.PerformModelAction(rd =>
             {
-                // ApplicationPath may be already set via UnityEditorProtocol, which is more accurate
+                // ApplicationPath may be already set via UnityEditorProtocol, which will obviously be correct
                 if (!rd.ApplicationPath.HasValue())
-                    rd.ApplicationPath.SetValue(info.Path.FullPath);
+                    rd.ApplicationPath.SetValue(applicationPath.FullPath);
+
                 if (!rd.ApplicationContentsPath.HasValue())
                 {
-                    var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(version);
-                    if (contentsPath != null)
+                    var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(applicationPath);
+                    if (!contentsPath.IsEmpty)
                         rd.ApplicationContentsPath.SetValue(contentsPath.FullPath);
                 }
-                if (!rd.ApplicationVersion.HasValue() && info.Version != null)
-                    rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(info.Version));
+                if (!rd.ApplicationVersion.HasValue() && version != null)
+                    rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(version));
             });
         }
     }

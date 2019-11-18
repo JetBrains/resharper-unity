@@ -18,8 +18,18 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Rider.SDK.Tests" Version="$(RiderSDKVersion)" />
+    <PackageReference Include="NUnit.Console" Version="3.10.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\rider-unity.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="AsmDef\**" />
+    <EmbeddedResource Remove="AsmDef\**" />
+    <None Remove="AsmDef\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AsmDefCommon\Feature" />
+    <Folder Include="AsmDefCommon\Feature\Services\Intentions" />
   </ItemGroup>
 </Project>

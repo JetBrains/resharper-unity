@@ -1,4 +1,5 @@
-﻿using JetBrains.ProjectModel;
+﻿using JetBrains.Annotations;
+using JetBrains.ProjectModel;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.ProjectModel
 {
@@ -8,7 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.ProjectModel
     public new const string Name = "YAML";
     public const string YAML_EXTENSION = ".yaml";
 
-    public new static readonly YamlProjectFileType Instance = null;
+    [CanBeNull, UsedImplicitly]
+    public new static YamlProjectFileType Instance { get; private set; }
 
     public YamlProjectFileType()
 #if RIDER

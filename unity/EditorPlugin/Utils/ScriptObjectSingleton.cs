@@ -74,7 +74,6 @@ namespace JetBrains.Rider.Unity.Editor.Utils
       else
       {
         instance = this as T;
-        Debug.Assert(instance != null);
       }
     }
 

@@ -557,7 +557,7 @@ options {
 // Option 3. Create an abstract nonterminal, which then requires a `ParseIdentifier` method. This would
 //   check the current token is either `IDENTIFIER` or belongs to the Keywords set. Then can return any
 //   element, e.g. `IDENTIFER` as a token, not a composite
-// Option 4. As above, but create another private non terminal that 
+// Option 4. As above, but create another private non terminal that
 //
 // Note that C# does context sensitive keywords the other way - all context sensitive keywords are identifiers
 // and parsed via custom match/expect methods. This has implications on follow tokens (on error, can skip to
@@ -570,7 +570,6 @@ options {
 }
 :
   IDENTIFIER<SHADER_LAB_IDENTIFIER, IdentifierToken>
-  | UNQUOTED_STRING_LITERAL<SHADER_LAB_IDENTIFIER, IdentifierToken>
 
   | SHADER_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
   | PROPERTIES_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
@@ -768,6 +767,7 @@ invalidVariableReferenceParameters
     | RPAREN
     | COMMA
     | DOT
+    | UNQUOTED_STRING_LITERAL
     | shaderLabIdentifier
   )*
 ;
@@ -1164,7 +1164,7 @@ attribute
 attributeParameters
 :
   LPAREN<LPAREN, LParen>
-  attributeParameterValues<PARAMETER_VALUES, ParameterValues>
+  attributeParameterValues<PARAMETER_VALUES, ParameterValues>?
   RPAREN<RPAREN, RParen>
 ;
 
@@ -1474,7 +1474,7 @@ blendValue
 :
   NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
   (
-    falseLiteral{FALSE_LITERAL, FalseLiteral} 
+    falseLiteral{FALSE_LITERAL, FalseLiteral}
     | blendValues
   )
 ;

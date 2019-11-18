@@ -24,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         [SettingsEntry(GutterIconMode.CodeInsightDisabled, "Unity highlighter scheme for editor.")]
         public GutterIconMode GutterIconMode;
 
+        // backward compability
         [SettingsEntry(true, "Should yaml heuristic be applied?")]
         public bool ShouldApplyYamlHugeFileHeuristic;
 
@@ -40,5 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Enables showing hot icon for frequently called code")]
         public bool EnableIconsForPerformanceCriticalCode;
+        
+        [SettingsEntry(true, "Show Inspector properties changes in editor")]
+        public bool EnableInspectorPropertiesEditor;
     }
 }

@@ -7,8 +7,10 @@ using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -18,52 +20,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
     [QuickFix]
     public class  MultiplicationOrderQuickFix : QuickFixBase
     {
-        private readonly IMultiplicativeExpression myExpression;
+        private readonly ICSharpExpression myExpression;
+        private readonly ICSharpExpression myMatrix;
+        private readonly ICSharpExpression myScalar;
 
         public MultiplicationOrderQuickFix(InefficientMultiplicationOrderWarning warning)
         {
             myExpression = warning.Expression;
+            myMatrix = warning.OperandMatrix;
+            myScalar = warning.OperandScalar;
         }
         
         protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
         {
-            var operands = GetAllOperands(myExpression).OrderBy(t => !t.GetExpressionType().ToIType().IsPredefinedNumeric()).ToList();
-            var factory = CSharpElementFactory.GetInstance(myExpression);
-
-            const string mul = "$0 * $1";
-            var newExpr = operands[0];
-            for (int i = 1; i < operands.Count; i++)
-                newExpr = factory.CreateExpression(mul, newExpr, operands[i].CopyWithResolve());
-           
-            myExpression.ReplaceBy(newExpr);
-            return null;
-        }
-
-        private List<ICSharpExpression> GetAllOperands(IMultiplicativeExpression expression)
-        {
-            var result = new List<ICSharpExpression>();
-            var left = expression.LeftOperand.GetOperandThroughParenthesis();
-            var right = expression.RightOperand.GetOperandThroughParenthesis();
-
-            if (left is IMultiplicativeExpression leftM)
-            {
-                result.AddRange(GetAllOperands(leftM));
-            }
-            else
-            {
-                result.Add(left);
-            }
+            var newMatrix = myMatrix.CopyWithResolve();
+            var newScalar = myScalar.CopyWithResolve();
             
-            if (right is IMultiplicativeExpression rightM)
-            {
-                result.AddRange(GetAllOperands(rightM));
-            }
-            else
-            {
-                result.Add(right);
-            }
-
-            return result;
+            myMatrix.ReplaceBy(newScalar);
+            myScalar.ReplaceBy(newMatrix);
+            return null;
         }
 
         public override bool IsAvailable(IUserDataHolder cache) => myExpression.IsValid();
