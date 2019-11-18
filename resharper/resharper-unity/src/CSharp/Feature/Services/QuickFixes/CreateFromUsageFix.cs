@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 
@@ -52,6 +53,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         {
         }
 
+        public CreateFromUsageFix(NotResolvedInTextWarning warning) 
+        {
+            if (warning.Reference is UnityEventFunctionReference unityEventFunctionReference)
+            {
+                myUnfilteredItems = new List<ICreateFromUsageActionProvider>
+                {
+                    new UnityCreateMethodFromStringLiteralUsageAction(unityEventFunctionReference)
+                };
+            }
+            else
+            {
+                myUnfilteredItems = new List<ICreateFromUsageActionProvider>();
+            }
+        }
+        
         public CreateFromUsageFix(RedundantInitializeOnLoadAttributeWarning warning)
         {
             myUnfilteredItems = new List<ICreateFromUsageActionProvider>
