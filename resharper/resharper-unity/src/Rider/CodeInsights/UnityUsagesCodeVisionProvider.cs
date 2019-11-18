@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
             myUnityEditorUsageCounter = shell.GetComponent<UnityEditorUsageCounter>();
         }
-        
+
         protected override string Noun(IDeclaredElement element, int count) => "asset usage" + Arity(count);
 
         protected override int GetBaseCount(SolutionAnalysisService swa, IGlobalUsageChecker usageChecker, IDeclaredElement element,
@@ -57,33 +57,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             if (!declaredElement.GetSolution().GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled.Value)
                 return false;
-                
+
             if (!declaredElement.GetSolution().GetComponent<AssetSerializationMode>().IsForceText)
                 return false;
-            
-            if (declaredElement is IMethod method)
+
+            if (declaredElement is IMethod method && !(method is IAccessor))
             {
                 var cache = method.GetSolution().GetComponent<UnitySceneDataLocalCache>();
                 return cache.IsEventHandler(method);
             }
 
+            if (declaredElement is IProperty property && property.Setter != null)
+            {
+                var cache = property.GetSolution().GetComponent<UnitySceneDataLocalCache>();
+                return cache.IsEventHandler(property.Setter);
+            }
+
             var unityApi = declaredElement.GetSolution().GetComponent<UnityApi>();
             if (!unityApi.IsDescendantOfMonoBehaviour(declaredElement as ITypeElement))
                 return false;
-            
+
             return true;
         }
 
         public override string ProviderId => "Unity Assets Usage";
-        
+
         protected override string FormatShort(IDeclaredElement elt, CodeVisionState state, int ownCount, int baseCount)
         {
             if (IsNotReady(state))
                 return Noun(elt, 0);
-            
+
             if (baseCount == 0)
                 return $"No asset usages";
-            
+
             return $"{ownCount} {Noun(elt, ownCount)}"; //always plural
         }
 
