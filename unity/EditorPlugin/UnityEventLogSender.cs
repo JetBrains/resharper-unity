@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.NonUnity;
+using UnityEditor;
 using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
@@ -14,8 +15,9 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!PluginSettings.LogEventsCollectorEnabled)
         return;
-      
-      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public); // Unity 2017.x+
+
+      // Both of these methods were introduced in 5.0+ but EditorPlugin.csproj still targets 4.7
+      var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public);
       if (eventInfo == null)
         eventInfo = typeof(Application).GetEvent("logMessageReceived", BindingFlags.Static | BindingFlags.Public);
 
@@ -27,10 +29,28 @@ namespace JetBrains.Rider.Unity.Editor
         {
           eventInfo.RemoveEventHandler(null, handler);
         });
+
+        // Introduced in 3.4, obsolete but still working in 2017.2+
+        // Should use EditorApplication.playModeStateChanged, introduced in 2017.2
+#pragma warning disable 618
+        EditorApplication.playmodeStateChanged += () =>
+#pragma warning restore 618
+        {
+          // Work around an issue in Unity 2017.1+ that stops sending log messages to the handler when leaving play mode.
+          // The issue will not be fixed because it might break compatibility of existing workarounds
+          // https://issuetracker.unity3d.com/issues/general-unityengine-dot-application-dot-logmessagereceived-is-not-being-raised-after-exiting-play-mode
+          // Note that although the issue says 2017.4+ it is actually 2017.1 and above. I haven't been able to test 5.x
+          if (!EditorApplication.isPlayingOrWillChangePlaymode)
+          {
+            eventInfo.RemoveEventHandler(null, handler);
+            eventInfo.AddEventHandler(null, handler);
+          }
+        };
       }
       else
       {
 #pragma warning disable 612, 618
+        // Obsolete from 5.0+
         Application.RegisterLogCallback(ApplicationOnLogMessageReceived);
 #pragma warning restore 612, 618
       }
@@ -75,7 +95,7 @@ namespace JetBrains.Rider.Unity.Editor
       AddEvent?.Invoke(this, e);
     }
   }
-  
+
   public class UnityEventLogSender
   {
     public UnityEventLogSender(UnityEventCollector collector)
@@ -88,7 +108,7 @@ namespace JetBrains.Rider.Unity.Editor
         ProcessQueue((UnityEventCollector)col);
       };
     }
-    
+
     private void ProcessQueue(UnityEventCollector collector)
     {
       RdLogEvent element;
@@ -97,7 +117,7 @@ namespace JetBrains.Rider.Unity.Editor
         SendLogEvent(element);
       }
     }
-    
+
     private void SendLogEvent(RdLogEvent logEvent)
     {
       MainThreadDispatcher.Instance.Queue(() =>
@@ -109,7 +129,7 @@ namespace JetBrains.Rider.Unity.Editor
             modelWithLifetime.Model.Log(logEvent);
           }
         }
-      });  
+      });
     }
   }
 }
