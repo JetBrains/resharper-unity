@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Application;
 using JetBrains.Application.Components;
 using JetBrains.Collections.Viewable;
@@ -13,6 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [ShellComponent]
     public class UnityRiderUnitTestCoverageAvailabilityChecker : IRiderUnitTestCoverageAvailabilityChecker, IHideImplementation<DefaultRiderUnitTestCoverageAvailabilityChecker>
     {
+        private static readonly Version ourMinSupportedUnityVersion = new Version(2018, 3);
+
         // this method should be very fast as it gets called a lot
         public HostProviderAvailability GetAvailability(IUnitTestElement element)
         {
@@ -22,10 +25,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return HostProviderAvailability.Available;
 
             var rdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
-            if (rdUnityModel.UnitTestPreference.Value != UnitTestLaunchPreference.PlayMode)
-                return HostProviderAvailability.Available;
+            switch (rdUnityModel.UnitTestPreference.Value)
+            {
+                case UnitTestLaunchPreference.NUnit:
+                    return HostProviderAvailability.Available;
+                case UnitTestLaunchPreference.PlayMode:
+                    return HostProviderAvailability.Nonexistent;
+                case UnitTestLaunchPreference.EditMode:
+                {
+                    var unityVersion = UnityVersion.Parse(rdUnityModel.ApplicationVersion.Maybe.ValueOrDefault ?? string.Empty);
 
-            return HostProviderAvailability.Nonexistent;
+                    return unityVersion == null || unityVersion < ourMinSupportedUnityVersion
+                        ? HostProviderAvailability.Nonexistent
+                        : HostProviderAvailability.Available;
+                }
+
+                default:
+                    return HostProviderAvailability.Nonexistent;
+            }
         }
     }
 }
