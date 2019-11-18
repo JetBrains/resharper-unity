@@ -273,7 +273,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
                                 myUnityProcessId.When(taskLifetime, (int?)null, _ => tcs.TrySetException(new Exception("Unity Editor has been closed.")));
 
-                                myEditorProtocol.UnityModel.Value.RunUnitTestLaunch();
+                                var rdTask = myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
+                                rdTask?.Result.Advise(taskLifetime, res =>
+                                {
+                                    myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
+                                    if (!res.Result)
+                                        tcs.TrySetException(new Exception("Failed to start tests in Unity."));
+                                });
                             });
                         }
                     });

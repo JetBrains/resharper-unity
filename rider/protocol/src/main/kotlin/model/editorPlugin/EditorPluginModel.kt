@@ -142,7 +142,7 @@ object EditorPluginModel: Root() {
         sink("compiledAssemblies", immutableList(CompiledAssembly))
 
         property("unitTestLaunch", UnitTestLaunch)
-        source("runUnitTestLaunch", void)
+        call("runUnitTestLaunch", void, bool)
 
         property("fullPluginPath", string)
 

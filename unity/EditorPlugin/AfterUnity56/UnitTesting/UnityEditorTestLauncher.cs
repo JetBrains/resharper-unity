@@ -23,21 +23,21 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       myLaunch = launch;
     }
 
-    public void TryLaunchUnitTests()
+    public bool TryLaunchUnitTests()
     {
       // new way
       var success = TryLaunchUnitTestsInternal();
       if (success)
-        return;
+        return true;
       
       // old way running tests works only for EditMode tests
       if (myLaunch.TestMode != TestMode.Edit)
       {
-        return;
+        return false;
       }
       
       // old way
-      TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
+      return TryLaunchUnitTestsInAssembly(myLaunch.TestFilters.SelectMany(a=>a.TestNames).ToArray());
     }
 
     private bool TryLaunchUnitTestsInternal()
@@ -92,7 +92,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       return false;
     }
 
-    private void TryLaunchUnitTestsInAssembly(string[] testNames)
+    private bool TryLaunchUnitTestsInAssembly(string[] testNames)
     {
       try
       {
@@ -106,7 +106,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         {
           ourLogger.Verbose(
             "Could not find UnityEditor.TestRunner or UnityEngine.TestRunner assemblies in current AppDomain");
-          return;
+          return false;
         }
 
         var launcherTypeString = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
@@ -130,7 +130,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         if (fieldInfo == null)
         {
           ourLogger.Verbose("Could not find testNames field via reflection");
-          return;
+          return false;
         }
         fieldInfo.SetValue(filter, testNames);
 
@@ -144,7 +144,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           if (enumType == null)
           {
             ourLogger.Verbose("Could not find TestPlatform field via reflection");
-            return;
+            return false;
           }
 
           var assemblyProviderType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
@@ -193,7 +193,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         if (runnerField == null)
         {
           ourLogger.Verbose("Could not find runnerField via reflection");
-          return;
+          return false;
         }
 
         var runner = runnerField.GetValue(launcher);
@@ -210,7 +210,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           clientController?.OnTestStarted(testId);
           TestEventsSender.TestStarted(myLaunch, tResult);
         }))
-          return;
+          return false;
 
         if (!AdviseTestFinished(runner, "m_TestFinishedEvent", result =>
         {
@@ -219,28 +219,30 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           clientController?.OnTestFinished();
           TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(result));
         }))
-          return;
+          return false;
 
         if (!AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
         {
           clientController?.OnSessionFinished();
           TestEventsSender.RunFinished(myLaunch);
         }))
-          return;
+          return false;
 
         var runMethod = launcherType.GetMethod("Run", BindingFlags.Instance | BindingFlags.Public);
         if (runMethod == null)
         {
           ourLogger.Verbose("Could not find runMethod via reflection");
-          return;
+          return false;
         }
 
         //run!
         runMethod.Invoke(launcher, null);
+        return true;
       }
       catch (Exception e)
       {
         ourLogger.Error(e, "Exception while launching Unity Editor tests.");
+        return false;
       }
     }
 
