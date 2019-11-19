@@ -50,7 +50,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (IsLoadedFromAssets()) // old mechanism, when EditorPlugin was copied to Assets folder
       {
         ourTestModeEnabled = Environment.GetCommandLineArgs().Contains("-riderTests");
-        
+
         var riderPath = ourRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
           RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
         if (!string.IsNullOrEmpty(riderPath))
@@ -449,13 +449,12 @@ namespace JetBrains.Rider.Unity.Editor
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
 
-          if (isPlaying)
-            model.ClearOnPlay(DateTime.UtcNow.Ticks);
-
           if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
             model.Play.SetValue(isPlaying);
+            if (isPlaying)
+              model.ClearOnPlay(DateTime.UtcNow.Ticks);
           }
 
           var isPaused = EditorApplication.isPaused;
