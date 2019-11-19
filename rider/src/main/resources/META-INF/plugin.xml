@@ -275,6 +275,7 @@
   <li>Update API information to 2019.3.0b11 (<a href="https://github.com/JetBrains/resharper-unity/pull/1412">#1412</a>)</li>
   <li>Methods with the <tt>[SettingsProvider]</tt> attribute are now marked as implicitly used (<a href="https://github.com/JetBrains/resharper-unity/issues/1225">#1225</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1362">#1362</a>)</li>
   <li>Rider: Add support for play mode tests (<a href="https://youtrack.jetbrains.com/issue/RIDER-19513">RIDER-19513</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1293">#1293</a>)</li>
+  <li>Rider: Add code coverage and continuous testing for Unity tests (<a href="https://github.com/JetBrains/resharper-unity/pull/1410">#1410</a>)</li>
   <li>Rider: Add syntax highlighting, schema generation and validation of UXML files (<a href="https://github.com/JetBrains/resharper-unity/pull/1399">#1399</a>)></li>
   <li>Rider: Add syntax highlighting, validation and completion for USS files (<a href="https://github.com/JetBrains/resharper-unity/issues/957">#957</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-20576">RIDER-20576</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1402">#1402</a>)</li>
   <li>Rider: Add Unity performance options to new inspection control panel (<a href="https://github.com/JetBrains/resharper-unity/pull/1408">#1408</a>)</li>
