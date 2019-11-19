@@ -285,6 +285,7 @@
   <li>Rider: Add Unity specific Live Templates settings page (<a href="https://github.com/JetBrains/resharper-unity/pull/1351">#1351</a>)</li>
   <li>Rider: Add project name to "Attach to Unity Process" and "Attach to Unity Editor" run configuration dialogs (<a href="https://github.com/JetBrains/resharper-unity/issues/1009">#1009</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-31184">RIDER-31184</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Rider: Add support for Clear on Play now in Rider's Unity log viewer (<a href="https://github.com/JetBrains/resharper-unity/issues/1281">#1281</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1294">#1294</a>)</li>
+  <li>Rider: Add context action for creating method from unresolved string literal in StartCoroutine and StopCoroutine(<a href="https://youtrack.jetbrains.com/issue/RIDER-27707">RIDER-27707</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1416">#1416</a>)</li>
   <li>Unity Editor: Bring Unity Editor to foreground when Rider is showing Unity asset usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1344">#1344</a>)</li>
 </ul>
 <em>Changed:</em>
@@ -295,6 +296,7 @@
   <li>Rider: Improve display of count of merged log items (<a href="https://github.com/JetBrains/resharper-unity/issues/1296">#1296</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
   <li>Rider: Status bar icon will show when Unity Editor is paused (<a href="https://github.com/JetBrains/resharper-unity/issues/1227">#1227</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1301">#1301</a>)</li>
   <li>Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1325">#1325</a>)</li>
+  <li>Rider: "Add RequireComponent" context action correctly add second attribute(<a href="https://youtrack.jetbrains.com/issue/RIDER-34390">RIDER-34390</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1416">#1416</a>)</li>
   <li>Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) (<a href="https://github.com/JetBrains/resharper-unity/issues/888">#888</a>)</li>
   <li>Unity Editor: Don't create <tt>EditorInstance.json</tt> for Unity 2017.1+, since it does it itself (<a href="https://github.com/JetBrains/resharper-unity/pull/1356">#1356</a>)</li>
   <li>Unity Editor: Reduce size of pre-compiled editor plugin for Unity 20192.2+ to help AppDomain restart performance (<a href="https://github.com/JetBrains/resharper-unity/pull/1367">#1367</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1390">#1390</a>)</li>

@@ -25,6 +25,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Add Unity specific Live Templates settings page ([#1351](https://github.com/JetBrains/resharper-unity/pull/1351))
 - Rider: Add project name to "Attach to Unity Process" and "Attach to Unity Editor" run configuration dialogs ([#1009](https://github.com/JetBrains/resharper-unity/issues/1009), [#RIDER-31184](https://youtrack.jetbrains.com/issue/RIDER-31184), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Add support for Clear on Play now in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
+- Rider: Add context action for creating method from unresolved string literal in StartCoroutine and StopCoroutine([#RIDER-27707](https://youtrack.jetbrains.com/issue/RIDER-27707), [#1416](https://github.com/JetBrains/resharper-unity/pull/1416])
 - Unity Editor: Bring Unity Editor to foreground when Rider is showing Unity asset usages ([#1344](https://github.com/JetBrains/resharper-unity/pull/1344))
 
 ### Changed
@@ -49,6 +50,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Fix correctly keeping `.meta` files up to date in `Packages` folder ([#1231](https://github.com/JetBrains/resharper-unity/issues/1231), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
 - Rider: Fix race condition preventing "Attach to Unity Process" dialog from always listing players ([RIDER-34039](https://youtrack.jetbrains.com/issue/RIDER-34039), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Prevent "Attach to Unity Process" attempting to attach to the same process multiple times ([#1129](https://github.com/JetBrains/resharper-unity/issues/1129), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
+- Rider: Fix auto-scroll of Unity log view ([#1393](https://github.com/JetBrains/resharper-unity/issues/1393), [#1394](https://github.com/JetBrains/resharper-unity/pull/1394))
+- Rider: "Add RequireComponent" context action correctly add second attribute([#RIDER-34390](https://youtrack.jetbrains.com/issue/RIDER-34390), [#1416](https://github.com/JetBrains/resharper-unity/pull/1416])
 - Rider: Work around Unity bug failing to send log events after leaving play mode ([#1414](https://github.com/JetBrains/resharper-unity/pull/1414))
 - Unity Editor: Stop suggesting C# 8 features when using a new msbuild from Mono ([#1379](https://github.com/JetBrains/resharper-unity/issues/1379), [#1380](https://github.com/JetBrains/resharper-unity/pull/1380))
 - Unity Editor: Avoid all initialisation when started in batch mode ([#1396](https://github.com/JetBrains/resharper-unity/pull/1396))

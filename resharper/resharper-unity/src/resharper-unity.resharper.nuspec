@@ -38,6 +38,7 @@ Added:
 
 - Update API information to 2019.3.0b11 (#1412)
 - Methods with the [SettingsProvider] attribute are now marked as implicitly used (#1225, #1362)
+- Add context action for creating method from unresolved string literal in StartCoroutine and StopCoroutine(RIDER-27707, #1416)
 
 Changed:
 
@@ -50,7 +51,8 @@ Fixed:
 - Fix moving .meta file during "Move to Folder" refactoring (#1370, #1389)
 - Fix orphan .meta file during "Safe Delete" refactoring (#856, #1389)
 - Fix correctly keeping .meta files up to date in Packages folder (#1231, #1389)
-
+- Fix correctly adding second "RequireComponent" attribute (RIDER-34390, #1416)
+    
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
