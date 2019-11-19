@@ -14,6 +14,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 - Update API information to 2019.3.0b11 ([#1412](https://github.com/JetBrains/resharper-unity/pull/1412))
 - Methods with the `[SettingsProvider]` attribute are now marked as implicitly used ([#1225](https://github.com/JetBrains/resharper-unity/issues/1225), [#1362](https://github.com/JetBrains/resharper-unity/pull/1362))
+- Support Find Usages on `UnityEvent` based event handlers ([#1142](https://github.com/JetBrains/resharper-unity/pull/1142))
 - Rider: Add support for play mode tests ([#1293](https://github.com/JetBrains/resharper-unity/issues/1293), [RIDER-19513](https://youtrack.jetbrains.com/issue/RIDER-19513))
 - Rider: Add syntax highlighting, schema generation and validation of UXML files ([#1399](https://github.com/JetBrains/resharper-unity/pull/1399))
 - Rider: Add syntax highlighting, validation and completion for USS files ([#957](https://github.com/JetBrains/resharper-unity/issues/957), [RIDER-20576](https://youtrack.jetbrains.com/issue/RIDER-20576), [#1402](https://github.com/JetBrains/resharper-unity/pull/1402))
@@ -34,6 +35,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Improve display of count of merged log items ([#1296](https://github.com/JetBrains/resharper-unity/issues/1296), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
 - Rider: Status bar icon will show when Unity Editor is paused ([#1227](https://github.com/JetBrains/resharper-unity/issues/1227), [#1301](https://github.com/JetBrains/resharper-unity/pull/1301))
 - Rider: Show Unity actions toolbar when opening a folder without a solution, to make it easy to launch Unity ([#1325](https://github.com/JetBrains/resharper-unity/pull/1325))
+- Rider: Show asset usage count on property setter and `UnityEvent` based event handlers ([#1142](https://github.com/JetBrains/resharper-unity/pull/1142))
 - Unity Editor: Use new 2019.2 API to open Rider at correct column as well as line (requires Rider package 1.1.0+) ([#888](https://github.com/JetBrains/resharper-unity/issues/888))
 - Unity Editor: Don't create `EditorInstance.json` for Unity 2017.1+, since it does it itself ([#1356](https://github.com/JetBrains/resharper-unity/pull/1356))
 - Unity Editor: Reduce size of pre-compiled editor plugin for Unity 20192.2+ to help AppDomain restart performance ([#1367](https://github.com/JetBrains/resharper-unity/pull/1367), [#1390](https://github.com/JetBrains/resharper-unity/pull/1390))
@@ -49,6 +51,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Fix race condition preventing "Attach to Unity Process" dialog from always listing players ([RIDER-34039](https://youtrack.jetbrains.com/issue/RIDER-34039), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Prevent "Attach to Unity Process" attempting to attach to the same process multiple times ([#1129](https://github.com/JetBrains/resharper-unity/issues/1129), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Fix auto-scroll of Unity log view ([#1393](https://github.com/JetBrains/resharper-unity/issues/1393), [#1394](https://github.com/JetBrains/resharper-unity/pull/1394))
+- Rider: Fix show usages on Code Vision link for auto property event handlers ([#1142](https://github.com/JetBrains/resharper-unity/pull/1142))
 - Unity Editor: Stop suggesting C# 8 features when using a new msbuild from Mono ([#1379](https://github.com/JetBrains/resharper-unity/issues/1379), [#1380](https://github.com/JetBrains/resharper-unity/pull/1380))
 - Unity Editor: Avoid all initialisation when started in batch mode ([#1396](https://github.com/JetBrains/resharper-unity/pull/1396))
 - Unity Editor: Fix exception calling `EditorApplication.isPlaying` on wrong thread ([#1308](https://github.com/JetBrains/resharper-unity/pull/1308))
