@@ -16,6 +16,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Methods with the `[SettingsProvider]` attribute are now marked as implicitly used ([#1225](https://github.com/JetBrains/resharper-unity/issues/1225), [#1362](https://github.com/JetBrains/resharper-unity/pull/1362))
 - Support Find Usages on `UnityEvent` based event handlers ([#1142](https://github.com/JetBrains/resharper-unity/pull/1142))
 - Rider: Add support for play mode tests ([#1293](https://github.com/JetBrains/resharper-unity/issues/1293), [RIDER-19513](https://youtrack.jetbrains.com/issue/RIDER-19513))
+- Rider: Add code coverage and continuous testing for Unity tests ([#1410](https://github.com/JetBrains/resharper-unity/pull/1410))
 - Rider: Add syntax highlighting, schema generation and validation of UXML files ([#1399](https://github.com/JetBrains/resharper-unity/pull/1399))
 - Rider: Add syntax highlighting, validation and completion for USS files ([#957](https://github.com/JetBrains/resharper-unity/issues/957), [RIDER-20576](https://youtrack.jetbrains.com/issue/RIDER-20576), [#1402](https://github.com/JetBrains/resharper-unity/pull/1402))
 - Rider: Add Unity performance options to new inspection control panel ([#1408](https://github.com/JetBrains/resharper-unity/pull/1408))
@@ -50,8 +51,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Fix correctly keeping `.meta` files up to date in `Packages` folder ([#1231](https://github.com/JetBrains/resharper-unity/issues/1231), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
 - Rider: Fix race condition preventing "Attach to Unity Process" dialog from always listing players ([RIDER-34039](https://youtrack.jetbrains.com/issue/RIDER-34039), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Prevent "Attach to Unity Process" attempting to attach to the same process multiple times ([#1129](https://github.com/JetBrains/resharper-unity/issues/1129), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
-- Rider: Fix auto-scroll of Unity log view ([#1393](https://github.com/JetBrains/resharper-unity/issues/1393), [#1394](https://github.com/JetBrains/resharper-unity/pull/1394))
 - Rider: Fix show usages on Code Vision link for auto property event handlers ([#1142](https://github.com/JetBrains/resharper-unity/pull/1142))
+- Rider: Work around Unity bug failing to send log events after leaving play mode ([#1414](https://github.com/JetBrains/resharper-unity/pull/1414))
 - Unity Editor: Stop suggesting C# 8 features when using a new msbuild from Mono ([#1379](https://github.com/JetBrains/resharper-unity/issues/1379), [#1380](https://github.com/JetBrains/resharper-unity/pull/1380))
 - Unity Editor: Avoid all initialisation when started in batch mode ([#1396](https://github.com/JetBrains/resharper-unity/pull/1396))
 - Unity Editor: Fix exception calling `EditorApplication.isPlaying` on wrong thread ([#1308](https://github.com/JetBrains/resharper-unity/pull/1308))
@@ -63,15 +64,12 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/31?closed=1)
 
 ### Changed
-* Use platform native line endings in generated `.meta` files. Works better with Perforce ([#1323](https://github.com/JetBrains/resharper-unity/pull/1323))
+- Use platform native line endings in generated `.meta` files. Works better with Perforce ([#1323](https://github.com/JetBrains/resharper-unity/pull/1323))
 
 ### Fixed
-* Fix issues with completion of Unity event functions ([RIDER-33167](https://youtrack.jetbrains.com/issue/RIDER-33167), [#1326](https://github.com/JetBrains/resharper-unity/pull/1326))
+- Fix issues with completion of Unity event functions ([RIDER-33167](https://youtrack.jetbrains.com/issue/RIDER-33167), [#1326](https://github.com/JetBrains/resharper-unity/pull/1326))
 - Fix exception building caches ([DEXP-481931](https://youtrack.jetbrains.com/issue/DEXP-481931), [#1355](https://github.com/JetBrains/resharper-unity/pull/1355))
-* Rider: Fix missing "Install Mono" notification ([#1329](https://github.com/JetBrains/resharper-unity/pull/1329))
-
-- Rider: Fix Clear on Play in Rider's Unity log viewer ([#1281](https://github.com/JetBrains/resharper-unity/issues/1281), [#1294](https://github.com/JetBrains/resharper-unity/pull/1294))
-- Unity window should get focus, when Rider is showing usages in it ([#1344](https://github.com/JetBrains/resharper-unity/pull/1344)
+- Rider: Fix missing "Install Mono" notification ([#1329](https://github.com/JetBrains/resharper-unity/pull/1329))
 
 
 ## 2019.2.2

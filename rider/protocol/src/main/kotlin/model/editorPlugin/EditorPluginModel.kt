@@ -71,16 +71,24 @@ object EditorPluginModel: Root() {
         +"Play"
     }
 
-    val TestFilter = structdef{
+    val TestFilter = structdef {
         field("assemblyName", string)
         field("testNames", immutableList(string))
     }
 
+    val UnitTestLaunchClientControllerInfo = structdef {
+        field("codeBase", string)
+        field("codeBaseDependencies", immutableList(string).nullable)
+        field("typeName", string)
+    }
+
     val UnitTestLaunch = classdef {
+        field("sessionId", string)
         field("testFilters", immutableList(TestFilter))
         field("testGroups", immutableList(string))
         field("testCategories", immutableList(string))
         field("testMode", TestMode)
+        field("clientControllerInfo", UnitTestLaunchClientControllerInfo.nullable)
         sink("testResult", TestResult)
         sink("runResult", RunResult)
         call("abort", void, bool)
@@ -98,6 +106,11 @@ object EditorPluginModel: Root() {
         +"ForceRequestScriptReload"
         +"Force"
         +"Normal"
+    }
+
+    val CompiledAssembly = structdef {
+        field("name", string)
+        field("outputPath", string)
     }
 
     init {
@@ -126,9 +139,10 @@ object EditorPluginModel: Root() {
         call("updateUnityPlugin", string, bool)
         call("refresh", RefreshType, void)
         call("getCompilationResult", void, bool)
+        sink("compiledAssemblies", immutableList(CompiledAssembly))
 
         property("unitTestLaunch", UnitTestLaunch)
-        source("runUnitTestLaunch", void)
+        call("runUnitTestLaunch", void, bool)
 
         property("fullPluginPath", string)
 
