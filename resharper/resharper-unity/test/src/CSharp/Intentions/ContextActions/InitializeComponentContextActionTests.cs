@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActio
         protected override string ExtraPath => "InitializeFieldComponent";
 
         [Test] public void AddRequireComponent() { DoNamedTest(); }
+        [Test] public void AddRequireComponent2() { DoNamedTest(); }
         [Test] public void InitializeInStart() { DoNamedTest(); }
         [Test] public void InitializeInAwake() { DoNamedTest(); }
     }
