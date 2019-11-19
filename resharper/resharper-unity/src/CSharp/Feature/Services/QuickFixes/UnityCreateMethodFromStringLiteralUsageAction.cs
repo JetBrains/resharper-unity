@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                     .Equals("StartCoroutine") == true && argumentList?.Arguments.Count > 1)
             {
                 var secondArgument = argumentList.NotNull("argumentList != null").Arguments[1];
-                if (secondArgument.Value.Type() is IDeclaredType type)
+                if (secondArgument.Value?.Type() is IDeclaredType type)
                 {
                     return new[] {type};
                 }

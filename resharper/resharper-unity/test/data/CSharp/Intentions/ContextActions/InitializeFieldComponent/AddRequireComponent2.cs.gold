@@ -1,0 +1,9 @@
+﻿using UnityEngine;
+
+[RequireComponent(typeof(Transform))]
+[RequireComponent(typeof(Collider2D))]
+public class Foo : MonoBehaviour
+{
+  public Collider2D Collider;
+  public Transform Trans{caret}form;
+}
