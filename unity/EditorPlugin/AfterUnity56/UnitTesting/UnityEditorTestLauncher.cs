@@ -128,15 +128,16 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         {
           stopRunMethod.Invoke(null, null);
           task.Set(true);
-          
-          if (!myLaunch.RunStarted.HasTrueValue()) // if RunStarted never happened 
-            myLaunch.RunResult(new RunResult(false));
         }
         catch (Exception)
         {
           ourLogger.Verbose($"Call {methodName} method failed.");
           task.Set(false);
         }
+        
+        if (!myLaunch.RunStarted.HasTrueValue()) // if RunStarted never happened 
+          myLaunch.RunResult(new RunResult(false));
+        
         return task;
       });
     }
