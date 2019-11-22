@@ -1,4 +1,4 @@
-﻿// ${COMPLETE_ITEM:private OnJointBreak(float) { ... }}
+﻿// ${COMPLETE_ITEM:private OnJointBreak(float) { ... \}}
 
 using System;
 using UnityEngine;

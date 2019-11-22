@@ -1,4 +1,4 @@
-﻿// ${COMPLETE_ITEM:private LateUpdate() { ... }}
+﻿// ${COMPLETE_ITEM:private LateUpdate() { ... \}}
 
 using System;
 using UnityEngine;
