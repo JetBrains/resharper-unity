@@ -404,7 +404,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             launch.RunResult.Advise(connectionLifetime, result =>
             {
-                tcs.SetResult(true);
+                tcs.SetResult(result.Passed);
             });
         }
 

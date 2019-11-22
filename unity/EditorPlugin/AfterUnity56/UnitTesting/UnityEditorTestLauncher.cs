@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rd.Tasks;
@@ -96,9 +97,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     private void SupportAbortNew()
     {
-      var assemblyName = "UnityEditor.TestRunner";
-      var typeName = "UnityEditor.TestTools.TestRunner.Api.TestRunnerApi";
-      var methodName = "CancelAllTestRuns";
+      const string assemblyName = "UnityEditor.TestRunner";
+      const string typeName = "UnityEditor.TestTools.TestRunner.Api.TestRunnerApi";
+      const string methodName = "CancelAllTestRuns";
       var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(assemblyName));
       if (assembly == null)
       {
@@ -133,6 +134,10 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           ourLogger.Verbose($"Call {methodName} method failed.");
           task.Set(false);
         }
+        
+        if (!myLaunch.RunStarted.HasTrueValue()) // if RunStarted never happened 
+          myLaunch.RunResult(new RunResult(false));
+        
         return task;
       });
     }
@@ -269,7 +274,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         if (!AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
         {
           clientController?.OnSessionFinished();
-          TestEventsSender.RunFinished(myLaunch);
+          var runResult = new RunResult(Equals(result.ResultState, ResultState.Success));
+          TestEventsSender.RunFinished(myLaunch, runResult);
         }))
           return false;
 
