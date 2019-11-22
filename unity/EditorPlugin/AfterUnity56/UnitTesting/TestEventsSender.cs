@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
-using System.Reflection;
 using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using UnityEngine;
 using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
@@ -28,10 +28,10 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
       ProcessQueue(data, unitTestLaunch);
 
-      SubscribeToChanged(assembly, data, unitTestLaunch);
+      SubscribeToChanged(data, unitTestLaunch);
     }
 
-    private static void SubscribeToChanged(Assembly assembly, Type data, UnitTestLaunch unitTestLaunch)
+    private static void SubscribeToChanged(Type data, UnitTestLaunch unitTestLaunch)
     {
       var eventInfo = data.GetEvent("Changed");
       
@@ -95,11 +95,21 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
             break;
           }
           case 2: // RunFinished
-            RunFinished(unitTestLaunch);
+          {
+            var runResult = new RunResult((TestStatus) resultState == TestStatus.Passed);
+            RunFinished(unitTestLaunch, runResult);
             break;
+          }
+          case 3: // RunStarted
+          {
+            RunStarted(unitTestLaunch);
+            break;
+          }
           default:
+          {
             ourLogger.Error("Unexpected TestEvent type.");
             break;
+          }
         }
       }
       
@@ -107,10 +117,16 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       if (clearMethod == null) return;      
       clearMethod.Invoke(instanceVal, new object[] {});
     }
-    
-    public static void RunFinished(UnitTestLaunch launch)
+
+    public static void RunStarted(UnitTestLaunch launch)
     {
-      launch.RunResult(new RunResult(true));
+      Debug.Log("RunStarted");
+      launch.RunStarted.Value = true;
+    }
+    
+    public static void RunFinished(UnitTestLaunch launch, RunResult result)
+    {
+      launch.RunResult(result);
     }
     
     public static void TestStarted(UnitTestLaunch launch, TestResult testResult)

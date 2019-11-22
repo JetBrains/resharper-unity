@@ -89,6 +89,7 @@ object EditorPluginModel: Root() {
         field("testCategories", immutableList(string))
         field("testMode", TestMode)
         field("clientControllerInfo", UnitTestLaunchClientControllerInfo.nullable)
+        property("runStarted", bool)
         sink("testResult", TestResult)
         sink("runResult", RunResult)
         call("abort", void, bool)
