@@ -102,7 +102,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           }
           case 3: // RunStarted
           {
-            RunStarted(unitTestLaunch);
+            unitTestLaunch.RunStarted.Value = true;
             break;
           }
           default:
@@ -114,16 +114,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       }
       
       var clearMethod = data.GetMethod("Clear");
-      if (clearMethod == null) return;      
-      clearMethod.Invoke(instanceVal, new object[] {});
+      clearMethod?.Invoke(instanceVal, new object[] {});
     }
 
-    public static void RunStarted(UnitTestLaunch launch)
-    {
-      Debug.Log("RunStarted");
-      launch.RunStarted.Value = true;
-    }
-    
     public static void RunFinished(UnitTestLaunch launch, RunResult result)
     {
       launch.RunResult(result);
