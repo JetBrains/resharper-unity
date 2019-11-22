@@ -1,4 +1,4 @@
-// ${COMPLETE_ITEM:OnAnimatorIK(int) { ... }}
+// ${COMPLETE_ITEM:OnAnimatorIK(int) { ... \}}
 using UnityEngine;
 using JetBrains.Annotations;
 

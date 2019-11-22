@@ -1,4 +1,4 @@
-﻿// ${COMPLETE_ITEM:private OnAnimatorIK(int) { ... }}
+﻿// ${COMPLETE_ITEM:private OnAnimatorIK(int) { ... \}}
 
 using System;
 using UnityEngine;

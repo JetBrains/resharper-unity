@@ -1,4 +1,4 @@
-﻿// ${COMPLETE_ITEM:LateUpdate() { ... }}
+﻿// ${COMPLETE_ITEM:LateUpdate() { ... \}}
 using UnityEngine;
 
 public class A : MonoBehaviour
