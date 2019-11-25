@@ -41,9 +41,4 @@
     <None Remove="AfterUnity56\**" />
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
-  </ItemGroup>
-  
 </Project>

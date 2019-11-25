@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Reflection;
 using System.Text;
 using JetBrains.Diagnostics;
 using JetBrains.Platform.Unity.EditorPluginModel;
@@ -28,10 +27,10 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
       ProcessQueue(data, unitTestLaunch);
 
-      SubscribeToChanged(assembly, data, unitTestLaunch);
+      SubscribeToChanged(data, unitTestLaunch);
     }
 
-    private static void SubscribeToChanged(Assembly assembly, Type data, UnitTestLaunch unitTestLaunch)
+    private static void SubscribeToChanged(Type data, UnitTestLaunch unitTestLaunch)
     {
       var eventInfo = data.GetEvent("Changed");
       
@@ -95,22 +94,31 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
             break;
           }
           case 2: // RunFinished
-            RunFinished(unitTestLaunch);
+          {
+            var runResult = new RunResult((TestStatus) resultState == TestStatus.Passed);
+            RunFinished(unitTestLaunch, runResult);
             break;
+          }
+          case 3: // RunStarted
+          {
+            unitTestLaunch.RunStarted.Value = true;
+            break;
+          }
           default:
+          {
             ourLogger.Error("Unexpected TestEvent type.");
             break;
+          }
         }
       }
       
       var clearMethod = data.GetMethod("Clear");
-      if (clearMethod == null) return;      
-      clearMethod.Invoke(instanceVal, new object[] {});
+      clearMethod?.Invoke(instanceVal, new object[] {});
     }
-    
-    public static void RunFinished(UnitTestLaunch launch)
+
+    public static void RunFinished(UnitTestLaunch launch, RunResult result)
     {
-      launch.RunResult(new RunResult(true));
+      launch.RunResult(result);
     }
     
     public static void TestStarted(UnitTestLaunch launch, TestResult testResult)

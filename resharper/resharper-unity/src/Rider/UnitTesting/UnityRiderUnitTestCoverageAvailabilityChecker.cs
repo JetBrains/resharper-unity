@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.Rider.Model;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
     [ShellComponent]
     public class UnityRiderUnitTestCoverageAvailabilityChecker : IRiderUnitTestCoverageAvailabilityChecker, IHideImplementation<DefaultRiderUnitTestCoverageAvailabilityChecker>

@@ -31,9 +31,4 @@
       <Visible>false</Visible>
     </ILRepackInputAssemblies>
   </ItemGroup>
-  
-  <ItemGroup>
-    <EmbeddedResource Include="..\lib\pdb2mdb.exe" />
-  </ItemGroup>
-  
 </Project>

@@ -1,4 +1,4 @@
-// ${COMPLETE_ITEM:private OnJointBreak(float) { ... }}
+// ${COMPLETE_ITEM:private OnJointBreak(float) { ... \}}
 using UnityEngine;
 
 // This can cause types in the System namespace to be unresolved

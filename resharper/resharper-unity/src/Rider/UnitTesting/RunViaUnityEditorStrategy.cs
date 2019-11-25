@@ -275,12 +275,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                     SubscribeResults(run, lt, tcs, launch);
                                 });
 
-                                myUnityProcessId.When(taskLifetime, (int?)null, _ => tcs.TrySetException(new Exception("Unity Editor has been closed."))); 
-                                
-                                // KS: IMHO this should be removed when Abort action will be supported in unity.rider package for Unity 2019.2+
-                                // Otherwise this allows several parallel test runs in Unity Editor, which is not supported on the plugin side, and can
-                                // easily damage per-test coverage data.
-                                taskLifetime.OnTermination(cancellationTs.Token.Register(() => tcs.TrySetCanceled()));
+                                myUnityProcessId.When(taskLifetime, (int?)null, _ => tcs.TrySetException(new Exception("Unity Editor has been closed.")));
 
                                 var rdTask = myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
                                 rdTask?.Result.Advise(taskLifetime, res =>
@@ -409,7 +404,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             launch.RunResult.Advise(connectionLifetime, result =>
             {
-                tcs.SetResult(true);
+                tcs.SetResult(result.Passed);
             });
         }
 
@@ -430,9 +425,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     return;
                 }
 
-                myConnectionTracker.State.When(waitingLifetimeDef.Lifetime, UnityEditorState.Idle, _ => tcs.TrySetResult(Unit.Instance));
+                if (myConnectionTracker.State.Value == UnityEditorState.Idle)
+                {
+                    tcs.TrySetResult(Unit.Instance);
+                    return;
+                }
+
+                myConnectionTracker.State.Change.Advise_When(waitingLifetimeDef.Lifetime, UnityEditorState.Idle, () => tcs.TrySetResult(Unit.Instance));
+
                 myUnityProcessId.When(waitingLifetimeDef.Lifetime, (int?)null, _ => tcs.TrySetException(new Exception("Unity Editor has been closed.")));
-                waitingLifetimeDef.Lifetime.OnTermination(() => cancellationToken.Register(() => tcs.TrySetCanceled()));
+                waitingLifetimeDef.Lifetime.TryOnTermination(cancellationToken.Register(() => tcs.TrySetCanceled()));
             });
 
             return tcs.Task;

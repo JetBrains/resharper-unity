@@ -275,6 +275,7 @@
   <li>Update API information to 2019.3.0b11 (<a href="https://github.com/JetBrains/resharper-unity/pull/1412">#1412</a>)</li>
   <li>Methods with the <tt>[SettingsProvider]</tt> attribute are now marked as implicitly used (<a href="https://github.com/JetBrains/resharper-unity/issues/1225">#1225</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1362">#1362</a>)</li>
   <li>Support Find Usages on <tt>UnityEvent</tt> based event handlers (<a href="https://github.com/JetBrains/resharper-unity/pull/1142">#1142</a>)</li>
+  <li>Add context action for creating method from unresolved string literal in <tt>StartCoroutine</tt> and <tt>StopCoroutine</tt> (<a href="https://youtrack.jetbrains.com/issue/RIDER-27707">RIDER-27707</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1416">#1416</a>)</li>
   <li>Rider: Add support for play mode tests (<a href="https://youtrack.jetbrains.com/issue/RIDER-19513">RIDER-19513</a>, <a href="https://github.com/JetBrains/resharper-unity/issues/1293">#1293</a>)</li>
   <li>Rider: Add code coverage and continuous testing for Unity tests (<a href="https://github.com/JetBrains/resharper-unity/pull/1410">#1410</a>)</li>
   <li>Rider: Add syntax highlighting, schema generation and validation of UXML files (<a href="https://github.com/JetBrains/resharper-unity/pull/1399">#1399</a>)></li>
@@ -310,6 +311,7 @@
   <li>Fix moving <tt>.meta</tt> file during "Move to Folder" refactoring (<a href="https://github.com/JetBrains/resharper-unity/issues/1370">#1370</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1389">#1389</a>)</li>
   <li>Fix orphan <tt>.meta</tt> file during "Safe Delete" refactoring (<a href="https://github.com/JetBrains/resharper-unity/issues/856">#856</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1389">#1389</a>)</li>
   <li>Fix correctly keeping <tt>.meta</tt> files up to date in <tt>Packages</tt> folder (<a href="https://github.com/JetBrains/resharper-unity/issues/1231">#1231</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1389">#1389</a>)</li>
+  <li>Fix "Add RequireComponent" context action to correctly add second attribute (<a href="https://youtrack.jetbrains.com/issue/RIDER-34390">RIDER-34390</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1416">#1416</a>)</li>
   <li>Rider: Fix race condition preventing "Attach to Unity Process" dialog from always listing players (<a href="https://youtrack.jetbrains.com/issue/RIDER-34039">RIDER-34039</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Rider: Prevent "Attach to Unity Process" attempting to attach to the same process multiple times (<a href="https://github.com/JetBrains/resharper-unity/issues/1129">#1129</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1298">#1298</a>)</li>
   <li>Rider: Fix show usages on Code Vision link for auto property event handlers (<a href="https://github.com/JetBrains/resharper-unity/pull/1142">#1142</a>)</li>

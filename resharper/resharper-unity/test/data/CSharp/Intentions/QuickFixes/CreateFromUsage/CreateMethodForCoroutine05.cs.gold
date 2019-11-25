@@ -1,0 +1,15 @@
+﻿using System.Collections;
+using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+  public void Whatever()
+  {
+    StartCoroutine("MyCoroutine", unknownId);
+  }
+
+  private IEnumerator MyCoroutine(object o)
+  {
+    {selstart}throw new System.NotImplementedException();{selend}
+  }
+}
