@@ -1,0 +1,13 @@
+Search target
+    NewBehaviourScript.ObjectHandler(Object value):void
+Found usages  (2 usages found)
+    <Miscellaneous Files>  (2 usages found)
+        Button (1).prefab  (1 usage found)
+            Button (1)  (1 usage found)
+                MonoBehaviour  (1 usage found)
+                    [5191, Assets/Button (1).prefab] (164: 23)  m_MethodName: ObjectHandler
+        SampleScene.unity  (1 usage found)
+            Canvas  (1 usage found)
+                Button2  (1 usage found)
+                    MonoBehaviour  (1 usage found)
+                        [28398, Assets/SampleScene.unity] (996: 23)  m_MethodName: ObjectHandler

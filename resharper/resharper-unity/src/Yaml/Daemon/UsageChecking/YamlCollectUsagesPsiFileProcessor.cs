@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Collections;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -9,6 +10,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
 {
     public class YamlCollectUsagesPsiFileProcessor : ICollectUsagesPsiFileProcessor, IRecursiveElementProcessor<IScopeProcessor>
     {
+        private readonly IDaemonProcess myDaemonProcess;
+
+        public YamlCollectUsagesPsiFileProcessor(IDaemonProcess daemonProcess)
+        {
+            myDaemonProcess = daemonProcess;
+        }
 
         public void ProcessFile(IDaemonProcess daemonProcess, IFile psiFile, IScopeProcessor topLevelScopeProcessor)
         {
@@ -24,7 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
             return true;
         }
 
-        public bool IsProcessingFinished(IScopeProcessor context) => false;
+        public bool IsProcessingFinished(IScopeProcessor context)
+        {
+            if (myDaemonProcess.InterruptFlag)
+                throw new OperationCanceledException();
+            return false;
+        }
 
         public void ProcessBeforeInterior(ITreeNode element, IScopeProcessor context)
         {
@@ -38,8 +50,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
                 usageData.SetElementState(declaredElement, UsageState.USED_MASK);
                 usageData.AddUsage(declaredElement, ReferenceCounter.Id);
                 usageData.AddUsage(declaredElement, UnityEditorUsageCounter.Id);
+
+                if (declaredElement is IAccessor accessor && accessor.OwnerMember is IProperty property)
+                {
+                    usageData.SetElementState(property, UsageState.NAME_CAPTURED | UsageState.ASSIGNED);
+                    usageData.AddUsage(property, ReferenceCounter.Id);
+                    usageData.AddUsage(property, UnityEditorUsageCounter.Id);
+                }
             }
-            
+
             foreach (var (_, swaElement) in context.UsageData.SwaExtensionsData)
             {
                 swaElement.ProcessBeforeInterior(element, context);

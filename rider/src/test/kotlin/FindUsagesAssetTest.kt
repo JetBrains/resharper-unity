@@ -24,10 +24,9 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
     }
 
     @BeforeMethod
-    fun InitializeEnvironement() {
+    fun initializeEnvironment() {
         copyUnityDll(unityDll, project, activeSolutionDirectory)
     }
-
 
     @DataProvider(name = "findUsagesGrouping")
     fun test1() = arrayOf(
@@ -139,6 +138,61 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
         doTest(5, 17)
     }
 
+    @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_2018")
+    fun findVoidHandler(caseName: String, groups: Array<String>?) {
+        doTest(11, 17, groups)
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_2018")
+    fun findIntHandler(caseName: String, groups: Array<String>?) {
+        doTest(14, 17, groups)
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_2018")
+    fun findFloatHandler(caseName: String, groups: Array<String>?) {
+        doTest(17, 17, groups)
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_2018")
+    fun findBoolHandler(caseName: String, groups: Array<String>?) {
+        doTest(20, 17, groups)
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_2018")
+    fun findObjectHandler(caseName: String, groups: Array<String>?) {
+        doTest(23, 17, groups)
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_2018")
+    fun findUnityEventHandler(caseName: String, groups: Array<String>?) {
+        doTest(26, 17, groups)
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_2018")
+    fun findPropertyHandler(caseName: String, groups: Array<String>?) {
+        doTest(29, 16, groups)
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    @TestEnvironment(solution = "FindUsages_event_handlers_2018")
+    fun findPropertyHandler2(caseName: String, groups: Array<String>?) {
+      doTest(33, 16, groups)
+    }
+
+
+    private fun doTest(line : Int, column : Int, groups: Array<String>?) {
+        disableAllGroups()
+        groups?.forEach { group -> setGroupingEnabled(group, true) }
+        doTest(line, column)
+    }
+
     private fun doTest(line : Int, column : Int) {
         withOpenedEditor("Assets/NewBehaviourScript.cs") {
             setCaretToPosition(line, column)
@@ -148,7 +202,6 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
             }
         }
     }
-
 
     private fun disableAllGroups() {
         occurrenceTypeGrouping(false)
@@ -162,9 +215,8 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
         unityComponentGrouping(false)
     }
 
-    fun BaseTestWithSolution.unityGameObjectGrouping(enable: Boolean) = setGroupingEnabled("UnityGameObject", enable)
-
-    fun BaseTestWithSolution.unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
+    private fun BaseTestWithSolution.unityGameObjectGrouping(enable: Boolean) = setGroupingEnabled("UnityGameObject", enable)
+    private fun BaseTestWithSolution.unityComponentGrouping(enable: Boolean) = setGroupingEnabled("UnityComponent", enable)
 
     override val waitForCaches = true
 }

@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking
             IEnumerable<SwaExtensionProviderBase> swaExtensionProviders)
         {
             // TODO: We could return a no-op processor for .meta or boring assets
-            return new YamlCollectUsagesPsiFileProcessor();
+            return new YamlCollectUsagesPsiFileProcessor(daemonProcess);
         }
     }
 }

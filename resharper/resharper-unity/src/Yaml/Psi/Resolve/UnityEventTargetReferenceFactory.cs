@@ -42,35 +42,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             //     Culture=neutral, PublicKeyToken=null
             var methodNameMapEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(methodNameValue));
             var callMapNode = BlockMappingNodeNavigator.GetByEntrie(methodNameMapEntry);
-            var callsSequenceEntry = SequenceEntryNavigator.GetByValue(callMapNode);
-            var callsSequenceNode = BlockSequenceNodeNavigator.GetByEntrie(callsSequenceEntry);
-            var callsMapEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(callsSequenceNode));
+            var callsMapEntry = BlockMappingEntryNavigator.GetByContent(
+                ContentNodeNavigator.GetByValue(
+                    BlockSequenceNodeNavigator.GetByEntrie(SequenceEntryNavigator.GetByValue(callMapNode))));
 
             // callsMapEntry should be "m_Calls" (and contain a value that is a sequence node). If it's not null,
             // everything else is also not null
             if (callsMapEntry == null)
                 return ReferenceCollection.Empty;
 
+            var persistentCallsMapNode = BlockMappingNodeNavigator.GetByEntrie(
+                BlockMappingEntryNavigator.GetByContent(
+                    ContentNodeNavigator.GetByValue(BlockMappingNodeNavigator.GetByEntrie(callsMapEntry))));
+            var eventTypeName = persistentCallsMapNode?.FindMapEntryBySimpleKey("m_TypeName")?.Content?.Value
+                ?.GetPlainScalarText();
+
             if (methodNameMapEntry.Key.MatchesPlainScalarText("m_MethodName") &&
-                callsMapEntry.Key.MatchesPlainScalarText("m_Calls"))
+                callsMapEntry.Key.MatchesPlainScalarText("m_Calls") && eventTypeName != null)
             {
                 var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Content.Value.AsFileID();
                 if (fileID != null && !fileID.IsNullReference)
                 {
-                    var text = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Mode"))?.Content.Value
-                        .GetPlainScalarText();
+                    var modeText = callMapNode.FindMapEntryBySimpleKey("m_Mode")?.Content.Value.GetPlainScalarText();
 
-                    var argMode = EventHandlerArgumentMode.Unknown;
-                    if (int.TryParse(text, out var mode))
+                    var argMode = EventHandlerArgumentMode.EventDefined;
+                    if (int.TryParse(modeText, out var mode))
                     {
                         if (1 <= mode && mode <= 6)
                             argMode = (EventHandlerArgumentMode) mode;
                     }
-                    
-                    var arguments = callMapNode.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_Arguments"))?.Content.Value as IBlockMappingNode;
-                    var typeNameRecord = arguments?.Entries.FirstOrDefault(t => t.Key.MatchesPlainScalarText("m_ObjectArgumentAssemblyTypeName"))?.Content.Value;
-                    var type = typeNameRecord?.GetPlainScalarText()?.Split(',').FirstOrDefault();
-                    if (type.IsNullOrEmpty() && mode == 1)
+
+                    var arguments = callMapNode.FindMapEntryBySimpleKey("m_Arguments")?.Content.Value as IBlockMappingNode;
+                    var argumentTypeName = arguments.FindMapEntryBySimpleKey("m_ObjectArgumentAssemblyTypeName")?.Content
+                        .Value.GetPlainScalarText();
+                    var type = argumentTypeName?.Split(',').FirstOrDefault();
+                    if (argMode == EventHandlerArgumentMode.EventDefined)
+                        type = eventTypeName.Split(',').FirstOrDefault();
+                    else if (argMode == EventHandlerArgumentMode.Void)
                         type = null;
 
                     var reference = new UnityEventTargetReference(methodNameValue, argMode, type, fileID);

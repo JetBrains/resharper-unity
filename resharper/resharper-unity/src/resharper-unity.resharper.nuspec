@@ -38,7 +38,8 @@ Added:
 
 - Update API information to 2019.3.0b11 (#1412)
 - Methods with the [SettingsProvider] attribute are now marked as implicitly used (#1225, #1362)
-- Add context action for creating method from unresolved string literal in StartCoroutine and StopCoroutine(RIDER-27707, #1416)
+- Support Find Usages on UnityEvent based event handlers (#1142)
+- Add context action for creating method from unresolved string literal in StartCoroutine and StopCoroutine (RIDER-27707, #1416)
 
 Changed:
 
