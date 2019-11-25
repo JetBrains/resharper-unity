@@ -1,0 +1,13 @@
+Search target
+    NewBehaviourScript.IntHandler(int value):void
+Found usages  (2 usages found)
+    <Miscellaneous Files>  (2 usages found)
+        Button (1).prefab  (1 usage found)
+            Button (1)  (1 usage found)
+                MonoBehaviour  (1 usage found)
+                    [4069, Assets/Button (1).prefab] (131: 23)  m_MethodName: IntHandler
+        SampleScene.unity  (1 usage found)
+            Canvas  (1 usage found)
+                Button2  (1 usage found)
+                    MonoBehaviour  (1 usage found)
+                        [27303, Assets/SampleScene.unity] (963: 23)  m_MethodName: IntHandler
