@@ -7,7 +7,7 @@ namespace DefaultNamespace
         public void Update()
         {
             var b = Vector3.up;
-            var c = b *{caret} (5 * (5 / 4));
+            var c = b * (5 / 4 *{caret} 5);
         }
     }
 }

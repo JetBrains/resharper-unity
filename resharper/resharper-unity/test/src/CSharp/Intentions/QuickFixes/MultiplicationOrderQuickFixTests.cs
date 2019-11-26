@@ -17,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 
         [Test] public void Available01() { DoNamedTest(); }
         [Test] public void Available02() { DoNamedTest(); }
+        [Test] public void Unavailable01() { DoNamedTest(); } // https://youtrack.jetbrains.com/issue/RIDER-33981
         [Test] public void UnavailableBrackets() { DoNamedTest(); }
         [Test] public void UnavailableGoodOrder() { DoNamedTest(); }
         
@@ -38,5 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
         [Test] public void Test03() { DoNamedTest(); }
+        [Test] public void Test04() { DoNamedTest(); }
+        [Test] public void Test05() { DoNamedTest(); }
+        [Test] public void Test06() { DoNamedTest(); }
     }
 }

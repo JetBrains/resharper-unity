@@ -1,0 +1,17 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class Available02 : MonoBehaviour
+    {
+        public void Update()
+        {
+            // https://youtrack.jetbrains.com/issue/RIDER-32798
+            // https://youtrack.jetbrains.com/issue/RIDER-33981
+            var x = Vector2.one * (1 + 20 / 20) * Vector2.down;
+            var y = Quaternion.Euler(0, 0, 0) * (Quaternion.identity * Vector3.back);
+
+        }
+    }
+}
+------------------------------------------------
