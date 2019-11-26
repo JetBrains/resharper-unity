@@ -6,7 +6,7 @@ namespace DefaultNamespace
     {
         public void Update()
         {
-            var x = Quaternion.identity * Quaternion.identity * (Vector3.one *{caret} Vector3.one) * 5f * 6f; 
+            var z = Vector2.down * (Vector2.down * 7f * {caret}10f * Vector2.down) * 5f * 6f;
         }
     }
 }
