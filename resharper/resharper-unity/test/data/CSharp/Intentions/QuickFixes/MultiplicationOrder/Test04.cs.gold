@@ -6,9 +6,8 @@ namespace DefaultNamespace
     {
         public void Update()
         {
-            int a =5;
-            var b = Vector3.up;
-            var c = b * (5{caret} * a);
+	    var result = Quaternion.Euler(0, 0, 0) * {caret}Quaternion.Euler(0, 0, 0) * Vector3.back * (7f * 7f * (5 * 7));        
+
         }
     }
 }

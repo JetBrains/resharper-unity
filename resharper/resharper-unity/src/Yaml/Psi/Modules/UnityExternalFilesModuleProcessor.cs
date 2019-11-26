@@ -243,7 +243,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private void AddExternalPsiSourceFiles(List<DirectoryEntryData> files, PsiModuleChangeBuilder builder)
         {
             foreach (var directoryEntry in files)
-                AddExternalPsiSourceFile(builder, directoryEntry.GetAbsolutePath());
+                 AddExternalPsiSourceFile(builder, directoryEntry.GetAbsolutePath());
         }
 
         private void AddExternalPsiSourceFile(PsiModuleChangeBuilder builder, FileSystemPath path)

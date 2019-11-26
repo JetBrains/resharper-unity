@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
@@ -10,20 +9,23 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(ICSharpExpression), HighlightingTypes =
+    [ElementProblemAnalyzer(typeof(IMultiplicativeExpression), HighlightingTypes =
         new[] {typeof(InefficientMultiplicationOrderWarning)})]
-    public class MultiplicationOrderAnalyzer : UnityElementProblemAnalyzer<ICSharpExpression>
+    public class MultiplicationOrderAnalyzer : UnityElementProblemAnalyzer<IMultiplicativeExpression>
     {
-        private static Dictionary<IClrTypeName, int> knownTypes = new Dictionary<IClrTypeName, int>()
+        private static readonly HashSet<IClrTypeName> ourKnownTypes = new HashSet<IClrTypeName>()
         {
-            {new ClrTypeName("UnityEngine.Vector2"), 2},
-            {new ClrTypeName("UnityEngine.Vector3"), 3},
-            {new ClrTypeName("UnityEngine.Vector4"), 4},
-            {new ClrTypeName("UnityEngine.Vector2Int"), 2},
-            {new ClrTypeName("UnityEngine.Vector3Int"), 3},
+            new ClrTypeName("UnityEngine.Vector2"),
+            new ClrTypeName("UnityEngine.Vector3"),
+            new ClrTypeName("UnityEngine.Vector4"),
+            new ClrTypeName("UnityEngine.Vector2Int"),
+            new ClrTypeName("UnityEngine.Vector3Int"),
+            new ClrTypeName("UnityEngine.Quaternion"),
+            new ClrTypeName("UnityEngine.Matrix4x4"),
         };
 
         public MultiplicationOrderAnalyzer(UnityApi unityApi)
@@ -31,52 +33,64 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
         }
 
-        protected override void Analyze(ICSharpExpression expression, ElementProblemAnalyzerData data,
+        protected override void Analyze(IMultiplicativeExpression expression, ElementProblemAnalyzerData data,
             IHighlightingConsumer consumer)
         {
-
-            var parent = expression.GetContainingParenthesizedExpression()?.Parent as ICSharpExpression;
-            if (GetMulOperation(expression) != null || GetMulOperation(parent) == null)
-                return;
-
-            if (IsMatrixType(expression.GetExpressionType()))
+            if (IsStartPoint(expression))
             {
                 var count = 0;
-                ICSharpExpression scalar = null;
-                while (true)
+                bool hasMatrix = false;
+         
+                var enumerator = expression.ThisAndDescendants<ICSharpExpression>();
+                var scalars = new List<ICSharpExpression>();
+                var matrices = new List<ICSharpExpression>();
+                
+                while (enumerator.MoveNext())
                 {
-                    count++;
-                    var curExpr = parent.GetContainingParenthesizedExpression();
-                    var byLeft = MultiplicativeExpressionNavigator.GetByLeftOperand(curExpr);
-                    var byRight = MultiplicativeExpressionNavigator.GetByRightOperand(curExpr);
-                    if (byLeft == null && byRight != null)
+                    var element = enumerator.Current;
+                    var mul = GetMulOperation(element.GetOperandThroughParenthesis());
+                    if (mul == null)
                     {
-                        scalar = byRight?.LeftOperand;
-                        parent = byRight;
-                    } else if (byRight == null && byLeft != null)
-                    {
-                        scalar = byLeft?.RightOperand;
-                        parent = byLeft;
+                        var type = IsMatrixTypeInner(element);
+                        if (type == MatrixTypeState.Unknown)
+                            return;
+
+                        if (type == MatrixTypeState.Scalar)
+                        {
+                            count++;
+                            scalars.Add(element);
+                        }
+                        else
+                        {
+                            hasMatrix = true;
+                            matrices.Add(element);
+                        }
+                        
+                        enumerator.SkipThisNode();
                     }
                     else
                     {
-                        break;
+                        // merge scalar mul
+                        if (IsMatrixTypeInner(mul) == MatrixTypeState.Scalar)
+                        {
+                            scalars.Add(mul);
+                            count++;
+                            enumerator.SkipThisNode();
+                        }
                     }
                 }
-
-                // incomplete expression
-                if (scalar == null)
-                    return;
-
-                if (count > 1)
-                {
-                    Assertion.Assert(scalar != null, "scalar != null");
-                    consumer.AddHighlighting(new InefficientMultiplicationOrderWarning(parent, expression, scalar));
-                }
+                
+                if (hasMatrix & count > 1)
+                    consumer.AddHighlighting(new InefficientMultiplicationOrderWarning(expression, scalars, matrices));
             }
         }
 
-        private IMultiplicativeExpression GetMulOperation(ICSharpExpression expression)
+        private bool IsStartPoint(ICSharpExpression expression)
+        {
+            return GetMulOperation(expression) != null && GetMulOperation(expression.GetContainingParenthesizedExpression()?.Parent) == null;
+        }
+
+        private IMultiplicativeExpression GetMulOperation(ITreeNode expression)
         {
             if (expression is IMultiplicativeExpression mul && mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK)
                 return mul;
@@ -84,25 +98,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             return null;
         }
 
-        private int GetMulCount(ICSharpExpression expression)
+        public static bool IsMatrixType(ICSharpExpression expression)
         {
-            if (expression is IMultiplicativeExpression mul &&
-                mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK)
-            {
-                return GetMulCount(mul.LeftOperand) + GetMulCount(mul.RightOperand);
-            }
-            else
-            {
-                return 1;
-            }
+            return IsMatrixTypeInner(expression) == MatrixTypeState.Matrix;
+        }
+        
+        private static MatrixTypeState IsMatrixTypeInner(ICSharpExpression expression)
+        {
+            var type = expression?.GetExpressionType().ToIType() as IDeclaredType;
+            if (type == null)
+                return MatrixTypeState.Unknown;
+            if (type.IsPredefinedNumeric())
+                return MatrixTypeState.Scalar;
+
+            if (ourKnownTypes.Contains(type.GetClrName()))
+                return MatrixTypeState.Matrix;
+            
+            return MatrixTypeState.Unknown;
         }
 
-        private bool IsMatrixType([NotNull] IExpressionType expression)
+        private enum MatrixTypeState
         {
-            var clrType = (expression as IDeclaredType)?.GetClrName();
-            if (clrType == null)
-                return false;
-            return knownTypes.ContainsKey(clrType);
+            Scalar,
+            Matrix,
+            Unknown
         }
     }
 }

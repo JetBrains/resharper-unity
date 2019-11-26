@@ -432,8 +432,8 @@
 
   <Warning name="InefficientMultiplicationOrder" configurableSeverity="Unity.InefficientMultiplicationOrder">
     <Parameter type="ICSharpExpression" name="expression"/>
-    <Parameter type="ICSharpExpression" name="operandMatrix"/>
-    <Parameter type="ICSharpExpression" name="operandScalar"/>
+    <Parameter type="List&lt;ICSharpExpression&gt;" name="scalars" isValid="skip"/>
+    <Parameter type="List&lt;ICSharpExpression&gt;" name="matrices" isValid="skip"/>
     <Message value="Order of multiplication operations is inefficient" />
     <Range>Expression.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
