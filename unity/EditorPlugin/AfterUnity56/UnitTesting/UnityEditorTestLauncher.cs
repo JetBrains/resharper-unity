@@ -97,49 +97,56 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     private void SupportAbortNew()
     {
-      const string assemblyName = "UnityEditor.TestRunner";
-      const string typeName = "UnityEditor.TestTools.TestRunner.Api.TestRunnerApi";
-      const string methodName = "CancelAllTestRuns";
-      var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(assemblyName));
-      if (assembly == null)
+      try
       {
-        ourLogger.Verbose($"Could not find {assemblyName} in the AppDomain.");
-        return;
-      }
-      var apiType = assembly.GetType(typeName);
-      if (apiType == null)
-      {
-        ourLogger.Verbose($"Could not find {typeName} in the {assemblyName}.");
-        return;
-      }
-      
-      var stopRunMethod = apiType.GetMethod(methodName);
-      if (stopRunMethod == null)
-      {
-        ourLogger.Verbose($"Could not find {methodName} in the {typeName}.");
-        return;
-      }
-      
-      myLaunch.Abort.Set((lifetime, _) =>
-      {
-        ourLogger.Verbose($"Call {methodName} method via reflection.");
-        var task = new RdTask<bool>();
-        try
+        const string assemblyName = "UnityEditor.TestRunner";
+        const string typeName = "UnityEditor.TestTools.TestRunner.Api.TestRunnerApi";
+        const string methodName = "CancelAllTestRuns";
+        var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(assemblyName));
+        if (assembly == null)
         {
-          stopRunMethod.Invoke(null, null);
-          task.Set(true);
+          ourLogger.Verbose($"Could not find {assemblyName} in the AppDomain.");
+          return;
         }
-        catch (Exception)
+        var apiType = assembly.GetType(typeName);
+        if (apiType == null)
         {
-          ourLogger.Verbose($"Call {methodName} method failed.");
-          task.Set(false);
+          ourLogger.Verbose($"Could not find {typeName} in the {assemblyName}.");
+          return;
         }
+      
+        var stopRunMethod = apiType.GetMethod(methodName);
+        if (stopRunMethod == null)
+        {
+          ourLogger.Verbose($"Could not find {methodName} in the {typeName}.");
+          return;
+        }
+      
+        myLaunch.Abort.Set((lifetime, _) =>
+        {
+          ourLogger.Verbose($"Call {methodName} method via reflection.");
+          var task = new RdTask<bool>();
+          try
+          {
+            stopRunMethod.Invoke(null, null);
+            task.Set(true);
+          }
+          catch (Exception)
+          {
+            ourLogger.Verbose($"Call {methodName} method failed.");
+            task.Set(false);
+          }
         
-        if (!myLaunch.RunStarted.HasTrueValue()) // if RunStarted never happened 
-          myLaunch.RunResult(new RunResult(false));
+          if (!myLaunch.RunStarted.HasTrueValue()) // if RunStarted never happened 
+            myLaunch.RunResult(new RunResult(false));
         
-        return task;
-      });
+          return task;
+        });
+      }
+      catch (Exception e)
+      {
+        ourLogger.Error(e, "Unexpected exception in SupportAbortNew");
+      }
     }
 
     private bool TryLaunchUnitTestsInAssembly(string[] testNames)
@@ -372,37 +379,44 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     
     private void SupportAbort(object runner)
     {
-      var unityTestAssemblyRunnerField =
-        runner.GetType().GetField("m_Runner", BindingFlags.Instance | BindingFlags.NonPublic);
-      if (unityTestAssemblyRunnerField == null)
+      try
       {
-        ourLogger.Verbose("Could not find m_Runner field.");
-        return;
-      }
-      var unityTestAssemblyRunner = unityTestAssemblyRunnerField.GetValue(runner);
-      var stopRunMethod = unityTestAssemblyRunner.GetType()
-        .GetMethod("StopRun", BindingFlags.Instance | BindingFlags.Public);
-      if (stopRunMethod == null)
-      {
-        ourLogger.Verbose("Could not find StopRun method.");
-        return;
-      }
-      myLaunch.Abort.Set((lifetime, _) =>
-      {
-        ourLogger.Verbose("Call StopRun method via reflection.");
-        var task = new RdTask<bool>();
-        try
+        var unityTestAssemblyRunnerField =
+          runner.GetType().GetField("m_Runner", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (unityTestAssemblyRunnerField == null)
         {
-          stopRunMethod.Invoke(unityTestAssemblyRunner, null);
-          task.Set(true);
+          ourLogger.Verbose("Could not find m_Runner field.");
+          return;
         }
-        catch (Exception)
+        var unityTestAssemblyRunner = unityTestAssemblyRunnerField.GetValue(runner);
+        var stopRunMethod = unityTestAssemblyRunner.GetType()
+          .GetMethod("StopRun", BindingFlags.Instance | BindingFlags.Public);
+        if (stopRunMethod == null)
         {
-          ourLogger.Verbose("Call StopRun method failed.");
-          task.Set(false);
+          ourLogger.Verbose("Could not find StopRun method.");
+          return;
         }
-        return task;
-      });
+        myLaunch.Abort.Set((lifetime, _) =>
+        {
+          ourLogger.Verbose("Call StopRun method via reflection.");
+          var task = new RdTask<bool>();
+          try
+          {
+            stopRunMethod.Invoke(unityTestAssemblyRunner, null);
+            task.Set(true);
+          }
+          catch (Exception)
+          {
+            ourLogger.Verbose("Call StopRun method failed.");
+            task.Set(false);
+          }
+          return task;
+        });
+      }
+      catch (Exception e)
+      {
+        ourLogger.Error(e, "Unexpected exception in SupportAbort.");
+      }
     }
   }
 }
