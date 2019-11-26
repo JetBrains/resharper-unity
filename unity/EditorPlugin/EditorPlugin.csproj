@@ -17,13 +17,13 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-    <ILRepackInputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll"/>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"/>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"/>
-    <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll"/>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Annotations.dll"/>
-    <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll"/>
+    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)Newtonsoft.Json.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Annotations.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="AfterUnity56\**" />

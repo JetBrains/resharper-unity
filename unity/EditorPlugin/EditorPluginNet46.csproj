@@ -16,10 +16,10 @@
   </ItemGroup>
   <ItemGroup>
     <!-- This one should be the first - it provides version to resulting assembly-->
-    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"/>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"/>
-    <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll"/>
+    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="AssetPostprocessors\CsprojAssetPostprocessor.cs" />
