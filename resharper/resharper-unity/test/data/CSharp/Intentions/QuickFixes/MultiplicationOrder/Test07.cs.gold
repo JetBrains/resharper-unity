@@ -6,8 +6,7 @@ namespace DefaultNamespace
     {
         public void Update()
         {
-	    var result = Quaternion.Euler(0, 0, 0) * ({caret}Quaternion.Euler(0, 0, 0) * Vector3.back) * (7f * 7f * (5 * 7));        
-
+            var x = Quaternion.identity * Quaternion.identity * (Vector3.one *{caret} Vector3.one) * (5f * 6f); 
         }
     }
 }

@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.Progress;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -32,11 +36,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         {
             var factory = CSharpElementFactory.GetInstance(myExpression);
 
-            var matrices = CreateMulExpression(factory, myMatrices);
-            var scalars = CreateMulExpression(factory, myScalars);
-            myExpression.ReplaceBy(factory.CreateExpression(mul, matrices, scalars));
+            var newScalars = myScalars.Select(t => t.CopyWithResolve()).ToList();
+            var newExpression = RemoveScalars(factory, myExpression);
+            
+            var scalars = CreateMulExpression(factory, newScalars);
+            myExpression.ReplaceBy(factory.CreateExpression(mul, newExpression, scalars));
             
             return null;
+        }
+
+        private ICSharpExpression RemoveScalars(CSharpElementFactory elementFactory, ICSharpExpression expression)
+        {
+            if (!MultiplicationOrderAnalyzer.IsMatrixType(expression))
+                return null;
+
+            var multiplication = MultiplicationOrderAnalyzer.GetMulOperation(expression.GetOperandThroughParenthesis());
+            if (multiplication == null)
+                return expression;
+
+            var left = RemoveScalars(elementFactory, multiplication.LeftOperand);
+            var right = RemoveScalars(elementFactory, multiplication.RightOperand);
+
+            if (left == null)
+            {
+                Assertion.Assert(right != null, "right != null");
+                return right;
+            }
+
+            if (right == null)
+            {
+                Assertion.Assert(left != null, "left != null");
+                return left;
+            }
+
+            return elementFactory.CreateExpression(mul, left.CopyWithResolve(), right.CopyWithResolve());
         }
 
         private ICSharpExpression CreateMulExpression(CSharpElementFactory factory, List<ICSharpExpression> elements)

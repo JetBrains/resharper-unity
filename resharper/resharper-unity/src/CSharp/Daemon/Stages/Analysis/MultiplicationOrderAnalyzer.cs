@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             return GetMulOperation(expression) != null && GetMulOperation(expression.GetContainingParenthesizedExpression()?.Parent) == null;
         }
 
-        private IMultiplicativeExpression GetMulOperation(ITreeNode expression)
+        public static IMultiplicativeExpression GetMulOperation(ITreeNode expression)
         {
             if (expression is IMultiplicativeExpression mul && mul.OperatorSign.GetTokenType() == CSharpTokenType.ASTERISK)
                 return mul;
