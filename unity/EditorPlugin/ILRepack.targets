@@ -1,8 +1,4 @@
 ﻿<Project>
-  <ItemGroup>
-    <!-- Note that EditorPlugin.csproj adds Newtonsoft.Json.dll -->
-    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll" />
-  </ItemGroup>
   <PropertyGroup>
     <ILRepackOutputAssembly>$(OutputPath)$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
   </PropertyGroup>
@@ -11,7 +7,7 @@
       <SearchDirectories Include="$(OutputPath)" />
     </ItemGroup>
     <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(ILRepackInputAssemblies)" 
-              LibraryPath="@(SearchDirectories)" 
+              LibraryPath="@(SearchDirectories)"
               OutputFile="$(ILRepackOutputAssembly)" />
   </Target>
 </Project>

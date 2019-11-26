@@ -15,20 +15,11 @@
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
   </ItemGroup>
   <ItemGroup>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll">
-      <Visible>false</Visible>
-    </ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll">
-      <Visible>false</Visible>
-    </ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll">
-      <Visible>false</Visible>
-    </ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll">
-      <Visible>false</Visible>
-    </ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll">
-      <Visible>false</Visible>
-    </ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
 </Project>
