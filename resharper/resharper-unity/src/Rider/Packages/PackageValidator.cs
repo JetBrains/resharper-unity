@@ -74,9 +74,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Packages
             return false;
         }
         
-        private static bool IsOldPackage(ref string message, Version riderPackageVersion, string packageMarketingName, string targetVersion)
+        private static bool IsOldPackage(ref string message, Version packageVersion, string packageMarketingName, string targetVersion)
         {
-            if (riderPackageVersion != null && riderPackageVersion < new Version(targetVersion))
+            if (packageVersion != null && packageVersion < new Version(targetVersion))
             {
                 message = $"Update {packageMarketingName} package to v.{targetVersion} or later in Unity Package Manager. {HelpLink}";
                 return true;
