@@ -20,6 +20,7 @@ using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execut
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.UnitTesting;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Packages;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
@@ -53,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityHost myUnityHost;
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
+        private readonly PackageValidator myPackageValidator;
 
         private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private readonly WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
@@ -73,7 +75,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             ConnectionTracker connectionTracker,
             UnityHost unityHost,
             ILogger logger,
-            Lifetime lifetime
+            Lifetime lifetime,
+            PackageValidator packageValidator
             )
         {
             mySolution = solution;
@@ -88,6 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myUnityHost = unityHost;
             myLogger = logger;
             myLifetime = lifetime;
+            myPackageValidator = packageValidator;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
@@ -282,7 +286,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                 {
                                     myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
                                     if (!res.Result)
-                                        tcs.TrySetException(new Exception("Failed to start tests in Unity."));
+                                    {
+                                        var defaultMessage = "Failed to start tests in Unity.";
+                                        if (myPackageValidator.HasNonCompatiblePackagesCombination(out var message))
+                                            defaultMessage = $"{defaultMessage} {message}";
+                                        tcs.TrySetException(new Exception(defaultMessage));
+                                    }
                                 });
                             });
                         }
@@ -375,8 +384,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             firstRun.Launch.Session);
                         break;
                     case Status.Running:
-                        myUnitTestResultManager.TestStarting(unitTestElement,
-                            firstRun.Launch.Session);
+                        myUnitTestResultManager.TestStarting(unitTestElement, firstRun.Launch.Session);
                         break;
                     case Status.Success:
                     case Status.Failure:
@@ -393,12 +401,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             
                         myUnitTestResultManager.TestOutput(unitTestElement, firstRun.Launch.Session, result.Output, TaskOutputType.STDOUT);
                         myUnitTestResultManager.TestDuration(unitTestElement, firstRun.Launch.Session, TimeSpan.FromMilliseconds(result.Duration));
-                        myUnitTestResultManager.TestFinishing(unitTestElement,
-                            firstRun.Launch.Session, message, taskResult);
+                        myUnitTestResultManager.TestFinishing(unitTestElement, firstRun.Launch.Session, message, taskResult);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(
-                            $"Unknown test result from the protocol: {result.Status}");
+                        throw new ArgumentOutOfRangeException($"Unknown test result from the protocol: {result.Status}");
                 }
             });
             
