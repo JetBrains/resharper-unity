@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Packages
             myUnityVersion = unityVersion;
         }
         
-        public bool HasNonCompatiblePackagesCombination(out string message)
+        public bool HasNonCompatiblePackagesCombination(bool isCoverage, out string message)
         {
             message = string.Empty;
             
@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Packages
                     return true;
                 }
                 
-                if (packages.ContainsKey(riderPackageName) && packages.ContainsKey(testFrameworkPackageName))
+                if (isCoverage && packages.ContainsKey(riderPackageName) && packages.ContainsKey(testFrameworkPackageName))
                 {
                     // https://youtrack.jetbrains.com/issue/RIDER-35880
                     var riderPackageVersion = packages[riderPackageName];

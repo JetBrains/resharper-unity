@@ -288,7 +288,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                     if (!res.Result)
                                     {
                                         var defaultMessage = "Failed to start tests in Unity.";
-                                        if (myPackageValidator.HasNonCompatiblePackagesCombination(out var message))
+
+                                        var isCoverage =
+                                            run.HostController.HostId != WellKnownHostProvidersIds.DebugProviderId &&
+                                            run.HostController.HostId != WellKnownHostProvidersIds.RunProviderId;
+                                        
+                                        if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
                                             defaultMessage = $"{defaultMessage} {message}";
                                         tcs.TrySetException(new Exception(defaultMessage));
                                     }
