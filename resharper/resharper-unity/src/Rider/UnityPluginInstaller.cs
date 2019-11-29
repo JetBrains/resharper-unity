@@ -134,6 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
+        // todo: https://github.com/JetBrains/resharper-unity/issues/1432
         private bool HasNewRiderPackage()
         {
             // Unity 2019.2+ is expected to have com.unity.ide.rider package, which loads EditorPlugin directly from Rider installation
