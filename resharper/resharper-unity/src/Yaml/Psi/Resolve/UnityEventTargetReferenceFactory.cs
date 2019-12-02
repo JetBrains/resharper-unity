@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
                 ?.GetPlainScalarText();
 
             if (methodNameMapEntry.Key.MatchesPlainScalarText("m_MethodName") &&
-                callsMapEntry.Key.MatchesPlainScalarText("m_Calls") && eventTypeName != null)
+                callsMapEntry.Key.MatchesPlainScalarText("m_Calls"))
             {
                 var fileID = callMapNode.FindMapEntryBySimpleKey("m_Target")?.Content.Value.AsFileID();
                 if (fileID != null && !fileID.IsNullReference)
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
                         .Value.GetPlainScalarText();
                     var type = argumentTypeName?.Split(',').FirstOrDefault();
                     if (argMode == EventHandlerArgumentMode.EventDefined)
-                        type = eventTypeName.Split(',').FirstOrDefault();
+                        type = eventTypeName?.Split(',').FirstOrDefault();
                     else if (argMode == EventHandlerArgumentMode.Void)
                         type = null;
 
