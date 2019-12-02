@@ -3,6 +3,7 @@ using JetBrains.Application.Settings.Extentions;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -19,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     {
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly RdUnityModel myRdUnityModel;
 
         public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
@@ -27,7 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             UnitTestingCachingService cachingService, INUnitTestParametersProvider testParametersProvider,
             UnityEditorProtocol editorProtocol,
             RunViaUnityEditorStrategy runViaUnityEditorStrategy,
-            NUnitOutOfProcessUnitTestRunStrategy nUnitOutOfProcessUnitTestRunStrategy)
+            NUnitOutOfProcessUnitTestRunStrategy nUnitOutOfProcessUnitTestRunStrategy,
+            UnitySolutionTracker unitySolutionTracker)
             : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settingsStore,
                 settingsOptimization, settingsCache, cachingService, nUnitOutOfProcessUnitTestRunStrategy, testParametersProvider)
         {
@@ -37,10 +40,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
             myEditorProtocol = editorProtocol;
             myUnityEditorStrategy = runViaUnityEditorStrategy;
+            myUnitySolutionTracker = unitySolutionTracker;
         }
 
         public override IUnitTestRunStrategy GetRunStrategy(IUnitTestElement element)
         {
+            if (!myUnitySolutionTracker.IsUnityProjectFolder.HasTrueValue())
+                return base.GetRunStrategy(element);
+            
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605
             if (!myRdUnityModel.UnitTestPreference.HasValue() && myEditorProtocol.UnityModel.Value != null ||
                 (myRdUnityModel.UnitTestPreference.HasValue() && myRdUnityModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit))
