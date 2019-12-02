@@ -86,6 +86,7 @@ task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
     dependsOn prepareBuildProps, prepareNuGetConfig
 
     solutionFile backend.resharperHostPluginSolution
+    noCache = true
     sources = [
             'https://api.nuget.org/v3/index.json'
     ]
@@ -103,6 +104,7 @@ task restoreUnityEditorPluginPackages(type: nugetRestore.class) {
     description 'Restores packages for Unity Editor plugin'
 
     solutionFile backend.unityPluginSolution
+    noCache = true
     sources = [
             'https://api.nuget.org/v3/index.json'
     ]
