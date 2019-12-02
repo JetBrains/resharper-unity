@@ -28,6 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
+                if (!args)
+                    return;
+
                 //check connection between backend and unity editor
                 locks.QueueRecurring(lifetime, "PeriodicallyCheck", TimeSpan.FromSeconds(1), () =>
                 {
