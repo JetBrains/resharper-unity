@@ -8,15 +8,14 @@ import com.jetbrains.rider.actions.RiderActions
 import com.jetbrains.rider.hyperlinks.RiderCtrlClickHost
 
 class AsmDefActionCallPolicy : RiderActionSupportPolicy() {
-    override fun getCallStrategy(psiElement: PsiElement, backendActionId: String): RiderActionCallStrategy {
-        if (backendActionId == IdeActions.ACTION_RENAME)
-            return RiderActionCallStrategy.FRONTEND_FIRST
-        if (RiderActions.GOTO_DECLARATION == backendActionId || IdeActions.ACTION_FIND_USAGES == backendActionId
-            || RiderCtrlClickHost.resharperActionId == backendActionId)
-            return RiderActionCallStrategy.BACKEND_FIRST
-
-        return RiderActionCallStrategy.FRONTEND_ONLY
-    }
+    override fun getCallStrategy(psiElement: PsiElement, backendActionId: String): RiderActionCallStrategy  =
+        when (backendActionId) {
+            IdeActions.ACTION_RENAME,
+            IdeActions.ACTION_FIND_USAGES,
+            RiderCtrlClickHost.resharperActionId,
+            RiderActions.GOTO_DECLARATION -> RiderActionCallStrategy.BACKEND_FIRST
+            else -> RiderActionCallStrategy.FRONTEND_ONLY
+        }
 
     override fun isAvailable(psiElement: PsiElement, backendActionId: String): Boolean {
         val viewProvider = psiElement.containingFile?.viewProvider ?: return false
