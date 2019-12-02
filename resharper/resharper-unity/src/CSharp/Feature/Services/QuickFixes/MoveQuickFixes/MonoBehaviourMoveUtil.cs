@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
         {
             classDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
 
-            return classDeclaration.MethodDeclarations.FirstOrDefault(t => t.NameIdentifier.Name.Equals(name));
+            return classDeclaration.MethodDeclarations.FirstOrDefault(t => name.Equals(t.NameIdentifier?.Name));
         }
 
         [NotNull]
