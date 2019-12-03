@@ -102,40 +102,45 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         const string assemblyName = "UnityEditor.TestRunner";
         const string typeName = "UnityEditor.TestTools.TestRunner.Api.TestRunnerApi";
         const string methodName = "CancelAllTestRuns";
+
+        MethodInfo stopRunMethod = null;
+        
         var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(assemblyName));
         if (assembly == null)
-        {
           ourLogger.Verbose($"Could not find {assemblyName} in the AppDomain.");
-          return;
-        }
-        var apiType = assembly.GetType(typeName);
-        if (apiType == null)
+        else
         {
-          ourLogger.Verbose($"Could not find {typeName} in the {assemblyName}.");
-          return;
-        }
-      
-        var stopRunMethod = apiType.GetMethod(methodName);
-        if (stopRunMethod == null)
-        {
-          ourLogger.Verbose($"Could not find {methodName} in the {typeName}.");
-          return;
+          var apiType = assembly.GetType(typeName);
+          if (apiType == null)
+            ourLogger.Verbose($"Could not find {typeName} in the {assemblyName}.");
+          else
+          {
+            stopRunMethod = apiType.GetMethod(methodName);
+            if (stopRunMethod == null)
+              ourLogger.Verbose($"Could not find {methodName} in the {typeName}.");
+          }
         }
       
         myLaunch.Abort.Set((lifetime, _) =>
         {
-          ourLogger.Verbose($"Call {methodName} method via reflection.");
           var task = new RdTask<bool>();
-          try
+
+          if (stopRunMethod != null)
           {
-            stopRunMethod.Invoke(null, null);
-            task.Set(true);
+            ourLogger.Verbose($"Call {methodName} method via reflection.");
+            try
+            {
+              stopRunMethod.Invoke(null, null);
+              task.Set(true);
+            }
+            catch (Exception)
+            {
+              ourLogger.Verbose($"Call {methodName} method failed.");
+              task.Set(false);
+            }
           }
-          catch (Exception)
-          {
-            ourLogger.Verbose($"Call {methodName} method failed.");
+          else
             task.Set(false);
-          }
         
           if (!myLaunch.RunStarted.HasTrueValue()) // if RunStarted never happened 
             myLaunch.RunResult(new RunResult(false));
