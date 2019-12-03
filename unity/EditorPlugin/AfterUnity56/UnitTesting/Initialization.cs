@@ -27,7 +27,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       modelValue.RunUnitTestLaunch.Set(rdVoid =>
       {
         if (!modelValue.UnitTestLaunch.HasValue()) return false;
-        var testLauncher = new UnityEditorTestLauncher(modelValue.UnitTestLaunch.Value);
+        var testLauncher = new UnityEditorTestLauncher(modelValue.UnitTestLaunch.Value, connectionLifetime);
         return testLauncher.TryLaunchUnitTests();
       });
     }
