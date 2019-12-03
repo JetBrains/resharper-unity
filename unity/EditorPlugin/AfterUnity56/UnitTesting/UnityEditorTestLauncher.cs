@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rd.Tasks;
 using NUnit.Framework.Interfaces;
@@ -15,13 +16,15 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
   public class UnityEditorTestLauncher
   {
     private readonly UnitTestLaunch myLaunch;
-    
+    private readonly Lifetime myConnectionLifetime;
+
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     private static string RunnerAddListener = "AddListener";
 
-    public UnityEditorTestLauncher(UnitTestLaunch launch)
+    public UnityEditorTestLauncher(UnitTestLaunch launch, Lifetime connectionLifetime)
     {
       myLaunch = launch;
+      myConnectionLifetime = connectionLifetime;
     }
 
     public bool TryLaunchUnitTests()
@@ -261,46 +264,64 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         var runner = runnerField.GetValue(launcher);
         SupportAbort(runner);
 
-        if (!AdviseTestStarted(runner, "m_TestStartedEvent", test =>
+        var runLifetimeDef = Lifetime.Define(myConnectionLifetime);
+        runLifetimeDef.Lifetime.OnTermination(() =>
         {
-          if (!(test is TestMethod)) return;
-          ourLogger.Verbose("TestStarted : {0}", test.FullName);
+          if (myConnectionLifetime.IsNotAlive)
+            TestEventsSender.RunFinished(myLaunch, new RunResult(false));
+        });
 
-          var testId = TestEventsSender.GetIdFromNUnitTest(test);
-          var tResult = new TestResult(testId, test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
+        var runStarted = false;
+        try
+        {
+          if (!AdviseTestStarted(runner, "m_TestStartedEvent", test =>
+          {
+            if (!(test is TestMethod)) return;
+            ourLogger.Verbose("TestStarted : {0}", test.FullName);
+
+            var testId = TestEventsSender.GetIdFromNUnitTest(test);
+            var tResult = new TestResult(testId, test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
           
-          clientController?.OnTestStarted(testId);
-          TestEventsSender.TestStarted(myLaunch, tResult);
-        }))
-          return false;
+            clientController?.OnTestStarted(testId);
+            TestEventsSender.TestStarted(myLaunch, tResult);
+          }))
+            return false;
 
-        if (!AdviseTestFinished(runner, "m_TestFinishedEvent", result =>
-        {
-          if (!(result.Test is TestMethod)) return;
+          if (!AdviseTestFinished(runner, "m_TestFinishedEvent", result =>
+          {
+            if (!(result.Test is TestMethod)) return;
 
-          clientController?.OnTestFinished();
-          TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(result));
-        }))
-          return false;
+            clientController?.OnTestFinished();
+            TestEventsSender.TestFinished(myLaunch, TestEventsSender.GetTestResult(result));
+          }))
+            return false;
 
-        if (!AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
-        {
-          clientController?.OnSessionFinished();
-          var runResult = new RunResult(Equals(result.ResultState, ResultState.Success));
-          TestEventsSender.RunFinished(myLaunch, runResult);
-        }))
-          return false;
+          if (!AdviseSessionFinished(runner, "m_RunFinishedEvent", result =>
+          {
+            clientController?.OnSessionFinished();
+            runLifetimeDef.Terminate();
+            var runResult = new RunResult(Equals(result.ResultState, ResultState.Success));
+            TestEventsSender.RunFinished(myLaunch, runResult);
+          }))
+            return false;
 
-        var runMethod = launcherType.GetMethod("Run", BindingFlags.Instance | BindingFlags.Public);
-        if (runMethod == null)
-        {
-          ourLogger.Verbose("Could not find runMethod via reflection");
-          return false;
+          var runMethod = launcherType.GetMethod("Run", BindingFlags.Instance | BindingFlags.Public);
+          if (runMethod == null)
+          {
+            ourLogger.Verbose("Could not find runMethod via reflection");
+            return false;
+          }
+
+          //run!
+          runMethod.Invoke(launcher, null);
+          runStarted = true;
+          return true;
         }
-
-        //run!
-        runMethod.Invoke(launcher, null);
-        return true;
+        finally
+        {
+          if (!runStarted)
+            runLifetimeDef.Terminate();
+        }
       }
       catch (Exception e)
       {
