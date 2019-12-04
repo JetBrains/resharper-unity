@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
-using JetBrains.Rd.Tasks;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
@@ -84,8 +82,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
           args = new object[] {mode, assemblyNames, testNames, null, null, null};
         }
-        
-        SupportAbortNew();
 
         runTestsMethod.Invoke(null, args);
         return true;
@@ -98,98 +94,15 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       return false;
     }
 
-    private void SupportAbortNew()
-    {
-      try
-      {
-        const string assemblyName = "UnityEditor.TestRunner";
-        const string typeName = "UnityEditor.TestTools.TestRunner.Api.TestRunnerApi";
-        const string methodName = "CancelAllTestRuns";
-
-        MethodInfo stopRunMethod = null;
-        
-        var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.Equals(assemblyName));
-        if (assembly == null)
-          ourLogger.Verbose($"Could not find {assemblyName} in the AppDomain.");
-        else
-        {
-          var apiType = assembly.GetType(typeName);
-          if (apiType == null)
-            ourLogger.Verbose($"Could not find {typeName} in the {assemblyName}.");
-          else
-          {
-            stopRunMethod = apiType.GetMethod(methodName);
-            if (stopRunMethod == null)
-              ourLogger.Verbose($"Could not find {methodName} in the {typeName}.");
-          }
-        }
-      
-        myLaunch.Abort.Set((lifetime, _) =>
-        {
-          var task = new RdTask<bool>();
-
-          if (stopRunMethod != null)
-          {
-            ourLogger.Verbose($"Call {methodName} method via reflection.");
-            try
-            {
-              stopRunMethod.Invoke(null, null);
-              task.Set(true);
-            }
-            catch (Exception)
-            {
-              ourLogger.Verbose($"Call {methodName} method failed.");
-              task.Set(false);
-            }
-          }
-          else
-            task.Set(false);
-        
-          if (!myLaunch.RunStarted.HasTrueValue()) // if RunStarted never happened 
-            myLaunch.RunResult(new RunResult(false));
-        
-          return task;
-        });
-      }
-      catch (Exception e)
-      {
-        ourLogger.Error(e, "Unexpected exception in SupportAbortNew");
-      }
-    }
 
     private bool TryLaunchUnitTestsInAssembly(string[] testNames)
     {
       try
       {
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        var testEditorAssembly = assemblies
-          .FirstOrDefault(assembly => assembly.GetName().Name.Equals("UnityEditor.TestRunner"));
-        var testEngineAssembly = assemblies
-          .FirstOrDefault(assembly => assembly.GetName().Name.Equals("UnityEngine.TestRunner"));
-
-        if (testEditorAssembly == null || testEngineAssembly == null)
-        {
-          ourLogger.Verbose(
-            "Could not find UnityEditor.TestRunner or UnityEngine.TestRunner assemblies in current AppDomain");
-          return false;
-        }
-
-        var launcherTypeString = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
-        var launcherType = testEditorAssembly.GetType(launcherTypeString);
-        if (launcherType == null)
-        {
-          string testEditorAssemblyProperties =  testEditorAssembly.GetTypes().Select(a=>a.Name).Aggregate((a, b)=> a+ ", " + b);
-          throw new NullReferenceException($"Could not find {launcherTypeString} among {testEditorAssemblyProperties}");
-        }
+        if (!TryGetAssemblies(out var testEditorAssembly, out var testEngineAssembly)) return false;
+        if (!TryGetLauncherType(testEditorAssembly, out var launcherType)) return false;
+        if (!TryGetFilter(testEngineAssembly, out var filter)) return false;
         
-        var filterType = testEngineAssembly.GetType("UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter");
-        if (filterType == null)
-        {
-          string testEngineAssemblyProperties = testEngineAssembly.GetTypes().Select(a=>a.Name).Aggregate((a, b)=> a+ ", " + b);
-          throw new NullReferenceException($"Could not find \"UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter\" among {testEngineAssemblyProperties}");
-        }
-        
-        var filter = Activator.CreateInstance(filterType);
         var fieldInfo = filter.GetType().GetField("testNames", BindingFlags.Instance | BindingFlags.Public);
         fieldInfo = fieldInfo??filter.GetType().GetField("names", BindingFlags.Instance | BindingFlags.Public);
         if (fieldInfo == null)
@@ -202,68 +115,12 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         var clientController = ClientControllerWrapper.TryCreate(myLaunch.SessionId, myLaunch.ClientControllerInfo);
         clientController?.OnSessionStarted();
 
-        object launcher;
-        if (UnityUtils.UnityVersion >= new Version(2018, 1))
-        {
-          var enumType = testEngineAssembly.GetType("UnityEngine.TestTools.TestPlatform");
-          if (enumType == null)
-          {
-            ourLogger.Verbose("Could not find TestPlatform field via reflection");
-            return false;
-          }
-
-          var assemblyProviderType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
-          var testPlatformVal = 2; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
-          if (assemblyProviderType != null)
-          {
-            var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
-              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-              new[] {Enum.ToObject(enumType, testPlatformVal)}, null);
-            ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
-            launcher = Activator.CreateInstance(launcherType,
-              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-              null, new[] {filter, assemblyProvider},
-              null);
-          }
-          else
-          {
-            try
-            {
-              launcher = Activator.CreateInstance(launcherType,
-                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)},
-                null);
-            }
-            catch (Exception) // Unity 2019.2+ with package com.unity.test-framework v 1.0.18 and 1.1.0 ctor was changed. in v 1.1.1 it was added back for compatibility
-            {
-              var apiFilterType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.Api.Filter");
-              var apiFilter = Activator.CreateInstance(apiFilterType);
-              var testNamesFieldInfo = apiFilter.GetType().GetField("testNames");
-              testNamesFieldInfo.SetValue(apiFilter, testNames);
-              var array = Array.CreateInstance(apiFilterType, 1);
-              array.SetValue(apiFilter, 0);
-              launcher = Activator.CreateInstance(launcherType, array, Enum.ToObject(enumType, testPlatformVal));
-            }
-          }
-        }
-        else
-        {
-          launcher = Activator.CreateInstance(launcherType,
-            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-            null, new[] {filter},
-            null);
-        }
-
-        var runnerField = launcherType.GetField("m_EditModeRunner", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (runnerField == null)
-        {
-          ourLogger.Verbose("Could not find runnerField via reflection");
+        if (!TryGetLauncher(testNames, testEngineAssembly, testEditorAssembly, launcherType, filter, out var launcher)) 
           return false;
-        }
 
-        var runner = runnerField.GetValue(launcher);
-        SupportAbort(runner);
-
+        if (!TryGetRunner(launcherType, launcher, out var runner))
+          return false;
+        
         var runLifetimeDef = Lifetime.Define(myConnectionLifetime);
         runLifetimeDef.Lifetime.OnTermination(() =>
         {
@@ -328,6 +185,129 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         ourLogger.Error(e, "Exception while launching Unity Editor tests.");
         return false;
       }
+    }
+
+    internal static bool TryGetAssemblies(out Assembly testEditorAssembly, out Assembly testEngineAssembly)
+    {
+      var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+      testEditorAssembly = assemblies
+        .FirstOrDefault(assembly => assembly.GetName().Name.Equals("UnityEditor.TestRunner"));
+      testEngineAssembly = assemblies
+        .FirstOrDefault(assembly => assembly.GetName().Name.Equals("UnityEngine.TestRunner"));
+
+      if (testEditorAssembly == null || testEngineAssembly == null)
+      {
+        ourLogger.Verbose(
+          "Could not find UnityEditor.TestRunner or UnityEngine.TestRunner assemblies in current AppDomain");
+        return false;
+      }
+
+      return true;
+    }
+
+    internal static bool TryGetLauncherType(Assembly testEditorAssembly, out Type launcherType)
+    {
+      var launcherTypeString = "UnityEditor.TestTools.TestRunner.EditModeLauncher";
+      launcherType = testEditorAssembly.GetType(launcherTypeString);
+      if (launcherType == null)
+      {
+        string testEditorAssemblyProperties =
+          testEditorAssembly.GetTypes().Select(a => a.Name).Aggregate((a, b) => a + ", " + b);
+        ourLogger.Verbose($"Could not find {launcherTypeString} among {testEditorAssemblyProperties}");
+        return false;
+      }
+
+      return true;
+    }
+
+    internal static bool TryGetFilter(Assembly testEngineAssembly, out object filter)
+    {
+      var filterType = testEngineAssembly.GetType("UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter");
+      if (filterType == null)
+      {
+        string testEngineAssemblyProperties =
+          testEngineAssembly.GetTypes().Select(a => a.Name).Aggregate((a, b) => a + ", " + b);
+        ourLogger.Verbose(
+          $"Could not find \"UnityEngine.TestTools.TestRunner.GUI.TestRunnerFilter\" among {testEngineAssemblyProperties}");
+        filter = null;
+        return false;
+      }
+
+      filter = Activator.CreateInstance(filterType);
+      return true;
+    }
+    
+    internal static bool TryGetRunner(Type launcherType, object launcher, out object runner)
+    {
+      runner = null;
+      var runnerField = launcherType.GetField("m_EditModeRunner", BindingFlags.Instance | BindingFlags.NonPublic);
+      if (runnerField == null)
+      {
+        ourLogger.Verbose("Could not find runnerField via reflection");
+        return false;
+      }
+
+      runner = runnerField.GetValue(launcher);
+      return true;
+    }
+
+    internal static bool TryGetLauncher(string[] testNames, Assembly testEngineAssembly, Assembly testEditorAssembly,
+      Type launcherType, object filter, out object launcher)
+    {
+      launcher = null;
+      if (UnityUtils.UnityVersion >= new Version(2018, 1))
+      {
+        var enumType = testEngineAssembly.GetType("UnityEngine.TestTools.TestPlatform");
+        if (enumType == null)
+        {
+          ourLogger.Verbose("Could not find TestPlatform field via reflection");
+          return false;
+        }
+
+        var assemblyProviderType =
+          testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.TestInEditorTestAssemblyProvider");
+        var testPlatformVal = 2; // All = 255, // 0xFF, EditMode = 2, PlayMode = 4,
+        if (assemblyProviderType != null)
+        {
+          var assemblyProvider = Activator.CreateInstance(assemblyProviderType,
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
+            new[] {Enum.ToObject(enumType, testPlatformVal)}, null);
+          ourLogger.Log(LoggingLevel.INFO, assemblyProvider.ToString());
+          launcher = Activator.CreateInstance(launcherType,
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+            null, new[] {filter, assemblyProvider},
+            null);
+        }
+        else
+        {
+          try
+          {
+            launcher = Activator.CreateInstance(launcherType,
+              BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+              null, new[] {filter, Enum.ToObject(enumType, testPlatformVal)},
+              null);
+          }
+          catch (Exception) // Unity 2019.2+ with package com.unity.test-framework v 1.0.18 and 1.1.0 ctor was changed. in v 1.1.1 it was added back for compatibility
+          {
+            var apiFilterType = testEditorAssembly.GetType("UnityEditor.TestTools.TestRunner.Api.Filter");
+            var apiFilter = Activator.CreateInstance(apiFilterType);
+            var testNamesFieldInfo = apiFilter.GetType().GetField("testNames");
+            testNamesFieldInfo.SetValue(apiFilter, testNames);
+            var array = Array.CreateInstance(apiFilterType, 1);
+            array.SetValue(apiFilter, 0);
+            launcher = Activator.CreateInstance(launcherType, array, Enum.ToObject(enumType, testPlatformVal));
+          }
+        }
+      }
+      else
+      {
+        launcher = Activator.CreateInstance(launcherType,
+          BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+          null, new[] {filter},
+          null);
+      }
+
+      return true;
     }
 
     private static bool AdviseSessionFinished(object runner, string fieldName, Action<ITestResult> callback)
@@ -401,48 +381,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       //subscribe for tests callbacks
       addListenerMethod.Invoke(mTestFinished, new object[] {new UnityAction<ITestResult>(callback)});
       return true;
-    }
-    
-    private void SupportAbort(object runner)
-    {
-      try
-      {
-        var unityTestAssemblyRunnerField =
-          runner.GetType().GetField("m_Runner", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (unityTestAssemblyRunnerField == null)
-        {
-          ourLogger.Verbose("Could not find m_Runner field.");
-          return;
-        }
-        var unityTestAssemblyRunner = unityTestAssemblyRunnerField.GetValue(runner);
-        var stopRunMethod = unityTestAssemblyRunner.GetType()
-          .GetMethod("StopRun", BindingFlags.Instance | BindingFlags.Public);
-        if (stopRunMethod == null)
-        {
-          ourLogger.Verbose("Could not find StopRun method.");
-          return;
-        }
-        myLaunch.Abort.Set((lifetime, _) =>
-        {
-          ourLogger.Verbose("Call StopRun method via reflection.");
-          var task = new RdTask<bool>();
-          try
-          {
-            stopRunMethod.Invoke(unityTestAssemblyRunner, null);
-            task.Set(true);
-          }
-          catch (Exception)
-          {
-            ourLogger.Verbose("Call StopRun method failed.");
-            task.Set(false);
-          }
-          return task;
-        });
-      }
-      catch (Exception e)
-      {
-        ourLogger.Error(e, "Unexpected exception in SupportAbort.");
-      }
     }
   }
 }
