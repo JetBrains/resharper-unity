@@ -4,12 +4,14 @@ import com.intellij.ide.plugins.PluginManager
 import com.intellij.ide.plugins.PluginManagerMain
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.fileEditor.FileEditor
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileType
 import com.jetbrains.rider.plugins.unity.util.isUssFile
 
 class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotificationPanel>() {
