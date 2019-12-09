@@ -53,3 +53,4 @@ fun isGeneratedUnityFile(file: VirtualFile): Boolean {
 }
 
 fun isUxmlFile(file: VirtualFile) = file.extension.equals("uxml", true)
+fun isUssFile(file: VirtualFile) = file.extension.equals("uss", true)
