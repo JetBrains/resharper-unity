@@ -37,11 +37,15 @@ class UnityIcons {
 
             val AsmDef = ReSharperPsiJavaScriptIcons.Json
 
-            val UnityYaml: Icon = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg")
+            val UnityYaml = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg")
             val UnityScene = IconLoader.getIcon("/resharper/UnityFileType/FileUnity.svg")
             val Meta = IconLoader.getIcon("/resharper/UnityFileType/FileUnityMeta.svg")
             val Asset = IconLoader.getIcon("/resharper/UnityFileType/FileUnityAsset.svg")
             val Prefab = IconLoader.getIcon("/resharper/UnityFileType/FileUnityPrefab.svg")
+
+            // These are front end only file types
+            val Uss = IconLoader.getIcon("/Icons/fileTypes/uss.svg")
+            val Uxml = IconLoader.getIcon("/Icons/fileTypes/uxml.svg")
         }
     }
 

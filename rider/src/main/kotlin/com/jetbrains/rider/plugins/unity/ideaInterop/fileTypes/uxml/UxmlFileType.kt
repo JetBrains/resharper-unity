@@ -4,7 +4,7 @@ import com.intellij.ide.highlighter.XmlLikeFileType
 import icons.UnityIcons
 
 object UxmlFileType : XmlLikeFileType(UxmlLanguage) {
-    override fun getIcon() = UnityIcons.FileTypes.Asset
+    override fun getIcon() = UnityIcons.FileTypes.Uxml
     override fun getName() = "UXML"
     override fun getDefaultExtension() = "uxml"
     override fun getDescription() = "UIElement UXML File (Unity)"
