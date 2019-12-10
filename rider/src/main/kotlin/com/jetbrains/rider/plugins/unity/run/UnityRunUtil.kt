@@ -114,7 +114,7 @@ object UnityRunUtil {
             while (tokenizer.hasMoreTokens()) {
                 val token = tokenizer.nextToken()
                 if (token.equals("-projectPath", true) || token.equals("-createPath", true)) {
-                    return getProjectNameFromPath(StringUtil.unescapeStringCharacters(tokenizer.nextToken()))
+                    return getProjectNameFromPath(StringUtil.unquoteString(tokenizer.nextToken()))
                 }
             }
         }
