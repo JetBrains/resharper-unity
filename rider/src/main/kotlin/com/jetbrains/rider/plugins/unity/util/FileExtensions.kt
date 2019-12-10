@@ -1,7 +1,12 @@
 package com.jetbrains.rider.plugins.unity.util
 
+import com.intellij.openapi.fileTypes.FileTypeRegistry
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.text.CaseInsensitiveStringHashingStrategy
+import com.jetbrains.rider.ideaInterop.fileTypes.msbuild.CsprojFileType
+import com.jetbrains.rider.ideaInterop.fileTypes.sln.SolutionFileType
+import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileType
+import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileType
 import gnu.trove.THashSet
 
 private val nonEditableExtensions = getExtensions()
@@ -48,8 +53,9 @@ fun isNonEditableUnityFileExtension(extension: String?): Boolean {
 }
 
 fun isGeneratedUnityFile(file: VirtualFile): Boolean {
-    val extension = file.extension
-    return extension.equals("csproj", true) || extension.equals("sln", true)
+    val fileTypeRegistry = FileTypeRegistry.getInstance()
+    return fileTypeRegistry.isFileOfType(file, CsprojFileType) || fileTypeRegistry.isFileOfType(file, SolutionFileType)
 }
 
-fun isUxmlFile(file: VirtualFile) = file.extension.equals("uxml", true)
+fun isUxmlFile(file: VirtualFile) = FileTypeRegistry.getInstance().isFileOfType(file, UxmlFileType)
+fun isUssFile(file: VirtualFile) = FileTypeRegistry.getInstance().isFileOfType(file, UssFileType)

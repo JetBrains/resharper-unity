@@ -6,8 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
+## 2019.3.1
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap7-rtm-2019.3.0...net193)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/33?closed=1)
+
+### Added
+
+- Added proper file icons for `*.uxml` and `*.uss` ([RIDER-34788](https://youtrack.jetbrains.com/issue/RIDER-34788), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
+
+### Changed
+
+- Entire plugin is no longer disabled if the CSS plugin is disabled ([RIDER-36523](https://youtrack.jetbrains.com/issue/RIDER-36523), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
+
+
+
 ## 2019.3
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/192...net193)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/192...net193-eap7-rtm-2019.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/29?closed=1)
 
 ### Added
@@ -51,6 +65,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Fix orphan `.meta` file during "Safe Delete" refactoring ([#856](https://github.com/JetBrains/resharper-unity/issues/856), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
 - Fix correctly keeping `.meta` files up to date in `Packages` folder ([#1231](https://github.com/JetBrains/resharper-unity/issues/1231), [#1389](https://github.com/JetBrains/resharper-unity/pull/1389))
 - Fix "Add RequireComponent" context action to correctly add second attribute ([#RIDER-34390](https://youtrack.jetbrains.com/issue/RIDER-34390), [#1416](https://github.com/JetBrains/resharper-unity/pull/1416])
+- Fix issues with ordering of multiplication of vector multiplication ([RIDER-33981](https://youtrack.jetbrains.com/issue/RIDER-33981), [RIDER-32798](https://youtrack.jetbrains.com/issue/RIDER-32798), [RIDER-32851](https://youtrack.jetbrains.com/issue/RIDER-32851), [#1168](https://github.com/JetBrains/resharper-unity/issues/1168), [#1428](https://github.com/JetBrains/resharper-unity/pull/1428))
 - Rider: Fix race condition preventing "Attach to Unity Process" dialog from always listing players ([RIDER-34039](https://youtrack.jetbrains.com/issue/RIDER-34039), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Prevent "Attach to Unity Process" attempting to attach to the same process multiple times ([#1129](https://github.com/JetBrains/resharper-unity/issues/1129), [#1298](https://github.com/JetBrains/resharper-unity/pull/1298))
 - Rider: Fix show usages on Code Vision link for auto property event handlers ([#1142](https://github.com/JetBrains/resharper-unity/pull/1142))
