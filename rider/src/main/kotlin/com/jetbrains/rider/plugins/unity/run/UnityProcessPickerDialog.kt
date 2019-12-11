@@ -62,12 +62,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
             commentRow("Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
                 "Standalone players must be visible to the current network.")
-        }.apply { minimumSize = Dimension(650, 300) }
+        }.apply { preferredSize = Dimension(600, 450) }
 
         isOKActionEnabled = false
         cancelAction.putValue(FOCUSED_ACTION, true)
         init()
-        setResizable(false)
+        setResizable(true)
     }
 
     // DialogWrapper only lets the Mac set the preferred component via FOCUSED_ACTION because reasons
