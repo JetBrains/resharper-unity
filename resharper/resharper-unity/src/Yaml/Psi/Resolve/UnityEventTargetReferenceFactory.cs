@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -40,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             //       m_CallState: 2
             //   m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
             //     Culture=neutral, PublicKeyToken=null
+            // Note that m_TypeName was removed in Unity 2018.4
             var methodNameMapEntry = BlockMappingEntryNavigator.GetByContent(ContentNodeNavigator.GetByValue(methodNameValue));
             var callMapNode = BlockMappingNodeNavigator.GetByEntrie(methodNameMapEntry);
             var callsMapEntry = BlockMappingEntryNavigator.GetByContent(
@@ -51,6 +51,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
             if (callsMapEntry == null)
                 return ReferenceCollection.Empty;
 
+            // Get the event type name, if it's serialised. This field was removed in Unity 2018.4, but remember that
+            // the serialised value will remain in the scene until it is re-saved.
+            // The only way to get the type name in Unity 2018.4+ is to get the type of the event (e.g. m_OnClick). This
+            // requires getting the type referenced in the m_Script serialised field, which might be in a referenced
+            // assembly, and could be arbitrarily deep in a custom class.
+            // The Event System has this problem, as the EventTrigger MonoBehaviour serialises a list of
+            // EventTrigger.Event instances, and it's EventTrigger.Event.callback that gives us the UnityEvent derived
+            // event type
+            // The only way to do this would be to resolve all types and fields between m_PersistentCalls and the "root"
+            // of the object, taking [FormerlySerialisedAs] into account
             var persistentCallsMapNode = BlockMappingNodeNavigator.GetByEntrie(
                 BlockMappingEntryNavigator.GetByContent(
                     ContentNodeNavigator.GetByValue(BlockMappingNodeNavigator.GetByEntrie(callsMapEntry))));
