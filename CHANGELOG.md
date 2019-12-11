@@ -12,12 +12,15 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Added
 
-- Added proper file icons for `*.uxml` and `*.uss` ([RIDER-34788](https://youtrack.jetbrains.com/issue/RIDER-34788), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
+- Rider: Added proper file icons for `*.uxml` and `*.uss` ([RIDER-34788](https://youtrack.jetbrains.com/issue/RIDER-34788), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
 
 ### Changed
 
-- Entire plugin is no longer disabled if the CSS plugin is disabled ([RIDER-36523](https://youtrack.jetbrains.com/issue/RIDER-36523), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
+- Rider: Entire plugin is no longer disabled if the CSS plugin is disabled ([RIDER-36523](https://youtrack.jetbrains.com/issue/RIDER-36523), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
 
+### Fixed
+
+- Fix usage count for custom event based event handlers in Unity 2018.4+ ([#1448](https://github.com/JetBrains/resharper-unity/issues/1448), [#1449](https://github.com/JetBrains/resharper-unity/pull/1449))
 
 
 ## 2019.3
