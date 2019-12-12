@@ -62,7 +62,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
             commentRow("Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
                 "Standalone players must be visible to the current network.")
-        }.apply { preferredSize = Dimension(600, 450) }
+        }.apply { preferredSize = Dimension(650, 450) }
 
         isOKActionEnabled = false
         cancelAction.putValue(FOCUSED_ACTION, true)
@@ -159,6 +159,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val debug = player.allowDebugging && !UnityRunUtil.isDebuggerAttached(player.host, player.port, project)
             val attributes = if (debug) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
             append(player.id, attributes)
+            if (player.roleName != null) {
+                append(" ${player.roleName}", attributes)
+            }
             if (player.projectName != null) {
                 append(" - ${player.projectName}", attributes)
             }

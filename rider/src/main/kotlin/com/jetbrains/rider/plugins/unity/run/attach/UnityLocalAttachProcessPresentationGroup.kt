@@ -14,13 +14,10 @@ object UnityLocalAttachProcessPresentationGroup : XAttachProcessPresentationGrou
     override fun getItemIcon(project: Project, process: ProcessInfo, userData: UserDataHolder) = UnityIcons.Icons.UnityLogo
 
     override fun getItemDisplayText(project: Project, process: ProcessInfo, userData: UserDataHolder): String {
-        val projectName = userData.getUserData(UnityLocalAttachProcessDebuggerProvider.PROJECT_NAME_KEY)
-        return if (projectName != null) {
-            "${process.executableDisplayName} ($projectName)"
-        }
-        else {
-            process.executableDisplayName
-        }
+        val displayNames = userData.getUserData(UnityLocalAttachProcessDebuggerProvider.PROCESS_INFO_KEY)?.get(process.pid)
+        val projectName = if (displayNames?.projectName != null) " (${displayNames.projectName})" else ""
+        val roleName = if (displayNames?.roleName != null) " ${displayNames.roleName}" else ""
+        return process.executableDisplayName + roleName + projectName
     }
 
     override fun compare(p1: ProcessInfo, p2: ProcessInfo) = p1.pid.compareTo(p2.pid)

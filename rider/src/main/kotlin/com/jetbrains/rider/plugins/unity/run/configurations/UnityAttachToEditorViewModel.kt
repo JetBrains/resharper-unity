@@ -47,9 +47,9 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
 
     private fun getEditorProcessInfos(processList: Array<ProcessInfo>): List<EditorProcessInfo> {
         val unityProcesses = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
-        val projectNames = UnityRunUtil.getUnityProcessProjectNames(unityProcesses, project)
+        val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
         return unityProcesses.map {
-            EditorProcessInfo(it.executableName, it.pid, projectNames[it.pid])
+            EditorProcessInfo(it.executableName, it.pid, unityProcessInfoMap[it.pid]?.projectName)
         }
     }
 }
