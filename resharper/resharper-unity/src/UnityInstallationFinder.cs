@@ -206,7 +206,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             var referencePathElement = documentElement.ChildElements()
                 .Where(a => a.Name == "ItemGroup").SelectMany(b => b.ChildElements())
-                .Where(c => c.Name == "Reference" && c.GetAttribute("Include").StartsWith("UnityEngine") || c.GetAttribute("Include").Equals("UnityEditor"))
+                .Where(c => c.Name == "Reference" && 
+                            (c.GetAttribute("Include").Equals("UnityEngine") // we can't use StartsWith here, some "UnityEngine*" libs are in packages
+                             || c.GetAttribute("Include").Equals("UnityEngine.CoreModule") // Dll project may have this reference instead of UnityEngine.dll
+                             || c.GetAttribute("Include").Equals("UnityEditor")))
                 .SelectMany(d => d.ChildElements())
                 .FirstOrDefault(c => c.Name == "HintPath");
 
