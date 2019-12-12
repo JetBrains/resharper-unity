@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Packages
             if (myUnityVersion.GetActualVersionForSolution() >= new Version("2019.2"))
                 return true;
 
-            message = $"PlayMode tests are supported for Unity 2019.2 and above. {HelpLink}";
+            message = $"Unity 2019.2 or later is required to run play-mode tests. {HelpLink}";
             return false;
         }
     }
