@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             ILogger logger,
             Lifetime lifetime,
             PackageValidator packageValidator
-            )
+        )
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
@@ -295,6 +295,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                         
                                         if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
                                             defaultMessage = $"{defaultMessage} {message}";
+
+                                        if (myEditorProtocol.UnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
+                                        {
+                                            if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
+                                                defaultMessage = $"{defaultMessage} {playMessage}";
+                                        }
+
                                         tcs.TrySetException(new Exception(defaultMessage));
                                     }
                                 });
