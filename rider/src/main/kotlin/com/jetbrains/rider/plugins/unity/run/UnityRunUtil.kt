@@ -81,8 +81,13 @@ object UnityRunUtil {
         val processInfoMap = mutableMapOf<Int, UnityProcessInfo>()
 
         processList.forEach {
-            val projectName = getProjectNameFromEditorInstanceJson(it, project)
-            parseProcessInfoFromCommandLine(it, projectName)?.let { n -> processInfoMap[it.pid] = n }
+            try {
+                val projectName = getProjectNameFromEditorInstanceJson(it, project)
+                parseProcessInfoFromCommandLine(it, projectName)?.let { n -> processInfoMap[it.pid] = n }
+            }
+            catch (t: Throwable) {
+                logger.warn("Error fetching Unity process info: ${it.commandLine}", t)
+            }
         }
 
         // If we failed to get project name from the command line, try and get it from the working directory
