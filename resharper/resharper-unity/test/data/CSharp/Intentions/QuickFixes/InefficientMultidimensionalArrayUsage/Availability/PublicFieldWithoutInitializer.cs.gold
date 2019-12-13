@@ -1,0 +1,13 @@
+﻿using UnityEditor;
+
+public class Foo
+{
+    public int[,] myTest = new int[5, 5]
+    [InitializeOnLoadMethod]
+    public static int OnLoad()
+    {
+        return 0;
+    }
+}
+
+------------------------------------------------
