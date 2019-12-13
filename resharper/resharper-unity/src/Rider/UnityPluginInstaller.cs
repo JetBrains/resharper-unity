@@ -292,15 +292,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 var editorPluginPathDir = myPluginPathsProvider.GetEditorPluginPathDir();
                 var editorPluginPath = editorPluginPathDir.Combine(PluginPathsProvider.BasicPluginDllFile);
+                var editor56PluginPath = editorPluginPathDir.Combine(PluginPathsProvider.Unity56PluginDllFile);
                 var editorFullPluginPath = editorPluginPathDir.Combine(PluginPathsProvider.FullPluginDllFile);
 
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
                 {
-                    if (myUnityVersion.GetActualVersionForSolution() < new Version("5.6"))
+                    var versionForSolution = myUnityVersion.GetActualVersionForSolution();
+                    if (versionForSolution < new Version("5.6"))
                     {
                         myLogger.Verbose($"Coping {editorPluginPath} -> {targetPath}");
                         editorPluginPath.CopyFile(targetPath, true);
+                    }
+                    else if (versionForSolution >= new Version("5.6") && versionForSolution < new Version("2017.3"))
+                    {
+                        myLogger.Verbose($"Coping {editor56PluginPath} -> {editor56PluginPath}");
+                        editor56PluginPath.CopyFile(targetPath, true);
                     }
                     else
                     {

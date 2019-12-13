@@ -145,8 +145,6 @@ object EditorPluginModel: Root() {
         property("unitTestLaunch", UnitTestLaunch)
         call("runUnitTestLaunch", void, bool)
 
-        property("fullPluginPath", string)
-
         property("editorLogPath", string)
         property("playerLogPath", string)
 

@@ -12,6 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IDeployedPackagesExpandLocationResolver myResolver;
         
         public static readonly string BasicPluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll";
+        public static readonly string Unity56PluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll";
         public static readonly string FullPluginDllFile = "JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll";
 
         public PluginPathsProvider(ApplicationPackages applicationPackages, IDeployedPackagesExpandLocationResolver resolver)
