@@ -272,6 +272,13 @@
           The same shortcut is defined for another menu item
         </Description>
       </Tag>
+
+      <Tag externalName="InefficientMultidimensionalArrayUsageWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Use jagged or one-dimensional array instead of multidimensional array</Title>
+        <Description>
+          Usage of multidimensional array is inefficient. Use the jagged or one-dimensional array instead.
+        </Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
 
@@ -393,7 +400,7 @@
     <Range>EqualityExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
-
+  
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
     <Message value="'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
@@ -427,6 +434,15 @@
     <Parameter type="bool" name="inlineRestoreValue" />
     <Message value="Repeated property access of built in component is inefficient" />
     <Range>HighlightedReference.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="InefficientMultidimensionalArrayUsage" configurableSeverity="Unity.InefficientMultidimensionalArrayUsage">\
+    <Parameter type="List&lt;ITreeNodePointer&lt;ITreeNode&gt;&gt;" name="usages" isValid="skip" />
+    <Parameter type="IArrayCreationExpression" name="arrayCreationExpression" isValid="skip"/>
+    <Parameter type="IVariableDeclaration" name="variableDeclaration" />
+    <Message value="Usage of multidimensional array is inefficient. Use jagged or one-dimensional array instead" />
+    <Range>VariableDeclaration.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
