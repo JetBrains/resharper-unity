@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.IProperty
@@ -27,21 +28,20 @@ class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: 
 
     fun refreshProcessList() {
         editorProcesses.clear()
-        val currentModalityState = application.currentModalityState
 
         application.executeOnPooledThread {
             val processList = OSProcessUtil.getProcessList()
             val editors = getEditorProcessInfos(processList)
 
-            application.invokeLater({ editors.forEach { editorProcesses.add(it) } }, currentModalityState)
-
-            editorInstanceJsonStatus.set(editorInstanceJson.validateStatus(processList))
-
-            this.pid.value = if (editorInstanceJsonStatus.value != EditorInstanceJsonStatus.Valid && editorProcesses.count() == 1) {
-                editorProcesses[0].pid
-            } else {
-                editorInstanceJson.contents?.process_id
-            }
+            application.invokeLater({
+                editorProcesses.addAll(editors)
+                editorInstanceJsonStatus.set(editorInstanceJson.validateStatus(processList))
+                pid.value = if (editorInstanceJsonStatus.value != EditorInstanceJsonStatus.Valid && editors.count() == 1) {
+                    editors[0].pid
+                } else {
+                    editorInstanceJson.contents?.process_id
+                }
+            }, ModalityState.any())
         }
     }
 
