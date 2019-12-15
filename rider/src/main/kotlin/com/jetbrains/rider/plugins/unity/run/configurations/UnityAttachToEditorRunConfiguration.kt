@@ -10,6 +10,7 @@ import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAc
 import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
@@ -29,9 +30,9 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     }
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
-    override var port: Int = -1
-    override var address: String = "127.0.0.1"
-    var pid: Int? = null
+    @Transient override var port: Int = -1
+    @Transient override var address: String = "127.0.0.1"
+    @Transient var pid: Int? = null
 
     override fun clone(): RunConfiguration {
         val configuration = super.clone() as UnityAttachToEditorRunConfiguration
@@ -68,6 +69,25 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
     override var listenPortForConnections: Boolean = false
 
+    override fun checkSettingsBeforeRun() {
+        // This method lets us check settings before run. If we throw an instance of RuntimeConfigurationError, the Run
+        // Configuration editor is displayed. It's called on the EDT, so theres' not a lot we can do - e.g. we can't get
+        // a process list.
+
+        // If we already have a pid, that means this run configuration has been launched before, and we've successfully
+        // attached to a process. Use it again.
+        if (pid != null) {
+            return
+        }
+
+        // Verify that we have an EditorInstance.json. If we don't, we can't easily tell that any running instances are
+        // for our project.
+        val editorInstanceJson = EditorInstanceJson.getInstance(project)
+        if (editorInstanceJson.status != EditorInstanceJsonStatus.Valid) {
+            throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
+        }
+    }
+
     fun updatePidAndPort() : Boolean {
 
         val processList = OSProcessUtil.getProcessList()
@@ -100,12 +120,22 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         // Too expensive to check here?
     }
 
+    override fun readExternal(element: Element) {
+        super.readExternal(element)
+        // Reset pid, address + port to defaults. It makes no sense to persist the pid across sessions. Unfortunately,
+        // the base class has been serialising them for years...
+        pid = null
+        port = -1
+        address = "127.0.0.1"
+    }
+
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
-        // Write it, but don't read it. We need to write it so that the modified check
-        // works, but we're not interested in reading it as we will recalculate it
+        // Write it, but don't read it. We need to write it so that the modified check works, but we're not interested
+        // in reading it as we will recalculate it.
+        // TODO: Explain the comment above - what modified check?
         if (pid != null) {
-            element.setAttribute("pid", pid.toString())
+            element.setAttribute("ignored-value-for-modified-check", pid.toString())
         }
     }
 }
