@@ -95,7 +95,11 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         // Try to reuse the previous process ID, if it's still valid, then fall back to finding the process
         // automatically. Theoretically, there is a tiny chance the previous process has died, and the process ID has
         // been recycled for a new process that just happens to be a Unity process. Practically, this is not likely
-        pid = checkValidEditorInstance(pid, processList) ?: findUnityEditorInstanceFromEditorInstanceJson(processList) ?: return false
+        port = -1
+        pid = checkValidEditorInstance(pid, processList) ?: findUnityEditorInstanceFromEditorInstanceJson(processList)
+        if (pid == null) {
+            return false
+        }
         port = convertPidToDebuggerPort(pid!!)
         return true
     }
