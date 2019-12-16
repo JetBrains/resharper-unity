@@ -86,7 +86,8 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                     Thread.sleep(2000)
                 }
                 UIUtil.invokeLaterIfNeeded {
-                    logger.trace("Connecting to Unity Editor with port: $port")
+                    logger.trace("DebuggerWorker port: $port")
+                    logger.trace("Connecting to Unity Editor with port: ${remoteConfiguration.port}")
                     super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
                 }
             }
