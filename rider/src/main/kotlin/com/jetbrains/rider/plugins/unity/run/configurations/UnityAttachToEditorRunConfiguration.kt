@@ -83,8 +83,12 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         }
 
         // If we're a class library project that isn't in a Unity project folder, we can't guess at the correct project
-        // to attach to, so throw an error and show the dialog
-        if (project.isUnityClassLibraryProject() && !project.isUnityProjectFolder()) {
+        // to attach to, so throw an error and show the dialog. This value will be null until the backend has finished
+        // loading. However, because we're a Unity run configuration, we can safely assume we're a Unity project, and if
+        // we're not inside a Unity project folder, then we can't automatically attach, so throw an error and show the
+        // dialog
+        val isClassLibraryProject = project.isUnityClassLibraryProject()
+        if (!project.isUnityProjectFolder() && (isClassLibraryProject == null || isClassLibraryProject)) {
             throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
         }
     }

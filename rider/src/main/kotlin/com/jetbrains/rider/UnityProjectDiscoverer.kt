@@ -21,7 +21,13 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
     val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
     val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
-    val isUnityClassLibraryProject = hasUnityReference.valueOrDefault(false) && isCorrectlyLoadedSolution(project)
+
+    // Note that this will only return a sensible value once the solution + backend have finished loading
+    val isUnityClassLibraryProject: Boolean?
+        get() {
+            val hasReference = hasUnityReference.valueOrNull ?: return null
+            return hasReference && isCorrectlyLoadedSolution(project)
+        }
 
     companion object {
         fun getInstance(project: Project) = project.getComponent<UnityProjectDiscoverer>()
