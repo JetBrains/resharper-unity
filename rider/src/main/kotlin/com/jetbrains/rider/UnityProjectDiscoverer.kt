@@ -19,7 +19,7 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
     // anywhere)
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
     val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
-    val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
+    val isUnityClassLibraryProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
 
     companion object {
         fun getInstance(project: Project) = project.getComponent<UnityProjectDiscoverer>()

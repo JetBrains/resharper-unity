@@ -11,6 +11,7 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
+import com.jetbrains.rider.*
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
@@ -71,17 +72,22 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
     override fun checkSettingsBeforeRun() {
         // This method lets us check settings before run. If we throw an instance of RuntimeConfigurationError, the Run
-        // Configuration editor is displayed. It's called on the EDT, so theres' not a lot we can do - e.g. we can't get
+        // Configuration editor is displayed. It's called on the EDT, so there's not a lot we can do - e.g. we can't get
         // a process list.
 
         // If we already have a pid, that means this run configuration has been launched before, and we've successfully
-        // attached to a process. Use it again.
+        // attached to a process. Use it again. If the pid is out of date (highly unlikely), we'll do our best to find
+        // the process again
         if (pid != null) {
             return
         }
 
         // Verify that we have an EditorInstance.json. If we don't, we can't easily tell that any running instances are
         // for our project.
+        // This means:
+        // * If Unity isn't running, we show the dialog. We never try to launch Unity ourselves
+        // * If EditorInstance.json doesn't exist (for some reason), we show the dialog
+        // * All other scenarios, we have EditorInstance.json and know exactly which instance to attach to
         val editorInstanceJson = EditorInstanceJson.getInstance(project)
         if (editorInstanceJson.status != EditorInstanceJsonStatus.Valid) {
             throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
@@ -92,19 +98,36 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
 
         val processList = OSProcessUtil.getProcessList()
 
-        // Try to reuse the previous process ID, if it's still valid, then fall back to finding the process
-        // automatically. Theoretically, there is a tiny chance the previous process has died, and the process ID has
-        // been recycled for a new process that just happens to be a Unity process. Practically, this is not likely
         port = -1
-        pid = checkValidEditorInstance(pid, processList) ?: findUnityEditorInstanceFromEditorInstanceJson(processList)
-        if (pid == null) {
-            return false
+
+        try {
+            // Try to reuse the previously attached process ID, if it's still valid. If we don't have a previous pid, or
+            // the process is no longer valid, try to find the best match, via EditorInstance.json or project name.
+            // The only way we'll match on project name is if a previously cached pid turns out to be invalid, and the
+            // new process hasn't created an EditorInstance.json for some reason.
+            pid = checkValidEditorProcess(pid, processList)
+                ?: findUnityEditorProcessFromEditorInstanceJson(processList)
+                ?: findUnityEditorProcessFromProjectName(processList)
+            if (pid == null) {
+                return false
+            }
+            port = convertPidToDebuggerPort(pid!!)
+            return true
         }
-        port = convertPidToDebuggerPort(pid!!)
-        return true
+        catch(t: Throwable) {
+            pid = null
+            throw t
+        }
     }
 
-    private fun findUnityEditorInstanceFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
+    private fun checkValidEditorProcess(pid: Int?, processList: Array<ProcessInfo>): Int? {
+        if (pid != null && UnityRunUtil.isValidUnityEditorProcess(pid, processList)) {
+            return pid
+        }
+        return null
+    }
+
+    private fun findUnityEditorProcessFromEditorInstanceJson(processList: Array<ProcessInfo>): Int? {
         val editorInstanceJson = EditorInstanceJson.getInstance(project)
         if (editorInstanceJson.validateStatus(processList) == EditorInstanceJsonStatus.Valid) {
             return editorInstanceJson.contents!!.process_id
@@ -113,15 +136,35 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         return null
     }
 
-    private fun checkValidEditorInstance(pid: Int?, processList: Array<ProcessInfo>): Int? {
-        if (pid != null && UnityRunUtil.isValidUnityEditorProcess(pid, processList)) {
-            return pid
-        }
-        return null
-    }
+    private fun findUnityEditorProcessFromProjectName(processList: Array<ProcessInfo>): Int? {
+        // This only works if we can figure out the project name for a running process. This might not succeed on
+        // Windows, if the process is started without appropriate command line args.
+        val unityProcesses = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
+        val map = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
 
-    override fun checkConfiguration() {
-        // Too expensive to check here?
+        // If we're a generated project, or a class library project that lives in the root of a Unity project alongside
+        // a generated project, we can use the project dir as the expected project name.
+        if (project.isUnityProject()) {
+            val expectedProjectName = project.projectDir.name
+            val entry = map.entries.firstOrNull { expectedProjectName.equals(it.value.projectName, true) }
+            if (entry != null) {
+                return entry.key
+            }
+
+            // We don't have a cached pid from a previous debug session, we don't have EditorInstance.json, we can't
+            // find a process with a matching project name. Best guess fallback is to attach to an unnamed project
+            val noNameProjects = map.entries.filter { it.value.projectName == null }
+            if (noNameProjects.count() == 1) {
+                return noNameProjects[0].key
+            }
+
+            return null
+        }
+        else {
+            // We're a class library project in a standalone directory. We can't guess the project name, and it's best
+            // not to attach to a random editor
+            throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
+        }
     }
 
     override fun readExternal(element: Element) {
