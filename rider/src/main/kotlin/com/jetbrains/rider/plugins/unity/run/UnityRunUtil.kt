@@ -23,6 +23,8 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
+data class UnityProcessInfo(val projectName: String?, val roleName: String?)
+
 object UnityRunUtil {
     private val logger = Logger.getInstance(UnityRunUtil::class.java)
 
@@ -59,12 +61,15 @@ object UnityRunUtil {
         return processList.any { it.pid == pid && isUnityEditorProcess(it) }
     }
 
-    fun getUnityProcessProjectName(processInfo: ProcessInfo, project: Project): String? {
-        return getUnityProcessProjectNames(listOf(processInfo), project)[processInfo.pid]
+    fun getUnityProcessInfo(processInfo: ProcessInfo, project: Project): UnityProcessInfo? {
+        return getAllUnityProcessInfo(listOf(processInfo), project)[processInfo.pid]
     }
 
-    fun getUnityProcessProjectNames(processList: List<ProcessInfo>, project: Project): Map<Int, String> {
-        // We have several options to get the project name (and directory, for future use):
+    fun getAllUnityProcessInfo(processList: List<ProcessInfo>, project: Project): Map<Int, UnityProcessInfo> {
+        // We might have to call external processes. Make sure we're running in the background
+        assertNotDispatchThread()
+
+        // We have several options to get the project name (and maybe directory, for future use):
         // 1) Match pid with EditorInstance.json - it's the current project
         // 2) If the editor was started from Unity Hub, use the -projectPath or -createProject parameters
         // 3) If we're on Mac/Linux, use `lsof -a -p {pid},{pid},{pid} -d cwd -Fn` to get the current working directory
@@ -73,22 +78,24 @@ object UnityRunUtil {
         //    E.g. https://stackoverflow.com/questions/16110936/read-other-process-current-directory-in-c-sharp
         // 4) Scrape the main window title. This is fragile, as the format changes, and can easily break with hyphens in
         //    project or scene names. It also doesn't give us the project path. And it doesn't work on Mac/Linux
-
-        // We might have to call external processes. Make sure we're running in the background
-        assertNotDispatchThread()
-        val projectNames = mutableMapOf<Int, String>()
+        val processInfoMap = mutableMapOf<Int, UnityProcessInfo>()
 
         processList.forEach {
-            val projectName = getProjectNameFromEditorInstanceJson(it, project) ?:
-                getProjectNameFromCommandLine(it)
-            projectName?.let { name -> projectNames[it.pid] = name }
+            try {
+                val projectName = getProjectNameFromEditorInstanceJson(it, project)
+                parseProcessInfoFromCommandLine(it, projectName)?.let { n -> processInfoMap[it.pid] = n }
+            }
+            catch (t: Throwable) {
+                logger.warn("Error fetching Unity process info: ${it.commandLine}", t)
+            }
         }
 
-        if (projectNames.size != processList.size) {
-            fillProjectNamesFromWorkingDirectory(processList, projectNames)
+        // If we failed to get project name from the command line, try and get it from the working directory
+        if (processInfoMap.size != processList.size || processInfoMap.any { it.value.projectName == null }) {
+            fillProjectNamesFromWorkingDirectory(processList, processInfoMap)
         }
 
-        return projectNames
+        return processInfoMap
     }
 
     private fun assertNotDispatchThread() {
@@ -107,63 +114,102 @@ object UnityRunUtil {
         } else null
     }
 
-    private fun getProjectNameFromCommandLine(processInfo: ProcessInfo): String? {
-        // Make sure the command line we're using is properly quoted, if possible
-        getQuotedCommandLine(processInfo)?.let {
-            val tokenizer = CommandLineTokenizer(processInfo.commandLine)
-            while (tokenizer.hasMoreTokens()) {
-                val token = tokenizer.nextToken()
-                if (token.equals("-projectPath", true) || token.equals("-createPath", true)) {
-                    return getProjectNameFromPath(StringUtil.unescapeStringCharacters(tokenizer.nextToken()))
-                }
-            }
-        }
+    private fun parseProcessInfoFromCommandLine(processInfo: ProcessInfo, canonicalProjectName: String?): UnityProcessInfo? {
+        var projectName = canonicalProjectName
+        var name: String? = null
+        var umpProcessRole: String? = null
+        var umpWindowTitle: String? = null
 
-        // Try to parse the unquoted command line, coping with a -projectPath or -createPath that might contain spaces
-        // and/or hyphens. Split the command line at argument boundaries, e.g. a hyphen followed by a non-whitespace
-        // char, with leading whitespace, or at the start of the string. Each split string should be an arg and an
-        // argvalue (lookahead means we keep the delimiter). If the path contains an embedded space-hyphen-nonspace
-        // sequence, we need to join segments until we're sure we've got the longest possible path.
-        // There is a pathological edge case of two directories with the same name but one with a suffix that matches
-        // the next command line argument. If we take the longest path, we can get the wrong one. E.g.
-        // "/home/Unity/project1" and "/home/Unity/project1 -useHub" would confuse things. I think this is so unlikely
-        // as to be happily ignored
-        // This assumes that all arguments begin with a hyphen, and there are no standalone arguments. Empirically, this
-        // is true
-        val commandLineArgs = processInfo.commandLine.split("(^|\\s)(?=-[^\\s])".toRegex())
+        val tokens = tokenizeCommandLine(processInfo)
         var i = 0
-        do {
-            if (commandLineArgs[i].startsWith("-projectPath", ignoreCase = true)
-                || commandLineArgs[i].startsWith("-createProject", ignoreCase = true)) {
-                val whitespace = commandLineArgs[i].indexOf(' ')
-                if (whitespace == -1) continue   // Weird if true
-                var path = commandLineArgs[i].substring(whitespace + 1)
+        while (i < tokens.size - 1) {   // -1 for the argument + argument value
+            val token = tokens[i++]
+            if (projectName == null && (token.equals("-projectPath", true) || token.equals("-createProject", true))) {
+                // For an unquoted command line, the next token isn't guaranteed to be the whole path. If the path
+                // contains a space-hyphen-char (e.g. `-projectPath /Users/matt/Projects/space game -is great -yeah`)
+                // they will be split as multiple tokens. Concatenate subsequent tokens until we have the longest valid
+                // path. Note that the arguments and values are all separated by a single space. Any other whitespace
+                // is still part of the string
 
+                var path = tokens[i++]
                 var lastValid = if (File(path).isDirectory) path else ""
-                while (i < commandLineArgs.size - 1) {
-                    path += " " + commandLineArgs[++i]
+                var j = i
+                while (j < tokens.size) {
+                    path += " " + tokens[j++]
                     if (File(path).isDirectory) {
                         lastValid = path
+                        i = j
                     }
                 }
 
-                return getProjectNameFromPath(lastValid)
+                projectName = getProjectNameFromPath(StringUtil.unquoteString(lastValid))
             }
+            else if (token.equals("-name", true)) {
+                name = StringUtil.unquoteString(tokens[i++])
+            }
+            else if (token.equals("-ump-process-role", true)) {
+                umpProcessRole = StringUtil.unquoteString(tokens[i++])
+            }
+            else if (token.equals("-ump-window-title", true)) {
+                umpWindowTitle = StringUtil.unquoteString(tokens[i++])
+            }
+        }
 
-            i++
-        } while (i < commandLineArgs.size)
+        if (projectName == null && name == null && umpWindowTitle == null && umpProcessRole == null) {
+            return null
+        }
 
-        return null
+        return UnityProcessInfo(projectName, name ?: umpWindowTitle ?: umpProcessRole)
+    }
+
+    private fun tokenizeCommandLine(processInfo: ProcessInfo): List<String> {
+        return tokenizeQuotedCommandLine(processInfo)
+            ?: tokenizeUnquotedCommandLine(processInfo)
+    }
+
+    private fun tokenizeQuotedCommandLine(processInfo: ProcessInfo): List<String>? {
+        return getQuotedCommandLine(processInfo)?.let {
+            val tokens = mutableListOf<String>()
+            val tokenizer = CommandLineTokenizer(it)
+            while(tokenizer.hasMoreTokens())
+                tokens.add(tokenizer.nextToken())
+            tokens
+        }
+    }
+
+    private fun tokenizeUnquotedCommandLine(processInfo: ProcessInfo): List<String> {
+        // Split the command line into arguments
+        // We assume an argument starts with a hyphen and has no whitespace in the name. Empirically, this is true
+        // So split on ^- or \s-
+        // Each chunk should now be an arg and an argvalue, e.g. `-name Foo`
+        // Split on the first whitespace. The argument value should be correct, but might require concatenating if
+        // the value pathologically contains a \s-[^\s] sequence
+        // E.g. `-createProject /Users/matt/my interesting -project` would split into the following tokens:
+        // "-createProject" "/Users/matt/my interesting" "-project"
+        // The single whitespace between arguments and between the argument and value is not captured, so must be added
+        // back if concatenating
+        val tokens = mutableListOf<String>()
+        processInfo.commandLine.split("(^|\\s)(?=-[^\\s])".toRegex()).forEach {
+            val whitespace = it.indexOf(' ')
+            if (whitespace == -1) {
+                tokens.add(it)
+            }
+            else {
+                tokens.add(it.substring(0, whitespace))
+                tokens.add(it.substring(whitespace + 1))
+            }
+        }
+        return tokens
     }
 
     private fun getQuotedCommandLine(processInfo: ProcessInfo): String? {
         return when {
-            SystemInfo.isWindows -> processInfo.commandLine
-            SystemInfo.isMac -> null
+            SystemInfo.isWindows -> processInfo.commandLine // Already quoted correctly
+            SystemInfo.isMac -> null    // We can't add quotes, and can't easily get an unquoted version
             SystemInfo.isUnix -> {
                 try {
                     // ProcessListUtil.getProcessListOnUnix already reads /proc/{pid}/cmdline, but doesn't quote
-                    // arguments that contain spaces, which makes it much harder to parse
+                    // arguments that contain spaces. https://youtrack.jetbrains.com/issue/IDEA-229022
                     val procfsCmdline = File("/proc/${processInfo.pid}/cmdline")
                     val cmdlineString = String(FileUtil.loadFileBytes(procfsCmdline), StandardCharsets.UTF_8)
                     val cmdlineParts = StringUtil.split(cmdlineString, "\u0000")
@@ -193,8 +239,10 @@ object UnityRunUtil {
 
     private fun getProjectNameFromPath(projectPath: String): String = Paths.get(projectPath).fileName.toString()
 
-    private fun fillProjectNamesFromWorkingDirectory(processList: List<ProcessInfo>, projectNames: MutableMap<Int, String>) {
+    private fun fillProjectNamesFromWorkingDirectory(processList: List<ProcessInfo>, projectNames: MutableMap<Int, UnityProcessInfo>) {
+        // Windows requires reading process memory. Unix is so much nicer.
         if (SystemInfo.isWindows) return
+
         try {
             val processIds = processList.joinToString(",") { it.pid.toString() }
             val command = when {
@@ -212,7 +260,7 @@ object UnityRunUtil {
                     val pid = stdout[i].substring(1).toInt()
                     val cwd = getProjectNameFromPath(stdout[i + 2].substring(1))
 
-                    projectNames[pid] = cwd
+                    projectNames[pid] = UnityProcessInfo(cwd, projectNames[pid]?.roleName)
                 }
             }
         }

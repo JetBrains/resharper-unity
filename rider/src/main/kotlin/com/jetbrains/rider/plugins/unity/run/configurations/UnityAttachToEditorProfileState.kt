@@ -11,11 +11,11 @@ import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.hasTrueValue
-import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
@@ -68,10 +68,12 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
             try {
                 if (!remoteConfiguration.updatePidAndPort()) {
                     logger.trace("Do not found Unity, starting new Unity Editor")
+
                     val model = UnityHost.getInstance(project).model
                     if (UnityInstallationFinder.getInstance(project).getApplicationPath() == null ||
-                        model.hasUnityReference.hasTrueValue && !UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
+                        model.hasUnityReference.hasTrueValue && !project.isUnityProject()) {
                         throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")
+                    }
 
                     val args = getUnityWithProjectArgs(project)
                     if (remoteConfiguration.play) {
@@ -86,7 +88,8 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                     Thread.sleep(2000)
                 }
                 UIUtil.invokeLaterIfNeeded {
-                    logger.trace("Connecting to Unity Editor with port: $port")
+                    logger.trace("DebuggerWorker port: $port")
+                    logger.trace("Connecting to Unity Editor with port: ${remoteConfiguration.port}")
                     super.createWorkerRunCmd(lifetime, helper, port).onSuccess { result.setResult(it) }.onError { result.setError(it) }
                 }
             }

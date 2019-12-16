@@ -49,8 +49,10 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
             }
 
             return try {
-                val contents = Gson().fromJson(FileReader(file), EditorInstanceJsonContents::class.java)
-                EditorInstanceJson(EditorInstanceJsonStatus.Valid, contents)
+                FileReader(file).use {
+                    val contents = Gson().fromJson(it, EditorInstanceJsonContents::class.java)
+                    EditorInstanceJson(EditorInstanceJsonStatus.Valid, contents)
+                }
             } catch (e: IOException) {
                 logger.error("Error reading EditorInstance.json", e)
                 empty(EditorInstanceJsonStatus.Error)
