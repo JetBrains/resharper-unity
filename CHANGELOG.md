@@ -7,16 +7,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
 ## 2019.3.1
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap7-rtm-2019.3.0...net193)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap7-rtm-2019.3.0...net193-eap7-rtm-2019.3.0-rtm-2019.3.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/33?closed=1)
 
 ### Added
 
-- Added proper file icons for `*.uxml` and `*.uss` ([RIDER-34788](https://youtrack.jetbrains.com/issue/RIDER-34788), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
+- Rider: Added proper file icons for `*.uxml` and `*.uss` ([RIDER-34788](https://youtrack.jetbrains.com/issue/RIDER-34788), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
 
 ### Changed
 
-- Entire plugin is no longer disabled if the CSS plugin is disabled ([RIDER-36523](https://youtrack.jetbrains.com/issue/RIDER-36523), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
+- Rider: Entire plugin is no longer disabled if the CSS plugin is disabled ([RIDER-36523](https://youtrack.jetbrains.com/issue/RIDER-36523), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
+- Rider: Make Attach to Unity Process dialog resizable ([#1446](https://github.com/JetBrains/resharper-unity/issues/1446), [#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
+- Rider: Identify child processes by role in Attach to Unity Process dialog ([#1328](https://github.com/JetBrains/resharper-unity/issues/1328), [#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
+
+### Fixed
+
+- Rider: Show correct project name when Unity started with certain command line on Windows ([#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
+- Rider: Show correct project name when multiple Unity processes listed in Attach to Process popup list ([#1456](https://github.com/JetBrains/resharper-unity/issues/1456), [#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
+- Rider: Fix exception in Attach to Unity Process dialog causing list to be empty ([#1454](https://github.com/JetBrains/resharper-unity/issues/1454), [#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
+- Rider: Show run configuration dialog for Unity class library projects ([#1445](https://github.com/JetBrains/resharper-unity/issues/1445), [#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
+- Rider: Fix finding existing Unity instance to debug ([RIDER-36256](https://youtrack.jetbrains.com/issue/RIDER-36256), [#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
+- Rider: Fix `EditorInstance.json` being locked by Rider ([#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
 
 
 
