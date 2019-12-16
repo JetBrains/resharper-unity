@@ -1,6 +1,7 @@
 package com.jetbrains.rider
 
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.plugins.unity.UnityHost
@@ -19,7 +20,8 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
     // anywhere)
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
     val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
-    val isUnityClassLibraryProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
+    val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
+    val isUnityClassLibraryProject = hasUnityReference.valueOrDefault(false) && isCorrectlyLoadedSolution(project)
 
     companion object {
         fun getInstance(project: Project) = project.getComponent<UnityProjectDiscoverer>()
@@ -58,5 +60,6 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
 }
 
 fun Project.isUnityGeneratedProject() = UnityProjectDiscoverer.getInstance(this).isUnityGeneratedProject
+fun Project.isUnityClassLibraryProject() = UnityProjectDiscoverer.getInstance(this).isUnityClassLibraryProject
 fun Project.isUnityProject()= UnityProjectDiscoverer.getInstance(this).isUnityProject
 fun Project.isUnityProjectFolder()= UnityProjectDiscoverer.getInstance(this).isUnityProjectFolder

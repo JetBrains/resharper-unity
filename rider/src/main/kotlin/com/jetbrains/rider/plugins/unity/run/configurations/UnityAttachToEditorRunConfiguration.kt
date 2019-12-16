@@ -82,14 +82,9 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             return
         }
 
-        // Verify that we have an EditorInstance.json. If we don't, we can't easily tell that any running instances are
-        // for our project.
-        // This means:
-        // * If Unity isn't running, we show the dialog. We never try to launch Unity ourselves
-        // * If EditorInstance.json doesn't exist (for some reason), we show the dialog
-        // * All other scenarios, we have EditorInstance.json and know exactly which instance to attach to
-        val editorInstanceJson = EditorInstanceJson.getInstance(project)
-        if (editorInstanceJson.status != EditorInstanceJsonStatus.Valid) {
+        // If we're a class library project that isn't in a Unity project folder, we can't guess at the correct project
+        // to attach to, so throw an error and show the dialog
+        if (project.isUnityClassLibraryProject() && !project.isUnityProjectFolder()) {
             throw RuntimeConfigurationError("Unable to automatically discover correct Unity Editor to debug")
         }
     }
@@ -103,8 +98,6 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         try {
             // Try to reuse the previously attached process ID, if it's still valid. If we don't have a previous pid, or
             // the process is no longer valid, try to find the best match, via EditorInstance.json or project name.
-            // The only way we'll match on project name is if a previously cached pid turns out to be invalid, and the
-            // new process hasn't created an EditorInstance.json for some reason.
             pid = checkValidEditorProcess(pid, processList)
                 ?: findUnityEditorProcessFromEditorInstanceJson(processList)
                 ?: findUnityEditorProcessFromProjectName(processList)

@@ -8,7 +8,6 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.ViewableList
-import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
