@@ -81,6 +81,8 @@ def debuggerDllFiles = [
 def unityEditorDllFiles = [
     "../unity/build/EditorPlugin/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll",
     "../unity/build/EditorPlugin/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb",
+    "../unity/build/EditorPluginUnity56/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll",
+    "../unity/build/EditorPluginUnity56/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb",
     "../unity/build/EditorPluginFull/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
     "../unity/build/EditorPluginFull/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
     "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",

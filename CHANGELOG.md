@@ -22,6 +22,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Fixed
 
+- Fix usage count for custom event based event handlers in Unity 2018.4+ ([#1448](https://github.com/JetBrains/resharper-unity/issues/1448), [#1449](https://github.com/JetBrains/resharper-unity/pull/1449))
 - Rider: Show correct project name when Unity started with certain command line on Windows ([#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
 - Rider: Show correct project name when multiple Unity processes listed in Attach to Process popup list ([#1456](https://github.com/JetBrains/resharper-unity/issues/1456), [#1450](https://github.com/JetBrains/resharper-unity/pull/1450))
 - Rider: Fix exception in Attach to Unity Process dialog causing list to be empty ([#1454](https://github.com/JetBrains/resharper-unity/issues/1454), [#1450](https://github.com/JetBrains/resharper-unity/pull/1450))

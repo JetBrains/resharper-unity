@@ -47,7 +47,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityVersion myUnityVersion;
         private readonly NotificationsModel myNotificationsModel;
         private readonly IHostProductInfo myHostProductInfo;
-        private readonly PluginPathsProvider myPluginPathsProvider;
         private readonly UnityHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
@@ -55,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public readonly ViewableProperty<EditorPluginModel> UnityModel = new ViewableProperty<EditorPluginModel>(null);
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
-            IScheduler dispatcher, IShellLocks locks, ISolution solution, PluginPathsProvider pluginPathsProvider,
+            IScheduler dispatcher, IShellLocks locks, ISolution solution,
             ISettingsStore settingsStore, JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
             UnitySolutionTracker unitySolutionTracker, IThreading threading,
             UnityVersion unityVersion, NotificationsModel notificationsModel,
@@ -68,7 +67,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
-            myPluginPathsProvider = pluginPathsProvider;
             myUsageStatistics = usageStatistics;
             myThreading = threading;
             myUnityVersion = unityVersion;
@@ -235,6 +233,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
                     editor.ApplicationContentsPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
+                    editor.ApplicationVersion.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.ApplicationVersion.SetValue(s)));
                     editor.ScriptCompilationDuringPlay.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ScriptCompilationDuringPlay.Set(ConvertToScriptCompilationEnum(s))));
 
@@ -243,8 +243,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         rd.GenerateUIElementsSchema.Set((l, u) =>
                             editor.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
                     });
-
-                    BindPluginPathToSettings(lf, editor);
 
                     TrackActivity(editor, lf);
 
@@ -276,19 +274,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return ScriptCompilationDuringPlay.RecompileAndContinuePlaying;
 
             return (ScriptCompilationDuringPlay) mode;
-        }
-
-        private void BindPluginPathToSettings(Lifetime lf, EditorPluginModel editor)
-        {
-            var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-            myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Change.Advise(lf,
-                val =>
-                {
-                    if (val.HasNew && val.New)
-                        editor.FullPluginPath.SetValue(myPluginPathsProvider.GetEditorPluginPathDir()
-                            .Combine(PluginPathsProvider.FullPluginDllFile).FullPath);
-                    editor.FullPluginPath.SetValue(string.Empty);
-                });
         }
 
         private void TrackActivity(EditorPluginModel editor, Lifetime lf)

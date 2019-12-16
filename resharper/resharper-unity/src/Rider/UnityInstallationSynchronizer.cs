@@ -10,9 +10,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityInstallationSynchronizer
     {
+        private readonly UnityEditorProtocol myUnityEditorProtocol;
+
         public UnityInstallationSynchronizer(Lifetime lifetime, UnitySolutionTracker solutionTracker,
-                                             UnityHost host, UnityVersion unityVersion, UnityReferencesTracker referencesTracker)
+                                             UnityHost host, UnityVersion unityVersion, UnityReferencesTracker referencesTracker,
+                                                 UnityEditorProtocol unityEditorProtocol)
         {
+            myUnityEditorProtocol = unityEditorProtocol;
             solutionTracker.IsUnityProjectFolder.Advise(lifetime, res =>
             {
                 if (!res) return;
@@ -26,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private static void NotifyFrontend(UnityHost host, UnityVersion unityVersion)
+        private void NotifyFrontend(UnityHost host, UnityVersion unityVersion)
         {
             var version = unityVersion.GetActualVersionForSolution();
             var applicationPath = unityVersion.GetActualAppPathForSolution();
@@ -43,17 +47,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             host.PerformModelAction(rd =>
             {
-                // ApplicationPath may be already set via UnityEditorProtocol, which will obviously be correct
-                if (!rd.ApplicationPath.HasValue())
-                    rd.ApplicationPath.SetValue(applicationPath.FullPath);
-
-                if (!rd.ApplicationContentsPath.HasValue())
-                {
-                    var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(applicationPath);
-                    if (!contentsPath.IsEmpty)
-                        rd.ApplicationContentsPath.SetValue(contentsPath.FullPath);
-                }
-                if (!rd.ApplicationVersion.HasValue() && version != null)
+                // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more correct than any counted value
+                if (myUnityEditorProtocol.UnityModel.Value != null) 
+                    return;
+                
+                rd.ApplicationPath.SetValue(applicationPath.FullPath);
+                var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(applicationPath);
+                if (!contentsPath.IsEmpty)
+                    rd.ApplicationContentsPath.SetValue(contentsPath.FullPath);
+                if (version != null)
                     rd.ApplicationVersion.SetValue(UnityVersion.VersionToString(version));
             });
         }

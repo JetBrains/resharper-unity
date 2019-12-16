@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests.rider-yaml", "resharp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginNet46", "..\unity\EditorPlugin\EditorPluginNet46.csproj", "{D0CC632D-652A-4BCB-8314-DB0E28867CAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginUnity56", "..\unity\EditorPlugin\EditorPluginUnity56.csproj", "{039A9131-C1C6-465C-952B-38B278CE458C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{D0CC632D-652A-4BCB-8314-DB0E28867CAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0CC632D-652A-4BCB-8314-DB0E28867CAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0CC632D-652A-4BCB-8314-DB0E28867CAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{039A9131-C1C6-465C-952B-38B278CE458C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{039A9131-C1C6-465C-952B-38B278CE458C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{039A9131-C1C6-465C-952B-38B278CE458C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{039A9131-C1C6-465C-952B-38B278CE458C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,5 +98,6 @@ Global
 		{891CF6EE-9537-48F9-9F2E-A526FAE66E8A} = {5B475CDF-F046-4823-A994-BD5261058461}
 		{AEF66645-4022-4032-A6D9-D770BC034E55} = {5B475CDF-F046-4823-A994-BD5261058461}
 		{D0CC632D-652A-4BCB-8314-DB0E28867CAB} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
+		{039A9131-C1C6-465C-952B-38B278CE458C} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
 	EndGlobalSection
 EndGlobal

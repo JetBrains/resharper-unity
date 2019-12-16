@@ -306,7 +306,6 @@ namespace JetBrains.Rider.Unity.Editor
           InitEditorLogPath(model);
 
           model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
-          model.FullPluginPath.AdviseNotNull(connectionLifetime, AdditionalPluginsInstaller.UpdateSelf);
           model.ApplicationPath.SetValue(EditorApplication.applicationPath);
           model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
           model.ApplicationVersion.SetValue(UnityUtils.UnityApplicationVersion);

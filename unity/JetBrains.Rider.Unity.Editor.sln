@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginFull", "EditorP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginNet46", "EditorPlugin\EditorPluginNet46.csproj", "{053B1D9F-87D0-4E73-9063-0239413B0C07}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPluginUnity56", "EditorPlugin\EditorPluginUnity56.csproj", "{34E701B0-A5F9-435F-9D1A-0AF22ED90CF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{053B1D9F-87D0-4E73-9063-0239413B0C07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{053B1D9F-87D0-4E73-9063-0239413B0C07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{053B1D9F-87D0-4E73-9063-0239413B0C07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34E701B0-A5F9-435F-9D1A-0AF22ED90CF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34E701B0-A5F9-435F-9D1A-0AF22ED90CF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34E701B0-A5F9-435F-9D1A-0AF22ED90CF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34E701B0-A5F9-435F-9D1A-0AF22ED90CF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
