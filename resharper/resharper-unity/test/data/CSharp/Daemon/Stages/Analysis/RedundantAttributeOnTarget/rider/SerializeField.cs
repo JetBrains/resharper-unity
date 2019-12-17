@@ -19,6 +19,7 @@ public class Foo
     public const string ConstField = "Hello world";
 
     [SerializeField]
+    [field: SerializeField]
     public string Property { get; set; }
 
     [SerializeField]
