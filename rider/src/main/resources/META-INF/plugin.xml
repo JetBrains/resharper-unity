@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2019.3.0.9999</version>
+  <version>2020.1.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
   <depends>com.intellij.modules.rider</depends>
@@ -262,32 +262,20 @@
   <change-notes>
 <![CDATA[
 <p>
-<strong>New in 2019.3.1</strong>
+<strong>New in 2020.1</strong>
+</p>
+<p>
 <em>Added:</em>
 <ul>
-  <li>Add proper file icons for <tt>*.uxml</tt> and <tt>*.uss</tt> files (<a href="https://youtrack.jetbrains.com/issue/RIDER-34788">RIDER-34788</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1443">#1443</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
-  <li>Entire plugin is no longer disabled if the CSS plugin is disabled (<a href="https://youtrack.jetbrains.com/issue/RIDER-36523">RIDER-36523</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1443">#1443</a>)</li>
-  <li>Rider: Make Attach to Unity Process dialog resizable (<a href="https://github.com/JetBrains/resharper-unity/issues/1446">#1446</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1450">#1450</a>)</li>
-  <li>Rider: Identify child processes by role in Attach to Unity Process dialog (<a href="https://github.com/JetBrains/resharper-unity/issues/1328">#1328</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1450">#1450</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
-  <li>Rider: Show correct project name when Unity started with certain command line on Windows (<a href="https://github.com/JetBrains/resharper-unity/pull/1450">#1450</a>)</li>
-  <li>Rider: Show correct project name when multiple Unity processes listed in Attach to Process popup list (<a href="https://github.com/JetBrains/resharper-unity/issues/1456">#1456</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1450">#1450</a>)</li>
-  <li>Rider: Fix exception in Attach to Unity Process dialog causing list to be empty (<a href="https://github.com/JetBrains/resharper-unity/issues/1454">#1454</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1450">#1450</a>)</li>
-  <li>Rider: Show run configuration dialog for Unity class library projects (<a href="https://github.com/JetBrains/resharper-unity/issues/1445">#1445</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1450">#1450</a>)</li>
-  <li>Rider: Fix finding existing Unity instance to debug (<a href="https://youtrack.jetbrains.com/issue/RIDER-36256">RIDER-36256</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1450">#1450</a>)</li>
-  <li>Rider: Fix <tt>EditorInstance.json</tt> being locked by Rider (<a href="https://github.com/JetBrains/resharper-unity/pull/1450">#1450</a>)</li>
-</ul>
-<em>Fixed:</em>
-<ul>
-  <li>Fix usage count for custom event based event handlers in Unity 2018.4+ (<a href="https://github.com/JetBrains/resharper-unity/issues/1448">#1448</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1449">#1449</a>)</li>
 </ul>
 </p>
-<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net193/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
+<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net201/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
 ]]>
   </change-notes>
 </idea-plugin>
