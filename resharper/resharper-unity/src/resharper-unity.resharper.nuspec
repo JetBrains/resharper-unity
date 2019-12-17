@@ -34,10 +34,10 @@
 - And much more!
 </description>
 <releaseNotes>
-New in 2019.3.1
+New in 2020.1
 
 Fixed:
-- Fix usage count for custom event based event handlers in Unity 2018.4+ (#1448, #1449)
+- Fix incorrect redundant SerializeField attribute warning for property backing field (#1016, #1464)
     
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
