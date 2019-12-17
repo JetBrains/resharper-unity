@@ -47,7 +47,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     <copyright>Copyright 2019 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[193.0]" />
+      <dependency id="Wave" version="[201.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>

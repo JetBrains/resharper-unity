@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2019.3.0.9999</version>
+  <version>2020.1.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
   <depends>com.intellij.modules.rider</depends>
