@@ -4,10 +4,8 @@ import com.intellij.util.io.readText
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.test.annotations.TestEnvironment
@@ -17,9 +15,9 @@ import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.changeFileSystem2
 import com.jetbrains.rider.test.scriptingApi.checkSwea
 import com.jetbrains.rider.util.idea.lifetime
-import org.testng.annotations.Test
 import java.io.File
 import java.nio.file.Paths
+import java.time.Duration
 import kotlin.test.assertNotNull
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
@@ -86,7 +84,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
             val externalEditorPath = Paths.get(project.basePath).resolve("Assets/ExternalEditor.txt")
 
             executeScript("DumpExternalEditor.cs")
-            waitAndPump(project.lifetime, { externalEditorPath.exists() }, 100000, { "ExternalEditor.txt is not created" })
+            waitAndPump(project.lifetime, { externalEditorPath.exists() }, Duration.ofSeconds(100), { "ExternalEditor.txt is not created" })
 
             executeWithGold(testGoldFile) {
                 it.print(externalEditorPath.readText())
@@ -126,7 +124,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
                     }
                 }
 
-                waitAndPump(project.lifetime, { !definition.isAlive }, 100000, { "Test message is not recieved" })
+                waitAndPump(project.lifetime, { !definition.isAlive }, Duration.ofSeconds(100), { "Test message is not received" })
 
                 killUnity(process)
                 checkSwea(project)
