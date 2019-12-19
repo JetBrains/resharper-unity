@@ -8,6 +8,7 @@ plugins {
     id 'com.jetbrains.rdgen' version '0.193.100'
     id 'com.ullink.nuget' version '2.18'
     id 'com.ullink.nunit' version '1.14'
+    id 'me.filippov.gradle.jvm.wrapper' version '0.9.2'
 }
 
 
