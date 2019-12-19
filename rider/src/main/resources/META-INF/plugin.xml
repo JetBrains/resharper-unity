@@ -96,6 +96,8 @@
 
     <feedbackDescriptionProvider implementation="com.jetbrains.rider.plugins.unity.UnityFeedbackDescriptionProvider" />
     <statusBarWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.UnityStatusBarWidget" />
+
+    <projectModelViewExtensions implementation="com.jetbrains.rider.plugins.unity.explorer.UnityProjectModelViewExtensions"/>
   </extensions>
 
   <project-components>
