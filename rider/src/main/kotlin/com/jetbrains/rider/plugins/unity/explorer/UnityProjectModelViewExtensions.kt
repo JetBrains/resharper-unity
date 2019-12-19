@@ -10,7 +10,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
     override fun chooseBestProjectModelNode(nodes: List<ProjectModelNode>): ProjectModelNode? {
 
-        // one of predefined projects
+        // predefined projects in the following order
         val predefinedProjectNames = arrayOf(
             UnityExplorer.DefaultProjectPrefix,
             UnityExplorer.DefaultProjectPrefix + "-firstpass",
