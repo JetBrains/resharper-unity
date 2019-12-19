@@ -33,12 +33,12 @@ class BackendPaths(private val project: Project, logger: Logger, val repositoryR
         if (bundledRiderSdkPath.isDirectory) {
             val riderSdkPath = File(bundledRiderSdkPath.canonicalPath, "lib/ReSharperHostSdk")
             assert(riderSdkPath.isDirectory)
-            logger.lifecycle("Rider SDK bundle found: $riderSdkPath.canonicalPath")
+            logger.lifecycle("Rider SDK bundle found: ${riderSdkPath.canonicalPath}")
         }
 
         bundledReSharperSdkPath = File(repositoryRoot, "rider/build/JetBrains.ReSharperUltimate.Packages")
         if (bundledReSharperSdkPath.isDirectory) {
-            logger.lifecycle("ReSharper SDK bundle found: $bundledReSharperSdkPath.canonicalPath")
+            logger.lifecycle("ReSharper SDK bundle found: ${bundledReSharperSdkPath.canonicalPath}")
         }
     }
 
