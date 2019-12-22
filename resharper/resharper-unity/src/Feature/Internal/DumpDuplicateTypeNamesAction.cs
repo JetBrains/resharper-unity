@@ -43,12 +43,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                 // Non-nested, public or protected types. Essentially what would appear in completion
                 if (typeElement.GetContainingType() == null && IsVisible(typeElement))
                 {
-                    var fullname = ((ITypeElement) typeElement).GetFullClrName();
-                    if (fullname.Contains("List"))
-                    {
-                        Console.WriteLine();
-                    }
-
                     var typeParametersOwner = (ITypeParametersOwner) typeElement;
                     var shortName = typeElement.ShortName + (typeParametersOwner.TypeParameters.Count > 0
                                         ? $"`{typeParametersOwner.TypeParameters.Count}"
