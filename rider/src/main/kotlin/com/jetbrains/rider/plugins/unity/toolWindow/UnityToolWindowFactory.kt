@@ -25,7 +25,7 @@ class UnityToolWindowFactory(project: Project,
         const val ACTION_PLACE = "Unity"
 
         fun show(project: Project) {
-            ToolWindowManager.getInstance(project)?.getToolWindow(TOOL_WINDOW_ID)?.show(null)
+            ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID)?.show(null)
         }
     }
 
@@ -38,6 +38,8 @@ class UnityToolWindowFactory(project: Project,
         }
     }
 
+    // TODO: Use ToolWindowFactory and toolWindow extension points
+    @Suppress("DEPRECATION")
     private fun create(): UnityToolWindowContext {
         val toolWindow = toolWindowManager.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
 
@@ -56,7 +58,7 @@ class UnityToolWindowFactory(project: Project,
             }
         })
         toolWindow.title = ""
-        toolWindow.icon = UnityIcons.ToolWindows.UnityLog
+        toolWindow.setIcon(UnityIcons.ToolWindows.UnityLog)
         // Required for hiding window without content
         ContentManagerWatcher(toolWindow, contentManager)
 
