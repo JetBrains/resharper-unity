@@ -89,6 +89,10 @@ if [ "$darwin" = "true" ]; then
     JVM_TEMP_FILE=$BUILD_DIR/jvm-macosx-x64.tar.gz
     JVM_URL=https://d3pxv6yz143wms.cloudfront.net/11.0.4.11.1/amazon-corretto-11.0.4.11.1-macosx-x64.tar.gz
     JVM_TARGET_DIR=$BUILD_DIR/gradle-jvm/amazon-corretto-11.0.4.11.1-macosx-x64-cc08dc
+elif [ "$cygwin" = "true" ] || [ "$msys" = "true" ]; then
+    JVM_TEMP_FILE=$BUILD_DIR/jvm-windows-x64.zip
+    JVM_URL=https://d3pxv6yz143wms.cloudfront.net/11.0.4.11.1/amazon-corretto-11.0.4.11.1-windows-x64.zip
+    JVM_TARGET_DIR=$BUILD_DIR/amazon-corretto-11.0.4.11.1-windows-x64-9b61dd
 else
     JVM_TEMP_FILE=$BUILD_DIR/jvm-linux-x64.tar.gz
     JVM_URL=https://d3pxv6yz143wms.cloudfront.net/11.0.4.11.1/amazon-corretto-11.0.4.11.1-linux-x64.tar.gz
@@ -120,7 +124,11 @@ else
   rm -rf "$JVM_TARGET_DIR"
   mkdir -p "$JVM_TARGET_DIR"
 
-  tar -x -f "$JVM_TEMP_FILE" -C "$JVM_TARGET_DIR"
+  if [ "$cygwin" = "true" ] || [ "$msys" = "true" ]; then
+      unzip "$JVM_TEMP_FILE" -d "$JVM_TARGET_DIR"
+  else
+      tar -x -f "$JVM_TEMP_FILE" -C "$JVM_TARGET_DIR"
+  fi
   rm -f "$JVM_TEMP_FILE"
 
   echo "$JVM_URL" >"$JVM_TARGET_DIR/.flag"
