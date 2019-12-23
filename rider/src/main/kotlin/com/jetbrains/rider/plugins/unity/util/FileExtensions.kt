@@ -44,13 +44,8 @@ private fun getExtensions(): THashSet<String> {
     return extensions
 }
 
-fun isNonEditableUnityFile(file: VirtualFile): Boolean {
-    return isNonEditableUnityFileExtension(file.extension)
-}
-
-fun isNonEditableUnityFileExtension(extension: String?): Boolean {
-    return nonEditableExtensions.contains(extension)
-}
+fun isNonEditableUnityFile(file: VirtualFile) = isNonEditableUnityFileExtension(file.extension)
+fun isNonEditableUnityFileExtension(extension: String?) = extension != null && nonEditableExtensions.contains(extension)
 
 fun isGeneratedUnityFile(file: VirtualFile): Boolean {
     val fileTypeRegistry = FileTypeRegistry.getInstance()
