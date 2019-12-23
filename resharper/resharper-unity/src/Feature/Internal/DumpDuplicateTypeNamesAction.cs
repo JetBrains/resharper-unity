@@ -1,18 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.Diagnostics;
 using JetBrains.Application.UI.Actions;
 using JetBrains.Application.UI.ActionsRevised.Menu;
-using JetBrains.Build.Running;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
-using JetBrains.ReSharper.Psi.Modules;
-using JetBrains.RiderTutorials.Utils;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
@@ -47,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
                     var shortName = typeElement.ShortName + (typeParametersOwner.TypeParameters.Count > 0
                                         ? $"`{typeParametersOwner.TypeParameters.Count}"
                                         : string.Empty);
-                    types.Add(shortName, ((ITypeElement) typeElement).GetFullClrName());
+                    types.Add(shortName, ((ITypeElement) typeElement).GetClrName().FullName);
                 }
             }
 
