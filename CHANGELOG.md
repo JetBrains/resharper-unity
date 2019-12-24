@@ -14,6 +14,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 - Exclude `Boo` and `UnityScript` namespaces, as well as the `System.Diagnostics.Debug` type from import completion ([#574](https://github.com/JetBrains/resharper-unity/issues/574), [#1473](https://github.com/JetBrains/resharper-unity/pull/1473))
 
+### Fixed
+
+- Fix incorrect redundant `SerializeField` attribute warning for property backing field ([#1016](https://github.com/JetBrains/resharper-unity/issues/1016), [#1464](https://github.com/JetBrains/resharper-unity/pull/1464))
+
 
 
 ## 2019.3.1

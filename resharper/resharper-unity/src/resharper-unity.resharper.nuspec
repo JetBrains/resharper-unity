@@ -39,6 +39,8 @@ New in 2020.1
 Added:
 - Exclude Boo and UnityScript namespaces, as well as the System.Diagnostics.Debug type from import completion (#574, #1473)
 
+Fixed:
+- Fix incorrect redundant SerializeField attribute warning for property backing field (#1016, #1464)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
