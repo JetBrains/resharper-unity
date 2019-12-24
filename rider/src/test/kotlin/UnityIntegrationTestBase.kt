@@ -1,5 +1,4 @@
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.io.exists
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rdclient.util.idea.waitAndPump
@@ -13,6 +12,7 @@ import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoP
 import com.jetbrains.rider.util.idea.lifetime
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Duration
 import kotlin.test.assertNotNull
 
 open class UnityIntegrationTestBase : BaseTestWithSolution() {
@@ -70,7 +70,7 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
 
     fun waitFirstScriptCompilation() {
         val unityStartFile = Paths.get(project.basePath).resolve(".start")
-        waitAndPump(project.lifetime, { unityStartFile.exists() }, 120000, { "Unity was not started." })
+        waitAndPump(project.lifetime, { unityStartFile.exists() }, Duration.ofSeconds(120), { "Unity was not started." })
     }
 
     fun installPlugin() {
@@ -78,17 +78,17 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
         unityHost.model.installEditorPlugin.fire(Unit)
 
         val editorPluginPath = Paths.get(project.basePath).resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
-        waitAndPump(project.lifetime, { editorPluginPath.exists() }, 10000, { "EditorPlugin was not installed." })
+        waitAndPump(project.lifetime, { editorPluginPath.exists() }, Duration.ofSeconds(10), { "EditorPlugin was not installed." })
     }
 
     fun waitConnection() {
         val unityHost = UnityHost.getInstance(project)
-        waitAndPump(project.lifetime, { unityHost.sessionInitialized.hasTrueValue }, 100000, { "unityHost is not initialized." })
+        waitAndPump(project.lifetime, { unityHost.sessionInitialized.hasTrueValue }, Duration.ofSeconds(100), { "unityHost is not initialized." })
     }
 
     fun killUnity(process : Process) {
         process.destroy()
-        waitAndPump(project.lifetime, { !process.isAlive }, 100000, { "Process should have existed." })
+        waitAndPump(project.lifetime, { !process.isAlive }, Duration.ofSeconds(100), { "Process should have existed." })
     }
 
     fun executeScript(file : String) {
