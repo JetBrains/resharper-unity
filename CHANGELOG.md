@@ -10,6 +10,10 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net193...net201)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/32?closed=1)
 
+### Added
+
+- Exclude `Boo` and `UnityScript` namespaces, as well as the `System.Diagnostics.Debug` type from import completion ([#574](https://github.com/JetBrains/resharper-unity/issues/574), [#1473](https://github.com/JetBrains/resharper-unity/pull/1473))
+
 
 
 ## 2019.3.1

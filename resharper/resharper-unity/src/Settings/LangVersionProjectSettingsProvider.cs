@@ -16,7 +16,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
     [SolutionComponent]
-    public class LangVersionSetting : IUnityProjectSettingsProvider
+    public class LangVersionProjectSettingsProvider : IUnityProjectSettingsProvider
     {
         private readonly ISettingsSchema mySettingsSchema;
         private readonly ILogger myLogger;
@@ -24,9 +24,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         private readonly ILanguageLevelProjectProperty<CSharpLanguageLevel, CSharpLanguageVersion> myLanguageLevelProjectProperty;
         private static readonly Version ourVersion46 = new Version(4, 6);
 
-        public LangVersionSetting(ISettingsSchema settingsSchema, ILogger logger,
-                                  UnityProjectFileCacheProvider unityProjectFileCache,
-                                  ILanguageLevelProjectProperty<CSharpLanguageLevel, CSharpLanguageVersion> languageLevelProjectProperty)
+        public LangVersionProjectSettingsProvider(ISettingsSchema settingsSchema, ILogger logger,
+                                                  UnityProjectFileCacheProvider unityProjectFileCache,
+                                                  ILanguageLevelProjectProperty<CSharpLanguageLevel, CSharpLanguageVersion> languageLevelProjectProperty)
         {
             mySettingsSchema = settingsSchema;
             myLogger = logger;
@@ -164,7 +164,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             }
             return true;
         }
-        
+
         private bool IsLangVersionLatest(IProject project)
         {
             foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations)
