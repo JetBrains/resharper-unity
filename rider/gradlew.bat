@@ -32,6 +32,67 @@ set APP_HOME=%DIRNAME%
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 
+@rem GRADLE JVM WRAPPER START MARKER
+
+setlocal
+
+set BUILD_DIR=%APP_HOME%build\
+set JVM_TARGET_DIR=%BUILD_DIR%gradle-jvm\amazon-corretto-11.0.4.11.1-windows-x64-9b61dd\
+
+set JVM_TEMP_FILE=jvm-windows-x64.zip
+set JVM_URL=https://d3pxv6yz143wms.cloudfront.net/11.0.4.11.1/amazon-corretto-11.0.4.11.1-windows-x64.zip
+
+set POWERSHELL=%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe
+
+if not exist "%JVM_TARGET_DIR%" MD "%JVM_TARGET_DIR%"
+
+if not exist "%JVM_TARGET_DIR%.flag" goto downloadAndExtractJvm
+
+set /p CURRENT_FLAG=<"%JVM_TARGET_DIR%.flag"
+if "%CURRENT_FLAG%" == "%JVM_URL%" goto continueWithJvm
+
+:downloadAndExtractJvm
+
+CD "%BUILD_DIR%"
+if errorlevel 1 goto fail
+
+echo Downloading %JVM_URL% to %BUILD_DIR%%JVM_TEMP_FILE%
+if exist "%JVM_TEMP_FILE%" DEL /F "%JVM_TEMP_FILE%"
+"%POWERSHELL%" -nologo -noprofile -Command "Set-StrictMode -Version 3.0; $ErrorActionPreference = \"Stop\"; (New-Object Net.WebClient).DownloadFile('%JVM_URL%', '%JVM_TEMP_FILE%')"
+if errorlevel 1 goto fail
+
+RMDIR /S /Q "%JVM_TARGET_DIR%"
+if errorlevel 1 goto fail
+
+MKDIR "%JVM_TARGET_DIR%"
+if errorlevel 1 goto fail
+
+CD "%JVM_TARGET_DIR%"
+if errorlevel 1 goto fail
+
+echo Extracting %BUILD_DIR%%JVM_TEMP_FILE% to %JVM_TARGET_DIR%
+"%POWERSHELL%" -nologo -noprofile -command "Set-StrictMode -Version 3.0; $ErrorActionPreference = \"Stop\"; Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('..\\..\\%JVM_TEMP_FILE%', '.');"
+if errorlevel 1 goto fail
+
+DEL /F "..\..\%JVM_TEMP_FILE%"
+if errorlevel 1 goto fail
+
+echo %JVM_URL%>"%JVM_TARGET_DIR%.flag"
+if errorlevel 1 goto fail
+
+:continueWithJvm
+
+set JAVA_HOME=
+for /d %%d in ("%JVM_TARGET_DIR%"*) do if exist "%%d\bin\java.exe" set JAVA_HOME=%%d
+if not exist "%JAVA_HOME%\bin\java.exe" (
+  echo Unable to find java.exe under %JVM_TARGET_DIR%
+  goto fail
+)
+
+endlocal & set JAVA_HOME=%JAVA_HOME%
+
+@rem GRADLE JVM WRAPPER END MARKER
+
 @rem Find java.exe
 if defined JAVA_HOME goto findJavaFromJavaHome
 

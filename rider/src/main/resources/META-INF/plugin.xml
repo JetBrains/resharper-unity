@@ -209,6 +209,15 @@
       <add-to-group group-id="FindMenuGroup" anchor="after" relative-to-action="FindUsages"/>
       <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="after" relative-to-action="FindUsages"/>
     </action>
+
+    <group id="RiderInternal.Unity" text="Unity Actions" popup="true" internal="true">
+      <add-to-group group-id="RiderInternal" anchor="last" />
+
+      <action id="Unity_Internal_DumpDuplicateTypeNames"
+              class="com.jetbrains.rider.plugins.unity.actions.internal.DumpDuplicateTypeNamesAction"
+              text="Dump Duplicate Type Names"
+              internal="true" />
+    </group>
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -269,12 +278,11 @@
 <p>
 <em>Added:</em>
 <ul>
-</ul>
-<em>Changed:</em>
-<ul>
+  <li>Exclude <tt>Boo</tt> and <tt>UnityScript</tt> namespaces, as well as the <tt>System.Diagnostics.Debug</tt> type from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1473">#1473</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
+  <li>Fix incorrect redundant <tt>SerializeField</tt> attribute warning for property backing field (<a href="https://github.com/JetBrains/resharper-unity/issues/1016">#1016</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1464">#1464</a>)</li>
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net201/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>

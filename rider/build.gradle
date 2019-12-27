@@ -5,15 +5,16 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.3.50'
     id 'org.jetbrains.intellij' // Version comes from buildSrc
-    id 'com.jetbrains.rdgen' version '0.193.100'
+    id 'com.jetbrains.rdgen' version '0.201.18'
     id 'com.ullink.nuget' version '2.18'
     id 'com.ullink.nunit' version '1.14'
+    id 'me.filippov.gradle.jvm.wrapper' version '0.9.3'
 }
 
 
 ext.repoRoot = project.file("..")
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-ext.bundledRiderSdkRoot = new File("dependencies")  // SDK from TC configuration/artifacts
+ext.bundledRiderSdkRoot = new File(projectDir, "dependencies")  // SDK from TC configuration/artifacts
 
 buildSearchableOptions.enabled = BuildConfiguration == "Release"
 

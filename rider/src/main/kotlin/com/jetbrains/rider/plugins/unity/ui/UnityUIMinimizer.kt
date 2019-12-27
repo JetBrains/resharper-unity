@@ -23,7 +23,7 @@ class UnityUIMinimizer : StartupActivity {
 
                 val nuget = toolWindowManager.getToolWindow("NuGet") as? ToolWindowImpl
                     ?: return@doWhenFocusSettlesDown
-                nuget.removeStripeButton()
+                nuget.isShowStripeButton = false
 
                 ActiveConfigurationAndPlatformAction.hiddenForProjects.add(project)
             }
@@ -41,7 +41,7 @@ class UnityUIMinimizer : StartupActivity {
                 val toolWindowManager = ToolWindowManager.getInstance(project)
                 val toolWindow = toolWindowManager.getToolWindow("NuGet") as? ToolWindowImpl
                     ?: return@doWhenFocusSettlesDown
-                toolWindow.showStripeButton()
+                toolWindow.isShowStripeButton = true
 
                 ActiveConfigurationAndPlatformAction.hiddenForProjects.remove(project)
             }

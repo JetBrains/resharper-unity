@@ -82,6 +82,76 @@ esac
 
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
+# GRADLE JVM WRAPPER START MARKER
+BUILD_DIR=$APP_HOME/build
+
+if [ "$darwin" = "true" ]; then
+    JVM_TEMP_FILE=$BUILD_DIR/jvm-macosx-x64.tar.gz
+    JVM_URL=https://d3pxv6yz143wms.cloudfront.net/11.0.4.11.1/amazon-corretto-11.0.4.11.1-macosx-x64.tar.gz
+    JVM_TARGET_DIR=$BUILD_DIR/gradle-jvm/amazon-corretto-11.0.4.11.1-macosx-x64-cc08dc
+elif [ "$cygwin" = "true" ] || [ "$msys" = "true" ]; then
+    JVM_TEMP_FILE=$BUILD_DIR/jvm-windows-x64.zip
+    JVM_URL=https://d3pxv6yz143wms.cloudfront.net/11.0.4.11.1/amazon-corretto-11.0.4.11.1-windows-x64.zip
+    JVM_TARGET_DIR=$BUILD_DIR/amazon-corretto-11.0.4.11.1-windows-x64-9b61dd
+else
+    JVM_TEMP_FILE=$BUILD_DIR/jvm-linux-x64.tar.gz
+    JVM_URL=https://d3pxv6yz143wms.cloudfront.net/11.0.4.11.1/amazon-corretto-11.0.4.11.1-linux-x64.tar.gz
+    JVM_TARGET_DIR=$BUILD_DIR/gradle-jvm/amazon-corretto-11.0.4.11.1-linux-x64-a8fc5f
+fi
+
+set -e
+
+if [ -e "$JVM_TARGET_DIR/.flag" ] && [ -n "$(ls "$JVM_TARGET_DIR")" ] && [ "x$(cat "$JVM_TARGET_DIR/.flag")" = "x${JVM_URL}" ]; then
+    # Everything is up-to-date in $JVM_TARGET_DIR, do nothing
+    true
+else
+  warn "Downloading $JVM_URL to $JVM_TEMP_FILE"
+
+  rm -f "$JVM_TEMP_FILE"
+  mkdir -p "$BUILD_DIR"
+  if command -v curl >/dev/null 2>&1; then
+      if [ -t 1 ]; then CURL_PROGRESS="--progress-bar"; else CURL_PROGRESS="--silent --show-error"; fi
+      # shellcheck disable=SC2086
+      curl $CURL_PROGRESS --output "${JVM_TEMP_FILE}" "$JVM_URL"
+  elif command -v wget >/dev/null 2>&1; then
+      if [ -t 1 ]; then WGET_PROGRESS=""; else WGET_PROGRESS="-nv"; fi
+      wget $WGET_PROGRESS -O "${JVM_TEMP_FILE}" "$JVM_URL"
+  else
+      die "ERROR: Please install wget or curl"
+  fi
+
+  warn "Extracting $JVM_TEMP_FILE to $JVM_TARGET_DIR"
+  rm -rf "$JVM_TARGET_DIR"
+  mkdir -p "$JVM_TARGET_DIR"
+
+  if [ "$cygwin" = "true" ] || [ "$msys" = "true" ]; then
+      unzip "$JVM_TEMP_FILE" -d "$JVM_TARGET_DIR"
+  else
+      tar -x -f "$JVM_TEMP_FILE" -C "$JVM_TARGET_DIR"
+  fi
+  rm -f "$JVM_TEMP_FILE"
+
+  echo "$JVM_URL" >"$JVM_TARGET_DIR/.flag"
+fi
+
+JAVA_HOME=
+for d in "$JVM_TARGET_DIR" "$JVM_TARGET_DIR"/* "$JVM_TARGET_DIR"/Contents/Home "$JVM_TARGET_DIR"/*/Contents/Home; do
+  if [ -e "$d/bin/java" ]; then
+    JAVA_HOME="$d"
+  fi
+done
+
+if [ '!' -e "$JAVA_HOME/bin/java" ]; then
+  die "Unable to find bin/java under $JVM_TARGET_DIR"
+fi
+
+# Make it available for child processes
+export JAVA_HOME
+
+set +e
+
+# GRADLE JVM WRAPPER END MARKER
+
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then

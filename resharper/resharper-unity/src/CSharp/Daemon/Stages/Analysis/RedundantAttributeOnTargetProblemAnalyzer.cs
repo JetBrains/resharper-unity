@@ -85,7 +85,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     return attribute.Target == AttributeTarget.Return
                         ? AttributeTargets.ReturnValue
                         : AttributeTargets.Method;
-                case IPropertyDeclaration _: return AttributeTargets.Property;
+                case IPropertyDeclaration _:
+                    return attribute.Target == AttributeTarget.Field
+                        ? AttributeTargets.Field
+                        : AttributeTargets.Property;
                 case IFieldDeclaration _: return AttributeTargets.Field;
                 case IEventDeclaration _: return AttributeTargets.Event;
                 case IInterfaceDeclaration _: return AttributeTargets.Interface;
