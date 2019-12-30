@@ -215,8 +215,6 @@ Add files and classes
    -Assets/Plugins/Editor
     -Assets/Plugins/Editor/JetBrains
      Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
-  -Assets/Scenes
-   Assets/Scenes/SampleScene.unity
   -Assets/Scripts
    -Assets/Scripts/Editor
     -Assets/Scripts/Editor/NewDirectory1
