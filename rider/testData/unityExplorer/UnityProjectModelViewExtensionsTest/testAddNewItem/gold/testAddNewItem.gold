@@ -1,0 +1,287 @@
+===================
+Add files and classes
+
+-Project
+ -Assets
+  -References
+   Boo.Lang
+   Microsoft.CSharp
+   Microsoft.Win32.Primitives
+   mscorlib
+   netstandard
+   nunit.framework
+   System
+   System.AppContext
+   System.Collections
+   System.Collections.Concurrent
+   System.Collections.NonGeneric
+   System.Collections.Specialized
+   System.ComponentModel
+   System.ComponentModel.Annotations
+   System.ComponentModel.Composition
+   System.ComponentModel.EventBasedAsync
+   System.ComponentModel.Primitives
+   System.ComponentModel.TypeConverter
+   System.Console
+   System.Core
+   System.Data
+   System.Data.Common
+   System.Diagnostics.Contracts
+   System.Diagnostics.Debug
+   System.Diagnostics.FileVersionInfo
+   System.Diagnostics.Process
+   System.Diagnostics.StackTrace
+   System.Diagnostics.TextWriterTraceListener
+   System.Diagnostics.Tools
+   System.Diagnostics.TraceSource
+   System.Diagnostics.Tracing
+   System.Drawing
+   System.Drawing.Primitives
+   System.Dynamic.Runtime
+   System.Globalization
+   System.Globalization.Calendars
+   System.Globalization.Extensions
+   System.IO
+   System.IO.Compression
+   System.IO.Compression.FileSystem
+   System.IO.Compression.ZipFile
+   System.IO.FileSystem
+   System.IO.FileSystem.DriveInfo
+   System.IO.FileSystem.Primitives
+   System.IO.FileSystem.Watcher
+   System.IO.IsolatedStorage
+   System.IO.MemoryMappedFiles
+   System.IO.Pipes
+   System.IO.UnmanagedMemoryStream
+   System.Linq
+   System.Linq.Expressions
+   System.Linq.Parallel
+   System.Linq.Queryable
+   System.Net
+   System.Net.Http
+   System.Net.Http.Rtc
+   System.Net.NameResolution
+   System.Net.NetworkInformation
+   System.Net.Ping
+   System.Net.Primitives
+   System.Net.Requests
+   System.Net.Security
+   System.Net.Sockets
+   System.Net.WebHeaderCollection
+   System.Net.WebSockets
+   System.Net.WebSockets.Client
+   System.Numerics
+   System.Numerics.Vectors
+   System.ObjectModel
+   System.Reflection
+   System.Reflection.Emit
+   System.Reflection.Emit.ILGeneration
+   System.Reflection.Emit.Lightweight
+   System.Reflection.Extensions
+   System.Reflection.Primitives
+   System.Resources.Reader
+   System.Resources.ResourceManager
+   System.Resources.Writer
+   System.Runtime
+   System.Runtime.CompilerServices.VisualC
+   System.Runtime.Extensions
+   System.Runtime.Handles
+   System.Runtime.InteropServices
+   System.Runtime.InteropServices.RuntimeInformation
+   System.Runtime.InteropServices.WindowsRuntime
+   System.Runtime.Numerics
+   System.Runtime.Serialization
+   System.Runtime.Serialization.Formatters
+   System.Runtime.Serialization.Json
+   System.Runtime.Serialization.Primitives
+   System.Runtime.Serialization.Xml
+   System.Security.Claims
+   System.Security.Cryptography.Algorithms
+   System.Security.Cryptography.Csp
+   System.Security.Cryptography.Encoding
+   System.Security.Cryptography.Primitives
+   System.Security.Cryptography.X509Certificates
+   System.Security.Principal
+   System.Security.SecureString
+   System.ServiceModel.Duplex
+   System.ServiceModel.Http
+   System.ServiceModel.NetTcp
+   System.ServiceModel.Primitives
+   System.ServiceModel.Security
+   System.ServiceModel.Web
+   System.Text.Encoding
+   System.Text.Encoding.Extensions
+   System.Text.RegularExpressions
+   System.Threading
+   System.Threading.Overlapped
+   System.Threading.Tasks
+   System.Threading.Tasks.Parallel
+   System.Threading.Thread
+   System.Threading.ThreadPool
+   System.Threading.Timer
+   System.Transactions
+   System.ValueTuple
+   System.Web
+   System.Windows
+   System.Xml
+   System.Xml.Linq
+   System.Xml.ReaderWriter
+   System.Xml.Serialization
+   System.Xml.XDocument
+   System.Xml.XmlDocument
+   System.Xml.XmlSerializer
+   System.Xml.XPath
+   System.Xml.XPath.XDocument
+   UnityEditor
+   UnityEditor.Graphs
+   UnityEditor.UWP.Extensions
+   UnityEditor.VR
+   UnityEditor.WindowsStandalone.Extensions
+   UnityEngine
+   UnityEngine.AccessibilityModule
+   UnityEngine.AIModule
+   UnityEngine.AndroidJNIModule
+   UnityEngine.AnimationModule
+   UnityEngine.ARModule
+   UnityEngine.AssetBundleModule
+   UnityEngine.AudioModule
+   UnityEngine.ClothModule
+   UnityEngine.ClusterInputModule
+   UnityEngine.ClusterRendererModule
+   UnityEngine.CoreModule
+   UnityEngine.CrashReportingModule
+   UnityEngine.DirectorModule
+   UnityEngine.DSPGraphModule
+   UnityEngine.GameCenterModule
+   UnityEngine.GridModule
+   UnityEngine.HotReloadModule
+   UnityEngine.ImageConversionModule
+   UnityEngine.IMGUIModule
+   UnityEngine.InputLegacyModule
+   UnityEngine.InputModule
+   UnityEngine.JSONSerializeModule
+   UnityEngine.LocalizationModule
+   UnityEngine.ParticleSystemModule
+   UnityEngine.PerformanceReportingModule
+   UnityEngine.Physics2DModule
+   UnityEngine.PhysicsModule
+   UnityEngine.ProfilerModule
+   UnityEngine.ScreenCaptureModule
+   UnityEngine.SharedInternalsModule
+   UnityEngine.SpriteMaskModule
+   UnityEngine.SpriteShapeModule
+   UnityEngine.StreamingModule
+   UnityEngine.SubstanceModule
+   UnityEngine.SubsystemsModule
+   UnityEngine.TerrainModule
+   UnityEngine.TerrainPhysicsModule
+   UnityEngine.TextCoreModule
+   UnityEngine.TextRenderingModule
+   UnityEngine.TilemapModule
+   UnityEngine.TLSModule
+   UnityEngine.UIElementsModule
+   UnityEngine.UIModule
+   UnityEngine.UmbraModule
+   UnityEngine.UNETModule
+   UnityEngine.UnityAnalyticsModule
+   UnityEngine.UnityConnectModule
+   UnityEngine.UnityTestProtocolModule
+   UnityEngine.UnityWebRequestAssetBundleModule
+   UnityEngine.UnityWebRequestAudioModule
+   UnityEngine.UnityWebRequestModule
+   UnityEngine.UnityWebRequestTextureModule
+   UnityEngine.UnityWebRequestWWWModule
+   UnityEngine.VehiclesModule
+   UnityEngine.VFXModule
+   UnityEngine.VideoModule
+   UnityEngine.VRModule
+   UnityEngine.WindModule
+   UnityEngine.XRModule
+   UnityScript
+   UnityScript.Lang
+  -Assets/AsmdefResponse
+   -Assets/AsmdefResponse/NewDirectory1
+    Assets/AsmdefResponse/NewDirectory1/AsmdefClass.cs
+    Assets/AsmdefResponse/NewDirectory1/zero
+   -Assets/AsmdefResponse/SS
+    Assets/AsmdefResponse/SS/AsmdefResponse2.asmdef
+    Assets/AsmdefResponse/SS/rrr.cs
+   Assets/AsmdefResponse/AsmdefResponse.asmdef
+   Assets/AsmdefResponse/NewBehaviourScript.cs
+  -Assets/NewDirectory1
+   Assets/NewDirectory1/MainClass.cs
+   Assets/NewDirectory1/zero
+  -Assets/Plugins
+   -Assets/Plugins/Editor
+    -Assets/Plugins/Editor/JetBrains
+     Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
+  -Assets/Scenes
+   Assets/Scenes/SampleScene.unity
+  -Assets/Scripts
+   -Assets/Scripts/Editor
+    -Assets/Scripts/Editor/NewDirectory1
+     Assets/Scripts/Editor/NewDirectory1/EditorClass.cs
+     Assets/Scripts/Editor/NewDirectory1/zero
+    Assets/Scripts/Editor/XMLUtilities.cs
+   -Assets/Scripts/NewDirectory1
+    Assets/Scripts/NewDirectory1/zero
+  Assets/Class1.cs
+
+
+Project [Name:&, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : com.unity.ide.rider.sln)[]
+
+Project [Name:AsmdefResponse, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : AsmdefResponse.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        Folder [Name:AsmdefResponse]
+          Child items:
+            ProjectFileImpl(Path : AsmdefResponse.asmdef)[NONE ]
+            ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
+            Folder [Name:NewDirectory1]
+              Child items:
+                ProjectFileImpl(Path : AsmdefClass.cs)[COMPILE ]
+
+Project [Name:AsmdefResponse2, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : AsmdefResponse2.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        Folder [Name:AsmdefResponse]
+          Child items:
+            Folder [Name:SS]
+              Child items:
+                ProjectFileImpl(Path : AsmdefResponse2.asmdef)[NONE ]
+                ProjectFileImpl(Path : rrr.cs)[COMPILE ]
+
+Project [Name:Assembly-CSharp, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : Assembly-CSharp.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        ProjectFileImpl(Path : Class1.cs)[COMPILE ]
+        Folder [Name:NewDirectory1]
+          Child items:
+            ProjectFileImpl(Path : MainClass.cs)[COMPILE ]
+
+Project [Name:Assembly-CSharp-Editor, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : Assembly-CSharp-Editor.csproj)[]
+    Folder [Name:Assets]
+      Child items:
+        Folder [Name:Scripts]
+          Child items:
+            Folder [Name:Editor]
+              Child items:
+                Folder [Name:NewDirectory1]
+                  Child items:
+                    ProjectFileImpl(Path : EditorClass.cs)[COMPILE ]
+                ProjectFileImpl(Path : XMLUtilities.cs)[COMPILE ]
+
+Project [Name:Miscellaneous Files, GUID:GUID]
+
+
+
