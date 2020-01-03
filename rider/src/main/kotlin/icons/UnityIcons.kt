@@ -35,7 +35,7 @@ class UnityIcons {
             val ShaderLab = IconLoader.getIcon("/resharper/ShaderFileType/FileShader.svg")
             val Cg = ShaderLab
 
-            val AsmDef = ReSharperPsiJavaScriptIcons.Json
+            val AsmDef = IconLoader.getIcon("/resharper/PsiJavaScript/Json.svg") // ReSharperPsiJavaScriptIcons.Json
 
             val UnityYaml = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg")
             val UnityScene = IconLoader.getIcon("/resharper/UnityFileType/FileUnity.svg")
@@ -101,7 +101,7 @@ class UnityIcons {
 
             val AssetsRoot = IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg")
             val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/UnityPackages.svg")
-            val ReferencesRoot = ReSharperCommonIcons.CompositeElement
+            val ReferencesRoot = IconLoader.getIcon("/resharper/Common/CompositeElement.svg") //ReSharperCommonIcons.CompositeElement
             val ReadOnlyPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderReadOnly.svg")
             val DependenciesRoot = IconLoader.getIcon("/Icons/Explorer/FolderDependencies.svg")
             val BuiltInPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderModules.svg")
@@ -113,7 +113,7 @@ class UnityIcons {
             val GitPackage: Icon = IconLoader.getIcon("/Icons/Explorer/FolderGit.svg")
             val UnknownPackage = IconLoader.getIcon("/Icons/Explorer/UnityPackageUnresolved.svg")
             val PackageDependency = IconLoader.getIcon("/Icons/Explorer/UnityPackageDependency.svg")
-            val Reference = ReSharperProjectModelIcons.Assembly
+            val Reference = IconLoader.getIcon("/resharper/ProjectModel/Assemblies.svg") // ReSharperProjectModelIcons.Assembly
 
             val AsmdefFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
             val AssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
