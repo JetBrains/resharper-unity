@@ -54,7 +54,7 @@ private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: File) : S
 fun addNewItem(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
     frameworkLogger.info("Start adding new item: '$itemName'")
     val viewPane = UnityExplorer.getInstance(project)
-    val dataContext = createDataContextFor2(viewPane, project, path)
+    val dataContext = createDataContextFor2(viewPane, project, arrayOf(path))
     changeFileSystem(project) {
         val createdFile = executeNewItemAction(dataContext, template.type, template.group!!, itemName)
         this.affectedFiles.add(createdFile!!.parentFile)
