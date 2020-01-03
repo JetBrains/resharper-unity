@@ -35,7 +35,7 @@ class UnityIcons {
             val ShaderLab = IconLoader.getIcon("/resharper/ShaderFileType/FileShader.svg")
             val Cg = ShaderLab
 
-            val AsmDef = ReSharperPsiJavaScriptIcons.Json
+            val AsmDef: Icon = ReSharperIcons.PsiJavaScript.Json
 
             val UnityYaml = IconLoader.getIcon("/resharper/YamlFileType/FileYaml.svg")
             val UnityScene = IconLoader.getIcon("/resharper/UnityFileType/FileUnity.svg")
@@ -101,7 +101,7 @@ class UnityIcons {
 
             val AssetsRoot = IconLoader.getIcon("/Icons/Explorer/UnityAssets.svg")
             val PackagesRoot = IconLoader.getIcon("/Icons/Explorer/UnityPackages.svg")
-            val ReferencesRoot = ReSharperCommonIcons.CompositeElement
+            val ReferencesRoot: Icon = ReSharperIcons.Common.CompositeElement
             val ReadOnlyPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderReadOnly.svg")
             val DependenciesRoot = IconLoader.getIcon("/Icons/Explorer/FolderDependencies.svg")
             val BuiltInPackagesRoot = IconLoader.getIcon("/Icons/Explorer/FolderModules.svg")
@@ -109,11 +109,11 @@ class UnityIcons {
             val BuiltInPackage = IconLoader.getIcon("/Icons/Explorer/UnityModule.svg")
             val ReferencedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageReferenced.svg")
             val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageEmbedded.svg")
-            val LocalPackage: Icon = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg")
-            val GitPackage: Icon = IconLoader.getIcon("/Icons/Explorer/FolderGit.svg")
+            val LocalPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg")
+            val GitPackage = IconLoader.getIcon("/Icons/Explorer/FolderGit.svg")
             val UnknownPackage = IconLoader.getIcon("/Icons/Explorer/UnityPackageUnresolved.svg")
             val PackageDependency = IconLoader.getIcon("/Icons/Explorer/UnityPackageDependency.svg")
-            val Reference = ReSharperProjectModelIcons.Assembly
+            val Reference: Icon = ReSharperIcons.ProjectModel.Assembly
 
             val AsmdefFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssetsAlt.svg")
             val AssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderAssets.svg")
