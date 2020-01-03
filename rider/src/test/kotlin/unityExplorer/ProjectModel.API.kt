@@ -82,23 +82,6 @@ fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataCo
     return createDataContextForNode(project, nodes)
 }
 
-fun createDataContextForNode(project: Project, nodes: Array<AbstractTreeNode<*>>): DataContext {
-    val projectView = ProjectView.getInstance(project)
-    val viewPane = projectView.currentProjectViewPane as SolutionViewPaneBase
-    val contextData = mapOf(
-        Pair(PlatformDataKeys.SELECTED_ITEM.name, nodes.singleOrNull()),
-        Pair(PlatformDataKeys.EDITOR.name, null),
-        Pair(PlatformDataKeys.SELECTED_ITEMS.name, nodes),
-        Pair(PlatformDataKeys.PROJECT.name, project),
-        Pair(ProjectModelDataKeys.PROJECT_MODEL_NODES.name, nodes.filterIsInstance<ISolutionModelNodeOwner>().map { it.node }.toTypedArray()),
-        Pair(ProjectModelDataKeys.SOLUTION_VIEW.name, viewPane),
-        Pair(LangDataKeys.IDE_VIEW.name, object: IdeView {
-            override fun getDirectories() = nodes.getPsiDirectories(project)
-            override fun getOrChooseDirectory() = directories.singleOrNull()
-        }))
-    return SimpleDataContext.getSimpleContext(contextData, TestDataProvider(project))
-}
-
 fun findReq(path: Array<String>, project: Project): AbstractTreeNode<*> {
     val viewPane = UnityExplorer.getInstance(project)
     val solutionNode = viewPane.model.root
