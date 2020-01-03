@@ -21,9 +21,9 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
                 // add file to Assets\NewDirectory1 is ambig between predefined projects and asmdef
                 // goes to Editor project
 
-                addNewItem(arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), TemplateType.CLASS, "AsmdefClass.cs")
-                addNewItem(arrayOf("Assets", "NewDirectory1"), TemplateType.CLASS, "MainClass.cs")
-                addNewItem(arrayOf("Assets", "Scripts", "Editor", "NewDirectory1"), TemplateType.CLASS, "EditorClass.cs")
+                addNewItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), TemplateType.CLASS, "AsmdefClass.cs")
+                addNewItem(project, arrayOf("Assets", "NewDirectory1"), TemplateType.CLASS, "MainClass.cs")
+                addNewItem(project, arrayOf("Assets", "Scripts", "Editor", "NewDirectory1"), TemplateType.CLASS, "EditorClass.cs")
             }
         }
     }

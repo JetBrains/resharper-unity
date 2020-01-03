@@ -16,13 +16,11 @@ import com.jetbrains.rider.model.RdProjectModelDumpParams
 import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerNode
-import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerRootNode
 import com.jetbrains.rider.projectView.ProjectModelDataKeys
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.ISolutionModelNodeOwner
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.getPsiDirectories
-import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.TestProjectModelContext
 import com.jetbrains.rider.test.framework.flushQueues
 import com.jetbrains.rider.test.framework.frameworkLogger
@@ -32,7 +30,6 @@ import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.util.idea.getComponent
 import com.jetbrains.rider.util.idea.syncFromBackend
 import java.io.File
-import javax.swing.JTree
 
 fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDirectory: File, action: () -> Unit) {
 
@@ -59,25 +56,11 @@ fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDire
 
 private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: File) : String {
     val tree = UnityExplorer.getInstance(project).tree
-    return dumpExplorerTree(tree, tempTestDirectory)
-}
-
-private fun dumpExplorerTree(tree: JTree, tempTestDirectory: File) : String {
-    val dump = dumpTree(tree)
-    return dump
-        .replace(" Scratches and Consoles", "")
-        .replace(SolutionViewPaneBase.TextSeparator, "*")
-        .replace(" * no index", "")
-        .maskCacheFiles()
+    return dumpExplorerTree(tree)
         .replace(tempTestDirectory.toPath().toUri().toString().replace("file:///", "file://"), "")
-        .replace("""(\s+)-Plugins$(\1\s+\S+$)*""".toRegex(RegexOption.MULTILINE), "") + "\n"
 }
 
-fun BaseTestWithSolution.addNewItem(path: Array<String>, template: TemplateType, itemName: String) {
-    addNewItem2(project, path, template, itemName)
-}
-
-fun addNewItem2(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
+fun addNewItem(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
     frameworkLogger.info("Start adding new item: '$itemName'")
     val dataContext = createDataContextFor2(project, path)
     changeFileSystem(project) {
