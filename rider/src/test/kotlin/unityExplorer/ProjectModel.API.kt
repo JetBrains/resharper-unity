@@ -24,7 +24,6 @@ import java.io.File
 import javax.swing.JTree
 
 fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDirectory: File, action: () -> Unit) {
-
     doActionAndWait(project, action, true)
     val treeDump = dumpUnityExplorerTree(project, tempTestDirectory)
 
@@ -52,97 +51,16 @@ private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: File) : S
         .replace(tempTestDirectory.toPath().toUri().toString().replace("file:///", "file://"), "")
 }
 
-
-fun dumpExplorerTree(tree: JTree) : String {
-    val dump = dumpTree(tree)
-    return dump
-        .replace(" Scratches and Consoles", "")
-        .replace(SolutionViewPaneBase.TextSeparator, "*")
-        .replace(" * no index", "")
-        .maskCacheFiles()
-        .replace("""(\s+)-Plugins$(\1\s+\S+$)*""".toRegex(RegexOption.MULTILINE), "") + "\n"
-}
-
-
 fun addNewItem(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
     frameworkLogger.info("Start adding new item: '$itemName'")
-    val dataContext = createDataContextFor2(project, path)
+    val viewPane = UnityExplorer.getInstance(project)
+    val dataContext = createDataContextFor2(viewPane, project, path)
     changeFileSystem(project) {
         val createdFile = executeNewItemAction(dataContext, template.type, template.group!!, itemName)
         this.affectedFiles.add(createdFile!!.parentFile)
     }
     persistAllFilesOnDisk(project)
     frameworkLogger.info("New item '$itemName' is added")
-}
-
-
-fun createDataContextFor2(project: Project, path: Array<String>): DataContext {
-    return createDataContextFor2(project, arrayOf(path))
-}
-
-fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataContext {
-    flushQueues()
-    val viewPane = UnityExplorer.getInstance(project)
-    val nodes = paths.map { findReq(viewPane, it, project) }.toTypedArray()
-    return createDataContextForNode(project, nodes)
-}
-
-fun findReq(viewPane:SolutionViewPaneBase, path: Array<String>, project: Project): AbstractTreeNode<*> {
-    val solutionNode = viewPane.model.root
-    val fileNodes = viewPane.model.root.children.filterIsInstance<UnityExplorerNode>()
-    val solutionNodeName = solutionNode.name
-
-    if (path.count() == 1) {
-        if (solutionNodeName == path[0])
-            return solutionNode
-    } else {
-        val node = findChildInternal(solutionNode, path, 1)
-        if (node != null) return node
-    }
-
-    if (fileNodes.isEmpty())
-        throw Exception("Node ${path.reduce { s1, s2 -> s1.split("?")[0] + "/" + s2.split("?")[0] }} not found in tree")
-
-    val fileNode = fileNodes.find { it.name.split(SolutionViewPaneBase.TextSeparator)[0].trim() == path[0] } as? AbstractTreeNode<*>
-        ?: throw Exception("Invalid name in path")
-
-    return if (path.count() == 1)
-        fileNode
-    else
-        findChildInternal(fileNode, path, 1)
-            ?: throw Exception("Node ${path.reduce { s1, s2 -> s1.split("?")[0] + "/" + s2.split("?")[0] }} not found in tree")
-}
-
-
-private fun findChildInternal(node: AbstractTreeNode<*>, path: Array<String>, index: Int): AbstractTreeNode<*>? {
-
-    val splitData = path[index].split("?")
-    val requestedName = splitData[0]
-    val requestedIndex = if (splitData.count() == 2) splitData[1].toInt() else 1
-
-    var childNameIndex = 0
-    for (child in node.children) {
-
-        // Explicitly set parent for node
-        // In real environment 'AbstractTreeStructureBase' do that for us immediately after getting children list
-        (child as AbstractTreeNode<*>).parent = node
-
-        val childName = child.name
-        if (childName != requestedName)
-            continue
-
-        childNameIndex++
-        if (childNameIndex != requestedIndex)
-            continue
-
-        val childIndex = index + 1
-        if (childIndex == path.count())
-            return child
-
-        val result = findChildInternal(child, path, childIndex)
-        if (result != null) return result
-    }
-    return null
 }
 
 private fun doActionAndWait(project: Project, action: () -> Unit, @Suppress("SameParameterValue") closeEditors: Boolean) {
