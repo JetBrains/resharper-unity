@@ -63,7 +63,6 @@ fun dumpExplorerTree(tree: JTree) : String {
         .replace("""(\s+)-Plugins$(\1\s+\S+$)*""".toRegex(RegexOption.MULTILINE), "") + "\n"
 }
 
-
 fun addNewItem(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
     frameworkLogger.info("Start adding new item: '$itemName'")
     val dataContext = createDataContextFor2(project, arrayOf(path))
