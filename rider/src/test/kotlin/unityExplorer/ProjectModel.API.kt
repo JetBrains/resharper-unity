@@ -24,6 +24,7 @@ import java.io.File
 import javax.swing.JTree
 
 fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDirectory: File, action: () -> Unit) {
+
     doActionAndWait(project, action, true)
     val treeDump = dumpUnityExplorerTree(project, tempTestDirectory)
 
@@ -51,16 +52,60 @@ private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: File) : S
         .replace(tempTestDirectory.toPath().toUri().toString().replace("file:///", "file://"), "")
 }
 
+
+fun dumpExplorerTree(tree: JTree) : String {
+    val dump = dumpTree(tree)
+    return dump
+        .replace(" Scratches and Consoles", "")
+        .replace(SolutionViewPaneBase.TextSeparator, "*")
+        .replace(" * no index", "")
+        .maskCacheFiles()
+        .replace("""(\s+)-Plugins$(\1\s+\S+$)*""".toRegex(RegexOption.MULTILINE), "") + "\n"
+}
+
+
 fun addNewItem(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
     frameworkLogger.info("Start adding new item: '$itemName'")
-    val viewPane = UnityExplorer.getInstance(project)
-    val dataContext = createDataContextFor2(viewPane, project, arrayOf(path))
+    val dataContext = createDataContextFor2(project, arrayOf(path))
     changeFileSystem(project) {
         val createdFile = executeNewItemAction(dataContext, template.type, template.group!!, itemName)
         this.affectedFiles.add(createdFile!!.parentFile)
     }
     persistAllFilesOnDisk(project)
     frameworkLogger.info("New item '$itemName' is added")
+}
+
+fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataContext {
+    flushQueues()
+    val nodes = paths.map { findReq(it, project) }.toTypedArray()
+    return createDataContextForNode(project, nodes)
+}
+
+fun findReq(path: Array<String>, project: Project): AbstractTreeNode<*> {
+    val viewPane = UnityExplorer.getInstance(project)
+    val solutionNode = viewPane.model.root
+    val fileNodes = viewPane.model.root.children.filterIsInstance<UnityExplorerNode>()
+    val solutionNodeName = solutionNode.name
+
+    if (path.count() == 1) {
+        if (solutionNodeName == path[0])
+            return solutionNode
+    } else {
+        val node = findChildInternal(solutionNode, path, 1)
+        if (node != null) return node
+    }
+
+    if (fileNodes.isEmpty())
+        throw Exception("Node ${path.reduce { s1, s2 -> s1.split("?")[0] + "/" + s2.split("?")[0] }} not found in tree")
+
+    val fileNode = fileNodes.find { it.name.split(SolutionViewPaneBase.TextSeparator)[0].trim() == path[0] } as? AbstractTreeNode<*>
+        ?: throw Exception("Invalid name in path")
+
+    return if (path.count() == 1)
+        fileNode
+    else
+        findChildInternal(fileNode, path, 1)
+            ?: throw Exception("Node ${path.reduce { s1, s2 -> s1.split("?")[0] + "/" + s2.split("?")[0] }} not found in tree")
 }
 
 private fun doActionAndWait(project: Project, action: () -> Unit, @Suppress("SameParameterValue") closeEditors: Boolean) {
