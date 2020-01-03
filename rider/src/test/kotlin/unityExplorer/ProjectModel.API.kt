@@ -21,6 +21,7 @@ import com.jetbrains.rider.test.scriptingApi.*
 import com.jetbrains.rider.util.idea.getComponent
 import com.jetbrains.rider.util.idea.syncFromBackend
 import java.io.File
+import javax.swing.JTree
 
 fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDirectory: File, action: () -> Unit) {
 
@@ -51,6 +52,18 @@ private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: File) : S
         .replace(tempTestDirectory.toPath().toUri().toString().replace("file:///", "file://"), "")
 }
 
+
+fun dumpExplorerTree(tree: JTree) : String {
+    val dump = dumpTree(tree)
+    return dump
+        .replace(" Scratches and Consoles", "")
+        .replace(SolutionViewPaneBase.TextSeparator, "*")
+        .replace(" * no index", "")
+        .maskCacheFiles()
+        .replace("""(\s+)-Plugins$(\1\s+\S+$)*""".toRegex(RegexOption.MULTILINE), "") + "\n"
+}
+
+
 fun addNewItem(project: Project, path: Array<String>, template: TemplateType, itemName: String) {
     frameworkLogger.info("Start adding new item: '$itemName'")
     val dataContext = createDataContextFor2(project, path)
@@ -69,12 +82,12 @@ fun createDataContextFor2(project: Project, path: Array<String>): DataContext {
 
 fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataContext {
     flushQueues()
-    val nodes = paths.map { findReq(it, project) }.toTypedArray()
+    val viewPane = UnityExplorer.getInstance(project)
+    val nodes = paths.map { findReq(viewPane, it, project) }.toTypedArray()
     return createDataContextForNode(project, nodes)
 }
 
-fun findReq(path: Array<String>, project: Project): AbstractTreeNode<*> {
-    val viewPane = UnityExplorer.getInstance(project)
+fun findReq(viewPane:SolutionViewPaneBase, path: Array<String>, project: Project): AbstractTreeNode<*> {
     val solutionNode = viewPane.model.root
     val fileNodes = viewPane.model.root.children.filterIsInstance<UnityExplorerNode>()
     val solutionNodeName = solutionNode.name
