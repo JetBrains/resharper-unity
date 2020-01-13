@@ -260,7 +260,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     new ShiftedDeclaredElementMatcher(eventFunction.Name, modifier.Length, textualInfo));
 
             var description = GetDescription(context, methodDeclaration);
-            return new WrappedLookupItem(lookupItem, description);
+            return new WrappedLookupItem<UnityEventFunctionTextualInfo>(lookupItem, description);
         }
 
         private RichTextBlock GetDescription(CSharpCodeCompletionContext context, IMethodDeclaration methodDeclaration)
@@ -486,12 +486,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             TextStyles = DeclaredElementPresenterTextStyles.ParameterInfo
         };
 
-        private class WrappedLookupItem : IWrappedLookupItem, IDescriptionProvidingLookupItem
+        private class WrappedLookupItem<TInfo> : IWrappedLookupItem, IDescriptionProvidingLookupItem, IAspectLookupItem<TInfo>
+            where TInfo : class, ILookupItemInfo
         {
-            private readonly ILookupItem myLookupItem;
+            private readonly LookupItem<TInfo> myLookupItem;
             [CanBeNull] private readonly RichTextBlock myDescription;
 
-            public WrappedLookupItem(ILookupItem lookupItem, [CanBeNull] RichTextBlock description)
+            public WrappedLookupItem(LookupItem<TInfo> lookupItem, [CanBeNull] RichTextBlock description)
             {
                 myLookupItem = lookupItem;
                 myDescription = description;
@@ -550,9 +551,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             public int Identity => myLookupItem.Identity;
 
+            public ILookupItemBehavior Behavior => myLookupItem.Behavior;
+
+            public ILookupItemPresentation Presentation => myLookupItem.Presentation;
+
+            public ILookupItemMatcher Matcher => myLookupItem.Matcher;
+
+            public void UpdateBehavior<TBehavior>(Func<TBehavior, TBehavior> fUpdateBehavior) where TBehavior : class, ILookupItemBehavior
+                => myLookupItem.UpdateBehavior(fUpdateBehavior);
+
+            public void UpdatePresentation<TPresentation>(Func<TPresentation, TPresentation> fUpdatePresentation) where TPresentation : class, ILookupItemPresentation
+                => myLookupItem.UpdatePresentation(fUpdatePresentation);
+
+            public void UpdatePresentationOfType<TPresentation>(Func<TPresentation, TPresentation> fUpdatePresentation) where TPresentation : class, ILookupItemPresentation
+                => myLookupItem.UpdatePresentationOfType(fUpdatePresentation);
+
+            public TInfo Info => myLookupItem.Info;
+
             #endregion
         }
-
 
         // TODO [vkrasnotsvetov, 193] : patch this logic in JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.Rules.Generate.OverrideRule
         // and remove copy-paste from product.
