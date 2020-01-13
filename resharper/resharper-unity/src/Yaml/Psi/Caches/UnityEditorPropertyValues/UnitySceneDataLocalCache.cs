@@ -163,7 +163,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         /// </summary>
         public static IPsiSourceFile GetSourceFileWithPointedYamlDocument(IPsiSourceFile containingFile, FileID id, MetaFileGuidCache guidCache)
         {
-            var module = (containingFile.PsiModule as UnityExternalFilesPsiModule).NotNull("module != null");
+            var module = (containingFile.PsiModule as UnityExternalFilesPsiModule).NotNull($"Expected Yaml module, found: {containingFile.PsiModule.Name}");
             var guid = id.guid;
             if (guid != null)
             {
