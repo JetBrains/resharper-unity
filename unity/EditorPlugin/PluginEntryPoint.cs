@@ -306,9 +306,7 @@ namespace JetBrains.Rider.Unity.Editor
           InitEditorLogPath(model);
 
           model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
-          model.ApplicationPath.SetValue(EditorApplication.applicationPath);
-          model.ApplicationContentsPath.SetValue(EditorApplication.applicationContentsPath);
-          model.ApplicationVersion.SetValue(UnityUtils.UnityApplicationVersion);
+          model.UnityApplicationData.SetValue(new UnityApplicationData(EditorApplication.applicationPath, EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           if (UnityUtils.UnityVersion >= new Version(2018, 2))

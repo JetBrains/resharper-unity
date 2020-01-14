@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     return HostProviderAvailability.Nonexistent;
                 case UnitTestLaunchPreference.EditMode:
                 {
-                    var unityVersion = UnityVersion.Parse(rdUnityModel.ApplicationVersion.Maybe.ValueOrDefault ?? string.Empty);
+                    var unityVersion = UnityVersion.Parse(rdUnityModel.UnityApplicationData.Maybe.ValueOrDefault.ApplicationVersion);
 
                     return unityVersion == null || unityVersion < ourMinSupportedUnityVersion
                         ? HostProviderAvailability.Nonexistent
