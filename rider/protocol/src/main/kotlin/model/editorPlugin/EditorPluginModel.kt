@@ -123,7 +123,6 @@ object EditorPluginModel: Root() {
         signal("findUsageResults", RdFindUsageResult)
         signal("showPreferences", void)
 
-        property("unityPluginVersion", string)
         property("riderProcessId", int)
         property("unityProcessId", int)
 
