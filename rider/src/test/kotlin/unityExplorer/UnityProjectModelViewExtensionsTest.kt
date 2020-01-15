@@ -12,7 +12,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         get() = true
 
     @Test
-    @TestEnvironment(solution = "com.unity.ide.rider")
+    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {
             //dump("Init", project, activeSolutionDirectory) {}
