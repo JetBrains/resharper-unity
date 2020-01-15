@@ -16,10 +16,6 @@ Add files and classes
   -Assets/NewDirectory1
    Assets/NewDirectory1/MainClass.cs
    Assets/NewDirectory1/zero
-  -Assets/Plugins
-   -Assets/Plugins/Editor
-    -Assets/Plugins/Editor/JetBrains
-     Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
   -Assets/Scripts
    -Assets/Scripts/Editor
     -Assets/Scripts/Editor/NewDirectory1
