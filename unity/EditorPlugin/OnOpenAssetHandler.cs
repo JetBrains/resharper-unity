@@ -102,7 +102,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      var argsString = assetFilePath == "" ? "" : $" --line {line} \"{assetFilePath}\""; // on mac empty string in quotes is causing additional solution to be opened https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider/issues/21
+      var argsString = assetFilePath == "" ? "" : $" --line {line} --col {column} \"{assetFilePath}\""; // on mac empty string in quotes is causing additional solution to be opened https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider/issues/21
       var args = string.Format("{0}{1}{0}{2}", "\"", mySlnFile, argsString);
       return CallRider(args);
     }
