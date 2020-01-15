@@ -1,9 +1,11 @@
 package com.jetbrains.rider.plugins.unity
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.components.ProjectComponent
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.vfs.AsyncFileListener
 import com.intellij.openapi.vfs.AsyncFileListener.ChangeApplier
 import com.intellij.openapi.vfs.VfsUtil
@@ -13,6 +15,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.util.SingleAlarm
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
@@ -23,31 +26,36 @@ import com.jetbrains.rider.projectView.indexing.contentModel.ContentModelUserSto
 import com.jetbrains.rider.projectView.indexing.contentModel.tryExclude
 import com.jetbrains.rider.projectView.indexing.contentModel.tryInclude
 import com.jetbrains.rider.util.idea.application
+import kotlinx.coroutines.Runnable
 import java.io.File
 
-class ContentModelUpdater(private val project: Project,
-                          private val unityProjectDiscoverer: UnityProjectDiscoverer,
-                          private val contentModel: ContentModelUserStore)
-    : ProjectComponent {
+class ContentModelUpdater(project: Project,
+    private val unityProjectDiscoverer: UnityProjectDiscoverer,
+                          private val contentModel: ContentModelUserStore): LifetimedProjectComponent(project)  {
+
+    init{
+        val connection = ApplicationManager.getApplication().messageBus.connect()
+        connection.subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
+            override fun projectOpened(project: Project) {
+                if (unityProjectDiscoverer.isUnityProject) {
+
+                    val alarm = SingleAlarm(Runnable(::onRootFoldersChanged), 1000, ModalityState.any(), project)
+                    val listener = Listener(alarm)
+
+                    // Listen to add/remove of folders in the root of the project
+                    VirtualFileManager.getInstance().addAsyncFileListener(listener, project)
+
+                    // Listen for external packages that we should be indexing
+                    PackageManager.getInstance(project).addListener(listener)
+
+                    alarm.request()
+                }
+            }
+        })
+    }
 
     private val excludedFolders = hashSetOf<File>()
     private val includedFolders = hashSetOf<File>()
-
-    override fun projectOpened() {
-        if (unityProjectDiscoverer.isUnityProject) {
-
-            val alarm = SingleAlarm(Runnable(::onRootFoldersChanged), 1000, ModalityState.any(), project)
-            val listener = Listener(alarm)
-
-            // Listen to add/remove of folders in the root of the project
-            VirtualFileManager.getInstance().addAsyncFileListener(listener, project)
-
-            // Listen for external packages that we should be indexing
-            PackageManager.getInstance(project).addListener(listener)
-
-            alarm.request()
-        }
-    }
 
     private fun onRootFoldersChanged() {
         application.assertIsDispatchThread()
