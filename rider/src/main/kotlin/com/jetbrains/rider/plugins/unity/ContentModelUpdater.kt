@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
@@ -34,8 +33,7 @@ class ContentModelUpdater(project: Project,
                           private val contentModel: ContentModelUserStore): LifetimedProjectComponent(project)  {
 
     init{
-        val connection = ApplicationManager.getApplication().messageBus.connect()
-        connection.subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
+            project.messageBus.connect().subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
             override fun projectOpened(project: Project) {
                 if (unityProjectDiscoverer.isUnityProject) {
 
