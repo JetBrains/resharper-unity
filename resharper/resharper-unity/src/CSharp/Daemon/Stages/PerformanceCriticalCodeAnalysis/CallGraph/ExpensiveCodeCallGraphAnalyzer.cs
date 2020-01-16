@@ -8,7 +8,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
     [SolutionComponent]
     public class ExpensiveCodeCallGraphAnalyzer : CallGraphAnalyzerBase
@@ -30,8 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             {
                 case IInvocationExpression invocationExpression when PerformanceCriticalCodeStageUtil.IsInvocationExpensive(invocationExpression):
                 case IReferenceExpression referenceExpression when PerformanceCriticalCodeStageUtil.IsCameraMainUsage(referenceExpression):
-                case IEqualityExpression equalityExpressionParam when PerformanceCriticalCodeStageUtil.IsNullComparisonWithUnityObject(equalityExpressionParam, out _):
-                case IFunctionDeclaration functionDeclaration when PerformanceCriticalCodeStageUtil.HasPerformanceSensitiveAttribute(functionDeclaration):
+                case IAttributesOwner attributesOwner when PerformanceCriticalCodeStageUtil.HasPerformanceSensitiveAttribute(attributesOwner):
                     result.Add(containingFunction);
                     break;
             }

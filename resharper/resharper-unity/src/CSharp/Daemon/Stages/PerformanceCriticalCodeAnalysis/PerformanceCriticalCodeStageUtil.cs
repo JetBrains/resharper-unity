@@ -10,7 +10,6 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis
 {
@@ -136,44 +135,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return false;
         }
 
-        public static bool HasPerformanceSensitiveAttribute(IFunctionDeclaration functionDeclaration)
+        public static bool HasPerformanceSensitiveAttribute(IAttributesOwner attributesOwner)
         {
-            return HasSpecificAttribute(functionDeclaration, "PerformanceCharacteristicsHintAttribute");
+            return HasSpecificAttribute(attributesOwner, "PerformanceCharacteristicsHintAttribute");
         }
         
-        public static bool HasFrequentlyCalledMethodAttribute(IFunctionDeclaration functionDeclaration)
+        public static bool HasFrequentlyCalledMethodAttribute(IAttributesOwner attributesOwner)
         {
-            return HasSpecificAttribute(functionDeclaration, "FrequentlyCalledMethodAttribute");
+            return HasSpecificAttribute(attributesOwner, "FrequentlyCalledMethodAttribute");
         }
         
-        public static bool HasSpecificAttribute(IFunctionDeclaration functionDeclaration, string name)
+        public static bool HasSpecificAttribute(IAttributesOwner attributesOwner, string name)
         {
-            var declaredElement = functionDeclaration.DeclaredElement;
-            if (declaredElement == null)
-                return false;
-            return declaredElement.GetAttributeInstances(true)
+            return attributesOwner.GetAttributeInstances(true)
                 .Any(t => t.GetClrName().ShortName.Equals(name));
         }
-        
-        public static IHighlighting CreateHiglighting(ITreeNode treeNode)
-        {
-            switch (treeNode)
-            {
-                case IInvocationExpression invocationExpression when IsInvocationExpensive(invocationExpression):
-                    return new PerformanceInvocationHighlighting(invocationExpression, (invocationExpression.InvokedExpression as IReferenceExpression).Reference);
-                
-                case IEqualityExpression equalityExpression when IsNullComparisonWithUnityObject(equalityExpression, out var name):
-                    return new PerformanceNullComparisonHighlighting(equalityExpression, name, equalityExpression.Reference.NotNull("eqaulityReference != null"));
-                
-                case IReferenceExpression referenceExpression when IsCameraMainUsage(referenceExpression):
-                    return new PerformanceCameraMainHighlighting(referenceExpression);
-            }
 
-            return null;
+        public static bool IsPerformanceCriticalRootMethod(UnityApi api, ITreeNode node)
+        {
+            // TODO: 20.1, support lambda
+            if (node is IAttributesOwner attributesOwner && HasPerformanceSensitiveAttribute(attributesOwner))
+                return true;
+
+            if (node is ICSharpDeclaration declaration &&
+                declaration.DeclaredElement is IClrDeclaredElement clrDeclaredElement)
+                return ourKnownHotMonoBehaviourMethods.Contains(clrDeclaredElement.ShortName);
+
+            return false;
         }
         
-
         #region data
+
+        private static readonly ISet<string> ourKnownHotMonoBehaviourMethods = new HashSet<string>()
+        {
+            "Update", "LateUpdate", "FixedUpdate",
+        };
 
         private static readonly ISet<string> ourKnownComponentCostlyMethods = new HashSet<string>()
         {

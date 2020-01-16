@@ -33,8 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
         }
         
-        
-        public abstract IDeclaredElement Analyze(IDeclaration treeNode, IHighlightingConsumer consumer,
+        public abstract bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
             DaemonProcessKind kind);
         
         protected virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,

@@ -30,10 +30,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             myUnityApi = unityApi;
         }
 
-        public override IDeclaredElement Analyze(IDeclaration node, IHighlightingConsumer consumer, DaemonProcessKind kind)
+        public override bool AddDeclarationHighlighting(IDeclaration node, IHighlightingConsumer consumer, DaemonProcessKind kind)
         {
             if (!(node is IClassLikeDeclaration element))
-                return null;
+                return false;
 
             var typeElement = element.DeclaredElement;
             if (typeElement != null)
@@ -57,10 +57,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                         kind);
                 }
 
-                return typeElement;
+                return true;
             }
 
-            return null;
+            return false;
         }
 
         protected virtual void AddMonoBehaviourHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
