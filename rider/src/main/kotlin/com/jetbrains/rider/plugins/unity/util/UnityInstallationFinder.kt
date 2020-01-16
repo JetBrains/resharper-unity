@@ -52,11 +52,11 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     private fun getApplicationContentsPathFromProtocol(): Path? {
-        return project.solution.rdUnityModel.applicationContentsPath.valueOrNull?.let { Paths.get(it) }
+        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.applicationContentsPath.let { Paths.get(it) }
     }
 
     private fun tryGetApplicationPathFromProtocol(): Path? {
-        return project.solution.rdUnityModel.applicationPath.valueOrNull?.let { Paths.get(it) }
+        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.applicationPath.let { Paths.get(it) }
     }
 
     fun getApplicationVersion(): String? {
@@ -64,6 +64,6 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     private fun tryGetApplicationVersionFromProtocol(): String? {
-        return project.solution.rdUnityModel.applicationVersion.valueOrNull
+        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.applicationVersion
     }
 }

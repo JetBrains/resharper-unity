@@ -46,6 +46,12 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("rootIndices", array(int))
     }
 
+    val UnityApplicationData = structdef {
+        field("applicationPath", string)
+        field("applicationContentsPath", string)
+        field("applicationVersion", string)
+    }
+
     init {
         sink("activateRider", void)
         sink("activateUnityLogView", void)
@@ -55,9 +61,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
         property("hideSolutionConfiguration", bool)
 
-        property("applicationPath", string)
-        property("applicationContentsPath", string)
-        property("applicationVersion", string)
+        property("unityApplicationData", UnityApplicationData)
 
         property("editorLogPath", string)
         property("playerLogPath", string)

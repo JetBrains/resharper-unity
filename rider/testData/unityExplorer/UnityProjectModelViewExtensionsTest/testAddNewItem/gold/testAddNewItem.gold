@@ -16,10 +16,6 @@ Add files and classes
   -Assets/NewDirectory1
    Assets/NewDirectory1/MainClass.cs
    Assets/NewDirectory1/zero
-  -Assets/Plugins
-   -Assets/Plugins/Editor
-    -Assets/Plugins/Editor/JetBrains
-     Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll
   -Assets/Scripts
    -Assets/Scripts/Editor
     -Assets/Scripts/Editor/NewDirectory1
@@ -33,7 +29,7 @@ Add files and classes
 
 Project [Name:&, GUID:GUID]
   Child items:
-    ProjectFileImpl(Path : com.unity.ide.rider.sln)[]
+    ProjectFileImpl(Path : UnityProjectModelViewExtensionsTest.sln)[]
 
 Project [Name:AsmdefResponse, GUID:GUID]
   Child items:
