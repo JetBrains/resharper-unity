@@ -25,6 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         private readonly List<ITreeNodePointer<ITreeNode>> myTreeNodePointers;
         private readonly IArrayCreationExpression myArrayCreationExpression;
         private readonly IArrayType myType;
+        private readonly IMultipleDeclaration myMultipleDeclaration;
 
         public InefficientMultidimensionalArrayUsageQuickFix(InefficientMultidimensionalArrayUsageWarning warning)
         {
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             myTreeNodePointers = warning.Usages;
             myArrayCreationExpression = warning.ArrayCreationExpression;
             myType = (myVariableDeclaration.Type as IArrayType).NotNull("type != null");
-
+            myMultipleDeclaration = warning.MultiplyDeclaration;
         }
         
 
@@ -140,7 +141,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         public override string Text => "Convert to jagged array";
         
-        public override bool IsAvailable(IUserDataHolder cache) => myWarning.IsValid() && myType.Rank == 2 &&
-                                                                   (myArrayCreationExpression == null || myArrayCreationExpression.Sizes.Count == 2);
+        public override bool IsAvailable(IUserDataHolder cache)
+        {
+            if (!myWarning.IsValid())
+                return false;
+
+            // Hard to generate pretty initializer
+            if (myType.Rank != 2)
+                return false;
+            if (myArrayCreationExpression != null && myArrayCreationExpression.Sizes.Count != 2)
+                return false;
+
+            if (myMultipleDeclaration.Declarators.Count > 1)
+                return false;
+
+            if (myVariableDeclaration is IFieldDeclaration)
+                return false;
+
+            return true;
+        }
     }
 }

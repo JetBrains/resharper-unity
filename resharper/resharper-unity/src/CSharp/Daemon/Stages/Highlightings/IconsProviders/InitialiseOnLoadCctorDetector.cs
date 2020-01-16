@@ -23,13 +23,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
         }
         
-        public override IDeclaredElement Analyze(IDeclaration node, IHighlightingConsumer consumer, DaemonProcessKind kind)
+        public override bool AddDeclarationHighlighting(IDeclaration node, IHighlightingConsumer consumer, DaemonProcessKind kind)
         {
             if (!(node is IConstructorDeclaration element))
-                return null;
+                return false;
             
             if (!element.IsStatic)
-                return null;
+                return false;
 
             var containingType = element.GetContainingTypeDeclaration()?.DeclaredElement;
             if (containingType != null &&
@@ -37,10 +37,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 AddHighlighting(consumer, element, "Used implicitly", 
                     "Called when Unity first launches the editor, the player, or recompiles scripts", kind);
-                return containingType;
+                return true;
             }
 
-            return null;
+            return false;
         }
 
         protected override IEnumerable<BulbMenuItem> GetActions(ICSharpDeclaration declaration)

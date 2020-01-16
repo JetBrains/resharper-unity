@@ -8,6 +8,7 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
   </Usings>
 
   <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
@@ -276,7 +277,7 @@
       <Tag externalName="InefficientMultidimensionalArrayUsageWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>Use jagged or one-dimensional array instead of multidimensional array</Title>
         <Description>
-          Usage of multidimensional array is inefficient. Use the jagged or one-dimensional array instead.
+          Multidimensional array element access is converted to a method call. It is more efficient to use a jagged or one-dimensional array.
         </Description>
       </Tag>
     </Group>
@@ -441,9 +442,11 @@
     <Parameter type="List&lt;ITreeNodePointer&lt;ITreeNode&gt;&gt;" name="usages" isValid="skip" />
     <Parameter type="IArrayCreationExpression" name="arrayCreationExpression" isValid="skip"/>
     <Parameter type="IVariableDeclaration" name="variableDeclaration" />
-    <Message value="Usage of multidimensional array is inefficient. Use jagged or one-dimensional array instead" />
-    <Range>VariableDeclaration.GetHighlightingRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
+    <Parameter type="IMultipleDeclaration" name="multiplyDeclaration" />
+    <Parameter type="DocumentRange" name="highlightingRange" />
+    <Message value="Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead" />
+    <Range>HighlightingRange</Range>
+    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE"/>
   </Warning>
 
   <Warning name="InefficientMultiplicationOrder" configurableSeverity="Unity.InefficientMultiplicationOrder">
@@ -452,7 +455,7 @@
     <Parameter type="List&lt;ICSharpExpression&gt;" name="matrices" isValid="skip"/>
     <Message value="Order of multiplication operations is inefficient" />
     <Range>Expression.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
+    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER"/>
   </Warning>
 
   <Warning name="InstantiateWithoutParent" configurableSeverity="Unity.InstantiateWithoutParent">

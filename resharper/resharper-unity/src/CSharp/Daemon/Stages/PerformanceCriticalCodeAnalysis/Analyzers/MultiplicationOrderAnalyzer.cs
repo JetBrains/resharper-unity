@@ -1,21 +1,19 @@
 using System.Collections.Generic;
-using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
-    [ElementProblemAnalyzer(typeof(IMultiplicativeExpression), HighlightingTypes =
-        new[] {typeof(InefficientMultiplicationOrderWarning)})]
-    public class MultiplicationOrderAnalyzer : UnityElementProblemAnalyzer<IMultiplicativeExpression>
+    [SolutionComponent]
+    public class MultiplicationOrderAnalyzer : PerformanceProblemAnalyzerBase<IMultiplicativeExpression>
     {
         private static readonly HashSet<IClrTypeName> ourKnownTypes = new HashSet<IClrTypeName>()
         {
@@ -27,14 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             new ClrTypeName("UnityEngine.Quaternion"),
             new ClrTypeName("UnityEngine.Matrix4x4"),
         };
-
-        public MultiplicationOrderAnalyzer(UnityApi unityApi)
-            : base(unityApi)
-        {
-        }
-
-        protected override void Analyze(IMultiplicativeExpression expression, ElementProblemAnalyzerData data,
-            IHighlightingConsumer consumer)
+        
+        protected override void Analyze(IMultiplicativeExpression expression, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
             if (IsStartPoint(expression))
             {
