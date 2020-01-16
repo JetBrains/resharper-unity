@@ -147,7 +147,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                     return false;
                 if (string.Compare(rootFolder.Name, ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase) == 0)
                     return true;
-                return string.Compare(rootFolder.Name, ProjectExtensions.PackagesFolder, StringComparison.OrdinalIgnoreCase) == 0;
+                if (string.Compare(rootFolder.Name, ProjectExtensions.PackagesFolder, StringComparison.OrdinalIgnoreCase) == 0)
+                    return true;
+                return rootFolder.Location.Combine($"{rootFolder.Name}.asmdef").ExistsFile; // for file: based packages
             }
 
             private static IProjectFolder GetRootFolder(IProjectItem item)
