@@ -114,6 +114,12 @@ object EditorPluginModel: Root() {
         field("outputPath", string)
     }
 
+    val UnityApplicationData = structdef{
+        field("applicationPath", string)
+        field("applicationContentsPath", string)
+        field("applicationVersion", string)
+    }
+
     init {
         property("play", bool)
         property("pause", bool)
@@ -123,13 +129,10 @@ object EditorPluginModel: Root() {
         signal("findUsageResults", RdFindUsageResult)
         signal("showPreferences", void)
 
-        property("unityPluginVersion", string)
         property("riderProcessId", int)
         property("unityProcessId", int)
 
-        property("applicationPath", string)
-        property("applicationContentsPath", string)
-        property("applicationVersion", string)
+        property("unityApplicationData", UnityApplicationData)
         property("scriptingRuntime", int)
 
         sink("log", RdLogEvent)

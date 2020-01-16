@@ -111,7 +111,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.InstallUnity3DRiderPlugin))
                 return;
 
-            if (HasNewRiderPackage()) return;
+            var versionForSolution = myUnityVersion.GetActualVersionForSolution();
+            if (versionForSolution >= new Version("2019.2")) // 2019.2+ would not work fine either without Rider package, and when package is present it loads EditorPlugin directly from Rider installation.
+                return;
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
@@ -132,43 +134,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 mySolution.Locks.Tasks.StartNew(myLifetime, Scheduling.MainDispatcher,
                     () => myRefresher.Refresh(RefreshType.Normal));
             });
-        }
-
-        // todo: https://github.com/JetBrains/resharper-unity/issues/1432
-        private bool HasNewRiderPackage()
-        {
-            // Unity 2019.2+ is expected to have com.unity.ide.rider package, which loads EditorPlugin directly from Rider installation
-            var manifestJsonFile = mySolution.SolutionDirectory.Combine("Packages/manifest.json");
-            if (manifestJsonFile.ExistsFile)
-            {
-                var text = manifestJsonFile.ReadAllText2().Text;
-                //"com.unity.ide.rider": "1.0.7"
-                var match = Regex.Match(text, @"""com\.unity\.ide\.rider""\s*:\s*""(?<version>.*)""", RegexOptions.Multiline);
-                if (match.Success)
-                {
-                    //it could be "com.unity.ide.rider": "1.1.2-preview.1"
-                    var versionString = match.Groups["version"].Value.Replace("-preview", string.Empty);
-                    if (Version.TryParse(versionString, out var version))
-                    {
-                        if (version >= new Version(1, 0, 7))
-                        {
-                            myLogger.Verbose($"com.unity.ide.rider version {version}. Skip EditorPlugin installation.");
-                            return true;
-                        }
-
-                        myLogger.Verbose($"com.unity.ide.rider version {version}. EditorPlugin installation continues.");
-                    }
-                }
-            }
-
-            var localPackage = mySolution.SolutionDirectory.Combine("Packages/com.unity.ide.rider/package.json");
-            if (localPackage.ExistsFile)
-            {
-                myLogger.Verbose("Local package com.unity.ide.rider detected, skip EditorPlugin installation.");
-                return true;
-            }
-
-            return false;
         }
 
         private void QueueInstall(UnityPluginDetector.InstallationInfo installationInfo, bool force = false)

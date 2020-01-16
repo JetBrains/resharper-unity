@@ -28,6 +28,7 @@ using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
 using Newtonsoft.Json;
+using UnityApplicationData = JetBrains.Rider.Model.UnityApplicationData;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -229,12 +230,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     // This means that if/when the Unity <-> Backend protocol closes, they still retain the last value
                     // they had - so the front end will retain the log and application paths of the just-closed editor.
                     // Opening a new editor instance will reconnect and push a new value through to the front end
-                    editor.ApplicationPath.Advise(lifetime,
-                        s => myHost.PerformModelAction(a => a.ApplicationPath.SetValue(s)));
-                    editor.ApplicationContentsPath.Advise(lifetime,
-                        s => myHost.PerformModelAction(a => a.ApplicationContentsPath.SetValue(s)));
-                    editor.ApplicationVersion.Advise(lifetime,
-                        s => myHost.PerformModelAction(a => a.ApplicationVersion.SetValue(s)));
+                    editor.UnityApplicationData.Advise(lifetime,
+                        s => myHost.PerformModelAction(a => a.UnityApplicationData.SetValue(new UnityApplicationData(s.ApplicationPath, s.ApplicationContentsPath, s.ApplicationVersion))));
                     editor.ScriptCompilationDuringPlay.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ScriptCompilationDuringPlay.Set(ConvertToScriptCompilationEnum(s))));
 
@@ -277,15 +274,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         private void TrackActivity(EditorPluginModel editor, Lifetime lf)
-        {
-            if (!editor.ApplicationVersion.HasValue())
-                editor.ApplicationVersion.AdviseNotNull(lf, version => { myUsageStatistics.TrackActivity("UnityVersion", version); });
-            else
-                myUsageStatistics.TrackActivity("UnityVersion", editor.ApplicationVersion.Value);
-            if (!editor.ScriptingRuntime.HasValue())
-                editor.ScriptingRuntime.Advise(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
-            else
-                myUsageStatistics.TrackActivity("ScriptingRuntime", editor.ScriptingRuntime.Value.ToString());
+        { 
+            editor.UnityApplicationData.AdviseOnce(lf, data => { myUsageStatistics.TrackActivity("UnityVersion", data.ApplicationVersion); });
+            editor.ScriptingRuntime.AdviseOnce(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
         }
 
         private void SubscribeToOpenFile([NotNull] EditorPluginModel editor)

@@ -29,7 +29,7 @@ class OpenUnityProjectAsFolderNotification(project: Project, unityHost: UnityHos
     }
 
     init {
-        unityHost.model.applicationPath.advise(componentLifetime) {
+        unityHost.model.unityApplicationData.advise(componentLifetime) {
             // Do nothing if we're not in Unity folders, or we are, but we're a proper .sln based solution
             if (project.solutionDescription is RdExistingSolution) return@advise
 

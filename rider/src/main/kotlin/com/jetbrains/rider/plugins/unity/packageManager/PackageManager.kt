@@ -65,7 +65,7 @@ class PackageManager(private val project: Project) {
 
         // The application path affects the module packages. This comes from the backend, so will be up to date with
         // changes from the Editor via protocol, or changes to the project files via heuristics
-        project.solution.rdUnityModel.applicationPath.advise(lifetime) { scheduleRefreshAndNotify() }
+        project.solution.rdUnityModel.unityApplicationData.advise(lifetime) { scheduleRefreshAndNotify() }
 
         scheduleRefreshAndNotify()
     }
