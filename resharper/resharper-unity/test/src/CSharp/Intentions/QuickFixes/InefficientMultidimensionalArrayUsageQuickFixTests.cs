@@ -17,6 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void FieldWithoutInitializer() { DoNamedTest(); }
         [Test] public void PublicFieldWithoutInitializer() { DoNamedTest(); }
         [Test] public void AdditionalUsages() { DoNamedTest(); }
+        [Test] public void PrivateFieldWithUsage() { DoNamedTest(); }
+
+        [Test] public void MultipleDeclarators() { DoNamedTest(); }
         
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile psiSourceFile,
             IContextBoundSettingsStore boundSettingsStore)
@@ -33,9 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 
         [Test] public void LocalDeclarationVar() { DoNamedTest(); }
         [Test] public void LocalDeclarationType() { DoNamedTest(); }
+        [Test] public void LocalDeclarationType2() { DoNamedTest(); }
         [Test] public void LocalDeclarationWithInitializer() { DoNamedTest(); }
-        [Test] public void FieldWithoutUsagesAndInitializer() { DoNamedTest(); }
-        [Test] public void FieldWithUsageAnaInitializer() { DoNamedTest(); }
-        [Test] public void FieldWithoutInitialization() { DoNamedTest(); }
     }
 }

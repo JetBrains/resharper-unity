@@ -6,7 +6,7 @@ namespace DefaultNamespace
     {
         public void Update()
         {
-            var test = new i{caret}nt[2][];
+            var te{caret}st = new int[2][];
             for (int index = 0; index < 2; index++)
             {
               test[index] = new int[2];

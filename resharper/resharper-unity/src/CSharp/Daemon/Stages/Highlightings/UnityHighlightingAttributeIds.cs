@@ -1,7 +1,10 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.Feature.HighlightingEye;
 
-[assembly: RegisterConfigurableHighlightingsGroup(UnityHighlightingGroupIds.Unity, "Unity")]
+[assembly: RegisterConfigurableHighlightingsGroup(UnityHighlightingGroupIds.Unity, "Unity"),
+           RegisterConfigurableHighlightingsGroup(UnityHighlightingGroupIds.UnityPerformance, "Unity Performance Inspections", HighlightingEyeGroupKind.UnityPerformanceKind
+           )]
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {

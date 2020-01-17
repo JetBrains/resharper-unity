@@ -28,6 +28,14 @@
     <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
       <DependentUpon>CSharpErrors.xml</DependentUpon>
     </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\CSharpPerformanceErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs">
+      <DependentUpon>CSharpPerformanceErrors.xml</DependentUpon>
+    </Compile>
     <!-- Cg language -->
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>

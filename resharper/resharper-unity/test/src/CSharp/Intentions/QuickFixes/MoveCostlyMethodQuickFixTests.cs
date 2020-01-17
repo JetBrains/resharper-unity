@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\MoveCostlyMethod\Availability";
 
-        [Test][Ignore("AvailabilityTestBase does not support global analysis")]  public void EveryThingAvailable() { DoNamedTest(); }
+        [Test]  public void EveryThingAvailable() { DoNamedTest(); }
         [Test][Ignore("AvailabilityTestBase does not support global analysis")]  public void NotAvailableDueToLocalDependencies1() { DoNamedTest(); }
         [Test][Ignore("AvailabilityTestBase does not support global analysis")]  public void NotAvailableDueToLocalDependencies2() { DoNamedTest(); }
 
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         {
             return (!(highlighting is IHighlightingTestBehaviour highlightingTestBehaviour) ||
                     !highlightingTestBehaviour.IsSuppressed) &&
-                   highlighting is PerformanceHighlightingBase && !(highlighting is PerformanceHighlighting);
+                   highlighting is UnityPerformanceHighlightingBase && !(highlighting is UnityPerformanceCriticalCodeLineMarker);
         }
     }
 
