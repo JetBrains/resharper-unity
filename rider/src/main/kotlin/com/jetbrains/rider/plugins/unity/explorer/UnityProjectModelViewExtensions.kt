@@ -8,6 +8,8 @@ import java.util.*
 
 class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtensions(project) {
 
+    // TODO: Replace with getBestParentProjectModelNode when it's clear what the fix is
+    @Suppress("OverridingDeprecatedMember")
     override fun chooseBestProjectModelNode(nodes: List<ProjectModelNode>): ProjectModelNode? {
 
         // predefined projects in the following order
@@ -30,6 +32,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (closest != null)
             return closest
 
+        @Suppress("DEPRECATION")
         return super.chooseBestProjectModelNode(nodes)
     }
 
