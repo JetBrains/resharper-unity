@@ -2,8 +2,8 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         private void CreateHiglighting(IInvocationExpression expression, IHighlightingConsumer consumer)
         {
-            consumer.AddHighlighting(new PerformanceInvocationHighlighting(expression, (expression.InvokedExpression as IReferenceExpression)?.Reference));
+            consumer.AddHighlighting(new UnityPerformanceInvocationWarning(expression, (expression.InvokedExpression as IReferenceExpression)?.Reference));
         }
     }
 }

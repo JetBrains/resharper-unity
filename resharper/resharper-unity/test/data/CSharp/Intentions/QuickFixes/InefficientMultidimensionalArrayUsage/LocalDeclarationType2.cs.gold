@@ -6,14 +6,14 @@ namespace DefaultNamespace
     {
         public void Update()
         {
-            int[][] te{caret}st = new int[2][];
+            int[][] test = new int[2][];
             for (int index = 0; index < 2; index++)
             {
               test[index] = new int[2];
             }
 
             test[0][0] = 5;
-            test[test[0][1]][test[0][test[0][1]]] = 5;
+            test[test[0][{caret}1]][test[0][test[0][1]]] = 5;
         }
     }
 }

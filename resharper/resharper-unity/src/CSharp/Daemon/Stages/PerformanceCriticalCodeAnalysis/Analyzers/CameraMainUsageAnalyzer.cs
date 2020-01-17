@@ -1,6 +1,6 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             if (PerformanceCriticalCodeStageUtil.IsCameraMainUsage(referenceExpression))
             {
-                consumer.AddHighlighting(new PerformanceCameraMainHighlighting(referenceExpression));
+                consumer.AddHighlighting(new UnityPerformanceCameraMainWarning(referenceExpression));
             }
         }
     }

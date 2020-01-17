@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)
             {
-                consumer.AddHighlighting(new PerformanceHighlighting(t.GetDocumentRange()));
+                consumer.AddHighlighting(new UnityPerformanceCriticalCodeLineMarker(t.GetDocumentRange()));
             }
         }
     }

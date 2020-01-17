@@ -78,13 +78,7 @@
         <Title>Incorrect method signature</Title>
         <Description>Method does not match expected signature.</Description>
       </Tag>
-
-      <Tag externalName="InefficientMultiplicationOrderWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-          <Title>Order of multiplication operations is inefficient</Title>
-        <Description>Reordering multiplication operations will improve performance</Description>
-      </Tag>
-
+      
       <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Repeated access of property on built in component is inefficient</Title>
@@ -273,13 +267,6 @@
           The same shortcut is defined for another menu item
         </Description>
       </Tag>
-
-      <Tag externalName="InefficientMultidimensionalArrayUsageWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Use jagged or one-dimensional array instead of multidimensional array</Title>
-        <Description>
-          Multidimensional array element access is converted to a method call. It is more efficient to use a jagged or one-dimensional array.
-        </Description>
-      </Tag>
     </Group>
   </SeverityConfiguration>
 
@@ -436,26 +423,6 @@
     <Message value="Repeated property access of built in component is inefficient" />
     <Range>HighlightedReference.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
-  <Warning name="InefficientMultidimensionalArrayUsage" configurableSeverity="Unity.InefficientMultidimensionalArrayUsage">\
-    <Parameter type="List&lt;ITreeNodePointer&lt;ITreeNode&gt;&gt;" name="usages" isValid="skip" />
-    <Parameter type="IArrayCreationExpression" name="arrayCreationExpression" isValid="skip"/>
-    <Parameter type="IVariableDeclaration" name="variableDeclaration" />
-    <Parameter type="IMultipleDeclaration" name="multiplyDeclaration" />
-    <Parameter type="DocumentRange" name="highlightingRange" />
-    <Message value="Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead" />
-    <Range>HighlightingRange</Range>
-    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE"/>
-  </Warning>
-
-  <Warning name="InefficientMultiplicationOrder" configurableSeverity="Unity.InefficientMultiplicationOrder">
-    <Parameter type="ICSharpExpression" name="expression"/>
-    <Parameter type="List&lt;ICSharpExpression&gt;" name="scalars" isValid="skip"/>
-    <Parameter type="List&lt;ICSharpExpression&gt;" name="matrices" isValid="skip"/>
-    <Message value="Order of multiplication operations is inefficient" />
-    <Range>Expression.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" qualifiedAttributeID="PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER"/>
   </Warning>
 
   <Warning name="InstantiateWithoutParent" configurableSeverity="Unity.InstantiateWithoutParent">

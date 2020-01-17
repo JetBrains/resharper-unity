@@ -1,7 +1,7 @@
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             IHighlightingConsumer consumer)
         {
             if (PerformanceCriticalCodeStageUtil.IsNullComparisonWithUnityObject(equalityExpression, out var name))
-                consumer.AddHighlighting(new PerformanceNullComparisonHighlighting(equalityExpression, name, equalityExpression.Reference.NotNull("eqaulityReference != null")));
+                consumer.AddHighlighting(new UnityPerformanceNullComparisonWarning(equalityExpression, name, equalityExpression.Reference.NotNull("eqaulityReference != null")));
         }
     }
 }

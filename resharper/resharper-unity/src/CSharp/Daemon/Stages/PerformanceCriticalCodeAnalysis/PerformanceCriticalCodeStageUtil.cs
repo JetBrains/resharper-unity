@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
-using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -157,6 +154,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (node is IAttributesOwner attributesOwner && HasPerformanceSensitiveAttribute(attributesOwner))
                 return true;
 
+            var typeElement = node.GetContainingNode<IClassLikeDeclaration>()?.DeclaredElement;
+            if (typeElement == null)
+                return false;
+
+            if (!api.IsDescendantOfMonoBehaviour(typeElement))
+                return false;
+            
             if (node is ICSharpDeclaration declaration &&
                 declaration.DeclaredElement is IClrDeclaredElement clrDeclaredElement)
                 return ourKnownHotMonoBehaviourMethods.Contains(clrDeclaredElement.ShortName);
