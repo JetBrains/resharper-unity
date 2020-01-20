@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util.Special;
 

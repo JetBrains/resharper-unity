@@ -12,6 +12,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;

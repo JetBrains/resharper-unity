@@ -7,6 +7,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 using JetBrains.Util.Logging;
+using ProjectExtensions = JetBrains.ReSharper.Plugins.Unity.ProjectModel.ProjectExtensions;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {

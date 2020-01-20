@@ -1,9 +1,8 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
 {
     public static class ProjectExtensions
     {

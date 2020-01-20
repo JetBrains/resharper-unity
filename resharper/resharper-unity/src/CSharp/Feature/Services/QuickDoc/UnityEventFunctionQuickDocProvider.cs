@@ -11,6 +11,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
 using JetBrains.ReSharper.Feature.Services.Util;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.Util;

@@ -1,6 +1,7 @@
 ﻿using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Resolve;
