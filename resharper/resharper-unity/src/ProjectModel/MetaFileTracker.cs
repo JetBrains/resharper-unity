@@ -137,7 +137,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static bool ShouldHandleChange(ProjectItemChange change)
             {
                 // String comparisons, treat as expensive if we're doing this very frequently
-                return !IsItemMetaFile(change);
+                return IsAssetOrPackage(change) && !IsItemMetaFile(change);
+            }
+
+            private static bool IsAssetOrPackage(ProjectItemChange change)
+            {
+                var rootFolder = GetRootFolder(change.OldParentFolder);
+                if (rootFolder == null)
+                    return false;
+                if (string.Compare(rootFolder.Name, ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase) == 0)
+                    return true;
+                if (string.Compare(rootFolder.Name, ProjectExtensions.PackagesFolder, StringComparison.OrdinalIgnoreCase) == 0)
+                    return true;
+                var project = change.ProjectItem.GetProject();
+                return project != null && project.HasSubItems(rootFolder.Name);
+            }
+
+            private static IProjectFolder GetRootFolder(IProjectItem item)
+            {
+                while (item?.ParentFolder != null && item.ParentFolder.Kind != ProjectItemKind.PROJECT)
+                    item = item.ParentFolder;
+                return item as IProjectFolder;
             }
 
             private static bool IsItemMetaFile(ProjectItemChange change)
