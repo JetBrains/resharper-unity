@@ -12,12 +12,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             var unitySolutionTracker = project.GetSolution().GetComponent<UnitySolutionTracker>();
             var unityReferencesTracker = project.GetSolution().GetComponent<UnityReferencesTracker>();
-            if (unitySolutionTracker.IsUnityGeneratedProject.Maybe.Value)
+            if (unitySolutionTracker.IsUnityGeneratedProject.Value)
                 yield return "UnityGenerated";
-            if (unitySolutionTracker.IsUnityProject.Maybe.Value)
+            else if (unitySolutionTracker.IsUnityProject.Value)
                 yield return "UnitySidecar";
-            if (unityReferencesTracker.HasUnityReference.Maybe.Value)
-                yield return "UnitySidecar";
+            else if (unityReferencesTracker.HasUnityReference.Value)
+                yield return "UnityClassLib";
         }
     }
 }
