@@ -23,10 +23,10 @@ namespace DefaultNamespace
                 myRigidBody2D = |GetComponent|(3)<RigidBody2D>();
             }
 
-            NotPerformanceCritical();
+            NotExpensive();
         }
 
-        public void |NotPerformanceCritical|(4)() {
+        public void |NotExpensive|(4)() {
             var a = |Vector3.up * 5f * 4f|(5);
             |arr[0, 1]|(6) = 5;
         }
