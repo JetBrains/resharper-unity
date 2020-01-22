@@ -1,59 +1,53 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rider.isUnityGeneratedProject
 import com.jetbrains.rider.projectView.ProjectModelViewExtensions
-import com.jetbrains.rider.projectView.nodes.ProjectModelNode
-import com.jetbrains.rider.projectView.nodes.containingProject
-import java.util.*
+import com.jetbrains.rider.projectView.ProjectModelViewHost
+import com.jetbrains.rider.projectView.nodes.*
 
 class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtensions(project) {
 
-    // TODO: Replace with getBestParentProjectModelNode when it's clear what the fix is
-    @Suppress("OverridingDeprecatedMember")
-    override fun chooseBestProjectModelNode(nodes: List<ProjectModelNode>): ProjectModelNode? {
+    override fun getBestParentProjectModelNode(virtualFile: VirtualFile): ProjectModelNode? {
+        if (!project.isUnityGeneratedProject())
+            return super.getBestParentProjectModelNode(virtualFile)
 
-        // predefined projects in the following order
-        val predefinedProjectNames = arrayOf(
-            UnityExplorer.DefaultProjectPrefix,
-            UnityExplorer.DefaultProjectPrefix + "-firstpass",
-            UnityExplorer.DefaultProjectPrefix + "-Editor",
-            UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass"
-        )
+        val recursive1 = recursive(virtualFile, virtualFile)
+        return recursive1 ?: super.getBestParentProjectModelNode(virtualFile)
+    }
 
-        for (name in predefinedProjectNames) {
-            for (node in nodes) {
-                if (node.containingProject()?.name.equals(name))
-                    return node
+    private fun recursive(origin : VirtualFile, virtualFile: VirtualFile): ProjectModelNode?
+    {
+        // stop going up
+        val host = ProjectModelViewHost.getInstance(project)
+        val items = host.getItemsByVirtualFile(virtualFile).toList()
+        if (items.filter { it.isSolutionFolder()}.any() || items.filter{it.isSolution()}.any())
+            return null
+
+        // one of the predefined projects
+        if (items.count() > 1) {
+            // predefined projects in the following order
+            val predefinedProjectNames = arrayOf(
+                UnityExplorer.DefaultProjectPrefix,
+                UnityExplorer.DefaultProjectPrefix + "-firstpass",
+                UnityExplorer.DefaultProjectPrefix + "-Editor",
+                UnityExplorer.DefaultProjectPrefix + "-Editor-firstpass"
+            )
+
+            for (name in predefinedProjectNames) {
+                for (node in items) {
+                    if (node.containingProject()?.name.equals(name))
+                        return node
+                }
             }
         }
 
-        // asmdef inside another asmdef - choose closest
-        val closest = findClosest(nodes)
-        if (closest != null)
-            return closest
+        // we are in a folder, which contains scripts - choose same node as scripts
+        val candidates = items.filter { node -> node.getChildren().any {it.isProjectFile()} }
+        if (candidates.count() == 1)
+            return candidates.single()
 
-        @Suppress("DEPRECATION")
-        return super.chooseBestProjectModelNode(nodes)
+        return recursive(origin, virtualFile.parent)
     }
-
-    private fun findClosest(nodes: List<ProjectModelNode>): ProjectModelNode? {
-        val queue: Queue<Pair<ProjectModelNode, ProjectModelNode>> = ArrayDeque()
-
-        for (node in nodes) {
-            queue.add(Pair(node, node))
-        }
-        do {
-            val pair = queue.poll()
-            if (predicate(pair.second))
-                return pair.first
-
-            for (n in pair.second.getChildren()) {
-                queue.add(Pair(pair.first, n))
-            }
-        } while (pair != null)
-        return null
-    }
-
-    private fun predicate(it: ProjectModelNode) =
-        it.getFile()?.extension.equals("asmdef", true)
 }
