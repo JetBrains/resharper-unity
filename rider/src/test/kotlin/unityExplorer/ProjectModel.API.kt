@@ -70,7 +70,7 @@ fun addNewItem(project: Project, path: Array<String>, template: TemplateType, it
         val createdFile = executeNewItemAction(dataContext, template.type, template.group!!, itemName)
         this.affectedFiles.add(createdFile!!.parentFile)
     }
-    persistAllFilesOnDisk(project)
+    persistAllFilesOnDisk()
     frameworkLogger.info("New item '$itemName' is added")
 }
 

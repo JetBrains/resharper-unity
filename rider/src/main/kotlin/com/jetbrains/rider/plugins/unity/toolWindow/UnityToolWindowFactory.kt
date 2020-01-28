@@ -7,8 +7,8 @@ import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
-import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
+import com.intellij.ui.content.ContentManagerListener
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
@@ -51,7 +51,16 @@ class UnityToolWindowFactory(project: Project,
         }
 
         val contentManager = toolWindow.contentManager
-        contentManager.addContentManagerListener(object : ContentManagerAdapter() {
+        contentManager.addContentManagerListener(object : ContentManagerListener {
+            override fun selectionChanged(p0: ContentManagerEvent) {
+            }
+
+            override fun contentRemoveQuery(p0: ContentManagerEvent) {
+            }
+
+            override fun contentAdded(p0: ContentManagerEvent) {
+            }
+
             override fun contentRemoved(event: ContentManagerEvent) {
                 context = null
                 toolWindowManager.unregisterToolWindow(TOOL_WINDOW_ID)

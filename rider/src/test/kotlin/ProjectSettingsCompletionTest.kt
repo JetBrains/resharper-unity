@@ -167,6 +167,6 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     // debug only
     @AfterMethod
     fun SaveDocuments() {
-        persistAllFilesOnDisk(project)
+        persistAllFilesOnDisk()
     }
 }
