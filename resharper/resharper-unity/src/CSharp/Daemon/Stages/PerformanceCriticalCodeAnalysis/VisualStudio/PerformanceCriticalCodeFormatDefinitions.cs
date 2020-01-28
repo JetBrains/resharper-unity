@@ -95,4 +95,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         [Export, Name(Name), BaseDefinition("formal language")]
         internal ClassificationTypeDefinition ClassificationTypeDefinition;
     }
+    
+    [ClassificationType(ClassificationTypeNames = Name)]
+    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
+        Before = VsHighlightPriorityClassificationDefinition.Name)]
+    [Export(typeof(EditorFormatDefinition))]
+    [Name(Name)]
+    [DisplayName(Name)]
+    [UserVisible(true)]
+    internal class InefficientMultiDimensionalArraysUsageClassificationDefinition : ClassificationFormatDefinition
+    {
+        private const string Name = PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE;
+
+        public InefficientMultiDimensionalArraysUsageClassificationDefinition()
+        {
+            DisplayName = Name;
+            ForegroundColor = System.Windows.Media.Color.FromRgb(0xff, 0x75, 0x26);
+        }
+
+        [Export, Name(Name), BaseDefinition("formal language")]
+        internal ClassificationTypeDefinition ClassificationTypeDefinition;
+    }
+    
+    [ClassificationType(ClassificationTypeNames = Name)]
+    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
+        Before = VsHighlightPriorityClassificationDefinition.Name)]
+    [Export(typeof(EditorFormatDefinition))]
+    [Name(Name)]
+    [DisplayName(Name)]
+    [UserVisible(true)]
+    internal class InefficientMultiplicationOrderClassificationDefinition : ClassificationFormatDefinition
+    {
+        private const string Name = PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER;
+
+        public InefficientMultiplicationOrderClassificationDefinition()
+        {
+            DisplayName = Name;
+            ForegroundColor = System.Windows.Media.Color.FromRgb(0xff, 0x75, 0x26);
+        }
+
+        [Export, Name(Name), BaseDefinition("formal language")]
+        internal ClassificationTypeDefinition ClassificationTypeDefinition;
+    }
 }

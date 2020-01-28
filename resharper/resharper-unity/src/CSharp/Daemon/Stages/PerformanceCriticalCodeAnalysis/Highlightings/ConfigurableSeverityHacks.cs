@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {
@@ -10,12 +12,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         [NotNull] private static readonly Severity[] ourSeverities = {
             Severity.HINT,
+            Severity.WARNING,
         };
 
         [NotNull] private static readonly string[] ourHighlightingIds = {
             PerformanceHighlightingAttributeIds.CAMERA_MAIN,
             PerformanceHighlightingAttributeIds.NULL_COMPARISON,
             PerformanceHighlightingAttributeIds.COSTLY_METHOD_INVOCATION,
+            PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER,
+            PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE,
         };
 
         public ConfigurableSeverityHacks()

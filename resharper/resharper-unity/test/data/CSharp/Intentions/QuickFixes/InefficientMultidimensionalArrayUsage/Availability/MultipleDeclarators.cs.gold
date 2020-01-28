@@ -1,0 +1,24 @@
+﻿using UnityEngine;
+using UnityEditor;
+
+public class Foo : MonoBehaviour
+{
+    public void Update()
+    {
+        int[,] |a|(0), |b|(1) = new int[5, 5];
+
+        |b[0, 0]|(2) = 5;
+        |a[1, 2]|(3) = 4;
+        return 0;
+    }
+}
+
+------------------------------------------------
+0: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+NO QUICKFIXES
+1: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+NO QUICKFIXES
+2: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+NO QUICKFIXES
+3: Accessing multidimensional arrays is inefficient. Use a jagged or one-dimensional array instead
+NO QUICKFIXES

@@ -7,8 +7,7 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
-using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util.Collections;
@@ -27,14 +26,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             myUnityApi = unityApi;
         }
         
-        public override IDeclaredElement Analyze(IDeclaration element, IHighlightingConsumer consumer, DaemonProcessKind kind)
+        public override bool AddDeclarationHighlighting(IDeclaration element, IHighlightingConsumer consumer, DaemonProcessKind kind)
         {
             if (!(element is IFieldDeclaration field))
-                return null;
+                return false;
 
             var declaredElement = field.DeclaredElement;
             if (declaredElement == null)
-                return null;
+                return false;
 
             bool isSerializedField = myUnityApi.IsSerialisedField(declaredElement);
             if (isSerializedField)
@@ -44,26 +43,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 if (myUnityApi.IsDescendantOfMonoBehaviour(declaredElement.GetContainingType()))
                 {
                     AddMonoBehaviourHighlighting(consumer, field, displayText, baseTooltip, kind);
-                    return declaredElement;
+                    return true;
 
                 } else if (myUnityApi.IsDescendantOfScriptableObject(declaredElement.GetContainingType()))
                 {
                     AddScriptableObjectHighlighting(consumer, field, displayText, baseTooltip, kind);
-                    return declaredElement;
+                    return true;
 
                 } else if (myUnityApi.IsInjectedField(declaredElement))
                 {
                     AddECSHighlighting(consumer, field, displayText, "This field is injected by Unity", kind);
-                    return declaredElement;
+                    return true;
                 } else 
                 {
                     AddSerializableHighlighting(consumer, field, displayText, "This field is serialized by Unity", kind);
                 }
 
-                return null;
+                return false;
             } 
 
-            return null;
+            return false;
         }
 
         protected virtual void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,

@@ -1,5 +1,5 @@
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes
@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
     [QuickFix]
     public class MoveCostlyInvocationQuickFix : AbstractMoveQuickFix
     {
-        public MoveCostlyInvocationQuickFix(PerformanceInvocationHighlighting warning) :
+        public MoveCostlyInvocationQuickFix(UnityPerformanceInvocationWarning warning) :
             base(warning.InvocationExpression?.GetContainingNode<IClassDeclaration>(), warning.InvocationExpression)
         {
         }

@@ -1,16 +1,13 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;

@@ -14,6 +14,7 @@ namespace DefaultNamespace
         {
             if (gameObject == null)
             {
+                GetComponent<Transform>();
                 // smth..
             }
         }

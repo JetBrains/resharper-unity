@@ -7,9 +7,7 @@ using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
-using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -33,8 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
         }
         
-        
-        public abstract IDeclaredElement Analyze(IDeclaration treeNode, IHighlightingConsumer consumer,
+        public abstract bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
             DaemonProcessKind kind);
         
         protected virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -13,17 +11,13 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
     [SolutionComponent]
     public class PerformanceCriticalCodeCallGraphAnalyzer : CallGraphAnalyzerBase
     {
         private readonly UnityApi myUnityApi;
         public static readonly string MarkId = "Unity.PerformanceCriticalContext";
-        private static readonly ISet<string> ourKnownHotMonoBehaviourMethods = new HashSet<string>()
-        {
-            "Update", "LateUpdate", "FixedUpdate",
-        };
 
         public PerformanceCriticalCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, UnityApi unityApi,
             UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker)
@@ -37,23 +31,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
-            if (currentNode is IMethodDeclaration methodDeclaration)
+            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myUnityApi, currentNode))
             {
-                if (PerformanceCriticalCodeStageUtil.HasFrequentlyCalledMethodAttribute(methodDeclaration))
-                {
-                    result.Add(containingFunction);
-                } else
-                if (ourKnownHotMonoBehaviourMethods.Contains(methodDeclaration.DeclaredName))
-                {
-                    var containingTypeDeclaration = methodDeclaration.GetContainingTypeDeclaration()?.DeclaredElement;
-
-                    if (myUnityApi.IsDescendantOfMonoBehaviour(containingTypeDeclaration))
-                    {
-                        result.Add(containingFunction);
-                    }
-                }
+                result.Add(containingFunction);
             }
-
 
             var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
             if (coroutineOrInvoke != null)
