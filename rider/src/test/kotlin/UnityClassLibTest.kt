@@ -51,7 +51,7 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         val newProject = createSolutionFromTemplate(templateId, null, activeSolutionDirectory, sameDirectory, null, parameters) { }!!
 
         newProject.enableBackendAsserts()
-        persistAllFilesOnDisk(newProject)
+        persistAllFilesOnDisk()
 
         waitForSolution(newProject, params)
         assertCurrentSolutionToolset()

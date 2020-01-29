@@ -102,7 +102,7 @@ class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
                 it.println("before change")
                 it.print(dumpLenses())
                 if (action()) {
-                    persistAllFilesOnDisk(project)
+                    persistAllFilesOnDisk()
                     waitForNextLenses()
                     it.println("after change")
                     it.print(dumpLenses())
