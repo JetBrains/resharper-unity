@@ -34,11 +34,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public object Load(IProgressIndicator progress, bool enablePersistence)
         {
+            foreach (var cache in myCaches)
+            {
+                cache.Load();
+            }
+
             return null;
         }
 
         public void MergeLoaded(object data)
         {
+            foreach (var cache in myCaches)
+            {
+                cache.MergeLoaded();
+            }
         }
         
         public void Save(IProgressIndicator progress, bool enablePersistence)
@@ -80,7 +89,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
-            throw new System.NotImplementedException();
         }
 
         public void SyncUpdate(bool underTransaction)
@@ -89,11 +97,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public void Dump(TextWriter writer, IPsiSourceFile sourceFile)
         {
-            var t = new int[5][];
-            writer.Write("TODO Dump");
         }
 
         
-        public bool HasDirtyFiles => true;//!myDirtyFiles.IsEmpty();
+        public bool HasDirtyFiles => false;//!myDirtyFiles.IsEmpty();
     }
 }
