@@ -34,10 +34,11 @@
 - And much more!
 </description>
 <releaseNotes>
-New in 2019.3.1
+New in 2019.3.2
 
 Fixed:
 - Fix usage count for custom event based event handlers in Unity 2018.4+ (#1448, #1449)
+- Avoid creating meta files outside of Asset or Packages folders (#1489, #1491)
     
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>

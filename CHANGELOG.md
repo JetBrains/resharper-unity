@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
+## 2019.3.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap7-rtm-2019.3.0-rtm-2019.3.1...net193-eap8-rtm-2019.3.2)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/34?closed=1)
+
+### Changed
+
+- Unity Editor: Find Usages window now allows replacing current open scene ([#1479](https://github.com/JetBrains/resharper-unity/issues/1479), [#1480](https://github.com/JetBrains/resharper-unity/pull/1480))
+
+### Fixed
+
+- Avoid creating meta files outside of Asset or Packages folders ([#1489](https://github.com/JetBrains/resharper-unity/issues/1489), [#1491](https://github.com/JetBrains/resharper-unity/pull/1491))
+
+
+
 ## 2019.3.1
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap7-rtm-2019.3.0...net193-eap7-rtm-2019.3.0-rtm-2019.3.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/33?closed=1)
