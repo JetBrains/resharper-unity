@@ -3,18 +3,20 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.icons.AllIcons
 import com.intellij.ide.SelectInContext
 import com.intellij.ide.projectView.ProjectView
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DataKey
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.ToggleAction
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.JDOMExternalizerUtil
+import com.jetbrains.rd.util.reflection.usingTrueFlag
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
+import com.jetbrains.rider.projectView.actions.ProjectViewActionBase
+import com.jetbrains.rider.projectView.actions.assemblyExplorer.ViewInAssemblyExplorer
 import com.jetbrains.rider.projectView.nodes.IProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
+import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.impl.SolutionViewSelectInTargetBase
+import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 import org.jdom.Element
 
@@ -26,11 +28,11 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         const val Weight = 1
         const val ShowHiddenItemsOption = "show-hidden-items"
         const val ShowProjectNamesOption = "show-project-names"
+        const val ShowTildeFoldersOption = "show-tilde-folders"
         const val DefaultProjectPrefix = "Assembly-CSharp"
 
         val Icon = UnityIcons.ToolWindows.UnityExplorer
         val IgnoredExtensions = hashSetOf("meta", "tmp")
-        val SELECTED_REFERENCE_KEY: DataKey<ReferenceItem> = DataKey.create("selectedReference")
 
         fun getInstance(project: Project) = tryGetInstance(project)!!
 
@@ -40,10 +42,13 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
     }
 
     var showHiddenItems = false
-        private set(value) { field = value }
+        private set
+
+    var showTildeFolders = true
+        private set
 
     var showProjectNames = true
-        private set(value) { field = value }
+        private set
 
     fun hasPackagesRoot(): Boolean {
         // The tree's model is cached, while this.model.root.children isn't. This is important in that it reflects the
@@ -64,21 +69,15 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
 
     override fun isInitiallyVisible() = project.isUnityProject()
 
-    override fun getData(dataId: String): Any? {
-        return when {
-            SELECTED_REFERENCE_KEY.`is`(dataId) -> getSelectedNodes().filterIsInstance<ReferenceItem>().singleOrNull()
-            else -> super.getData(dataId)
-        }
-    }
-
     override fun getSelectedProjectModelNodes(): Array<IProjectModelNode> {
-        return getSelectedNodes().filterIsInstance<UnityExplorerNode>().flatMap { it.nodes.asIterable() }.toTypedArray()
+        return getSelectedNodes().filterIsInstance<IProjectModeNodesOwner>().flatMap { it.nodes.asIterable() }.toTypedArray()
     }
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
         JDOMExternalizerUtil.writeField(element, ShowHiddenItemsOption, showHiddenItems.toString())
         JDOMExternalizerUtil.writeField(element, ShowProjectNamesOption, showProjectNames.toString())
+        JDOMExternalizerUtil.writeField(element, ShowTildeFoldersOption, showTildeFolders.toString())
     }
 
     override fun readExternal(element: Element) {
@@ -87,6 +86,8 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         showHiddenItems = option != null && java.lang.Boolean.parseBoolean(option)
         option = JDOMExternalizerUtil.readField(element, ShowProjectNamesOption)
         showProjectNames = option == null || java.lang.Boolean.parseBoolean(option)
+        option = JDOMExternalizerUtil.readField(element, ShowTildeFoldersOption)
+        showTildeFolders = option == null || java.lang.Boolean.parseBoolean(option)
     }
 
     override fun getTitle() = Title
@@ -109,19 +110,26 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         override fun getWeight() = Weight.toFloat()
     }
 
+    // Adds to the tool window toolbar
+    override fun addToolbarActions(actionGroup: DefaultActionGroup) {
+        actionGroup.addAction(ConfigureScratchesAction()).setAsSecondary(true)
+        actionGroup.addAction(ShowProjectNamesAction()).setAsSecondary(true)
+        actionGroup.addAction(ShowTildeFoldersAction()).setAsSecondary(true)
+        super.addToolbarActions(actionGroup)
+    }
+
+    // Adds to the project view pane's own toolbar
     override fun addPrimaryToolbarActions(actionGroup: DefaultActionGroup) {
         actionGroup.addAction(ShowHiddenItemsAction())
-        actionGroup.addAction(ShowProjectNamesAction()).setAsSecondary(true)
+        ActionManager.getInstance().getAction("ViewInAssemblyExplorer")!!.let { actionGroup.addAction(it) }
         actionGroup.addSeparator()
         super.addPrimaryToolbarActions(actionGroup)
     }
 
     private inner class ShowHiddenItemsAction
-        : ToggleAction("Show Hidden Files", "Show all files, including .meta files", AllIcons.Actions.ShowHiddens), DumbAware {
+        : ToggleAction("Show All Files", "Show all files, including .meta files", AllIcons.Actions.ShowHiddens), DumbAware {
 
-        override fun isSelected(event: AnActionEvent): Boolean {
-            return showHiddenItems
-        }
+        override fun isSelected(event: AnActionEvent) = showHiddenItems
 
         override fun setSelected(event: AnActionEvent, flag: Boolean) {
             if (showHiddenItems != flag) {
@@ -133,6 +141,24 @@ class UnityExplorer(project: Project) : SolutionViewPaneBase(project, UnityExplo
         override fun update(e: AnActionEvent) {
             super.update(e)
             e.presentation.isEnabledAndVisible = ProjectView.getInstance(myProject).currentProjectViewPane === this@UnityExplorer
+        }
+    }
+
+    private inner class ShowTildeFoldersAction
+        : ToggleAction("Show Hidden Folders", "Show folders ending with '~'", AllIcons.Actions.ListFiles), DumbAware {
+
+        override fun isSelected(event: AnActionEvent) = showTildeFolders
+
+        override fun setSelected(event: AnActionEvent, flag: Boolean) {
+            if (showTildeFolders != flag) {
+                showTildeFolders = flag
+                updateFromRoot(false)
+            }
+        }
+
+        override fun update(e: AnActionEvent) {
+            super.update(e)
+            e.presentation.isEnabledAndVisible = ProjectView.getInstance(myProject).currentProjectViewPane == this@UnityExplorer
         }
     }
 

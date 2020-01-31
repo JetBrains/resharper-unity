@@ -198,13 +198,6 @@
               class="com.jetbrains.rider.plugins.unity.ui.UnitTest.SwitchUnitTestLauncherComboBoxAction" />
     </group>
 
-    <!-- Note that this doesn't have text, so it doesn't show up in the keymap options page -->
-    <action id="ShowReferencePropertiesAction"
-            class="com.jetbrains.rider.plugins.unity.explorer.ShowReferencePropertiesAction"
-            use-shortcut-of="ShowIntentionActions">
-      <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last" />
-    </action>
-
     <action id="InstallEditorPluginAction"
             class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
             text="Install Unity Editor Plugin" />
