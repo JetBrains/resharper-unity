@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     //
     // NOTE: If someone adds a reference that this class doesn't know about, the file will be removed from the search
     // domain and any usages won't be found!
-    [SearchGuru(SearchGuruPerformanceEnum.FastFilterOutByIndex)]
+     // [SearchGuru(SearchGuruPerformanceEnum.FastFilterOutByIndex)]
     public class UnityYamlSearchGuru : ISearchGuru
     {
         private readonly UnityApi myUnityApi;

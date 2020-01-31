@@ -22,7 +22,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues
 {
-    [PsiComponent]
+    // [PsiComponent]
     public class UnitySceneDataCache : SimpleICache<UnitySceneData>
     {
         private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;

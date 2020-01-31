@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
   {
     private readonly IDeclaredElementsSet myElements;
     private readonly bool myFindCandidates;
-    private readonly List<string> myElementNames;
+    protected readonly List<string> ElementNames;
 
     public YamlReferenceSearcher(IDomainSpecificSearcherFactory searchWordsProvider, IDeclaredElementsSet elements,
       bool findCandidates)
@@ -22,11 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
       myElements = elements;
       myFindCandidates = findCandidates;
 
-      myElementNames = new List<string>(elements.Count);
+      ElementNames = new List<string>(elements.Count);
       foreach (var element in elements)
       {
         foreach (var name in searchWordsProvider.GetAllPossibleWordsInFile(element))
-          myElementNames.Add(name);
+          ElementNames.Add(name);
       }
     }
 
@@ -51,11 +52,12 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
       // Normally, wordsInText will match referenceNames, as the reference's GetName will return a string that is also
       // in the text. One example of a reference with a different name is a constructor initialiser, where the name is
       // .ctor, but would appear in text as this or base
-      var wordsInText = myElementNames;
-      var referenceNames = myElementNames;
-      var result = new ReferenceSearchSourceFileProcessorWorkaround<TResult>(element, myFindCandidates, consumer, myElements,
-        wordsInText, referenceNames).Run();
-      return result == FindExecution.Stop;
+      var wordsInText = ElementNames;
+      var referenceNames = ElementNames;
+      throw new OperationCanceledException();
+      // var result = new ReferenceSearchSourceFileProcessorWorkaround<TResult>(element, myFindCandidates, consumer, myElements,
+      //   wordsInText, referenceNames).Run();
+      // return result == FindExecution.Stop;
     }
   }
 }

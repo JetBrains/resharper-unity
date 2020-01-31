@@ -31,11 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         {
             if (sourceFile.PrimaryPsiLanguage.Is<UnityYamlLanguage>() && sourceFile.IsAsset())
             {
-                if (wordIndexForChecks == null || (wordIndexForChecks.CanContainAllSubwords(sourceFile, "m_Script") &&
-                                                   wordIndexForChecks.CanContainAllSubwords(sourceFile, "11500000")))
-                {
-                    return new MonoScriptReferenceFactory();
-                }
+                return new MonoScriptReferenceFactory();
             }
 
             return null;

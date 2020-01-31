@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             bool findCandidates)
         {
             return elements.Any(IsInterestingElement)
-                ? new YamlReferenceSearcher(this, elements, findCandidates)
+                ? new UnityYamlReferenceSearcher(this, elements, findCandidates)
                 : null;
         }
 
@@ -66,6 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 {
                     words.Add(element.ShortName);
                 }
+                words.Add(YamlTrigramIndexBuilder.YAML_REFERENCE_IDENTIFIER);
 
                 return words;
             }
