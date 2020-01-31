@@ -15,7 +15,7 @@ using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSetti
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [SolutionComponent]
+    // [SolutionComponent]
     public class UnityProjectSettingsCache : SimpleICache<ProjectSettingsCacheItem>
     {
         private readonly IEnumerable<IProjectSettingsAssetHandler> myProjectSettingsAssetHandlers;
