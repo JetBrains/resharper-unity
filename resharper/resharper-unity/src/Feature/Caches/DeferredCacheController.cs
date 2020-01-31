@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Daemon.Experimental;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Util;
@@ -14,76 +15,100 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 {
     [SolutionComponent]
-    public class DeferredCacheController
+    public class DeferredCacheController : IDaemonTaskBeforeInvisibleProcessProvider
     {
-        private const int BATCH_SIZE = 10;
+        private const int BATCH_SIZE = 5;
         
         private readonly IShellLocks myShellLocks;
-        private readonly DaemonThread myDaemonThread;
+        private readonly DeferredCachesLocks myDeferredCachesLocks;
         private readonly DeferredHelperCache myDeferredHelperCache;
         private readonly IEnumerable<IDeferredCache> myDeferredCaches;
 
         private readonly Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myPartlyCalculatedData = new Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
         private readonly Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myCalculatedData = new Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
         
-        public DeferredCacheController(IPersistentIndexManager persistentIndexManager, IShellLocks shellLocks, DaemonThread daemonThread,
+        public DeferredCacheController(IPersistentIndexManager persistentIndexManager, IShellLocks shellLocks, DeferredCachesLocks deferredCachesLocks,
             DeferredHelperCache deferredHelperCache, IEnumerable<IDeferredCache> deferredCaches)
         {
             myShellLocks = shellLocks;
-            myDaemonThread = daemonThread;
+            myDeferredCachesLocks = deferredCachesLocks;
             myDeferredHelperCache = deferredHelperCache;
             myDeferredCaches = deferredCaches;
         }
-        public void GetTasks(Lifetime lifetime)
+        public Action CreateTask(Lifetime lifetime)
         {
-            using (TryReadLockCookie.Create(NullProgressIndicator.Instance, myShellLocks, () => !lifetime.IsAlive))
+            return () =>
             {
-                foreach (var psiSourceFile in new LocalList<IPsiSourceFile>(myDeferredHelperCache.FilesToDrop))
+                using (TryReadLockCookie.Create(NullProgressIndicator.Instance, myShellLocks, () => !lifetime.IsAlive))
                 {
-                    myPartlyCalculatedData.Remove(psiSourceFile);
-                    myCalculatedData.Remove(psiSourceFile);
-                    // TODO: enter write lock
-                    foreach (var cache in myDeferredCaches)
+                    // First of all, drop data for out-of-date files under DeferredCachesWriteLock
+                    foreach (var psiSourceFile in new LocalList<IPsiSourceFile>(myDeferredHelperCache.FilesToDrop))
                     {
-                        cache.Drop(psiSourceFile);
-                    }
-                    
-                    // DeferredCacheController is unique reader for data in DeferredHelperCache
-                    // Clearing list is safe operation here due to ReadLock
-                    myDeferredHelperCache.FilesToDrop.Remove(psiSourceFile);
-                    CheckForInterrupt(lifetime);
-                }
-                myDeferredHelperCache.FilesToDrop.Clear();
-
-                FlushBuildDataIfNeed(lifetime);
-                
-                foreach (var psiSourceFile in GetFilesToProcess())
-                {
-                    if (!myPartlyCalculatedData.TryGetValue(psiSourceFile, out var cacheToData))
-                    {
-                        cacheToData = new Dictionary<IDeferredCache, object>();
-                        myPartlyCalculatedData[psiSourceFile] = cacheToData;
-                    }
-                    
-                    foreach (var cache in myDeferredCaches)
-                    {
-                        if (cacheToData.ContainsKey(cache))
-                            continue;
-
-                        cacheToData[cache] = cache.Build(lifetime, psiSourceFile);
+                        myPartlyCalculatedData.Remove(psiSourceFile);
+                        myCalculatedData.Remove(psiSourceFile);
+                        
+                        myDeferredCachesLocks.ExecuteUnderWriteLock(() =>
+                        {
+                            // Drop operation should be fast, do not interrupt here
+                            foreach (var cache in myDeferredCaches)
+                            {
+                                cache.Drop(psiSourceFile);
+                            }
+                        });
+                        
+                        // Tidy up dropped file from collection
+                        myDeferredHelperCache.FilesToDrop.Remove(psiSourceFile);
+                        
+                        
+                        // That point is safe for checking interruption
                         CheckForInterrupt(lifetime);
                     }
-                    myDeferredHelperCache.FilesToProcess.Remove(psiSourceFile);
-                    
-                    Assertion.Assert(!myCalculatedData.ContainsKey(psiSourceFile), "!myCalculatedData.ContainsKey(psiSourceFile)");
-                    myCalculatedData[psiSourceFile] = myPartlyCalculatedData[psiSourceFile];
-                    myPartlyCalculatedData.Remove(psiSourceFile);
 
+                    myDeferredHelperCache.FilesToDrop.Clear();
+
+                    // Possibly, there was interruption in previous flush, prioritize data flushing
                     FlushBuildDataIfNeed(lifetime);
-                }
 
-                FlushBuildData(lifetime);
-            }
+                    foreach (var psiSourceFile in GetFilesToProcess())
+                    {
+                        if (!myPartlyCalculatedData.TryGetValue(psiSourceFile, out var cacheToData))
+                        {
+                            cacheToData = new Dictionary<IDeferredCache, object>();
+                            myPartlyCalculatedData[psiSourceFile] = cacheToData;
+                        }
+
+                        myDeferredCachesLocks.ExecuteUnderReadLock(_ =>
+                        {
+                            foreach (var cache in myDeferredCaches)
+                            {
+                                if (!cache.IsApplicable(psiSourceFile))
+                                    continue;
+                            
+                                if (cache.UpToDate(psiSourceFile))
+                                    continue;
+                            
+                                if (cacheToData.ContainsKey(cache))
+                                    continue;
+
+                            
+                                cacheToData[cache] = cache.Build(lifetime, psiSourceFile);
+                                CheckForInterrupt(lifetime);
+                            }
+                        });
+
+                        myDeferredHelperCache.FilesToProcess.Remove(psiSourceFile);
+
+                        Assertion.Assert(!myCalculatedData.ContainsKey(psiSourceFile),
+                            "!myCalculatedData.ContainsKey(psiSourceFile)");
+                        myCalculatedData[psiSourceFile] = myPartlyCalculatedData[psiSourceFile];
+                        myPartlyCalculatedData.Remove(psiSourceFile);
+
+                        FlushBuildDataIfNeed(lifetime);
+                    }
+
+                    FlushBuildData(lifetime);
+                }
+            };
         }
 
         private void CheckForInterrupt(Lifetime lifetime)
@@ -94,6 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         private IEnumerable<IPsiSourceFile> GetFilesToProcess()
         {
+            // prioritize cache calculation for files, which we have started to process already
             foreach (var sourceFile in new LocalList<IPsiSourceFile>(myPartlyCalculatedData.Keys))
             {
                 yield return sourceFile;
@@ -110,10 +136,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             foreach (var sourceFile in new LocalList<IPsiSourceFile>(myCalculatedData.Keys))
             {
                 var cacheToData = myCalculatedData[sourceFile];
-                foreach (var (cache, data) in cacheToData)
+                myDeferredCachesLocks.ExecuteUnderWriteLock(() =>
                 {
-                    cache.Merge(sourceFile, data);
-                }
+                    foreach (var (cache, data) in cacheToData)
+                    {
+                        cache.Merge(sourceFile, data);
+                    }
+                });
 
                 myCalculatedData.Remove(sourceFile);
 
@@ -129,5 +158,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 FlushBuildData(lifetime);
             }
         }
+        
     }
 }
