@@ -18,11 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
     {
         private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly IEnumerable<IDeferredCache> myCaches;
-        private readonly SynchronizedSet<IPsiSourceFile> myActualFiles = new SynchronizedSet<IPsiSourceFile>();
         public readonly SynchronizedSet<IPsiSourceFile> FilesToDrop = new SynchronizedSet<IPsiSourceFile>();
         public readonly SynchronizedSet<IPsiSourceFile> FilesToProcess = new SynchronizedSet<IPsiSourceFile>();
         
-        protected DeferredHelperCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, IEnumerable<IDeferredCache> caches)
+        public DeferredHelperCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, IEnumerable<IDeferredCache> caches)
         {
             myPersistentIndexManager = persistentIndexManager;
             myCaches = caches;
@@ -30,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         
         public void MarkAsDirty(IPsiSourceFile sourceFile)
         {
+            FilesToProcess.Add(sourceFile);
         }
 
         public object Load(IProgressIndicator progress, bool enablePersistence)
@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         {
             foreach (var cache in myCaches)
             {
-                cache.MergeLoaded();
+                cache.MergeLoadedData();
             }
         }
         
@@ -67,7 +67,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public object Build(IPsiSourceFile sourceFile, bool isStartup)
         {
-            myActualFiles.Add(sourceFile);
             FilesToProcess.Add(sourceFile);
             return true;
         }
@@ -78,17 +77,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public void Drop(IPsiSourceFile sourceFile)
         {
-            myActualFiles.Remove(sourceFile);
             FilesToProcess.Remove(sourceFile);
             FilesToDrop.Add(sourceFile);
         }
 
         public void OnPsiChange(ITreeNode elementContainingChanges, PsiChangedElementType type)
         {
+            var sourceFile = elementContainingChanges?.GetSourceFile();
+            if (sourceFile != null)
+            {
+                FilesToProcess.Add(sourceFile);
+            }
         }
 
         public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
+            FilesToProcess.Add(sourceFile);
         }
 
         public void SyncUpdate(bool underTransaction)
