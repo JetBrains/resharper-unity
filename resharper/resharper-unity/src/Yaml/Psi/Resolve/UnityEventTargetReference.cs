@@ -21,14 +21,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
     {
         private readonly EventHandlerArgumentMode myMode;
         private readonly string myType;
-        private readonly FileID myFileId;
+        private readonly AssetDocumentReference myTarget;
 
-        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, EventHandlerArgumentMode mode, string type, FileID fileId)
+        public UnityEventTargetReference([NotNull] IPlainScalarNode owner, EventHandlerArgumentMode mode, string type, AssetDocumentReference target)
             : base(owner)
         {
             myMode = mode;
             myType = type;
-            myFileId = fileId;
+            myTarget = target;
         }
 
         public string EventHandlerName => myOwner.GetText();
@@ -101,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         private bool IsMonoBehaviourReference()
         {
             var yamlFile = (IYamlFile) myOwner.GetContainingFile();
-            var document = yamlFile.FindDocumentByAnchor(myFileId.fileID);
+            var document = yamlFile.FindDocumentByAnchor(myTarget.LocalDocumentAnchor);
             return document.GetUnityObjectTypeFromRootNode() == "MonoBehaviour";
         }
 
@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
         [CanBeNull]
         public string GetScriptAssetGuid(UnitySceneDataLocalCache cache, MetaFileGuidCache guidCache)
         {
-            return cache.GetScriptGuid(UnitySceneDataLocalCache.GetSourceFileWithPointedYamlDocument(myOwner.GetSourceFile(), myFileId, guidCache), myFileId.fileID);
+            return cache.GetScriptGuid(UnitySceneDataLocalCache.GetSourceFileWithPointedYamlDocument(myOwner.GetSourceFile(), myTarget, guidCache), myTarget.LocalDocumentAnchor);
         }
     }
 }

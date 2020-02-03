@@ -32,8 +32,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private readonly OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement> mySceneElements
             = new OneToCompactCountingSet<SceneElementId, IUnityHierarchyElement>();
         
-        private readonly OneToCompactCountingSet<string, (IPsiSourceFile sourceFile, FileID id)> myShortNameToScriptTarget = 
-            new OneToCompactCountingSet<string, (IPsiSourceFile sourceFile, FileID id)>();
+        private readonly OneToCompactCountingSet<string, (IPsiSourceFile sourceFile, AssetDocumentReference id)> myShortNameToScriptTarget = 
+            new OneToCompactCountingSet<string, (IPsiSourceFile sourceFile, AssetDocumentReference id)>();
 
         private readonly Dictionary<IPsiSourceFile, OneToSetMap<string, string>> myScriptMapping =
             new Dictionary<IPsiSourceFile, OneToSetMap<string, string>>();
@@ -138,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             foreach (var (sourceFile, scriptAnchor) in myShortNameToScriptTarget.GetValues(declaredElement.ShortName))
             {
                 var scriptAnchorSourceFile = GetSourceFileWithPointedYamlDocument(sourceFile, scriptAnchor, myGuidCache);
-                var guid = GetScriptGuid(scriptAnchorSourceFile, scriptAnchor.fileID);
+                var guid = GetScriptGuid(scriptAnchorSourceFile, scriptAnchor.LocalDocumentAnchor);
                 if (guid == null)
                     continue;
                 
@@ -161,10 +161,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         /// FileId is reference to some object in Unity asset file. If guid property is defined in asset file, 
         /// FileId references some object in another Unity asset file which could be resovled by this guid ant MetaFileGuidCache
         /// </summary>
-        public static IPsiSourceFile GetSourceFileWithPointedYamlDocument(IPsiSourceFile containingFile, FileID id, MetaFileGuidCache guidCache)
+        public static IPsiSourceFile GetSourceFileWithPointedYamlDocument(IPsiSourceFile containingFile, AssetDocumentReference id, MetaFileGuidCache guidCache)
         {
             var module = (containingFile.PsiModule as UnityExternalFilesPsiModule).NotNull($"Expected Yaml module, found: {containingFile.PsiModule.Name}");
-            var guid = id.guid;
+            var guid = id.ExternalAssetGuid;
             if (guid != null)
             {
                 var path = guidCache.GetAssetFilePathsFromGuid(guid).FirstOrDefault();
@@ -224,17 +224,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             if (sourceFile == null || anchor == null)
                 return;
             
-            ProcessSceneHierarchyFromComponentToRoot(sourceFile, new FileID(null, anchor),  consumer);
+            ProcessSceneHierarchyFromComponentToRoot(sourceFile, new AssetDocumentReference(null, anchor),  consumer);
         }
         
         public void ProcessSceneHierarchyFromComponentToRoot(IPsiSourceFile sourceFile, string anchor, IUnityCachedSceneProcessorConsumer consumer)
         {
             myShellLocks.AssertReadAccessAllowed();
-            ProcessSceneHierarchyFromComponentToRoot(sourceFile, new FileID(null, anchor),  consumer);
+            ProcessSceneHierarchyFromComponentToRoot(sourceFile, new AssetDocumentReference(null, anchor),  consumer);
         }
 
 
-        private void ProcessSceneHierarchyFromComponentToRoot(IPsiSourceFile sourceFile, FileID id, IUnityCachedSceneProcessorConsumer consumer)
+        private void ProcessSceneHierarchyFromComponentToRoot(IPsiSourceFile sourceFile, AssetDocumentReference id, IUnityCachedSceneProcessorConsumer consumer)
         {
             var start = mySceneElements.GetValues(new SceneElementId(sourceFile, id)).FirstOrDefault();
             if (start == null)
@@ -242,7 +242,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             if (!start.IsStripped) // start component can be stripped, e.g : prefab's MonoBehavior's function is passed to button event handler
             {
 
-                FileID gameObjectId;
+                AssetDocumentReference gameObjectId;
                 if (start is TransformHierarchyElement transformHierarchyElement)
                 {
                     gameObjectId = transformHierarchyElement.GameObject;
@@ -304,7 +304,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                         return;
 
                     var prefabInstance = mySceneElements.GetValues(new SceneElementId(currentFile, prefabInstanceId)).FirstOrDefault() as ModificationHierarchyElement;
-                    var prefabSourceFilePaths = myGuidCache.GetAssetFilePathsFromGuid(correspondingId.guid);
+                    var prefabSourceFilePaths = myGuidCache.GetAssetFilePathsFromGuid(correspondingId.ExternalAssetGuid);
                     if (prefabSourceFilePaths.Count > 1 || prefabSourceFilePaths.Count == 0)
                         return;
 
@@ -382,16 +382,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private struct SceneElementId
         {
             public readonly IPsiSourceFile SourceFile;
-            public readonly FileID FileID;
+            public readonly AssetDocumentReference AssetDocumentReference;
 
-            public SceneElementId(IPsiSourceFile sourceFile, FileID fileID)
+            public SceneElementId(IPsiSourceFile sourceFile, AssetDocumentReference assetDocumentReference)
             {
                 SourceFile = sourceFile;
-                FileID = fileID;
+                AssetDocumentReference = assetDocumentReference;
             }
             public bool Equals(SceneElementId other)
             {
-                return SourceFile.Equals(other.SourceFile) && FileID.Equals(other.FileID);
+                return SourceFile.Equals(other.SourceFile) && AssetDocumentReference.Equals(other.AssetDocumentReference);
             }
 
             public override bool Equals(object obj)
@@ -403,7 +403,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             {
                 unchecked
                 {
-                    return (SourceFile.GetHashCode() * 397) ^ FileID.GetHashCode();
+                    return (SourceFile.GetHashCode() * 397) ^ AssetDocumentReference.GetHashCode();
                 }
             }
         }

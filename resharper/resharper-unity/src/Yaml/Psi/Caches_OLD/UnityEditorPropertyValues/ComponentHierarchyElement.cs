@@ -7,18 +7,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     [PolymorphicMarshaller]
     public class ComponentHierarchyElement : IUnityHierarchyElement
     {
-        public FileID Id { get; }
-        public FileID CorrespondingSourceObject { get; }
-        public FileID PrefabInstance { get; }
-        public FileID GameObject { get; }
+        public AssetDocumentReference Id { get; }
+        public AssetDocumentReference CorrespondingSourceObject { get; }
+        public AssetDocumentReference PrefabInstance { get; }
+        public AssetDocumentReference GameObject { get; }
         public bool IsStripped { get; }
         
-        public ComponentHierarchyElement(FileID id, FileID correspondingSourceObject, FileID prefabInstance, FileID gameObject, bool isStripped)
+        public ComponentHierarchyElement(AssetDocumentReference id, AssetDocumentReference correspondingSourceObject, AssetDocumentReference prefabInstance, AssetDocumentReference gameObject, bool isStripped)
         {
             Id = id;
-            CorrespondingSourceObject = correspondingSourceObject  ?? FileID.Null;
-            PrefabInstance = prefabInstance  ?? FileID.Null;
-            GameObject = gameObject  ?? FileID.Null;
+            CorrespondingSourceObject = correspondingSourceObject  ?? AssetDocumentReference.Null;
+            PrefabInstance = prefabInstance  ?? AssetDocumentReference.Null;
+            GameObject = gameObject  ?? AssetDocumentReference.Null;
             IsStripped = isStripped;
         }
         
@@ -28,10 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private static ComponentHierarchyElement Read(UnsafeReader reader)
         {
             return new ComponentHierarchyElement(
-                FileID.ReadFrom(reader),
-                FileID.ReadFrom(reader),
-                FileID.ReadFrom(reader),
-                FileID.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
                 reader.ReadBool());
         }
 

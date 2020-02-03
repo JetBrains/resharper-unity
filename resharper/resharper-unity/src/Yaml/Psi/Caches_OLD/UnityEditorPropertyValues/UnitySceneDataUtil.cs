@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     internal static class UnitySceneDataUtil
     {
         private static StringSearcher ourStringSearcher = new StringSearcher("m_PersistentCalls:", true);
-        public static void ExtractSimpleAndReferenceValues(IBuffer buffer, Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues, OneToSetMap<string, FileID> eventHandlerToScriptTarget)
+        public static void ExtractSimpleAndReferenceValues(IBuffer buffer, Dictionary<string, string> simpleValues, Dictionary<string, AssetDocumentReference> referenceValues, OneToSetMap<string, AssetDocumentReference> eventHandlerToScriptTarget)
         {
             // special field for accessing anchor id
             simpleValues["&anchor"] = GetAnchorFromBuffer(buffer);
@@ -113,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return null;
         }
 
-        public static FileID GetFileId(IBuffer buffer, YamlLexer lexer)
+        public static AssetDocumentReference GetFileId(IBuffer buffer, YamlLexer lexer)
         {
             SkipWhitespaceAndNewLine(lexer);
             if (lexer.TokenType == YamlTokenType.LBRACE)
@@ -125,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return null;
         }
         
-        public static FileID GetFileId(IBuffer buffer)
+        public static AssetDocumentReference GetFileId(IBuffer buffer)
         {
             var lexer = new YamlLexer(buffer, false, false);
             lexer.Start();
@@ -143,7 +143,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return null;
         }
 
-        public static FileID GetFileIdInner(IBuffer buffer, YamlLexer lexer)
+        public static AssetDocumentReference GetFileIdInner(IBuffer buffer, YamlLexer lexer)
         {
             var fileId = GetFieldValue(buffer, lexer, "fileID");
             if (fileId == null)
@@ -151,12 +151,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             
             SkipWhitespace(lexer);
             if (lexer.TokenType != YamlTokenType.COMMA)
-                return new FileID(null, fileId);
+                return new AssetDocumentReference(null, fileId);
             lexer.Advance();
 
             var guid = GetFieldValue(buffer, lexer, "guid");
             
-            return new FileID(guid, fileId);
+            return new AssetDocumentReference(guid, fileId);
         }
 
 
@@ -191,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             return null;
         }
 
-        private static void FillTargetAndMethod(IBuffer buffer, OneToSetMap<string, FileID> eventHandlerToScriptTarget)
+        private static void FillTargetAndMethod(IBuffer buffer, OneToSetMap<string, AssetDocumentReference> eventHandlerToScriptTarget)
         {
             var lexer = new YamlLexer(buffer, false, false);
             lexer.Start();
@@ -199,7 +199,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             
             TokenNodeType currentToken;
 
-            FileID currentTarget = null;
+            AssetDocumentReference currentTarget = null;
             string currentMethod = null;
             
             while ((currentToken = lexer.TokenType) != null)

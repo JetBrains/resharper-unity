@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             var fileID = componentDocument.GetUnityObjectPropertyValue(UnityYamlConstants.ScriptProperty).AsFileID();
             if (fileID != null && fileID.IsExternal && fileID.IsMonoScript)
             {
-                var typeElement = GetTypeElementFromScriptAssetGuid(componentDocument.GetSolution(), fileID.guid);
+                var typeElement = GetTypeElementFromScriptAssetGuid(componentDocument.GetSolution(), fileID.ExternalAssetGuid);
                 if (typeElement != null)
                 {
                     // TODO: Format like in Unity, by splitting the camel humps
@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                 return null;
 
             var file = (IYamlFile) prefabInstanceDocument.GetContainingFile();
-            return file.FindDocumentByAnchor(fileID.fileID);
+            return file.FindDocumentByAnchor(fileID.LocalDocumentAnchor);
         }
 
         [CanBeNull]
@@ -182,7 +182,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     var componentFileID = componentNode?.EntriesEnumerable.FirstOrDefault()?.Content.Value.AsFileID();
                     if (componentFileID != null && !componentFileID.IsNullReference && !componentFileID.IsExternal)
                     {
-                        var component = file.FindDocumentByAnchor(componentFileID.fileID);
+                        var component = file.FindDocumentByAnchor(componentFileID.LocalDocumentAnchor);
                         var componentName = component.GetUnityObjectTypeFromRootNode();
                         if (componentName != null && (componentName.Equals(UnityYamlConstants.RectTransformComponent) || componentName.Equals(UnityYamlConstants.TransformComponent)))
                             return component;
@@ -204,7 +204,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     var type = (mod.FindMapEntryBySimpleKey(UnityYamlConstants.PropertyPathProperty)?.Content.Value as IPlainScalarNode)
                         ?.Text.GetText();
                     var target = mod.FindMapEntryBySimpleKey(UnityYamlConstants.TargetProperty)?.Content.Value?.AsFileID();
-                    if (type?.Equals(value) == true && target?.fileID.Equals(targetFileId) == true)
+                    if (type?.Equals(value) == true && target?.LocalDocumentAnchor.Equals(targetFileId) == true)
                     {
                         return mod.FindMapEntryBySimpleKey(UnityYamlConstants.ValueProperty)?.Content.Value
                             ?.GetPlainScalarText();

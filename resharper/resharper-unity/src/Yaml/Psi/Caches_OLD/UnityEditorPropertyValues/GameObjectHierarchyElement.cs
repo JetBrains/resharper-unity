@@ -9,20 +9,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     [PolymorphicMarshaller]
     public class GameObjectHierarchyElement : IUnityHierarchyElement
     {
-        public FileID Id { get; }
-        public FileID CorrespondingSourceObject { get; }
-        public FileID PrefabInstance { get; }
+        public AssetDocumentReference Id { get; }
+        public AssetDocumentReference CorrespondingSourceObject { get; }
+        public AssetDocumentReference PrefabInstance { get; }
         public bool IsStripped { get; }
         public string Name { get; }
-        public FileID TransformId { get; set; }
+        public AssetDocumentReference TransformId { get; set; }
 
-        public GameObjectHierarchyElement(FileID id, FileID correspondingSourceObject, FileID prefabParentObject, bool isStripped, FileID transformId, string name)
+        public GameObjectHierarchyElement(AssetDocumentReference id, AssetDocumentReference correspondingSourceObject, AssetDocumentReference prefabParentObject, bool isStripped, AssetDocumentReference transformId, string name)
         {
             Id = id;
-            CorrespondingSourceObject = correspondingSourceObject ?? FileID.Null;
-            PrefabInstance = prefabParentObject ?? FileID.Null;
+            CorrespondingSourceObject = correspondingSourceObject ?? AssetDocumentReference.Null;
+            PrefabInstance = prefabParentObject ?? AssetDocumentReference.Null;
             IsStripped = isStripped;
-            TransformId = transformId ?? FileID.Null;
+            TransformId = transformId ?? AssetDocumentReference.Null;
             Name = name;
         }
         
@@ -32,11 +32,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private static GameObjectHierarchyElement Read(UnsafeReader reader)
         {
            return new GameObjectHierarchyElement(
-               FileID.ReadFrom(reader),
-               FileID.ReadFrom(reader),
-               FileID.ReadFrom(reader),
+               AssetDocumentReference.ReadFrom(reader),
+               AssetDocumentReference.ReadFrom(reader),
+               AssetDocumentReference.ReadFrom(reader),
                reader.ReadBool(),
-               FileID.ReadFrom(reader), 
+               AssetDocumentReference.ReadFrom(reader), 
                reader.ReadString());
         }
 

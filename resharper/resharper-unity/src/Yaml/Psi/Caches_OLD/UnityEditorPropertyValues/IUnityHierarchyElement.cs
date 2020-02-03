@@ -2,9 +2,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 {
     public interface IUnityHierarchyElement
     {
-        FileID Id { get;}
-        FileID CorrespondingSourceObject { get;}
-        FileID PrefabInstance { get;}
+        AssetDocumentReference Id { get;}
+        AssetDocumentReference CorrespondingSourceObject { get;}
+        AssetDocumentReference PrefabInstance { get;}
         bool IsStripped { get;}
     }
 }

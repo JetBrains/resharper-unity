@@ -1,5 +1,6 @@
 using JetBrains.Application.PersistentMap;
 using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -45,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public void Merge(IPsiSourceFile psiSourceFile, object build)
         {
-            Drop(psiSourceFile);
+            Assertion.Assert(!Map.ContainsKey(psiSourceFile), "!Map.ContainsKey(psiSourceFile)");
             
             if (build != null)
             {
@@ -67,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         /// <summary>
         /// This method is executed under standard ReadLock
         /// </summary>
-        public abstract object Build(in Lifetime lifetime, IPsiSourceFile psiSourceFile);
+        public abstract object Build(Lifetime lifetime, IPsiSourceFile psiSourceFile);
 
         /// <summary>
         /// This method is executed under DeferredCachesWriteLock

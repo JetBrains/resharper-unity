@@ -55,5 +55,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 myReaderWriterLockSlim.ExitReadLock();
             }
         }
+        
+        public T ExecuteUnderReadLock<T>(Func<Lifetime, T> action)
+        {
+            myReaderWriterLockSlim.EnterReadLock();
+            try
+            {
+                Thread.MemoryBarrier();
+                return action(myLifetime);
+            }
+            finally
+            {
+                myReaderWriterLockSlim.ExitReadLock();
+            }
+        }
     }
 }

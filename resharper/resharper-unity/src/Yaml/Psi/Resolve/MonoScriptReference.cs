@@ -13,20 +13,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 {
     public class MonoScriptReference : CheckedReferenceBase<IPlainScalarNode>, IUnityYamlReference
     {
-        private readonly FileID myFileID;
+        private readonly AssetDocumentReference myAssetDocumentReference;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         [CanBeNull] private string myResolvedName;
 
-        public MonoScriptReference(IPlainScalarNode owner, FileID fileID, MetaFileGuidCache metaFileGuidCache)
-            : this(owner, fileID, metaFileGuidCache, null)
+        public MonoScriptReference(IPlainScalarNode owner, AssetDocumentReference assetDocumentReference, MetaFileGuidCache metaFileGuidCache)
+            : this(owner, assetDocumentReference, metaFileGuidCache, null)
         {
         }
 
-        private MonoScriptReference(IPlainScalarNode owner, FileID fileID, MetaFileGuidCache metaFileGuidCache,
+        private MonoScriptReference(IPlainScalarNode owner, AssetDocumentReference assetDocumentReference, MetaFileGuidCache metaFileGuidCache,
                                     string resolvedName)
             : base(owner)
         {
-            myFileID = fileID;
+            myAssetDocumentReference = assetDocumentReference;
             myMetaFileGuidCache = metaFileGuidCache;
             myResolvedName = resolvedName;
         }
@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override ISymbolTable GetReferenceSymbolTable(bool useReferenceName)
         {
-            var assetGuid = myFileID.guid;
+            var assetGuid = myAssetDocumentReference.ExternalAssetGuid;
             var candidates = UnityObjectPsiUtil.GetTypeElementCandidatesFromScriptAssetGuid(myOwner.GetSolution(), assetGuid);
             if (candidates.IsEmpty())
                 return EmptySymbolTable.INSTANCE;
@@ -88,15 +88,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public override HybridCollection<string> GetAllNames()
         {
-            var assetNames = myMetaFileGuidCache.GetAssetNames(myFileID.guid);
+            var assetNames = myMetaFileGuidCache.GetAssetNames(myAssetDocumentReference.ExternalAssetGuid);
             switch (assetNames.Count)
             {
                 case 0:
-                    return new HybridCollection<string>(myFileID.guid);
+                    return new HybridCollection<string>(myAssetDocumentReference.ExternalAssetGuid);
                 case 1:
-                    return new HybridCollection<string>(myFileID.guid, assetNames[0]);
+                    return new HybridCollection<string>(myAssetDocumentReference.ExternalAssetGuid, assetNames[0]);
                 default:
-                    return new HybridCollection<string>(myFileID.guid).Add(assetNames);
+                    return new HybridCollection<string>(myAssetDocumentReference.ExternalAssetGuid).Add(assetNames);
             }
         }
 

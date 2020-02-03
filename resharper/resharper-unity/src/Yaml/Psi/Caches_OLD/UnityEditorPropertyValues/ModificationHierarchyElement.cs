@@ -10,35 +10,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     [PolymorphicMarshaller]
     public class ModificationHierarchyElement : IUnityHierarchyElement
     {
-        public FileID Id { get; }
-        public FileID CorrespondingSourceObject { get; }
-        public FileID PrefabInstance { get; }
+        public AssetDocumentReference Id { get; }
+        public AssetDocumentReference CorrespondingSourceObject { get; }
+        public AssetDocumentReference PrefabInstance { get; }
         public bool IsStripped { get; }
 
-        public FileID TransformParentId { get; }
+        public AssetDocumentReference TransformParentId { get; }
 
-        private readonly Dictionary<FileID, string> myNames;
-        private readonly Dictionary<FileID, int?> myRootIndexes;
+        private readonly Dictionary<AssetDocumentReference, string> myNames;
+        private readonly Dictionary<AssetDocumentReference, int?> myRootIndexes;
 
-        public ModificationHierarchyElement(FileID id, FileID correspondingSourceObject, FileID prefabInstance, bool isStripped, FileID transformParentId, Dictionary<FileID, int?> rootIndexes, Dictionary<FileID, string> names)
+        public ModificationHierarchyElement(AssetDocumentReference id, AssetDocumentReference correspondingSourceObject, AssetDocumentReference prefabInstance, bool isStripped, AssetDocumentReference transformParentId, Dictionary<AssetDocumentReference, int?> rootIndexes, Dictionary<AssetDocumentReference, string> names)
         {
             Id = id;
-            CorrespondingSourceObject = correspondingSourceObject ?? FileID.Null;
-            PrefabInstance = prefabInstance  ?? FileID.Null;
+            CorrespondingSourceObject = correspondingSourceObject ?? AssetDocumentReference.Null;
+            PrefabInstance = prefabInstance  ?? AssetDocumentReference.Null;
             IsStripped = isStripped;
-            TransformParentId = transformParentId ?? FileID.Null;
+            TransformParentId = transformParentId ?? AssetDocumentReference.Null;
             myRootIndexes = rootIndexes;
             myNames = names;
         }
 
-        public string GetName(FileID fileID)
+        public string GetName(AssetDocumentReference assetDocumentReference)
         {
-            return myNames.GetValueSafe(fileID);
+            return myNames.GetValueSafe(assetDocumentReference);
         }
         
-        public int? GetRootIndex(FileID fileID)
+        public int? GetRootIndex(AssetDocumentReference assetDocumentReference)
         {
-            return myRootIndexes.GetValueSafe(fileID, null);
+            return myRootIndexes.GetValueSafe(assetDocumentReference, null);
         }
         
         
@@ -48,11 +48,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private static ModificationHierarchyElement Read(UnsafeReader reader)
         {
             return new ModificationHierarchyElement(
-                FileID.ReadFrom(reader),
-                FileID.ReadFrom(reader),
-                FileID.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
                 reader.ReadBool(),
-                FileID.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
                 ReadDictionary(reader, unsafeReader =>
                 {
                     if (unsafeReader.ReadNullness())
@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             );
         }
 
-        private static void WriteDictionary<T>(UnsafeWriter writer, Dictionary<FileID, T> value, Action<UnsafeWriter, T> writeValue)
+        private static void WriteDictionary<T>(UnsafeWriter writer, Dictionary<AssetDocumentReference, T> value, Action<UnsafeWriter, T> writeValue)
         {
             writer.Write(value.Count);
             foreach (var (id, v) in value)
@@ -73,24 +73,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
         }
 
-        private static Dictionary<FileID, T> ReadDictionary<T>(UnsafeReader reader, Func<UnsafeReader, T> readValue)
+        private static Dictionary<AssetDocumentReference, T> ReadDictionary<T>(UnsafeReader reader, Func<UnsafeReader, T> readValue)
         {
             var count = reader.ReadInt32();
-            var result = new Dictionary<FileID, T>(count);
+            var result = new Dictionary<AssetDocumentReference, T>(count);
             for (int i = 0; i < count; i++)
             {
-                result[FileID.ReadFrom(reader)] = readValue(reader);
+                result[AssetDocumentReference.ReadFrom(reader)] = readValue(reader);
             }
 
             return result;
         }
         
-        private static IList<FileID> ReadChildren(UnsafeReader reader)
+        private static IList<AssetDocumentReference> ReadChildren(UnsafeReader reader)
         {
             var count = reader.ReadInt32();
-            var result = new List<FileID>(count);
+            var result = new List<AssetDocumentReference>(count);
             for (var i = 0; i < count; i++) 
-                result.Add(FileID.ReadFrom(reader));
+                result.Add(AssetDocumentReference.ReadFrom(reader));
 
             return result;
         }
