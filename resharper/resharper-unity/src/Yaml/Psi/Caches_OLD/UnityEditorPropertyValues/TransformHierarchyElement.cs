@@ -10,12 +10,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     {
         
         public int RootOrder { get; }
-        public FileID Father { get; }
-        public TransformHierarchyElement(FileID id, FileID correspondingSourceObject, FileID prefabParentObject, bool isStripped, int rootOrder, FileID gameObject, FileID father)
+        public AssetDocumentReference Father { get; }
+        public TransformHierarchyElement(AssetDocumentReference id, AssetDocumentReference correspondingSourceObject, AssetDocumentReference prefabParentObject, bool isStripped, int rootOrder, AssetDocumentReference gameObject, AssetDocumentReference father)
             : base(id, correspondingSourceObject, prefabParentObject, gameObject, isStripped)
         {
             RootOrder = rootOrder;
-            Father = father ?? FileID.Null;
+            Father = father ?? AssetDocumentReference.Null;
         }
         
         [UsedImplicitly] public new static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
@@ -25,13 +25,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         private static TransformHierarchyElement Read(UnsafeReader reader)
         {
             return new TransformHierarchyElement(
-                FileID.ReadFrom(reader),
-                FileID.ReadFrom(reader),
-                FileID.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader),
                 reader.ReadBool(),
                 reader.ReadInt32(),
-                FileID.ReadFrom(reader),
-                FileID.ReadFrom(reader));
+                AssetDocumentReference.ReadFrom(reader),
+                AssetDocumentReference.ReadFrom(reader));
         }
 
         private static void Write(UnsafeWriter writer, TransformHierarchyElement value)

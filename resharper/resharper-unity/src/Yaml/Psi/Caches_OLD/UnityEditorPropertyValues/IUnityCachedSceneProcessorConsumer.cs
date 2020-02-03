@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             string name = null;
             if (modifications != null)
             {
-                name = modifications.GetName(new FileID(null, gameObject.Id.fileID));
+                name = modifications.GetName(new AssetDocumentReference(null, gameObject.Id.LocalDocumentAnchor));
             }
             if (name == null)
             {

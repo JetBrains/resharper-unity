@@ -86,12 +86,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             var sourceFile = elementContainingChanges?.GetSourceFile();
             if (sourceFile != null)
             {
+                FilesToDrop.Add(sourceFile);
                 FilesToProcess.Add(sourceFile);
             }
         }
 
         public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
+            FilesToDrop.Add(sourceFile);
             FilesToProcess.Add(sourceFile);
         }
 

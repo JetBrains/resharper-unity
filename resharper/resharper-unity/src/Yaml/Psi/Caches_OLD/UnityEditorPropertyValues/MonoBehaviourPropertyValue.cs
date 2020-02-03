@@ -63,9 +63,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     public class MonoBehaviourReferenceValue : MonoBehaviourPropertyValue
     {
         [NotNull]
-        public FileID Reference { get; }
+        public AssetDocumentReference Reference { get; }
 
-        public MonoBehaviourReferenceValue([NotNull] FileID referenceValue, [NotNull] string monoBehaviour,
+        public MonoBehaviourReferenceValue([NotNull] AssetDocumentReference referenceValue, [NotNull] string monoBehaviour,
             [CanBeNull] string localGameObjectAnchor)
             : base(monoBehaviour, localGameObjectAnchor)
         {
@@ -97,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
         public static MonoBehaviourPropertyValue ReadFrom(UnsafeReader reader)
         {
-            return new MonoBehaviourReferenceValue(FileID.ReadFrom(reader),
+            return new MonoBehaviourReferenceValue(AssetDocumentReference.ReadFrom(reader),
                 reader.ReadString().NotNull("monoBehaviour != null"), reader.ReadString());
         }
 
@@ -122,12 +122,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             var consumer = new UnityPathCachedSceneConsumer();
 
             var gameObjectFile = file;
-            if (Reference.guid != null)
+            if (Reference.ExternalAssetGuid != null)
             {
                 var module = file.PsiModule as UnityExternalFilesPsiModule;
                 Assertion.Assert(module != null, "module != null");
                 var guidCache = solution.GetComponent<MetaFileGuidCache>();
-                var filePath = guidCache.GetAssetFilePathsFromGuid(Reference.guid).FirstOrDefault(null);
+                var filePath = guidCache.GetAssetFilePathsFromGuid(Reference.ExternalAssetGuid).FirstOrDefault(null);
                 if (filePath == null)
                     return unknownResult;
 
@@ -138,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
             
             
-            pathProvider.ProcessSceneHierarchyFromComponentToRoot(gameObjectFile, Reference.fileID, consumer);
+            pathProvider.ProcessSceneHierarchyFromComponentToRoot(gameObjectFile, Reference.LocalDocumentAnchor, consumer);
 
             var parts = consumer.NameParts;
             if (parts.Count == 0)
@@ -146,7 +146,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 var cache = solution.GetComponent<UnityGameObjectNamesCache>();
                 if (cache.Map.TryGetValue(gameObjectFile, out var anchorToName))
                 {
-                    if (anchorToName.TryGetValue(Reference.fileID, out var name))
+                    if (anchorToName.TryGetValue(Reference.LocalDocumentAnchor, out var name))
                     {
                         return name;
                     }

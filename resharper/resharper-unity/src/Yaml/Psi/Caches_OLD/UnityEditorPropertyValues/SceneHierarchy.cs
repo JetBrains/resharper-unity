@@ -17,9 +17,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
     {
         private static readonly ILogger ourLogger = Logger.GetLogger<SceneHierarchy>();
 
-        public readonly Dictionary<FileID, IUnityHierarchyElement> Elements = new Dictionary<FileID, IUnityHierarchyElement>();
+        public readonly Dictionary<AssetDocumentReference, IUnityHierarchyElement> Elements = new Dictionary<AssetDocumentReference, IUnityHierarchyElement>();
 
-        private readonly Dictionary<FileID, FileID> myGameObjectsTransforms = new Dictionary<FileID, FileID>();
+        private readonly Dictionary<AssetDocumentReference, AssetDocumentReference> myGameObjectsTransforms = new Dictionary<AssetDocumentReference, AssetDocumentReference>();
             
         public void WriteTo(UnsafeWriter writer)
         {
@@ -39,21 +39,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
             for (int i = 0; i < count; i++)
             {
-                var id = FileID.ReadFrom(reader);
+                var id = AssetDocumentReference.ReadFrom(reader);
                 element.Elements.Add(id, reader.ReadPolymorphic<IUnityHierarchyElement>());
             }
 
             return element;
         }
 
-        public void AddSceneHierarchyElement(Dictionary<string, string> simpleValues, Dictionary<string, FileID> referenceValues)
+        public void AddSceneHierarchyElement(Dictionary<string, string> simpleValues, Dictionary<string, AssetDocumentReference> referenceValues)
         {
             var anchor = simpleValues.GetValueSafe("&anchor");
             if (string.IsNullOrEmpty(anchor))
                 return;
             
 
-            var id = new FileID(null, anchor);
+            var id = new AssetDocumentReference(null, anchor);
             if (Elements.ContainsKey(id))
                 ourLogger.Verbose($"Id = {anchor.Substring(0, Math.Min(anchor.Length, 100))} is defined several times for different documents");
             
@@ -100,13 +100,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
             }
         }
 
-        private FileID GetCorrespondingSourceObjectId(Dictionary<string, FileID> referenceValues)
+        private AssetDocumentReference GetCorrespondingSourceObjectId(Dictionary<string, AssetDocumentReference> referenceValues)
         {
             return referenceValues.GetValueSafe(UnityYamlConstants.CorrespondingSourceObjectProperty) ??
                    referenceValues.GetValueSafe(UnityYamlConstants.CorrespondingSourceObjectProperty2017);
         }
         
-        private FileID GetPrefabInstanceId(Dictionary<string, FileID> referenceValues)
+        private AssetDocumentReference GetPrefabInstanceId(Dictionary<string, AssetDocumentReference> referenceValues)
         {
             return referenceValues.GetValueSafe(UnityYamlConstants.PrefabInstanceProperty) ??
                    referenceValues.GetValueSafe(UnityYamlConstants.PrefabInstanceProperty2017);
@@ -124,7 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
 
             TokenNodeType currentToken;
 
-            var transformParentId = FileID.Null;
+            var transformParentId = AssetDocumentReference.Null;
             
             while ((currentToken = lexer.TokenType) != null)
             {
@@ -153,10 +153,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                             }                            
                         } else if (text.Equals(UnityYamlConstants.ModificationsProperty))
                         {
-                            var names = new Dictionary<FileID, string>();
-                            var rootIndexes = new Dictionary<FileID, int?>();
+                            var names = new Dictionary<AssetDocumentReference, string>();
+                            var rootIndexes = new Dictionary<AssetDocumentReference, int?>();
                             GetModifications(buffer, lexer, indentSize, names, rootIndexes);
-                            var id = new FileID(null, anchor);
+                            var id = new AssetDocumentReference(null, anchor);
                             Elements[id] = new ModificationHierarchyElement(id, null, null,  false, transformParentId, rootIndexes, names);
                             return;
                         }
@@ -174,9 +174,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
         /// 
         /// After this method is executed, lexer current token is null or indent of next entry (after m_Modifications)
         /// </summary>
-        private void GetModifications(IBuffer buffer, YamlLexer lexer, int parentIndentSize, Dictionary<FileID, string> names, Dictionary<FileID, int?> rootIndexes)
+        private void GetModifications(IBuffer buffer, YamlLexer lexer, int parentIndentSize, Dictionary<AssetDocumentReference, string> names, Dictionary<AssetDocumentReference, int?> rootIndexes)
         {
-            FileID curTarget = null;
+            AssetDocumentReference curTarget = null;
             string curPropertyPath = null;
             string curValue = null;
             

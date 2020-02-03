@@ -323,7 +323,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 return b ? "1" : "0";
 
             if (presentationType == UnityPresentationType.FileId && value == null)
-                return FileID.Null;
+                return AssetDocumentReference.Null;
 
             if ((presentationType == UnityPresentationType.OtherSimple  || presentationType == UnityPresentationType.Bool) && value == null)
                 return "0";
