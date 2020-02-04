@@ -28,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         }
         
         public void MarkAsDirty(IPsiSourceFile sourceFile)
+        
         {
             FilesToProcess.Add(sourceFile);
         }
@@ -73,6 +74,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
+            FilesToProcess.Add(sourceFile);
+            // TODO
+            // here add FilesToProcess
+            // here add to FilesToDrop
+            // Add assertion in contoller that each file to process is valid
         }
 
         public void Drop(IPsiSourceFile sourceFile)
@@ -86,14 +92,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             var sourceFile = elementContainingChanges?.GetSourceFile();
             if (sourceFile != null)
             {
-                FilesToDrop.Add(sourceFile);
                 FilesToProcess.Add(sourceFile);
             }
         }
 
         public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
-            FilesToDrop.Add(sourceFile);
             FilesToProcess.Add(sourceFile);
         }
 

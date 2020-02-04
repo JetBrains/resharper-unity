@@ -46,8 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public void Merge(IPsiSourceFile psiSourceFile, object build)
         {
-            Assertion.Assert(!Map.ContainsKey(psiSourceFile), "!Map.ContainsKey(psiSourceFile)");
-            
+            Drop(psiSourceFile);
+
             if (build != null)
             {
                 myTimeStamps[psiSourceFile] = psiSourceFile.GetAggregatedTimestamp();

@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
                     if (mCalls == null)
                         return null;
                     
-                    var eventTypeName = persistentCallsMap.GetValue("m_TypeName")?.GetPlainScalarText();
+                    var eventTypeName = rootMap.GetValue("m_TypeName").GetPlainScalarText();
                     
                     foreach (var call in mCalls.Entries)
                     {
@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
                         else if (argMode == EventHandlerArgumentMode.Void)
                             type = null;
                         
-                        result.Add(new AssetMethodData(currentSourceFile, methodName, argMode, type, fileID));                        
+                        result.Add(new AssetMethodData(currentSourceFile.GetPersistentID(), methodName, argMode, type, fileID));                        
                     }
                 }
             }
@@ -99,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
             var element = unityAssetDataElement as AssetMethodsDataElement;
             foreach (var method in element.Methods)
             {
-                myShortNameToScriptTarget.Add(method.MethodName, method);
+                myShortNameToScriptTarget.Remove(method.MethodName, method);
             }
         }
 
@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
             var element = unityAssetDataElement as AssetMethodsDataElement;
             foreach (var method in element.Methods)
             {
-                myShortNameToScriptTarget.Remove(method.MethodName, method);
+                myShortNameToScriptTarget.Add(method.MethodName, method);
             }
         }
 

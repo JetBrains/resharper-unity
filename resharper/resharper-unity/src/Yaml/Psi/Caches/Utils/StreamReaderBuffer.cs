@@ -8,6 +8,9 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils
 {
+    /// <summary>
+    /// NOTE: bufferSize must be larger than number of look ahead characters
+    /// </summary>
     public class StreamReaderBuffer : IBuffer
     {
         private readonly StreamReader myStreamReader;
@@ -16,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils
         private bool myIsEof = false;
 
         private List<BufferFragment> myFragments = new List<BufferFragment>();
+        private int myLength = int.MaxValue; // We don't know the real number of chars in large file, we will read bufferSize chars ahead to detect eof
 
         public StreamReaderBuffer(StreamReader streamReader, int bufferSize)
         {
@@ -65,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils
             get
             {
                 if (myFragments.Count == 0)
-                    ReadFragment();
+                    return 0;
                 return myFragments[0].CharIndex;
             }
         }
@@ -74,11 +78,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils
         {
             var lastLoaded = myReadFragmentsCount * myBufferSize;
 
+            if (!myIsEof)
+            {
+                charIndex += myBufferSize; // read next fragment to detect EOF
+            }
+            
             while (charIndex >= lastLoaded)
             {
                 lastLoaded += myBufferSize;
                 ReadFragment();
             }
+
+
         }
 
         private BufferFragment GetFragmentByIndex(int charIndex)
@@ -96,23 +107,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils
             char[] buffer = new char[myBufferSize];
             var readCount = myStreamReader.ReadBlock(buffer, 0, myBufferSize);
             if (readCount != myBufferSize)
+            {
+
+                myLength = myReadFragmentsCount * myBufferSize + readCount;
                 myIsEof = true;
-            
+            }
+            if (readCount == 0)
+                return;
+
             myFragments.Add(new BufferFragment(myReadFragmentsCount * myBufferSize, buffer));
             myReadFragmentsCount++;
         }
 
-        public int Length => (int)myStreamReader.BaseStream.Length;
+        public int Length => myLength;
 
-        public void DropFragments(int saveCount = 2)
+        public void DropFragments()
         {
             var length = myFragments.Count;
             if (length < 2)
                 return;
             
             var newFragments = new List<BufferFragment>();
-            newFragments.Add(myFragments[length - 2]);
-            newFragments.Add(myFragments[length - 1]);
+            
+            /*
+             * [BLOCK1]
+             * x : 0
+             * -[BLOCK1][BLOCK2]--  [BlOCK2][BLOCK3]
+             *  eof[BLOCK3]
+             */
+            
+            newFragments.Add(myFragments[length - 3]); // could contain first part of yaml document (the first minus char)
+            newFragments.Add(myFragments[length - 2]); // the rest part of yaml document
+            newFragments.Add(myFragments[length - 1]); // the part which was loaded for eof check
 
             myFragments = newFragments;
         }

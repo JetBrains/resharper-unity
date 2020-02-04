@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -23,11 +24,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly IconHost myIconHost;
 
         public RiderEventHandlerDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnitySceneDataLocalCache cache,
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer,AssetMethodsElementContainer assetMethodsElementContainer, UnitySceneDataLocalCache cache,
             UnityCodeInsightProvider codeInsightProvider,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost)
-            : base(solution, swa,  settingsStore, callGraphSwaExtensionProvider, cache, analyzer)
+            : base(solution, swa,  settingsStore, callGraphSwaExtensionProvider, assetMethodsElementContainer, cache, analyzer)
         {
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;
