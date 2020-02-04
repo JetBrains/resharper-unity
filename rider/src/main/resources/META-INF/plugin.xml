@@ -271,8 +271,6 @@
 <![CDATA[
 <p>
 <strong>New in 2020.1</strong>
-</p>
-<p>
 <em>Added:</em>
 <ul>
   <li>Exclude <tt>Boo</tt> and <tt>UnityScript</tt> namespaces, as well as the <tt>System.Diagnostics.Debug</tt> type from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1473">#1473</a>)</li>

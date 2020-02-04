@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -36,10 +37,25 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
 
       if (!wasFound)
       {
-        if (EditorUtility.DisplayDialog("Find usages", "Do you want to load scene which contains usage?", "Ok", "No"))
+        var result = EditorUtility.DisplayDialogComplex("Find usages",
+          $"Do you want to close the current scene and open scene \"{sceneName}.unity\"?",
+          "Open Scene", 
+          "Cancel",
+          "Open Scene Additive");
+
+        switch (result)
         {
-          var scene = EditorSceneManager.OpenScene(filePath, OpenSceneMode.Additive);
-          SelectUsageOnScene(scene, path, rootIndices, true);
+          case 0:
+            EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+            var scene = EditorSceneManager.OpenScene(filePath, OpenSceneMode.Single);
+            SelectUsageOnScene(scene, path, rootIndices, true);
+            break;
+          case 1:
+            return;
+          case 2:
+            var sceneAdditive = EditorSceneManager.OpenScene(filePath, OpenSceneMode.Additive);
+            SelectUsageOnScene(sceneAdditive, path, rootIndices, true);
+            break;
         }
       }
     }
