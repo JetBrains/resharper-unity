@@ -112,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         // This will open the Body chameleon
         [CanBeNull]
-        public static string GetFileId(this IYamlDocument yamlDocument)
+        public static string GetLocalDocumentAnchor(this IYamlDocument yamlDocument)
         {
             var properties = GetDocumentBlockNodeProperties(yamlDocument.Body.BlockNode);
             return properties?.AnchorProperty?.Text?.GetText();

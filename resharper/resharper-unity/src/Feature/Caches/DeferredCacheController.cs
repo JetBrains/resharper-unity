@@ -66,11 +66,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                     myDeferredHelperCache.FilesToDrop.Clear();
 
+                    foreach (var psiSourceFile in GetFilesToProcess())
+                    {
+                        myCalculatedData.Remove(psiSourceFile);
+                    }
+                    
                     // Possibly, there was interruption in previous flush, prioritize data flushing
                     FlushBuildDataIfNeed(lifetime);
 
                     foreach (var psiSourceFile in GetFilesToProcess())
                     {
+                        Assertion.Assert(psiSourceFile.IsValid(), "psiSourceFile.IsValid()");
                         if (!myPartlyCalculatedData.TryGetValue(psiSourceFile, out var cacheToData))
                         {
                             cacheToData = new Dictionary<IDeferredCache, object>();

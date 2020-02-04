@@ -7,11 +7,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     public class UnityAssetData
     {
-        private Dictionary<string, IUnityAssetDataElement> myUnityAssetDataElements = new Dictionary<string, IUnityAssetDataElement>();
+        public readonly Dictionary<string, IUnityAssetDataElement> UnityAssetDataElements = new Dictionary<string, IUnityAssetDataElement>();
         public static void WriteDelegate(UnsafeWriter writer, UnityAssetData value)
         {
-            writer.Write(value.myUnityAssetDataElements.Count);
-            foreach (var v in value.myUnityAssetDataElements.Values)
+            writer.Write(value.UnityAssetDataElements.Count);
+            foreach (var v in value.UnityAssetDataElements.Values)
             {
                 writer.WritePolymorphic(v);
             }
@@ -33,21 +33,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public void AddDataElement(IUnityAssetDataElement dataElement)
         {
-            if (myUnityAssetDataElements.TryGetValue(dataElement.ContainerId, out var element))
+            if (UnityAssetDataElements.TryGetValue(dataElement.ContainerId, out var element))
             {
                 element.AddData(dataElement);
             }
             else
             {
-                myUnityAssetDataElements[dataElement.ContainerId] = dataElement;
-            }
-        }
-
-        public void Restore(IPsiSourceFile owner)
-        {
-            foreach (var unityAssetDataElement in myUnityAssetDataElements.Values)
-            {
-                unityAssetDataElement.Restoree(owner);
+                UnityAssetDataElements[dataElement.ContainerId] = dataElement;
             }
         }
     }

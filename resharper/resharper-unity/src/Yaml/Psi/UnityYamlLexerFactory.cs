@@ -7,6 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
     public class UnityYamlLexerFactory : YamlLexerFactory
     {
-        protected override ILexer GetDefaultLexer(IBuffer buffer) => new UnityYamlLexer(buffer, 0, buffer.Length - 1);
+        protected override ILexer GetDefaultLexer(IBuffer buffer) => new UnityYamlLexer(buffer);
     }
 }

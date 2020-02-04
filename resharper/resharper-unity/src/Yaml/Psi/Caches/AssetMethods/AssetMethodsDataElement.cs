@@ -48,13 +48,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
                 Methods.Add(assetMethodData);
             }
         }
-
-        public void Restore(IPsiSourceFile owner)
-        {
-            foreach (var result in Methods)
-            {
-                result.Owner = owner;
-            }
-        }
     }
 }

@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
     //   serialised fields of UnityEventBase). The m_TypeName property is the type of the serialised event. The handlers
     //   are serialised as a list of PersistentCalls, with m_Target being the MonoScript fileID and m_MethodName being
     //   the name of the method in that type (so be careful with rename!)
-    [ReferenceProviderFactory]
+    //[ReferenceProviderFactory]
     public class UnityEventTargetReferenceProviderFactory : IReferenceProviderFactory
     {
         public UnityEventTargetReferenceProviderFactory(Lifetime lifetime)

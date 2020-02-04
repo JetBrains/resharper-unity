@@ -7,6 +7,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         string ContainerId { get; }
 
         void AddData(IUnityAssetDataElement unityAssetDataElement);
-        void Restore(IPsiSourceFile owner);
     }
 }

@@ -6,15 +6,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 {
     public class AssetMethodData
     {
-        public IPsiSourceFile Owner { get; set; }
+        public string OwnerId { get;}
         public string MethodName { get; }
         public EventHandlerArgumentMode Mode { get; }
         public string Type { get; }
         public AssetDocumentReference AssetDocumentReference { get; }
 
-        public AssetMethodData(IPsiSourceFile owner, string methodName, EventHandlerArgumentMode mode, string type, AssetDocumentReference assetDocumentReference)
+        public AssetMethodData(string ownerId, string methodName, EventHandlerArgumentMode mode, string type, AssetDocumentReference assetDocumentReference)
         {
-            Owner = owner;
+            OwnerId = ownerId;
             MethodName = methodName;
             Mode = mode;
             Type = type;
@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 
         public void WriteTo(UnsafeWriter writer)
         {
+            writer.Write(OwnerId);
             writer.Write(MethodName);
             writer.Write((int)Mode);
             writer.Write(Type);
@@ -31,16 +32,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 
         public static AssetMethodData ReadFrom(UnsafeReader reader)
         {
-            return new AssetMethodData(null, reader.ReadString(), (EventHandlerArgumentMode)reader.ReadInt32(),
+            return new AssetMethodData(reader.ReadString(), reader.ReadString(), (EventHandlerArgumentMode)reader.ReadInt32(),
                 reader.ReadString(), AssetDocumentReference.ReadFrom(reader));
         }
 
         protected bool Equals(AssetMethodData other)
         {
-            return Equals(Owner, other.Owner) && MethodName == other.MethodName
-                                              && Mode == other.Mode
-                                              && Type == other.Type
-                                              && Equals(AssetDocumentReference, other.AssetDocumentReference);
+            return Equals(OwnerId, other.OwnerId) && MethodName == other.MethodName
+                                                  && Mode == other.Mode
+                                                  && Type == other.Type
+                                                  && Equals(AssetDocumentReference, other.AssetDocumentReference);
         }
 
         public override bool Equals(object obj)
@@ -55,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
         {
             unchecked
             {
-                var hashCode = Owner.GetHashCode();
+                var hashCode = OwnerId.GetHashCode();
                 hashCode = (hashCode * 397) ^ MethodName.GetHashCode() ;
                 hashCode = (hashCode * 397) ^ (int) Mode;
                 hashCode = (hashCode * 397) ^ (Type != null ? Type.GetHashCode() : 0);

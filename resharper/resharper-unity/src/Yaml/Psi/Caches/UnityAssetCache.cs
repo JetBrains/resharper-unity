@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.ReSharper.UnitTestRunner.JavaScript.Common;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
@@ -38,8 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return sourceFile.PsiModule is UnityExternalFilesPsiModule;
         }
 
-        protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData build)
+        protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData data)
         {
+            foreach (var (id, element) in data.UnityAssetDataElements)
+            {
+                myUnityAssetDataElementContainers[id].Merge(sourceFile, element);
+            }
         }
 
         private const int BUFFER_SIZE = 4;
@@ -51,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                 using (var sr = new StreamReader(s, Encoding.UTF8, true, BUFFER_SIZE))
                 {
                     var buffer = new StreamReaderBuffer(sr, BUFFER_SIZE);
-                    var lexer = new UnityYamlLexer(buffer, 0, buffer.Length - 1);
+                    var lexer = new UnityYamlLexer(buffer);
                     lexer.Start();
 
                     var docId = 0;
@@ -76,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                         }
 
                         test.Add(lexer.TokenEnd);
-                        buffer.DropFragments(2);
+                        buffer.DropFragments();
                         lexer.Advance();
                     }
                     
@@ -121,14 +126,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             myDocumentNumber.TryRemove(sourceFile, out _);
             myCurrentTimeStamp.TryRemove(sourceFile, out _);
+
+            foreach (var (id, element) in data.UnityAssetDataElements)
+            {
+                myUnityAssetDataElementContainers[id].Drop(sourceFile, element);
+            }
         }
 
         public override void MergeLoadedData()
         {
             foreach (var (sourceFile, unityAssetData) in Map)
             {
-                unityAssetData.Restore(sourceFile);
+                MergeData(sourceFile, unityAssetData);
             }
+
         }
 
         public override void InvalidateData()
