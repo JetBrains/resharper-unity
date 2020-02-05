@@ -157,40 +157,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
 
+                var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
+                    new Identities(IdKind.Client), myDispatcher, wire, lifetime);
+
+                protocol.ThrowErrorOnOutOfSyncModels = false;
+
+                protocol.OutOfSyncModels.AdviseOnce(lifetime, e =>
+                {
+                    if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
+                        return;
+                        
+                    myPluginInstallations.Add(mySolution.SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
+                        
+                    var appVersion = myUnityVersion.GetActualVersionForSolution();
+                    if (appVersion < new Version(2019, 2))
+                    {
+                        var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+                        var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
+                        if (!isEnabled)
+                        {
+                            myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
+                        }
+                    }
+                    else
+                    {
+                        var notification = new NotificationModel("Advanced Unity integration is unavailable", 
+                            $"Please update External Editor to {myHostProductInfo.VersionMarketingString} in Unity Preferences.",
+                            true, RdNotificationEntryType.WARN);
+                        mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify", () => myNotificationsModel.Notification(notification));
+                    }
+                });
+                
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
 
-                    var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
-                        new Identities(IdKind.Client), myDispatcher, wire, lf);
-
-                    protocol.ThrowErrorOnOutOfSyncModels = false;
-
-                    protocol.OutOfSyncModels.AdviseOnce(lf, e =>
-                    {
-                        if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
-                            return;
-                        
-                        myPluginInstallations.Add(mySolution.SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
-                        
-                        var appVersion = myUnityVersion.GetActualVersionForSolution();
-                        if (appVersion < new Version(2019, 2))
-                        {
-                            var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-                            var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lf, entry, null).Value;
-                            if (!isEnabled)
-                            {
-                                myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
-                            }
-                        }
-                        else
-                        {
-                            var notification = new NotificationModel("Advanced Unity integration is unavailable", 
-                                $"Please update External Editor to {myHostProductInfo.VersionMarketingString} in Unity Preferences.",
-                                true, RdNotificationEntryType.WARN);
-                            mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify", () => myNotificationsModel.Notification(notification));
-                        }
-                    });
                     var editor = new EditorPluginModel(lf, protocol);
                     editor.IsBackendConnected.Set(rdVoid => true);
 
