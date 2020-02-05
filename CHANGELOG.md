@@ -14,9 +14,29 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 - Exclude `Boo` and `UnityScript` namespaces, as well as the `System.Diagnostics.Debug` type from import completion ([#574](https://github.com/JetBrains/resharper-unity/issues/574), [#1473](https://github.com/JetBrains/resharper-unity/pull/1473))
 
+### Changed
+
+- Rider: Show folders ending with `~` by default in Unity Explorer ([#1444](https://github.com/JetBrains/resharper-unity/issues/1444), [1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+- Rider: Move Unity Explorer settings to main "gear" icon ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+
 ### Fixed
 
 - Fix incorrect redundant `SerializeField` attribute warning for property backing field ([#1016](https://github.com/JetBrains/resharper-unity/issues/1016), [#1464](https://github.com/JetBrains/resharper-unity/pull/1464))
+- Rider: Fix tooltip display for packages in Unity Explorer ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+
+
+
+## 2019.3.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap7-rtm-2019.3.0-rtm-2019.3.1...net193-eap8-rtm-2019.3.2)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/34?closed=1)
+
+### Changed
+
+- Unity Editor: Find Usages window now allows replacing current open scene ([#1479](https://github.com/JetBrains/resharper-unity/issues/1479), [#1480](https://github.com/JetBrains/resharper-unity/pull/1480))
+
+### Fixed
+
+- Avoid creating meta files outside of Asset or Packages folders ([#1489](https://github.com/JetBrains/resharper-unity/issues/1489), [#1491](https://github.com/JetBrains/resharper-unity/pull/1491))
 
 
 

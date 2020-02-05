@@ -6,7 +6,7 @@ import com.jetbrains.rider.plugins.gradle.tasks.*
 ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
 
 nuget {
-    version = "4.4.1"
+    version = "4.9.4"
 }
 
 // if there's no bundled SDK and we have to build R#, we download & unzip it, changing SDK path
