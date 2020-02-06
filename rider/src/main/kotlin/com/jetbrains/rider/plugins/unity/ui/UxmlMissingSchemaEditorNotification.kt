@@ -15,6 +15,7 @@ import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.intellij.util.text.VersionComparatorUtil
 import com.jetbrains.rd.framework.RdTaskResult
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.isUnityProject
@@ -26,7 +27,6 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.isUxmlFile
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
-import com.jetbrains.rider.util.idea.lifetime
 import java.nio.file.Paths
 
 class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNotificationPanel>() {

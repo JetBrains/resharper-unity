@@ -13,6 +13,7 @@ import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
+import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.lifetime.onTermination
@@ -24,7 +25,6 @@ import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.model.ScriptCompilationDuringPlay
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
-import com.jetbrains.rider.util.idea.application
 
 class UnityAutoSaveConfigureNotification(project: Project, private val unityProjectDiscoverer: UnityProjectDiscoverer,
                                          private val unityHost: UnityHost, solutionLifecycleHost: SolutionLifecycleHost) : LifetimedProjectComponent(project) {

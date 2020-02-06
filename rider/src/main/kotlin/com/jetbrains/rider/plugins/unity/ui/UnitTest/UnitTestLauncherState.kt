@@ -6,10 +6,10 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.lifetime
 import org.jdom.Element
 
 @State(name = "UnityUnitTestConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])

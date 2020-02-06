@@ -4,6 +4,7 @@ import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
@@ -12,7 +13,6 @@ import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.projectDir
-import com.jetbrains.rider.util.idea.application
 
 class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: Project) {
 

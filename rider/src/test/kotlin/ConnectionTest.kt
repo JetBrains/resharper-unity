@@ -1,6 +1,7 @@
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.io.exists
 import com.intellij.util.io.readText
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -14,7 +15,6 @@ import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.changeFileSystem2
 import com.jetbrains.rider.test.scriptingApi.checkSwea
-import com.jetbrains.rider.util.idea.lifetime
 import java.io.File
 import java.nio.file.Paths
 import java.time.Duration

@@ -1,5 +1,6 @@
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.exists
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.plugins.unity.UnityHost
@@ -9,7 +10,6 @@ import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
-import com.jetbrains.rider.util.idea.lifetime
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
