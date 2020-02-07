@@ -30,7 +30,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Refer
             LocalDocumentAnchor = localDocumentAnchor;
         }
 
-        private string ExternalAssetGuid { get; }
+        public string ExternalAssetGuid { get; }
         public string LocalDocumentAnchor { get; }
+
+
+        protected bool Equals(ExternalReference other)
+        {
+            return ExternalAssetGuid == other.ExternalAssetGuid && LocalDocumentAnchor == other.LocalDocumentAnchor;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ExternalReference) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (ExternalAssetGuid.GetHashCode() * 397) ^ LocalDocumentAnchor.GetHashCode();
+            }
+        }
     }
 }

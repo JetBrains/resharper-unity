@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         private readonly SequentialLifetimes mySequentialLifetimes;
         private readonly IShellLocks myShellLocks;
         private readonly IDaemonThread myDaemonThread;
-        private readonly ReaderWriterLockSlim myReaderWriterLockSlim = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim myReaderWriterLockSlim = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
         public DeferredCachesLocks(Lifetime lifetime, IShellLocks shellLocks, IDaemonThread daemonThread)
         {

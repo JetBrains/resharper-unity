@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
 {
@@ -54,10 +53,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Psi.Search
       // .ctor, but would appear in text as this or base
       var wordsInText = ElementNames;
       var referenceNames = ElementNames;
-      throw new OperationCanceledException();
-      // var result = new ReferenceSearchSourceFileProcessorWorkaround<TResult>(element, myFindCandidates, consumer, myElements,
-      //   wordsInText, referenceNames).Run();
-      // return result == FindExecution.Stop;
+      var result = new ReferenceSearchSourceFileProcessorWorkaround<TResult>(element, myFindCandidates, consumer, myElements,
+        wordsInText, referenceNames).Run();
+      return result == FindExecution.Stop;
     }
   }
 }

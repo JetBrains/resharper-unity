@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
     // have different namespaces)
     // We'll add a reference from the guid of a 11500000 fileID structure to the class it represents, by finding the C#
     // file asset with the same guid, and the class of the same name inside the file
-    [ReferenceProviderFactory]
+    // [ReferenceProviderFactory]
     public class MonoScriptReferenceProviderFactory : IReferenceProviderFactory
     {
         public MonoScriptReferenceProviderFactory(Lifetime lifetime)

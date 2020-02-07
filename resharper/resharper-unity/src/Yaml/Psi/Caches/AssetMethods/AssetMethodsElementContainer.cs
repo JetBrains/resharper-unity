@@ -1,14 +1,23 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
+using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
+using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Psi.Resolve;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
@@ -19,16 +28,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
     public class AssetMethodsElementContainer : IUnityAssetDataElementContainer
     {
         private readonly ISolution mySolution;
+        private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
         private readonly DeferredCachesLocks myDeferredCachesLocks;
 
-        public AssetMethodsElementContainer(ISolution solution, DeferredCachesLocks deferredCachesLocks)
+        public AssetMethodsElementContainer(ISolution solution, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer, DeferredCachesLocks deferredCachesLocks)
         {
             mySolution = solution;
+            myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
             myDeferredCachesLocks = deferredCachesLocks;
         }
         
         private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName", false);
         private readonly OneToCompactCountingSet<string, AssetMethodData> myShortNameToScriptTarget = new OneToCompactCountingSet<string, AssetMethodData>();
+        private readonly Dictionary<IPsiSourceFile, OneToListMap<string, AssetMethodData>> myPsiSourceFileToMethods = new Dictionary<IPsiSourceFile, OneToListMap<string, AssetMethodData>>(); 
         
         public IUnityAssetDataElement Build(Lifetime lifetime, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
@@ -63,12 +75,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
                         if (fileID == null || fileID.IsNullReference)
                             continue;
 
-                        var methodName = methodDescription.GetValue("m_MethodName").GetPlainScalarText();
+                        var methodNameNode = methodDescription.GetValue("m_MethodName");
+                        var methodName = methodNameNode?.GetPlainScalarText();
                         if (methodName == null)
                             continue;
+
+                        var methodNameRange = methodNameNode.GetTreeTextRange();
                         
                         var arguments = methodDescription.GetValue("m_Arguments") as IBlockMappingNode;
-                        var modeText = methodDescription.GetValue("m_Mode").GetPlainScalarText();
+                        var modeText = methodDescription.GetValue("m_Mode")?.GetPlainScalarText();
                         var argMode = EventHandlerArgumentMode.EventDefined;
                         if (int.TryParse(modeText, out var mode))
                         {
@@ -83,8 +98,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
                             type = eventTypeName?.Split(',').FirstOrDefault();
                         else if (argMode == EventHandlerArgumentMode.Void)
                             type = null;
-                        
-                        result.Add(new AssetMethodData(currentSourceFile.GetPersistentID(), methodName, argMode, type, fileID));                        
+
+                        var range = new TextRange(assetDocument.StartOffset + methodNameRange.StartOffset.Offset,
+                            assetDocument.StartOffset + methodNameRange.EndOffset.Offset);
+                        result.Add(new AssetMethodData(currentSourceFile.PsiStorage.PersistentIndex, methodName, range,
+                            argMode, type, fileID.ToReference(currentSourceFile)));                        
                     }
                 }
             }
@@ -101,15 +119,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
             {
                 myShortNameToScriptTarget.Remove(method.MethodName, method);
             }
+
+            myPsiSourceFileToMethods.Remove(sourceFile);
         }
 
         public void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
         {
-            var element = unityAssetDataElement as AssetMethodsDataElement;
+            var element = (unityAssetDataElement as AssetMethodsDataElement).NotNull("element != null");
+            var groupMethods = new OneToListMap<string, AssetMethodData>();
             foreach (var method in element.Methods)
             {
                 myShortNameToScriptTarget.Add(method.MethodName, method);
+                groupMethods.Add(method.MethodName, method);
             }
+            
+            myPsiSourceFileToMethods.Add(sourceFile, groupMethods);
         }
 
         public bool IsEventHandler(IDeclaredElement declaredElement)
@@ -124,8 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 
                 foreach (var assetMethodData in myShortNameToScriptTarget.GetValues(declaredElement.ShortName))
                 {
-                    // var scriptAnchorSourceFile = GetSourceFileWithPointedYamlDocument(sourceFile, scriptAnchor, myGuidCache);
-                    var guid = "a1d497fe1c6a82f4d946c6867da502bd";//GetScriptGuid(scriptAnchorSourceFile, scriptAnchor.LocalDocumentAnchor);
+                    var guid = GetScriptGuid(assetMethodData);
                     if (guid == null)
                         continue;
                 
@@ -143,6 +166,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 
                 return false;     
             });
+        }
+
+        private string GetScriptGuid(AssetMethodData assetMethodData)
+        {
+            var reference = assetMethodData.TargetScriptReference;
+            var scriptComponent = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference) as ScriptComponentHierarchy;
+            var guid = scriptComponent?.ScriptReference.ExternalAssetGuid; 
+            
+            return guid;
+        }
+
+        public IEnumerable<AssetMethodData> GetAssetUsagesFor(IPsiSourceFile psiSourceFile, IDeclaredElement declaredElement)
+        {
+            return myDeferredCachesLocks.ExecuteUnderReadLock(lf =>
+            {
+                var result = new List<AssetMethodData>();
+                if (!myPsiSourceFileToMethods.TryGetValue(psiSourceFile, out var methods))
+                    return EmptyList<AssetMethodData>.Enumerable;
+                
+                var assetMethodData = methods.GetValuesSafe(declaredElement.ShortName);
+                foreach (var methodData in assetMethodData)
+                {
+                    var symbolTable = GetReferenceSymbolTable(psiSourceFile, methodData);
+                    if (symbolTable.GetResolveResult(methodData.MethodName).ResolveErrorType == ResolveErrorType.OK)
+                    {
+                        result.Add(methodData);
+                    }
+                }
+                
+                return result;
+            });
+        }
+        
+        private ISymbolTable GetReferenceSymbolTable(IPsiSourceFile owner, AssetMethodData assetMethodData)
+        {
+            var assetGuid = GetScriptGuid(assetMethodData);
+            var targetType = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(owner.GetSolution(), assetGuid);
+            if (targetType == null)
+                return EmptySymbolTable.INSTANCE;
+
+            var symbolTable = ResolveUtil.GetSymbolTableByTypeElement(targetType, SymbolTableMode.FULL, owner.GetPsiModule());
+
+            return symbolTable.Filter(assetMethodData.MethodName, IsMethodFilter.INSTANCE, OverriddenFilter.INSTANCE, new ExactNameFilter(assetMethodData.MethodName),
+                new StaticFilter(new NonStaticAccessContext(null)), new EventHandlerSymbolFilter(assetMethodData.Mode, assetMethodData.Type, targetType.Module));
         }
 
         public string Id => nameof(AssetMethodsElementContainer);

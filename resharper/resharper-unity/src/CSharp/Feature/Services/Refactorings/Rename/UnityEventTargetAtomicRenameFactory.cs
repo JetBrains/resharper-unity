@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             if (!declaredElement.IsFromUnityProject())
                 return false;
 
-            return IsEventHandler(declaredElement);
+            return IsPossibleEventHandler(declaredElement);
         }
 
         public RenameAvailabilityCheckResult CheckRenameAvailability(IDeclaredElement element)
@@ -27,24 +27,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public IEnumerable<AtomicRenameBase> CreateAtomicRenames(IDeclaredElement declaredElement, string newName,
                                                                  bool doNotAddBindingConflicts)
         {
-            return new[] {new UnityEventTargetAtomicRename(declaredElement, newName)};
+            return new[] {new UnityEventTargetAtomicRename(declaredElement.GetSolution(), declaredElement, newName)};
         }
 
-        private static bool IsEventHandler(IDeclaredElement declaredElement)
+        private static bool IsPossibleEventHandler(IDeclaredElement declaredElement)
         {
-            var eventHandlerCache = declaredElement.GetSolution().GetComponent<UnitySceneDataLocalCache>();
-            switch (declaredElement)
-            {
-                case IMethod method:
-                    return eventHandlerCache.IsEventHandler(method);
+            var clrDeclaredElement = declaredElement as IClrDeclaredElement;
 
-                case IProperty property:
-                    var setter = property.Setter;
-                    return setter != null && eventHandlerCache.IsEventHandler(setter);
-
-                default:
-                    return false;
-            }
+            var containingType = clrDeclaredElement?.GetContainingType();
+            if (containingType == null)
+                return false;
+            
+            var unityObjectType = TypeFactory.CreateTypeByCLRName(KnownTypes.Object, clrDeclaredElement.Module).GetTypeElement();
+            return containingType.IsDescendantOf(unityObjectType);
         }
     }
 }
