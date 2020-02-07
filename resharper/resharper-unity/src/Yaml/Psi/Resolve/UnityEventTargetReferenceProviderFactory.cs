@@ -1,5 +1,6 @@
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -35,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
     //   serialised fields of UnityEventBase). The m_TypeName property is the type of the serialised event. The handlers
     //   are serialised as a list of PersistentCalls, with m_Target being the MonoScript fileID and m_MethodName being
     //   the name of the method in that type (so be careful with rename!)
-    //[ReferenceProviderFactory]
+    // [ReferenceProviderFactory]
     public class UnityEventTargetReferenceProviderFactory : IReferenceProviderFactory
     {
         public UnityEventTargetReferenceProviderFactory(Lifetime lifetime)
@@ -46,10 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve
 
         public IReferenceFactory CreateFactory(IPsiSourceFile sourceFile, IFile file, IWordIndex wordIndexForChecks)
         {
-            if (sourceFile.PrimaryPsiLanguage.Is<UnityYamlLanguage>() && sourceFile.IsAsset())
+            if (sourceFile.PsiModule is UnityExternalFilesPsiModule)
             {
-                if (wordIndexForChecks == null || wordIndexForChecks.CanContainAllSubwords(sourceFile, "m_MethodName"))
-                    return new UnityEventTargetReferenceFactory();
+                return new UnityEventTargetReferenceFactory();
             }
 
             return null;

@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
-using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References
@@ -11,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Refer
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new LocalReference(reader.ReadString(), reader.ReadString());
+        private static object Read(UnsafeReader reader) => new LocalReference(reader.ReadInt32(), reader.ReadString());
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as LocalReference);
@@ -22,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Refer
             writer.Write(value.LocalDocumentAnchor);
         }
         
-        public LocalReference(string ownerId, string localDocumentAnchor)
+        public LocalReference(int ownerId, string localDocumentAnchor)
         {
             OwnerId = ownerId;
             LocalDocumentAnchor = localDocumentAnchor;
@@ -30,7 +29,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Refer
 
         public string LocalDocumentAnchor { get; }
         
-        public string OwnerId { get; private set; }
+        public int OwnerId { get; private set; }
 
+        protected bool Equals(LocalReference other)
+        {
+            return LocalDocumentAnchor == other.LocalDocumentAnchor && OwnerId == other.OwnerId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((LocalReference) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (LocalDocumentAnchor.GetHashCode() * 397) ^ OwnerId.GetHashCode();
+            }
+        }
     }
 }

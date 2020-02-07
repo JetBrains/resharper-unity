@@ -7,6 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils
 {
     public class AssetDocument
     {
+        public int StartOffset { get; }
         public IBuffer Buffer { get; }
         private readonly object myLockObject = new object();
         private IYamlDocument myDocument = null;
@@ -31,8 +32,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils
             }
         }
 
-        public AssetDocument(IBuffer buffer)
+        public AssetDocument(int startOffset, IBuffer buffer)
         {
+            StartOffset = startOffset;
             Buffer = buffer;
         }
     }

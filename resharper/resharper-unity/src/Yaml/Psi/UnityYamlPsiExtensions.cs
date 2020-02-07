@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -80,6 +81,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public AssetDocumentReference WithGuid(string newGuid)
         {
             return new AssetDocumentReference(newGuid, LocalDocumentAnchor);
+        }
+
+        public IHierarchyReference ToReference(IPsiSourceFile currentSourceFile)
+        {
+            if (ExternalAssetGuid == null)
+                return new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, LocalDocumentAnchor);
+            
+            return new ExternalReference(ExternalAssetGuid, LocalDocumentAnchor);
         }
     }
     // ReSharper restore InconsistentNaming

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using JetBrains.Collections;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
@@ -22,12 +23,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     [SolutionComponent]
     public class UnityAssetCache : DeferredCacheBase<UnityAssetData>
     {
+        private readonly ILogger myLogger;
         private readonly Dictionary<string, IUnityAssetDataElementContainer> myUnityAssetDataElementContainers = new Dictionary<string, IUnityAssetDataElementContainer>();
         private readonly ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)> myDocumentNumber = new ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)>();
         private readonly ConcurrentDictionary<IPsiSourceFile, long> myCurrentTimeStamp = new ConcurrentDictionary<IPsiSourceFile, long>();
-        public UnityAssetCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers)
+        public UnityAssetCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers, ILogger logger)
             : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate))
         {
+            myLogger = logger;
             foreach (var unityAssetDataElementContainer in unityAssetDataElementContainers)
             {
                 myUnityAssetDataElementContainers[unityAssetDataElementContainer.Id] = unityAssetDataElementContainer;
@@ -43,7 +46,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             foreach (var (id, element) in data.UnityAssetDataElements)
             {
-                myUnityAssetDataElementContainers[id].Merge(sourceFile, element);
+                var container =  myUnityAssetDataElementContainers[id];
+                Assertion.Assert(container != null, "container != null");
+                try
+                {
+                    container.Merge(sourceFile, element);
+                }
+                catch (Exception e)
+                {
+                    myLogger.Error(e, "An error occurred while merging data in {0}", container.GetType().Name);
+                }
             }
         }
 
@@ -60,7 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                     lexer.Start();
 
                     var docId = 0;
-                    var test = new List<int>();
                     while (lexer.TokenType != null)
                     {
                         if (!lifetime.IsAlive)
@@ -73,14 +84,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                             if (lexer.TokenType == UnityYamlTokenType.DOCUMENT)
                             {
                                 var documentBuffer = ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd));
-                                BuildDocument(result, lifetime, psiSourceFile, documentBuffer);
+                                BuildDocument(result, lifetime, psiSourceFile, lexer.TokenStart, documentBuffer);
                             }
 
                             myDocumentNumber[psiSourceFile] = (result, docId);
                             myCurrentTimeStamp[psiSourceFile] = psiSourceFile.GetAggregatedTimestamp();
                         }
 
-                        test.Add(lexer.TokenEnd);
                         buffer.DropFragments();
                         lexer.Advance();
                     }
@@ -103,17 +113,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             return myDocumentNumber[psiSourceFile];
         }
 
-        private void BuildDocument(UnityAssetData data, Lifetime lifetime, IPsiSourceFile sourceFile, IBuffer buffer)
+        private void BuildDocument(UnityAssetData data, Lifetime lifetime, IPsiSourceFile sourceFile, int start, IBuffer buffer)
         {
-            var assetDocument = new AssetDocument(buffer);
+            var assetDocument = new AssetDocument(start, buffer);
             var results = new LocalList<IUnityAssetDataElement>();
             foreach (var unityAssetDataElementContainer in myUnityAssetDataElementContainers.Values)
             {
                 if (!lifetime.IsAlive)
                     throw new OperationCanceledException();
-                var result = unityAssetDataElementContainer.Build(lifetime, sourceFile, assetDocument);
-                if (result != null)
-                    results.Add(result);
+                try
+                {
+                    var result = unityAssetDataElementContainer.Build(lifetime, sourceFile, assetDocument);
+                    if (result != null)
+                        results.Add(result);
+                }
+                catch (Exception e)
+                {
+                    myLogger.Error(e, "An error occured while building document: {0}", unityAssetDataElementContainer.GetType().Name);
+                }
             }
 
             foreach (var result in results)
@@ -129,7 +146,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
             foreach (var (id, element) in data.UnityAssetDataElements)
             {
-                myUnityAssetDataElementContainers[id].Drop(sourceFile, element);
+                var container =  myUnityAssetDataElementContainers[id];
+                Assertion.Assert(container != null, "container != null");
+                try
+                {
+                    container.Drop(sourceFile, element);
+                }
+                catch (Exception e)
+                {
+                    myLogger.Error(e, "An error occurred while dropping data in {0}", container.GetType().Name);
+                }
             }
         }
 
