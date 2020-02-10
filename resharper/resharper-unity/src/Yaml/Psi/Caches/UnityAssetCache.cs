@@ -127,6 +127,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                     if (result != null)
                         results.Add(result);
                 }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
                 catch (Exception e)
                 {
                     myLogger.Error(e, "An error occured while building document: {0}", unityAssetDataElementContainer.GetType().Name);

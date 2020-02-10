@@ -6,12 +6,12 @@ using JetBrains.Serialization;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
 {
     [PolymorphicMarshaller]
-    public class AssetInspectorValuesDateElement : IUnityAssetDataElement
+    public class AssetInspectorValuesDataElement : IUnityAssetDataElement
     {
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
         [UsedImplicitly]
-        public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetInspectorValuesDateElement);
+        public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetInspectorValuesDataElement);
 
 
         private static object Read(UnsafeReader reader)
@@ -23,22 +23,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
             {
                 list.Add(reader.ReadPolymorphic<InspectorVariableUsage>());
             }
-            return new AssetInspectorValuesDateElement(list);
+            return new AssetInspectorValuesDataElement(list);
         }
 
-        private static void Write(UnsafeWriter writer, AssetInspectorValuesDateElement value)
+        private static void Write(UnsafeWriter writer, AssetInspectorValuesDataElement value)
         {
             writer.Write(value.VariableUsages.Count);
             foreach (var v in value.VariableUsages)
             {
-                writer.WritePolymorphic(v.Value);
+                writer.WritePolymorphic(v);
             }
         }
         
         public readonly List<InspectorVariableUsage> VariableUsages = new List<InspectorVariableUsage>();
         public string ContainerId => nameof(AssetInspectorValuesContainer);
 
-        public AssetInspectorValuesDateElement(IEnumerable<InspectorVariableUsage> usages)
+        public AssetInspectorValuesDataElement(IEnumerable<InspectorVariableUsage> usages)
         {
             foreach (var inspectorVariableUsage in usages)
             {
@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
         
         public void AddData(IUnityAssetDataElement unityAssetDataElement)
         {
-            var valuesElement = unityAssetDataElement as AssetInspectorValuesDateElement;
+            var valuesElement = unityAssetDataElement as AssetInspectorValuesDataElement;
             foreach (var variableUsage in valuesElement.VariableUsages)
             {
                 VariableUsages.Add(variableUsage);

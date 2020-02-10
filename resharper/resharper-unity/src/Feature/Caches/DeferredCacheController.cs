@@ -127,6 +127,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                                 {
                                     cacheToData[cache] = cache.Build(lifetime, psiSourceFile);
                                 }
+                                catch (OperationCanceledException)
+                                {
+                                    throw;
+                                }
                                 catch (Exception e)
                                 {
                                     myLogger.Error(e, "An error occurred during build cache {0}", cache.GetType().Name);
