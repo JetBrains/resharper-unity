@@ -39,5 +39,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
         public IHierarchyReference ScriptReference { get; }
         public string Name { get; }
         public IAssetValue Value { get; }
+
+        protected bool Equals(InspectorVariableUsage other)
+        {
+            return Location.Equals(other.Location) && ScriptReference.Equals(other.ScriptReference) && Name == other.Name && Value.Equals(other.Value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((InspectorVariableUsage) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Location.GetHashCode();
+                hashCode = (hashCode * 397) ^ ScriptReference.GetHashCode();
+                hashCode = (hashCode * 397) ^ Name.GetHashCode();
+                hashCode = (hashCode * 397) ^ Value.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 }

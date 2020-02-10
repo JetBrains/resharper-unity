@@ -17,8 +17,13 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Files;
@@ -49,9 +54,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly Lifetime myLifetime;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly UnityApi myUnityApi;
-        private readonly IPsiFiles myFiles;
+        private readonly IPersistentIndexManager myIndexManager;
         private readonly UnityHost myUnityHost;
-        private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
+        private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
+        private readonly AssetDocumentHierarchyElementContainer myHierarchyElementContainer;
         private readonly ITooltipManager myTooltipManager;
         private readonly TextControlManager myTextControlManager;
         private readonly UnityEditorProtocol myProtocol;
@@ -63,127 +69,129 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             new[] {new CodeLensRelativeOrderingLast()};
 
         public UnityCodeInsightFieldUsageProvider(Lifetime lifetime, UnitySolutionTracker unitySolutionTracker, ConnectionTracker connectionTracker,
-            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPsiFiles files, UnityHost unityHost, UnitySceneDataLocalCache sceneDataCache,
+            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, IPersistentIndexManager indexManager, UnityHost unityHost,
+            AssetInspectorValuesContainer inspectorValuesContainer, AssetDocumentHierarchyElementContainer hierarchyElementContainer,
             ITooltipManager tooltipManager, TextControlManager textControlManager, UnityEditorProtocol protocol)
             : base(unitySolutionTracker, host, bulbMenu)
         {
             myLifetime = lifetime;
             myConnectionTracker = connectionTracker;
             myUnityApi = unityApi;
-            myFiles = files;
+            myIndexManager = indexManager;
             myUnityHost = unityHost;
-            myUnitySceneDataLocalCache = sceneDataCache;
+            myInspectorValuesContainer = inspectorValuesContainer;
+            myHierarchyElementContainer = hierarchyElementContainer;
             myTooltipManager = tooltipManager;
             myTextControlManager = textControlManager;
             myProtocol = protocol;
         }
         
-        private static (string guid, string propertyName)? GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
+        private static (string guid, string[] propertyNames) GetAssetGuidAndPropertyName(ISolution solution, IDeclaredElement declaredElement)
         {
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
             
             var containingType = (declaredElement as IClrDeclaredElement)?.GetContainingType();
             if (containingType == null)
-                return null;
+                return (null, null);
 
             var sourceFile = declaredElement.GetSourceFiles().FirstOrDefault();
             if (sourceFile == null)
-                return null;
+                return (null, null);
 
             if (!sourceFile.IsValid())
-                return null;
+                return (null, null);
 
             var guid = solution.GetComponent<MetaFileGuidCache>().GetAssetGuid(sourceFile);
             if (guid == null)
-                return null;
+                return (null, null);
 
             // TODO [19.3] support several names for field 
 //            var formerlySerializedAs = AttributeUtil.GetAttribute(fieldDeclaration, KnownTypes.FormerlySerializedAsAttribute);
 //            var oldName = formerlySerializedAs?.Arguments.FirstOrDefault()?.Value?.ConstantValue?.Value as string;
 
-            return (guid, declaredElement.ShortName);
+            return (guid, new [] {declaredElement.ShortName});
         }
         
         public override void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
         {
-            if (highlighting is UnityInspectorCodeInsightsHighlighting unityInspectorCodeInsightsHighlighting)
-            {
-                Shell.Instance.GetComponent<JetPopupMenus>().Show(solution.GetLifetime(),
-                    JetPopupMenu.ShowWhen.NoItemsBannerIfNoItems, (lifetime, menu) =>
-                    {
-                        var presentationType = unityInspectorCodeInsightsHighlighting.UnityPresentationType;
-                        var initValue = unityInspectorCodeInsightsHighlighting.ConstantValue;
-                        var declaredElement = (highlighting.DeclaredElement as IClrDeclaredElement).NotNull("declaredElement != null");
-
-                        if (!declaredElement.IsValid())
-                            return;
-                        
-                        var result = GetAssetGuidAndPropertyName(solution, declaredElement);
-                        if (!result.HasValue)
-                            return;
-
-                        
-                        var valuesCache = solution.GetComponent<UnitySceneDataLocalCache>();
-                        var values = valuesCache.GetPropertyValues(result.Value.guid, result.Value.propertyName);
-
-                        menu.Caption.Value = WindowlessControlAutomation.Create("Inspector values");
-                        menu.KeyboardAcceleration.Value = KeyboardAccelerationFlags.QuickSearch;
-
-                        var valuesToShow = values.Where(t => !IsSameWithInitializer(t.Value, presentationType, initValue)).Take(POP_UP_MAX_COUNT);
-                        foreach (var valueWithLocation in valuesToShow)
-                        {
-                            var value = valueWithLocation.Value;
-                            if (ShouldShowUnknownPresentation(presentationType))
-                                menu.ItemKeys.Add(valueWithLocation);
-                            else
-                                menu.ItemKeys.Add(valueWithLocation);
-
-                        }
-
-                        menu.DescribeItem.Advise(lifetime, e =>
-                        {
-                            var value = (e.Key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
-
-                            string shortPresentation;
-                            if (ShouldShowUnknownPresentation(presentationType))
-                            {
-                                shortPresentation = "...";
-                            }
-                            else
-                            {
-                                if (!declaredElement.IsValid())
-                                    return;
-
-                                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                                {
-                                    var type = declaredElement.Type();
-                                    shortPresentation = GetPresentation(value, presentationType, type, solution,
-                                        declaredElement.Module, true);
-                                }
-                            }
-
-                            e.Descriptor.Text = shortPresentation;
-                            OccurrencePresentationUtil.AppendRelatedFile(e.Descriptor, value.File.DisplayName.Replace("\\", "/"));
-
-                            e.Descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
-                            e.Descriptor.Style = MenuItemStyle.Enabled;
-                        });
-
-                        menu.ItemClicked.Advise(lifetime, key =>
-                        {
-                            if (!myConnectionTracker.IsConnectionEstablished())
-                            {
-                                ShowNotification();
-                                return;
-                            }
-
-                            var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
-                            
-                            UnityEditorFindUsageResultCreator.CreateRequestAndShow(myProtocol, myUnityHost, myLifetime, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
-                                value.Value.MonoBehaviour, value.File);
-                        });
-                    });
-            }
+            // if (highlighting is UnityInspectorCodeInsightsHighlighting unityInspectorCodeInsightsHighlighting)
+            // {
+            //     Shell.Instance.GetComponent<JetPopupMenus>().Show(solution.GetLifetime(),
+            //         JetPopupMenu.ShowWhen.NoItemsBannerIfNoItems, (lifetime, menu) =>
+            //         {
+            //             var presentationType = unityInspectorCodeInsightsHighlighting.UnityPresentationType;
+            //             var initValue = unityInspectorCodeInsightsHighlighting.ConstantValue;
+            //             var declaredElement = (highlighting.DeclaredElement as IClrDeclaredElement).NotNull("declaredElement != null");
+            //
+            //             if (!declaredElement.IsValid())
+            //                 return;
+            //             
+            //             var result = GetAssetGuidAndPropertyName(solution, declaredElement);
+            //             if (!result.HasValue)
+            //                 return;
+            //
+            //             
+            //             var valuesCache = solution.GetComponent<UnitySceneDataLocalCache>();
+            //             var values = valuesCache.GetPropertyValues(result.Value.guid, result.Value.propertyName);
+            //
+            //             menu.Caption.Value = WindowlessControlAutomation.Create("Inspector values");
+            //             menu.KeyboardAcceleration.Value = KeyboardAccelerationFlags.QuickSearch;
+            //
+            //             var valuesToShow = values.Where(t => !IsSameWithInitializer(t.Value, presentationType, initValue)).Take(POP_UP_MAX_COUNT);
+            //             foreach (var valueWithLocation in valuesToShow)
+            //             {
+            //                 var value = valueWithLocation.Value;
+            //                 if (ShouldShowUnknownPresentation(presentationType))
+            //                     menu.ItemKeys.Add(valueWithLocation);
+            //                 else
+            //                     menu.ItemKeys.Add(valueWithLocation);
+            //
+            //             }
+            //
+            //             menu.DescribeItem.Advise(lifetime, e =>
+            //             {
+            //                 var value = (e.Key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
+            //
+            //                 string shortPresentation;
+            //                 if (ShouldShowUnknownPresentation(presentationType))
+            //                 {
+            //                     shortPresentation = "...";
+            //                 }
+            //                 else
+            //                 {
+            //                     if (!declaredElement.IsValid())
+            //                         return;
+            //
+            //                     using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+            //                     {
+            //                         var type = declaredElement.Type();
+            //                         shortPresentation = GetPresentation(value, presentationType, type, solution,
+            //                             declaredElement.Module, true);
+            //                     }
+            //                 }
+            //
+            //                 e.Descriptor.Text = shortPresentation;
+            //                 OccurrencePresentationUtil.AppendRelatedFile(e.Descriptor, value.File.DisplayName.Replace("\\", "/"));
+            //
+            //                 e.Descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
+            //                 e.Descriptor.Style = MenuItemStyle.Enabled;
+            //             });
+            //
+            //             menu.ItemClicked.Advise(lifetime, key =>
+            //             {
+            //                 if (!myConnectionTracker.IsConnectionEstablished())
+            //                 {
+            //                     ShowNotification();
+            //                     return;
+            //                 }
+            //
+            //                 var value = (key as MonoBehaviourPropertyValueWithLocation).NotNull("value != null");
+            //                 
+            //                 UnityEditorFindUsageResultCreator.CreateRequestAndShow(myProtocol, myUnityHost, myLifetime, solution.SolutionDirectory, myUnitySceneDataLocalCache, 
+            //                     value.Value.MonoBehaviour, value.File);
+            //             });
+            //         });
+            // }
         }
 
         private void ShowNotification()
@@ -193,6 +201,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 return;
             
             myTooltipManager.Show("Start the Unity Editor to view changes in the Inspector", lifetime => textControl.PopupWindowContextFactory.CreatePopupWindowContext(lifetime));
+            
         }
 
         private string GetPresentation(MonoBehaviourPropertyValueWithLocation monoBehaviourPropertyValueWithLocation,
@@ -256,14 +265,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var solution = element.GetSolution();
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
-            var result = GetAssetGuidAndPropertyName(solution, declaredElement);
-            if (!result.HasValue)
+            var (guid, propertyNames) = GetAssetGuidAndPropertyName(solution, declaredElement);
+            if (guid == null || propertyNames == null || propertyNames.Length == 0)
                 return;
-
-            var guid = result.Value.guid;
-            var propertyName = result.Value.propertyName;
-
-            var cache = solution.GetComponent<UnitySceneDataLocalCache>();
 
             var field = (declaredElement as IField).NotNull();
             var type = field.Type;
@@ -279,27 +283,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue.Value;
             
             var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
-            var initValueCount = cache.GetValueCount(guid, propertyName, initValueUnityPresentation);
+            var initValueCount = myInspectorValuesContainer.GetValueCount(guid, propertyNames, initValueUnityPresentation);
 
-            if (initValueCount == 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 1) // only modified value
+            if (initValueCount == 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 1) // only modified value
             {
-                var valueWithLocations = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray(); 
-                Assertion.Assert(valueWithLocations.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
-                displayName = GetPresentation(valueWithLocations[0], presentationType, type, solution,element.GetPsiModule(), false);
-            } else if (initValueCount > 0 && cache.GetPropertyUniqueValuesCount(guid, propertyName) == 2)  
+                var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray(); 
+                Assertion.Assert(values.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
+                var value = values[0];
+                displayName = value.GetPresentation(solution, myIndexManager, myHierarchyElementContainer, type);
+            } else if (initValueCount > 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 2)  
             {
                     
                 // original value & only one modified value
-                var values = cache.GetUniqueValuesWithLocation(guid, propertyName).ToArray();
+                var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray();
                 Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
-                    
-                var anotherValueWithLocation = values[0].Value.Value.Equals(initValueUnityPresentation) ? values[1] : values[0];
-                displayName = GetPresentation(anotherValueWithLocation, presentationType, type, solution,element.GetPsiModule(), false);
+
+                var anotherValueWithLocation = values.First(t => !t.Equals(initValueUnityPresentation));
+                displayName = anotherValueWithLocation.GetPresentation(solution, myIndexManager,
+                    myHierarchyElementContainer, type);
             }
             
             if (displayName == null)
             {
-                var count = cache.GetFilesWithPropertyCount(guid, propertyName) - cache.GetFilesCountWithoutChanges(guid, propertyName, initValueUnityPresentation);
+                var count = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) - 
+                            myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
                 if (count == 0)
                 {
                     displayName = "Unchanged";
@@ -317,21 +324,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 declaredElement, iconModel, presentationType, initValue));
         }
         
-        private object GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
+        private IAssetValue GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
         {
             if (presentationType == UnityPresentationType.Bool && value is bool b)
-                return b ? "1" : "0";
+                return b ? new AssetSimpleValue("1") : new AssetSimpleValue("0");
 
             if (presentationType == UnityPresentationType.FileId && value == null)
-                return AssetDocumentReference.Null;
+                return new AssetReferenceValue(new LocalReference(0, "0"));
 
             if ((presentationType == UnityPresentationType.OtherSimple  || presentationType == UnityPresentationType.Bool) && value == null)
-                return "0";
+                return new AssetSimpleValue("0");
             
             if (value == null)
-                return string.Empty;
+                return new AssetSimpleValue(string.Empty);
 
-            return value.ToString();
+            return new AssetSimpleValue(value.ToString());
         }
         
         private UnityPresentationType GetUnityPresentationType(IType type)

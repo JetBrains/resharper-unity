@@ -29,10 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Refer
 
         public string LocalDocumentAnchor { get; }
         
-        public int OwnerId { get; private set; }
+        public int OwnerId { get;}
 
         protected bool Equals(LocalReference other)
         {
+            if (LocalDocumentAnchor.Equals("0") && other.LocalDocumentAnchor.Equals("0"))
+                return true;
             return LocalDocumentAnchor == other.LocalDocumentAnchor && OwnerId == other.OwnerId;
         }
 
@@ -48,6 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Refer
         {
             unchecked
             {
+                if (LocalDocumentAnchor.Equals("0"))
+                    return 0;
                 return (LocalDocumentAnchor.GetHashCode() * 397) ^ OwnerId.GetHashCode();
             }
         }
