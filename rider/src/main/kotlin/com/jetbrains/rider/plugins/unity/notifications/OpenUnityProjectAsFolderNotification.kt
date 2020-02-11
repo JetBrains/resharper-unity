@@ -45,12 +45,12 @@ class OpenUnityProjectAsFolderNotification(project: Project, unityHost: UnityHos
                 if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider"))
                     adviceText = " Please install <b>Rider package</b> via Unity Package Manager."
                 val content = if (solutionDescription.projectFilePaths.isEmpty()) {
-                    "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
+                    "This looks like a Unity project. C# and Unity specific features are not available when the project is opened as a folder." +
                             adviceText
                 } else
-                    "This looks like a Unity project. C# and Unity specific functionality is not available when only a single project is opened." +
+                    "This looks like a Unity project. C# and Unity specific features are not available when only a single project is opened." +
                             adviceText
-                val title = "Unity functionality unavailable"
+                val title = "Unity features unavailable"
                 val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
                 notification.setListener { _, hyperlinkEvent ->
 
