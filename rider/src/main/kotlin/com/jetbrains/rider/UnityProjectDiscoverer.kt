@@ -1,7 +1,6 @@
 package com.jetbrains.rider
 
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.plugins.unity.UnityHost

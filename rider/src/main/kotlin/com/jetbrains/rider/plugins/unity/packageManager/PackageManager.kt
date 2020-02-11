@@ -91,6 +91,10 @@ class PackageManager(private val project: Project) {
     val hasBuiltInPackages: Boolean
         get() = filterPackagesBySource(PackageSource.BuiltIn).any()
 
+    fun hasPackage(id:String):Boolean {
+        return allPackages.any { it.name == id }
+    }
+
     fun getPackageData(packageFolder: VirtualFile): PackageData? {
         return packagesByFolderName[packageFolder.name]
     }

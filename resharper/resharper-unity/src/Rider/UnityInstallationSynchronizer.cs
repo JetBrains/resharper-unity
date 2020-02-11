@@ -1,4 +1,4 @@
-using JetBrains.Collections.Viewable;
+using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
@@ -53,7 +53,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
                 
                 var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(applicationPath);
-                rd.UnityApplicationData.SetValue(new UnityApplicationData(applicationPath.FullPath, contentsPath.FullPath, UnityVersion.VersionToString(version)));
+                rd.UnityApplicationData.SetValue(new UnityApplicationData(applicationPath.FullPath, 
+                    contentsPath.FullPath, 
+                    UnityVersion.VersionToString(version),
+                    UnityVersion.RequiresRiderPackage(version)
+                    ));
             });
         }
     }

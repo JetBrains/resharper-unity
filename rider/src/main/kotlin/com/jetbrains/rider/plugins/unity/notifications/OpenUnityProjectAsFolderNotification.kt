@@ -14,8 +14,10 @@ import com.jetbrains.rider.model.RdVirtualSolution
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
+import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solutionDescription
@@ -40,6 +42,8 @@ class OpenUnityProjectAsFolderNotification(project: Project, unityHost: UnityHos
                 if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
                     adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
                 }
+                if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider"))
+                    adviceText = " Install <b>Rider package</b> via Unity Package Manager."
                 val content = if (solutionDescription.projectFilePaths.isEmpty()) {
                     "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
                             adviceText
