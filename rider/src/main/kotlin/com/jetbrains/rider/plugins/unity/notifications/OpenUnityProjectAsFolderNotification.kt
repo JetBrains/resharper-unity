@@ -43,7 +43,7 @@ class OpenUnityProjectAsFolderNotification(project: Project, unityHost: UnityHos
                     adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
                 }
                 if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider"))
-                    adviceText = " Install <b>Rider package</b> via Unity Package Manager."
+                    adviceText = " Please install <b>Rider package</b> via Unity Package Manager."
                 val content = if (solutionDescription.projectFilePaths.isEmpty()) {
                     "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
                             adviceText
