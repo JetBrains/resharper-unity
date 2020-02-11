@@ -32,22 +32,19 @@ class OpenUnityProjectAsFolderNotification(project: Project, unityHost: UnityHos
 
     init {
         unityHost.model.unityApplicationData.advise(componentLifetime) {
-            // Do nothing if we're not in Unity folders, or we are, but we're a proper .sln based solution
-            if (project.solutionDescription is RdExistingSolution) return@advise
-
             val solutionDescription = project.solutionDescription
             val title = "Unity features unavailable"
             val content = "Configuration required:<br/>" +
                 "<ul><li>Install the <b>Rider package</b> in Unity’s Package Manager</li>" +
                 "<li>Select Rider as the External Editor</li>" +
                 "<li>Reopen Rider from Unity</li></ul>"
-            if (solutionDescription is RdExistingSolution){
+            if (solutionDescription is RdExistingSolution){ // proper solution
                 if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
                     val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
                     Notifications.Bus.notify(notification, project)
                 }
             }
-            if (solutionDescription is RdVirtualSolution) {
+            else if (solutionDescription is RdVirtualSolution) { // opened as folder
                 var adviceText = " Please <a href=\"reopen\">click here</a> to start Unity, generate a solution file and reopen the project."
                 val editorInstanceJson = EditorInstanceJson.getInstance(project)
                 if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
