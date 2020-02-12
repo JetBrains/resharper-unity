@@ -15,7 +15,7 @@ class UnityUIMinimizer : StartupActivity {
             if (project.isDisposed)
                 return
 
-            val unityUiManager = UnityUIManager.tryGetInstance(project) ?: return
+            val unityUiManager = UnityUIManager.getInstance(project)
             unityUiManager.hasMinimizedUi.value = true
 
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
@@ -34,7 +34,7 @@ class UnityUIMinimizer : StartupActivity {
             if (project.isDisposed)
                 return
 
-            val unityUiManager = UnityUIManager.tryGetInstance(project) ?: return
+            val unityUiManager = UnityUIManager.getInstance(project)
             unityUiManager.hasMinimizedUi.value = false
 
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
@@ -50,8 +50,8 @@ class UnityUIMinimizer : StartupActivity {
 
     override fun runActivity(project: Project) {
         application.invokeLater {
-            val unityUIManager = UnityUIManager.tryGetInstance(project)
-            if (unityUIManager?.hasMinimizedUi?.hasTrueValue() == true) {
+            val unityUIManager = UnityUIManager.getInstance(project)
+            if (unityUIManager.hasMinimizedUi.hasTrueValue()) {
                 ensureMinimizedUI(project)
             }
         }

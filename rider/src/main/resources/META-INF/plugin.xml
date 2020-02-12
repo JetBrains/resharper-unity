@@ -98,12 +98,13 @@
     <statusBarWidgetProvider implementation="com.jetbrains.rider.plugins.unity.ui.UnityStatusBarWidget" />
 
     <projectModelViewExtensions implementation="com.jetbrains.rider.plugins.unity.explorer.UnityProjectModelViewExtensions"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
   </extensions>
 
   <project-components>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnitTest.UnitTestLauncherState</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ContentModelUpdater</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OutOfSyncEditorNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>
@@ -195,7 +196,7 @@
     <group id="Rider.UnitTesting.TopToolbar.MiscOptions.Unity">
       <add-to-group group-id="Rider.UnitTesting.TopToolbar.MiscOptions.Plugin" anchor="last"/>
       <action id="UnityTestLauncher"
-              class="com.jetbrains.rider.plugins.unity.ui.UnitTest.SwitchUnitTestLauncherComboBoxAction" />
+              class="com.jetbrains.rider.plugins.unity.ui.unitTesting.SwitchUnitTestLauncherComboBoxAction" />
     </group>
 
     <action id="InstallEditorPluginAction"

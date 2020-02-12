@@ -32,7 +32,7 @@ import com.sun.jna.Native
 import com.sun.jna.win32.StdCallLibrary
 import java.awt.Frame
 
-class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComponent(project) {
+class UnityHost(project: Project) : LifetimedProjectComponent(project) {
     val model = project.solution.rdUnityModel
     private val logger = Logger.getInstance(UnityHost::class.java)
     val sessionInitialized = model.sessionInitialized
@@ -64,7 +64,7 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             val task = RdTask<Boolean>()
 
             val configuration =
-                runManager.findConfigurationByTypeAndName(UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
+                RunManager.getInstance(project).findConfigurationByTypeAndName(UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
             if (configuration == null)
                 task.set(false)
             else {

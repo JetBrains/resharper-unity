@@ -8,9 +8,7 @@ import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile
 import com.jetbrains.rider.util.idea.getComponent
 
-class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : LifetimedProjectComponent(project) {
-    val hasUnityReference = unityHost.model.hasUnityReference
-
+class UnityProjectDiscoverer(project: Project) : LifetimedProjectComponent(project) {
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = hasUnityFileStructure(project)
 
@@ -24,7 +22,7 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
     // Note that this will only return a sensible value once the solution + backend have finished loading
     val isUnityClassLibraryProject: Boolean?
         get() {
-            val hasReference = hasUnityReference.valueOrNull ?: return null
+            val hasReference = UnityHost.getInstance(project).model.hasUnityReference.valueOrNull ?: return null
             return hasReference && isCorrectlyLoadedSolution(project)
         }
 

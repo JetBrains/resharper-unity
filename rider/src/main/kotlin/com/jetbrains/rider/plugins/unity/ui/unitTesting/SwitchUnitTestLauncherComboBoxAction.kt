@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ui.UnitTest
+package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -11,7 +11,6 @@ import com.jetbrains.rider.projectView.solution
 import javax.swing.JComponent
 
 class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
-
 
     private fun getLauncherDescription(currentPreference: UnitTestLaunchPreference?): String {
         val preferenceNotNull = currentPreference ?: return UseNunitLauncherAction.NUnitDescription

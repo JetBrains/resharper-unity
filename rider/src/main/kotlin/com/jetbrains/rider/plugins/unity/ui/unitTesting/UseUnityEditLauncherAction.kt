@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ui.UnitTest
+package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
