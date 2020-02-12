@@ -100,12 +100,15 @@
     <projectModelViewExtensions implementation="com.jetbrains.rider.plugins.unity.explorer.UnityProjectModelViewExtensions"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
+    <projectService serviceImplementation="com.jetbrains.rider.UnityProjectDiscoverer"/>
   </extensions>
+
+  <projectListeners>
+    <listener class="com.jetbrains.rider.plugins.unity.ContentModelUpdater" topic="com.intellij.openapi.project.ProjectManagerListener" />
+  </projectListeners>
 
   <project-components>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ContentModelUpdater</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OutOfSyncEditorNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification</implementation-class></component>
