@@ -23,7 +23,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 - Fix incorrect redundant `SerializeField` attribute warning for property backing field ([#1016](https://github.com/JetBrains/resharper-unity/issues/1016), [#1464](https://github.com/JetBrains/resharper-unity/pull/1464))
 - Rider: Fix tooltip display for packages in Unity Explorer ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
-- Unity Unit tests exploration. Easy to run all tests from solution. ([#1500](https://github.com/JetBrains/resharper-unity/pull/1500))
+- Rider: Fix settings search not finding Unity pages ([#1516](https://github.com/JetBrains/resharper-unity/issues/1516), [#1520](https://github.com/JetBrains/resharper-unity/pull/1520))
+- Rider: Fix discovery and running of all tests in a project ([#1509](https://github.com/JetBrains/resharper-unity/issues/1509), [#1500](https://github.com/JetBrains/resharper-unity/pull/1500))
 
 
 ## 2019.3.2
