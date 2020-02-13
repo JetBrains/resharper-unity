@@ -39,11 +39,11 @@
       <DependentUpon>YamlErrors.xml</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(ReSharperSDKVersion)" />
+  <ItemGroup>    
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props')" />
 </Project>

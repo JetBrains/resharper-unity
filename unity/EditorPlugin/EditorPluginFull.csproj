@@ -22,4 +22,5 @@
     <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
 </Project>
