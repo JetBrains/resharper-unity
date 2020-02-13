@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 {
                     if (mySwaPauseLifetimeDef == null)
                     {
-                        myLogger.Info("Start processing files in deferred caches");
+                        myLogger.Verbose("Start processing files in deferred caches");
                         mySwaPauseLifetimeDef = myLifetime.CreateNested();
                         mySolutionAnalysisConfiguration.Pause(mySwaPauseLifetimeDef.Lifetime, "Deferred index is calculated");
                     }
@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     // First of all, drop data for out-of-date files under DeferredCachesWriteLock
                     foreach (var psiSourceFile in new LocalList<IPsiSourceFile>(myDeferredHelperCache.FilesToDrop))
                     {
-                        myLogger.Info("Drop {0}", psiSourceFile.GetPersistentIdForLogging());
+                        myLogger.Verbose("Drop {0}", psiSourceFile.GetPersistentIdForLogging());
                         myPartlyCalculatedData.Remove(psiSourceFile);
                         myCalculatedData.Remove(psiSourceFile);
                         
@@ -101,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                     foreach (var psiSourceFile in GetFilesToProcess())
                     {
-                        myLogger.Info("Build started {0}", psiSourceFile.GetPersistentIdForLogging());
+                        myLogger.Verbose("Build started {0}", psiSourceFile.GetPersistentIdForLogging());
                         Assertion.Assert(psiSourceFile.IsValid(), "psiSourceFile.IsValid()");
                         if (!myPartlyCalculatedData.TryGetValue(psiSourceFile, out var cacheToData))
                         {
@@ -148,14 +148,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                         myPartlyCalculatedData.Remove(psiSourceFile);
 
                         FlushBuildDataIfNeed(lifetime);
-                        myLogger.Info("Build finished {0}", psiSourceFile.GetPersistentIdForLogging());
+                        myLogger.Verbose("Build finished {0}", psiSourceFile.GetPersistentIdForLogging());
 
                     }
 
                     FlushBuildData(lifetime);
                     if (mySwaPauseLifetimeDef.Lifetime.IsAlive)
                     {
-                        myLogger.Info("Finish processing files in deferred caches");
+                        myLogger.Verbose("Finish processing files in deferred caches");
                         mySwaPauseLifetimeDef.Terminate();
                     }
                 }
@@ -187,7 +187,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
             foreach (var sourceFile in new LocalList<IPsiSourceFile>(myCalculatedData.Keys))
             {
-                myLogger.Info("Start merging for {0}", sourceFile);
+                myLogger.Verbose("Start merging for {0}", sourceFile);
                 var cacheToData = myCalculatedData[sourceFile];
                 myDeferredCachesLocks.ExecuteUnderWriteLock(() =>
                 {
@@ -206,7 +206,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                 myCalculatedData.Remove(sourceFile);
 
-                myLogger.Info("Finish merging for {0}", sourceFile);
+                myLogger.Verbose("Finish merging for {0}", sourceFile);
                 CheckForInterrupt(lifetime);
             }
         }
