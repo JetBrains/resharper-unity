@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
             var isStripped = AssetUtils.IsStripped(assetDocument.Buffer);
             var gameObject = AssetUtils.GetGameObject(assetDocument.Buffer)?.ToReference(currentSourceFile);
             var prefabInstance = AssetUtils.GetPrefabInstance(assetDocument.Buffer)?.ToReference(currentSourceFile) as LocalReference;
-            var correspondingSourceObject = AssetUtils.GetPrefabInstance(assetDocument.Buffer)?.ToReference(currentSourceFile) as ExternalReference;
+            var correspondingSourceObject = AssetUtils.GetCorrespondingSourceObject(assetDocument.Buffer)?.ToReference(currentSourceFile) as ExternalReference;
             var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor);
 
             if (anchor == null)
@@ -85,12 +85,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
             } else if (AssetUtils.IsTransform(assetDocument.Buffer))
             {
                 var father = AssetUtils.GetTransformFather(assetDocument.Buffer)?.ToReference(currentSourceFile);
+                var rootIndex = AssetUtils.GetRootIndex(assetDocument.Buffer);
                 return new AssetDocumentHierarchyElement(
-                    new TransformHierarchy(location, gameObject, father, prefabInstance, correspondingSourceObject, isStripped));
+                    new TransformHierarchy(location, gameObject, father, rootIndex, prefabInstance, correspondingSourceObject, isStripped));
             } else if (AssetUtils.IsGameObject(assetDocument.Buffer))
             {
+                var name = AssetUtils.GetGameObjectName(assetDocument.Buffer);
+                if (name == null)
+                    return null;
+                
                 return new AssetDocumentHierarchyElement(
-                    new GameObjectHierarchy(location, prefabInstance, correspondingSourceObject, isStripped));
+                    new GameObjectHierarchy(location, name, prefabInstance, correspondingSourceObject, isStripped));
             } else if (AssetUtils.IsPrefabModification(assetDocument.Buffer))
             {
                 var modification = AssetUtils.GetPrefabModification(assetDocument.Document);

@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
         {
             var location = reader.ReadPolymorphic<LocalReference>();
             var parentTransform = reader.ReadPolymorphic<IHierarchyReference>();
-            var count = reader.ReadInt();
+            var count = reader.ReadInt32();
             var modifications = new List<PrefabModification>();
             for (int i = 0; i < count; i++)
                 modifications.Add(reader.ReadPolymorphic<PrefabModification>());
@@ -35,7 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
             {
                 writer.WritePolymorphic(prefabModification);
             }
-            writer.Write(value.IsStripped);
         }
 
         public PrefabInstanceHierarchy(LocalReference location, IHierarchyReference parentTransform, List<PrefabModification> prefabModifications)

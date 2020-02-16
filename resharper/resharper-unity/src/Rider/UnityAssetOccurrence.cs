@@ -5,6 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -14,26 +15,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public IPsiSourceFile SourceFile { get; }
         public TextRange TextRange { get; }
         public IHierarchyElement Parent { get; }
+        public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
 
-        public UnityAssetOccurrence(IPsiSourceFile sourceFile, TextRange textRange, IHierarchyElement parent)
+        public UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, TextRange textRange, IHierarchyElement parent)
         {
             SourceFile = sourceFile;
             TextRange = textRange;
             Parent = parent;
             PresentationOptions = OccurrencePresentationOptions.DefaultOptions;
+            DeclaredElementPointer = declaredElement;
         }
 
         public bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
             TabOptions tabOptions = TabOptions.Default)
         {
-            // if (!solution.GetComponent<ConnectionTracker>().IsConnectionEstablished())
-            //     return base.Navigate(solution, windowContext, transferFocus, tabOptions);
-            //
-            // var findRequestCreator = solution.GetComponent<UnityEditorFindUsageResultCreator>();
-            // var reference = PrimaryReference as IUnityYamlReference;
-            // if (reference == null)
-            //     return true;
-            // findRequestCreator.CreateRequestToUnity(reference, true);
+            if (!solution.GetComponent<ConnectionTracker>().IsConnectionEstablished())
+                return true;
+            
+            var findRequestCreator = solution.GetComponent<UnityEditorFindUsageResultCreator>();
+            var declaredElement = DeclaredElementPointer.FindDeclaredElement();
+            if (declaredElement == null)
+                return true;
+            
+            findRequestCreator.CreateRequestToUnity(declaredElement, Parent, true);
             return false;
         }
 

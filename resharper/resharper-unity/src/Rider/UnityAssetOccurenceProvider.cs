@@ -18,7 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             if (findResult is UnityAssetFindResult unityAssetFindResult)
             {
-                return new UnityAssetOccurrence(unityAssetFindResult.SourceFile, unityAssetFindResult.TextRange, unityAssetFindResult.Parent); 
+                return new UnityAssetOccurrence(unityAssetFindResult.SourceFile, unityAssetFindResult.DeclaredElementPointer, 
+                    unityAssetFindResult.TextRange, unityAssetFindResult.Parent); 
             }
             
             return null;

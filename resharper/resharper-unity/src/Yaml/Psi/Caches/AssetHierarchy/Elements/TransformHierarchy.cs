@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
         public new static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader) => new TransformHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<IHierarchyReference>(),
-            reader.ReadPolymorphic<IHierarchyReference>(), reader.ReadPolymorphic<LocalReference>(),
+            reader.ReadPolymorphic<IHierarchyReference>(), reader.ReadInt32(), reader.ReadPolymorphic<LocalReference>(),
             reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
 
         [UsedImplicitly]
@@ -23,17 +23,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
             writer.WritePolymorphic(value.Location);
             writer.WritePolymorphic(value.GameObjectReference);
             writer.WritePolymorphic(value.Parent);
+            writer.Write(value.RootIndex);
             writer.WritePolymorphic(value.PrefabInstance);
             writer.WritePolymorphic(value.CorrespondingSourceObject);
             writer.Write(value.IsStripped);
         }
         public IHierarchyReference Parent { get; }
+        public int RootIndex { get; }
 
         public TransformHierarchy(LocalReference location, IHierarchyReference gameObjectReference, IHierarchyReference parent,
-            LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped) 
+            int rootIndex, LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped) 
             : base(location, gameObjectReference, prefabInstance, correspondingSourceObject, isStripped)
         {
             Parent = parent;
+            RootIndex = rootIndex;
         }
 
         protected bool Equals(TransformHierarchy other)
