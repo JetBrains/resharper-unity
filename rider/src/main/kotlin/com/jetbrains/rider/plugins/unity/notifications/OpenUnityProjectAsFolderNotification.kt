@@ -14,8 +14,10 @@ import com.jetbrains.rider.model.RdVirtualSolution
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
+import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solutionDescription
@@ -30,24 +32,35 @@ class OpenUnityProjectAsFolderNotification(project: Project, unityHost: UnityHos
 
     init {
         unityHost.model.unityApplicationData.advise(componentLifetime) {
-            // Do nothing if we're not in Unity folders, or we are, but we're a proper .sln based solution
-            if (project.solutionDescription is RdExistingSolution) return@advise
-
             val solutionDescription = project.solutionDescription
-            if (solutionDescription is RdVirtualSolution) {
+            val title = "Unity features unavailable"
+            val content = "Configuration required:<br/>" +
+                "<ul><li>Install the <b>Rider package</b> in Unity’s Package Manager</li>" +
+                "<li>Select Rider as the External Editor</li>" +
+                "<li>Reopen Rider from Unity</li></ul>"
+            if (solutionDescription is RdExistingSolution){ // proper solution
+                if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
+                    val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
+                    Notifications.Bus.notify(notification, project)
+                }
+            }
+            else if (solutionDescription is RdVirtualSolution) { // opened as folder
                 var adviceText = " Please <a href=\"reopen\">click here</a> to start Unity, generate a solution file and reopen the project."
                 val editorInstanceJson = EditorInstanceJson.getInstance(project)
                 if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
                     adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
                 }
-                val content = if (solutionDescription.projectFilePaths.isEmpty()) {
-                    "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
+                val contentWoSolution =
+                    if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
+                        content
+                    }
+                    else if (solutionDescription.projectFilePaths.isEmpty()) {
+                    "This looks like a Unity project. C# and Unity specific features are not available when the project is opened as a folder." +
                             adviceText
                 } else
-                    "This looks like a Unity project. C# and Unity specific functionality is not available when only a single project is opened." +
+                    "This looks like a Unity project. C# and Unity specific features are not available when only a single project is opened." +
                             adviceText
-                val title = "Unity functionality unavailable"
-                val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
+                val notification = Notification(notificationGroupId.displayId, title, contentWoSolution, NotificationType.WARNING)
                 notification.setListener { _, hyperlinkEvent ->
 
                     if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener

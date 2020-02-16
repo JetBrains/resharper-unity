@@ -9,8 +9,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [ShellComponent]
     public class UnityAndroidDetector: ProjectModelViewPresenterExtension
     {
-        public override bool TryAddUserData(IProject project, out string name, out string value)
+        public override bool TryAddUserData(IProjectFile projectFile, out string name, out string value)
         {
+            var project = projectFile.GetProject();
+            if (project == null)
+                return base.TryAddUserData(projectFile, out name, out value);
+            
             foreach (var configuration in project.ProjectProperties.ActiveConfigurations.Configurations.OfType<IManagedProjectConfiguration>())
             {
                 var defines = configuration.DefineConstants;
@@ -21,10 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return true;
                 }
             }
-
+            
             name = null;
             value = null;
-            return false;
+            return base.TryAddUserData(projectFile, out name, out value);
         }
     }
 }

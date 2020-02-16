@@ -50,6 +50,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("applicationPath", string)
         field("applicationContentsPath", string)
         field("applicationVersion", string)
+        field("requiresRiderPackage", bool)
     }
 
     init {

@@ -72,18 +72,22 @@ class UnityExplorerRootNode(project: Project, private val packageManager: Packag
     }
 }
 
+interface IProjectModeNodesOwner {
+    val nodes: Sequence<IProjectModelNode>
+}
+
 open class UnityExplorerNode(project: Project,
                              virtualFile: VirtualFile,
                              nestedFiles: List<VirtualFile>,
                              private val isUnderAssets: Boolean,
                              private val isReadOnlyPackageFile: Boolean = false)
-    : FileSystemNodeBase(project, virtualFile, nestedFiles) {
+    : FileSystemNodeBase(project, virtualFile, nestedFiles), IProjectModeNodesOwner {
 
-    val nodes: Array<IProjectModelNode>
+    override val nodes: Sequence<IProjectModelNode>
         get() {
             val nodes = ProjectModelViewHost.getInstance(myProject).getItemsByVirtualFile(virtualFile)
-            if (nodes.any()) return nodes.filterIsInstance<IProjectModelNode>().toTypedArray()
-            return arrayOf(super.node)
+            if (nodes.any()) return nodes.asSequence()
+            return sequenceOf(super.node)
         }
 
     public override fun hasProblemFileBeneath() = nodes.any { (it as? ProjectModelNode)?.hasErrors() == true }
@@ -94,8 +98,27 @@ open class UnityExplorerNode(project: Project,
         presentation.setIcon(calculateIcon())
 
         // Add additional info for directories
-        if (!virtualFile.isDirectory || !UnityExplorer.getInstance(myProject).showProjectNames) return
-        addProjects(presentation)
+        val unityExplorer = UnityExplorer.getInstance(myProject)
+        if (virtualFile.isDirectory && unityExplorer.showProjectNames) {
+            addProjects(presentation)
+        }
+
+        // Add tooltip for non-imported folders (anything ending with tilde). Also, show the full name if we're hiding
+        // the tilde suffix
+        if (virtualFile.isDirectory && virtualFile.name.endsWith("~")) {
+            var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else "<br/>"
+            if (!unityExplorer.showHiddenItems) {
+                tooltip += virtualFile.name + "<br/>"
+            }
+            presentation.tooltip = tooltip + "This folder is not imported into the asset database"
+        }
+    }
+
+    override fun getName(): String {
+        if (virtualFile.isDirectory && !UnityExplorer.getInstance(myProject).showHiddenItems) {
+            return super.getName().removeSuffix("~")
+        }
+        return super.getName()
     }
 
     protected fun addProjects(presentation: PresentationData) {
@@ -108,7 +131,7 @@ open class UnityExplorerNode(project: Project,
             var description = projectNames.take(3).joinToString(", ")
             if (projectNames.count() > 3) {
                 description += ", …"
-                presentation.tooltip = "Contains files from multiple projects:\n" + projectNames.joinToString("\n")
+                presentation.tooltip = "Contains files from multiple projects:<br/>" + projectNames.joinToString("<br/>")
             }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
         }
@@ -233,10 +256,10 @@ open class UnityExplorerNode(project: Project,
     }
 
     override fun getVirtualFileChildren(): List<VirtualFile> {
-        return super.getVirtualFileChildren().filter { filterNode(it) }
+        return super.getVirtualFileChildren().filter { shouldShowVirtualFile(it) }
     }
 
-    private fun filterNode(file: VirtualFile): Boolean {
+    private fun shouldShowVirtualFile(file: VirtualFile): Boolean {
         if (UnityExplorer.getInstance(myProject).showHiddenItems) {
             return true
         }
@@ -248,7 +271,21 @@ open class UnityExplorerNode(project: Project,
         }
 
         val name = file.nameWithoutExtension.toLowerCase()
-        if (name == "cvs" || file.name.startsWith(".") || file.name.endsWith("~")) {
+        if (name == "cvs" || file.name.startsWith(".")) {
+            return false
+        }
+
+        /* Files and folders ending with '~' are ignored by the asset importer. Files with '~' are usually backup files,
+           but Unity uses folders that end with '~' as a way of distributing files that are not to be imported. This is
+           usually `Documentation~` inside packages (https://docs.unity3d.com/Manual/cus-layout.html), but it can also
+           be used for distributing code, too. This code will not be treated as assets by Unity, but will still be added
+           to the generated .csproj files to allow for use as e.g. command line tools
+        */
+        if (file.name.endsWith("~")) {
+            if (file.isDirectory && UnityExplorer.getInstance(myProject).showTildeFolders) {
+                return true
+            }
+
             return false
         }
 

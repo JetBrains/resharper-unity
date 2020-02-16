@@ -6,10 +6,10 @@ import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.Consumer
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.util.idea.lifetime
 import icons.UnityIcons
 import java.awt.event.MouseEvent
 import javax.swing.Icon

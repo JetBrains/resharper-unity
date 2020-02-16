@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.util.SingleAlarm
+import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
@@ -24,7 +25,6 @@ import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.indexing.contentModel.ContentModelUserStore
 import com.jetbrains.rider.projectView.indexing.contentModel.tryExclude
 import com.jetbrains.rider.projectView.indexing.contentModel.tryInclude
-import com.jetbrains.rider.util.idea.application
 import kotlinx.coroutines.Runnable
 import java.io.File
 

@@ -66,4 +66,8 @@ class UnityInstallationFinder(private val project: Project) {
     private fun tryGetApplicationVersionFromProtocol(): String? {
         return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.applicationVersion
     }
+
+    fun requiresRiderPackage(): Boolean {
+        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.requiresRiderPackage ?: return false
+    }
 }

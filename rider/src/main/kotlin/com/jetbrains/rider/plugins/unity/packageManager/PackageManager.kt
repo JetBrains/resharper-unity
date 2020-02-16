@@ -17,6 +17,7 @@ import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.NonUrgentExecutor
 import com.intellij.util.io.isDirectory
 import com.intellij.util.pooledThreadSingleAlarm
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.explorer.LockDetails
@@ -27,7 +28,6 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.lifetime
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
@@ -90,6 +90,10 @@ class PackageManager(private val project: Project) {
 
     val hasBuiltInPackages: Boolean
         get() = filterPackagesBySource(PackageSource.BuiltIn).any()
+
+    fun hasPackage(id:String):Boolean {
+        return allPackages.any { it.name == id }
+    }
 
     fun getPackageData(packageFolder: VirtualFile): PackageData? {
         return packagesByFolderName[packageFolder.name]
