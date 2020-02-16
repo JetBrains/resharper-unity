@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues.Deserializers;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues.Values;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Util;
@@ -22,27 +27,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
         private readonly IPersistentIndexManager myManager;
         private readonly UnityExternalFilesPsiModule myPsiModule;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
+        private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
 
         private readonly ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement> myAssetDocumentsHierarchy =
             new ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement>();
 
-        public AssetDocumentHierarchyElementContainer(DeferredCachesLocks locks, IPersistentIndexManager manager, UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache)
+        public AssetDocumentHierarchyElementContainer(DeferredCachesLocks locks, IPersistentIndexManager manager
+            , UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
         {
             myLocks = locks;
             myManager = manager;
             myPsiModule = psiModuleProvider.PsiModule;
             myMetaFileGuidCache = metaFileGuidCache;
+            myAssetInspectorValueDeserializers = assetInspectorValueDeserializers;
         }
 
         public IUnityAssetDataElement Build(Lifetime lifetime, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
+            var anchor = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
+            var isStripped = AssetUtils.IsStripped(assetDocument.Buffer);
+            var gameObject = AssetUtils.GetGameObject(assetDocument.Buffer)?.ToReference(currentSourceFile);
+            var prefabInstance = AssetUtils.GetPrefabInstance(assetDocument.Buffer)?.ToReference(currentSourceFile) as LocalReference;
+            var correspondingSourceObject = AssetUtils.GetPrefabInstance(assetDocument.Buffer)?.ToReference(currentSourceFile) as ExternalReference;
+            var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor);
+
+            if (anchor == null)
+                return null;
+            
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {
                 var entries = assetDocument.Document.FindRootBlockMapEntries()?.Entries;
                 if (entries == null)
                     return null;
 
-                var anchor = assetDocument.Document.GetLocalDocumentAnchor();
                 AssetDocumentReference documentReference = null;
 
                 foreach (var entry in entries)
@@ -57,9 +74,67 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
                 if (documentReference != null && anchor != null)
                 {
                     return new AssetDocumentHierarchyElement(
-                            new ScriptComponentHierarchy(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor),
-                            new ExternalReference(documentReference.ExternalAssetGuid, documentReference.LocalDocumentAnchor)));
+                            new ScriptComponentHierarchy(location,
+                            new ExternalReference(documentReference.ExternalAssetGuid, documentReference.LocalDocumentAnchor),
+                            gameObject,
+                            prefabInstance,
+                            correspondingSourceObject,
+                            isStripped
+                            ));
                 }
+            } else if (AssetUtils.IsTransform(assetDocument.Buffer))
+            {
+                var father = AssetUtils.GetTransformFather(assetDocument.Buffer)?.ToReference(currentSourceFile);
+                return new AssetDocumentHierarchyElement(
+                    new TransformHierarchy(location, gameObject, father, prefabInstance, correspondingSourceObject, isStripped));
+            } else if (AssetUtils.IsGameObject(assetDocument.Buffer))
+            {
+                return new AssetDocumentHierarchyElement(
+                    new GameObjectHierarchy(location, prefabInstance, correspondingSourceObject, isStripped));
+            } else if (AssetUtils.IsPrefabModification(assetDocument.Buffer))
+            {
+                var modification = AssetUtils.GetPrefabModification(assetDocument.Document);
+                var parentTransform = modification?.GetValue("m_TransformParent")?.AsFileID()?.ToReference(currentSourceFile);
+                var modifications = modification?.GetValue("m_Modifications") as IBlockSequenceNode;
+                var result = new List<PrefabModification>();
+                if (modifications != null)
+                {
+                    foreach (var entry in modifications.Entries)
+                    {
+                        var map = entry.Value as IBlockMappingNode;
+                        if (map == null)
+                            continue;
+
+                        var target = map.GetValue("target").AsFileID()?.ToReference(currentSourceFile);
+                        if (target == null)
+                            continue;
+                        
+                        var name = map.GetValue("propertyPath").GetPlainScalarText();
+                        if (name == null)
+                            continue;
+                        
+                        var valueNode = map.FindMapEntryBySimpleKey("value")?.Content;
+                        if (valueNode == null)
+                            continue;
+                        
+                        IAssetValue value = null;
+                        foreach (var assetInspectorValueDeserializer in myAssetInspectorValueDeserializers)
+                        {
+                            if (assetInspectorValueDeserializer.TryGetInspectorValue(currentSourceFile, valueNode, out value))
+                                break;
+                        }
+                        if (value == null)
+                            continue;
+                        
+                        result.Add(new PrefabModification(target, name, value));
+                    }
+                }
+                return new AssetDocumentHierarchyElement(new PrefabInstanceHierarchy(location, parentTransform, result));
+            }
+            else // regular component
+            {
+               return new AssetDocumentHierarchyElement(
+                   new ComponentHierarchy(location, gameObject, prefabInstance, correspondingSourceObject, isStripped));
             }
             return null;
         }
@@ -71,7 +146,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
 
         public void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
         {
-            myAssetDocumentsHierarchy[sourceFile] = unityAssetDataElement as AssetDocumentHierarchyElement;
+            var element = unityAssetDataElement as AssetDocumentHierarchyElement;
+            myAssetDocumentsHierarchy[sourceFile] = element;
+            element.RestoreHierarchy();
         }
 
         public IHierarchyElement GetHierarchyElement(IHierarchyReference reference)

@@ -1,0 +1,42 @@
+using JetBrains.Annotations;
+using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues.Values;
+using JetBrains.Serialization;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements
+{
+    [PolymorphicMarshaller]
+    public class PrefabModification
+    {
+        [NotNull]
+        public IHierarchyReference Target { get; }
+        [NotNull]
+        public string PropertyPath { get; }
+        [NotNull]
+        public IAssetValue Value { get; }
+
+        [UsedImplicitly] 
+        public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
+
+        private static object Read(UnsafeReader reader) => new PrefabModification(reader.ReadPolymorphic<IHierarchyReference>(),
+            reader.ReadString(), reader.ReadPolymorphic<IAssetValue>());
+
+        [UsedImplicitly]
+        public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as PrefabModification);
+
+        private static void Write(UnsafeWriter writer, PrefabModification value)
+        {
+            writer.WritePolymorphic(value.Target);
+            writer.Write(value.PropertyPath);
+            writer.WritePolymorphic(value.Value);
+        }
+
+        public PrefabModification(IHierarchyReference target, string propertyPath, IAssetValue value)
+        {
+            Target = target;
+            PropertyPath = propertyPath;
+            Value = value;
+        }
+    }
+}

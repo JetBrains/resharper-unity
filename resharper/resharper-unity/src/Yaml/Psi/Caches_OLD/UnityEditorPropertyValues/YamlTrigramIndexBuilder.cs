@@ -37,23 +37,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyV
                 UnsafeIntArray entryData = indexEntryBuilder.Build();
                 return entryData.ToIntArray();
             }
-
-        // var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
-            // if (file == null)
-            //     return null;
-            //
-            // using (UnsafeWriter.Cookie unsafeWriterCookie = UnsafeWriter.NewThreadLocalWriter())
-            // {
-            //     TrigramIndexEntryBuilder indexEntryBuilder = new TrigramIndexEntryBuilder(unsafeWriterCookie);
-            //     foreach (var yamlDocument in file.Documents)
-            //     {
-            //         foreach (TrigramToken trigramToken in new BufferTrigramSource(yamlDocument.GetTextAsBuffer()))
-            //             indexEntryBuilder.Add(trigramToken);
-            //     }
-            //
-            //     UnsafeIntArray entryData = indexEntryBuilder.Build();
-            //     return entryData.ToIntArray();
-            // }
         }
 
         public int[] Build(IDocument document, SeldomInterruptChecker interruptChecker, string displayName)
