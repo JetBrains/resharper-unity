@@ -1,7 +1,9 @@
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -29,27 +31,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         protected RichText GetDisplayText(UnityAssetOccurrence occurrence)
         {
-            // var processor = occurrence.GetSolution().NotNull("rangeOccurrence.GetSolution() != null")
-            //     .GetComponent<UnitySceneDataLocalCache>();
-            // var occurrence = (rangeOccurrence as UnityEditorOccurrence).NotNull("rangeOccurrence as UnityEditorOccurrence != null");
-            // var reference = (occurrence.PrimaryReference as IUnityYamlReference).NotNull("occurrence.PrimaryReference as IUnityYamlReference != null");
-        
-        
-            // return GetAttachedGameObjectName(processor, reference.ComponentDocument);
-
-            return occurrence.Parent.Location.LocalDocumentAnchor;
+            var processor = occurrence.GetSolution().NotNull("occurrence.GetSolution() != null").GetComponent<AssetHierarchyProcessor>();
+            return GetAttachedGameObjectName(processor, occurrence);
         }
 
-        //
-        // public static string GetAttachedGameObjectName(UnitySceneDataLocalCache cache, IYamlDocument document) {
-        //
-        //     var consumer = new UnityPathCachedSceneConsumer();
-        //     cache.ProcessSceneHierarchyFromComponentToRoot(document, consumer);
-        //
-        //     var parts = consumer.NameParts;
-        //     if (parts.Count == 0)
-        //         return "...";
-        //     return string.Join("/", consumer.NameParts);
-        // }
+        public static string GetAttachedGameObjectName(AssetHierarchyProcessor processor, UnityAssetOccurrence occurrence) {
+        
+            var consumer = new UnityScenePathGameObjectConsumer();
+            processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.Parent, consumer);
+        
+            var parts = consumer.NameParts;
+            if (parts.Count == 0)
+                return "...";
+            return string.Join("/", consumer.NameParts);
+        }
     }
 }

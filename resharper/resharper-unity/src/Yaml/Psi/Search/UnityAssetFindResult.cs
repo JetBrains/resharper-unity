@@ -1,5 +1,6 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.Util;
 
@@ -8,14 +9,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     public class UnityAssetFindResult : FindResult
     {
         public IPsiSourceFile SourceFile { get; }
+        public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
         public TextRange TextRange { get; }
         public IHierarchyElement Parent { get; }
 
-        public UnityAssetFindResult(IPsiSourceFile sourceFile, TextRange textRange, IHierarchyElement parent)
+        public UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, TextRange textRange, IHierarchyElement parent)
         {
             SourceFile = sourceFile;
             TextRange = textRange;
             Parent = parent;
+            DeclaredElementPointer = new SourceElementPointer<IDeclaredElement>(declaredElement);
         }
 
         protected bool Equals(UnityAssetFindResult other)

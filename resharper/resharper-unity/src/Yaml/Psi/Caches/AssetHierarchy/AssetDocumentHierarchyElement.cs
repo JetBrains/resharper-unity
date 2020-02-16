@@ -11,10 +11,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
     [PolymorphicMarshaller]
     public class AssetDocumentHierarchyElement : IUnityAssetDataElement
     {
-        private Dictionary<string, IHierarchyElement> myLocalAnchorToHierarchyElement =
+        private readonly Dictionary<string, IHierarchyElement> myLocalAnchorToHierarchyElement =
             new Dictionary<string, IHierarchyElement>();
 
-        private List<TransformHierarchy> myTransformHierarchies = new List<TransformHierarchy>();
+        private readonly List<TransformHierarchy> myTransformHierarchies = new List<TransformHierarchy>();
 
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
@@ -31,6 +31,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
             {
                 var hierarchyElement = reader.ReadPolymorphic<IHierarchyElement>();
                 result.myLocalAnchorToHierarchyElement[hierarchyElement.Location.LocalDocumentAnchor] = hierarchyElement;
+                if (hierarchyElement is TransformHierarchy transformHierarchy)
+                    result.myTransformHierarchies.Add(transformHierarchy);
             }
             return result;
         }

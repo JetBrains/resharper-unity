@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new GameObjectHierarchy(reader.ReadPolymorphic<LocalReference>(),
+        private static object Read(UnsafeReader reader) => new GameObjectHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadString(),
             reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
 
         [UsedImplicitly]
@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
         private static void Write(UnsafeWriter writer, GameObjectHierarchy value)
         {
             writer.WritePolymorphic(value.Location);
+            writer.Write(value.Name);
             writer.WritePolymorphic(value.PrefabInstance);
             writer.WritePolymorphic(value.CorrespondingSourceObject);
             writer.Write(value.IsStripped);
@@ -31,10 +32,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
         public LocalReference PrefabInstance { get; }
         public ExternalReference CorrespondingSourceObject { get; }
         public TransformHierarchy Transform { get; internal set; }
+        public string Name { get; }
 
-        public GameObjectHierarchy(LocalReference location, LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped)
+        public GameObjectHierarchy(LocalReference location, string name, LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped)
         {
             Location = location;
+            Name = name;
             PrefabInstance = prefabInstance;
             CorrespondingSourceObject = correspondingSourceObject;
             IsStripped = isStripped;

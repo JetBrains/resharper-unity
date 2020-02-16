@@ -9,10 +9,16 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.ReSharper.Psi.Caches.Persistence;
 using JetBrains.ReSharper.Psi.Impl.Search.Operations;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Resources.Shell;
@@ -28,51 +34,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISolution mySolution;
         private readonly ISearchDomain myYamlSearchDomain;
         private readonly IShellLocks myLocks;
-        private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
+        private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
         private readonly RiderBackgroundTaskHost myBackgroundTaskHost;
         private readonly UnityHost myUnityHost;
         private readonly UnityEditorProtocol myEditorProtocol;
+        private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly FileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
-            UnitySceneDataLocalCache sceneDataCache, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory,
-            UnityEditorProtocol editorProtocol,
+            AssetHierarchyProcessor assetHierarchyProcessor, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory,
+            UnityEditorProtocol editorProtocol, IPersistentIndexManager persistentIndexManager,
             [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
             myLifetime = lifetime;
             mySolution = solution;
             myLocks = locks;
-            myUnitySceneDataLocalCache = sceneDataCache;
+            myAssetHierarchyProcessor = assetHierarchyProcessor;
             myBackgroundTaskHost = backgroundTaskHost;
             myYamlSearchDomain = searchDomainFactory.CreateSearchDomain(externalFilesModuleFactory.PsiModule);
             myUnityHost = unityHost;
             myEditorProtocol = editorProtocol;
+            myPersistentIndexManager = persistentIndexManager;
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
 
-        public void CreateRequestToUnity([NotNull] IUnityYamlReference yamlReference, bool focusUnity)
-        {
-            var declaredElement = yamlReference.Resolve().DeclaredElement;
-            if (declaredElement == null)
-                return;
-
-            var sourceFile = yamlReference.ComponentDocument.GetSourceFile();
-            if (sourceFile == null)
-                return;
-
-            var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(yamlReference.ComponentDocument.GetTextAsBuffer());
-            
-            CreateRequestToUnity(declaredElement, sourceFile, anchor, focusUnity);
-        }
-
-        public void CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, IPsiSourceFile selectedSourceFile, string selectAnchor, bool focusUnity)
+        public void CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, IHierarchyElement element, bool focusUnity)
         {
             var finder = mySolution.GetPsiServices().AsyncFinder;
-            var consumer = new UnityUsagesFinderConsumer(myUnitySceneDataLocalCache, mySolutionDirectoryPath);
+            var consumer = new UnityUsagesFinderConsumer(myAssetHierarchyProcessor, myPersistentIndexManager, mySolutionDirectoryPath);
 
-            var selectRequest = (selectedSourceFile == null || selectAnchor == null)
-                ? null
-                : CreateRequest(mySolutionDirectoryPath, myUnitySceneDataLocalCache, selectAnchor, selectedSourceFile, false);
+            var sourceFile = myPersistentIndexManager[element.Location.OwnerId];
+            if (sourceFile == null)
+                return;
+            
+            var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor,
+                myPersistentIndexManager, element, sourceFile, false);
             
             
             var lifetimeDef = myLifetime.CreateNested();
@@ -100,35 +96,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        public static FindUsageResultElement CreateRequest([NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
-            [NotNull] string anchor, IPsiSourceFile sourceFile, bool needExpand = false)
+        private static FindUsageResultElement CreateRequest(FileSystemPath solutionDirPath, AssetHierarchyProcessor assetDocumentHierarchy, 
+            IPersistentIndexManager persistentIndexManager, IHierarchyElement hierarchyElement, IPsiSourceFile sourceFile, bool needExpand = false)
         {
             if (!GetPathFromAssetFolder(solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
                 return null;
             
             bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
             
-            var consumer = new UnityPathCachedSceneConsumer();
-            unitySceneDataLocalCache.ProcessSceneHierarchyFromComponentToRoot(sourceFile, anchor, consumer);
+            var consumer = new UnityScenePathGameObjectConsumer();
+            assetDocumentHierarchy.ProcessSceneHierarchyFromComponentToRoot(hierarchyElement, consumer);
             
             return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray());
         }
 
-        public static void CreateRequestAndShow([NotNull]  UnityEditorProtocol editor, UnityHost host, Lifetime lifetime, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
-            [NotNull] string anchor, IPsiSourceFile sourceFile, bool needExpand = false)
-        {
-            FindUsageResultElement request;
-            using (ReadLockCookie.Create())
-            {
-                request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile, needExpand);
-            }
-            
-            host.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result.Advise(lifetime,
-                result =>
-                {
-                    editor.UnityModel.Value.ShowGameObjectOnScene.Fire(request.ConvertToUnityModel());
-                }));
-        }
+        // public static void CreateRequestAndShow([NotNull]  UnityEditorProtocol editor, UnityHost host, Lifetime lifetime, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
+        //     [NotNull] string anchor, IPsiSourceFile sourceFile, bool needExpand = false)
+        // {
+        //     FindUsageResultElement request;
+        //     using (ReadLockCookie.Create())
+        //     {
+        //         request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile, needExpand);
+        //     }
+        //     
+        //     host.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result.Advise(lifetime,
+        //         result =>
+        //         {
+        //             editor.UnityModel.Value.ShowGameObjectOnScene.Fire(request.ConvertToUnityModel());
+        //         }));
+        // }
         
         private static bool GetPathFromAssetFolder([NotNull] FileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file, 
             out string filePath, out string fileName, out string extension)
@@ -150,36 +146,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return true;
         }
         
-        private class UnityUsagesFinderConsumer : IFindResultConsumer<IUnityYamlReference>
+        private class UnityUsagesFinderConsumer : IFindResultConsumer<UnityAssetFindResult>
         {
-            private readonly UnitySceneDataLocalCache myUnitySceneDataLocalCache;
+            private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
+            private readonly IPersistentIndexManager myPersistentIndexManager;
             private readonly FileSystemPath mySolutionDirectoryPath;
             private FindExecution myFindExecution = FindExecution.Continue;
             
             public List<FindUsageResultElement> Result = new List<FindUsageResultElement>();
 
-            public UnityUsagesFinderConsumer(UnitySceneDataLocalCache unitySceneDataLocalCache, FileSystemPath solutionDirectoryPath)
+            public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor, IPersistentIndexManager persistentIndexManager,
+                FileSystemPath solutionDirectoryPath)
             {
-                myUnitySceneDataLocalCache = unitySceneDataLocalCache;
+                myAssetHierarchyProcessor = assetHierarchyProcessor;
+                myPersistentIndexManager = persistentIndexManager;
                 mySolutionDirectoryPath = solutionDirectoryPath;
             }
             
-            public IUnityYamlReference Build(FindResult result)
+            public UnityAssetFindResult Build(FindResult result)
             {
-                return (result as FindResultReference)?.Reference as IUnityYamlReference;
+                return result as UnityAssetFindResult;
             }
 
-            public FindExecution Merge(IUnityYamlReference data)
+            public FindExecution Merge(UnityAssetFindResult data)
             {
-                var sourceFile = data.ComponentDocument.GetSourceFile();
-                if (sourceFile == null || !sourceFile.IsValid())
+                var sourceFile = myPersistentIndexManager[data.Parent.Location.OwnerId];
+                if (sourceFile == null)
                     return myFindExecution;
                 
-                var anchor = UnitySceneDataUtil.GetAnchorFromBuffer(data.ComponentDocument.GetTextAsBuffer());
-                if (anchor == null)
-                    return myFindExecution;
-                
-                var request = CreateRequest(mySolutionDirectoryPath, myUnitySceneDataLocalCache, anchor, sourceFile);
+                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, myPersistentIndexManager, data.Parent, sourceFile);
                 if (request != null)
                     Result.Add(request);
                 

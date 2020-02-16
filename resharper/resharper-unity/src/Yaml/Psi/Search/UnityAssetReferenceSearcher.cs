@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 {
                     var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetMethodData.TargetScriptReference);
                     if (hierarchyElement != null)
-                        consumer.Accept(new UnityAssetFindResult(sourceFile, assetMethodData.TextRange,
+                        consumer.Accept(new UnityAssetFindResult(sourceFile, element, assetMethodData.TextRange,
                             hierarchyElement));
                 }
             }
