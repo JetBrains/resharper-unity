@@ -12,21 +12,59 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new ComponentHierarchy(reader.ReadPolymorphic<LocalReference>());
+        private static object Read(UnsafeReader reader) => new ComponentHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<IHierarchyReference>(),
+            reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as ComponentHierarchy);
 
         private static void Write(UnsafeWriter writer, ComponentHierarchy value)
         {
-            writer.WritePolymorphic(value.LocalReference);
+            writer.WritePolymorphic(value.Location);
+            writer.WritePolymorphic(value.GameObjectReference);
+            writer.WritePolymorphic(value.PrefabInstance);
+            writer.WritePolymorphic(value.CorrespondingSourceObject);
+            writer.Write(value.IsStripped);
         }
         
-        public ComponentHierarchy(LocalReference localReference)
+        public ComponentHierarchy(LocalReference localReference, IHierarchyReference gameObject,
+            LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped)
         {
-            LocalReference = localReference;
+            Location = localReference;
+            GameObjectReference = gameObject;
+            PrefabInstance = prefabInstance;
+            CorrespondingSourceObject = correspondingSourceObject;
+            IsStripped = isStripped;
         }
 
-        public LocalReference LocalReference { get; }
+        public LocalReference Location { get; }
+        public IHierarchyReference GameObjectReference { get; }
+        public bool IsStripped { get; }
+        public LocalReference PrefabInstance { get; }
+        public ExternalReference CorrespondingSourceObject { get; }
+
+        protected bool Equals(ComponentHierarchy other)
+        {
+            return Equals(Location, other.Location) && Equals(GameObjectReference, other.GameObjectReference) && IsStripped == other.IsStripped;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ComponentHierarchy) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Location != null ? Location.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (GameObjectReference != null ? GameObjectReference.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ IsStripped.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 }

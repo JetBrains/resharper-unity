@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         
             // return GetAttachedGameObjectName(processor, reference.ComponentDocument);
 
-            return occurrence.Parent.LocalReference.LocalDocumentAnchor;
+            return occurrence.Parent.Location.LocalDocumentAnchor;
         }
 
         //
