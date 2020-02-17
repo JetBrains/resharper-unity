@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Feature.HighlightingEye;
 
 [assembly: RegisterConfigurableHighlightingsGroup(UnityHighlightingGroupIds.Unity, "Unity"),
-           RegisterConfigurableHighlightingsGroup(UnityHighlightingGroupIds.UnityPerformance, "Unity Performance Inspections", HighlightingEyeGroupKind.UnityPerformanceKind
+           RegisterConfigurableHighlightingsGroup(UnityHighlightingGroupIds.UnityPerformance, "Unity Performance Inspections", PencilsGroupKind.UnityPerformanceKind
            )]
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings

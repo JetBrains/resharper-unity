@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using JetBrains.Application.Progress;
 using JetBrains.Collections.Synchronized;
+using JetBrains.Collections.Viewable;
 using JetBrains.DocumentManagers.impl;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -21,16 +22,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         public readonly SynchronizedSet<IPsiSourceFile> FilesToDrop = new SynchronizedSet<IPsiSourceFile>();
         public readonly SynchronizedSet<IPsiSourceFile> FilesToProcess = new SynchronizedSet<IPsiSourceFile>();
         
-        public DeferredHelperCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, IEnumerable<IDeferredCache> caches)
+        public DeferredHelperCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
+            IEnumerable<IDeferredCache> caches)
         {
             myPersistentIndexManager = persistentIndexManager;
             myCaches = caches;
         }
         
         public void MarkAsDirty(IPsiSourceFile sourceFile)
-        
         {
-            FilesToProcess.Add(sourceFile);
+            AddToProcess(sourceFile);
         }
 
         public object Load(IProgressIndicator progress, bool enablePersistence)
@@ -68,22 +69,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public object Build(IPsiSourceFile sourceFile, bool isStartup)
         {
-            FilesToProcess.Add(sourceFile);
+            AddToProcess(sourceFile);
             return true;
         }
 
         public void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
-            FilesToProcess.Add(sourceFile);
-            // TODO
-            // here add FilesToProcess
-            // here add to FilesToDrop
-            // Add assertion in contoller that each file to process is valid
+            AddToProcess(sourceFile);
         }
 
         public void Drop(IPsiSourceFile sourceFile)
         {
-            FilesToProcess.Remove(sourceFile);
+            DropFromProcess(sourceFile);
             FilesToDrop.Add(sourceFile);
         }
 
@@ -92,13 +89,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             var sourceFile = elementContainingChanges?.GetSourceFile();
             if (sourceFile != null)
             {
-                FilesToProcess.Add(sourceFile);
+                AddToProcess(sourceFile);
             }
         }
 
         public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
-            FilesToProcess.Add(sourceFile);
+            AddToProcess(sourceFile);
         }
 
         public void SyncUpdate(bool underTransaction)
@@ -109,7 +106,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         {
         }
 
+        private void AddToProcess(IPsiSourceFile sourceFile)
+        {
+            FilesToProcess.Add(sourceFile);
+            AfterAddToProcess.Fire(sourceFile);
+        }
+
+        public void DropFromProcess(IPsiSourceFile sourceFile)
+        {
+            FilesToProcess.Remove(sourceFile);
+            AfterRemoveFromProcess.Fire(sourceFile);
+        }
         
         public bool HasDirtyFiles => false;//!myDirtyFiles.IsEmpty();
+        
+        public Signal<IPsiSourceFile> AfterAddToProcess = new Signal<IPsiSourceFile>();
+        public Signal<IPsiSourceFile> AfterRemoveFromProcess = new Signal<IPsiSourceFile>();
     }
 }
