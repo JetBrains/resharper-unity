@@ -4,9 +4,11 @@ using System.Threading;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Experimental;
 using JetBrains.ReSharper.Psi;
@@ -20,42 +22,75 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
     {
         private const int BATCH_SIZE = 5;
 
-        private readonly Lifetime myLifetime;
         private readonly SolutionAnalysisConfiguration mySolutionAnalysisConfiguration;
         private readonly IShellLocks myShellLocks;
         private readonly DeferredCachesLocks myDeferredCachesLocks;
         private readonly DeferredHelperCache myDeferredHelperCache;
         private readonly IEnumerable<IDeferredCache> myDeferredCaches;
+        private readonly DeferredCacheProgressBar myProgressBar;
         private readonly ILogger myLogger;
 
         private readonly Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myPartlyCalculatedData = new Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
         private readonly Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myCalculatedData = new Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
-        private LifetimeDefinition mySwaPauseLifetimeDef;
+        private readonly SequentialLifetimes myWorkLifetime;
+        public IReadonlyProperty<bool> CompletedOnce => myCompletedOnce;
+        private ViewableProperty<bool> myCompletedOnce;
         
-        
-        public DeferredCacheController(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, SolutionAnalysisConfiguration solutionAnalysisConfiguration, IShellLocks shellLocks, DeferredCachesLocks deferredCachesLocks,
-            DeferredHelperCache deferredHelperCache, IEnumerable<IDeferredCache> deferredCaches, ILogger logger)
+        public DeferredCacheController(Lifetime lifetime, SolutionCaches solutionCaches, IPersistentIndexManager persistentIndexManager, SolutionAnalysisConfiguration solutionAnalysisConfiguration, IShellLocks shellLocks, DeferredCachesLocks deferredCachesLocks,
+            DeferredHelperCache deferredHelperCache, IEnumerable<IDeferredCache> deferredCaches, DeferredCacheProgressBar progressBar, ILogger logger)
         {
-            myLifetime = lifetime;
             mySolutionAnalysisConfiguration = solutionAnalysisConfiguration;
             myShellLocks = shellLocks;
             myDeferredCachesLocks = deferredCachesLocks;
             myDeferredHelperCache = deferredHelperCache;
             myDeferredCaches = deferredCaches;
+            myProgressBar = progressBar;
             myLogger = logger;
+            myWorkLifetime = new SequentialLifetimes(lifetime);
+            myCompletedOnce = new ViewableProperty<bool>();
+            if (solutionCaches.PersistentProperties.TryGetValue("DeferredCachesCompletedOnce", out var result))
+            {
+                myCompletedOnce.Value = result.Equals("True");
+            }
+            else
+            {
+                myCompletedOnce.Value = false;
+            }
+            
+            myCompletedOnce.Change.Advise(lifetime, b =>
+            {
+                solutionCaches.PersistentProperties["DeferredCachesCompletedOnce"] = b ? "True" : "False";
+            });
         }
 
+        public bool IsProcessingFiles()
+        {
+            return myDeferredHelperCache.FilesToDrop.Count > 0 || myDeferredHelperCache.FilesToProcess.Count > 0 ||
+                   myPartlyCalculatedData.Count > 0 || myCalculatedData.Count > 0;
+        }
+        
         public Action CreateTask(Lifetime lifetime)
         {
             return () =>
             {
                 using (TryReadLockCookie.Create(NullProgressIndicator.Instance, myShellLocks, () => !lifetime.IsAlive))
                 {
-                    if (mySwaPauseLifetimeDef == null)
+                    if (!IsProcessingFiles())
                     {
+                        myCompletedOnce.Value = true;
+                        return;
+                    }
+                    
+                    if (myWorkLifetime.IsCurrentTerminated)
+                    {
+                        var workLifetime = myWorkLifetime.Next();
                         myLogger.Verbose("Start processing files in deferred caches");
-                        mySwaPauseLifetimeDef = myLifetime.CreateNested();
-                        mySolutionAnalysisConfiguration.Pause(mySwaPauseLifetimeDef.Lifetime, "Deferred index is calculated");
+                        if (!myCompletedOnce.Value)
+                        {
+                            mySolutionAnalysisConfiguration.Pause(workLifetime, "Calculating deferred index");
+                        }
+                        
+                        myProgressBar.Start(workLifetime);
                     }
                     
                     // First of all, drop data for out-of-date files under DeferredCachesWriteLock
@@ -101,6 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                     foreach (var psiSourceFile in GetFilesToProcess())
                     {
+                        myProgressBar.SetCurrentProcessingFile(psiSourceFile);
                         myLogger.Verbose("Build started {0}", psiSourceFile.GetPersistentIdForLogging());
                         Assertion.Assert(psiSourceFile.IsValid(), "psiSourceFile.IsValid()");
                         if (!myPartlyCalculatedData.TryGetValue(psiSourceFile, out var cacheToData))
@@ -140,7 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                             }
                         });
 
-                        myDeferredHelperCache.FilesToProcess.Remove(psiSourceFile);
+                        myDeferredHelperCache.DropFromProcess(psiSourceFile);
 
                         Assertion.Assert(!myCalculatedData.ContainsKey(psiSourceFile),
                             "!myCalculatedData.ContainsKey(psiSourceFile)");
@@ -153,11 +189,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     }
 
                     FlushBuildData(lifetime);
-                    if (mySwaPauseLifetimeDef.Lifetime.IsAlive)
-                    {
-                        myLogger.Verbose("Finish processing files in deferred caches");
-                        mySwaPauseLifetimeDef.Terminate();
-                    }
+                    
+                    myWorkLifetime.TerminateCurrent();
+                    myCompletedOnce.Value = true;
                 }
             };
         }
@@ -187,6 +221,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
             foreach (var sourceFile in new LocalList<IPsiSourceFile>(myCalculatedData.Keys))
             {
+                CheckForInterrupt(lifetime);
                 myLogger.Verbose("Start merging for {0}", sourceFile);
                 var cacheToData = myCalculatedData[sourceFile];
                 myDeferredCachesLocks.ExecuteUnderWriteLock(() =>
@@ -207,13 +242,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 myCalculatedData.Remove(sourceFile);
 
                 myLogger.Verbose("Finish merging for {0}", sourceFile);
-                CheckForInterrupt(lifetime);
             }
         }
 
         private void FlushBuildDataIfNeed(Lifetime lifetime)
         {
-            
             if (myCalculatedData.Count > BATCH_SIZE)
             {
                 FlushBuildData(lifetime);
