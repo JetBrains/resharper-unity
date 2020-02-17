@@ -6,24 +6,25 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
-    public class UnityAssetFindResult : FindResult
+    public abstract class UnityAssetFindResult : FindResult
     {
         public IPsiSourceFile SourceFile { get; }
         public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
         public TextRange TextRange { get; }
         public IHierarchyElement Parent { get; }
 
-        public UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, TextRange textRange, IHierarchyElement parent)
+        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, TextRange textRange, IHierarchyElement parent)
         {
             SourceFile = sourceFile;
             TextRange = textRange;
             Parent = parent;
             DeclaredElementPointer = new SourceElementPointer<IDeclaredElement>(declaredElement);
         }
+        
 
         protected bool Equals(UnityAssetFindResult other)
         {
-            return SourceFile.Equals(other.SourceFile) && TextRange.Equals(other.TextRange);
+            return SourceFile.Equals(other.SourceFile) && TextRange.Equals(other.TextRange) && Parent.Equals(other.Parent);
         }
 
         public override bool Equals(object obj)
@@ -38,7 +39,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             unchecked
             {
-                return (SourceFile.GetHashCode() * 397) ^ TextRange.GetHashCode();
+                var hashCode = SourceFile.GetHashCode();
+                hashCode = (hashCode * 397) ^ TextRange.GetHashCode();
+                hashCode = (hashCode * 397) ^ Parent.GetHashCode();
+                return hashCode;
             }
         }
     }

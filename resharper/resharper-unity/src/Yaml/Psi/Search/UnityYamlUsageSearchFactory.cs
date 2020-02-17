@@ -5,6 +5,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
@@ -46,8 +47,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var solution = elements.FirstOrDefault().NotNull("elements.FirstOrDefault() != null").GetSolution();
             var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
             var methodsContainer = solution.GetComponent<AssetMethodsElementContainer>();
+            var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
+            var assetUsagesContainer = solution.GetComponent<AssetUsagesElementContainer>();
             
-            return new UnityAssetReferenceSearcher(hierarchyContainer, methodsContainer, elements, findCandidates);
+            return new UnityAssetReferenceSearcher(hierarchyContainer, assetUsagesContainer, methodsContainer, metaFileGuidCache, elements, findCandidates);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An

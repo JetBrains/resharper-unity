@@ -186,7 +186,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
             }
         }
         
-        
         public string Id => nameof(AssetDocumentHierarchyElementContainer);
+        public int Order => int.MaxValue;
     }
 }

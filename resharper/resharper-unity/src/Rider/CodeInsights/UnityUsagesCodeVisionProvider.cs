@@ -92,8 +92,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)};
         protected IconId IconId => InsightUnityIcons.InsightUnity.Id;
 
-        public void AddHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration,
-            ITypeElement declaredElement, int count, string tooltipText, string moreText, IconModel iconModel)
+        public void AddHighlighting(IHighlightingConsumer consumer, IDeclaration declaration,
+            IDeclaredElement declaredElement, int count, string tooltipText, string moreText, IconModel iconModel)
         {
             consumer.AddHighlighting(new CodeInsightsHighlighting(declaration.GetNameDocumentRange(), 
                 GetText(count), tooltipText, moreText, this, declaredElement, iconModel));

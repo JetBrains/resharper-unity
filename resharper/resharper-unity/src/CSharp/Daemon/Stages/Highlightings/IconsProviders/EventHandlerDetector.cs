@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (declaredElement is IProperty property)
                 method = property.Setter;
 
-            if (method != null && myAssetMethodsElementContainer.IsEventHandler(method))
+            if (method != null && myAssetMethodsElementContainer.GetAssetUsagesCount(method, out _) > 0)
             {
                 AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
                 return true;
