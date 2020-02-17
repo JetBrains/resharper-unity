@@ -10,6 +10,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon.Experimental;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -22,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
     {
         private const int BATCH_SIZE = 5;
 
+        private readonly ISolution mySolution;
         private readonly SolutionAnalysisConfiguration mySolutionAnalysisConfiguration;
         private readonly IShellLocks myShellLocks;
         private readonly DeferredCachesLocks myDeferredCachesLocks;
@@ -36,9 +38,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         public IReadonlyProperty<bool> CompletedOnce => myCompletedOnce;
         private ViewableProperty<bool> myCompletedOnce;
         
-        public DeferredCacheController(Lifetime lifetime, SolutionCaches solutionCaches, IPersistentIndexManager persistentIndexManager, SolutionAnalysisConfiguration solutionAnalysisConfiguration, IShellLocks shellLocks, DeferredCachesLocks deferredCachesLocks,
+        public DeferredCacheController(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches, IPersistentIndexManager persistentIndexManager, SolutionAnalysisConfiguration solutionAnalysisConfiguration, IShellLocks shellLocks, DeferredCachesLocks deferredCachesLocks,
             DeferredHelperCache deferredHelperCache, IEnumerable<IDeferredCache> deferredCaches, DeferredCacheProgressBar progressBar, ILogger logger)
         {
+            mySolution = solution;
             mySolutionAnalysisConfiguration = solutionAnalysisConfiguration;
             myShellLocks = shellLocks;
             myDeferredCachesLocks = deferredCachesLocks;
@@ -192,6 +195,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     
                     myWorkLifetime.TerminateCurrent();
                     myCompletedOnce.Value = true;
+                    
+                    // invalidate and update highlightings according to deferred caches data
+                    mySolution.GetComponent<IDaemon>().Invalidate();
                 }
             };
         }

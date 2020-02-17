@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.Collections.Synchronized;
 using JetBrains.Collections.Viewable;
@@ -108,14 +109,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         private void AddToProcess(IPsiSourceFile sourceFile)
         {
-            FilesToProcess.Add(sourceFile);
-            AfterAddToProcess.Fire(sourceFile);
+            bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
+            if (isApplicable)
+            {
+                FilesToProcess.Add(sourceFile);
+                AfterAddToProcess.Fire(sourceFile);
+            }
         }
 
         public void DropFromProcess(IPsiSourceFile sourceFile)
         {
-            FilesToProcess.Remove(sourceFile);
-            AfterRemoveFromProcess.Fire(sourceFile);
+            bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
+            if (isApplicable)
+            {
+                FilesToProcess.Remove(sourceFile);
+                AfterRemoveFromProcess.Fire(sourceFile);
+            }
         }
         
         public bool HasDirtyFiles => false;//!myDirtyFiles.IsEmpty();

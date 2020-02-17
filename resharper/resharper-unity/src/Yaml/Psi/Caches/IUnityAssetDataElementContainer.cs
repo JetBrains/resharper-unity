@@ -12,5 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement);
         
         string Id { get; }
+        
+        int Order { get; }
     }
 }

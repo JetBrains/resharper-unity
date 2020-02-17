@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
@@ -25,16 +26,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
     {
         private readonly ILogger myLogger;
         private readonly Dictionary<string, IUnityAssetDataElementContainer> myUnityAssetDataElementContainers = new Dictionary<string, IUnityAssetDataElementContainer>();
+        private List<IUnityAssetDataElementContainer> myOrderedContainers;
+        private List<IUnityAssetDataElementContainer> myOrderedIncreasingContainers;
         private readonly ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)> myDocumentNumber = new ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)>();
         private readonly ConcurrentDictionary<IPsiSourceFile, long> myCurrentTimeStamp = new ConcurrentDictionary<IPsiSourceFile, long>();
         public UnityAssetCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers, ILogger logger)
             : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate))
         {
             myLogger = logger;
-            foreach (var unityAssetDataElementContainer in unityAssetDataElementContainers)
+            myOrderedContainers = unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList();
+            myOrderedIncreasingContainers = myOrderedContainers.OrderBy(t => t.Order).ToList();
+            foreach (var unityAssetDataElementContainer in myOrderedContainers)
             {
                 myUnityAssetDataElementContainers[unityAssetDataElementContainer.Id] = unityAssetDataElementContainer;
             }
+
         }
 
         public override bool IsApplicable(IPsiSourceFile sourceFile)
@@ -44,17 +50,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData data)
         {
-            foreach (var (id, element) in data.UnityAssetDataElements)
+            foreach (var container in myOrderedContainers)
             {
-                var container =  myUnityAssetDataElementContainers[id];
-                Assertion.Assert(container != null, "container != null");
-                try
+                if (data.UnityAssetDataElements.TryGetValue(container.Id, out var element))
                 {
-                    container.Merge(sourceFile, element);
-                }
-                catch (Exception e)
-                {
-                    myLogger.Error(e, "An error occurred while merging data in {0}", container.GetType().Name);
+                    Assertion.Assert(container != null, "container != null");
+                    try
+                    {
+                        container.Merge(sourceFile, element);
+                    }
+                    catch (Exception e)
+                    {
+                        myLogger.Error(e, "An error occurred while merging data in {0}", container.GetType().Name);
+                    }
                 }
             }
         }
@@ -117,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             var assetDocument = new AssetDocument(start, buffer);
             var results = new LocalList<IUnityAssetDataElement>();
-            foreach (var unityAssetDataElementContainer in myUnityAssetDataElementContainers.Values)
+            foreach (var unityAssetDataElementContainer in myOrderedContainers)
             {
                 if (!lifetime.IsAlive)
                     throw new OperationCanceledException();
@@ -148,17 +156,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             myDocumentNumber.TryRemove(sourceFile, out _);
             myCurrentTimeStamp.TryRemove(sourceFile, out _);
 
-            foreach (var (id, element) in data.UnityAssetDataElements)
+            foreach (var container in myOrderedIncreasingContainers)
             {
-                var container =  myUnityAssetDataElementContainers[id];
-                Assertion.Assert(container != null, "container != null");
-                try
+                if (data.UnityAssetDataElements.TryGetValue(container.Id, out var element))
                 {
-                    container.Drop(sourceFile, element);
-                }
-                catch (Exception e)
-                {
-                    myLogger.Error(e, "An error occurred while dropping data in {0}", container.GetType().Name);
+                    Assertion.Assert(container != null, "container != null");
+                    try
+                    {
+                        container.Drop(sourceFile, element);
+                    }
+                    catch (Exception e)
+                    {
+                        myLogger.Error(e, "An error occurred while dropping data in {0}", container.GetType().Name);
+                    }
                 }
             }
         }

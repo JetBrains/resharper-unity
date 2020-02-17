@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
@@ -24,6 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages
         }
         
         private OneToCompactCountingSet<string, AssetUsage> myAssetUsages = new OneToCompactCountingSet<string, AssetUsage>();
+        private Dictionary<IPsiSourceFile, OneToCompactCountingSet<string, AssetUsage>> myAssetUsagesPerFile = new Dictionary<IPsiSourceFile, OneToCompactCountingSet<string, AssetUsage>>();
+        
+        
         public IUnityAssetDataElement Build(Lifetime lifetime, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
             // TODO: deps for other assets
@@ -62,7 +67,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages
                 foreach (var dependency in assetUsage.Dependencies)
                 {
                     if (dependency is ExternalReference externalReference)
+                    {
                         myAssetUsages.Remove(externalReference.ExternalAssetGuid, assetUsage);
+
+                        var set = myAssetUsagesPerFile[sourceFile];
+                        set.Remove(externalReference.ExternalAssetGuid, assetUsage);
+                        if (set.Count == 0)
+                            myAssetUsagesPerFile.Remove(sourceFile);
+                    }
                 }
             }
         }
@@ -75,7 +87,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages
                 foreach (var dependency in assetUsage.Dependencies)
                 {
                     if (dependency is ExternalReference externalReference)
+                    {
                         myAssetUsages.Add(externalReference.ExternalAssetGuid, assetUsage);
+
+                        if (!myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
+                        {
+                            set = new OneToCompactCountingSet<string, AssetUsage>();
+                            myAssetUsagesPerFile[sourceFile] = set;
+                        }
+
+                        set.Add(externalReference.ExternalAssetGuid, assetUsage);
+                    }
                 }
             }
         }
@@ -91,7 +113,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages
                 if (classLikeDeclaration.TypeParameters.Count != 0)
                     return 0;
 
-                if (!classLikeDeclaration.NameIdentifier.Name.Equals(sourceFile.Name))
+                if (classLikeDeclaration.DeclaredElement?.GetContainingType() != null)
+                    return 0;
+
+                if (!classLikeDeclaration.NameIdentifier.Name.Equals(sourceFile.GetLocation().NameWithoutExtension))
                     return 0;
 
                 var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
@@ -103,5 +128,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages
         }
         
         public string Id => nameof(AssetUsagesElementContainer);
+        public int Order => 0;
+
+        public IEnumerable<AssetUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, string guid)
+        {
+            return myDeferredCachesLocks.ExecuteUnderReadLock(_ =>
+            {
+                if (myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
+                    return set.GetValues(guid).ToList();
+                return Enumerable.Empty<AssetUsage>();
+            });
+        }
     }
 }

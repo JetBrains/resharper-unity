@@ -271,6 +271,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
         };
         
         public string Id => nameof(AssetInspectorValuesContainer);
+        public int Order => 0;
 
         private class MonoBehaviourField
         {
