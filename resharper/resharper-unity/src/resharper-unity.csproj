@@ -119,7 +119,6 @@
   </ItemGroup>
   <!-- References -->
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK" Version="$(ReSharperSDKVersion)" />
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.4.2" />
     <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
@@ -157,4 +156,7 @@
   <ItemGroup>
     <Folder Include="AsmDefCommon\Daemon\ContextHighlighters" />
   </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props')" />
 </Project>

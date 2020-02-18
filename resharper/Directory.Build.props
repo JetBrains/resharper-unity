@@ -24,6 +24,5 @@
   </PropertyGroup>
 
   <Import Project="..\Packaging.props" />
-  <Import Project="JetBrains.Rider.SDK.generated.props" />
-  <Import Project="JetBrains.ReSharper.SDK.generated.props" />
+  <Import Project="$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props" Condition="Exists('$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props')" />
 </Project>

@@ -30,4 +30,5 @@
     <None Remove="AfterUnity56\**" />
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
 </Project>

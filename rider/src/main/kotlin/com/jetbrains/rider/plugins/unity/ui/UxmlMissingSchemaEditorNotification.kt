@@ -116,7 +116,7 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
         panel.text("Generating. Please wait.")
         link?.isVisible = false
 
-        unityHost.model.generateUIElementsSchema.start(Unit).result.adviseOnce(project.lifetime) {
+        unityHost.model.generateUIElementsSchema.start(project.lifetime, Unit).result.adviseOnce(project.lifetime) {
             if (it is RdTaskResult.Success && it.value) {
                 EditorNotifications.getInstance(project).updateAllNotifications()
 
