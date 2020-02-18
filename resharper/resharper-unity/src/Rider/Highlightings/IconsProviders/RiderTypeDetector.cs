@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
@@ -74,15 +74,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                             RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));   
                     } else if (myDeferredCacheController.IsProcessingFiles())
                     {
-                        var count = myAssetUsagesElementContainer.GetUsagesCount(declaration);
+                        var count = myAssetUsagesElementContainer.GetUsagesCount(declaration, out var estimatedResult);
                         myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
-                            "Click to see usages in assets", "Assets usages", myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id));
+                            "Click to see usages in assets", "Assets usages", estimatedResult, myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id));
                     }
                     else
                     {
-                        var count = myAssetUsagesElementContainer.GetUsagesCount(declaration);
+                        var count = myAssetUsagesElementContainer.GetUsagesCount(declaration, out var estimatedResult);
                         myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
-                            "Click to see usages in assets", "Assets usages", myIconHost.Transform(InsightUnityIcons.InsightUnity.Id));
+                            "Click to see usages in assets", "Assets usages", estimatedResult, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id));
                     }
                 }
             }

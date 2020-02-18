@@ -1,5 +1,5 @@
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 
@@ -18,7 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public override string ToString()
         {
-            return $"{InspectorVariableUsage.Name} = {InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement())}";
+            using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+            {
+                return $"{InspectorVariableUsage.Name} = {InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement())}";
+            }
         }
     }
 }

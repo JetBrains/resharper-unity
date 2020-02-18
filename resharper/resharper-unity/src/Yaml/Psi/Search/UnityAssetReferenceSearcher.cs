@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;

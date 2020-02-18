@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Xaml.Impl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
@@ -225,7 +224,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
                 return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
-            return method.GetSolution().GetComponent<UnitySceneDataLocalCache>().IsEventHandler(method);
+            var deferredCaches = solution.GetComponent<DeferredCacheController>();
+            if (deferredCaches.IsProcessingFiles())
+            {
+                return solution.GetComponent<AssetMethodsElementContainer>().IsPossibleEventHandler(method);
+            }
+
+            return solution.GetComponent<AssetMethodsElementContainer>().GetAssetUsagesCount(method, out bool estimatedResult) > 0 || estimatedResult;
         }
     }
 }

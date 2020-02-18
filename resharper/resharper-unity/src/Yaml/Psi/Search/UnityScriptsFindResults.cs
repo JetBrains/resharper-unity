@@ -1,5 +1,5 @@
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search

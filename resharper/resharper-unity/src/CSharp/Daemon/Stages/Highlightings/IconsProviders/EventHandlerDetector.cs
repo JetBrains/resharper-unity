@@ -7,8 +7,7 @@ using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -21,16 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtension;
         private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
-        private readonly UnitySceneDataLocalCache mySceneDataCache;
 
         public EventHandlerDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore,
             CallGraphSwaExtensionProvider callGraphSwaExtension, AssetMethodsElementContainer assetMethodsElementContainer,
-            UnitySceneDataLocalCache sceneDataCache, PerformanceCriticalCodeCallGraphAnalyzer analyzer)
+             PerformanceCriticalCodeCallGraphAnalyzer analyzer)
             : base(solution, swa, callGraphSwaExtension, settingsStore, analyzer)
         {
             myCallGraphSwaExtension = callGraphSwaExtension;
             myAssetMethodsElementContainer = assetMethodsElementContainer;
-            mySceneDataCache = sceneDataCache;
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,

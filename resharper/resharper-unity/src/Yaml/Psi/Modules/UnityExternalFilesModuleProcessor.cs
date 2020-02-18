@@ -50,11 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityYamlDisableStrategy myUnityYamlDisableStrategy;
-        private readonly BinaryUnityFileCache myBinaryUnityFileCache;
-        private readonly ISettingsSchema mySettingsSchema;
-        private readonly SettingsLayersProvider mySettingsLayersProvider;
         private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly UnityYamlSupport myUnityYamlSupport;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
 
@@ -67,7 +63,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityYamlDisableStrategy unityYamlDisableStrategy,
-                                                 BinaryUnityFileCache binaryUnityFileCache,
                                                  ISettingsSchema settingsSchema,
                                                  SettingsLayersProvider settingsLayersProvider,
                                                  AssetSerializationMode assetSerializationMode,
@@ -83,11 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
             myUnityYamlDisableStrategy = unityYamlDisableStrategy;
-            myBinaryUnityFileCache = binaryUnityFileCache;
-            mySettingsSchema = settingsSchema;
-            mySettingsLayersProvider = settingsLayersProvider;
             myAssetSerializationMode = assetSerializationMode;
-            myUnityYamlSupport = unityYamlSupport;
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
@@ -405,13 +396,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                         // timestamps and never get updated by ICache implementations!
                         if (sourceFile is PsiSourceFileFromPath psiSourceFileFromPath)
                             psiSourceFileFromPath.GetCachedFileSystemData().Refresh(delta.NewPath);
-
-                        // Has the file flipped from binary back to text?
-                        if (myBinaryUnityFileCache.IsBinaryFile(sourceFile) &&
-                            sourceFile.GetLocation().SniffYamlHeader())
-                        {
-                            myBinaryUnityFileCache.Invalidate(sourceFile);
-                        }
 
                         builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
                     }

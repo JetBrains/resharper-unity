@@ -15,17 +15,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         private readonly IProjectFileExtensions myProjectFileExtensions;
         private readonly PsiProjectFileTypeCoordinator myProjectFileTypeCoordinator;
-        private readonly UnityYamlSupport myUnityYamlSupport;
         private readonly DocumentManager myDocumentManager;
 
         public UnityYamlPsiSourceFileFactory(IProjectFileExtensions projectFileExtensions,
                                              PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
-                                             UnityYamlSupport unityYamlSupport,
                                              DocumentManager documentManager)
         {
             myProjectFileExtensions = projectFileExtensions;
             myProjectFileTypeCoordinator = projectFileTypeCoordinator;
-            myUnityYamlSupport = unityYamlSupport;
             myDocumentManager = documentManager;
         }
 
@@ -59,8 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private IPsiSourceFileProperties PropertiesFactory(IPsiSourceFile psiSourceFile)
         {
-            var binaryUnityFileCache = psiSourceFile.GetSolution().GetComponent<BinaryUnityFileCache>();
-            return new UnityExternalFileProperties(psiSourceFile, myUnityYamlSupport, binaryUnityFileCache);
+            return new UnityExternalFileProperties();
         }
     }
 }

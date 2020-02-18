@@ -12,8 +12,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
@@ -31,11 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly AssetSerializationMode myAssetSerializationMode;
 
         public RiderEventHandlerDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer,AssetMethodsElementContainer assetMethodsElementContainer, UnitySceneDataLocalCache cache,
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer,AssetMethodsElementContainer assetMethodsElementContainer,
             UnityCodeInsightProvider codeInsightProvider, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, DeferredCacheController deferredCacheController,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost, AssetSerializationMode assetSerializationMode)
-            : base(solution, swa,  settingsStore, callGraphSwaExtensionProvider, assetMethodsElementContainer, cache, analyzer)
+            : base(solution, swa,  settingsStore, callGraphSwaExtensionProvider, assetMethodsElementContainer, analyzer)
         {
             myAssetMethodsElementContainer = assetMethodsElementContainer;
             myCodeInsightProvider = codeInsightProvider;
@@ -79,13 +78,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                     {
                         var count = myAssetMethodsElementContainer.GetAssetUsagesCount(element.DeclaredElement, out var estimate);
                         myUsagesCodeVisionProvider.AddHighlighting(consumer, element, element.DeclaredElement, count,
-                            "Click to see usages in assets", "Assets usages", myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id));
+                            "Click to see usages in assets", "Assets usages", estimate, myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id));
                     }
                     else
                     {
                         var count = myAssetMethodsElementContainer.GetAssetUsagesCount(element.DeclaredElement, out var estimate);
                         myUsagesCodeVisionProvider.AddHighlighting(consumer, element, element.DeclaredElement, count,
-                            "Click to see usages in assets", "Assets usages", myIconHost.Transform(iconId));
+                            "Click to see usages in assets", "Assets usages",estimate, myIconHost.Transform(iconId));
                     }
                 }
             }

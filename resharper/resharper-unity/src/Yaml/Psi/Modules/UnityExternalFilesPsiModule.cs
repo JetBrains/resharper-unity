@@ -33,8 +33,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             Name = moduleName;
             TargetFrameworkId = targetFrameworkId;
             mySourceFiles = new CompactMap<FileSystemPath, Pair<IPsiSourceFile, LifetimeDefinition>>();
-            
-            PutData(DaemonEnablePolicy.EnableSwaForMiscModuleKey, true);
         }
 
         public IPsiServices GetPsiServices() => mySolution.GetPsiServices();
