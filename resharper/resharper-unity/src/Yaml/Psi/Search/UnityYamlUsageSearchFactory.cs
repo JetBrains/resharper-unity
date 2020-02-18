@@ -3,13 +3,11 @@ using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
@@ -32,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
         public override bool IsCompatibleWithLanguage(PsiLanguageType languageType)
         {
-            return languageType.Is<UnityYamlLanguage>();
+            return languageType.Is<UnityYamlDummyLanguage>();
         }
 
         public override IDomainSpecificSearcher CreateReferenceSearcher(IDeclaredElementsSet elements,

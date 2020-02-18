@@ -6,15 +6,12 @@ using JetBrains.Application.UI.ActionsRevised.Handlers;
 using JetBrains.Application.UI.DataContext;
 using JetBrains.Application.UI.PopupLayout;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.DataContext;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CodeInsights;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
 using JetBrains.ReSharper.Host.Features.CodeInsights.Providers;
@@ -22,11 +19,7 @@ using JetBrains.ReSharper.Host.Features.Services;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.DataContext;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
@@ -47,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             myContexts = shell.GetComponent<DataContexts>();
         }
 
-        protected string Noun(int count) => "asset usage" + (count == 1 ? "" : "s");
+        protected string Noun(int count, bool estimatedResult) => "asset usage" + (count == 1 && !estimatedResult ? "" : "s");
 
         public bool IsAvailableIn(ISolution solution)
         {
@@ -93,18 +86,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         protected IconId IconId => InsightUnityIcons.InsightUnity.Id;
 
         public void AddHighlighting(IHighlightingConsumer consumer, IDeclaration declaration,
-            IDeclaredElement declaredElement, int count, string tooltipText, string moreText, IconModel iconModel)
+            IDeclaredElement declaredElement, int count, string tooltipText, string moreText, bool estimatedResult,
+            IconModel iconModel)
         {
             consumer.AddHighlighting(new CodeInsightsHighlighting(declaration.GetNameDocumentRange(), 
-                GetText(count), tooltipText, moreText, this, declaredElement, iconModel));
+                GetText(count, estimatedResult), tooltipText, moreText, this, declaredElement, iconModel));
         }
 
-        private string GetText(int count)
+        private string GetText(int count, bool estimatedResult)
         {
-            if (count == 0)
+            if (count == 0 && !estimatedResult)
                 return "No asset usages";
 
-            return $"{count} {Noun(count)}";
+            var countText = count + (estimatedResult ? "+" : "");
+            return $"{countText} {Noun(count, estimatedResult)}";
         }
     }
 }
