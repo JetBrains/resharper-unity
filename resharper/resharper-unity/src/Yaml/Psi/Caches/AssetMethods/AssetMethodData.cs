@@ -9,16 +9,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 {
     public class AssetMethodData
     {
-        public int OwnerId { get;}
+        public LocalReference Location { get; }
         public string MethodName { get; }
         public EventHandlerArgumentMode Mode { get; }
         public string Type { get; }
         public IHierarchyReference TargetScriptReference { get; }
         public TextRange TextRange { get; }
 
-        public AssetMethodData(int ownerId, string methodName, TextRange textRange, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
+        public AssetMethodData(LocalReference location, string methodName, TextRange textRange, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
         {
-            OwnerId = ownerId;
+            Location = location;
             MethodName = methodName;
             TextRange = textRange;
             Mode = mode;
@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 
         public void WriteTo(UnsafeWriter writer)
         {
-            writer.Write(OwnerId);
+            writer.WritePolymorphic(Location);
             writer.Write(MethodName);
             writer.Write(TextRange.StartOffset);
             writer.Write(TextRange.EndOffset);
@@ -39,13 +39,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 
         public static AssetMethodData ReadFrom(UnsafeReader reader)
         {
-            return new AssetMethodData(reader.ReadInt32(), reader.ReadString(), new TextRange(reader.ReadInt32(), reader.ReadInt32()),
+            return new AssetMethodData(reader.ReadPolymorphic<LocalReference>(), reader.ReadString(), new TextRange(reader.ReadInt32(), reader.ReadInt32()),
                 (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), reader.ReadPolymorphic<IHierarchyReference>());
         }
 
         protected bool Equals(AssetMethodData other)
         {
-            return Equals(OwnerId, other.OwnerId) && MethodName == other.MethodName
+            return Equals(Location, other.Location) && MethodName == other.MethodName
                                                   && Mode == other.Mode
                                                   && Type == other.Type
                                                   && Equals(TargetScriptReference, other.TargetScriptReference);
@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
         {
             unchecked
             {
-                var hashCode = OwnerId.GetHashCode();
+                var hashCode = Location.GetHashCode();
                 hashCode = (hashCode * 397) ^ MethodName.GetHashCode() ;
                 hashCode = (hashCode * 397) ^ (int) Mode;
                 hashCode = (hashCode * 397) ^ (Type != null ? Type.GetHashCode() : 0);

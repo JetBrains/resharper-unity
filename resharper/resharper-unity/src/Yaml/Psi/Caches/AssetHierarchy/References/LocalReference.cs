@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Serialization;
@@ -30,6 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Refer
         public string LocalDocumentAnchor { get; }
         
         public int OwnerId { get;}
+        public static LocalReference Null { get; set; } = new LocalReference(0, String.Empty);
 
         protected bool Equals(LocalReference other)
         {

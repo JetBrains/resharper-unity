@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
 using JetBrains.UI.RichText;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
     [OccurrencePresenter(Priority = 10.0)]
     public class UnityEditorOccurencePresenter : IOccurrencePresenter
@@ -32,13 +32,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         protected RichText GetDisplayText(UnityAssetOccurrence occurrence)
         {
             var processor = occurrence.GetSolution().NotNull("occurrence.GetSolution() != null").GetComponent<AssetHierarchyProcessor>();
-            return GetAttachedGameObjectName(processor, occurrence);
+            var name =  GetAttachedGameObjectName(processor, occurrence);
+
+            if (occurrence is UnityInspectorValuesOccurrence inspectorValuesOccurrence)
+            {
+                var solution = occurrence.GetSolution();
+                return $"{inspectorValuesOccurrence.InspectorVariableUsage.Value.GetPresentation(solution, occurrence.DeclaredElementPointer.FindDeclaredElement())} in {name}";
+            }
+            return name;
         }
 
         public static string GetAttachedGameObjectName(AssetHierarchyProcessor processor, UnityAssetOccurrence occurrence) {
         
             var consumer = new UnityScenePathGameObjectConsumer();
-            processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.Parent, consumer);
+            processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.AttachedElement, consumer);
         
             var parts = consumer.NameParts;
             if (parts.Count == 0)

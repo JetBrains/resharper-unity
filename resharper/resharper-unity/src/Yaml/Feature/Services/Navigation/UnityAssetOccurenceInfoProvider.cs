@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Feature.Services.Occurrences.OccurrenceInformation;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
     [SolutionFeaturePart]
     public class UnityAssetOccurenceInfoProvider : IOccurrenceInformationProvider2
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public TextRange GetTextRange(IOccurrence occurrence)
         {
-            return (occurrence as UnityAssetOccurrence).TextRange;
+            return TextRange.InvalidRange;
         }
 
         public ProjectModelElementEnvoy GetProjectModelElementEnvoy(IOccurrence occurrence)

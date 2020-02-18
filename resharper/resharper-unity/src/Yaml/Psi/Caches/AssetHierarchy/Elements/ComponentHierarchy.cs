@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new ComponentHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<IHierarchyReference>(),
+        private static object Read(UnsafeReader reader) => new ComponentHierarchy(reader.ReadString(), reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<IHierarchyReference>(),
             reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
 
         [UsedImplicitly]
@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
 
         private static void Write(UnsafeWriter writer, ComponentHierarchy value)
         {
+            writer.Write(value.Name);
             writer.WritePolymorphic(value.Location);
             writer.WritePolymorphic(value.GameObjectReference);
             writer.WritePolymorphic(value.PrefabInstance);
@@ -27,9 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
             writer.Write(value.IsStripped);
         }
         
-        public ComponentHierarchy(LocalReference localReference, IHierarchyReference gameObject,
+        public ComponentHierarchy(string name, LocalReference localReference, IHierarchyReference gameObject,
             LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped)
         {
+            Name = name;
             Location = localReference;
             GameObjectReference = gameObject;
             PrefabInstance = prefabInstance;
@@ -37,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
             IsStripped = isStripped;
         }
 
+        public string Name { get; }
         public LocalReference Location { get; }
         public IHierarchyReference GameObjectReference { get; }
         public bool IsStripped { get; }

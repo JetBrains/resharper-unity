@@ -138,8 +138,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
             }
             else // regular component
             {
-               return new AssetDocumentHierarchyElement(
-                   new ComponentHierarchy(location, gameObject, prefabInstance, correspondingSourceObject, isStripped));
+                var name = AssetUtils.GetRawComponentName(assetDocument.Buffer);
+                if (name == null)
+                    return null;
+
+                return new AssetDocumentHierarchyElement(
+                   new ComponentHierarchy(name, location, gameObject, prefabInstance, correspondingSourceObject, isStripped));
             }
             return null;
         }

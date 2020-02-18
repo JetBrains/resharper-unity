@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
 
         public TransformHierarchy(LocalReference location, IHierarchyReference gameObjectReference, IHierarchyReference parent,
             int rootIndex, LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped) 
-            : base(location, gameObjectReference, prefabInstance, correspondingSourceObject, isStripped)
+            : base("Transform", location, gameObjectReference, prefabInstance, correspondingSourceObject, isStripped)
         {
             Parent = parent;
             RootIndex = rootIndex;

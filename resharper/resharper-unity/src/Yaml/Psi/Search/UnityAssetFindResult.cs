@@ -1,4 +1,5 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
@@ -10,21 +11,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         public IPsiSourceFile SourceFile { get; }
         public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
-        public TextRange TextRange { get; }
-        public IHierarchyElement Parent { get; }
+        public IHierarchyElement AttachedElement { get; }
 
-        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, TextRange textRange, IHierarchyElement parent)
+        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, IHierarchyElement attachedElement)
         {
             SourceFile = sourceFile;
-            TextRange = textRange;
-            Parent = parent;
+            AttachedElement = attachedElement;
             DeclaredElementPointer = new SourceElementPointer<IDeclaredElement>(declaredElement);
         }
         
 
         protected bool Equals(UnityAssetFindResult other)
         {
-            return SourceFile.Equals(other.SourceFile) && TextRange.Equals(other.TextRange) && Parent.Equals(other.Parent);
+            return SourceFile.Equals(other.SourceFile) && AttachedElement.Equals(other.AttachedElement);
         }
 
         public override bool Equals(object obj)
@@ -40,8 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             unchecked
             {
                 var hashCode = SourceFile.GetHashCode();
-                hashCode = (hashCode * 397) ^ TextRange.GetHashCode();
-                hashCode = (hashCode * 397) ^ Parent.GetHashCode();
+                hashCode = (hashCode * 397) ^ AttachedElement.GetHashCode();
                 return hashCode;
             }
         }

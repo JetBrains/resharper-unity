@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Eleme
         public ScriptComponentHierarchy(LocalReference reference, ExternalReference scriptReference,
             IHierarchyReference gameObject, LocalReference prefabInstance, ExternalReference correspondingSourceObject
             , bool isStripped) 
-            : base(reference, gameObject, prefabInstance, correspondingSourceObject, isStripped)
+            : base("MonoBehaviour", reference, gameObject, prefabInstance, correspondingSourceObject, isStripped)
         {
             ScriptReference = scriptReference;
         }

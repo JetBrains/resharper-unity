@@ -109,19 +109,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages
                 var sourceFile = classLikeDeclaration.GetSourceFile();
                 if (sourceFile == null)
                     return 0;
-            
-                if (classLikeDeclaration.TypeParameters.Count != 0)
+
+                var declaredElement = classLikeDeclaration.DeclaredElement;
+                if (declaredElement == null)
                     return 0;
 
-                if (classLikeDeclaration.DeclaredElement?.GetContainingType() != null)
-                    return 0;
-
-                if (!classLikeDeclaration.NameIdentifier.Name.Equals(sourceFile.GetLocation().NameWithoutExtension))
-                    return 0;
-
-                var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
-                if (guid == null)
-                    return 0;
+                var guid = GetGuidFor(declaredElement);
 
                 return myAssetUsages.GetOrEmpty(guid).Count;
             });
@@ -130,14 +123,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages
         public string Id => nameof(AssetUsagesElementContainer);
         public int Order => 0;
 
-        public IEnumerable<AssetUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, string guid)
+        public IEnumerable<AssetUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
         {
             return myDeferredCachesLocks.ExecuteUnderReadLock(_ =>
             {
+                var guid = GetGuidFor(declaredElement);
+                
                 if (myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
                     return set.GetValues(guid).ToList();
                 return Enumerable.Empty<AssetUsage>();
             });
+        }
+
+        private string GetGuidFor(ITypeElement typeElement)
+        {
+            var sourceFile = typeElement.GetDeclarations().FirstOrDefault()?.GetSourceFile();
+            if (sourceFile == null)
+                return null;
+            
+            if (typeElement.TypeParameters.Count != 0)
+                return null;
+
+            if (typeElement.GetContainingType() != null)
+                return null;
+
+            if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
+                return null;
+
+            var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
+            return guid;
         }
     }
 }

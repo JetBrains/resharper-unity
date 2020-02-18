@@ -52,6 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
             if (ourMethodNameSearcher.Find(buffer) < 0)
                 return null;
 
+            var anchor = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
+            
             var entries = assetDocument.Document.FindRootBlockMapEntries()?.Entries;
             if (entries == null)
                 return null;
@@ -105,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
 
                         var range = new TextRange(assetDocument.StartOffset + methodNameRange.StartOffset.Offset,
                             assetDocument.StartOffset + methodNameRange.EndOffset.Offset);
-                        result.Add(new AssetMethodData(currentSourceFile.PsiStorage.PersistentIndex, methodName, range,
+                        result.Add(new AssetMethodData(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), methodName, range,
                             argMode, type, fileID.ToReference(currentSourceFile)));                        
                     }
                 }
@@ -130,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
                 {
                     if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(localReference) is ScriptComponentHierarchy script)
                     {
-                        myLocalUsages.Remove(method.MethodName, new AssetMethodData(0, method.MethodName, TextRange.InvalidRange,
+                        myLocalUsages.Remove(method.MethodName, new AssetMethodData(LocalReference.Null, method.MethodName, TextRange.InvalidRange,
                             method.Mode, method.Type, script.ScriptReference));
                     }
                 }
@@ -155,7 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods
                 {
                     if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(localReference) is ScriptComponentHierarchy script)
                     {
-                        myLocalUsages.Add(method.MethodName, new AssetMethodData(0, method.MethodName, TextRange.InvalidRange,
+                        myLocalUsages.Add(method.MethodName, new AssetMethodData(LocalReference.Null, method.MethodName, TextRange.InvalidRange,
                             method.Mode, method.Type, script.ScriptReference));
                     }
                 }

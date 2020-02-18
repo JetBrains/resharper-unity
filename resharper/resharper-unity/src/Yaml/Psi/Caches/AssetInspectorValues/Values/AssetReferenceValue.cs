@@ -1,7 +1,9 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -50,10 +52,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
             return Reference.GetHashCode();
         }
 
-        public string GetPresentation(ISolution solution, IPersistentIndexManager persistentIndexManager,
-            AssetDocumentHierarchyElementContainer assetDocument, IType type)
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement)
         {
-            return "Cube (test)";
+            solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
+
+            var processor = solution.GetComponent<AssetHierarchyProcessor>();
+            var consumer = new UnityScenePathGameObjectConsumer(true);
+            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
+            var element = hierarchyContainer.GetHierarchyElement(Reference);
+            if (element == null)
+                return "...";
+            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer);
+            if (consumer.NameParts.Count == 0)
+                return "...";
+            var result =  string.Join("/", consumer.NameParts);
+
+            if (element is ComponentHierarchy componentHierarchy)
+                result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
+
+            return result;
         }
     }
 }
