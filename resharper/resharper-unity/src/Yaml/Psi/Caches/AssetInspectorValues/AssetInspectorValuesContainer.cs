@@ -5,13 +5,16 @@ using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues.Deserializers;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues.Values;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 
@@ -20,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
     [SolutionComponent]
     public class AssetInspectorValuesContainer : IUnityAssetDataElementContainer
     {
+        private readonly DeferredCachesLocks myDeferredCachesLocks;
         private readonly ILogger myLogger;
         private readonly List<IAssetInspectorValueDeserializer> myDeserializers;
         
@@ -32,10 +36,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
             new OneToCompactCountingSet<MonoBehaviourField, IAssetValue>();
         
         private readonly CountingSet<MonoBehaviourFieldWithValue> myValuesWhichAreUniqueInWholeFile = new CountingSet<MonoBehaviourFieldWithValue>();
+        private readonly Dictionary<IPsiSourceFile, OneToListMap<string, InspectorVariableUsage>> myPsiSourceFileToInspectorValues = new Dictionary<IPsiSourceFile, OneToListMap<string, InspectorVariableUsage>>();
+
         
-        
-        public AssetInspectorValuesContainer(IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
+        public AssetInspectorValuesContainer(DeferredCachesLocks deferredCachesLocks, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
         {
+            myDeferredCachesLocks = deferredCachesLocks;
             myLogger = logger;
             myDeserializers = assetInspectorValueDeserializer.OrderByDescending(t => t.Order).ToList();
         }
@@ -107,6 +113,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
                 myChangesInFiles.Remove(mbField, sourceFile);
                 RemoveChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name, sourceFile), variableUsage);
             }
+
+            myPsiSourceFileToInspectorValues.Remove(sourceFile);
         }
 
         private void RemoveChangesPerFile(MonoBehaviourField monoBehaviourField, InspectorVariableUsage variableUsage)
@@ -144,6 +152,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
         public void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetInspectorValuesDataElement;
+            var inspectorUsages = new OneToListMap<string, InspectorVariableUsage>();
+
             foreach (var variableUsage in element.VariableUsages)
             {
                 var guid = (variableUsage.ScriptReference as ExternalReference)?.ExternalAssetGuid;
@@ -155,7 +165,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
                 AddUniqueValue(mbField, variableUsage);
                 myChangesInFiles.Add(mbField, sourceFile);
                 AddChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name, sourceFile), variableUsage);
+                
+                inspectorUsages.Add(variableUsage.Name, variableUsage);
             }
+            
+            myPsiSourceFileToInspectorValues.Add(sourceFile, inspectorUsages);
         }
 
         private void AddChangesPerFile(MonoBehaviourField monoBehaviourField, InspectorVariableUsage variableUsage)
@@ -346,6 +360,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
                     return ((myField != null ? myField.GetHashCode() : 0) * 397) ^ (myValue != null ? myValue.GetHashCode() : 0);
                 }
             }
+        }
+
+        public IEnumerable<InspectorVariableUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, IField element)
+        {
+            var containingType = element?.GetContainingType();
+
+            if (containingType == null)
+                return Enumerable.Empty<InspectorVariableUsage>();
+            
+            return myDeferredCachesLocks.ExecuteUnderReadLock(lf =>
+            {
+                var result = new List<InspectorVariableUsage>();
+                if (!myPsiSourceFileToInspectorValues.TryGetValue(sourceFile, out var usages))
+                    return EmptyList<InspectorVariableUsage>.Enumerable;
+
+                foreach (var name in AssetUtils.GetAllNamesFor(element))
+                {
+                    var usagesData = usages.GetValuesSafe(name);
+                    foreach (var usage in usagesData)
+                    {
+                        var guid = (usage.ScriptReference as ExternalReference)?.ExternalAssetGuid;
+                        if (guid == null)
+                            continue;
+
+                        var typeElement = UnityObjectPsiUtil.GetTypeElementFromScriptAssetGuid(element.GetSolution(), guid);
+                        if (typeElement == null || !typeElement.IsDescendantOf(containingType))
+                            continue;
+
+                        result.Add(usage);
+                    }
+                }
+
+                return result;
+            });
         }
     }
 }

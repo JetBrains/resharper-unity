@@ -6,6 +6,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
 {
     public class UnityScenePathGameObjectConsumer : IGameObjectConsumer
     {
+        private readonly bool myOnlyName;
+
+        public UnityScenePathGameObjectConsumer(bool onlyName = false)
+        {
+            myOnlyName = onlyName;
+        }
+    
         public List<string> NameParts => myParts.ToList();
         public List<int> RootIndexes => myIndex.ToList();
         
@@ -16,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy
         {
             myParts.Push(gameObject.Name);
             myIndex.Push(gameObject.Transform.RootIndex);
-            return true;
+            return !myOnlyName;
         }
     }
 }

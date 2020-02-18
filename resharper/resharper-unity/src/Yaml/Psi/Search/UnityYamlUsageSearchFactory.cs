@@ -4,6 +4,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
@@ -49,8 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var methodsContainer = solution.GetComponent<AssetMethodsElementContainer>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
             var assetUsagesContainer = solution.GetComponent<AssetUsagesElementContainer>();
+            var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             
-            return new UnityAssetReferenceSearcher(hierarchyContainer, assetUsagesContainer, methodsContainer, metaFileGuidCache, elements, findCandidates);
+            return new UnityAssetReferenceSearcher(hierarchyContainer, assetUsagesContainer, methodsContainer, assetValuesContainer, metaFileGuidCache, elements, findCandidates);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An
@@ -87,7 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 return false;
             return unityApi.IsUnityType(element as IClass)
                    || unityApi.IsPotentialEventHandler(element as IMethod)
-                   || unityApi.IsPotentialEventHandler(element as IProperty);
+                   || unityApi.IsPotentialEventHandler(element as IProperty)
+                   || unityApi.IsSerialisedField(element as IField);
         }
     }
 }

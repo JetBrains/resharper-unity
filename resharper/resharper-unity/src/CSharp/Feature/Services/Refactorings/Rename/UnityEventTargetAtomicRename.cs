@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             {
                 myElementsToRename = GetAssetOccurrence(de, subProgress)
                     .Select(t => new TextOccurrenceRenameMarker(
-                        new FindResultText(t.SourceFile, new DocumentRange(t.SourceFile.Document, t.TextRange)),
+                        new FindResultText(t.SourceFile, new DocumentRange(t.SourceFile.Document, t.AssetMethodData.TextRange)),
                         NewName)).ToList();
             }
             
@@ -45,15 +45,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime);
         }
 
-        private List<UnityAssetFindResult> GetAssetOccurrence(IDeclaredElement de, IProgressIndicator subProgress)
+        private List<UnityMethodsFindResult> GetAssetOccurrence(IDeclaredElement de, IProgressIndicator subProgress)
         {
             var finder = mySolution.GetPsiServices().AsyncFinder;
             var module = mySolution.GetComponent<UnityExternalFilesModuleFactory>().PsiModule;
             var searchDomain = SearchDomainFactory.Instance.CreateSearchDomain(module);
-            var results = new List<UnityAssetFindResult>();
+            var results = new List<UnityMethodsFindResult>();
             finder.Find(new []{de}, searchDomain, new FindResultConsumer(result =>
             {
-                if (result is UnityAssetFindResult fr)
+                if (result is UnityMethodsFindResult fr)
                 {
                     results.Add(fr);
                 }

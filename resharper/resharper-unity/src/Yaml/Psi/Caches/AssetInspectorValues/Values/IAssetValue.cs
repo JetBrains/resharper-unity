@@ -7,6 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
 {
     public interface IAssetValue
     {
-        string GetPresentation(ISolution solution, IPersistentIndexManager persistentIndexManager, AssetDocumentHierarchyElementContainer assetDocument, IType type);
+        string GetPresentation(ISolution solution, IDeclaredElement declaredElement);
     }
 }

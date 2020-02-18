@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
@@ -17,15 +18,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
         private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
         private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
+        private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly IDeclaredElementsSet myElements;
 
         public UnityAssetReferenceSearcher(AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,  AssetUsagesElementContainer assetUsagesElementContainer,
-            AssetMethodsElementContainer assetMethodsElementContainer, MetaFileGuidCache metaFileGuidCache, IDeclaredElementsSet elements, bool findCandidates)
+            AssetMethodsElementContainer assetMethodsElementContainer, AssetInspectorValuesContainer assetInspectorValuesContainer, MetaFileGuidCache metaFileGuidCache, IDeclaredElementsSet elements, bool findCandidates)
         {
             myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
             myAssetUsagesElementContainer = assetUsagesElementContainer;
             myAssetMethodsElementContainer = assetMethodsElementContainer;
+            myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myMetaFileGuidCache = metaFileGuidCache;
             myElements = elements;
         }
@@ -43,22 +46,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                             myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetMethodData
                                 .TargetScriptReference);
                         if (hierarchyElement != null)
-                            consumer.Accept(new UnityMethodsFindResult(sourceFile, element, assetMethodData.TextRange,
-                                hierarchyElement));
+                            consumer.Accept(new UnityMethodsFindResult(sourceFile, element, assetMethodData, hierarchyElement));
                     }
                 }
 
-                if (element is IClass)
+                if (element is ITypeElement typeElement)
                 {
-                    var elementSourceFile = element.GetSourceFiles().FirstOrDefault();
-                    if (elementSourceFile == null)
-                        return false;
-
-                    var guid = myMetaFileGuidCache.GetAssetGuid(elementSourceFile);
-                    if (guid == null)
-                        return false;
-
-                    var usages = myAssetUsagesElementContainer.GetAssetUsagesFor(sourceFile, guid);
+                    var usages = myAssetUsagesElementContainer.GetAssetUsagesFor(sourceFile, typeElement);
 
                     foreach (var assetUsage in usages)
                     {
@@ -66,13 +60,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         if (hierarchyElement == null)
                             continue;
 
-                        consumer.Accept(new UnityScriptsFindResults(sourceFile, element, TextRange.InvalidRange, hierarchyElement));
+                        consumer.Accept(new UnityScriptsFindResults(sourceFile, element, assetUsage, hierarchyElement));
                     }
                 }
 
                 if (element is IField field)
                 {
-                    // TODO
+                    var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
+                    foreach (var assetUsage in usages)
+                    {
+                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetUsage.Location);
+                        if (hierarchyElement == null)
+                            continue;
+
+                        consumer.Accept(new UnityInspectorFindResults(sourceFile, element, assetUsage, hierarchyElement));
+                    }
                 }
             }
 

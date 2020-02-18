@@ -1,9 +1,11 @@
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Serialization;
 using static JetBrains.Serialization.UnsafeWriter;
 
@@ -48,10 +50,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetInspectorValues
             return SimpleValue.GetHashCode();
         }
 
-        public string GetPresentation(ISolution solution, IPersistentIndexManager persistentIndexManager,
-            AssetDocumentHierarchyElementContainer assetDocument, IType type)
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement)
         {
-            return SimpleValue;
+            solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
+            var type = declaredElement.Type();
+            if (type == null)
+                return "...";
+            if (type.IsBool())
+            {
+                if (SimpleValue.Equals("0"))
+                    return "\"false\"";
+                return "\"true\"";
+            }
+
+            if (type.IsEnumType())
+            {
+                if (!int.TryParse(SimpleValue, out var result))
+                    return  "...";
+                var @enum = type.GetTypeElement() as IEnum;
+                var enumMemberType = @enum?.EnumMembers.FirstOrDefault()?.ConstantValue.Type;
+                if (enumMemberType == null)
+                    return "...";
+                var enumMembers = CSharpEnumUtil.CalculateEnumMembers(new ConstantValue(result, enumMemberType), @enum);
+
+                return string.Join(" | ", enumMembers.Select(t => t.ShortName));
+            }
+
+            return $"\"{SimpleValue ?? "..." }\"";
         }
 
         public string SimpleValue { get; }

@@ -1,9 +1,16 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Metadata.Reader.API;
+using JetBrains.Metadata.Reader.Impl;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.Util.Literals;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
@@ -31,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private static readonly StringSearcher ourBracketSearcher = new StringSearcher("}", true);
         private static readonly StringSearcher ourEndLineSearcher = new StringSearcher("\n", true);
         private static readonly StringSearcher ourEndLine2Searcher = new StringSearcher("\r", true);
+        private static readonly StringSearcher ourColumnSearcher = new StringSearcher(":", true);
 
         public static bool IsMonoBehaviourDocument(IBuffer buffer) =>
             ourMonoBehaviourCheck.Find(buffer, 0, Math.Min(buffer.Length, 20)) >= 0;
@@ -171,6 +179,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         {
             // Prefab instance has a map of modifications, that stores delta of instance and prefab
             return yamlDocument.GetUnityObjectPropertyValue(UnityYamlConstants.ModificationProperty) as IBlockMappingNode;
+        }
+
+        private static readonly IClrTypeName ourFormerlySerializedAsAttribute = new ClrTypeName("UnityEngine.Serialization.FormerlySerializedAsAttribute");
+        public static IEnumerable<string> GetAllNamesFor(IField field)
+        {
+            yield return field.ShortName;
+
+            foreach (var attribute in field.GetAttributeInstances(ourFormerlySerializedAsAttribute, false))
+            {
+                var result = attribute.PositionParameters().FirstOrDefault()?.ConstantValue.Value as string;
+                if (result == null)
+                    continue;
+                yield return result;
+            }
+        }
+
+        public static string GetRawComponentName(IBuffer assetDocumentBuffer)
+        {
+            var pos = ourColumnSearcher.Find(assetDocumentBuffer);
+            if (pos < 0)
+                return null;
+
+            pos--;
+            var sb = new StringBuilder();
+            while (pos >= 0)
+            {
+                if (pos == '\r')
+                    break;
+                if (pos == '\n')
+                    break;
+
+                sb.Append(assetDocumentBuffer[pos]);
+                pos--;
+            }
+
+            return sb.ToString();
+        }
+        
+        public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, ComponentHierarchy componentHierarchy)
+        {
+            if (componentHierarchy is ScriptComponentHierarchy scriptComponent)
+            {
+                var result = metaFileGuidCache.GetAssetNames(scriptComponent.ScriptReference.ExternalAssetGuid).FirstOrDefault();
+                if (result != null)
+                    return result;
+            }
+
+            return componentHierarchy.Name;
         }
     }
 }
