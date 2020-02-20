@@ -15,7 +15,7 @@ import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
+import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.rdUnityModel
@@ -32,7 +32,7 @@ import com.sun.jna.Native
 import com.sun.jna.win32.StdCallLibrary
 import java.awt.Frame
 
-class UnityHost(project: Project) : LifetimedProjectComponent(project) {
+class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
     val model = project.solution.rdUnityModel
     private val logger = Logger.getInstance(UnityHost::class.java)
     val sessionInitialized = model.sessionInitialized

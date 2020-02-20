@@ -1,6 +1,6 @@
 package com.jetbrains.rider
 
-import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.jetbrains.rdclient.util.idea.LifetimedProjectService
 import com.jetbrains.rider.model.RdExistingSolution
@@ -17,6 +17,7 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectService(project
     // anywhere)
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
     val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
+    @Suppress("unused")
     val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
 
     // Note that this will only return a sensible value once the solution + backend have finished loading
@@ -27,7 +28,7 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectService(project
         }
 
     companion object {
-        fun getInstance(project: Project): UnityProjectDiscoverer = ServiceManager.getService(project, UnityProjectDiscoverer::class.java)
+        fun getInstance(project: Project): UnityProjectDiscoverer = project.service()
 
         private fun hasUnityFileStructure(project: Project): Boolean {
             // Make sure we have an Assets folder and a ProjectSettings folder. We can't rely on Library, as that won't

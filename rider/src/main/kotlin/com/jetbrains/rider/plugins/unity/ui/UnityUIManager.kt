@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.LifetimedProjectService
@@ -15,13 +14,13 @@ class UnityUIManager(project: Project) : LifetimedProjectService(project), Persi
 
     companion object {
         const val hasMinimizedUiAttribute = "hasMinimizedUI"
-        fun getInstance(project: Project): UnityUIManager =  ServiceManager.getService(project, UnityUIManager::class.java)
+        fun getInstance(project: Project): UnityUIManager =  project.service()
     }
 
     val hasMinimizedUi: Property<Boolean?> = Property(null) //null means undefined, default value
 
     init {
-        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(project.lifetime) {
+        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(componentLifetime) {
             // Only hide UI for generated projects, so that sidecar projects can still access nuget
             if (UnityProjectDiscoverer.getInstance(project).isUnityGeneratedProject && hasMinimizedUi.value == null) hasMinimizedUi.set(true)
         }
