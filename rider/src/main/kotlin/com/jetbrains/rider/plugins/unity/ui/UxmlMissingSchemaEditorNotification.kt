@@ -63,14 +63,14 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
             // We'll support 2018.2+ but recommend 2019.1+
             val unityVersion: String? = UnityInstallationFinder.getInstance(project).getApplicationVersion()
             if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2018.2.0") == -1) {
-                if (PropertiesComponent.getInstance(project).getBoolean(DO_NOT_SHOW_VERSION_KEY, false)) {
+                if (PropertiesComponent.getInstance().getBoolean(DO_NOT_SHOW_VERSION_KEY, false)) {
                     return null
                 }
                 val panel = EditorNotificationPanel()
                 panel.text("UXML support requires Unity 2019.1 or above")
                 panel.createActionLabel("Don't show again") {
                     // Project level — do not show again for this project
-                    PropertiesComponent.getInstance(project).setValue(DO_NOT_SHOW_VERSION_KEY, true)
+                    PropertiesComponent.getInstance().setValue(DO_NOT_SHOW_VERSION_KEY, true)
                     EditorNotifications.getInstance(project).updateAllNotifications()
                 }
                 return panel
