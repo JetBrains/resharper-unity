@@ -33,7 +33,7 @@ import com.sun.jna.win32.StdCallLibrary
 import java.awt.Frame
 
 class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
-    val model = project.solution.rdUnityModel
+    private val model = project.solution.rdUnityModel
     private val logger = Logger.getInstance(UnityHost::class.java)
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
@@ -123,4 +123,4 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
     private val user32 = if (SystemInfo.isWindows) Native.load("user32", User32::class.java) else null
 }
 
-fun Project.isConnectedToEditor() = UnityHost.getInstance(this).sessionInitialized.valueOrDefault(false)
+fun Project.isConnectedToEditor() = this.solution.rdUnityModel.sessionInitialized.valueOrDefault(false)

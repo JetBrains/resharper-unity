@@ -18,7 +18,6 @@ import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
@@ -69,7 +68,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 if (!remoteConfiguration.updatePidAndPort()) {
                     logger.trace("Do not found Unity, starting new Unity Editor")
 
-                    val model = UnityHost.getInstance(project).model
+                    val model = project.solution.rdUnityModel
                     if (UnityInstallationFinder.getInstance(project).getApplicationPath() == null ||
                         model.hasUnityReference.hasTrueValue && !project.isUnityProject()) {
                         throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")

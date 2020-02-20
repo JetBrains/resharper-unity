@@ -3,16 +3,16 @@ package com.jetbrains.rider.settings
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rd.util.reactive.Signal
+import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 
-class RiderUnitySettings(project: Project) : LifetimedProjectComponent(project) {
+class RiderUnitySettings(project: Project) : ProtocolSubscribedProjectComponent(project) {
     companion object {
         private val properties = PropertiesComponent.getInstance()
-        private val propertiesPrefix = "RiderUnitySettings."
+        private const val propertiesPrefix = "RiderUnitySettings."
     }
 
-    class BooleanViewProperty(val name: String, val defaultValue: Boolean = false) {
+    class BooleanViewProperty(val name: String, private val defaultValue: Boolean = false) {
         val update = Signal<Boolean>()
 
         fun advise(lifetime: Lifetime, handler: (Boolean) -> Unit) = update.advise(lifetime, handler)

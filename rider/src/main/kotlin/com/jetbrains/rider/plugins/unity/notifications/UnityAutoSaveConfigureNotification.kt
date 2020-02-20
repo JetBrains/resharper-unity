@@ -18,17 +18,16 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rd.util.reactive.*
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
+import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.document.getFirstEditor
 import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.model.ScriptCompilationDuringPlay
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
+import com.jetbrains.rider.projectView.solution
 
-class UnityAutoSaveConfigureNotification(project: Project, private val unityProjectDiscoverer: UnityProjectDiscoverer,
-                                         private val unityHost: UnityHost, solutionLifecycleHost: SolutionLifecycleHost) : LifetimedProjectComponent(project) {
-
+class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
     private val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance()
     private var lifetimeDefinition = componentLifetime.createNested()
     private val KEY = Key.create<Any>("PromoteAutoSave")
@@ -38,21 +37,22 @@ class UnityAutoSaveConfigureNotification(project: Project, private val unityProj
     }
 
     init {
-        solutionLifecycleHost.isBackendLoaded.whenTrue(componentLifetime) {
-            if (!propertiesComponent.getBoolean(settingName) && unityProjectDiscoverer.isUnityProject) {
+        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(componentLifetime) {
+            if (!propertiesComponent.getBoolean(settingName) && UnityProjectDiscoverer.getInstance(project).isUnityProject) {
 
                 val eventMulticaster = EditorFactory.getInstance().eventMulticaster
                 val generalSettings = GeneralSettings.getInstance()
 
                 val documentListener: DocumentListener = object : DocumentListener {
                     override fun documentChanged(event: DocumentEvent) {
-                        if (unityHost.model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
+                        val model = project.solution.rdUnityModel
+                        if (model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
                             return
 
-                        if (!unityHost.model.scriptCompilationDuringPlay.hasValue)
+                        if (!model.scriptCompilationDuringPlay.hasValue)
                             return
 
-                        if (unityHost.model.scriptCompilationDuringPlay.valueOrThrow != ScriptCompilationDuringPlay.RecompileAndContinuePlaying)
+                        if (model.scriptCompilationDuringPlay.valueOrThrow != ScriptCompilationDuringPlay.RecompileAndContinuePlaying)
                             return
 
                         if (!lifetimeDefinition.isAlive)
@@ -83,14 +83,14 @@ class UnityAutoSaveConfigureNotification(project: Project, private val unityProj
         textEditor.putUserData(KEY, Any())
 
         // Do not show notification, when user leaves play mode and start typing in that moment
-        if (unityHost.model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
+        if (project.solution.rdUnityModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
             return
 
         val panel = EditorNotificationPanel(LightColors.RED)
         panel.setText("You are modifying a script while Unity Editor is being in Play Mode. This can lead to a loss of the state in your running game.")
 
         panel.createActionLabel("Configure Unity Editor") {
-            unityHost.model.showPreferences.fire()
+            project.solution.rdUnityModel.showPreferences.fire()
             lifetimeDefinition.terminate()
         }
 

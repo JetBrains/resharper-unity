@@ -8,12 +8,12 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 class PlayInUnityAction : ToggleAction() {
 
     override fun isSelected(e: AnActionEvent):Boolean {
-        val unityHost = e.getHost() ?: return false
-        return unityHost.model.play.valueOrDefault(false)
+        val model = e.getModel() ?: return false
+        return model.play.valueOrDefault(false)
     }
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
-        e.getHost()?.model?.play?.set(value)
+        e.getModel()?.play?.set(value)
     }
 
     override fun update(e: AnActionEvent) {
@@ -25,17 +25,17 @@ class PlayInUnityAction : ToggleAction() {
 class PauseInUnityAction : ToggleAction() {
 
     override fun isSelected(e: AnActionEvent):Boolean {
-        val unityHost = e.getHost() ?: return false
-        return unityHost.model.pause.valueOrDefault(false)
+        val model = e.getModel() ?: return false
+        return model.pause.valueOrDefault(false)
     }
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
-        e.getHost()?.model?.pause?.set(value)
+        e.getModel()?.pause?.set(value)
     }
 
     override fun update(e: AnActionEvent) {
         e.handleUpdateForUnityConnection {
-            it.model.play.valueOrDefault(false)
+            it.play.valueOrDefault(false)
         }
         super.update(e)
     }
@@ -44,12 +44,12 @@ class PauseInUnityAction : ToggleAction() {
 class StepInUnityAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
-        e.getHost()?.model?.step?.fire(Unit)
+        e.getModel()?.step?.fire(Unit)
     }
 
     override fun update(e: AnActionEvent) {
         e.handleUpdateForUnityConnection {
-            it.model.play.valueOrDefault(false)
+            it.play.valueOrDefault(false)
         }
     }
 }

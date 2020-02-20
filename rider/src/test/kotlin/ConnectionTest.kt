@@ -6,9 +6,10 @@ import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
@@ -111,7 +112,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
             executeScript("WriteToLog.cs")
 
             executeWithGold(testGoldFile) {
-                val model = UnityHost.getInstance(project).model
+                val model = project.solution.rdUnityModel
                 val definition = LifetimeDefinition()
                 model.onUnityLogEvent.adviseNotNull(definition.lifetime) {entry ->
                     val type = RdLogEventType.values()[entry.type]
