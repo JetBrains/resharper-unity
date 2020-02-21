@@ -25,7 +25,7 @@ class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotifica
 
     override fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
         if (project.isUnityProject() && isUssFile(file) && PluginManagerCore.isDisabled(PluginId.getId(CSS_PLUGIN_ID))) {
-            if (PropertiesComponent.getInstance().getBoolean(DO_NOT_SHOW_AGAIN_KEY, false)) {
+            if (PropertiesComponent.getInstance(project).getBoolean(DO_NOT_SHOW_AGAIN_KEY, false)) {
                 return null
             }
 
@@ -41,7 +41,7 @@ class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotifica
             }
             panel.createActionLabel("Don't show again") {
                 // Project level - do not show again for this project
-                PropertiesComponent.getInstance().setValue(DO_NOT_SHOW_AGAIN_KEY, true)
+                PropertiesComponent.getInstance(project).setValue(DO_NOT_SHOW_AGAIN_KEY, true)
                 EditorNotifications.getInstance(project).updateAllNotifications()
             }
             return panel
