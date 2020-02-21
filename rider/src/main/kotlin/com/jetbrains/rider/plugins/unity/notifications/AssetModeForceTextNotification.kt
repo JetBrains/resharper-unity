@@ -28,7 +28,7 @@ class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjec
 
     private fun showNotificationIfNeeded() {
 
-        if (PropertiesComponent.getInstance().getBoolean(settingName)) return
+        if (PropertiesComponent.getInstance(project).getBoolean(settingName)) return
 
         val message = """Some advanced integration features are unavailable when the Unity asset serialisation mode is not set to “Force Text”. Enable text serialisation to allow Rider to learn more about the structure of your scenes and assets.
             <ul style="margin-left:10px">
@@ -47,7 +47,7 @@ class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjec
             }
 
             if (hyperlinkEvent.description == "doNotShow"){
-                PropertiesComponent.getInstance().setValue(settingName, true)
+                PropertiesComponent.getInstance(project).setValue(settingName, true)
                 notification.hideBalloon()
             }
         }
