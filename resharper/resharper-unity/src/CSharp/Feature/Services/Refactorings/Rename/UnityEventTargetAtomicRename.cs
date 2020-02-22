@@ -67,6 +67,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public override void Rename(IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
                                     IRefactoringDriver driver)
         {
+            if (myElementsToRename == null)
+                return;
+            
             foreach (var textOccurrence in myElementsToRename)
             {
                 if (!textOccurrence.Included || !textOccurrence.Marker.IsValid) continue;

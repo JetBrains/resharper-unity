@@ -1,17 +1,18 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
     [PolymorphicMarshaller]
-    public class ComponentHierarchy : IHierarchyElement
+    public class ComponentHierarchy : IComponentHierarchy
     {
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new ComponentHierarchy(reader.ReadString(), reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<IHierarchyReference>(),
+        private static object Read(UnsafeReader reader) => new ComponentHierarchy(reader.ReadString(), reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<LocalReference>(),
             reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
 
         [UsedImplicitly]
@@ -27,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             writer.Write(value.IsStripped);
         }
         
-        public ComponentHierarchy(string name, LocalReference localReference, IHierarchyReference gameObject,
+        public ComponentHierarchy(string name, LocalReference localReference, LocalReference gameObject,
             LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped)
         {
             Name = name;
@@ -38,12 +39,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             IsStripped = isStripped;
         }
 
-        public string Name { get; }
-        public LocalReference Location { get; }
-        public IHierarchyReference GameObjectReference { get; }
-        public bool IsStripped { get; }
-        public LocalReference PrefabInstance { get; }
-        public ExternalReference CorrespondingSourceObject { get; }
+        public virtual string Name { get; }
+        public virtual LocalReference Location { get; }
+        public virtual LocalReference GameObjectReference { get; }
+        public virtual bool IsStripped { get; }
+        public virtual LocalReference PrefabInstance { get; }
+        public virtual ExternalReference CorrespondingSourceObject { get; }
+        public virtual IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        {
+            return new ImportedComponentHierarchy(prefabInstanceHierarchy, this);
+        }
 
         protected bool Equals(ComponentHierarchy other)
         {
@@ -62,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             unchecked
             {
-                var hashCode = (Location != null ? Location.GetHashCode() : 0);
+                var hashCode = Location.GetHashCode();
                 hashCode = (hashCode * 397) ^ (GameObjectReference != null ? GameObjectReference.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ IsStripped.GetHashCode();
                 return hashCode;

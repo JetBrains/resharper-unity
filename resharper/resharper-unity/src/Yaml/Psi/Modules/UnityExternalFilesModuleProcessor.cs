@@ -217,14 +217,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             var builder = new PsiModuleChangeBuilder();
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
 
-#if RESHARPER
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
-#endif
             FlushChanges(builder);
 
-#if RIDER
-            AddExternalProjectFiles(externalFiles.AssetFiles);
-#endif
+
 
             // We should only start watching for file system changes after adding the files we know about
             foreach (var directory in externalFiles.Directories)
@@ -254,7 +250,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 return;
 
             var paths = files.Select(e => e.GetAbsolutePath()).ToList();
-            AddExternalProjectFiles(paths);
+            //AddExternalProjectFiles(paths);
         }
 #endif
 
@@ -357,7 +353,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     var builder = new PsiModuleChangeBuilder();
                     var projectFilesToAdd = new List<FileSystemPath>();
                     ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
-                    AddExternalProjectFiles(projectFilesToAdd);
+                    //AddExternalProjectFiles(projectFilesToAdd);
                     FlushChanges(builder);
                 });
         }
@@ -373,13 +369,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             switch (delta.ChangeType)
             {
                 case FileSystemChangeType.ADDED:
-                    if (delta.NewPath.IsInterestingAsset())
+                    if (delta.NewPath.IsInterestingAsset() || delta.NewPath.IsInterestingMeta())
                     {
-                        if (!IsKnownBinaryAsset(delta.NewPath) && !IsAssetExcludedByName(delta.NewPath))
-                            projectFilesToAdd.Add(delta.NewPath);
-                    }
-                    else if (delta.NewPath.IsInterestingMeta())
                         AddExternalPsiSourceFile(builder, delta.NewPath);
+                    }
                     break;
 
                 case FileSystemChangeType.DELETED:

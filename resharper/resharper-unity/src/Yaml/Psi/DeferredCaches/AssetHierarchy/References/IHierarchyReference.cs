@@ -2,6 +2,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public interface IHierarchyReference
     {
-        string LocalDocumentAnchor { get; }
+        ulong LocalDocumentAnchor { get; }
     }
 }

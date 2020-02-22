@@ -36,6 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             this.LocalDocumentAnchor = localDocumentAnchor;
         }
 
+        public ulong? AnchorLong => ulong.TryParse(LocalDocumentAnchor, out var result) ? result : (ulong?)null;
+
         public override string ToString()
         {
             return $"FileID: {LocalDocumentAnchor}, {ExternalAssetGuid ?? "<no guid>"}";
@@ -50,6 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             return new AssetDocumentReference(reader.ReadString(), reader.ReadString());
         }
+        
         
         public static void WriteTo(UnsafeWriter writer, AssetDocumentReference value)
         {
@@ -85,10 +88,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public IHierarchyReference ToReference(IPsiSourceFile currentSourceFile)
         {
-            if (ExternalAssetGuid == null)
-                return new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, LocalDocumentAnchor);
+            if (!ulong.TryParse(LocalDocumentAnchor, out var result))
+                return null;
             
-            return new ExternalReference(ExternalAssetGuid, LocalDocumentAnchor);
+            if (ExternalAssetGuid == null)
+                return new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, result);
+            
+            return new ExternalReference(ExternalAssetGuid, result);
         }
     }
     // ReSharper restore InconsistentNaming

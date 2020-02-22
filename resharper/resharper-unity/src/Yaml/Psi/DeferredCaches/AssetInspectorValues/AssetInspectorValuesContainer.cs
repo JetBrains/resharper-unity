@@ -48,11 +48,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {
                 var anchor = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
-                if (anchor == null)
+                if (!anchor.HasValue)
                     return null;
                 
                 var dictionary = new Dictionary<string, IAssetValue>();
                 var entries = assetDocument.Document.FindRootBlockMapEntries()?.Entries;
+                if (entries == null)
+                    return null;
+                
                 foreach (var entry in entries)
                 {
                     var key = entry.Key.GetPlainScalarText();
@@ -78,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
                 if (dictionary.TryGetValue(UnityYamlConstants.ScriptProperty, out var scriptValue) && scriptValue is AssetReferenceValue referenceValue)
                 {
-                    var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor);
+                    var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor.Value);
                     var script = referenceValue.Reference;
                     var list = new List<InspectorVariableUsage>();
                     foreach (var (key, value) in dictionary)

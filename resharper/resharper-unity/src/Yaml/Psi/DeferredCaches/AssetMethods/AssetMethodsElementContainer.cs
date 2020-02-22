@@ -50,7 +50,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             if (ourMethodNameSearcher.Find(buffer) < 0)
                 return null;
 
-            var anchor = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
+            var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
+            if (!anchorRaw.HasValue)
+                return null;
+
+            var anchor = anchorRaw.Value;
             
             var entries = assetDocument.Document.FindRootBlockMapEntries()?.Entries;
             if (entries == null)
@@ -128,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     myExternalCount.Remove(method.MethodName);
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
-                    if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(localReference) is ScriptComponentHierarchy script)
+                    if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(localReference, false) is IScriptComponentHierarchy script)
                     {
                         myLocalUsages.Remove(method.MethodName, new AssetMethodData(LocalReference.Null, method.MethodName, TextRange.InvalidRange,
                             method.Mode, method.Type, script.ScriptReference));
@@ -153,7 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     myExternalCount.Add(method.MethodName);
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
-                    if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(localReference) is ScriptComponentHierarchy script)
+                    if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(localReference, false) is IScriptComponentHierarchy script)
                     {
                         myLocalUsages.Add(method.MethodName, new AssetMethodData(LocalReference.Null, method.MethodName, TextRange.InvalidRange,
                             method.Mode, method.Type, script.ScriptReference));
@@ -216,7 +220,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
         private string GetScriptGuid(AssetMethodData assetMethodData)
         {
             var reference = assetMethodData.TargetScriptReference;
-            var scriptComponent = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference) as ScriptComponentHierarchy;
+            var scriptComponent = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference, false) as IScriptComponentHierarchy;
             var guid = scriptComponent?.ScriptReference.ExternalAssetGuid; 
             
             return guid;

@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new LocalReference(reader.ReadInt32(), reader.ReadString());
+        private static object Read(UnsafeReader reader) => new LocalReference(reader.ReadInt32(), reader.ReadULong());
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as LocalReference);
@@ -22,20 +22,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             writer.Write(value.LocalDocumentAnchor);
         }
         
-        public LocalReference(int ownerId, string localDocumentAnchor)
+        public LocalReference(int ownerId, ulong localDocumentAnchor)
         {
             OwnerId = ownerId;
             LocalDocumentAnchor = localDocumentAnchor;
         }
 
-        public string LocalDocumentAnchor { get; }
+        public ulong LocalDocumentAnchor { get; }
         
         public int OwnerId { get;}
-        public static LocalReference Null { get; set; } = new LocalReference(0, String.Empty);
+        public static LocalReference Null { get; set; } = new LocalReference(0, 0);
 
         protected bool Equals(LocalReference other)
         {
-            if (LocalDocumentAnchor.Equals("0") && other.LocalDocumentAnchor.Equals("0"))
+            if (LocalDocumentAnchor == 0 && other.LocalDocumentAnchor == 0)
                 return true;
             return LocalDocumentAnchor == other.LocalDocumentAnchor && OwnerId == other.OwnerId;
         }
@@ -52,8 +52,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             unchecked
             {
-                if (LocalDocumentAnchor.Equals("0"))
+                if (LocalDocumentAnchor == 0)
                     return 0;
+                
                 return (LocalDocumentAnchor.GetHashCode() * 397) ^ OwnerId.GetHashCode();
             }
         }

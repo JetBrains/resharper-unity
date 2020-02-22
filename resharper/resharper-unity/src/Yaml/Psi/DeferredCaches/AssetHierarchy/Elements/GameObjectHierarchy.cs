@@ -1,12 +1,13 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
     [PolymorphicMarshaller]
-    public class GameObjectHierarchy : IHierarchyElement
+    public class GameObjectHierarchy : IGameObjectHierarchy
     {
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
@@ -26,13 +27,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             writer.Write(value.IsStripped);
         }
         
-        public LocalReference Location { get; }
-        public IHierarchyReference GameObjectReference => null;
-        public bool IsStripped { get; }
-        public LocalReference PrefabInstance { get; }
-        public ExternalReference CorrespondingSourceObject { get; }
-        public TransformHierarchy Transform { get; internal set; }
-        public string Name { get; }
+        public virtual LocalReference Location { get; }
+        public LocalReference GameObjectReference => null;
+        public virtual bool IsStripped { get; }
+        public virtual LocalReference PrefabInstance { get; }
+        public virtual ExternalReference CorrespondingSourceObject { get; }
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        {
+            return new ImportedGameObjectHierarchy(prefabInstanceHierarchy, this);
+        }
+
+        public ITransformHierarchy GetTransformHierarchy(AssetDocumentHierarchyElement owner)
+        {
+            return owner.GetTransformHierarchy(this);
+        }
+
+        public virtual string Name { get; }
 
         public GameObjectHierarchy(LocalReference location, string name, LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped)
         {

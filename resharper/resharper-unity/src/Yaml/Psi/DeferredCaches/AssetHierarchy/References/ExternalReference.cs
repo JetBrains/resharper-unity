@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private static object Read(UnsafeReader reader)
         {
-            return new ExternalReference(reader.ReadString(), reader.ReadString());
+            return new ExternalReference(reader.ReadString(), reader.ReadULong());
         }
 
         [UsedImplicitly]
@@ -24,14 +24,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             writer.Write(value.LocalDocumentAnchor);
         }
 
-        public ExternalReference(string externalAssetGuid, string localDocumentAnchor)
+        public ExternalReference(string externalAssetGuid, ulong localDocumentAnchor)
         {
             ExternalAssetGuid = externalAssetGuid;
             LocalDocumentAnchor = localDocumentAnchor;
         }
 
         public string ExternalAssetGuid { get; }
-        public string LocalDocumentAnchor { get; }
+        public ulong LocalDocumentAnchor { get; }
 
 
         protected bool Equals(ExternalReference other)

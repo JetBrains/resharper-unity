@@ -6,13 +6,13 @@ using JetBrains.Serialization;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
     [PolymorphicMarshaller]
-    public class ScriptComponentHierarchy : ComponentHierarchy
+    public class ScriptComponentHierarchy : ComponentHierarchy, IScriptComponentHierarchy
     {
         [UsedImplicitly] 
         public new static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader) => new ScriptComponentHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(),
-            reader.ReadPolymorphic<IHierarchyReference>(), reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
+            reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
 
         [UsedImplicitly]
         public new static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as ScriptComponentHierarchy);
@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
         
         public ScriptComponentHierarchy(LocalReference reference, ExternalReference scriptReference,
-            IHierarchyReference gameObject, LocalReference prefabInstance, ExternalReference correspondingSourceObject
+            LocalReference gameObject, LocalReference prefabInstance, ExternalReference correspondingSourceObject
             , bool isStripped) 
             : base("MonoBehaviour", reference, gameObject, prefabInstance, correspondingSourceObject, isStripped)
         {
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         [NotNull]
-        public ExternalReference ScriptReference { get; }
+        public virtual ExternalReference ScriptReference { get; }
 
         protected bool Equals(ScriptComponentHierarchy other)
         {
@@ -55,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ (ScriptReference != null ? ScriptReference.GetHashCode() : 0);
+                return (base.GetHashCode() * 397) ^ (ScriptReference.GetHashCode());
             }
         }
     }

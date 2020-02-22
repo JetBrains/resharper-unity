@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return SimpleValue.GetHashCode();
         }
 
-        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement)
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
             var type = declaredElement.Type();

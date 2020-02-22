@@ -19,10 +19,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private readonly Stack<string> myParts = new Stack<string>();
         private readonly Stack<int> myIndex = new Stack<int>();
         
-        public bool AddGameObject(GameObjectHierarchy gameObject)
+        public bool AddGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject)
         {
             myParts.Push(gameObject.Name);
-            myIndex.Push(gameObject.Transform.RootIndex);
+            myIndex.Push(gameObject.GetTransformHierarchy(owner).RootIndex);
             return !myOnlyName;
         }
     }

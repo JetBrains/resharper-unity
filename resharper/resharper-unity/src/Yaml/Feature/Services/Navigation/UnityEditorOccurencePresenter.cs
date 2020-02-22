@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             if (occurrence is UnityInspectorValuesOccurrence inspectorValuesOccurrence)
             {
                 var solution = occurrence.GetSolution();
-                return $"{inspectorValuesOccurrence.InspectorVariableUsage.Value.GetPresentation(solution, occurrence.DeclaredElementPointer.FindDeclaredElement())} in {name}";
+                return $"{inspectorValuesOccurrence.InspectorVariableUsage.Value.GetPresentation(solution, occurrence.DeclaredElementPointer.FindDeclaredElement(), true)} in {name}";
             }
             return name;
         }
@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public static string GetAttachedGameObjectName(AssetHierarchyProcessor processor, UnityAssetOccurrence occurrence) {
         
             var consumer = new UnityScenePathGameObjectConsumer();
-            processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.AttachedElement, consumer);
+            processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.AttachedElement, consumer, true, true);
         
             var parts = consumer.NameParts;
             if (parts.Count == 0)
