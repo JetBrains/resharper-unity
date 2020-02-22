@@ -64,6 +64,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             {
                 InvalidateImportCache(deps, visited);
             }
+            
+            InvalidateImportCache(guid, visited);
         }
 
         private void InvalidateImportCache(string deps, HashSet<string> visited)
