@@ -23,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     {
         private readonly DeferredCachesLocks myLocks;
         private readonly IPersistentIndexManager myManager;
+        private readonly PrefabImportCache myPrefabImportCache;
         private readonly UnityExternalFilesPsiModule myPsiModule;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
@@ -30,11 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private readonly ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement> myAssetDocumentsHierarchy =
             new ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement>();
 
-        public AssetDocumentHierarchyElementContainer(DeferredCachesLocks locks, IPersistentIndexManager manager
+        public AssetDocumentHierarchyElementContainer(DeferredCachesLocks locks, IPersistentIndexManager manager, PrefabImportCache prefabImportCache
             , UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
         {
             myLocks = locks;
             myManager = manager;
+            myPrefabImportCache = prefabImportCache;
             myPsiModule = psiModuleProvider.PsiModule;
             myMetaFileGuidCache = metaFileGuidCache;
             myAssetInspectorValueDeserializers = assetInspectorValueDeserializers;
@@ -42,16 +44,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public IUnityAssetDataElement Build(Lifetime lifetime, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
-            var anchor = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
+            var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
+            if (!anchorRaw.HasValue)
+                return null;
+
+            var anchor = anchorRaw.Value;
+            
             var isStripped = AssetUtils.IsStripped(assetDocument.Buffer);
-            var gameObject = AssetUtils.GetGameObject(assetDocument.Buffer)?.ToReference(currentSourceFile);
+            var gameObject = AssetUtils.GetGameObject(assetDocument.Buffer)?.ToReference(currentSourceFile) as LocalReference;
             var prefabInstance = AssetUtils.GetPrefabInstance(assetDocument.Buffer)?.ToReference(currentSourceFile) as LocalReference;
             var correspondingSourceObject = AssetUtils.GetCorrespondingSourceObject(assetDocument.Buffer)?.ToReference(currentSourceFile) as ExternalReference;
             var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor);
 
-            if (anchor == null)
-                return null;
-            
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {
                 var entries = assetDocument.Document.FindRootBlockMapEntries()?.Entries;
@@ -69,11 +73,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     }
                 }
 
-                if (documentReference != null && anchor != null)
+                if (documentReference != null)
                 {
+                    var scriptAnchorRaw = documentReference.AnchorLong;
+                    if (!scriptAnchorRaw.HasValue)
+                        return null;
+                    
                     return new AssetDocumentHierarchyElement(
                             new ScriptComponentHierarchy(location,
-                            new ExternalReference(documentReference.ExternalAssetGuid, documentReference.LocalDocumentAnchor),
+                            new ExternalReference(documentReference.ExternalAssetGuid, scriptAnchorRaw.Value),
                             gameObject,
                             prefabInstance,
                             correspondingSourceObject,
@@ -82,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 }
             } else if (AssetUtils.IsTransform(assetDocument.Buffer))
             {
-                var father = AssetUtils.GetTransformFather(assetDocument.Buffer)?.ToReference(currentSourceFile);
+                var father = AssetUtils.GetTransformFather(assetDocument.Buffer)?.ToReference(currentSourceFile) as LocalReference;
                 var rootIndex = AssetUtils.GetRootIndex(assetDocument.Buffer);
                 return new AssetDocumentHierarchyElement(
                     new TransformHierarchy(location, gameObject, father, rootIndex, prefabInstance, correspondingSourceObject, isStripped));
@@ -97,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             } else if (AssetUtils.IsPrefabModification(assetDocument.Buffer))
             {
                 var modification = AssetUtils.GetPrefabModification(assetDocument.Document);
-                var parentTransform = modification?.GetValue("m_TransformParent")?.AsFileID()?.ToReference(currentSourceFile);
+                var parentTransform = modification?.GetValue("m_TransformParent")?.AsFileID()?.ToReference(currentSourceFile) as LocalReference;
                 var modifications = modification?.GetValue("m_Modifications") as IBlockSequenceNode;
                 var result = new List<PrefabModification>();
                 if (modifications != null)
@@ -132,7 +140,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                         result.Add(new PrefabModification(target, name, value));
                     }
                 }
-                return new AssetDocumentHierarchyElement(new PrefabInstanceHierarchy(location, parentTransform, result));
+
+                var sourcePrefabGuid = AssetUtils.GetSourcePrefab(assetDocument.Buffer).ToReference(currentSourceFile) as ExternalReference;
+                if (sourcePrefabGuid == null)
+                    return null;
+                return new AssetDocumentHierarchyElement(new PrefabInstanceHierarchy(location, sourcePrefabGuid.ExternalAssetGuid, parentTransform, result));
             }
             else // regular component
             {
@@ -154,30 +166,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetDocumentHierarchyElement;
+            element.AssetDocumentHierarchyElementContainer = this;
             myAssetDocumentsHierarchy[sourceFile] = element;
             element.RestoreHierarchy();
         }
 
-        public IHierarchyElement GetHierarchyElement(IHierarchyReference reference)
+        public IHierarchyElement GetHierarchyElement(IHierarchyReference reference, bool prefabImport)
         {
             return myLocks.ExecuteUnderReadLock(lf =>
             {
-                var sourceFile = GetSourceFile(reference);
-                if (sourceFile == null)
+                var sourceFile = GetSourceFile(reference, out var guid);
+                if (sourceFile == null || guid == null)
                     return null;
-
-                return myAssetDocumentsHierarchy[sourceFile].GetHierarchyElement(reference.LocalDocumentAnchor);
+                
+                return myAssetDocumentsHierarchy[sourceFile].GetHierarchyElement(guid, reference.LocalDocumentAnchor, prefabImport ? myPrefabImportCache : null);
             });
         }
 
-        private IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference)
+        public AssetDocumentHierarchyElement GetAssetHierarchyFor(IPsiSourceFile sourceFile)
+        {
+            myLocks.AssertReadAccessAllowed();
+            if (myAssetDocumentsHierarchy.TryGetValue(sourceFile, out var result))
+                return result;
+            
+            return null;
+        }
+        
+        public AssetDocumentHierarchyElement GetAssetHierarchyFor(LocalReference location, out string guid)
+        {
+            myLocks.AssertReadAccessAllowed();
+            var sourceFile = GetSourceFile(location, out guid);
+            if (sourceFile == null || guid == null)
+                return null;
+
+            return myAssetDocumentsHierarchy.GetValueSafe(sourceFile);
+        }
+        
+        private IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference, out string guid)
         {
             switch (hierarchyReference)
             {
                 case LocalReference localReference:
-                    return myManager[localReference.OwnerId];
+                    var sourceFile = myManager[localReference.OwnerId];
+                    guid = sourceFile != null ? myMetaFileGuidCache.GetAssetGuid(sourceFile) : null;
+                    return sourceFile;
                 case ExternalReference externalReference:
-                    var paths = myMetaFileGuidCache.GetAssetFilePathsFromGuid(externalReference.ExternalAssetGuid);
+                    guid = externalReference.ExternalAssetGuid;
+                    var paths = myMetaFileGuidCache.GetAssetFilePathsFromGuid(guid);
                     if (paths.Count != 1)
                         return null;
 
@@ -187,6 +222,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     throw new InvalidOperationException();
             }
         }
+        
         
         public string Id => nameof(AssetDocumentHierarchyElementContainer);
         public int Order => int.MaxValue;

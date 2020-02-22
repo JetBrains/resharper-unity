@@ -52,22 +52,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return Reference.GetHashCode();
         }
 
-        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement)
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
 
             var processor = solution.GetComponent<AssetHierarchyProcessor>();
             var consumer = new UnityScenePathGameObjectConsumer(true);
             var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
-            var element = hierarchyContainer.GetHierarchyElement(Reference);
+            var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
             if (element == null)
                 return "...";
-            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer);
+            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport, prefabImport);
             if (consumer.NameParts.Count == 0)
                 return "...";
             var result =  string.Join("/", consumer.NameParts);
 
-            if (element is ComponentHierarchy componentHierarchy)
+            if (element is IComponentHierarchy componentHierarchy)
                 result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
 
             return result;

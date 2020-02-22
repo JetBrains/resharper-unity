@@ -34,9 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             // TODO: deps for other assets
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {                
-                var anchor = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
-                if (anchor == null)
+                var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
+                if (!anchorRaw.HasValue)
                     return null;
+
+                var anchor = anchorRaw.Value;
                 
                 var entries = assetDocument.Document.FindRootBlockMapEntries()?.Entries;
                 if (entries == null)

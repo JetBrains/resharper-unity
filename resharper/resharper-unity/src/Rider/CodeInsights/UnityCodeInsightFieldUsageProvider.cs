@@ -147,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray(); 
                 Assertion.Assert(values.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
                 var value = values[0];
-                displayName = value.GetPresentation(solution, field);
+                displayName = value.GetPresentation(solution, field, false);
             } else if (initValueCount > 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 2)  
             {
                     
@@ -156,10 +156,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
 
                 var anotherValueWithLocation = values.First(t => !t.Equals(initValueUnityPresentation));
-                displayName = anotherValueWithLocation.GetPresentation(solution, field);
+                displayName = anotherValueWithLocation.GetPresentation(solution, field, false);
             }
             
-            if (displayName == null)
+            if (displayName == null || displayName.Equals("..."))
             {
                 var count = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) - 
                             myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
@@ -185,7 +185,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 return b ? new AssetSimpleValue("1") : new AssetSimpleValue("0");
 
             if (presentationType == UnityPresentationType.FileId && value == null)
-                return new AssetReferenceValue(new LocalReference(0, "0"));
+                return new AssetReferenceValue(new LocalReference(0, 0));
 
             if ((presentationType == UnityPresentationType.OtherSimple  || presentationType == UnityPresentationType.Bool) && value == null)
                 return new AssetSimpleValue("0");

@@ -42,9 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     var usages = myAssetMethodsElementContainer.GetAssetUsagesFor(sourceFile, element);
                     foreach (var assetMethodData in usages)
                     {
-                        var hierarchyElement =
-                            myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetMethodData
-                                .TargetScriptReference);
+                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetMethodData.Location, false);
                         if (hierarchyElement != null)
                             consumer.Accept(new UnityMethodsFindResult(sourceFile, element, assetMethodData, hierarchyElement));
                     }
@@ -56,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
                     foreach (var assetUsage in usages)
                     {
-                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetUsage.Location);
+                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetUsage.Location, false);
                         if (hierarchyElement == null)
                             continue;
 
@@ -69,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
                     foreach (var assetUsage in usages)
                     {
-                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetUsage.Location);
+                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetUsage.Location, false);
                         if (hierarchyElement == null)
                             continue;
 

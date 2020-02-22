@@ -1,10 +1,13 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 {
@@ -41,9 +44,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             }
         }
 
-
         public void ExecuteUnderReadLock(Action<Lifetime> action)
         {
+            myShellLocks.AssertReadAccessAllowed();
             myReaderWriterLockSlim.EnterReadLock();
             try
             {
@@ -58,6 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         
         public T ExecuteUnderReadLock<T>(Func<Lifetime, T> action)
         {
+            myShellLocks.AssertReadAccessAllowed();
             myReaderWriterLockSlim.EnterReadLock();
             try
             {
@@ -68,6 +72,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             {
                 myReaderWriterLockSlim.ExitReadLock();
             }
+        }
+        
+        [Conditional("JET_MODE_ASSERT")]
+        public void AssertReadAccessAllowed()
+        {
+            Logger.Assert(myReaderWriterLockSlim.IsReadLockHeld, "This operation requires a deferred caches read lock");
+        }
+        
+        [Conditional("JET_MODE_ASSERT")]
+        public void AssertWriteAccessAllowed()
+        {
+            Logger.Assert(myShellLocks.IsWriteAccessAllowed() || myReaderWriterLockSlim.IsWriteLockHeld, "This operation requires a deferred caches write lock or standard write lock");
         }
     }
 }

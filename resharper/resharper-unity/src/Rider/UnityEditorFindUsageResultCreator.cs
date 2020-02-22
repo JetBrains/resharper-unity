@@ -63,8 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (sourceFile == null)
                 return;
             
-            var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor,
-                myPersistentIndexManager, element, sourceFile, false);
+            var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, element, sourceFile, false);
             
             
             var lifetimeDef = myLifetime.CreateNested();
@@ -93,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         private static FindUsageResultElement CreateRequest(FileSystemPath solutionDirPath, AssetHierarchyProcessor assetDocumentHierarchy, 
-            IPersistentIndexManager persistentIndexManager, IHierarchyElement hierarchyElement, IPsiSourceFile sourceFile, bool needExpand = false)
+            IHierarchyElement hierarchyElement, IPsiSourceFile sourceFile, bool needExpand = false)
         {
             if (!GetPathFromAssetFolder(solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
                 return null;
@@ -101,27 +100,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
             
             var consumer = new UnityScenePathGameObjectConsumer();
-            assetDocumentHierarchy.ProcessSceneHierarchyFromComponentToRoot(hierarchyElement, consumer);
+            assetDocumentHierarchy.ProcessSceneHierarchyFromComponentToRoot(hierarchyElement, consumer, true, true);
             
             return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray());
         }
 
-        // public static void CreateRequestAndShow([NotNull]  UnityEditorProtocol editor, UnityHost host, Lifetime lifetime, [NotNull] FileSystemPath solutionDirPath, [NotNull]UnitySceneDataLocalCache unitySceneDataLocalCache, 
-        //     [NotNull] string anchor, IPsiSourceFile sourceFile, bool needExpand = false)
-        // {
-        //     FindUsageResultElement request;
-        //     using (ReadLockCookie.Create())
-        //     {
-        //         request = CreateRequest(solutionDirPath, unitySceneDataLocalCache, anchor, sourceFile, needExpand);
-        //     }
-        //     
-        //     host.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result.Advise(lifetime,
-        //         result =>
-        //         {
-        //             editor.UnityModel.Value.ShowGameObjectOnScene.Fire(request.ConvertToUnityModel());
-        //         }));
-        // }
-        
         private static bool GetPathFromAssetFolder([NotNull] FileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file, 
             out string filePath, out string fileName, out string extension)
         {
@@ -170,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (sourceFile == null)
                     return myFindExecution;
                 
-                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, myPersistentIndexManager, data.AttachedElement, sourceFile);
+                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.AttachedElement, sourceFile);
                 if (request != null)
                     Result.Add(request);
                 

@@ -6,13 +6,13 @@ using JetBrains.Serialization;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
     [PolymorphicMarshaller]
-    public class TransformHierarchy : ComponentHierarchy
+    public class TransformHierarchy : ComponentHierarchy, ITransformHierarchy
     {
         [UsedImplicitly] 
         public new static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new TransformHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<IHierarchyReference>(),
-            reader.ReadPolymorphic<IHierarchyReference>(), reader.ReadInt32(), reader.ReadPolymorphic<LocalReference>(),
+        private static object Read(UnsafeReader reader) => new TransformHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<LocalReference>(),
+            reader.ReadPolymorphic<LocalReference>(), reader.ReadInt32(), reader.ReadPolymorphic<LocalReference>(),
             reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
 
         [UsedImplicitly]
@@ -28,10 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             writer.WritePolymorphic(value.CorrespondingSourceObject);
             writer.Write(value.IsStripped);
         }
-        public IHierarchyReference Parent { get; }
-        public int RootIndex { get; }
+        public virtual LocalReference Parent { get; }
+        public virtual int RootIndex { get; }
 
-        public TransformHierarchy(LocalReference location, IHierarchyReference gameObjectReference, IHierarchyReference parent,
+        public TransformHierarchy(LocalReference location, LocalReference gameObjectReference, LocalReference parent,
             int rootIndex, LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped) 
             : base("Transform", location, gameObjectReference, prefabInstance, correspondingSourceObject, isStripped)
         {
@@ -41,7 +41,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         protected bool Equals(TransformHierarchy other)
         {
-            return Equals(Location, other.Location) && Equals(GameObjectReference, other.GameObjectReference) && Equals(Parent, other.Parent) && IsStripped == other.IsStripped;
+            return base.Equals(other) && Equals(Parent, other.Parent) && RootIndex == other.RootIndex;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TransformHierarchy) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Parent != null ? Parent.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ RootIndex;
+                return hashCode;
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                return $"{InspectorVariableUsage.Name} = {InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement())}";
+                return $"{InspectorVariableUsage.Name} = {InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true)}";
             }
         }
     }

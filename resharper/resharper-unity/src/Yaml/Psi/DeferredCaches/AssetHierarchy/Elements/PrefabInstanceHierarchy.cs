@@ -7,7 +7,7 @@ using JetBrains.Serialization;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
     [PolymorphicMarshaller]
-    public class PrefabInstanceHierarchy : IHierarchyElement
+    public class PrefabInstanceHierarchy : IPrefabInstanceHierarchy
     {
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
@@ -15,12 +15,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private static object Read(UnsafeReader reader)
         {
             var location = reader.ReadPolymorphic<LocalReference>();
-            var parentTransform = reader.ReadPolymorphic<IHierarchyReference>();
+            var sourcePrefabGuid = reader.ReadString();
+            var parentTransform = reader.ReadPolymorphic<LocalReference>();
             var count = reader.ReadInt32();
             var modifications = new List<PrefabModification>();
             for (int i = 0; i < count; i++)
                 modifications.Add(reader.ReadPolymorphic<PrefabModification>());
-            return new PrefabInstanceHierarchy(location, parentTransform, modifications);
+            return new PrefabInstanceHierarchy(location, sourcePrefabGuid, parentTransform, modifications);
         }
 
         [UsedImplicitly]
@@ -29,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private static void Write(UnsafeWriter writer, PrefabInstanceHierarchy value)
         {
             writer.WritePolymorphic(value.Location);
+            writer.Write(value.SourcePrefabGuid);
             writer.WritePolymorphic(value.ParentTransform);
             writer.Write(value.PrefabModifications.Count);
             foreach (var prefabModification in value.PrefabModifications)
@@ -37,24 +39,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             }
         }
 
-        public PrefabInstanceHierarchy(LocalReference location, IHierarchyReference parentTransform, List<PrefabModification> prefabModifications)
+        public PrefabInstanceHierarchy(LocalReference location, string sourcePrefabGuid, LocalReference parentTransform, List<PrefabModification> prefabModifications)
         {
             Location = location;
             ParentTransform = parentTransform;
             PrefabModifications = prefabModifications;
+            SourcePrefabGuid = sourcePrefabGuid;
         }
 
         public IReadOnlyList<PrefabModification> PrefabModifications { get; }
-        public IHierarchyReference ParentTransform { get; }
+        public LocalReference ParentTransform { get; }
         public LocalReference Location { get; }
-        public IHierarchyReference GameObjectReference => null;
+        public LocalReference GameObjectReference => null;
         public bool IsStripped => false;
         public LocalReference PrefabInstance => null;
         public ExternalReference CorrespondingSourceObject => null;
-
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy) => null;
+        public string SourcePrefabGuid { get; }
+        
         protected bool Equals(PrefabInstanceHierarchy other)
         {
-            return Location.Equals(other.Location);
+            return Location.Equals(other.Location) && SourcePrefabGuid == other.SourcePrefabGuid;
         }
 
         public override bool Equals(object obj)
@@ -67,7 +72,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public override int GetHashCode()
         {
-            return Location.GetHashCode();
+            unchecked
+            {
+                return (Location.GetHashCode() * 397) ^ SourcePrefabGuid.GetHashCode();
+            }
         }
     }
 }

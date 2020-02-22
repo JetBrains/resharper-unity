@@ -36,6 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private static readonly StringSearcher ourPrefabInstanceSearcher2017 = new StringSearcher("m_PrefabInternal:", true);
         private static readonly StringSearcher ourCorrespondingObjectSearcher = new StringSearcher("m_CorrespondingSourceObject:", true);
         private static readonly StringSearcher ourCorrespondingObjectSearcher2017 = new StringSearcher("m_PrefabParentObject:", true);
+        private static readonly StringSearcher ourSourcePrefabSearcher = new StringSearcher("m_SourcePrefab:", true);
         private static readonly StringSearcher ourFatherSearcher = new StringSearcher("m_Father:", true);
         private static readonly StringSearcher ourBracketSearcher = new StringSearcher("}", true);
         private static readonly StringSearcher ourEndLineSearcher = new StringSearcher("\n", true);
@@ -61,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public static bool IsStripped(IBuffer buffer) =>
             ourStrippedSearcher.Find(buffer, 0, Math.Min(buffer.Length, 150)) >= 0;
         
-        public static string GetAnchorFromBuffer(IBuffer buffer)
+        public static ulong? GetAnchorFromBuffer(IBuffer buffer)
         {
             var index = 0;
             while (true)
@@ -82,7 +83,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 sb.Append(buffer[index++]);
             }
 
-            return sb.ToString();
+            var resultStr = sb.ToString();
+            if (ulong.TryParse(resultStr, out var result))
+                return result;
+
+            return null;
         }
 
 
@@ -93,6 +98,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         [CanBeNull]
         public static AssetDocumentReference GetTransformFather(IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetDocumentBuffer, ourFatherSearcher);
+        
+        [CanBeNull]
+        public static AssetDocumentReference GetSourcePrefab(IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetDocumentBuffer, ourSourcePrefabSearcher);
 
         public static int GetRootIndex(IBuffer assetDocumentBuffer)
         {
@@ -219,9 +228,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return sb.ToString();
         }
         
-        public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, ComponentHierarchy componentHierarchy)
+        public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
         {
-            if (componentHierarchy is ScriptComponentHierarchy scriptComponent)
+            if (componentHierarchy is IScriptComponentHierarchy scriptComponent)
             {
                 var result = metaFileGuidCache.GetAssetNames(scriptComponent.ScriptReference.ExternalAssetGuid).FirstOrDefault();
                 if (result != null)
@@ -229,34 +238,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             }
 
             return componentHierarchy.Name;
-        }
-        
-                [NotNull]
-        public static string GetComponentName([NotNull] IYamlDocument componentDocument)
-        {
-            var name = componentDocument.GetUnityObjectPropertyValue(UnityYamlConstants.NameProperty).AsString();
-            if (!string.IsNullOrWhiteSpace(name))
-                return name;
-
-            var scriptDocument = componentDocument.GetUnityObjectDocumentFromFileIDProperty(UnityYamlConstants.ScriptProperty);
-            name = scriptDocument.GetUnityObjectPropertyValue(UnityYamlConstants.NameProperty).AsString();
-            if (!string.IsNullOrWhiteSpace(name))
-                return name;
-
-            var fileID = componentDocument.GetUnityObjectPropertyValue(UnityYamlConstants.ScriptProperty).AsFileID();
-            if (fileID != null && fileID.IsExternal && fileID.IsMonoScript)
-            {
-                var typeElement = GetTypeElementFromScriptAssetGuid(componentDocument.GetSolution(), fileID.ExternalAssetGuid);
-                if (typeElement != null)
-                {
-                    // TODO: Format like in Unity, by splitting the camel humps
-                    return typeElement.ShortName + " (Script)";
-                }
-            }
-
-            return scriptDocument.GetUnityObjectTypeFromRootNode()
-                   ?? componentDocument.GetUnityObjectTypeFromRootNode()
-                   ?? "Component";
         }
 
         [CanBeNull]

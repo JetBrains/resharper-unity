@@ -10,16 +10,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     [PolymorphicMarshaller]
     public class AssetDocumentHierarchyElement : IUnityAssetDataElement
     {
-        private readonly Dictionary<string, IHierarchyElement> myLocalAnchorToHierarchyElement =
-            new Dictionary<string, IHierarchyElement>();
+        private readonly Dictionary<ulong, IHierarchyElement> myLocalAnchorToHierarchyElement =
+            new Dictionary<ulong, IHierarchyElement>();
 
-        private readonly List<TransformHierarchy> myTransformHierarchies = new List<TransformHierarchy>();
+        private readonly Dictionary<ulong, ITransformHierarchy> myGameObjectLocationToTransform = new Dictionary<ulong, ITransformHierarchy>(); 
+        
+        private readonly List<ITransformHierarchy> myTransformHierarchies = new List<ITransformHierarchy>();
+
+        private readonly List<IPrefabInstanceHierarchy>
+            myPrefabInstanceHierarchies = new List<IPrefabInstanceHierarchy>();
 
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetDocumentHierarchyElement);
 
+        public AssetDocumentHierarchyElementContainer AssetDocumentHierarchyElementContainer { get; internal set; }
 
         private static object Read(UnsafeReader reader)
         {
@@ -30,8 +36,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             {
                 var hierarchyElement = reader.ReadPolymorphic<IHierarchyElement>();
                 result.myLocalAnchorToHierarchyElement[hierarchyElement.Location.LocalDocumentAnchor] = hierarchyElement;
-                if (hierarchyElement is TransformHierarchy transformHierarchy)
+                if (hierarchyElement is ITransformHierarchy transformHierarchy)
                     result.myTransformHierarchies.Add(transformHierarchy);
+
+                if (hierarchyElement is IPrefabInstanceHierarchy prefabInstanceHierarchy)
+                    result.myPrefabInstanceHierarchies.Add(prefabInstanceHierarchy);
             }
             return result;
         }
@@ -47,8 +56,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public AssetDocumentHierarchyElement(IHierarchyElement hierarchyElements)
         {
             myLocalAnchorToHierarchyElement[hierarchyElements.Location.LocalDocumentAnchor] = hierarchyElements;
-            if (hierarchyElements is TransformHierarchy transformHierarchy)
+            if (hierarchyElements is ITransformHierarchy transformHierarchy)
                 myTransformHierarchies.Add(transformHierarchy);
+
+            if (hierarchyElements is IPrefabInstanceHierarchy prefabInstanceHierarchy)
+                myPrefabInstanceHierarchies.Add(prefabInstanceHierarchy);
         }
         
         public AssetDocumentHierarchyElement()
@@ -69,32 +81,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             {
                 myTransformHierarchies.Add(element);
             }
+            
+            foreach (var element in hierarchyElement.myPrefabInstanceHierarchies)
+            {
+                myPrefabInstanceHierarchies.Add(element);
+            }
         }
 
-        public IHierarchyElement GetHierarchyElement(string anchor)
+        public IHierarchyElement GetHierarchyElement(string ownerGuid, ulong anchor, PrefabImportCache prefabImportCache)
         {
             if (myLocalAnchorToHierarchyElement.TryGetValue(anchor, out var result))
             {
-                return result;
+                if (!result.IsStripped) // stipped means, that element is not real and we should import prefab
+                    return result;
             }
 
+            if (prefabImportCache != null)
+            {
+                var elements = prefabImportCache.GetImportedElementsFor(ownerGuid, this);
+                if (elements.TryGetValue(anchor, out result))
+                    return result;
+            }
+            
             return null;
         }
+
+        public List<IPrefabInstanceHierarchy> PrefabInstanceHierarchies => myPrefabInstanceHierarchies;
 
         public void RestoreHierarchy()
         {
             foreach (var transformHierarchy in myTransformHierarchies)
             {
-                if (transformHierarchy.GameObjectReference is LocalReference localReference)
+                var reference = transformHierarchy.GameObjectReference;
+                if (reference != null)
                 {
-                    var go = GetHierarchyElement(localReference.LocalDocumentAnchor) as GameObjectHierarchy;
-                    if (go == null)
-                        continue;
-                    go.Transform = transformHierarchy;
+                    myGameObjectLocationToTransform[reference.LocalDocumentAnchor] = transformHierarchy;
                 }
             }
             
             myTransformHierarchies.Clear();
         }
+
+        internal ITransformHierarchy GetTransformHierarchy(GameObjectHierarchy gameObjectHierarchy)
+        {
+            return myGameObjectLocationToTransform.GetValueSafe(gameObjectHierarchy.Location.LocalDocumentAnchor);
+        }
+
+        public IEnumerable<IHierarchyElement> Elements => myLocalAnchorToHierarchyElement.Values;
     }
 }
