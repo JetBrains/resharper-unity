@@ -286,6 +286,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         
         public string Id => nameof(AssetInspectorValuesContainer);
         public int Order => 0;
+        public void Invalidate()
+        {
+            myUniqueValues.Clear();
+            myUniqueValuesCount.Clear();
+            myChangesInFiles.Clear();
+            myValuesWhichAreUniqueInWholeFile.Clear();
+            myPsiSourceFileToInspectorValues.Clear();
+            myValueCountPerPropertyAndFile.Clear();
+        }
 
         private class MonoBehaviourField
         {

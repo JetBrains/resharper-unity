@@ -23,27 +23,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     [SolutionComponent]
     public class UnityAssetCache : DeferredCacheBase<UnityAssetData>
     {
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
+        private readonly PrefabImportCache myPrefabImportCache;
         private readonly ILogger myLogger;
-        private readonly Dictionary<string, IUnityAssetDataElementContainer> myUnityAssetDataElementContainers = new Dictionary<string, IUnityAssetDataElementContainer>();
-        private List<IUnityAssetDataElementContainer> myOrderedContainers;
-        private List<IUnityAssetDataElementContainer> myOrderedIncreasingContainers;
+        private readonly List<IUnityAssetDataElementContainer> myOrderedContainers;
+        private readonly List<IUnityAssetDataElementContainer> myOrderedIncreasingContainers;
         private readonly ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)> myDocumentNumber = new ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)>();
         private readonly ConcurrentDictionary<IPsiSourceFile, long> myCurrentTimeStamp = new ConcurrentDictionary<IPsiSourceFile, long>();
-        public UnityAssetCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers, ILogger logger)
+        public UnityAssetCache(Lifetime lifetime, AssetIndexingSupport assetIndexingSupport, PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers, ILogger logger)
             : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate))
         {
+            myAssetIndexingSupport = assetIndexingSupport;
+            myPrefabImportCache = prefabImportCache;
             myLogger = logger;
             myOrderedContainers = unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList();
             myOrderedIncreasingContainers = myOrderedContainers.OrderBy(t => t.Order).ToList();
-            foreach (var unityAssetDataElementContainer in myOrderedContainers)
-            {
-                myUnityAssetDataElementContainers[unityAssetDataElementContainer.Id] = unityAssetDataElementContainer;
-            }
-
         }
 
         public override bool IsApplicable(IPsiSourceFile sourceFile)
         {
+            if (!myAssetIndexingSupport.IsEnabled.Value)
+                return false;
+            
             return sourceFile.PsiModule is UnityExternalFilesPsiModule;
         }
 
@@ -69,6 +70,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private const int BUFFER_SIZE = 4096;
         public override object Build(Lifetime lifetime, IPsiSourceFile psiSourceFile)
         {
+            if (!myAssetIndexingSupport.IsEnabled.Value)
+                return null;
+                
             if (!psiSourceFile.GetLocation().SniffYamlHeader())
                 return new UnityAssetData();
             
@@ -186,6 +190,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public override void InvalidateData()
         {
+            foreach (var increasingContainer in myOrderedIncreasingContainers)
+            {
+                increasingContainer.Invalidate();
+            }
+
+            myPrefabImportCache.Invalidate();
         }
     }
 }

@@ -13,5 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         string Id { get; }
         
         int Order { get; }
+        void Invalidate();
     }
 }

@@ -262,5 +262,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         public string Id => nameof(AssetMethodsElementContainer);
         public int Order => 0;
+        public void Invalidate()
+        {
+            myShortNameToScriptTarget.Clear();
+            myExternalCount.Clear();
+            myPsiSourceFileToMethods.Clear();
+            myLocalUsages.Clear();
+        }
     }
 }

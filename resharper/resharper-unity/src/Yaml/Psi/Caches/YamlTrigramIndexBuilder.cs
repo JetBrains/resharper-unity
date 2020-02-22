@@ -11,7 +11,7 @@ using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
-    [Language(typeof(UnityYamlDummyLanguage))]
+    [Language(typeof(UnityYamlLanguage))]
     public class YamlTrigramIndexBuilder : ITrigramIndexBuilder
     {
         public const string YAML_REFERENCE_IDENTIFIER = "#YAML_REFERENCE#";

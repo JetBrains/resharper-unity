@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         {
             if (!myAssetSerializationMode.IsForceText || 
                 !Settings.GetValue((UnitySettings key) => key.EnableInspectorPropertiesEditor) ||
-                !Settings.GetValue((UnitySettings key) => key.IsYamlParsingEnabled))
+                !Settings.GetValue((UnitySettings key) => key.IsAssetIndexingEnabled))
             {
                 AddHighlighting(consumer, element, text, tooltip, kind);
                 return;

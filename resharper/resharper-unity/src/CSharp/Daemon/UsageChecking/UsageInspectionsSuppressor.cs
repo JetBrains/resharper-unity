@@ -218,7 +218,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             var solution = method.GetSolution();
             var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
-            var yamlParsingEnabled = solution.GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled;
+            var yamlParsingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled;
 
             // TODO: These two are usually used together. Consider combining in some way
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
