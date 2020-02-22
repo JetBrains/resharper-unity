@@ -50,12 +50,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public void Add(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
         {
-            myDeferredCachesLocks.AssertWriteAccessAllowed();
-            var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
-            foreach (var prefabInstanceHierarchy in assetDocumentHierarchyElement.PrefabInstanceHierarchies)
-            {
-                myDependencies.Add(prefabInstanceHierarchy.SourcePrefabGuid, guid);
-            }
         }
 
         public void Remove(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
@@ -69,11 +63,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             foreach (var deps in myDependencies.GetValuesSafe(guid))
             {
                 InvalidateImportCache(deps, visited);
-            }
-            
-            foreach (var prefabInstanceHierarchy in assetDocumentHierarchyElement.PrefabInstanceHierarchies)
-            {
-                myDependencies.Remove(prefabInstanceHierarchy.SourcePrefabGuid, guid);
             }
         }
 
@@ -102,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     if (myCache.TryGetFromCache(ownerGuid, out result))
                         return result;
 
-                    result = DoImport(assetDocumentHierarchyElement, new HashSet<string>());
+                    result = DoImport(ownerGuid, assetDocumentHierarchyElement, new HashSet<string>());
                     StoreResult(ownerGuid, result);
                 }
             }
@@ -111,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
 
         [NotNull]
-        private IDictionary<ulong, IHierarchyElement> DoImport(AssetDocumentHierarchyElement assetDocumentHierarchyElement, HashSet<string> visitedGuid)
+        private IDictionary<ulong, IHierarchyElement> DoImport(string ownerGuid, AssetDocumentHierarchyElement assetDocumentHierarchyElement, HashSet<string> visitedGuid)
         {
             var result = new Dictionary<ulong, IHierarchyElement>();
             foreach (var prefabInstanceHierarchy in assetDocumentHierarchyElement.PrefabInstanceHierarchies)
@@ -131,8 +120,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 {
                     if (!visitedGuid.Contains(guid)) // invalid assets with cycles in prefab imports
                     {
+                        myDependencies.Add(guid, ownerGuid);
                         visitedGuid.Add(guid);
-                        importedElements = DoImport(prefabHierarchy, visitedGuid);
+                        importedElements = DoImport(guid, prefabHierarchy, visitedGuid);
                         StoreResult(guid, importedElements);
                     }
                     else
