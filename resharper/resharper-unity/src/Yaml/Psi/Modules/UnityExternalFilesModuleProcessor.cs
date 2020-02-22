@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -15,12 +13,9 @@ using JetBrains.ProjectModel.Impl;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Common;
 using JetBrains.ProjectModel.Tasks;
-using JetBrains.ProjectModel.Transaction;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.GeneratedCode.Settings;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
@@ -216,11 +211,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             var builder = new PsiModuleChangeBuilder();
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
-
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
             FlushChanges(builder);
-
-
 
             // We should only start watching for file system changes after adding the files we know about
             foreach (var directory in externalFiles.Directories)
@@ -241,47 +233,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             var sourceFile = myPsiSourceFileFactory.CreateExternalPsiSourceFile(myModuleFactory.PsiModule, path);
             builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Added);
-        }
-
-#if RIDER
-        private void AddExternalProjectFiles(List<DirectoryEntryData> files)
-        {
-            if (files.Count == 0)
-                return;
-
-            var paths = files.Select(e => e.GetAbsolutePath()).ToList();
-            //AddExternalProjectFiles(paths);
-        }
-#endif
-
-        private void AddExternalProjectFiles(List<FileSystemPath> paths)
-        {
-            if (paths.Count == 0)
-                return;
-
-            using (new ProjectModelBatchChangeCookie(mySolution, SimpleTaskExecutor.Instance))
-            using (mySolution.Locks.UsingWriteLock())
-            {
-                foreach (var path in paths)
-                {
-                    AddExternalProjectFile(path);
-                }
-            }
-        }
-
-        // Add the asset file as a project file, as various features require IProjectFile. Once created, it will
-        // automatically get an IPsiSourceFile created for it, and attached to our module via
-        // UnityMiscFilesProjectPsiModuleProvider
-        private void AddExternalProjectFile(FileSystemPath path)
-        {
-            if (mySolution.FindProjectItemsByLocation(path).Count > 0)
-                return;
-
-            var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
-            Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
-            var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
-                new MiscFilesProjectProperties());
-            projectImpl.DoCreateFile(null, path, properties);
         }
 
         private void UpdateStatistics(ExternalFiles externalFiles)
