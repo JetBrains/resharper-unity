@@ -160,6 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public void Drop(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
         {
+            myPrefabImportCache.Remove(sourceFile, unityAssetDataElement as AssetDocumentHierarchyElement);
             myAssetDocumentsHierarchy.TryRemove(sourceFile, out _);
         }
 
@@ -170,6 +171,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             element.IsScene = sourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlConstants.Scene);
             myAssetDocumentsHierarchy[sourceFile] = element;
             element.RestoreHierarchy();
+
+            myPrefabImportCache.Add(sourceFile, element);
         }
 
         public IHierarchyElement GetHierarchyElement(IHierarchyReference reference, bool prefabImport)
