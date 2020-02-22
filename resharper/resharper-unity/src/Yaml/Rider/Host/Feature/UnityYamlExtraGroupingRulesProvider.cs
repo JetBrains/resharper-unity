@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                     var solution = occurrence.GetSolution();
                     var processor = solution.GetComponent<AssetHierarchyProcessor>();
                     var consumer = new UnityScenePathGameObjectConsumer();
-                    processor.ProcessSceneHierarchyFromComponentToRoot(assetOccurrence.AttachedElement, consumer, true, true);
+                    processor.ProcessSceneHierarchyFromComponentToRoot(assetOccurrence.AttachedElementLocation, consumer, true, true);
                     string name = "...";
                     if (consumer.NameParts.Count > 0)
                         name = string.Join("\\", consumer.NameParts);
@@ -132,9 +132,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                if (occurrence is UnityAssetOccurrence assetOccurrence && assetOccurrence.AttachedElement is IComponentHierarchy componentHierarchyElement)
+                if (occurrence is UnityAssetOccurrence assetOccurrence)
                 {
-                    return CreateModel(AssetUtils.GetComponentName(myMetaFileGuidCache, componentHierarchyElement));
+                    var hierarchyContainer = assetOccurrence.GetSolution()?.GetComponent<AssetDocumentHierarchyElementContainer>();
+                    var element = hierarchyContainer?.GetHierarchyElement(assetOccurrence.AttachedElementLocation, true);
+                    if (element is IComponentHierarchy componentHierarchyElement)
+                        return CreateModel(AssetUtils.GetComponentName(myMetaFileGuidCache, componentHierarchyElement));
                 }
             }
 

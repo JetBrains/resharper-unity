@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
 
@@ -37,6 +38,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             Parent = parent;
             RootIndex = rootIndex;
+        }
+
+        public override IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        {
+            return new ImportedTransformHierarchy(prefabInstanceHierarchy, this);
         }
 
         protected bool Equals(TransformHierarchy other)

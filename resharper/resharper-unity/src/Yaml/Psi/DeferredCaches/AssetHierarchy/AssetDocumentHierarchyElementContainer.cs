@@ -167,6 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             var element = unityAssetDataElement as AssetDocumentHierarchyElement;
             element.AssetDocumentHierarchyElementContainer = this;
+            element.IsScene = sourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlConstants.Scene);
             myAssetDocumentsHierarchy[sourceFile] = element;
             element.RestoreHierarchy();
         }

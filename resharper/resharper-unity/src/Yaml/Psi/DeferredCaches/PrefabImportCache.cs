@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly IShellLocks myShellLocks;
         private readonly OneToSetMap<string, string> myDependencies = new OneToSetMap<string, string>();
-        private DirectMappedCache<string, IDictionary<ulong, IHierarchyElement>> myCache = new DirectMappedCache<string, IDictionary<ulong, IHierarchyElement>>(100);
+        private readonly DirectMappedCache<string, IDictionary<ulong, IHierarchyElement>> myCache = new DirectMappedCache<string, IDictionary<ulong, IHierarchyElement>>(100);
         private readonly UnityExternalFilesPsiModule myUnityExternalFilesPsiModule;
         
         public PrefabImportCache(Lifetime lifetime, DeferredCachesLocks deferredCachesLocks, MetaFileGuidCache metaFileGuidCache, UnityExternalFilesModuleFactory unityExternalFilesModuleFactory, IShellLocks shellLocks)
@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         {
             myShellLocks.IsWriteAccessAllowed();
             visited.Add(deps);
-            myCache.Remove(deps);
+            myCache.RemoveFromCache(deps);
             foreach (var d in myDependencies.GetValuesSafe(deps))
             {
                 if (!visited.Contains(d))
@@ -191,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         {
             Assertion.Assert(hierarchyElements !=  null, "hierarchyElements !=  null");
             Assertion.Assert(!myCache.ContainsKeyInCache(ownerGuid), "!myCache.ContainsKey(ownerGuid)");
-            myCache.Add(ownerGuid, hierarchyElements);
+            myCache.AddToCache(ownerGuid, hierarchyElements);
         }
     }
 }

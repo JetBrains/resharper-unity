@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
@@ -9,6 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     [PolymorphicMarshaller]
     public class PrefabInstanceHierarchy : IPrefabInstanceHierarchy
     {
+        private readonly Dictionary<(ulong, string), IAssetValue> myModifications = new Dictionary<(ulong, string), IAssetValue>();
+        
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
@@ -45,8 +48,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             ParentTransform = parentTransform;
             PrefabModifications = prefabModifications;
             SourcePrefabGuid = sourcePrefabGuid;
+
+            foreach (var modification in prefabModifications)
+            {
+                myModifications[(modification.Target.LocalDocumentAnchor, modification.PropertyPath)] = modification.Value;
+            }
         }
 
+        public IReadOnlyDictionary<(ulong, string), IAssetValue> Modifications => myModifications;
         public IReadOnlyList<PrefabModification> PrefabModifications { get; }
         public LocalReference ParentTransform { get; }
         public LocalReference Location { get; }

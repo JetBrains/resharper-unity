@@ -2,6 +2,7 @@ using JetBrains.Application.UI.Tooltips;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.TextControl.TextControlsManagement;
@@ -11,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class RiderUnityAssetOccurrenceNavigator : UnityAssetOccurrenceNavigator
     {
-        public override bool Navigate(ISolution solution, IDeclaredElementPointer<IDeclaredElement> pointer, IHierarchyElement parent)
+        public override bool Navigate(ISolution solution, IDeclaredElementPointer<IDeclaredElement> pointer, LocalReference location)
         {
             if (!solution.GetComponent<ConnectionTracker>().IsConnectionEstablished())
             {
@@ -30,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (declaredElement == null)
                 return true;
             
-            findRequestCreator.CreateRequestToUnity(declaredElement, parent, true);
+            findRequestCreator.CreateRequestToUnity(declaredElement, location, true);
             return false;
         }
     }
