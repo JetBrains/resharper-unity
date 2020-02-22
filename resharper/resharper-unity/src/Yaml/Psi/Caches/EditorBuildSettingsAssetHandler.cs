@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
         {
-            var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
+            var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
             var scenesArray = GetSceneCollection(file);
 
             if (scenesArray == null)

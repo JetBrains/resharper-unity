@@ -94,8 +94,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         public void Invalidate()
         {
             myPersistentIndexManager.Solution.GetComponent<IShellLocks>().AssertWriteAccessAllowed();
-            Map.Clear();
             InvalidateData();
+            Map.Clear();
         }
 
         /// <summary>

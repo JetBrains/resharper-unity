@@ -11,20 +11,20 @@ using JetBrains.ReSharper.Plugins.Yaml.Settings;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 {
     [SolutionComponent]
-    public class UnityYamlSupport
+    public class AssetIndexingSupport
     {
-        public readonly IProperty<bool> IsUnityYamlParsingEnabled;
+        public readonly IProperty<bool> IsEnabled;
 
-        public UnityYamlSupport(Lifetime lifetime, YamlSupport yamlSupport, SolutionCaches solutionCaches, ISolution solution, ISettingsStore settingsStore)
+        public AssetIndexingSupport(Lifetime lifetime, YamlSupport yamlSupport, SolutionCaches solutionCaches, ISolution solution, ISettingsStore settingsStore)
         {
             var settings = settingsStore.BindToContextLive(lifetime,
                 ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            IsUnityYamlParsingEnabled = settings.GetValueProperty(lifetime, (UnitySettings key) => key.IsYamlParsingEnabled);
+            IsEnabled = settings.GetValueProperty(lifetime, (UnitySettings key) => key.IsAssetIndexingEnabled);
 
             if (!yamlSupport.IsParsingEnabled.Value)
-                IsUnityYamlParsingEnabled.Value = false;
+                IsEnabled.Value = false;
 
-            IsUnityYamlParsingEnabled.Change.Advise(lifetime, v =>
+            IsEnabled.Change.Advise(lifetime, v =>
             {
                 if (v.HasNew && v.New)
                 {

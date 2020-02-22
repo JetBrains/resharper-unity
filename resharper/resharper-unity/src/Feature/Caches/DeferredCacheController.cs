@@ -258,6 +258,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 FlushBuildData(lifetime);
             }
         }
+
+        public void Invalidate<T>() where T : IDeferredCache
+        {
+            myShellLocks.AssertWriteAccessAllowed();
+            
+            foreach (var deferredCache in myDeferredCaches)
+            {
+                if (deferredCache is T)
+                    deferredCache.Invalidate();
+            }
+        }
         
     }
 }

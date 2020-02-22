@@ -230,5 +230,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         
         public string Id => nameof(AssetDocumentHierarchyElementContainer);
         public int Order => int.MaxValue;
+        public void Invalidate()
+        {
+            myAssetDocumentsHierarchy.Clear();
+        }
     }
 }

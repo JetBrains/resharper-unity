@@ -73,10 +73,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             AddNamingSection(lifetime, settingsStore);
 
             Header("Text based assets");
-            CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
-                "Parse text based asset files for script and event handler usages (requires re-opening solution)");
+            CheckBox((UnitySettings s) => s.IsAssetIndexingEnabled,
+                "Parse text based asset files for script and event handler usages");
             CheckBox((UnitySettings s) => s.EnableInspectorPropertiesEditor,
                 "Show Inspector values in the editor");
+            CheckBox((UnitySettings s) => s.EnableInspectorPropertiesEditor,
+                "Store prefab information in caches (improves find usages performance)");
+            CheckBox((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic,
+                "Automatically disable asset indexing for large solutions");
             
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,

@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
     [SolutionComponent]
     public class RiderEventHandlerDetector : EventHandlerDetector
     {
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
@@ -30,12 +31,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly AssetSerializationMode myAssetSerializationMode;
 
         public RiderEventHandlerDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer,AssetMethodsElementContainer assetMethodsElementContainer,
+            SettingsStore settingsStore, AssetIndexingSupport assetIndexingSupport, PerformanceCriticalCodeCallGraphAnalyzer analyzer,AssetMethodsElementContainer assetMethodsElementContainer,
             UnityCodeInsightProvider codeInsightProvider, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, DeferredCacheController deferredCacheController,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost, AssetSerializationMode assetSerializationMode)
             : base(solution, swa,  settingsStore, callGraphSwaExtensionProvider, assetMethodsElementContainer, analyzer)
         {
+            myAssetIndexingSupport = assetIndexingSupport;
             myAssetMethodsElementContainer = assetMethodsElementContainer;
             myCodeInsightProvider = codeInsightProvider;
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
@@ -61,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                     consumer.AddImplicitConfigurableHighlighting(element);
                 }
 
-                if (!myAssetSerializationMode.IsForceText)
+                if (!myAssetIndexingSupport.IsEnabled.Value || !myAssetSerializationMode.IsForceText)
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                         tooltip, text, myIconHost.Transform(iconId), GetActions(element),

@@ -127,6 +127,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         
         public string Id => nameof(AssetUsagesElementContainer);
         public int Order => 0;
+        public void Invalidate()
+        {
+            myAssetUsages.Clear();
+            myAssetUsagesPerFile.Clear();
+        }
 
         public IEnumerable<AssetUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
         {

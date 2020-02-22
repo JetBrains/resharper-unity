@@ -2,7 +2,9 @@ using System;
 using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
@@ -13,8 +15,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
     [ProjectFileType(typeof(UnityYamlProjectFileType))]
     public class UnityYamlProjectFileLanguageService : ProjectFileLanguageService
     {
-        public UnityYamlProjectFileLanguageService() : base(UnityYamlProjectFileType.Instance)
+        private readonly YamlSupport myYamlSupport;
+
+        public UnityYamlProjectFileLanguageService(YamlSupport yamlSupport) : base(UnityYamlProjectFileType.Instance)
         {
+            myYamlSupport = yamlSupport;
         }
 
         public override ILexerFactory GetMixedLexerFactory(ISolution solution, IBuffer buffer, IPsiSourceFile sourceFile = null)
@@ -30,15 +35,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             if (location.ExtensionNoDot.Equals("meta") || components.Length == 2 && components[0].Equals("ProjectSettings"))
                 return base.GetPsiLanguageType(sourceFile);
             
-            return UnityYamlDummyLanguage.Instance ?? throw new InvalidOperationException("Unexpected state");
+            return UnityYamlLanguage.Instance ?? throw new InvalidOperationException("Unexpected state");
         }
 
         protected override PsiLanguageType PsiLanguageType
         {
             get
             {
-                var yamlLanguage = (PsiLanguageType) UnityYamlLanguage.Instance ?? UnknownLanguage.Instance;
-                return yamlLanguage ?? throw new InvalidOperationException("Unexpected state");
+                var yamlLanguage = (PsiLanguageType) YamlLanguage.Instance ?? UnknownLanguage.Instance;
+                return myYamlSupport.IsParsingEnabled.Value ? yamlLanguage : UnknownLanguage.Instance;
             }
         }
 

@@ -20,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
     [SolutionComponent]
     public class RiderTypeDetector : TypeDetector
     {
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
@@ -27,16 +28,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
-        private readonly UnityYamlSupport myUnityYamlSupport;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
         public RiderTypeDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
             SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi,
-            UnityUsagesCodeVisionProvider usagesCodeVisionProvider, UnityCodeInsightProvider codeInsightProvider, AssetUsagesElementContainer assetUsagesElementContainer,
+            AssetIndexingSupport assetIndexingSupport, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, UnityCodeInsightProvider codeInsightProvider, AssetUsagesElementContainer assetUsagesElementContainer,
             DeferredCacheController deferredCacheController, UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost, UnityYamlSupport unityYamlSupport, AssetSerializationMode assetSerializationMode)
+            IconHost iconHost, AssetSerializationMode assetSerializationMode)
             : base(solution, swa, callGraphSwaExtensionProvider, settingsStore, unityApi, analyzer)
         {
+            myAssetIndexingSupport = assetIndexingSupport;
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
             myCodeInsightProvider = codeInsightProvider;
             myAssetUsagesElementContainer = assetUsagesElementContainer;
@@ -44,7 +45,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
-            myUnityYamlSupport = unityYamlSupport;
             myAssetSerializationMode = assetSerializationMode;
         }
 
@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                     consumer.AddImplicitConfigurableHighlighting(declaration);
                 }
 
-                if (!myAssetSerializationMode.IsForceText)
+                if (!myAssetIndexingSupport.IsEnabled.Value || !myAssetSerializationMode.IsForceText)
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text,
                         tooltip, text, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id), GetActions(declaration),

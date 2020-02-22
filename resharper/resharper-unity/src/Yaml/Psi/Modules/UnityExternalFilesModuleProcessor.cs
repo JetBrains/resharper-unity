@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  ISettingsSchema settingsSchema,
                                                  SettingsLayersProvider settingsLayersProvider,
                                                  AssetSerializationMode assetSerializationMode,
-                                                 UnityYamlSupport unityYamlSupport)
+                                                 AssetIndexingSupport assetIndexingSupport)
         {
             myLifetime = lifetime;
             myLogger = logger;

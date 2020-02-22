@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
@@ -18,10 +19,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class LayerMaskAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly UnityYamlSupport myUnityYamlSupport;
+        private readonly YamlSupport myUnityYamlSupport;
 
         public LayerMaskAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
-            UnityYamlSupport unityYamlSupport)
+            YamlSupport unityYamlSupport)
             : base(unityApi)
         {
             myAssetSerializationMode = assetSerializationMode;
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!myAssetSerializationMode.IsForceText) 
                 return;
             
-            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
+            if (!myUnityYamlSupport.IsParsingEnabled.Value)
                 return;
             
             if (IsLayerMaskGetMask(element) || IsLayerMaskNameToLayer(element))
