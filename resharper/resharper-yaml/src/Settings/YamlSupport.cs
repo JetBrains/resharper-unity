@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Settings
     public YamlSupport(Lifetime lifetime, ISettingsStore settingsStore)
     {
       var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
-      IsParsingEnabled = boundStore.GetValueProperty(lifetime, (YamlSettings s) => s.EnableYamlParsing);
+      IsParsingEnabled = boundStore.GetValueProperty(lifetime, (YamlSettings s) => s.EnableYamlParsing2);
     }
   }
 }

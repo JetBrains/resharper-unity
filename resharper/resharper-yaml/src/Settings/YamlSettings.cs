@@ -7,6 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Settings
   public class YamlSettings
   {
     [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of YAML files.")]
-    public bool EnableYamlParsing;
+    public bool EnableYamlParsing2;
   }
 }
