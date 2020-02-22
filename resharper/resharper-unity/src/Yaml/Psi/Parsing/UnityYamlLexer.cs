@@ -32,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 
         public void Advance()
         {
+            bool findHeader = false;
             if (myCurOffset > EndOffset)
             {
                 myTokenNodeType = null;
@@ -51,6 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                 switch (myBuffer[myCurOffset])
                 {
                     case '%':
+                        findHeader = true;
                         while (true)
                         {
                             if (myCurOffset > EndOffset)
@@ -79,6 +81,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 
                         break;
                     case '-':
+                        if (findHeader)
+                        {
+                            myTokenNodeType = UnityYamlTokenType.USELESS_DOCUMENT;
+                            return;
+                        }
                         myCurOffset++;
                         if (myCurOffset + 1 <= EndOffset && myBuffer[myCurOffset] == '-' &&
                             myBuffer[myCurOffset + 1] == '-')

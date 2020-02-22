@@ -1,6 +1,7 @@
 
 using System;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs
 {
@@ -34,10 +35,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 if (myTransformHierarchy.Parent.LocalDocumentAnchor == 0)
                     return myPrefabInstanceHierarchy.ParentTransform;
                 
-                return myTransformHierarchy.Location.GetImportedReference(myPrefabInstanceHierarchy);
+                return myTransformHierarchy.Parent.GetImportedReference(myPrefabInstanceHierarchy);
             }
         }
+        
+        public int RootIndex
+        {
+            get
+            {
+                if (myPrefabInstanceHierarchy.Modifications.TryGetValue((myTransformHierarchy.Location.LocalDocumentAnchor, "m_RootOrder"), out var result) && result is AssetSimpleValue simpleValue)
+                {
+                    if (int.TryParse(simpleValue.SimpleValue, out var index))
+                        return index;
+                }
 
-        public int RootIndex => throw new NotImplementedException("TODO: apply patch");
+                return myTransformHierarchy.RootIndex;
+            }
+        }
     }
 }

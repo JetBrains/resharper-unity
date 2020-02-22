@@ -1,34 +1,26 @@
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Psi.Caches.Persistence;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
 {
     [SolutionComponent]
     public class AssetHierarchyProcessor
     {
-        private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly DeferredCachesLocks myLocks;
         private readonly PrefabImportCache myPrefabImportCache;
-        private readonly PersistentIndexManager myPersistentIndexManager;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
 
-        public AssetHierarchyProcessor(MetaFileGuidCache metaFileGuidCache, DeferredCachesLocks locks, PrefabImportCache prefabImportCache,
-            PersistentIndexManager persistentIndexManager, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer)
+        public AssetHierarchyProcessor(DeferredCachesLocks locks, PrefabImportCache prefabImportCache, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer)
         {
-            myMetaFileGuidCache = metaFileGuidCache;
             myLocks = locks;
             myPrefabImportCache = prefabImportCache;
-            myPersistentIndexManager = persistentIndexManager;
             myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
         }
 
-        public void ProcessSceneHierarchyFromComponentToRoot(IHierarchyElement hierarchyElement, IGameObjectConsumer consumer,
-            bool forcePrefabImportForStartPoint, bool forcePrefabImport)
+        public void ProcessSceneHierarchyFromComponentToRoot(IHierarchyElement hierarchyElement, IGameObjectConsumer consumer, bool forcePrefabImport)
         {
             myLocks.AssertReadAccessAllowed();
 
@@ -40,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
             var owner = myAssetDocumentHierarchyElementContainer.GetAssetHierarchyFor(hierarchyElement.Location, out _);
             
-            ProcessHierarchy(owner, hierarchyElement, consumer);
+            ProcessHierarchy(owner, hierarchyElement, consumer, forcePrefabImport);
         }
 
         public void ProcessSceneHierarchyFromComponentToRoot(LocalReference location, IGameObjectConsumer consumer, bool forcePrefabImportForStartPoint, bool forcePrefabImport)
@@ -52,33 +44,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 return;
 
             var hierarchyElement = owner.GetHierarchyElement(guid, location.LocalDocumentAnchor, forcePrefabImportForStartPoint ? myPrefabImportCache : null);
-            ProcessSceneHierarchyFromComponentToRoot(location, consumer, forcePrefabImportForStartPoint, forcePrefabImport);            
-  
+            ProcessSceneHierarchyFromComponentToRoot(hierarchyElement, consumer, forcePrefabImport);            
         }
 
         private void ProcessHierarchy(AssetDocumentHierarchyElement owner, IHierarchyElement element,
-            IGameObjectConsumer consumer)
+            IGameObjectConsumer consumer, bool prefabImport)
         {
             if (element == null)
                 return;
             
             if (element is IGameObjectHierarchy gameObjectHierarchy)
             {
-                ProcessGameObject(owner, gameObjectHierarchy, consumer);
+                ProcessGameObject(owner, gameObjectHierarchy, consumer, prefabImport);
             }
             else if (element is IComponentHierarchy componentHierarchy)
             {
                 var gameObjectReference = componentHierarchy.GameObjectReference;
-                var gameObject = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(gameObjectReference, false) as IGameObjectHierarchy;
+                var gameObject = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(gameObjectReference, prefabImport) as IGameObjectHierarchy;
 
-                ProcessGameObject(owner, gameObject, consumer);
+                ProcessGameObject(owner, gameObject, consumer, prefabImport);
             } else
             {
                 Assertion.Fail($"Unsupported type: {element.GetType().Name}");
             }
         }
 
-        private void ProcessGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject, IGameObjectConsumer consumer)
+        private void ProcessGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject, IGameObjectConsumer consumer, bool prefabImport)
         {
             var transform = gameObject?.GetTransformHierarchy(owner);
             if (transform == null)
@@ -91,7 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (parentTransform == null)
                 return;
             
-            ProcessHierarchy(owner, parentTransform, consumer);
+            ProcessHierarchy(owner, parentTransform, consumer, prefabImport);
         }
     }
 }

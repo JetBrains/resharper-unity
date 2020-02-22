@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
             if (element == null)
                 return "...";
-            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport, prefabImport);
+            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
             if (consumer.NameParts.Count == 0)
                 return "...";
             var result =  string.Join("/", consumer.NameParts);

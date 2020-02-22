@@ -2,6 +2,7 @@ using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.UI.RichText;
@@ -42,15 +43,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             return name;
         }
 
-        public static string GetAttachedGameObjectName(AssetHierarchyProcessor processor, UnityAssetOccurrence occurrence) {
-        
-            var consumer = new UnityScenePathGameObjectConsumer();
-            processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.AttachedElement, consumer, true, true);
-        
-            var parts = consumer.NameParts;
-            if (parts.Count == 0)
-                return "...";
-            return string.Join("/", consumer.NameParts);
+        private string GetAttachedGameObjectName(AssetHierarchyProcessor processor, UnityAssetOccurrence occurrence)
+        {
+            return occurrence.GetSolution()?.GetComponent<DeferredCachesLocks>().ExecuteUnderReadLock(_ =>
+            {
+                var consumer = new UnityScenePathGameObjectConsumer();
+                processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.AttachedElementLocation, consumer, true, true);
+
+                var parts = consumer.NameParts;
+                if (parts.Count == 0)
+                    return "...";
+                return string.Join("/", consumer.NameParts);
+            }) ?? "UNKNOWN";
         }
     }
 }

@@ -25,6 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return new ImportedComponentHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public string Name => throw new NotImplementedException("TODO: apply patch");
+        public string Name => myComponentHierarchy.Name;
     }
 }

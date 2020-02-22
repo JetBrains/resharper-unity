@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
 
@@ -24,6 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetDocumentHierarchyElement);
+
+        public bool IsScene { get; internal set; }
 
         public AssetDocumentHierarchyElementContainer AssetDocumentHierarchyElementContainer { get; internal set; }
 
@@ -95,12 +98,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 if (!result.IsStripped) // stipped means, that element is not real and we should import prefab
                     return result;
             }
+            
+            if (result != null && IsScene && result.IsStripped )
+            {
+                var prefabInstance = result.PrefabInstance;
+                var correspondingObject = result.CorrespondingSourceObject;
+                if (prefabInstance != null && correspondingObject != null)
+                    anchor = PrefabsUtil.Import(prefabInstance.LocalDocumentAnchor, correspondingObject.LocalDocumentAnchor);
+            }
 
             if (prefabImportCache != null)
             {
                 var elements = prefabImportCache.GetImportedElementsFor(ownerGuid, this);
-                if (elements.TryGetValue(anchor, out result))
-                    return result;
+                
+                if (elements.TryGetValue(anchor, out var importedResult))
+                    return importedResult;
             }
             
             return null;

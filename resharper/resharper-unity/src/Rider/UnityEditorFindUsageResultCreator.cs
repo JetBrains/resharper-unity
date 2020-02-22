@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
@@ -54,16 +55,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
 
-        public void CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, IHierarchyElement element, bool focusUnity)
+        public void CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, LocalReference location, bool focusUnity)
         {
             var finder = mySolution.GetPsiServices().AsyncFinder;
             var consumer = new UnityUsagesFinderConsumer(myAssetHierarchyProcessor, myPersistentIndexManager, mySolutionDirectoryPath);
 
-            var sourceFile = myPersistentIndexManager[element.Location.OwnerId];
+            var sourceFile = myPersistentIndexManager[location.OwnerId];
             if (sourceFile == null)
                 return;
             
-            var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, element, sourceFile, false);
+            var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, location, sourceFile, false);
             
             
             var lifetimeDef = myLifetime.CreateNested();
@@ -92,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         private static FindUsageResultElement CreateRequest(FileSystemPath solutionDirPath, AssetHierarchyProcessor assetDocumentHierarchy, 
-            IHierarchyElement hierarchyElement, IPsiSourceFile sourceFile, bool needExpand = false)
+            LocalReference location, IPsiSourceFile sourceFile, bool needExpand = false)
         {
             if (!GetPathFromAssetFolder(solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
                 return null;
@@ -100,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
             
             var consumer = new UnityScenePathGameObjectConsumer();
-            assetDocumentHierarchy.ProcessSceneHierarchyFromComponentToRoot(hierarchyElement, consumer, true, true);
+            assetDocumentHierarchy.ProcessSceneHierarchyFromComponentToRoot(location, consumer, true, true);
             
             return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray());
         }
@@ -153,7 +154,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (sourceFile == null)
                     return myFindExecution;
                 
-                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.AttachedElement, sourceFile);
+                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.AttachedElement.Location, sourceFile);
                 if (request != null)
                     Result.Add(request);
                 
