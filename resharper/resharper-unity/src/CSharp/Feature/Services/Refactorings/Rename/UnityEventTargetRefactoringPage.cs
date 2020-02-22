@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public override BeControl GetPageContent()
         {
             return BeControls.GetRichText(
-                "Please ensure the project is saved in the Unity Editor, or any changes will be lost.", true);
+                "Please ensure the project is saved in the Unity Editor, or any changes will be lost.", wrap: true);
         }
     }
 }
