@@ -89,32 +89,29 @@ namespace JetBrains.Rider.Unity.Editor
       var home = Environment.GetEnvironmentVariable("HOME");
       if (!string.IsNullOrEmpty(home))
       {
-        if (!string.IsNullOrEmpty(home))
+        var localAppData = Path.Combine(home, @".local/share");
+        var toolboxRiderRootPath = GetToolboxRiderRootPath(localAppData);
+
+        installInfos.AddRange(CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
+          .Select(a => new RiderInfo(a, true)).ToList());
+
+        //$Home/.local/share/applications/jetbrains-rider.desktop
+        var shortcut = new FileInfo(Path.Combine(home, @".local/share/applications/jetbrains-rider.desktop"));
+
+        if (shortcut.Exists)
         {
-          var localAppData = Path.Combine(home, @".local/share");
-          var toolboxRiderRootPath = GetToolboxRiderRootPath(localAppData);
-
-          installInfos.AddRange(CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
-            .Select(a => new RiderInfo(a, true)).ToList());
-
-          //$Home/.local/share/applications/jetbrains-rider.desktop
-          var shortcut = new FileInfo(Path.Combine(home, @".local/share/applications/jetbrains-rider.desktop"));
-
-          if (shortcut.Exists)
+          var lines = File.ReadAllLines(shortcut.FullName);
+          foreach (var line in lines)
           {
-            var lines = File.ReadAllLines(shortcut.FullName);
-            foreach (var line in lines)
-            {
-              if (!line.StartsWith("Exec=\""))
-                continue;
-              var path = line.Split('"').Where((item, index) => index == 1).SingleOrDefault();
-              if (string.IsNullOrEmpty(path))
-                continue;
+            if (!line.StartsWith("Exec=\""))
+              continue;
+            var path = line.Split('"').Where((item, index) => index == 1).SingleOrDefault();
+            if (string.IsNullOrEmpty(path))
+              continue;
 
-              if (installInfos.Any(a => a.Path == path)) // avoid adding similar build as from toolbox
-                continue;
-              installInfos.Add(new RiderInfo(path, false));
-            }
+            if (installInfos.Any(a => a.Path == path)) // avoid adding similar build as from toolbox
+              continue;
+            installInfos.Add(new RiderInfo(path, false));
           }
         }
       }
