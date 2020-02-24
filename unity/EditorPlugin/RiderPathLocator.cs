@@ -91,7 +91,8 @@ namespace JetBrains.Rider.Unity.Editor
       {
         if (!string.IsNullOrEmpty(home))
         {
-          var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
+          var localAppData = Path.Combine(home, @".local/share");
+          var toolboxRiderRootPath = GetToolboxRiderRootPath(localAppData);
 
           installInfos.AddRange(CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
             .Select(a => new RiderInfo(a, true)).ToList());
@@ -142,7 +143,8 @@ namespace JetBrains.Rider.Unity.Editor
       var home = Environment.GetEnvironmentVariable("HOME");
       if (!string.IsNullOrEmpty(home))
       {
-        var toolboxRiderRootPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
+        var localAppData = Path.Combine(home, @"Library/Application Support");
+        var toolboxRiderRootPath = GetToolboxRiderRootPath(localAppData);
         var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "", "Rider*.app", true)
           .Select(a => new RiderInfo(a, true));
         installInfos.AddRange(paths);
@@ -154,16 +156,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static RiderInfo[] CollectRiderInfosWindows()
     {
       var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-      var toolboxPath = Path.Combine(localAppData, @"JetBrains\Toolbox");
-      var settingsJson = Path.Combine(toolboxPath, ".settings.json");
-
-      if (File.Exists(settingsJson))
-      {
-        var path = SettingsJson.GetInstallLocationFromJson(File.ReadAllText(settingsJson));
-        if (!string.IsNullOrEmpty(path))
-          toolboxPath = path;
-      }
-      var toolboxRiderRootPath = Path.Combine(toolboxPath, @"apps\Rider");
+      var toolboxRiderRootPath = GetToolboxRiderRootPath(localAppData);
       var installPathsToolbox = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider64.exe", false).ToList();
       var installInfosToolbox = installPathsToolbox.Select(a => new RiderInfo(a, true)).ToList();
 
@@ -178,7 +171,23 @@ namespace JetBrains.Rider.Unity.Editor
 
       return installInfos.ToArray();
     }
-    
+
+    private static string GetToolboxRiderRootPath(string localAppData)
+    {
+      var toolboxPath = Path.Combine(localAppData, @"JetBrains\Toolbox");
+      var settingsJson = Path.Combine(toolboxPath, ".settings.json");
+
+      if (File.Exists(settingsJson))
+      {
+        var path = SettingsJson.GetInstallLocationFromJson(File.ReadAllText(settingsJson));
+        if (!string.IsNullOrEmpty(path))
+          toolboxPath = path;
+      }
+
+      var toolboxRiderRootPath = Path.Combine(toolboxPath, @"apps\Rider");
+      return toolboxRiderRootPath;
+    }
+
     internal static string GetBuildNumber(string path)
     {
       var file = new FileInfo(Path.Combine(path, GetRelativePathToBuildTxt()));
