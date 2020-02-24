@@ -161,7 +161,17 @@ namespace JetBrains.Rider.Unity.Editor
     private static RiderInfo[] CollectRiderInfosWindows()
     {
       var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-      var toolboxRiderRootPath = Path.Combine(localAppData, @"JetBrains\Toolbox\apps\Rider");
+      var toolboxPath = Path.Combine(localAppData, @"JetBrains\Toolbox");
+      var settingsJson = Path.Combine(toolboxPath, ".settings.json");
+
+      if (File.Exists(settingsJson))
+      {
+        var path = SettingsJson.GetInstallLocationFromJson(File.ReadAllText(settingsJson));
+        if (!string.IsNullOrEmpty(path))
+          toolboxPath = path;
+      }
+      var toolboxRiderRootPath = Path.Combine(toolboxPath, @"apps\Rider");
+      
       var installPathsToolbox = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider64.exe", false).ToList();
       var installInfosToolbox = installPathsToolbox.Select(a => new RiderInfo(a, true)).ToList();
 
@@ -295,6 +305,32 @@ namespace JetBrains.Rider.Unity.Editor
     // Disable the "field is never assigned" compiler warning. We never assign it, but Unity does.
     // Note that Unity disable this warning in the generated C# projects
 #pragma warning disable 0649
+    
+    [Serializable]
+    class SettingsJson
+    {
+      // ReSharper disable once InconsistentNaming
+      public string install_location;
+      
+      [CanBeNull]
+      public static string GetInstallLocationFromJson(string json)
+      {
+        try
+        {
+#if UNITY_4_7 || UNITY_5_5
+          return JsonConvert.DeserializeObject<SettingsJson>(json).install_location;
+#else
+          return JsonUtility.FromJson<SettingsJson>(json).install_location;
+#endif
+        }
+        catch (Exception)
+        {
+          Logger.Warn($"Failed to get install_location from json {json}");
+        }
+
+        return null;
+      }
+    }
 
     [Serializable]
     class ToolboxHistory
