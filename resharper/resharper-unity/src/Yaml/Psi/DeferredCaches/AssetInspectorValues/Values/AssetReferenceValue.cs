@@ -56,8 +56,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
+
             return solution.GetComponent<DeferredCachesLocks>().ExecuteUnderReadLock(_ =>
             {
+                if (Reference.LocalDocumentAnchor == 0)
+                    return "None";
+                
                 var processor = solution.GetComponent<AssetHierarchyProcessor>();
                 var consumer = new UnityScenePathGameObjectConsumer(true);
                 var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
