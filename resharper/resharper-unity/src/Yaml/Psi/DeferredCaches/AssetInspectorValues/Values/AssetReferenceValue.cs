@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
@@ -55,22 +56,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
+            return solution.GetComponent<DeferredCachesLocks>().ExecuteUnderReadLock(_ =>
+            {
+                var processor = solution.GetComponent<AssetHierarchyProcessor>();
+                var consumer = new UnityScenePathGameObjectConsumer(true);
+                var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
+                var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
+                if (element == null)
+                    return "...";
+                processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
+                if (consumer.NameParts.Count == 0)
+                    return "...";
+                var result = string.Join("/", consumer.NameParts);
 
-            var processor = solution.GetComponent<AssetHierarchyProcessor>();
-            var consumer = new UnityScenePathGameObjectConsumer(true);
-            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
-            var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
-            if (element == null)
-                return "...";
-            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
-            if (consumer.NameParts.Count == 0)
-                return "...";
-            var result =  string.Join("/", consumer.NameParts);
+                if (element is IComponentHierarchy componentHierarchy)
+                    result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
 
-            if (element is IComponentHierarchy componentHierarchy)
-                result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
-
-            return result;
+                return result;
+            });
         }
     }
 }

@@ -141,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     }
                 }
 
-                var sourcePrefabGuid = AssetUtils.GetSourcePrefab(assetDocument.Buffer).ToReference(currentSourceFile) as ExternalReference;
+                var sourcePrefabGuid = AssetUtils.GetSourcePrefab(assetDocument.Buffer)?.ToReference(currentSourceFile) as ExternalReference;
                 if (sourcePrefabGuid == null)
                     return null;
                 return new AssetDocumentHierarchyElement(new PrefabInstanceHierarchy(location, sourcePrefabGuid.ExternalAssetGuid, parentTransform, result));
