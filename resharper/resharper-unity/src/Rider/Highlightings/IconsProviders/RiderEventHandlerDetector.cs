@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     var count = myAssetMethodsElementContainer.GetAssetUsagesCount(element.DeclaredElement, out var estimate);
                     myUsagesCodeVisionProvider.AddHighlighting(consumer, element, element.DeclaredElement, count,
-                        "Click to see usages in assets", "Assets usages",estimate, iconModel);
+                        "Click to view usages in assets", "Assets usages",estimate, iconModel);
                 }
             }
         }
