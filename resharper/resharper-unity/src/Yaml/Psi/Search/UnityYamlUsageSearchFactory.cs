@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
@@ -49,8 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
             var assetUsagesContainer = solution.GetComponent<AssetUsagesElementContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
+            var controller = solution.GetComponent<DeferredCacheController>();
             
-            return new UnityAssetReferenceSearcher(hierarchyContainer, assetUsagesContainer, methodsContainer, assetValuesContainer, metaFileGuidCache, elements, findCandidates);
+            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, assetUsagesContainer, methodsContainer, assetValuesContainer, metaFileGuidCache, elements, findCandidates);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An
