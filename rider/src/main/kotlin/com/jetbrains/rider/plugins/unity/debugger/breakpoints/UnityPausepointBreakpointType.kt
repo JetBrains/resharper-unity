@@ -33,7 +33,7 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
 
     override fun canPutAt(file: VirtualFile, line: Int, project: Project): Boolean = false
 
-    override fun getPriority(): Int = super.getPriority() + 1
+    override fun getPriority(): Int = super.getPriority() - 1
 
     override fun getVisibleStandardPanels(): EnumSet<StandardPanels> = EnumSet.of(StandardPanels.DEPENDENCY)
 }
