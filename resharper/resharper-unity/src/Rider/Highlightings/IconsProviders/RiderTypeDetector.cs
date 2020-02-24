@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
@@ -59,31 +60,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                     consumer.AddImplicitConfigurableHighlighting(declaration);
                 }
 
-                if (!myAssetIndexingSupport.IsEnabled.Value || !myAssetSerializationMode.IsForceText)
+                IconModel iconModel = myIconHost.Transform(InsightUnityIcons.InsightUnity.Id);
+                if (myAssetIndexingSupport.IsEnabled.Value && myAssetSerializationMode.IsForceText)
+                {
+                    if (myDeferredCacheController.IsProcessingFiles())
+                        iconModel = myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id);
+                    
+                    if (!myDeferredCacheController.CompletedOnce.Value)
+                        tooltip = "Usages in assets are not available during asset indexing";
+
+                }
+                
+                if (!myAssetIndexingSupport.IsEnabled.Value ||!myDeferredCacheController.CompletedOnce.Value || !myAssetSerializationMode.IsForceText)
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text,
-                        tooltip, text, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id), GetActions(declaration),
+                        tooltip, text, iconModel, GetActions(declaration),
                         RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
                 }
                 else
                 {
-                    if (!myDeferredCacheController.CompletedOnce.Value)
-                    {
-                        myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text,
-                            tooltip, text, myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id), GetActions(declaration),
-                            RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));   
-                    } else if (myDeferredCacheController.IsProcessingFiles())
-                    {
-                        var count = myAssetUsagesElementContainer.GetUsagesCount(declaration, out var estimatedResult);
-                        myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
-                            "Click to see usages in assets", "Assets usages", estimatedResult, myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id));
-                    }
-                    else
-                    {
-                        var count = myAssetUsagesElementContainer.GetUsagesCount(declaration, out var estimatedResult);
-                        myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
-                            "Click to see usages in assets", "Assets usages", estimatedResult, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id));
-                    }
+                    var count = myAssetUsagesElementContainer.GetUsagesCount(declaration, out var estimatedResult);
+                    myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
+                        "Click to see usages in assets", "Assets usages", estimatedResult, iconModel);
                 }
             }
         }

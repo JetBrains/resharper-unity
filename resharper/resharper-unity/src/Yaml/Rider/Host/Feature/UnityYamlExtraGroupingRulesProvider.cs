@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Tree;
 using JetBrains.ReSharper.Host.Features.Usages;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
@@ -96,14 +97,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 if (occurrence is UnityAssetOccurrence assetOccurrence)
                 {
                     var solution = occurrence.GetSolution();
-                    var processor = solution.GetComponent<AssetHierarchyProcessor>();
-                    var consumer = new UnityScenePathGameObjectConsumer();
-                    processor.ProcessSceneHierarchyFromComponentToRoot(assetOccurrence.AttachedElementLocation, consumer, true, true);
-                    string name = "...";
-                    if (consumer.NameParts.Count > 0)
-                        name = string.Join("\\", consumer.NameParts);
+                    return solution.GetComponent<DeferredCachesLocks>().ExecuteUnderReadLock(_ =>
+                    {
+                        var processor = solution.GetComponent<AssetHierarchyProcessor>();
+                        var consumer = new UnityScenePathGameObjectConsumer();
+                        processor.ProcessSceneHierarchyFromComponentToRoot(assetOccurrence.AttachedElementLocation, consumer, true, true);
+                        string name = "...";
+                        if (consumer.NameParts.Count > 0)
+                            name = string.Join("\\", consumer.NameParts);
 
-                    return CreateModel(name);
+                        return CreateModel(name);
+                    });
                 }
             }
 

@@ -4,9 +4,11 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -20,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
     public class RiderFieldDetector : FieldDetector
     {
         private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;
+        private readonly DeferredCacheController myDeferredCacheController;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
@@ -27,12 +30,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
         public RiderFieldDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
             SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi,
-            UnityCodeInsightFieldUsageProvider fieldUsageProvider,
+            UnityCodeInsightFieldUsageProvider fieldUsageProvider, DeferredCacheController deferredCacheController,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost, AssetSerializationMode assetSerializationMode)
             : base(solution, swa, callGraphSwaExtensionProvider, settingsStore, analyzer, unityApi)
         {
             myFieldUsageProvider = fieldUsageProvider;
+            myDeferredCacheController = deferredCacheController;
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
@@ -58,9 +62,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     consumer.AddImplicitConfigurableHighlighting(element);
                 }
+
+                var isProcessing = myDeferredCacheController.IsProcessingFiles();
                 myFieldUsageProvider.AddInspectorHighlighting(consumer, element, element.DeclaredElement, text,
-                    tooltip, text, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id), GetActions(element),
-                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
+                    tooltip, isProcessing ? "Inspector values are not available during asset indexing" : text,
+                    isProcessing ? myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id) : myIconHost.Transform(InsightUnityIcons.InsightUnity.Id),
+                    GetActions(element), RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
             }
         }
 

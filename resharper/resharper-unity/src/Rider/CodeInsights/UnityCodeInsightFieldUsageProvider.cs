@@ -23,6 +23,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
 using JetBrains.ReSharper.Host.Features.Services;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
@@ -43,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
     public class UnityCodeInsightFieldUsageProvider : AbstractUnityCodeInsightProvider
     {
         private readonly UnityApi myUnityApi;
+        private readonly DeferredCacheController myDeferredCacheController;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
         private readonly DataContexts myContexts;
         private readonly IActionManager myActionManager;
@@ -54,11 +56,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             new[] {new CodeLensRelativeOrderingLast()};
 
         public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker,
-            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu,
+            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, DeferredCacheController deferredCacheController,
             AssetInspectorValuesContainer inspectorValuesContainer)
             : base(unitySolutionTracker, host, bulbMenu)
         {
             myUnityApi = unityApi;
+            myDeferredCacheController = deferredCacheController;
             myInspectorValuesContainer = inspectorValuesContainer;
             myActionManager = Shell.Instance.GetComponent<IActionManager>();
             myContexts =  Shell.Instance.GetComponent<DataContexts>();
@@ -130,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var type = field.Type;
             var presentationType = GetUnityPresentationType(type);
 
-            if (ShouldShowUnknownPresentation(presentationType))
+            if (myDeferredCacheController.IsProcessingFiles() || ShouldShowUnknownPresentation(presentationType))
             {
                 base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
