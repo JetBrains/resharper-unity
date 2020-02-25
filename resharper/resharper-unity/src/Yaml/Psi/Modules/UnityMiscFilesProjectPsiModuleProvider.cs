@@ -48,7 +48,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         public void OnProjectFileChanged(IProjectFile projectFile, PsiModuleChange.ChangeType changeType,
                                          PsiModuleChangeBuilder changeBuilder, FileSystemPath oldLocation)
         {
-
+            if (projectFile == null)
+                return;
+            
+            var module = myModuleFactory.PsiModule;
+            if (module == null)
+                return;
+            
+            switch (changeType)
+            {
+                case PsiModuleChange.ChangeType.Added:
+                    if (UnityYamlFileExtensions.IsMetaOrProjectSettings(projectFile.GetSolution(), projectFile.Location)
+                        && myAssetSerializationMode.IsForceText &&
+                        !module.ContainsPath(projectFile.Location))
+                    {
+                        // Create the PsiSourceFile, add it to the module, add the change to the builder
+                        var psiSourceFile = myPsiSourceFileFactory.CreatePsiProjectFile(module, projectFile);
+                        module.Add(projectFile.Location, psiSourceFile, null);
+                        changeBuilder.AddFileChange(psiSourceFile, PsiModuleChange.ChangeType.Added);
+                    }
+                    break;
+            
+                case PsiModuleChange.ChangeType.Removed:
+                    // Do nothing. We only remove source files if the underlying file itself has been removed, which is
+                    // handled by UnityExternalFilesModuleProcessor and a file system watcher
+                    break;
+            
+                case PsiModuleChange.ChangeType.Modified:
+                    if (module.TryGetFileByPath(projectFile.Location, out var sourceFile))
+                        changeBuilder.AddFileChange(sourceFile, changeType);
+                    break;
+            }
         }
     }
 }

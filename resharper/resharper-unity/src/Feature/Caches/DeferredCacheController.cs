@@ -74,11 +74,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                    myPartlyCalculatedData.Count > 0 || myCalculatedData.Count > 0;
         }
 
-        public bool IsCompletedOnce()
-        {
-            return myCompletedOnce;
-        }
-        
         public Action CreateTask(Lifetime lifetime)
         {
             return () =>
