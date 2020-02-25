@@ -25,5 +25,5 @@
 
   <!-- Import version number -->
   <Import Project="..\Packaging.props" />
-  <Import Project="$(MSBuildThisFileDirectory)..\resharper\build\generated\DotNetSdkPath.generated.props" Condition="Exists('$(MSBuildThisFileDirectory)..\resharper\build\generated\DotNetSdkPath.generated.props')" />
+  <Import Project="..\resharper\Directory.Build.props" />
 </Project>

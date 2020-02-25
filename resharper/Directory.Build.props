@@ -23,6 +23,10 @@
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.0" />
+  </ItemGroup>
+
   <Import Project="..\Packaging.props" />
   <Import Project="$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props" Condition="Exists('$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props')" />
 </Project>
