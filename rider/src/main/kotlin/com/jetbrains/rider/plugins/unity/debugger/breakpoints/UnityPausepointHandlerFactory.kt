@@ -12,7 +12,7 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
     }
 
     override fun unregisterBreakpoint(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>, p1: Boolean) {
-        debugProcess.breakpointsManager.registerLineBreakpoint(breakpoint)
+        debugProcess.breakpointsManager.unregisterLineBreakpoint(breakpoint)
     }
 }
 
