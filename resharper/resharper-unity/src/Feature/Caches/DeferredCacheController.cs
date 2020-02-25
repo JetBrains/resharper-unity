@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Application.Progress;
@@ -32,8 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         private readonly DeferredCacheProgressBar myProgressBar;
         private readonly ILogger myLogger;
 
-        private readonly Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myPartlyCalculatedData = new Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
-        private readonly Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myCalculatedData = new Dictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
+        private readonly ConcurrentDictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myPartlyCalculatedData = new ConcurrentDictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
+        private readonly ConcurrentDictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myCalculatedData = new ConcurrentDictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
         private readonly SequentialLifetimes myWorkLifetime;
         public IReadonlyProperty<bool> CompletedOnce => myCompletedOnce;
         private ViewableProperty<bool> myCompletedOnce;
@@ -51,6 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             myLogger = logger;
             myWorkLifetime = new SequentialLifetimes(lifetime);
             myCompletedOnce = new ViewableProperty<bool>();
+            
             if (solutionCaches.PersistentProperties.TryGetValue("DeferredCachesCompletedOnce", out var result))
             {
                 myCompletedOnce.Value = result.Equals("True");
@@ -70,6 +72,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         {
             return myDeferredHelperCache.FilesToDrop.Count > 0 || myDeferredHelperCache.FilesToProcess.Count > 0 ||
                    myPartlyCalculatedData.Count > 0 || myCalculatedData.Count > 0;
+        }
+
+        public bool IsCompletedOnce()
+        {
+            return myCompletedOnce;
         }
         
         public Action CreateTask(Lifetime lifetime)
@@ -100,8 +107,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     foreach (var psiSourceFile in new LocalList<IPsiSourceFile>(myDeferredHelperCache.FilesToDrop))
                     {
                         myLogger.Verbose("Drop {0}", psiSourceFile.GetPersistentIdForLogging());
-                        myPartlyCalculatedData.Remove(psiSourceFile);
-                        myCalculatedData.Remove(psiSourceFile);
+                        myPartlyCalculatedData.TryRemove(psiSourceFile, out _);
+                        myCalculatedData.TryRemove(psiSourceFile, out _);
                         
                         myDeferredCachesLocks.ExecuteUnderWriteLock(() =>
                         {
@@ -131,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                     foreach (var psiSourceFile in GetFilesToProcess())
                     {
-                        myCalculatedData.Remove(psiSourceFile);
+                        myCalculatedData.TryRemove(psiSourceFile, out _);
                     }
                     
                     // Possibly, there was interruption in previous flush, prioritize data flushing
@@ -184,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                         Assertion.Assert(!myCalculatedData.ContainsKey(psiSourceFile),
                             "!myCalculatedData.ContainsKey(psiSourceFile)");
                         myCalculatedData[psiSourceFile] = myPartlyCalculatedData[psiSourceFile];
-                        myPartlyCalculatedData.Remove(psiSourceFile);
+                        myPartlyCalculatedData.TryRemove(psiSourceFile, out _);
 
                         FlushBuildDataIfNeed(lifetime);
                         myLogger.Verbose("Build finished {0}", psiSourceFile.GetPersistentIdForLogging());
@@ -245,7 +252,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     }
                 });
 
-                myCalculatedData.Remove(sourceFile);
+                myCalculatedData.TryRemove(sourceFile, out _);
 
                 myLogger.Verbose("Finish merging for {0}", sourceFile);
             }

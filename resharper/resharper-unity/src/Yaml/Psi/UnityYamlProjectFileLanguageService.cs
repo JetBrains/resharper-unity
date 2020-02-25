@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             var location = sourceFile.GetLocation();
             var components = location.MakeRelativeTo(sourceFile.GetSolution().SolutionDirectory).Components.ToArray();
-            if (location.ExtensionNoDot.Equals("meta") || components.Length == 2 && components[0].Equals("ProjectSettings"))
+            if (location.ExtensionNoDot.Equals("meta", StringComparison.OrdinalIgnoreCase) || components.Length == 2 && components[0].Equals("ProjectSettings", StringComparison.OrdinalIgnoreCase))
                 return base.GetPsiLanguageType(sourceFile);
             
             return UnityYamlLanguage.Instance ?? throw new InvalidOperationException("Unexpected state");

@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             if (IsInterestingElement(element))
             {
-                var words = new List<string> {YamlTrigramIndexBuilder.YAML_REFERENCE_IDENTIFIER};
+                var words = new List<string> {UnityAssetTrigramIndexBuild.ASSET_REFERENCE_IDENTIFIER};
                 return words;
             }
 

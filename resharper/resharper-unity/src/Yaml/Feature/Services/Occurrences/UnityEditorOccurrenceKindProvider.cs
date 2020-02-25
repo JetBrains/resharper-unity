@@ -27,7 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
             return new[]
             {
                 UnityAssetSpecificOccurrenceKinds.EventHandler,
-                UnityAssetSpecificOccurrenceKinds.ComponentUsage
+                UnityAssetSpecificOccurrenceKinds.ComponentUsage,
+                UnityAssetSpecificOccurrenceKinds.InspectorUsage
             };
         }
     }
