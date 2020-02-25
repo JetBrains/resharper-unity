@@ -31,6 +31,10 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
 
     override fun getTemporaryIcon(): Icon = UnityIcons.Icons.UnityLogo
 
+    override fun getInvalidIcon(): Icon = UnityIcons.Icons.UnityLogo
+
+    override fun getVerifiedIcon(): Icon = UnityIcons.Icons.UnityLogo
+
     override fun canPutAt(file: VirtualFile, line: Int, project: Project): Boolean = false
 
     override fun getPriority(): Int = super.getPriority() - 1
