@@ -96,7 +96,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 var oldValue = Map.GetValueSafe(sourceFile)?.Guid;
                 var newValue = (builtPart as MetaFileCacheItem)?.Guid;
-                GuidChanged.Fire((sourceFile, oldValue, newValue));
+                if (!string.Equals(oldValue, newValue))
+                    GuidChanged.Fire((sourceFile, oldValue, newValue));
             }
             catch (Exception e)
             {

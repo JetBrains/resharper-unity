@@ -77,8 +77,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 "Parse text based asset files for script and event handler usages");
             CheckBox((UnitySettings s) => s.EnableInspectorPropertiesEditor,
                 "Show Inspector values in the editor");
-            CheckBox((UnitySettings s) => s.EnableInspectorPropertiesEditor,
-                "Store prefab information in caches (improves find usages performance)");
+            CheckBox((UnitySettings s) => s.IsPrefabCacheEnabled,
+                "Cache prefab data to improve find usage performance");
             CheckBox((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic,
                 "Automatically disable asset indexing for large solutions");
             

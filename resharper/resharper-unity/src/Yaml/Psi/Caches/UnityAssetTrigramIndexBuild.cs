@@ -12,12 +12,12 @@ using JetBrains.Util.PersistentMap;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 {
     [Language(typeof(UnityYamlLanguage))]
-    public class YamlTrigramIndexBuilder : ITrigramIndexBuilder
+    public class UnityAssetTrigramIndexBuild : ITrigramIndexBuilder
     {
-        public const string YAML_REFERENCE_IDENTIFIER = "#YAML_REFERENCE#";
+        public const string ASSET_REFERENCE_IDENTIFIER = "#ASSET_REFERENCE#";
         private readonly ILogger myLogger;
 
-        public YamlTrigramIndexBuilder(ILogger logger)
+        public UnityAssetTrigramIndexBuild(ILogger logger)
         {
             myLogger = logger;
         }
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             using (UnsafeWriter.Cookie unsafeWriterCookie = UnsafeWriter.NewThreadLocalWriter())
             {
                 TrigramIndexEntryBuilder indexEntryBuilder = new TrigramIndexEntryBuilder(unsafeWriterCookie);
-                foreach (TrigramToken trigramToken in new BufferTrigramSource(new StringBuffer(YAML_REFERENCE_IDENTIFIER)))
+                foreach (TrigramToken trigramToken in new BufferTrigramSource(new StringBuffer(ASSET_REFERENCE_IDENTIFIER)))
                     indexEntryBuilder.Add(trigramToken);
                 
                 UnsafeIntArray entryData = indexEntryBuilder.Build();

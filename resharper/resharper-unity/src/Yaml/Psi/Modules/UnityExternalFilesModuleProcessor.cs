@@ -302,15 +302,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                 () =>
                 {
                     var builder = new PsiModuleChangeBuilder();
-                    var projectFilesToAdd = new List<FileSystemPath>();
-                    ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
-                    //AddExternalProjectFiles(projectFilesToAdd);
+                    ProcessFileSystemChangeDelta(delta, builder);
                     FlushChanges(builder);
                 });
         }
 
-        private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder,
-            List<FileSystemPath> projectFilesToAdd)
+        private void ProcessFileSystemChangeDelta(FileSystemChangeDelta delta, PsiModuleChangeBuilder builder)
         {
             var module = myModuleFactory.PsiModule;
             if (module == null)
@@ -352,7 +349,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             }
 
             foreach (var child in delta.GetChildren())
-                ProcessFileSystemChangeDelta(child, builder, projectFilesToAdd);
+                ProcessFileSystemChangeDelta(child, builder);
         }
 
         [CanBeNull]
