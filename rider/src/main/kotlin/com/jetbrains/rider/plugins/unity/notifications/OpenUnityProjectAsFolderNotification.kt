@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
 import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
 import com.jetbrains.rider.model.rdUnityModel
@@ -32,6 +33,9 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
 
     init {
         project.solution.rdUnityModel.unityApplicationData.advise(componentLifetime) {
+            if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
+                return@advise
+
             val solutionDescription = project.solutionDescription
             val title = "Unity features unavailable"
             val content = "Configuration required:<br/>" +
