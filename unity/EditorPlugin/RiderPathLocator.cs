@@ -85,83 +85,75 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static RiderInfo[] CollectAllRiderPathsLinux()
     {
+      var installInfos = new List<RiderInfo>();
       var home = Environment.GetEnvironmentVariable("HOME");
-      if (string.IsNullOrEmpty(home))
-        return new RiderInfo[0];
-
-      //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/173.3994.1125/bin/rider.sh
-      //$Home/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.channel.settings.json
-      var toolboxRiderRootPath = Path.Combine(home, @".local/share/JetBrains/Toolbox/apps/Rider");
-      var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
-        .Select(a => new RiderInfo(a, true)).ToList();
-
-      //$Home/.local/share/applications/jetbrains-rider.desktop
-      var shortcut = new FileInfo(Path.Combine(home, @".local/share/applications/jetbrains-rider.desktop"));
-
-      if (shortcut.Exists)
+      if (!string.IsNullOrEmpty(home))
       {
-        var lines = File.ReadAllLines(shortcut.FullName);
-        foreach (var line in lines)
-        {
-          if (!line.StartsWith("Exec=\""))
-            continue;
-          var path = line.Split('"').Where((item, index) => index == 1).SingleOrDefault();
-          if (string.IsNullOrEmpty(path))
-            continue;
+        var localAppData = Path.Combine(home, @".local/share");
+        var toolboxRiderRootPath = GetToolboxRiderRootPath(localAppData);
 
-          if (paths.Any(a => a.Path == path)) // avoid adding similar build as from toolbox
-            continue;
-          paths.Add(new RiderInfo(path, false));
+        installInfos.AddRange(CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider.sh", false)
+          .Select(a => new RiderInfo(a, true)).ToList());
+
+        //$Home/.local/share/applications/jetbrains-rider.desktop
+        var shortcut = new FileInfo(Path.Combine(home, @".local/share/applications/jetbrains-rider.desktop"));
+
+        if (shortcut.Exists)
+        {
+          var lines = File.ReadAllLines(shortcut.FullName);
+          foreach (var line in lines)
+          {
+            if (!line.StartsWith("Exec=\""))
+              continue;
+            var path = line.Split('"').Where((item, index) => index == 1).SingleOrDefault();
+            if (string.IsNullOrEmpty(path))
+              continue;
+
+            if (installInfos.Any(a => a.Path == path)) // avoid adding similar build as from toolbox
+              continue;
+            installInfos.Add(new RiderInfo(path, false));
+          }
         }
       }
 
       // snap install
       var snapInstallPath = "/snap/rider/current/bin/rider.sh";
       if (new FileInfo(snapInstallPath).Exists)
-        paths.Add(new RiderInfo(snapInstallPath, false));
+        installInfos.Add(new RiderInfo(snapInstallPath, false));
       
-      return paths.ToArray();
+      return installInfos.ToArray();
     }
 
     private static RiderInfo[] CollectRiderInfosMac()
     {
+      var installInfos = new List<RiderInfo>();
       // "/Applications/*Rider*.app"
       var folder = new DirectoryInfo("/Applications");
-      if (!folder.Exists)
-        return new RiderInfo[0];
-
-      var results = folder.GetDirectories("*Rider*.app")
-        .Select(a => new RiderInfo(a.FullName, false))
-        .ToList();
+      if (folder.Exists)
+      {
+        installInfos.AddRange(folder.GetDirectories("*Rider*.app")
+          .Select(a => new RiderInfo(a.FullName, false))
+          .ToList());
+      }
 
       // /Users/user/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/181.3870.267/Rider EAP.app
       var home = Environment.GetEnvironmentVariable("HOME");
       if (!string.IsNullOrEmpty(home))
       {
-        var toolboxRiderRootPath = Path.Combine(home, @"Library/Application Support/JetBrains/Toolbox/apps/Rider");
+        var localAppData = Path.Combine(home, @"Library/Application Support");
+        var toolboxRiderRootPath = GetToolboxRiderRootPath(localAppData);
         var paths = CollectPathsFromToolbox(toolboxRiderRootPath, "", "Rider*.app", true)
           .Select(a => new RiderInfo(a, true));
-        results.AddRange(paths);
+        installInfos.AddRange(paths);
       }
 
-      return results.ToArray();
-    }
-
-    internal static string GetBuildNumber(string path)
-    {
-      var file = new FileInfo(Path.Combine(path, GetRelativePathToBuildTxt()));
-      if (!file.Exists) 
-        return string.Empty;
-      var text = File.ReadAllText(file.FullName);
-      if (text.Length > 3)
-        return text.Substring(3);
-      return string.Empty;
+      return installInfos.ToArray();
     }
 
     private static RiderInfo[] CollectRiderInfosWindows()
     {
       var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-      var toolboxRiderRootPath = Path.Combine(localAppData, @"JetBrains\Toolbox\apps\Rider");
+      var toolboxRiderRootPath = GetToolboxRiderRootPath(localAppData);
       var installPathsToolbox = CollectPathsFromToolbox(toolboxRiderRootPath, "bin", "rider64.exe", false).ToList();
       var installInfosToolbox = installPathsToolbox.Select(a => new RiderInfo(a, true)).ToList();
 
@@ -177,7 +169,33 @@ namespace JetBrains.Rider.Unity.Editor
       return installInfos.ToArray();
     }
 
-    
+    private static string GetToolboxRiderRootPath(string localAppData)
+    {
+      var toolboxPath = Path.Combine(localAppData, @"JetBrains\Toolbox");
+      var settingsJson = Path.Combine(toolboxPath, ".settings.json");
+
+      if (File.Exists(settingsJson))
+      {
+        var path = SettingsJson.GetInstallLocationFromJson(File.ReadAllText(settingsJson));
+        if (!string.IsNullOrEmpty(path))
+          toolboxPath = path;
+      }
+
+      var toolboxRiderRootPath = Path.Combine(toolboxPath, @"apps\Rider");
+      return toolboxRiderRootPath;
+    }
+
+    internal static string GetBuildNumber(string path)
+    {
+      var file = new FileInfo(Path.Combine(path, GetRelativePathToBuildTxt()));
+      if (!file.Exists) 
+        return string.Empty;
+      var text = File.ReadAllText(file.FullName);
+      if (text.Length > 3)
+        return text.Substring(3);
+      return string.Empty;
+    }
+
     private static string GetRelativePathToBuildTxt()
     {
 #if RIDER_EDITOR_PLUGIN
@@ -295,6 +313,32 @@ namespace JetBrains.Rider.Unity.Editor
     // Disable the "field is never assigned" compiler warning. We never assign it, but Unity does.
     // Note that Unity disable this warning in the generated C# projects
 #pragma warning disable 0649
+    
+    [Serializable]
+    class SettingsJson
+    {
+      // ReSharper disable once InconsistentNaming
+      public string install_location;
+      
+      [CanBeNull]
+      public static string GetInstallLocationFromJson(string json)
+      {
+        try
+        {
+#if UNITY_4_7 || UNITY_5_5
+          return JsonConvert.DeserializeObject<SettingsJson>(json).install_location;
+#else
+          return JsonUtility.FromJson<SettingsJson>(json).install_location;
+#endif
+        }
+        catch (Exception)
+        {
+          Logger.Warn($"Failed to get install_location from json {json}");
+        }
+
+        return null;
+      }
+    }
 
     [Serializable]
     class ToolboxHistory
