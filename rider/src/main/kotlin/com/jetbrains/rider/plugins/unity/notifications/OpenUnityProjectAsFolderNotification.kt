@@ -38,10 +38,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
 
             val solutionDescription = project.solutionDescription
             val title = "Unity features unavailable"
-            val content = "Configuration required:<br/>" +
-                "<ul><li>Install the <b>Rider package</b> in Unity’s Package Manager</li>" +
-                "<li>Select Rider as the External Editor</li>" +
-                "<li>Reopen Rider from Unity</li></ul>"
+            val content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and  Rider is set as the External Editor. Reopen Rider from Unity."
             if (solutionDescription is RdExistingSolution){ // proper solution
                 if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
                     val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
