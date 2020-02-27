@@ -37,8 +37,14 @@
 New in 2020.1
 
 Added:
+- Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix (RIDER-22812, #1459)
 - Exclude Boo and UnityScript namespaces, as well as the System.Diagnostics.Debug type from import completion (#574, #1473)
 - Add more attributes to external annotations. E.g. ShortcutAttribute will mark the method as in use (#1546, #1548)
+
+Changed:
+- Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled (#1459)
+- Stop marking a method as expensive if it only contains a null check (#1459)
+- Move vector multiplication order inspection to performance critical context only (#1459)
 
 Fixed:
 - Fix incorrect redundant SerializeField attribute warning for property backing field (#1016, #1464)

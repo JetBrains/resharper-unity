@@ -271,15 +271,23 @@
 <![CDATA[
 <p>
 <strong>New in 2020.1</strong>
+</p>
+<p>
 <em>Added:</em>
 <ul>
+  <li>Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix (<a href="https://youtrack.jetbrains.com/issue/RIDER-22812">RIDER-22812</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Exclude <tt>Boo</tt> and <tt>UnityScript</tt> namespaces, as well as the <tt>System.Diagnostics.Debug</tt> type from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1473">#1473</a>)</li>
   <li>Add more attributes to external annotations. E.g. <tt>ShortcutAttribute</tt> will mark the method as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/1546">#1546</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1548">#1548</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
+  <li>Stop marking a method as expensive if it only contains a null check (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
+  <li>Move vector multiplication order inspection to performance critical context only (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
+  <li>Rider: Adding file to Unity Explorer will add to correct C# project (<a href="https://youtrack.jetbrains.com/issue/RIDER-23169">RIDER-23169</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1470">#1470</a>)</li>
   <li>Rider: Show folders ending with <tt>~</tt> by default in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/1444">#1444</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Move Unity Explorer settings to main "gear" icon (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
+  <li>Unity Editor: Move caret to correct column when opening file (<a href="https://youtrack.jetbrains.com/issue/RIDER-27450">RIDER-27450</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1486">#1486</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
