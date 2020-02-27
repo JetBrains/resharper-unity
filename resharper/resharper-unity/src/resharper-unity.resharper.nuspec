@@ -38,6 +38,7 @@ New in 2020.1
 
 Added:
 - Exclude Boo and UnityScript namespaces, as well as the System.Diagnostics.Debug type from import completion (#574, #1473)
+- Add more attributes to external annotations. E.g. ShortcutAttribute will mark the method as in use (#1546, #1548)
 
 Fixed:
 - Fix incorrect redundant SerializeField attribute warning for property backing field (#1016, #1464)
