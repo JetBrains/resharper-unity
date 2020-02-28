@@ -7,15 +7,15 @@ Found usages  (3 usages found)
                 NewBehaviourScript  (1 usage found)
                     Start()  (1 usage found)
                         [244, Assets/NewBehaviourScript.cs] (10: 27)  gameObject.AddComponent<NewBehaviourScript>();
-    <Miscellaneous Files>  (2 usages found)
+    Assets  (2 usages found)
         SampleScene.unity  (2 usages found)
-            Prefab_NewName  (1 usage found)
-                Element0  (1 usage found)
-                    Element1  (1 usage found)
-                        NewBehaviourScript (Script)  (1 usage found)
-                            [4378, Assets/SampleScene.unity] (158: 38)  m_Script: {fileID: 11500000, guid: de52802ae1dfc7a4e9c6bf4c9bf2ad53, type: 3}
             Prefab  (1 usage found)
                 Element0  (1 usage found)
                     Element1  (1 usage found)
-                        NewBehaviourScript (Script)  (1 usage found)
-                            [21314, Assets/SampleScene.unity] (762: 38)  m_Script: {fileID: 11500000, guid: de52802ae1dfc7a4e9c6bf4c9bf2ad53, type: 3}
+                        NewBehaviourScript  (1 usage found)
+                            Guid: de52802ae1dfc7a4e9c6bf4c9bf2ad53
+            Prefab_NewName  (1 usage found)
+                Element0  (1 usage found)
+                    Element1  (1 usage found)
+                        NewBehaviourScript  (1 usage found)
+                            Guid: de52802ae1dfc7a4e9c6bf4c9bf2ad53

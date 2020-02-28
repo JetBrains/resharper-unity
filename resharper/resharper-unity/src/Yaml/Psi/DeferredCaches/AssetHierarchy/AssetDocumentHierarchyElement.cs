@@ -95,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             if (myLocalAnchorToHierarchyElement.TryGetValue(anchor, out var result))
             {
-                if (!result.IsStripped) // stipped means, that element is not real and we should import prefab
+                if (!result.IsStripped || prefabImportCache == null) // stipped means, that element is not real and we should import prefab
                     return result;
             }
             

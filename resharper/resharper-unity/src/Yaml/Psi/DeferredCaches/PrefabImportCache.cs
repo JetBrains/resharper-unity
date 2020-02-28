@@ -56,6 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public void Add(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
         {
+            Remove(sourceFile, assetDocumentHierarchyElement);
         }
 
         public void Remove(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)

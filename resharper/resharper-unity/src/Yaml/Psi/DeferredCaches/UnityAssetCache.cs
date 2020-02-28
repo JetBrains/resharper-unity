@@ -9,6 +9,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
@@ -23,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     [SolutionComponent]
     public class UnityAssetCache : DeferredCacheBase<UnityAssetData>
     {
+        private readonly AssetDocumentHierarchyElementContainer myHierarchyElementContainer;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly PrefabImportCache myPrefabImportCache;
         private readonly ILogger myLogger;
@@ -38,6 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             myLogger = logger;
             myOrderedContainers = unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList();
             myOrderedIncreasingContainers = myOrderedContainers.OrderBy(t => t.Order).ToList();
+
+            myHierarchyElementContainer = myOrderedContainers.First(t => t is AssetDocumentHierarchyElementContainer) as AssetDocumentHierarchyElementContainer;
         }
 
         public override bool IsApplicable(IPsiSourceFile sourceFile)
@@ -50,6 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData data)
         {
+            if (!data.UnityAssetDataElements.TryGetValue(myHierarchyElementContainer.Id, out var hierarchyElement))
+                return;
+            
             foreach (var container in myOrderedContainers)
             {
                 if (data.UnityAssetDataElements.TryGetValue(container.Id, out var element))
@@ -57,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     Assertion.Assert(container != null, "container != null");
                     try
                     {
-                        container.Merge(sourceFile, element);
+                        container.Merge(sourceFile,hierarchyElement as AssetDocumentHierarchyElement, element);
                     }
                     catch (Exception e)
                     {
@@ -162,6 +169,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             myDocumentNumber.TryRemove(sourceFile, out _);
             myCurrentTimeStamp.TryRemove(sourceFile, out _);
 
+            if (!data.UnityAssetDataElements.TryGetValue(myHierarchyElementContainer.Id, out var hierarchyElement))
+                return;
+            
             foreach (var container in myOrderedIncreasingContainers)
             {
                 if (data.UnityAssetDataElements.TryGetValue(container.Id, out var element))
@@ -169,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     Assertion.Assert(container != null, "container != null");
                     try
                     {
-                        container.Drop(sourceFile, element);
+                        container.Drop(sourceFile, hierarchyElement as AssetDocumentHierarchyElement, element);
                     }
                     catch (Exception e)
                     {

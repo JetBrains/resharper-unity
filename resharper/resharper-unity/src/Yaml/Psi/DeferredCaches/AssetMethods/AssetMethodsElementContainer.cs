@@ -30,11 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
         private readonly DeferredCachesLocks myDeferredCachesLocks;
 
-        public AssetMethodsElementContainer(ISolution solution, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer, DeferredCachesLocks deferredCachesLocks)
+        public AssetMethodsElementContainer(ISolution solution, AssetDocumentHierarchyElementContainer elementContainer, DeferredCachesLocks deferredCachesLocks)
         {
             mySolution = solution;
-            myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
             myDeferredCachesLocks = deferredCachesLocks;
+            myAssetDocumentHierarchyElementContainer = elementContainer;
         }
         
         private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName", false);
@@ -120,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             return null;
         }
 
-        public void Drop(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
+        public void Drop(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetMethodsDataElement;
             foreach (var method in element.Methods)
@@ -132,10 +132,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     myExternalCount.Remove(method.MethodName);
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
-                    if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(localReference, false) is IScriptComponentHierarchy script)
+                    if (assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, null) is IScriptComponentHierarchy script)
                     {
-                        myLocalUsages.Remove(method.MethodName, new AssetMethodData(LocalReference.Null, method.MethodName, TextRange.InvalidRange,
-                            method.Mode, method.Type, script.ScriptReference));
+                        if (script.IsStripped)
+                        {
+                            myExternalCount.Remove(method.MethodName);
+                        }
+                        else
+                        {
+                            myLocalUsages.Remove(method.MethodName, new AssetMethodData(LocalReference.Null,
+                                method.MethodName, TextRange.InvalidRange,
+                                method.Mode, method.Type, script.ScriptReference));
+                        }
                     }
                 }
             }
@@ -143,7 +151,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             myPsiSourceFileToMethods.Remove(sourceFile);
         }
 
-        public void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
+        public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = (unityAssetDataElement as AssetMethodsDataElement).NotNull("element != null");
             var groupMethods = new OneToListMap<string, AssetMethodData>();
@@ -157,10 +165,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     myExternalCount.Add(method.MethodName);
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
-                    if (myAssetDocumentHierarchyElementContainer.GetHierarchyElement(localReference, false) is IScriptComponentHierarchy script)
+                    if (assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, null) is IScriptComponentHierarchy script)
                     {
-                        myLocalUsages.Add(method.MethodName, new AssetMethodData(LocalReference.Null, method.MethodName, TextRange.InvalidRange,
-                            method.Mode, method.Type, script.ScriptReference));
+                        if (script.IsStripped)
+                        {
+                            myExternalCount.Add(method.MethodName);
+                        }
+                        else
+                        {
+                            myLocalUsages.Add(method.MethodName, new AssetMethodData(LocalReference.Null,
+                                method.MethodName, TextRange.InvalidRange,
+                                method.Mode, method.Type, script.ScriptReference));
+                        }
                     }
                 }
             }
@@ -172,11 +188,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
         {
             return myDeferredCachesLocks.ExecuteUnderReadLock(_ =>
             {
+                if (declaredElement is IProperty property)
+                {
+                    var setter = property.Setter;
+                    if (setter != null && myShortNameToScriptTarget.GetValues(setter.ShortName).Length > 0)
+                        return true;
+                    
+                    var getter = property.Getter;
+                    if (getter != null && myShortNameToScriptTarget.GetValues(getter.ShortName).Length > 0)
+                        return true;
+
+                    return false;
+                }
+                
                 return myShortNameToScriptTarget.GetValues(declaredElement.ShortName).Length > 0;
             });
         }
-        
+
         public int GetAssetUsagesCount(IDeclaredElement declaredElement, out bool estimatedResult)
+        {
+            if (declaredElement is IProperty property)
+            {
+                var getter = property.Getter;
+                var setter = property.Setter;
+
+                var count = 0;
+                estimatedResult = false;
+                if (getter != null)
+                {
+                    count += GetAssetUsagesCountInner(getter, out var getterEstimated);
+                    estimatedResult |= getterEstimated;
+                }
+                
+                if (setter != null)
+                {
+                    count += GetAssetUsagesCountInner(setter, out var setterEstimated);
+                    estimatedResult |= setterEstimated;
+                }
+
+                return count;
+            }
+
+            return GetAssetUsagesCountInner(declaredElement, out estimatedResult);
+        }
+        
+        public int GetAssetUsagesCountInner(IDeclaredElement declaredElement, out bool estimatedResult)
         {
             estimatedResult = false;
             if (!(declaredElement is IClrDeclaredElement clrDeclaredElement))
@@ -220,8 +276,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
         private string GetScriptGuid(AssetMethodData assetMethodData)
         {
             var reference = assetMethodData.TargetScriptReference;
-            var scriptComponent = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference, false) as IScriptComponentHierarchy;
-            var guid = scriptComponent?.ScriptReference.ExternalAssetGuid; 
+            var scriptComponent = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference, true) as IScriptComponentHierarchy;
+            var guid = scriptComponent?.ScriptReference?.ExternalAssetGuid; 
             
             return guid;
         }

@@ -3,7 +3,7 @@ Block 80 BlockLensListRenderer
 Top
     Visible
         Text RdTextRange(startOffset=93, endOffset=111) 6 asset usages
-        Text RdTextRange(startOffset=93, endOffset=111) 7 usages
+        Text RdTextRange(startOffset=93, endOffset=111) 1 usage
     Hidden
 Block 163 BlockLensListRenderer
 Top

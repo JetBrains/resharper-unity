@@ -37,6 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private static readonly StringSearcher ourCorrespondingObjectSearcher = new StringSearcher("m_CorrespondingSourceObject:", true);
         private static readonly StringSearcher ourCorrespondingObjectSearcher2017 = new StringSearcher("m_PrefabParentObject:", true);
         private static readonly StringSearcher ourSourcePrefabSearcher = new StringSearcher("m_SourcePrefab:", true);
+        private static readonly StringSearcher ourSourcePrefab2017Searcher = new StringSearcher("m_ParentPrefab:", true);
         private static readonly StringSearcher ourFatherSearcher = new StringSearcher("m_Father:", true);
         private static readonly StringSearcher ourBracketSearcher = new StringSearcher("}", true);
         private static readonly StringSearcher ourEndLineSearcher = new StringSearcher("\n", true);
@@ -101,7 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         
         [CanBeNull]
         public static AssetDocumentReference GetSourcePrefab(IBuffer assetDocumentBuffer) =>
-            GetReferenceBySearcher(assetDocumentBuffer, ourSourcePrefabSearcher);
+            GetReferenceBySearcher(assetDocumentBuffer, ourSourcePrefabSearcher) ?? GetReferenceBySearcher(assetDocumentBuffer, ourSourcePrefab2017Searcher);
 
         public static int GetRootIndex(IBuffer assetDocumentBuffer)
         {
@@ -230,7 +231,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         
         public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
         {
-            if (componentHierarchy is IScriptComponentHierarchy scriptComponent)
+            if (componentHierarchy is IScriptComponentHierarchy scriptComponent && scriptComponent.ScriptReference != null)
             {
                 var result = metaFileGuidCache.GetAssetNames(scriptComponent.ScriptReference.ExternalAssetGuid).FirstOrDefault();
                 if (result != null)

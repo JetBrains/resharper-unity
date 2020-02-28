@@ -47,7 +47,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityYamlDisableStrategy myUnityYamlDisableStrategy;
-        private readonly AssetSerializationMode myAssetSerializationMode;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
 
@@ -61,8 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityYamlDisableStrategy unityYamlDisableStrategy,
                                                  ISettingsSchema settingsSchema,
-                                                 SettingsLayersProvider settingsLayersProvider,
-                                                 AssetSerializationMode assetSerializationMode)
+                                                 SettingsLayersProvider settingsLayersProvidert)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -74,7 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
             myUnityYamlDisableStrategy = unityYamlDisableStrategy;
-            myAssetSerializationMode = assetSerializationMode;
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
@@ -103,11 +100,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             // Note that this means we process meta and asset files for class library projects, which likely won't have
             // asset files. We can't use IsUnityGeneratedProject because any project based in the Packages folder or
             // using 'file:' won't be processed.
-            if (!myAssetSerializationMode.IsForceText || !project.IsUnityProject())
+            if (!project.IsUnityProject())
                 return;
 
             var externalFiles = CollectExternalFilesForUnityProject();
-            if (externalFiles.LargeAssets.Count > 0) myUnityYamlDisableStrategy.Run(externalFiles.LargeAssets);
+            if (externalFiles.AssetFiles.Count > 0) myUnityYamlDisableStrategy.Run(externalFiles.AssetFiles);
 
             CollectExternalFilesForAsmDefProject(externalFiles, project);
             AddExternalFiles(externalFiles);
@@ -211,15 +208,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private void AddExternalFiles(ExternalFiles externalFiles)
         {
             var builder = new PsiModuleChangeBuilder();
-            AddExternalPsiSourceFiles(externalFiles.LargeAssets, builder);
-
-#if RESHARPER
-            AddExternalPsiSourceFiles(externalFiles.SmallAssets, builder);
-#endif
+            AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
+            AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
             FlushChanges(builder);
 
 #if RIDER
-            AddExternalProjectFiles(externalFiles.SmallAssets);
+            AddExternalProjectFiles(externalFiles.AssetFiles);
 #endif
 
             // We should only start watching for file system changes after adding the files we know about
@@ -274,9 +268,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         // UnityMiscFilesProjectPsiModuleProvider
         private void AddExternalProjectFile(FileSystemPath path)
         {
-            if (mySolution.FindProjectItemsByLocation(path).Count > 0)
-                return;
-
             var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
             var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
@@ -286,7 +277,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private void UpdateStatistics(ExternalFiles externalFiles)
         {
-            foreach (var directoryEntry in externalFiles.LargeAssets)
+            foreach (var directoryEntry in externalFiles.AssetFiles)
             {
                 if (directoryEntry.RelativePath.IsAsset())
                     AssetSizes.Add(directoryEntry.Length);
@@ -369,11 +360,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             switch (delta.ChangeType)
             {
                 case FileSystemChangeType.ADDED:
-                    if (delta.NewPath.IsMeta())
+                    if (delta.NewPath.IsInterestingAsset())
                     {
-                        projectFilesToAdd.Add(delta.NewPath);
+                        if (!IsKnownBinaryAsset(delta.NewPath) && !IsAssetExcludedByName(delta.NewPath))
+                            projectFilesToAdd.Add(delta.NewPath);
                     }
-                    else if (!IsKnownBinaryAsset(delta.NewPath) &&!IsAssetExcludedByName(delta.NewPath) && delta.NewPath.IsInterestingAsset())
+                    else if (delta.NewPath.IsInterestingMeta())
                         AddExternalPsiSourceFile(builder, delta.NewPath);
                     break;
 
@@ -452,16 +444,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private class ExternalFiles
         {
-            public readonly List<DirectoryEntryData> SmallAssets = new List<DirectoryEntryData>();
-            public readonly List<DirectoryEntryData> LargeAssets = new List<DirectoryEntryData>();
+            public readonly List<DirectoryEntryData> MetaFiles = new List<DirectoryEntryData>();
+            public readonly List<DirectoryEntryData> AssetFiles = new List<DirectoryEntryData>();
             public FrugalLocalList<DirectoryEntryData> KnownBinaryAssetFiles = new FrugalLocalList<DirectoryEntryData>();
             public FrugalLocalList<DirectoryEntryData> ExcludedByNameAssetFiles = new FrugalLocalList<DirectoryEntryData>();
             public FrugalLocalList<FileSystemPath> Directories = new FrugalLocalList<FileSystemPath>();
 
             public void AddFile(DirectoryEntryData directoryEntry)
             {
-                if (directoryEntry.RelativePath.IsMeta() || directoryEntry.BaseDir.Components.LastOrEmpty.Equals("ProjectSettings"))
-                    SmallAssets.Add(directoryEntry);
+                if (directoryEntry.RelativePath.IsInterestingMeta())
+                    MetaFiles.Add(directoryEntry);
                 else if (directoryEntry.RelativePath.IsInterestingAsset())
                 {
                     if (IsKnownBinaryAsset(directoryEntry))
@@ -469,7 +461,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     else if (IsAssetExcludedByName(directoryEntry.RelativePath))
                         ExcludedByNameAssetFiles.Add(directoryEntry);
                     else
-                        LargeAssets.Add(directoryEntry);
+                        AssetFiles.Add(directoryEntry);
                 }
             }
 

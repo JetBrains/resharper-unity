@@ -42,6 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return owner.GetTransformHierarchy(this);
         }
 
+        // Null only for stripped objects
+        [CanBeNull] 
         public virtual string Name { get; }
 
         public GameObjectHierarchy(LocalReference location, string name, LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped)

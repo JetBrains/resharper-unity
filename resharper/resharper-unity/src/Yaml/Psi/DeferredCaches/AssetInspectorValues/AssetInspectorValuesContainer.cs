@@ -6,6 +6,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Deserializers;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
@@ -98,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return null;
         }
 
-        public void Drop(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
+        public void Drop(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetInspectorValuesDataElement;
             foreach (var variableUsage in element.VariableUsages)
@@ -149,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             }
         }
 
-        public void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
+        public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement,IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetInspectorValuesDataElement;
             var inspectorUsages = new OneToListMap<string, InspectorVariableUsage>();
