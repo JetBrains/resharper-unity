@@ -4,6 +4,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -35,6 +36,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {                
                 var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
+                bool stripped = AssetUtils.IsStripped(assetDocument.Buffer);
+                if (stripped) // we will handle it in prefabs
+                    return null;
+                
                 if (!anchorRaw.HasValue)
                     return null;
 
@@ -61,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             return null;
         }
 
-        public void Drop(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
+        public void Drop(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var dataElement = unityAssetDataElement as AssetUsagesDataElement;
             foreach (var assetUsage in dataElement.AssetUsages)
@@ -81,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             }
         }
 
-        public void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
+        public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var dataElement = unityAssetDataElement as AssetUsagesDataElement;
             foreach (var assetUsage in dataElement.AssetUsages)

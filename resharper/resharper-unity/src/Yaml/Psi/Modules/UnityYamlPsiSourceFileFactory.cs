@@ -35,15 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             return file;
         }
         
-        public IPsiSourceFile CreatePsiProjectFile(IPsiModule psiModule, IProjectFile projectFile)
-        {
-            var file = new UnityYamlAssetPsiSourceFile(projectFile, myProjectFileExtensions, myProjectFileTypeCoordinator,
-                psiModule, projectFile.Location, Memoize(PropertiesFactory), myDocumentManager, UniversalModuleReferenceContext.Instance);
-            // Prime the file system cache
-            file.GetCachedFileSystemData();
-            return file;
-        }
-
         // The PropertiesFactory passed to PsiSourceFileFromPath is called on EVERY access to IPsiSourceFile.Properties.
         // This function allows us to create a single instance for each file. The cache variable (as well as the func
         // parameter) are captured into a closure class. When the closure's is invoked, we can populate and return the

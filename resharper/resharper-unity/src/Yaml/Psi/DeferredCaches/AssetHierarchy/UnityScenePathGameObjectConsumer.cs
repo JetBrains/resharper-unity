@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         
         public bool AddGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject)
         {
-            myParts.Push(gameObject.Name);
+            myParts.Push(gameObject.Name ?? "...");
             myIndex.Push(gameObject.GetTransformHierarchy(owner).RootIndex);
             return !myOnlyName;
         }

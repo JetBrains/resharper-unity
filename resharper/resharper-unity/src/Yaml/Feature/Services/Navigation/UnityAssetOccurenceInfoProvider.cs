@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public OccurrenceMergeContext GetMergeContext(IOccurrence occurrence)
         {
-            return OccurrenceMergeContext.Empty;
+            return new OccurrenceMergeContext(occurrence);
         }
 
         public TextRange GetTextRange(IOccurrence occurrence)

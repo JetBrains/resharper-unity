@@ -51,7 +51,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             var module = mySolution.GetComponent<UnityExternalFilesModuleFactory>().PsiModule;
             var searchDomain = SearchDomainFactory.Instance.CreateSearchDomain(module);
             var results = new List<UnityMethodsFindResult>();
-            finder.Find(new []{de}, searchDomain, new FindResultConsumer(result =>
+
+            var elements = de is IProperty property ? new[] {de, property.Getter, property.Setter} : new[] {de};
+            
+            finder.Find(elements, searchDomain, new FindResultConsumer(result =>
             {
                 if (result is UnityMethodsFindResult fr)
                 {

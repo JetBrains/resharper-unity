@@ -108,18 +108,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils
         private void ReadFragment()
         {
             Assertion.Assert(!myIsEof, "!myIsEof");
-            char[] buffer = new char[myBufferSize];
-            var readCount = myStreamReader.ReadBlock(buffer, 0, myBufferSize);
-            if (readCount != myBufferSize)
-            {
 
-                myLength = myReadFragmentsCount * myBufferSize + readCount;
-                myIsEof = true;
+            var builder = new StringBuilder();
+            
+            // replace '\r\n' to '\n'
+            // replace '\r' to '\n'
+            while (builder.Length != myBufferSize)
+            {
+                char[] buffer = new char[myBufferSize];
+                var queryRead = myBufferSize - builder.Length;
+                var readCount = myStreamReader.ReadBlock(buffer, 0, queryRead);
+                
+                for (int i = 0; i < readCount; i++)
+                {
+                    var c = buffer[i];
+                    if (c == '\r')
+                    {
+                        // next character is not '\n'
+                        if (i == readCount - 1 && myStreamReader.Peek() != '\n' || buffer[i + 1] != '\n')
+                            builder.Append('\n');
+                    }
+                    else
+                    {
+                        builder.Append(c);
+                    }
+                }
+                
+                if (readCount != queryRead)
+                {
+                    myLength = myReadFragmentsCount * myBufferSize + builder.Length;
+                    myIsEof = true;
+                    break;
+                }
             }
-            if (readCount == 0)
+                        
+            if (builder.Length == 0)
                 return;
 
-            myFragments.Add(new BufferFragment(myReadFragmentsCount * myBufferSize, buffer));
+            myFragments.Add(new BufferFragment(myReadFragmentsCount * myBufferSize, builder));
             myReadFragmentsCount++;
         }
 
@@ -147,9 +173,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils
         private class BufferFragment
         {
             private readonly int myCharIndex;
-            private readonly char[] myBuffer;
+            private readonly StringBuilder myBuffer;
 
-            public BufferFragment(int charIndex, char[] buffer)
+            public BufferFragment(int charIndex, StringBuilder buffer)
             {
                 myCharIndex = charIndex;
                 myBuffer = buffer;

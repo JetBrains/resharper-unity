@@ -73,15 +73,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     }
                 }
 
-                if (documentReference != null)
+                if (isStripped || documentReference != null)
                 {
-                    var scriptAnchorRaw = documentReference.AnchorLong;
-                    if (!scriptAnchorRaw.HasValue)
-                        return null;
+                    var scriptAnchorRaw = documentReference?.AnchorLong;
                     
                     return new AssetDocumentHierarchyElement(
                             new ScriptComponentHierarchy(location,
-                            new ExternalReference(documentReference.ExternalAssetGuid, scriptAnchorRaw.Value),
+                            !scriptAnchorRaw.HasValue ? null : new ExternalReference(documentReference.ExternalAssetGuid, scriptAnchorRaw.Value),
                             gameObject,
                             prefabInstance,
                             correspondingSourceObject,
@@ -97,11 +95,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             } else if (AssetUtils.IsGameObject(assetDocument.Buffer))
             {
                 var name = AssetUtils.GetGameObjectName(assetDocument.Buffer);
-                if (name == null)
-                    return null;
-                
-                return new AssetDocumentHierarchyElement(
-                    new GameObjectHierarchy(location, name, prefabInstance, correspondingSourceObject, isStripped));
+                if (isStripped || name != null)
+                {
+                    return new AssetDocumentHierarchyElement(new GameObjectHierarchy(location, name, prefabInstance, correspondingSourceObject, isStripped));
+                }
             } else if (AssetUtils.IsPrefabModification(assetDocument.Buffer))
             {
                 var modification = AssetUtils.GetPrefabModification(assetDocument.Document);
@@ -158,13 +155,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return null;
         }
 
-        public void Drop(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
+        public void Drop(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement hierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             myPrefabImportCache.Remove(sourceFile, unityAssetDataElement as AssetDocumentHierarchyElement);
             myAssetDocumentsHierarchy.TryRemove(sourceFile, out _);
         }
 
-        public void Merge(IPsiSourceFile sourceFile, IUnityAssetDataElement unityAssetDataElement)
+        public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement hierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetDocumentHierarchyElement;
             element.AssetDocumentHierarchyElementContainer = this;

@@ -1,4 +1,6 @@
+using System.Linq;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi.Search;
 
@@ -11,7 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         {
             if (findResult is UnityScriptsFindResults unityScriptsFindResults)
             {
-                return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer, unityScriptsFindResults.AttachedElement); 
+                var guid = (unityScriptsFindResults.AssetUsage.Dependencies.FirstOrDefault() as ExternalReference)?.ExternalAssetGuid ?? "INVALID";
+                return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer, unityScriptsFindResults.AttachedElement, guid); 
             }
             
             if (findResult is UnityInspectorFindResults unityInspectorFindResults)
@@ -21,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             
             if (findResult is UnityMethodsFindResult unityMethodsFindResult)
             {
-                return new UnityMethodsOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer, unityMethodsFindResult.AttachedElement); 
+                return new UnityMethodsOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer, unityMethodsFindResult.AttachedElement,unityMethodsFindResult.AssetMethodData); 
             }
             
             return null;

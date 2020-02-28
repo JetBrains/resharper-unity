@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
 
@@ -35,12 +36,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             ScriptReference = scriptReference;
         }
 
-        [NotNull]
+        [CanBeNull]
         public virtual ExternalReference ScriptReference { get; }
 
         protected bool Equals(ScriptComponentHierarchy other)
         {
             return base.Equals(other) && Equals(ScriptReference, other.ScriptReference);
+        }
+
+        public override IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        {
+            return new ImportedScriptComponentHierarchy(prefabInstanceHierarchy, this);
         }
 
         public override bool Equals(object obj)
@@ -55,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ (ScriptReference.GetHashCode());
+                return (base.GetHashCode() * 397) ^ (ScriptReference != null ? ScriptReference.GetHashCode() : 0);
             }
         }
     }
