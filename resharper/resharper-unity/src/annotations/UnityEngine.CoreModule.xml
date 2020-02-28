@@ -440,4 +440,8 @@
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
   </member>
 
+  <!-- N:AOT -->
+  <member name="T:AOT.MonoPInvokeCallbackAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
 </assembly>

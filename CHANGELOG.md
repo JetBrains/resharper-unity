@@ -14,7 +14,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 - Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix ([RIDER-22818](https://youtrack.jetbrains.com/issue/RIDER-22812), [#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
 - Exclude `Boo` and `UnityScript` namespaces, as well as the `System.Diagnostics.Debug` type from import completion ([#574](https://github.com/JetBrains/resharper-unity/issues/574), [#1473](https://github.com/JetBrains/resharper-unity/pull/1473))
-- Add more attributes to external annotations. E.g. `ShortcutAttribute` will mark the method as in use ([#1546](https://github.com/JetBrains/resharper-unity/issues/1546), [#1548](https://github.com/JetBrains/resharper-unity/pull/1548))
+- Add more attributes to external annotations. E.g. `ShortcutAttribute` will mark the method as in use ([#1546](https://github.com/JetBrains/resharper-unity/issues/1546), [RIDER-40330](https://youtrack.jetbrains.com/issue/RIDER-40330), [#1548](https://github.com/JetBrains/resharper-unity/pull/1548))
 
 ### Changed
 

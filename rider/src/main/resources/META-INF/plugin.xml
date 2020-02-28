@@ -277,7 +277,7 @@
 <ul>
   <li>Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix (<a href="https://youtrack.jetbrains.com/issue/RIDER-22812">RIDER-22812</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Exclude <tt>Boo</tt> and <tt>UnityScript</tt> namespaces, as well as the <tt>System.Diagnostics.Debug</tt> type from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1473">#1473</a>)</li>
-  <li>Add more attributes to external annotations. E.g. <tt>ShortcutAttribute</tt> will mark the method as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/1546">#1546</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1548">#1548</a>)</li>
+  <li>Add more attributes to external annotations. E.g. <tt>ShortcutAttribute</tt> will mark the method as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/1546">#1546</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-40330">RIDER-40330</a> <a href="https://github.com/JetBrains/resharper-unity/pull/1548">#1548</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
