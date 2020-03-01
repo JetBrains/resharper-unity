@@ -210,11 +210,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             var builder = new PsiModuleChangeBuilder();
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
-            FlushChanges(builder);
-
-#if RIDER
-            AddExternalProjectFiles(externalFiles.AssetFiles);
-#endif
+            FlushChanges(builder, externalFiles.AssetFiles.Select(t => t.GetAbsolutePath()).ToList());
 
             // We should only start watching for file system changes after adding the files we know about
             foreach (var directory in externalFiles.Directories)
@@ -344,8 +340,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     var builder = new PsiModuleChangeBuilder();
                     var projectFilesToAdd = new List<FileSystemPath>();
                     ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
-                    AddExternalProjectFiles(projectFilesToAdd);
-                    FlushChanges(builder);
+                    FlushChanges(builder, projectFilesToAdd);
                 });
         }
 
@@ -363,7 +358,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     if (delta.NewPath.IsInterestingAsset())
                     {
                         if (!IsKnownBinaryAsset(delta.NewPath) && !IsAssetExcludedByName(delta.NewPath))
+                        {
+                            AddExternalPsiSourceFile(builder, delta.NewPath);
                             projectFilesToAdd.Add(delta.NewPath);
+                        }
                     }
                     else if (delta.NewPath.IsInterestingMeta())
                         AddExternalPsiSourceFile(builder, delta.NewPath);
@@ -404,7 +402,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             return module.TryGetFileByPath(path, out var sourceFile) ? sourceFile : null;
         }
 
-        private void FlushChanges(PsiModuleChangeBuilder builder)
+        private void FlushChanges(PsiModuleChangeBuilder builder, List<FileSystemPath> projectFilesToAdd)
         {
             if (builder.IsEmpty)
                 return;
@@ -436,6 +434,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                         }
 
                         myChangeManager.OnProviderChanged(this, builder.Result, SimpleTaskExecutor.Instance);
+                        
+#if RIDER
+                        AddExternalProjectFiles(projectFilesToAdd);
+#endif
                     }
                 });
         }
