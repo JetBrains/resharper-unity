@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
+using JetBrains.DocumentManagers;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
@@ -25,6 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     public class UnityAssetCache : DeferredCacheBase<UnityAssetData>
     {
         private readonly AssetDocumentHierarchyElementContainer myHierarchyElementContainer;
+        private readonly DocumentToProjectFileMappingStorage myDocumentToProjectFileMappingStorage;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly PrefabImportCache myPrefabImportCache;
         private readonly ILogger myLogger;
@@ -32,9 +34,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private readonly List<IUnityAssetDataElementContainer> myOrderedIncreasingContainers;
         private readonly ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)> myDocumentNumber = new ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)>();
         private readonly ConcurrentDictionary<IPsiSourceFile, long> myCurrentTimeStamp = new ConcurrentDictionary<IPsiSourceFile, long>();
-        public UnityAssetCache(Lifetime lifetime, AssetIndexingSupport assetIndexingSupport, PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers, ILogger logger)
+        public UnityAssetCache(Lifetime lifetime, DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage, AssetIndexingSupport assetIndexingSupport, PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers, ILogger logger)
             : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate))
         {
+            myDocumentToProjectFileMappingStorage = documentToProjectFileMappingStorage;
             myAssetIndexingSupport = assetIndexingSupport;
             myPrefabImportCache = prefabImportCache;
             myLogger = logger;
@@ -84,43 +87,61 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 return new UnityAssetData();
             
             var (result, alreadyBuildDocId) = GetAlreadyBuildDocId(psiSourceFile);
-            psiSourceFile.GetLocation().ReadStream(s =>
+            EnumerateDocuments(psiSourceFile, buffer =>
             {
-                using (var sr = new StreamReader(s, Encoding.UTF8, true, BUFFER_SIZE))
+                var lexer = new UnityYamlLexer(buffer);
+                lexer.Start();
+
+                var docId = 0;
+                while (lexer.TokenType != null)
                 {
-                    var buffer = new StreamReaderBuffer(sr, BUFFER_SIZE);
-                    var lexer = new UnityYamlLexer(buffer);
-                    lexer.Start();
-
-                    var docId = 0;
-                    while (lexer.TokenType != null)
-                    {
-                        if (!lifetime.IsAlive)
-                            throw new OperationCanceledException();
+                    if (!lifetime.IsAlive)
+                        throw new OperationCanceledException();
                         
-                        docId++;
+                    docId++;
 
-                        if (docId > alreadyBuildDocId)
+                    if (docId > alreadyBuildDocId)
+                    {
+                        if (lexer.TokenType == UnityYamlTokenType.DOCUMENT)
                         {
-                            if (lexer.TokenType == UnityYamlTokenType.DOCUMENT)
-                            {
-                                var documentBuffer = ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd));
-                                BuildDocument(result, lifetime, psiSourceFile, lexer.TokenStart, documentBuffer);
-                            }
-
-                            myDocumentNumber[psiSourceFile] = (result, docId);
-                            myCurrentTimeStamp[psiSourceFile] = psiSourceFile.GetAggregatedTimestamp();
+                            var documentBuffer = ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd));
+                            BuildDocument(result, lifetime, psiSourceFile, lexer.TokenStart, documentBuffer);
                         }
 
-                        buffer.DropFragments();
-                        lexer.Advance();
+                        myDocumentNumber[psiSourceFile] = (result, docId);
+                        myCurrentTimeStamp[psiSourceFile] = psiSourceFile.GetAggregatedTimestamp();
                     }
-                    
+
+                    if (buffer is StreamReaderBuffer streamReaderBuffer)
+                    {
+                        streamReaderBuffer.DropFragments();
+                    }
+
                     lexer.Advance();
                 }
             });
             
             return result;
+        }
+
+        private void EnumerateDocuments(IPsiSourceFile sourceFile, Action<IBuffer> bufferProcessor)
+        {
+            var existingDocument = myDocumentToProjectFileMappingStorage.TryGetDocumentByPath(sourceFile.GetLocation());
+            if (existingDocument != null)
+            {
+                bufferProcessor(existingDocument.Buffer);
+            }
+            else
+            {
+                sourceFile.GetLocation().ReadStream(s =>
+                {
+                    using (var sr = new StreamReader(s, Encoding.UTF8, true, BUFFER_SIZE))
+                    {
+                        var buffer = new StreamReaderBuffer(sr, BUFFER_SIZE);
+                        bufferProcessor(buffer);
+                    }
+                });
+            }
         }
 
         private (UnityAssetData, int) GetAlreadyBuildDocId(IPsiSourceFile psiSourceFile)
