@@ -125,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils
                     if (c == '\r')
                     {
                         // next character is not '\n'
-                        if (i == readCount - 1 && myStreamReader.Peek() != '\n' || buffer[i + 1] != '\n')
+                        if (i == readCount - 1 && myStreamReader.Peek() != '\n' || i != readCount - 1 && buffer[i + 1] != '\n')
                             builder.Append('\n');
                     }
                     else
