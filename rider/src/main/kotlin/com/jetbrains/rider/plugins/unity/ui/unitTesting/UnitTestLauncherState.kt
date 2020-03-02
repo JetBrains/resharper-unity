@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.ui.UnitTest
+package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.components.PersistentStateComponent
@@ -13,7 +13,7 @@ import com.jetbrains.rider.projectView.solution
 import org.jdom.Element
 
 @State(name = "UnityUnitTestConfiguration", storages = [(Storage(StoragePathMacros.WORKSPACE_FILE))])
-class UnitTestLauncherState(val project: Project, val propertiesComponent: PropertiesComponent) : PersistentStateComponent<Element> {
+class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Element> {
 
     companion object {
         const val discoverLaunchViaUnity = "Discover.Launch.Via.Unity"
@@ -25,6 +25,7 @@ class UnitTestLauncherState(val project: Project, val propertiesComponent: Prope
     }
 
     init {
+        val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance(project)
         if (!propertiesComponent.getBoolean(discoverLaunchViaUnity)) {
             val nestedLifetime = project.lifetime.createNested()
             project.solution.rdUnityModel.sessionInitialized.advise(nestedLifetime){ isConnected ->
@@ -69,5 +70,4 @@ class UnitTestLauncherState(val project: Project, val propertiesComponent: Prope
 
         return UnitTestLaunchPreference.EditMode
     }
-
 }

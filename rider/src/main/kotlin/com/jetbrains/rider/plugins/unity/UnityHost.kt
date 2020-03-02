@@ -15,7 +15,7 @@ import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
+import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.rdUnityModel
@@ -32,8 +32,8 @@ import com.sun.jna.Native
 import com.sun.jna.win32.StdCallLibrary
 import java.awt.Frame
 
-class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComponent(project) {
-    val model = project.solution.rdUnityModel
+class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
+    private val model = project.solution.rdUnityModel
     private val logger = Logger.getInstance(UnityHost::class.java)
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
@@ -65,7 +65,7 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             val task = RdTask<Boolean>()
 
             val configuration =
-                runManager.findConfigurationByTypeAndName(UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
+                RunManager.getInstance(project).findConfigurationByTypeAndName(UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
             if (configuration == null)
                 task.set(false)
             else {
@@ -124,4 +124,4 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
     private val user32 = if (SystemInfo.isWindows) Native.load("user32", User32::class.java) else null
 }
 
-fun Project.isConnectedToEditor() = UnityHost.getInstance(this).sessionInitialized.valueOrDefault(false)
+fun Project.isConnectedToEditor() = this.solution.rdUnityModel.sessionInitialized.valueOrDefault(false)
