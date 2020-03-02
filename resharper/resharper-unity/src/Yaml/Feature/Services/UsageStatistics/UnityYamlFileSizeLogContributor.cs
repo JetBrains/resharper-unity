@@ -12,13 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.UsageStatistic
     public class UnityYamlFileSizeLogContributor : IActivityLogContributorSolutionComponent
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
-        private readonly UnityYamlSupport myUnityYamlSupport;
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly UnityExternalFilesModuleProcessor myModuleProcessor;
 
-        public UnityYamlFileSizeLogContributor(UnitySolutionTracker unitySolutionTracker, UnityYamlSupport unityYamlSupport, UnityExternalFilesModuleProcessor moduleProcessor)
+        public UnityYamlFileSizeLogContributor(UnitySolutionTracker unitySolutionTracker, AssetIndexingSupport assetIndexingSupport, UnityExternalFilesModuleProcessor moduleProcessor)
         {
             myUnitySolutionTracker = unitySolutionTracker;
-            myUnityYamlSupport = unityYamlSupport;
+            myAssetIndexingSupport = assetIndexingSupport;
             myModuleProcessor = moduleProcessor;
         }
 
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.UsageStatistic
             unityYamlStats["a"] = JArray.FromObject(myModuleProcessor.AssetSizes);
             unityYamlStats["kba"] = JArray.FromObject(myModuleProcessor.KnownBinaryAssetSizes);
             unityYamlStats["ebna"] = JArray.FromObject(myModuleProcessor.ExcludedByNameAssetsSizes);
-            unityYamlStats["e"] = myUnityYamlSupport.IsUnityYamlParsingEnabled.Value;
+            unityYamlStats["e"] = myAssetIndexingSupport.IsEnabled.Value;
         }
     }
 }

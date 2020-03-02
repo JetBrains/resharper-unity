@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
                 "Show gutter icons for implicit script usages");
 
             Header("Text based assets");
-            CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
+            CheckBox((UnitySettings s) => s.IsAssetIndexingEnabled,
                 "Parse text based asset files for implicit script usages (requires re-opening solution)");
 
             if (productConfigurations.IsInternalMode())

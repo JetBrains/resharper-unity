@@ -1,13 +1,13 @@
 Search target
     NewBehaviourScript.PropertyEventHandler:int
 Found usages  (2 usages found)
-    <Miscellaneous Files>  (2 usages found)
+    Assets  (2 usages found)
         Button (1).prefab  (1 usage found)
             Button (1)  (1 usage found)
                 MonoBehaviour  (1 usage found)
-                    [5584, Assets/Button (1).prefab] (175: 23)  m_MethodName: set_PropertyEventHandler
+                    m_MethodName: set_PropertyEventHandler
         SampleScene.unity  (1 usage found)
             Canvas  (1 usage found)
                 Button2  (1 usage found)
                     MonoBehaviour  (1 usage found)
-                        [28782, Assets/SampleScene.unity] (1007: 23)  m_MethodName: set_PropertyEventHandler
+                        m_MethodName: set_PropertyEventHandler

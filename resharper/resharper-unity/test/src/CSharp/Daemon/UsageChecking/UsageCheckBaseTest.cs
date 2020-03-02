@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
             {
                 ChangeSettingsTemporarily(lifetime).BoundStore.SetValue(HighlightingSettingsAccessor.AnalysisEnabled, AnalysisScope.SOLUTION);
                 if (DisableYamlParsing())
-                    ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => key.IsYamlParsingEnabled, false);
+                    ChangeSettingsTemporarily(lifetime).BoundStore.SetValue((UnitySettings key) => key.IsAssetIndexingEnabled, false);
 
                 var files = swea.GetFilesToAnalyze().OrderBy(f => f.Name).ToList();
                 foreach (var file in files)

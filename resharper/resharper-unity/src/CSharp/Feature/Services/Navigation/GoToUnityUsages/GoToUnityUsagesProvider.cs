@@ -31,7 +31,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.G
             var solutionTracker = solution.GetComponent<UnitySolutionTracker>();
             if (!solutionTracker.IsUnityProject.HasTrueValue())
                 yield break;
-
+            
+            solution.GetComponent<UnityUsagesDeferredCachesNotification>().CheckAndShowNotification();
+            
             var navigationExecutionHost = DefaultNavigationExecutionHost.GetInstance(solution);
 
             var execution = GetSearchesExecution(dataContext, navigationExecutionHost);

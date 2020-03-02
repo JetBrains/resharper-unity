@@ -1,3 +1,7 @@
+import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.enums.PlatformType
@@ -8,6 +12,7 @@ import org.testng.annotations.BeforeSuite
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File
+import java.time.Duration
 
 @TestEnvironment(platform = [PlatformType.ALL])
 class FindUsagesAssetTest : BaseTestWithSolution() {
@@ -23,9 +28,9 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
         unityDll = downloadUnityDll()
     }
 
-    @BeforeMethod
-    fun initializeEnvironment() {
-        copyUnityDll(unityDll, project, activeSolutionDirectory)
+    override fun preprocessTempDirectory(tempDir: File) {
+        super.preprocessTempDirectory(tempDir)
+        copyUnityDll(unityDll, activeSolutionDirectory)
     }
 
     @DataProvider(name = "findUsagesGrouping")
@@ -194,6 +199,10 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
     }
 
     private fun doTest(line : Int, column : Int) {
+        val host = UnityHost.getInstance(project)
+
+        waitAndPump(project.lifetime, { host.model.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
+
         withOpenedEditor("Assets/NewBehaviourScript.cs") {
             setCaretToPosition(line, column)
             val text = requestFindUsages(activeSolutionDirectory)

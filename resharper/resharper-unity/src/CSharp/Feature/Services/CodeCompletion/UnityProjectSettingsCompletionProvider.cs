@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         {
             var ranges = context.CompletionRanges;
             IEnumerable<string> completionItems = null;
-
+            
             // scene completion
             if (IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral, IsLoadSceneMethod, IsCorrespondingArgument("sceneName")))
             {

@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Impl.Search.SearchDomain;
@@ -33,8 +38,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             bool findCandidates)
         {
             return elements.Any(IsInterestingElement)
-                ? new YamlReferenceSearcher(this, elements, findCandidates)
+                ? CreateSearcher(elements, findCandidates)
                 : null;
+        }
+
+        private UnityAssetReferenceSearcher CreateSearcher(IDeclaredElementsSet elements, bool findCandidates)
+        {
+            var solution = elements.FirstOrDefault().NotNull("elements.FirstOrDefault() != null").GetSolution();
+            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
+            var methodsContainer = solution.GetComponent<AssetMethodsElementContainer>();
+            var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
+            var assetUsagesContainer = solution.GetComponent<AssetUsagesElementContainer>();
+            var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
+            var controller = solution.GetComponent<DeferredCacheController>();
+            
+            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, assetUsagesContainer, methodsContainer, assetValuesContainer, metaFileGuidCache, elements, findCandidates);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An
@@ -45,28 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             if (IsInterestingElement(element))
             {
-                var words = new List<string>();
-
-                // If it's a class, we only need the asset GUID
-                if (element is IClass)
-                {
-                    var metaFileGuidCache = element.GetSolution().GetComponent<MetaFileGuidCache>();
-                    foreach (var sourceFile in element.GetSourceFiles())
-                    {
-                        // If the element doesn't have the same name as the file it's in, Unity doesn't recognise it
-                        if (!sourceFile.Name.StartsWith(element.ShortName))
-                            continue;
-
-                        var guid = metaFileGuidCache.GetAssetGuid(sourceFile);
-                        if (guid != null)
-                            words.Add(guid);
-                    } 
-                }
-                else
-                {
-                    words.Add(element.ShortName);
-                }
-
+                var words = new List<string> {UnityAssetTrigramIndexBuild.ASSET_REFERENCE_IDENTIFIER};
                 return words;
             }
 
@@ -92,7 +89,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 return false;
             return unityApi.IsUnityType(element as IClass)
                    || unityApi.IsPotentialEventHandler(element as IMethod)
-                   || unityApi.IsPotentialEventHandler(element as IProperty);
+                   || unityApi.IsPotentialEventHandler(element as IProperty)
+                   || unityApi.IsSerialisedField(element as IField);
         }
     }
 }

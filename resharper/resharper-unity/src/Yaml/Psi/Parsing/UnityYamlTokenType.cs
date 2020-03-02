@@ -6,15 +6,6 @@ using JetBrains.Text;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
 {
-//    public class UnityYamlTokenElement : YamlTokenBase
-//    {
-//        public UnityYamlTokenElement(TokenNodeType tokenNodeType, IBuffer buffer, TreeOffset startOffset,
-//            TreeOffset endOffset)
-//            : base(tokenNodeType, buffer, startOffset, endOffset)
-//        {
-//        }
-//    }
-
     public class UnityYamlTokenType
     {
         private class UnityDocumentTokenType : YamlTokenType.YamlTokenNodeType

@@ -1,20 +1,17 @@
 Search target
     NewBehaviourScript
-Found usages  (4 usages found)
-    <Miscellaneous Files>  (4 usages found)
+Found usages  (3 usages found)
+    Assets  (3 usages found)
         Button (1).prefab  (1 usage found)
             Button (1)  (1 usage found)
                 Text  (1 usage found)
-                    NewBehaviourScript (Script)  (1 usage found)
-                        [1565, Assets/Button (1).prefab] (58: 38)  m_Script: {fileID: 11500000, guid: 8db260203ccdf7840a338bea5f51c7e8, type: 3}
+                    NewBehaviourScript  (1 usage found)
+                        Guid: 8db260203ccdf7840a338bea5f51c7e8
         Sphere.prefab  (1 usage found)
             Sphere  (1 usage found)
-                NewBehaviourScript (Script)  (1 usage found)
-                    [2688, Assets/Sphere.prefab] (95: 38)  m_Script: {fileID: 11500000, guid: 8db260203ccdf7840a338bea5f51c7e8, type: 3}
-        scene.unity  (2 usages found)
-            Sphere  (1 usage found)
-                NewBehaviourScript (Script)  (1 usage found)
-                    [5138, Assets/scene.unity] (163: 38)  m_Script: {fileID: 11500000, guid: 8db260203ccdf7840a338bea5f51c7e8, type: 3}
+                NewBehaviourScript  (1 usage found)
+                    Guid: 8db260203ccdf7840a338bea5f51c7e8
+        scene.unity  (1 usage found)
             Cube  (1 usage found)
-                NewBehaviourScript (Script)  (1 usage found)
-                    [16625, Assets/scene.unity] (577: 38)  m_Script: {fileID: 11500000, guid: 8db260203ccdf7840a338bea5f51c7e8, type: 3}
+                NewBehaviourScript  (1 usage found)
+                    Guid: 8db260203ccdf7840a338bea5f51c7e8
