@@ -1,15 +1,15 @@
 <assembly name="UnityEngine.CoreModule">
 
   <!-- Nullness -->
-  <!--<member name="P:UnityEngine.Component.transform">
+  <member name="P:UnityEngine.Component.transform">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>-->
+  </member>
   <member name="P:UnityEngine.Component.gameObject">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
-  <!--<member name="P:UnityEngine.GameObject.transform">
+  <member name="P:UnityEngine.GameObject.transform">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-  </member>-->
+  </member>
   <member name="P:UnityEngine.Object.name">
     <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
   </member>
@@ -40,7 +40,7 @@
   <member name="M:UnityEngine.GameObject.AddComponent``1">
     <typeparameter name="T">
       <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
-        <!-- ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature -->
+        <!-- ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature = 8 -->
         <argument>8</argument>
       </attribute>
     </typeparameter>
@@ -51,12 +51,13 @@
   <member name="M:UnityEngine.ScriptableObject.CreateInstance``1">
     <typeparameter name="T">
       <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
-        <!-- ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature -->
+        <!-- ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature = 8 -->
         <argument>8</argument>
       </attribute>
     </typeparameter>
   </member>
 
+  <!-- Assertion methods -->
 
   <!-- UnityEngine.Assertions.Assert -->
   <member name="M:UnityEngine.Assertions.Assert.IsTrue(System.Boolean)">
@@ -372,7 +373,9 @@
   </member>
 
 
-  <!-- Attributes -->
+  <!-- Attribute usage. Grouped by namespace -->
+
+  <!-- N:UnityEngine -->
   <member name="T:UnityEngine.AddComponentMenu">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
@@ -388,6 +391,11 @@
     </attribute>
   </member>
   <member name="T:UnityEngine.DisallowMultipleComponent">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.ExecuteAlways">
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEngine.MonoBehaviour</argument>
     </attribute>
@@ -425,5 +433,15 @@
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
       <argument>UnityEngine.MonoBehaviour</argument>
     </attribute>
+  </member>
+  
+  <!-- N:UnityEngine.Scripting -->
+  <member name="T:UnityEngine.Scripting.PreserveAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+
+  <!-- N:AOT -->
+  <member name="T:AOT.MonoPInvokeCallbackAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
   </member>
 </assembly>

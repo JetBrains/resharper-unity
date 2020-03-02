@@ -39,9 +39,12 @@ class BackendPaths(private val project: Project,
                 if (riderSdkPath?.isDirectory == true) {
                     logger.lifecycle("Rider SDK bundle found: ${riderSdkPath?.canonicalPath}")
                 } else {
-                    logger.error("Bundle Rider SDK not found in '$riderSdkPath'")
+                    logger.error("Bundle Rider SDK not found in '$riderSdkPath'. Falling back to public SDK")
                 }
-            } else {
+            }
+
+            if (riderSdkPath == null || riderSdkPath?.isDirectory == false)
+            {
                 val intellij = project.extensions.findByType(IntelliJPluginExtension::class.java)!!
 
                 var root = File(repositoryRoot, "rider/build/riderRD-$productVersion-SNAPSHOT")
