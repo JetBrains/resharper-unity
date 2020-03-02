@@ -26,6 +26,7 @@ import com.jetbrains.rider.projectView.indexing.contentModel.tryInclude
 import kotlinx.coroutines.Runnable
 import java.io.File
 
+// todo: This is a misuse of project listeners. ContentModelUpdater has API and stores state and even has Alarm-based events, what fits naturally here is a service with a bunch of listeners.
 class ContentModelUpdater : ProjectManagerListener {
     private val excludedFolders = hashSetOf<File>()
     private val includedFolders = hashSetOf<File>()
