@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new LocalReference(reader.ReadInt32(), reader.ReadULong());
+        private static object Read(UnsafeReader reader) => new LocalReference(reader.ReadLong(), reader.ReadULong());
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as LocalReference);
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             writer.Write(value.LocalDocumentAnchor);
         }
         
-        public LocalReference(int ownerId, ulong localDocumentAnchor)
+        public LocalReference(long ownerId, ulong localDocumentAnchor)
         {
             OwnerId = ownerId;
             LocalDocumentAnchor = localDocumentAnchor;
@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public ulong LocalDocumentAnchor { get; }
         
-        public int OwnerId { get;}
+        public long OwnerId { get;}
         public static LocalReference Null { get; set; } = new LocalReference(0, 0);
 
         protected bool Equals(LocalReference other)

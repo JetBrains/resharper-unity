@@ -22,8 +22,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
     public abstract class DeferredCacheBase<T> : IDeferredCache
     {
         private readonly IPersistentIndexManager myPersistentIndexManager;
-        public OptimizedPersistentSortedMap<IPsiSourceFile, T> Map { get; }
-        private OptimizedPersistentSortedMap<IPsiSourceFile, long> myTimeStamps { get; }
+        public IOptimizedPersistentSortedMap<IPsiSourceFile, T> Map { get; }
+        private readonly IOptimizedPersistentSortedMap<IPsiSourceFile, long> myTimeStamps;
         protected DeferredCacheBase(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, IUnsafeMarshaller<T> valueMarshaller)
         {
             myPersistentIndexManager = persistentIndexManager;
