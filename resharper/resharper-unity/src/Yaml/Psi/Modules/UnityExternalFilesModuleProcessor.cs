@@ -264,6 +264,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         // UnityMiscFilesProjectPsiModuleProvider
         private void AddExternalProjectFile(FileSystemPath path)
         {
+            if (mySolution.FindProjectItemsByLocation(path).Count > 0)
+                return;
+            
             var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
             var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
