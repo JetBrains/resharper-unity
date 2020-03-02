@@ -5,11 +5,13 @@ using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
@@ -36,13 +38,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             using (var subProgress = pi.CreateSubProgress())
             {
                 myElementsToRename = GetAssetOccurrence(de, subProgress)
-                    .Select(t => new TextOccurrenceRenameMarker(
-                        new FindResultText(t.SourceFile, new DocumentRange(t.SourceFile.Document, t.AssetMethodData.TextRange)),
-                        NewName)).ToList();
+                    .Select(t =>
+                    {
+                        var curRange = t.AssetMethodData.TextRange;
+
+                        var range = de is IProperty ? new TextRange(curRange.StartOffset + 4, curRange.EndOffset) : curRange;  
+                        return new TextOccurrenceRenameMarker(
+                            new FindResultText(t.SourceFile, new DocumentRange(t.SourceFile.Document, range)), NewName);
+                    }).ToList();
             }
             
             return new UnityEventTargetRefactoringPage(
-                ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime);
+                ((RefactoringWorkflowBase) renameWorkflow).WorkflowExecuterLifetime, mySolution.GetComponent<DeferredCacheController>());
         }
 
         private List<UnityMethodsFindResult> GetAssetOccurrence(IDeclaredElement de, IProgressIndicator subProgress)
