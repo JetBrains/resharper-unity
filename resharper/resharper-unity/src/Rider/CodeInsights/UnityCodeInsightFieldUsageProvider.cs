@@ -126,11 +126,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
 
             var field = (declaredElement as IField).NotNull();
+            var type = field.Type;
+            var containingType = field.GetContainingType();
+            if (containingType == null)
+                return;
+            
             var (guid, propertyNames) = GetAssetGuidAndPropertyName(solution, field);
             if (guid == null || propertyNames == null || propertyNames.Length == 0)
                 return;
-
-            var type = field.Type;
+            
             var presentationType = GetUnityPresentationType(type);
 
             if (myDeferredCacheController.IsProcessingFiles() || ShouldShowUnknownPresentation(presentationType))
@@ -138,45 +142,59 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
             }
-            
+
             var initializer = (element as IFieldDeclaration).NotNull("element as IFieldDeclaration != null").Initial;
             var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue.Value;
-            
+
             var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
-            var initValueCount = myInspectorValuesContainer.GetValueCount(guid, propertyNames, initValueUnityPresentation);
-
-            if (initValueCount == 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 1) // only modified value
-            {
-                var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray(); 
-                Assertion.Assert(values.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
-                var value = values[0];
-                displayName = value.GetPresentation(solution, field, false);
-            } else if (initValueCount > 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 2)  
-            {
-                    
-                // original value & only one modified value
-                var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray();
-                Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
-
-                var anotherValueWithLocation = values.First(t => !t.Equals(initValueUnityPresentation));
-                displayName = anotherValueWithLocation.GetPresentation(solution, field, false);
-            }
             
-            if (displayName == null || displayName.Equals("..."))
+            if (myInspectorValuesContainer.IsIndexResultEstimated(guid, containingType, propertyNames))
             {
-                var count = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) - 
-                            myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
-                if (count == 0)
+                var count = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -  myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
+                displayName = $"{count}+ changes";
+            }
+            else
+            {
+                var initValueCount =
+                    myInspectorValuesContainer.GetValueCount(guid, propertyNames, initValueUnityPresentation);
+
+                if (initValueCount == 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 1
+                ) // only modified value
                 {
-                    displayName = "Unchanged";
+                    var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray();
+                    Assertion.Assert(values.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
+                    var value = values[0];
+                    displayName = value.GetPresentation(solution, field, false);
                 }
-                else
+                else if (initValueCount > 0 &&
+                         myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 2)
                 {
-                    var word = count == 1 ? "asset" : "assets";
-                    displayName = $"Changed in {count} {word}";
+
+                    // original value & only one modified value
+                    var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray();
+                    Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
+
+                    var anotherValueWithLocation = values.First(t => !t.Equals(initValueUnityPresentation));
+                    displayName = anotherValueWithLocation.GetPresentation(solution, field, false);
+                }
+
+                if (displayName == null || displayName.Equals("..."))
+                {
+                    var count = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -
+                                myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames,
+                                    initValueUnityPresentation);
+                    if (count == 0)
+                    {
+                        displayName = "Unchanged";
+                    }
+                    else
+                    {
+                        var word = count == 1 ? "asset" : "assets";
+                        displayName = $"Changed in {count} {word}";
+                    }
                 }
             }
-            
+
             consumer.AddHighlighting(new CodeInsightsHighlighting(element.GetNameDocumentRange(),
                 displayName, tooltip, "Property Inspector values", this,
                 declaredElement, iconModel));
