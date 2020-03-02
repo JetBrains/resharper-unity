@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.openapi.project.Project

@@ -17,7 +17,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 {
     [SolutionComponent]
-    public class DeferredHelperCache : ICache
+    public class DeferredHelperCache : IPsiSourceFileCache
     {
         private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly IEnumerable<IDeferredCache> myCaches;
