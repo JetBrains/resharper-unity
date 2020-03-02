@@ -31,7 +31,6 @@ class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
     }
 
     override fun preprocessTempDirectory(tempDir: File) {
-        super.preprocessTempDirectory(tempDir)
         copyUnityDll(unityDll, activeSolutionDirectory)
         if (testMethod.name.contains("YamlOff")) {
             val dotSettingsFile = activeSolutionDirectory.combine("$activeSolution.sln.DotSettings.user")
