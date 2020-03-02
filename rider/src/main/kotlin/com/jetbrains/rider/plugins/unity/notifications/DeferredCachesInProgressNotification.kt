@@ -1,23 +1,20 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationGroup
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.ex.StatusBarEx
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectView.solution
 
 
-class DeferredCachesInProgressNotification(project: Project, unityHost: UnityHost): LifetimedProjectComponent(project) {
+class DeferredCachesInProgressNotification(project: Project): ProtocolSubscribedProjectComponent(project) {
 
     init {
-        unityHost.model.showDeferredCachesProgressNotification.adviseNotNull(componentLifetime) {
+        project.solution.rdUnityModel.showDeferredCachesProgressNotification.adviseNotNull(componentLifetime) {
             UIUtil.invokeLaterIfNeeded {
                 val ideFrame = WindowManager.getInstance().getIdeFrame(project)
                 if (ideFrame != null) {
