@@ -18,7 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
 
         public int GetPriority(OccurrenceKind occurrenceKind)
         {
-            if (occurrenceKind == UnityAssetSpecificOccurrenceKinds.EventHandler)
+            if (occurrenceKind == UnityAssetSpecificOccurrenceKinds.EventHandler ||
+                occurrenceKind == UnityAssetSpecificOccurrenceKinds.ComponentUsage ||
+                occurrenceKind == UnityAssetSpecificOccurrenceKinds.InspectorUsage)
                 return -10;
             return 0;
         }
