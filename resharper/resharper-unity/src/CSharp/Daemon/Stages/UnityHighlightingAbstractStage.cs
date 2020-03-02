@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
@@ -27,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
     {
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
         private readonly PerformanceCriticalCodeCallGraphMarksProvider myPerformanceCriticalCodeCallGraphMarksProvider;
+        private readonly CallGraphBurstMarksProvider myCallGraphBurstMarksProvider;
         protected readonly IEnumerable<IUnityDeclarationHighlightingProvider> HiglightingProviders;
         protected readonly IEnumerable<IUnityProblemAnalyzer> PerformanceProblemAnalyzers;
         protected readonly UnityApi API;
@@ -36,12 +38,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
         protected UnityHighlightingAbstractStage(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             PerformanceCriticalCodeCallGraphMarksProvider performanceCriticalCodeCallGraphMarksProvider,
+            CallGraphBurstMarksProvider callGraphBurstMarksProvider,
             IEnumerable<IUnityDeclarationHighlightingProvider> higlightingProviders,
             IEnumerable<IUnityProblemAnalyzer> performanceProblemAnalyzers, UnityApi api,
             UnityCommonIconProvider commonIconProvider, IElementIdProvider provider, ILogger logger)
         {
             myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             myPerformanceCriticalCodeCallGraphMarksProvider = performanceCriticalCodeCallGraphMarksProvider;
+            myCallGraphBurstMarksProvider = callGraphBurstMarksProvider;
             HiglightingProviders = higlightingProviders;
             PerformanceProblemAnalyzers = performanceProblemAnalyzers;
             API = api;
@@ -59,10 +63,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
             var isPerformanceAnalysisEnabled =
                 settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
+            var isBurstAnalysisEnabled = settings.GetValue((UnitySettings s) => s.EnableBurstCodeHighlighting);
 
             
             return new UnityHighlightingProcess(process, file, myCallGraphSwaExtensionProvider,
                 myPerformanceCriticalCodeCallGraphMarksProvider, isPerformanceAnalysisEnabled,
+                myCallGraphBurstMarksProvider, isBurstAnalysisEnabled,
                 HiglightingProviders, PerformanceProblemAnalyzers,
                 API, myCommonIconProvider, processKind, myProvider, Logger);
         }
@@ -73,6 +79,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
         private readonly PerformanceCriticalCodeCallGraphMarksProvider myPerformanceCriticalCodeCallGraphMarksProvider;
         private readonly bool myIsPerformanceAnalysisEnabled;
+        private readonly CallGraphBurstMarksProvider myCallGraphBurstMarksProvider;
+        private readonly bool myIsBurstAnalysisEnabled;
         private readonly IEnumerable<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
         private readonly IEnumerable<IUnityProblemAnalyzer> myPerformanceProblemAnalyzers;
         private readonly UnityApi myAPI;
@@ -93,6 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             PerformanceCriticalCodeCallGraphMarksProvider performanceCriticalCodeCallGraphMarksProvider,
             bool isPerformanceAnalysisEnabled,
+            CallGraphBurstMarksProvider callGraphBurstMarksProvider, bool isBurstAnalysisEnabled,
             IEnumerable<IUnityDeclarationHighlightingProvider> declarationHighlightingProviders,
             IEnumerable<IUnityProblemAnalyzer> performanceProblemAnalyzers, UnityApi api,
             UnityCommonIconProvider commonIconProvider,
@@ -103,6 +112,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             myPerformanceCriticalCodeCallGraphMarksProvider = performanceCriticalCodeCallGraphMarksProvider;
             myIsPerformanceAnalysisEnabled = isPerformanceAnalysisEnabled;
+            myCallGraphBurstMarksProvider = callGraphBurstMarksProvider;
+            myIsBurstAnalysisEnabled = isBurstAnalysisEnabled;
             myDeclarationHighlightingProviders = declarationHighlightingProviders;
             myPerformanceProblemAnalyzers = performanceProblemAnalyzers;
             myAPI = api;
@@ -161,6 +172,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             var res = new List<UnityProblemAnalyzerContext>();
             if (myIsPerformanceAnalysisEnabled && IsPerformanceCriticalDeclaration(element))
                 res.Add(UnityProblemAnalyzerContext.PERFOMANCE_CONTEXT);
+            if (myIsBurstAnalysisEnabled && IsBurstDeclaration(element))
+                res.Add(UnityProblemAnalyzerContext.BURST_CONTEXT);
             return res;
         }
 
@@ -250,6 +263,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             }
 
             return PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myAPI, declaration);
+        }
+
+        private bool IsBurstDeclaration(ITreeNode element)
+        {
+            if (!(element is ICSharpDeclaration declaration))
+                return false;
+            var declaredElement = declaration.DeclaredElement;
+            if (declaredElement == null)
+                return false;
+            if (myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS)
+            {
+                var id = myProvider.GetElementId(declaredElement);
+                if (!id.HasValue)
+                    return false;
+                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(myCallGraphBurstMarksProvider.Id, true,
+                    id.Value);
+            }
+
+            return myCallGraphBurstMarksProvider.GetMarkedFunctionsFrom(element, null).FirstOrDefault() != null;
         }
     }
 }

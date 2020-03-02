@@ -47,6 +47,13 @@
         <Description>Event function with the same name is already declared.</Description>
       </Tag>
 
+      <Tag externalName="BurstWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Burst</Title>
+        <Description>
+          Burst
+        </Description>
+      </Tag>
+      
       <Tag externalName="ExpectedComponentWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>Expected type derived from 'Component' or 'MonoBehaviour'</Title>
         <Description>Expected built in type derived from 'Component', or user type derived from 'MonoBehaviour'.</Description>
@@ -288,7 +295,16 @@
          for this highlight. Only used when the file is processed in QUICKFIX mode (default is
          to use ERROR mode)
        -->
-
+  <Warning name="Burst" configurableSeverity="Unity.Burst">\
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="warningText"/>
+    <Message value="Prohibited in Burst: {0}.">
+      <Argument>WarningText</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+  
   <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
     <Parameter type="ITreeNode" name="node" />
     <Message value="The name is not defined in the Input manager. The call is likely to fail at runtime." />
