@@ -3,18 +3,14 @@ package com.jetbrains.rider.plugins.unity.ui
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
-import com.intellij.openapi.wm.StatusBarWidgetProvider
+import com.intellij.openapi.wm.StatusBarWidgetFactory
 import com.jetbrains.rider.UnityProjectDiscoverer
 
-class UnityStatusBarWidget: StatusBarWidgetProvider {
-    override fun getWidget(project: Project): StatusBarWidget? {
-        if (!UnityProjectDiscoverer.getInstance(project).isUnityProject)
-            return null
-
-        return UnityStatusBarIcon(project)
-    }
-
-    override fun getAnchor(): String {
-        return StatusBar.Anchors.after(StatusBar.StandardWidgets.READONLY_ATTRIBUTE_PANEL)
-    }
+class UnityStatusBarWidget: StatusBarWidgetFactory {
+    override fun getId() = UnityStatusBarIcon.StatusBarIconId
+    override fun isAvailable(project: Project) = UnityProjectDiscoverer.getInstance(project).isUnityProject
+    override fun canBeEnabledOn(statusBar: StatusBar) = true
+    override fun getDisplayName() = "Unity Editor connection"
+    override fun disposeWidget(widget: StatusBarWidget) {}
+    override fun createWidget(project: Project) = UnityStatusBarIcon(project)
 }
