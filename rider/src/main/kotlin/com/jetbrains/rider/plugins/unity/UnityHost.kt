@@ -45,7 +45,8 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             ProjectUtil.focusProjectWindow(project, true)
             val frame = WindowManager.getInstance().getFrame(project)
             if (frame != null) {
-                frame.setExtendedState(BitUtil.set(frame.extendedState, Frame.ICONIFIED, false))
+                if (BitUtil.isSet(frame.extendedState, Frame.ICONIFIED))
+                    frame.extendedState = BitUtil.set(frame.extendedState, Frame.ICONIFIED, false)
             }
         }
 
