@@ -25,18 +25,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             IDeclaredElement containingFunction)
         {
             var res = new HashSet<IDeclaredElement>();
-            if (currentNode is IStructDeclaration structDeclaration
-                && structDeclaration.GetAttribute(KnownTypes.BurstCompile) != null &&
+            if (currentNode is IMethodDeclaration methodDeclaration &&
+                methodDeclaration.GetContainingTypeDeclaration() is IStructDeclaration structDeclaration &&
+                structDeclaration.GetAttribute(KnownTypes.BurstCompile) != null &&
                 myAPI.IsDescendantOf(KnownTypes.Job, structDeclaration.DeclaredElement))
             {
-                foreach (var methodDeclaration in structDeclaration.MethodDeclarations)
+                var declaredElement = methodDeclaration.DeclaredElement;
+                if (declaredElement != null &&
+                    declaredElement.ShortName == "Execute" &&
+                    declaredElement.Parameters.Count == 0 &&
+                    declaredElement.TypeParameters.Count == 0)
                 {
-                    if (methodDeclaration.DeclaredName == "Execute" &&
-                        methodDeclaration.Params.ParameterDeclarations.Count == 0)
-                    {
-                        res.Add(methodDeclaration.DeclaredElement);
-                        break;
-                    }
+                    res.Add(declaredElement);
                 }
             }
 

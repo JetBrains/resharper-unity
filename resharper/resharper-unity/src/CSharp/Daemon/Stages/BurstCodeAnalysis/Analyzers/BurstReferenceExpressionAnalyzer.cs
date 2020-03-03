@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     (!typeOwner.Type().IsSuitableForBurst() ||
                      element is IModifiersOwner modifiersOwner &&
                      (modifiersOwner.IsVirtual || modifiersOwner.IsOverride || modifiersOwner.IsAbstract) 
-                     // && !IsQualifierOpenType(referenceExpression) <---- CGTD if member is open type and has VOA member, then it has class based constraints, so it cannot be instantiated with struct
+                     // && !IsQualifierOpenType(referenceExpression) <---- if member is open type and has virtual/abstract/override member, then it has class based constraints, so it cannot be instantiated with struct
                      ))
                 {
                     //virtual and abstract cannot be in struct. only override is getHashCode -> function

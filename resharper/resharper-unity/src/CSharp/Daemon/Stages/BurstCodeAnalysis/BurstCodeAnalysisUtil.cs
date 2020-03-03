@@ -1,5 +1,6 @@
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis
@@ -23,7 +24,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         
         public static bool InBurstAttribute(IReferenceExpression expression)
         {
-            return expression.Parent?.Parent is IAttribute attribute && attribute.Name.ShortName == "DllImport";
+            return expression.GetContainingNode<IAttribute>() is IAttribute attribute && attribute.Name.ShortName == "DllImport";
         }
+
+        public static bool IsGetHashCode(this IFunction function)
+        {
+            return function is IMethod && function.ShortName == "GetHashCode" && function.Parameters.Count == 0 &&
+                   function.ReturnType.IsInt();
+        }
+        
     }
 }

@@ -1,7 +1,6 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -51,12 +50,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             //                ok. burst alows invoking static functions.
 
             //CGTD handle function pointers
-            var invokedMethod =
-                invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as ITypeMember;
+            var invokedMethod = invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as ITypeMember;
             var containingType = invokedMethod?.GetContainingType();
-            if ((containingType is IStruct || containingType.IsValueTypeClass()) && invokedMethod is IFunction function &&
-                !(function is IMethod && function.ShortName == "GetHashCode" && function.Parameters.Count == 0 &&
-                  function.ReturnType.IsInt()) && (function.IsVirtual || function.IsOverride || function.IsAbstract))
+            if (containingType.Type().IsValueType() &&
+                invokedMethod is IFunction function && !function.IsGetHashCode() && 
+                (function.IsVirtual || function.IsOverride || function.IsAbstract))
             {
                 consumer.AddHighlighting(new BurstWarning(invocationExpression.InvokedExpression.GetDocumentRange(),
                     "virtual method invocation"));
