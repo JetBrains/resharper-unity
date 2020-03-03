@@ -80,6 +80,7 @@ namespace ApiParser
 
         public void ExportTo(XmlTextWriter xmlWriter)
         {
+            xmlWriter.WriteComment("This file is auto-generated");
             xmlWriter.WriteStartElement("api");
             ExportVersionRange(xmlWriter);
             foreach (var type in myTypes.OrderBy(t => t.Name))

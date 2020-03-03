@@ -1,4 +1,5 @@
-﻿<api minimumVersion="5.0" maximumVersion="2020.1">
+﻿<!--This file is auto-generated-->
+<api minimumVersion="5.0" maximumVersion="2020.1">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="IsOpenForEdit" static="True" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
       <parameters>
