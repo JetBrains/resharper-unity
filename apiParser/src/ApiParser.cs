@@ -1,39 +1,37 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
 using JetBrains.Util;
+using Newtonsoft.Json;
 
 namespace ApiParser
 {
-    public class ApiParser
+    internal class ApiParser
     {
-        // "Namespace:" is only used in 5.0
-        private static readonly Regex CaptureKindAndNamespaceRegex = new Regex(@"^((?<type>class|struct) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)$", RegexOptions.Compiled);
-        private static readonly Regex IsCoroutineRegex = new Regex(@"(?:can be|as) a co-routine", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex IsCoroutineRegex =
+            new Regex(@"(?:can be|as) a co-routine", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         // Capture the argument string from e.g. Class.Method(string s, int a)
         // I don't know why we match without brackets
-        private static readonly Regex CaptureArgumentsRegex = new Regex(@"^(?:[\w.]+)?\.(?:\w+)(?:\((?<args>.*)\)|(?<args>.*))$", RegexOptions.Compiled);
+        private static readonly Regex CaptureArgumentsRegex =
+            new Regex(@"^(?:[\w.]+)?\.(?:\w+)(?:\((?<args>.*)\)|(?<args>.*))$", RegexOptions.Compiled);
 
-        private static readonly string[] ScriptReferenceRelativePaths = new[]
-        {
-            @"Documentation" + Path.DirectorySeparatorChar + "en" + Path.DirectorySeparatorChar + "ScriptReference",
-            @"Documentation" + Path.DirectorySeparatorChar + "ScriptReference", // 2018.1.6f1
-            @"20182-08cdcee9b18e-edited" + Path.DirectorySeparatorChar + "Documentation" + Path.DirectorySeparatorChar + "ScriptReference" // 2018.2.2f1
-        };
+        private static readonly string ScriptReferenceRelativePath =
+            Path.Combine("Documentation", "en", "ScriptReference");
 
         private readonly UnityApi myApi;
+        private readonly TypeResolver myTypeResolver;
 
-        public ApiParser(UnityApi api)
+        public ApiParser(UnityApi api, TypeResolver typeResolver)
         {
             myApi = api;
+            myTypeResolver = typeResolver;
         }
-
-        public event EventHandler<ProgressEventArgs> Progress;
 
         public void ExportTo(XmlTextWriter writer)
         {
@@ -47,15 +45,21 @@ namespace ApiParser
             {
                 Directory.SetCurrentDirectory(path);
 
-                var scriptReferenceRelativePath = ScriptReferenceRelativePaths.First(Directory.Exists);
+                var files = LoadTypes(Path.Combine(ScriptReferenceRelativePath, "docdata/toc.json"), apiVersion)
+                    .Select(f => Path.Combine(ScriptReferenceRelativePath, f) + ".html").ToArray();
 
-                var files = Directory.EnumerateFiles(scriptReferenceRelativePath, @"*.html").Reverse().ToArray();
                 var processed = new HashSet<string>();
-
                 for (var i = 0; i < files.Length; ++i)
                 {
-                    ParseFile(files[i], apiVersion, processed);
-                    OnProgress(new ProgressEventArgs(i + 1, files.Length));
+                    // Some of the links in toc.json aren't valid...
+                    if (!File.Exists(files[i]))
+                    {
+                        Console.WriteLine($"Cannot find file {files[i]}");
+                        continue;
+                    }
+
+                    ParseMessageFile(files[i], apiVersion, processed);
+                    ReportProgress(i + 1, files.Length);
                 }
             }
             finally
@@ -66,92 +70,106 @@ namespace ApiParser
             Console.WriteLine();
         }
 
-        private static ApiNode[] PickExample([NotNull] ApiNode details, [NotNull] string type)
+        private static void ReportProgress(int current, int total)
         {
-            return details.SelectMany($@"div.subsection/pre.codeExample{type}");
+            var cursorTop = Console.CursorTop;
+            Console.WriteLine("{0,5} / {1,5} ({2:F0}%)", current, total, ((float)current / total) * 100.0f);
+            Console.SetCursorPosition(0, cursorTop);
         }
 
-        private static ApiNode[] PickExample([NotNull] ApiNode details)
+        private HashSet<string> LoadTypes(string tocJsonPath, Version apiVersion)
         {
-            // Favour C#, it's the most strongly typed
-            var examples = PickExample(details, "CS");
-            if (examples.IsEmpty())
-                examples = PickExample(details, "JS");
-            if (examples.IsEmpty())
-                examples = PickExample(details, "Raw");
-            return examples;
+            var tocJson = File.ReadAllText(tocJsonPath);
+            var toc = JsonConvert.DeserializeObject<Toc>(tocJson);
+            
+            var files = new HashSet<string>();
+            LoadTypes(toc.children.Single(c => c.title == "UnityEngine"), string.Empty, files);
+            LoadTypes(toc.children.Single(c => c.title == "UnityEditor"), string.Empty, files);
+            
+            // AssetModificationProcessor is missing from the 5.0 index
+            if (apiVersion == new Version(5, 0))
+                files.Add("AssetModificationProcessor");
+            
+            // Playable is missing from 5.2 and 5.3 index
+            if (apiVersion == new Version(5, 2) || apiVersion == new Version(5,3))
+                files.Add("Experimental.Director.Playable");
+            
+            return files;
         }
 
-        private void OnProgress([NotNull] ProgressEventArgs e)
+        private void LoadTypes(Toc tocEntry, string namespacePrefix, ISet<string> files)
         {
-            Progress?.Invoke(this, e);
+            if (tocEntry.link != null && tocEntry.link != "null")
+            {
+                myTypeResolver.AddType(tocEntry.title, namespacePrefix + tocEntry.title, false);
+                files.Add(tocEntry.link);
+            }
+
+            if (tocEntry.children == null)
+            {
+                if (tocEntry.link == null || tocEntry.link == "null")
+                    throw new InvalidDataException($"Entry {tocEntry.title} has no children and no link");
+                return;
+            }
+
+            foreach (var child in tocEntry.children)
+            {
+                if (child.title == "Attributes" || child.title == "Assemblies")
+                    continue;
+                
+                if (child.title == "Classes" || child.title == "Interfaces" || child.title == "Enumerations")
+                {
+                    foreach (var grandchild in child.children)
+                        LoadTypes(grandchild, tocEntry.title + ".", files);
+
+                    continue;
+                }
+                
+                if (child.children != null)
+                    LoadTypes(child, child.title + ".", files);
+                else
+                {
+                    myTypeResolver.AddType(child.title, namespacePrefix + child.title, false);
+                    
+                    // UnityEditor.ProjectWindowCallback is such an example
+                    if (child.link == null || child.link == "null")
+                        Console.WriteLine($"Entry {child.title} has no link!");
+                    else
+                        files.Add(child.link);
+                }
+            }
         }
 
-        private void ParseFile(string filename, Version apiVersion, HashSet<string> processed)
+        private void ParseMessageFile(string filename, Version apiVersion, HashSet<string> processed)
         {
             if (processed.Contains(filename))
                 return;
 
             processed.Add(filename);
 
-            // We're only interested in the file if it contains messages. Bail early
-            // so we don't have to parse it to HTML
-            var content = File.ReadAllText(filename);
-            if (!content.Contains("Messages"))
+            var document = TypeDocument.Load(filename);
+            if (document == null || document.Messages.Length == 0)
                 return;
 
-            var document = ApiNode.LoadContent(content);
-            var section = document?.SelectOne(@"//div.content/div.section");
-            var header = section?.SelectOne(@"div.mb20.clear");
-            var removed = header?.SelectOne(@"div[@class='message message-error mb20']");
-            var name = header?.SelectOne(@"h1.heading.inherit"); // Type or type member name
-            var ns = header?.SelectOne(@"p");   // "class in {ns}"/"struct in {ns}"/"Namespace: {ns}"
-
-            // Only interested in types at this point
-            if (name == null || ns == null)
+            if (document.IsRemoved)
             {
-//                Console.WriteLine("File has no types: {0}", filename);
+                Console.WriteLine($"{document.Namespace}.{document.ShortName} no longer available in {apiVersion}");
                 return;
             }
 
-            // Only types that have messages
-            var messages = section.Subsection("Messages").ToArray();
-            if (messages.Length == 0) return;
+            var unityApiType =
+                myApi.AddType(document.Namespace, document.ShortName, document.Kind, filename, apiVersion);
 
-            var match = CaptureKindAndNamespaceRegex.Match(ns.Text);
-            var clsType = match.Groups["type"].Value;
-            var nsName = match.Groups["namespace"].Value;
-
-            if (string.IsNullOrEmpty(clsType)) clsType = "class";
-            if (string.IsNullOrEmpty(nsName))
+            foreach (var message in document.Messages)
             {
-                // Quick fix up for the 5.0 docs, which don't specify a namespace for AssetModificationProcessor
-                if (apiVersion == new Version(5, 0) && name.Text == "AssetModificationProcessor")
-                    nsName = "UnityEditor";
-                else
-                {
-                    Console.WriteLine("Missing namespace: {0}", name.Text);
-                    return;
-                }
-            }
-
-            if (removed != null && removed.Text.StartsWith("Removed"))
-            {
-                Console.WriteLine($"{nsName}.{name.Text} no longer available in {apiVersion}: {removed.Text}");
-                return;
-            }
-
-            var unityApiType = myApi.AddType(nsName, name.Text, clsType, filename, apiVersion);
-
-            foreach (var message in messages)
-            {
-                var eventFunction = ParseMessage(name.Text, message, apiVersion, nsName, processed);
+                var eventFunction =
+                    ParseMessage(document.ShortName, message, apiVersion, document.Namespace, processed);
                 unityApiType.MergeEventFunction(eventFunction, apiVersion);
             }
         }
 
         [CanBeNull]
-        private UnityApiEventFunction ParseMessage(string className, ApiNode message, Version apiVersion,
+        private UnityApiEventFunction ParseMessage(string className, SimpleHtmlNode message, Version apiVersion,
             string hintNamespace, HashSet<string> processed)
         {
             var link = message.SelectOne(@"td.lbl/a");
@@ -161,12 +179,11 @@ namespace ApiParser
             var detailsPath = link[@"href"];
             if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
-            var scriptReferenceRelativePath = ScriptReferenceRelativePaths.First(Directory.Exists);
-            var path = Path.Combine(scriptReferenceRelativePath, detailsPath);
+            var path = Path.Combine(ScriptReferenceRelativePath, detailsPath);
             processed.Add(path);
             if (!File.Exists(path)) return null;
 
-            var detailsDoc = ApiNode.Load(path);
+            var detailsDoc = SimpleHtmlNode.Load(path);
             var details = detailsDoc?.SelectOne(@"//div.content/div.section");
             var signature = details?.SelectOne(@"div.mb20.clear/h1.heading.inherit");
             var staticNode = details?.SelectOne(@"div.subsection/p/code.varname[text()='static']");
@@ -198,7 +215,8 @@ namespace ApiParser
                         case "MonoBehaviour.Start":
                         case "MonoBehaviour.OnDestroy":
                         case "EditorWindow.OnProjectChange":
-                        case "AssetPostprocessor.OnPostprocessSprites": // 2018.3 adds example with incorrect casing - OnPostProcessSprites
+                        case "AssetPostprocessor.OnPostprocessSprites"
+                            : // 2018.3 adds example with incorrect casing - OnPostProcessSprites
                             Console.WriteLine(
                                 $"WARNING: Unable to parse example for {fullName}. Example incorrect in docs");
                             break;
@@ -215,7 +233,8 @@ namespace ApiParser
                                 Console.WriteLine();
                             }
 
-                            throw new InvalidOperationException($"Failed to parse example for {className}.{messageName}");
+                            throw new InvalidOperationException(
+                                $"Failed to parse example for {className}.{messageName}");
                     }
                 }
 
@@ -233,7 +252,7 @@ namespace ApiParser
                 isCoroutine = true;
             }
 
-            var docPath = Path.Combine(scriptReferenceRelativePath, detailsPath);
+            var docPath = Path.Combine(ScriptReferenceRelativePath, detailsPath);
             var eventFunction = new UnityApiEventFunction(messageName, staticNode != null || isStaticFromExample,
                 isCoroutine, returnType, apiVersion, desc.Text, docPath);
 
@@ -242,7 +261,31 @@ namespace ApiParser
             return eventFunction;
         }
 
-        private static void ParseParameters(UnityApiEventFunction eventFunction, ApiNode signature, ApiNode details, string owningMessageNamespace, string[] argumentNames)
+        private static SimpleHtmlNode[] PickExample([NotNull] SimpleHtmlNode details, [NotNull] string type)
+        {
+            var nodes = details.SelectMany($@"div.subsection/pre.codeExample{type}");
+            if (nodes.Length > 0)
+            {
+                if (nodes[0].Text.StartsWith("no example available"))
+                    return EmptyArray<SimpleHtmlNode>.Instance;
+            }
+
+            return nodes;
+        }
+
+        private static SimpleHtmlNode[] PickExample([NotNull] SimpleHtmlNode details)
+        {
+            // Favour C#, it's the most strongly typed
+            var examples = PickExample(details, "CS");
+            if (examples.IsEmpty())
+                examples = PickExample(details, "JS");
+            if (examples.IsEmpty())
+                examples = PickExample(details, "Raw");
+            return examples;
+        }
+
+        private void ParseParameters(UnityApiEventFunction eventFunction, SimpleHtmlNode signature,
+            SimpleHtmlNode details, string owningMessageNamespace, string[] argumentNames)
         {
             // Capture the arguments string. Note that this might be `string s, int i` or `string, int`
             var match = CaptureArgumentsRegex.Match(signature.Text);
@@ -254,7 +297,20 @@ namespace ApiParser
                 .Select(s => s.Trim())
                 .ToArray();
             var total = argumentStrings.Length;
-            var arguments = argumentStrings.Select((s, i) => new Argument(s, i, total, owningMessageNamespace)).ToArray();
+            var arguments = argumentStrings.Select((arg, i) =>
+            {
+                var argName = total > 1 ? $"arg{i + 1}" : @"arg";
+                var typeName = arg;
+                if (arg.Contains(' '))
+                {
+                    var parts = arg.Split(' ');
+                    argName = parts[1];
+                    typeName = parts[0];
+                }
+
+                var apiType = myTypeResolver.CreateApiType(typeName, owningMessageNamespace);
+                return new Argument(apiType, argName);
+            }).ToArray();
 
             ResolveArguments(details, arguments, argumentNames);
 
@@ -262,7 +318,8 @@ namespace ApiParser
                 eventFunction.AddParameter(argument.Name, argument.Type, argument.Description);
         }
 
-        private static void ResolveArguments([NotNull] ApiNode details, [NotNull] IReadOnlyList<Argument> arguments, string[] argumentNames)
+        private static void ResolveArguments([NotNull] SimpleHtmlNode details,
+            [NotNull] IReadOnlyList<Argument> arguments, string[] argumentNames)
         {
             for (var i = 0; i < arguments.Count && i < argumentNames.Length; i++)
             {
@@ -275,7 +332,8 @@ namespace ApiParser
                 ParseMessageParameters(arguments, parameters);
         }
 
-        private static void ParseMessageParameters([NotNull] IEnumerable<Argument> arguments, [NotNull] IReadOnlyList<ApiNode> parameters)
+        private static void ParseMessageParameters([NotNull] IEnumerable<Argument> arguments,
+            [NotNull] IReadOnlyList<SimpleHtmlNode> parameters)
         {
             var i = 0;
             foreach (var argument in arguments)
@@ -286,7 +344,9 @@ namespace ApiParser
             }
         }
 
-        private static readonly Regex SingleLineCommentsRegex = new Regex(@"^\s*//.*$", RegexOptions.Compiled | RegexOptions.Multiline);
+        private static readonly Regex SingleLineCommentsRegex =
+            new Regex(@"^\s*//.*$", RegexOptions.Compiled | RegexOptions.Multiline);
+
         private static readonly Regex BlankCleanup1 = new Regex(@"\s+", RegexOptions.Compiled);
         private static readonly Regex BlankCleanup2 = new Regex(@"\s*(\W)\s*", RegexOptions.Compiled);
         private static readonly Regex ArrayFixup = new Regex(@"(\[\])(\w)", RegexOptions.Compiled);
@@ -294,7 +354,7 @@ namespace ApiParser
 
         // Gets return type and argument names from example
         [CanBeNull]
-        private static Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, ApiNode[] examples,
+        private Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, SimpleHtmlNode[] examples,
             string owningMessageNamespace)
         {
             foreach (var example in examples)
@@ -307,7 +367,8 @@ namespace ApiParser
             return null;
         }
 
-        private static Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, ApiNode example, string owningMessageNamespace)
+        private Tuple<ApiType, string[], bool> ParseDetailsFromExample(string messageName, SimpleHtmlNode example,
+            string owningMessageNamespace)
         {
             var exampleText = example.Text;
             exampleText = SingleLineCommentsRegex.Replace(exampleText, string.Empty);
@@ -316,14 +377,16 @@ namespace ApiParser
             exampleText = ArrayFixup.Replace(exampleText, "$1 $2");
 
             // This matches both C# and JS function signatures
-            var functionRegex = new Regex($@"(?:\W|^)(?<static>static\s+)?(?<returnType>\w+\W*)\s+{messageName}\((?<parameters>[^)]*)\)(?::(?<returnType>\w+\W*))?{{");
+            var functionRegex =
+                new Regex(
+                    $@"(?:\W|^)(?<static>static\s+)?(?<returnType>\w+\W*)\s+{messageName}\((?<parameters>[^)]*)\)(?::(?<returnType>\w+\W*))?{{");
             var m = functionRegex.Match(exampleText);
             if (m.Success)
             {
                 var returnTypeName = m.Groups["returnType"].Value;
                 if (returnTypeName == "function") // JS without an explicit return type
                     returnTypeName = "void";
-                var returnType = new ApiType(returnTypeName, owningMessageNamespace);
+                var returnType = myTypeResolver.CreateApiType(returnTypeName, owningMessageNamespace);
                 var parameters = m.Groups["parameters"].Value
                     .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
                 var isStatic = m.Groups["static"].Success;
@@ -342,5 +405,15 @@ namespace ApiParser
 
             return null;
         }
+
+#pragma warning disable 649
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
+        private class Toc
+        {
+            public string link;
+            public string title;
+            public List<Toc> children;
+        }
+#pragma warning restore 649
     }
 }
