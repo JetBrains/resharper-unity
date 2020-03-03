@@ -149,8 +149,14 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       changed |= SetXCodeDllReference("UnityEditor.iOS.Extensions.Common.dll", projectContentElement, xmlns);
       changed |= SetDisableHandlePackageFileConflicts(projectContentElement, xmlns); // already exists
       changed |= SetGenerateTargetFrameworkAttribute(projectContentElement, xmlns); // no need
+      changed |= CleanUpNoWarn(projectContentElement, xmlns); 
       
       return changed;
+    }
+
+    private static bool CleanUpNoWarn(XElement projectContentElement, XNamespace xmlns)
+    {
+      return SetOrUpdateProperty(projectContentElement, xmlns, "NoWarn", existing => "");
     }
 
     /* Since Unity 2018.1.5f1 it looks like this:
