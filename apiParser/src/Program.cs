@@ -19,7 +19,15 @@ namespace ApiParser
                 Console.WriteLine("Usage: ApiParser.exe docsFolder");
                 Console.WriteLine("       ApiParser.exe apiXmlPath version");
                 Console.WriteLine();
-                Console.WriteLine("  docsFolder - folder that contains all versions of Unity docs");
+                Console.WriteLine("ApiParser.exe docsFolder");
+                Console.WriteLine("  Parse all documentation installed by Unity Hub, as well as everything in the docsFolder and create a new api.xml");
+                Console.WriteLine();
+                Console.WriteLine("  docsFolder - folder that contains multiple versions of Unity docs");
+                Console.WriteLine("               Contents should be in the format Documentation-X.Y.ZfA/Documentation/en/ScriptReference");
+                Console.WriteLine();
+                Console.WriteLine("ApiParser.exe apiXmlPath version");
+                Console.WriteLine("  Parse the installed documentation corresponding to version and merge into an existing api.xml file");
+                Console.WriteLine();
                 Console.WriteLine("  apiXmlPath - location of api.xml to read and merge into");
                 Console.WriteLine("  version - version of Unity to read docs from. Must be installed in standard Unity Hub location");
                 Console.WriteLine();
