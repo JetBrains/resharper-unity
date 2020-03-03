@@ -1,4 +1,4 @@
-﻿<api minimumVersion="5.0" maximumVersion="2019.3">
+﻿<api minimumVersion="5.0" maximumVersion="2020.1">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
     <message name="IsOpenForEdit" static="True" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
       <parameters>
@@ -20,7 +20,7 @@
       </parameters>
       <returns type="UnityEditor.AssetDeleteResult" array="False" />
     </message>
-    <message name="OnWillMoveAsset" static="True" description="Unity calls this method when it is about to move an Asset on disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
+    <message name="OnWillMoveAsset" static="True" description="This is called by Unity when it is about to move an asset on disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
       <parameters>
         <parameter type="System.String" array="False" name="sourcePath" />
         <parameter type="System.String" array="False" name="destinationPath" />
@@ -552,7 +552,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnParticleSystemStopped" static="False" minimumVersion="2018.3" description="OnParticleSystemStopped is called when all particles in the system have died, and no new particles will be born. New particles cease to be created either after Stop is called, or when the duration property of a non-looping system has been exceeded." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleSystemStopped.html">
+    <message name="OnParticleSystemStopped" static="False" minimumVersion="2018.2" description="OnParticleSystemStopped is called when all particles in the system have died, and no new particles will be born. New particles cease to be created either after Stop is called, or when the duration property of a non-looping system has been exceeded." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleSystemStopped.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnParticleTrigger" static="False" minimumVersion="5.4" maximumVersion="5.4" description="OnParticleTrigger is called when any particles in a particle system meet the conditions in the trigger module." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleTrigger.html">
