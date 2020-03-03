@@ -72,7 +72,7 @@ namespace ApiParser
                 var parseableVersion = Regex.Match(requiredVersion, @"^(\d+\.\d+)").Groups[1].Value;
                 docVersions.Add((docRoot.FullPath, Version.Parse(parseableVersion)));
             }
-            
+
             var unityApi = new UnityApi();
             if (apiXml.ExistsFile)
                 unityApi = UnityApi.ImportFrom(apiXml);

@@ -45,21 +45,61 @@ namespace ApiParser
             {
                 Directory.SetCurrentDirectory(path);
 
-                var files = LoadTypes(Path.Combine(ScriptReferenceRelativePath, "docdata/toc.json"), apiVersion)
-                    .Select(f => Path.Combine(ScriptReferenceRelativePath, f) + ".html").ToArray();
+                var links = LoadTypes(Path.Combine(ScriptReferenceRelativePath, "docdata/toc.json"), apiVersion)
+                    .Select(f => (file: Path.Combine(ScriptReferenceRelativePath, f.link) + ".html", f.fullName)).ToArray();
 
-                var processed = new HashSet<string>();
-                for (var i = 0; i < files.Length; ++i)
+                Console.WriteLine("Number of types: {0}", links.Length);
+
+                var messages = new List<TypeDocument>();
+                var progress = 1;
+                for (int i = 0; i < links.Length; ++i)
                 {
                     // Some of the links in toc.json aren't valid...
-                    if (!File.Exists(files[i]))
+                    if (!File.Exists(links[i].file))
                     {
-                        Console.WriteLine($"Cannot find file {files[i]}");
+                        Console.WriteLine($"Cannot find file {links[i].file}");
+                        progress++;
                         continue;
                     }
 
-                    ParseMessageFile(files[i], apiVersion, processed);
-                    ReportProgress(i + 1, files.Length);
+                    var document = TypeDocument.Load(links[i].file, links[i].fullName);
+                    progress++;
+                    if (document != null)
+                    {
+                        if (document.IsRemoved)
+                        {
+                            myTypeResolver.MarkObsolete(document.FullName, apiVersion);
+                            if (document.Messages.Length != 0)
+                            {
+                                Console.WriteLine(
+                                    $"{document.FullName} is documented but no longer available in {apiVersion}");
+                            }
+                        }
+                        else if (document.Messages.Length > 0)
+                        {
+                            messages.Add(document);
+                            progress--;
+                        }
+                    }
+                    ReportProgress(progress, links.Length);
+                }
+
+                foreach (var document in messages)
+                {
+                    ReportProgress(progress++, links.Length);
+
+                    var unityApiType =
+                        myApi.AddType(document.Namespace, document.ShortName, document.Kind, document.DocPath, apiVersion);
+
+                    foreach (var message in document.Messages)
+                    {
+                        var eventFunction =
+                            ParseMessage(document.ShortName, message, apiVersion, document.Namespace);
+                        if (eventFunction == null)
+                            continue;
+
+                        unityApiType.MergeEventFunction(eventFunction, apiVersion);
+                    }
                 }
             }
             finally
@@ -77,100 +117,59 @@ namespace ApiParser
             Console.SetCursorPosition(0, cursorTop);
         }
 
-        private HashSet<string> LoadTypes(string tocJsonPath, Version apiVersion)
+        private IEnumerable<(string link, string fullName)> LoadTypes(string tocJsonPath, Version apiVersion)
         {
             var tocJson = File.ReadAllText(tocJsonPath);
             var toc = JsonConvert.DeserializeObject<Toc>(tocJson);
-            
-            var files = new HashSet<string>();
-            LoadTypes(toc.children.Single(c => c.title == "UnityEngine"), string.Empty, files);
-            LoadTypes(toc.children.Single(c => c.title == "UnityEditor"), string.Empty, files);
-            
+
+            if (toc.children == null)
+                throw new InvalidDataException($"Cannot load {tocJsonPath}");
+
+            var links = new List<(string link, string fullName)>();
+            LoadTypes(toc.children.Single(c => c.title == "UnityEngine"), string.Empty, links);
+            LoadTypes(toc.children.Single(c => c.title == "UnityEditor"), string.Empty, links);
+
             // AssetModificationProcessor is missing from the 5.0 index
             if (apiVersion == new Version(5, 0))
-                files.Add("AssetModificationProcessor");
-            
+                links.Add(("AssetModificationProcessor", "UnityEditor.AssetModificationProcessor"));
+
             // Playable is missing from 5.2 and 5.3 index
             if (apiVersion == new Version(5, 2) || apiVersion == new Version(5,3))
-                files.Add("Experimental.Director.Playable");
-            
-            return files;
+                links.Add(("Experimental.Director.Playable", "UnityEngine.Experimental.Directory.Playable"));
+
+            return links;
         }
 
-        private void LoadTypes(Toc tocEntry, string namespacePrefix, ISet<string> files)
+        private void LoadTypes(Toc entry, string namespacePrefix, List<(string link, string fullName)> links)
         {
-            if (tocEntry.link != null && tocEntry.link != "null")
+            if (entry.IsType)
             {
-                myTypeResolver.AddType(tocEntry.title, namespacePrefix + tocEntry.title, false);
-                files.Add(tocEntry.link);
+                var fullName = namespacePrefix + entry.title;
+                myTypeResolver.AddType(entry.title, fullName);
+                links.Add((entry.link, fullName));
             }
 
-            if (tocEntry.children == null)
+            if (entry.children == null)
             {
-                if (tocEntry.link == null || tocEntry.link == "null")
-                    throw new InvalidDataException($"Entry {tocEntry.title} has no children and no link");
+                if (!entry.IsType)
+                    Console.WriteLine($"Entry {entry.title} has no children and no link");
                 return;
             }
 
-            foreach (var child in tocEntry.children)
+            foreach (var child in entry.children)
             {
                 if (child.title == "Attributes" || child.title == "Assemblies")
                     continue;
-                
+
                 if (child.title == "Classes" || child.title == "Interfaces" || child.title == "Enumerations")
-                {
-                    foreach (var grandchild in child.children)
-                        LoadTypes(grandchild, tocEntry.title + ".", files);
-
-                    continue;
-                }
-                
-                if (child.children != null)
-                    LoadTypes(child, child.title + ".", files);
-                else
-                {
-                    myTypeResolver.AddType(child.title, namespacePrefix + child.title, false);
-                    
-                    // UnityEditor.ProjectWindowCallback is such an example
-                    if (child.link == null || child.link == "null")
-                        Console.WriteLine($"Entry {child.title} has no link!");
-                    else
-                        files.Add(child.link);
-                }
-            }
-        }
-
-        private void ParseMessageFile(string filename, Version apiVersion, HashSet<string> processed)
-        {
-            if (processed.Contains(filename))
-                return;
-
-            processed.Add(filename);
-
-            var document = TypeDocument.Load(filename);
-            if (document == null || document.Messages.Length == 0)
-                return;
-
-            if (document.IsRemoved)
-            {
-                Console.WriteLine($"{document.Namespace}.{document.ShortName} no longer available in {apiVersion}");
-                return;
-            }
-
-            var unityApiType =
-                myApi.AddType(document.Namespace, document.ShortName, document.Kind, filename, apiVersion);
-
-            foreach (var message in document.Messages)
-            {
-                var eventFunction =
-                    ParseMessage(document.ShortName, message, apiVersion, document.Namespace, processed);
-                unityApiType.MergeEventFunction(eventFunction, apiVersion);
+                    namespacePrefix = entry.IsType ? namespacePrefix + entry.title + "+" : entry.title + ".";
+                LoadTypes(child, namespacePrefix, links);
             }
         }
 
         [CanBeNull]
         private UnityApiEventFunction ParseMessage(string className, SimpleHtmlNode message, Version apiVersion,
-            string hintNamespace, HashSet<string> processed)
+            string hintNamespace)
         {
             var link = message.SelectOne(@"td.lbl/a");
             var desc = message.SelectOne(@"td.desc");
@@ -180,7 +179,6 @@ namespace ApiParser
             if (string.IsNullOrWhiteSpace(detailsPath)) return null;
 
             var path = Path.Combine(ScriptReferenceRelativePath, detailsPath);
-            processed.Add(path);
             if (!File.Exists(path)) return null;
 
             var detailsDoc = SimpleHtmlNode.Load(path);
@@ -256,9 +254,9 @@ namespace ApiParser
             var eventFunction = new UnityApiEventFunction(messageName, staticNode != null || isStaticFromExample,
                 isCoroutine, returnType, apiVersion, desc.Text, docPath);
 
-            ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames);
-
-            return eventFunction;
+            return ParseParameters(eventFunction, signature, details, hintNamespace, argumentNames, apiVersion)
+                ? eventFunction
+                : null;
         }
 
         private static SimpleHtmlNode[] PickExample([NotNull] SimpleHtmlNode details, [NotNull] string type)
@@ -284,13 +282,13 @@ namespace ApiParser
             return examples;
         }
 
-        private void ParseParameters(UnityApiEventFunction eventFunction, SimpleHtmlNode signature,
-            SimpleHtmlNode details, string owningMessageNamespace, string[] argumentNames)
+        private bool ParseParameters(UnityApiEventFunction eventFunction, SimpleHtmlNode signature,
+            SimpleHtmlNode details, string owningMessageNamespace, string[] argumentNames, Version apiVersion)
         {
             // Capture the arguments string. Note that this might be `string s, int i` or `string, int`
             var match = CaptureArgumentsRegex.Match(signature.Text);
             if (!match.Success)
-                return;
+                return false;
 
             var argumentString = match.Groups["args"].Value;
             var argumentStrings = argumentString.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
@@ -314,8 +312,17 @@ namespace ApiParser
 
             ResolveArguments(details, arguments, argumentNames);
 
+            // If any of the types we're using have been removed/marked obsolete, then the message is also obsolete
+            foreach (var argument in arguments)
+            {
+                if (myTypeResolver.IsObsolete(argument.Type.FullName, apiVersion))
+                    return false;
+            }
+
             foreach (var argument in arguments)
                 eventFunction.AddParameter(argument.Name, argument.Type, argument.Description);
+
+            return true;
         }
 
         private static void ResolveArguments([NotNull] SimpleHtmlNode details,
@@ -408,11 +415,14 @@ namespace ApiParser
 
 #pragma warning disable 649
         [SuppressMessage("ReSharper", "InconsistentNaming")]
+        [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized")]
         private class Toc
         {
             public string link;
             public string title;
-            public List<Toc> children;
+            [CanBeNull] public List<Toc> children;
+
+            public bool IsType => link != null && link != "null";
         }
 #pragma warning restore 649
     }

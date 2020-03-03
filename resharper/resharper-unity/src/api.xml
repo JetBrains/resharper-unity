@@ -466,7 +466,7 @@
     <message name="OnDisable" static="False" description="This function is called when the behaviour becomes disabled." path="Documentation/en/ScriptReference/MonoBehaviour.OnDisable.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnDisconnectedFromServer" static="False" description="Called on the client when the connection was lost or you disconnected from the server." path="Documentation/en/ScriptReference/MonoBehaviour.OnDisconnectedFromServer.html">
+    <message name="OnDisconnectedFromServer" static="False" maximumVersion="2018.1" description="Called on the client when the connection was lost or you disconnected from the server." path="Documentation/en/ScriptReference/MonoBehaviour.OnDisconnectedFromServer.html">
       <parameters>
         <parameter type="UnityEngine.NetworkDisconnection" array="False" name="info" />
       </parameters>
@@ -481,13 +481,13 @@
     <message name="OnEnable" static="False" description="This function is called when the object becomes enabled and active." path="Documentation/en/ScriptReference/MonoBehaviour.OnEnable.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnFailedToConnect" static="False" description="Called on the client when a connection attempt fails for some reason." path="Documentation/en/ScriptReference/MonoBehaviour.OnFailedToConnect.html">
+    <message name="OnFailedToConnect" static="False" maximumVersion="2018.1" description="Called on the client when a connection attempt fails for some reason." path="Documentation/en/ScriptReference/MonoBehaviour.OnFailedToConnect.html">
       <parameters>
         <parameter type="UnityEngine.NetworkConnectionError" array="False" name="error" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnFailedToConnectToMasterServer" static="False" description="Called on clients or servers when there is a problem connecting to the MasterServer." path="Documentation/en/ScriptReference/MonoBehaviour.OnFailedToConnectToMasterServer.html">
+    <message name="OnFailedToConnectToMasterServer" static="False" maximumVersion="2018.1" description="Called on clients or servers when there is a problem connecting to the MasterServer." path="Documentation/en/ScriptReference/MonoBehaviour.OnFailedToConnectToMasterServer.html">
       <parameters>
         <parameter type="UnityEngine.NetworkConnectionError" array="False" name="error" />
       </parameters>
@@ -514,7 +514,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnMasterServerEvent" static="False" description="Called on clients or servers when reporting events from the MasterServer." path="Documentation/en/ScriptReference/MonoBehaviour.OnMasterServerEvent.html">
+    <message name="OnMasterServerEvent" static="False" maximumVersion="2018.1" description="Called on clients or servers when reporting events from the MasterServer." path="Documentation/en/ScriptReference/MonoBehaviour.OnMasterServerEvent.html">
       <parameters>
         <parameter type="UnityEngine.MasterServerEvent" array="False" name="msEvent" />
       </parameters>
@@ -541,7 +541,7 @@
     <message name="OnMouseUpAsButton" static="False" coroutine="True" description="OnMouseUpAsButton is only called when the mouse is released over the same Collider as it was pressed." path="Documentation/en/ScriptReference/MonoBehaviour.OnMouseUpAsButton.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnNetworkInstantiate" static="False" description="Called on objects which have been network instantiated with Network.Instantiate." path="Documentation/en/ScriptReference/MonoBehaviour.OnNetworkInstantiate.html">
+    <message name="OnNetworkInstantiate" static="False" maximumVersion="2018.1" description="Called on objects which have been network instantiated with Network.Instantiate." path="Documentation/en/ScriptReference/MonoBehaviour.OnNetworkInstantiate.html">
       <parameters>
         <parameter type="UnityEngine.NetworkMessageInfo" array="False" name="info" />
       </parameters>
@@ -568,13 +568,13 @@
     <message name="OnParticleUpdateJobScheduled" static="False" minimumVersion="2019.3" description="OnParticleUpdateJobScheduled is called when a Particle System's built-in update job has been scheduled." path="Documentation/en/ScriptReference/MonoBehaviour.OnParticleUpdateJobScheduled.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPlayerConnected" static="False" description="Called on the server whenever a new player has successfully connected." path="Documentation/en/ScriptReference/MonoBehaviour.OnPlayerConnected.html">
+    <message name="OnPlayerConnected" static="False" maximumVersion="2018.1" description="Called on the server whenever a new player has successfully connected." path="Documentation/en/ScriptReference/MonoBehaviour.OnPlayerConnected.html">
       <parameters>
         <parameter type="UnityEngine.NetworkPlayer" array="False" name="player" />
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnPlayerDisconnected" static="False" description="Called on the server whenever a player disconnected from the server." path="Documentation/en/ScriptReference/MonoBehaviour.OnPlayerDisconnected.html">
+    <message name="OnPlayerDisconnected" static="False" maximumVersion="2018.1" description="Called on the server whenever a player disconnected from the server." path="Documentation/en/ScriptReference/MonoBehaviour.OnPlayerDisconnected.html">
       <parameters>
         <parameter type="UnityEngine.NetworkPlayer" array="False" name="player" />
       </parameters>
@@ -599,7 +599,7 @@
     <message name="OnRenderObject" static="False" description="OnRenderObject is called after camera has rendered the Scene." path="Documentation/en/ScriptReference/MonoBehaviour.OnRenderObject.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnSerializeNetworkView" static="False" description="Used to customize synchronization of variables in a script watched by a network view." path="Documentation/en/ScriptReference/MonoBehaviour.OnSerializeNetworkView.html">
+    <message name="OnSerializeNetworkView" static="False" maximumVersion="2018.1" description="Used to customize synchronization of variables in a script watched by a network view." path="Documentation/en/ScriptReference/MonoBehaviour.OnSerializeNetworkView.html">
       <parameters>
         <parameter type="UnityEngine.BitStream" array="False" name="stream" />
         <parameter type="UnityEngine.NetworkMessageInfo" array="False" name="info" />

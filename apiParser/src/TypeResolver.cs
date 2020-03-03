@@ -10,7 +10,7 @@ namespace ApiParser
     internal class TypeResolver
     {
         private readonly OneToSetMap<string, string> myFullNames = new OneToSetMap<string, string>();
-        private readonly HashSet<string> myIsObsolete = new HashSet<string>();
+        private readonly Dictionary<string, Version> myIsObsolete = new Dictionary<string, Version>();
 
         public TypeResolver()
         {
@@ -37,7 +37,7 @@ namespace ApiParser
                 suffix = "[]";
                 name = name.Substring(0, name.Length - 2);
             }
-            
+
             var candidates = myFullNames[name];
             if (!candidates.Any())
             {
@@ -81,20 +81,24 @@ namespace ApiParser
             return candidates.Single() + suffix;
         }
 
-        public bool IsObsolete(string fullName)
+        public bool IsObsolete(string fullName, Version currentVersion)
         {
-            return myIsObsolete.Contains(fullName);
+            return myIsObsolete.TryGetValue(fullName, out var fromVersion) && currentVersion >= fromVersion;
         }
 
-        public void AddType(string shortName, string fullName, bool isObsolete)
+        public void MarkObsolete(string name, Version version)
+        {
+            var fullName = ResolveFullName(name, "");
+            if (myIsObsolete.TryGetValue(fullName, out var fromVersion) && fromVersion < version)
+                return;
+
+            myIsObsolete[fullName] = version;
+        }
+
+        public void AddType(string shortName, string fullName)
         {
             myFullNames.Add(shortName, fullName);
             myFullNames.Add(fullName, fullName);
-            if (isObsolete)
-            {
-                myIsObsolete.Add(shortName);
-                myIsObsolete.Add(fullName);
-            }
         }
 
         public ApiType CreateApiType(string name, string namespaceHint = "")

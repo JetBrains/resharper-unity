@@ -10,8 +10,8 @@ namespace ApiParser
         public static readonly ApiType Bool = new ApiType("System.Boolean");
         public static readonly ApiType StringByRef = new ApiType("System.String&");
         public static readonly ApiType IEnumerator = new ApiType("System.Collections.IEnumerator");
-        
-        public ApiType([NotNull] string fullName, bool isObsolete = false)
+
+        public ApiType([NotNull] string fullName)
         {
             if (string.IsNullOrWhiteSpace(fullName)) fullName = "void";
 
@@ -28,14 +28,12 @@ namespace ApiParser
             }
 
             FullName = fullName;
-            IsObsolete = isObsolete;
         }
 
         public string FullName { get; }
 
         public bool IsArray { get; }
         public bool IsByRef { get; }
-        public bool IsObsolete { get; }
 
         public override string ToString()
         {

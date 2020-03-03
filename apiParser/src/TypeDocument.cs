@@ -10,30 +10,31 @@ namespace ApiParser
     {
         // "Namespace:" is only used in 5.0
         private static readonly Regex CaptureKindAndNamespaceRegex = new Regex(@"^(((?<type>class|struct|interface) in|Namespace:)\W*(?<namespace>\w+(?:\.\w+)*)|(?<type>enumeration))$", RegexOptions.Compiled);
-        
+
         [CanBeNull]
-        internal static TypeDocument Load(string filename)
+        internal static TypeDocument Load(string fileName, string fullName)
         {
-            var content = File.ReadAllText(filename);
+            var content = File.ReadAllText(fileName);
             if (!content.Contains("class in") && !content.Contains("struct in") && !content.Contains("interface in") && !content.Contains("enumeration") && !content.Contains("Namespace:"))
                 return null;
 
             try
             {
-                var document = new TypeDocument(content, "");
+                var document = new TypeDocument(content, fileName, fullName);
                 if (string.IsNullOrEmpty(document.ShortName) || string.IsNullOrEmpty(document.Kind))
                     return null;
                 return document;
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error reading file: {filename}: " + e);
+                Console.WriteLine($"Error reading file: {fileName}: " + e);
                 return null;
             }
         }
 
-        private TypeDocument(string content, string namespaceHint)
+        private TypeDocument(string content, string docPath, string fullName)
         {
+            DocPath = docPath;
             var documentNode = SimpleHtmlNode.LoadContent(content);
 
             ShortName = documentNode.SelectOne(@"//div.content/div.section/div.mb20.clear/h1")?.Text
@@ -42,7 +43,7 @@ namespace ApiParser
             // So we can return early
             Messages = EmptyArray<SimpleHtmlNode>.Instance;
             Kind = Namespace = string.Empty;
-            
+
             // "class in {ns}"/"struct in {ns}"/"Namespace: {ns}"
             var namespaceParagraph = documentNode.SelectOne(@"//div.content/div.section/div.mb20.clear/p");
             if (namespaceParagraph == null)
@@ -55,17 +56,10 @@ namespace ApiParser
             if (string.IsNullOrEmpty(Kind)) Kind = "class";
             if (string.IsNullOrEmpty(Namespace))
             {
-                if (Kind == "enumeration")
-                {
-                    Namespace = namespaceHint;
-                }
-                else if (ShortName == "AssetModificationProcessor")
-                {
-                    // Quick fix up for the 5.0 docs, which don't specify a namespace for AssetModificationProcessor
-                    Namespace = "UnityEditor";
-                }
-                else
-                    throw new InvalidDataException($"Missing namespace {Kind}: {ShortName}");
+                var index = fullName.LastIndexOf('.');
+                if (index == -1)
+                    throw new InvalidDataException($"Cannot get namespace from full type name: {fullName}");
+                Namespace = fullName.Substring(0, index);
             }
 
             Messages = documentNode.SelectMany(
@@ -75,7 +69,8 @@ namespace ApiParser
                 documentNode.SelectOne(@"//div.content/div.section/div.mb20.clear/div[@class='message message-error mb20']");
             IsRemoved = removedDiv != null && removedDiv.Text.StartsWith("Removed");
         }
-        
+
+        [NotNull] public string DocPath { get; private set; }
         [NotNull] public string ShortName { get; private set; }
         // Namespace is not guaranteed to be 100% correct. Enums are missing the UnityEngine. or UnityEditor. prefix
         [NotNull] public string Namespace { get; private set; }
