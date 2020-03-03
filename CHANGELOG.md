@@ -21,6 +21,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
 - Stop marking a method as expensive if it only contains a null check ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
 - Move vector multiplication order inspection to performance critical context only ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
+- Updated API information to 2020.1.0a25 ([#1553](https://github.com/JetBrains/resharper-unity/pull/1553))
+- Remove messages that use obsolete parameter types ([#1545](https://github.com/JetBrains/resharper-unity/issues/1545), [#1553](https://github.com/JetBrains/resharper-unity/pull/1553))
 - Rider: Adding file to Unity Explorer will add to correct C# project ([RIDER-23169](https://youtrack.jetbrains.com/issue/RIDER-23169), [#1470](https://github.com/JetBrains/resharper-unity/pull/1470))
 - Rider: Show folders ending with `~` by default in Unity Explorer ([#1444](https://github.com/JetBrains/resharper-unity/issues/1444), [1506](https://github.com/JetBrains/resharper-unity/pull/1506))
 - Rider: Move Unity Explorer settings to main "gear" icon ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
