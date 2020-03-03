@@ -97,6 +97,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         sink("startUnity", void)
         sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
+        sink("showDeferredCachesProgressNotification", void)
+        property("isDeferredCachesCompletedOnce", bool)
+
         property("ScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
 

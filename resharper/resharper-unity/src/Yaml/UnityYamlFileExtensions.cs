@@ -1,5 +1,7 @@
 using System;
 using JetBrains.Annotations;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
@@ -59,6 +61,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
         public static bool IsMeta([NotNull] this IPath path)
         {
             return SimplePathEndsWith(path, MetaFileExtensionWithDot);
+        }
+
+        public static bool IsMetaOrProjectSettings(ISolution solution, FileSystemPath location)
+        {
+            var components = location.MakeRelativeTo(solution.SolutionDirectory).Components.ToArray();
+            if (location.ExtensionNoDot.Equals("meta", StringComparison.InvariantCultureIgnoreCase) || components.Length == 2 &&
+                components[0].Equals("ProjectSettings", StringComparison.InvariantCultureIgnoreCase))
+                return true;
+
+            return false;
         }
 
         public static bool IsInterestingMeta([NotNull] this IPath path)

@@ -13,6 +13,10 @@ fun downloadUnityDll() : File{
 }
 
 fun copyUnityDll(unityDll : File, project : Project, activeSolutionDirectory : File) {
-    unityDll.copyTo(activeSolutionDirectory.combine("UnityEngine.dll"))
+    copyUnityDll(unityDll, activeSolutionDirectory)
     refreshFileSystem(project)
+}
+
+fun copyUnityDll(unityDll : File, activeSolutionDirectory : File) {
+    unityDll.copyTo(activeSolutionDirectory.combine("UnityEngine.dll"))
 }

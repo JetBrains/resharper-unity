@@ -6,7 +6,6 @@ using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -18,9 +17,7 @@ using JetBrains.ProjectModel.Tasks;
 using JetBrains.ProjectModel.Transaction;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.GeneratedCode.Settings;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Modules.ExternalFileModules;
 using JetBrains.Util;
@@ -50,11 +47,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
         private readonly UnityYamlDisableStrategy myUnityYamlDisableStrategy;
-        private readonly BinaryUnityFileCache myBinaryUnityFileCache;
-        private readonly ISettingsSchema mySettingsSchema;
-        private readonly SettingsLayersProvider mySettingsLayersProvider;
-        private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly UnityYamlSupport myUnityYamlSupport;
         private readonly JetHashSet<FileSystemPath> myRootPaths;
         private readonly FileSystemPath mySolutionDirectory;
 
@@ -67,11 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                                                  UnityYamlPsiSourceFileFactory psiSourceFileFactory,
                                                  UnityExternalFilesModuleFactory moduleFactory,
                                                  UnityYamlDisableStrategy unityYamlDisableStrategy,
-                                                 BinaryUnityFileCache binaryUnityFileCache,
                                                  ISettingsSchema settingsSchema,
-                                                 SettingsLayersProvider settingsLayersProvider,
-                                                 AssetSerializationMode assetSerializationMode,
-                                                 UnityYamlSupport unityYamlSupport)
+                                                 SettingsLayersProvider settingsLayersProvidert)
         {
             myLifetime = lifetime;
             myLogger = logger;
@@ -83,11 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             myPsiSourceFileFactory = psiSourceFileFactory;
             myModuleFactory = moduleFactory;
             myUnityYamlDisableStrategy = unityYamlDisableStrategy;
-            myBinaryUnityFileCache = binaryUnityFileCache;
-            mySettingsSchema = settingsSchema;
-            mySettingsLayersProvider = settingsLayersProvider;
-            myAssetSerializationMode = assetSerializationMode;
-            myUnityYamlSupport = unityYamlSupport;
 
             changeManager.RegisterChangeProvider(lifetime, this);
 
@@ -116,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             // Note that this means we process meta and asset files for class library projects, which likely won't have
             // asset files. We can't use IsUnityGeneratedProject because any project based in the Packages folder or
             // using 'file:' won't be processed.
-            if (!myAssetSerializationMode.IsForceText || !project.IsUnityProject())
+            if (!project.IsUnityProject())
                 return;
 
             var externalFiles = CollectExternalFilesForUnityProject();
@@ -225,15 +209,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             var builder = new PsiModuleChangeBuilder();
             AddExternalPsiSourceFiles(externalFiles.MetaFiles, builder);
-
-#if RESHARPER
             AddExternalPsiSourceFiles(externalFiles.AssetFiles, builder);
-#endif
-            FlushChanges(builder);
-
-#if RIDER
-            AddExternalProjectFiles(externalFiles.AssetFiles);
-#endif
+            FlushChanges(builder, externalFiles.AssetFiles.Select(t => t.GetAbsolutePath()).ToList());
 
             // We should only start watching for file system changes after adding the files we know about
             foreach (var directory in externalFiles.Directories)
@@ -289,7 +266,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             if (mySolution.FindProjectItemsByLocation(path).Count > 0)
                 return;
-
+            
             var projectImpl = mySolution.MiscFilesProject as ProjectImpl;
             Assertion.AssertNotNull(projectImpl, "mySolution.MiscFilesProject as ProjectImpl");
             var properties = myProjectFilePropertiesFactory.CreateProjectFileProperties(
@@ -366,8 +343,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     var builder = new PsiModuleChangeBuilder();
                     var projectFilesToAdd = new List<FileSystemPath>();
                     ProcessFileSystemChangeDelta(delta, builder, projectFilesToAdd);
-                    AddExternalProjectFiles(projectFilesToAdd);
-                    FlushChanges(builder);
+                    FlushChanges(builder, projectFilesToAdd);
                 });
         }
 
@@ -385,7 +361,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                     if (delta.NewPath.IsInterestingAsset())
                     {
                         if (!IsKnownBinaryAsset(delta.NewPath) && !IsAssetExcludedByName(delta.NewPath))
+                        {
+                            AddExternalPsiSourceFile(builder, delta.NewPath);
                             projectFilesToAdd.Add(delta.NewPath);
+                        }
                     }
                     else if (delta.NewPath.IsInterestingMeta())
                         AddExternalPsiSourceFile(builder, delta.NewPath);
@@ -405,13 +384,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                         // timestamps and never get updated by ICache implementations!
                         if (sourceFile is PsiSourceFileFromPath psiSourceFileFromPath)
                             psiSourceFileFromPath.GetCachedFileSystemData().Refresh(delta.NewPath);
-
-                        // Has the file flipped from binary back to text?
-                        if (myBinaryUnityFileCache.IsBinaryFile(sourceFile) &&
-                            sourceFile.GetLocation().SniffYamlHeader())
-                        {
-                            myBinaryUnityFileCache.Invalidate(sourceFile);
-                        }
 
                         builder.AddFileChange(sourceFile, PsiModuleChange.ChangeType.Modified);
                     }
@@ -433,7 +405,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             return module.TryGetFileByPath(path, out var sourceFile) ? sourceFile : null;
         }
 
-        private void FlushChanges(PsiModuleChangeBuilder builder)
+        private void FlushChanges(PsiModuleChangeBuilder builder, List<FileSystemPath> projectFilesToAdd)
         {
             if (builder.IsEmpty)
                 return;
@@ -465,6 +437,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                         }
 
                         myChangeManager.OnProviderChanged(this, builder.Result, SimpleTaskExecutor.Instance);
+                        
+#if RIDER
+                        AddExternalProjectFiles(projectFilesToAdd);
+#endif
                     }
                 });
         }

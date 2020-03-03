@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class |MyBehaviour|(0) : MonoBehaviour
+public class ||MyBehaviour|(0)|(1) : MonoBehaviour
 {
 }
 
@@ -8,10 +8,11 @@ public class Whatever
 {
     public static void DoSomething()
     {
-        var behaviour = |new MyBehaviour()|(1);
+        var behaviour = |new MyBehaviour()|(2);
     }
 }
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): ReSharper Warning: 'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent<T>()' instead of 'new'
+(1): UnityCodeInsights: 
+(2): ReSharper Warning: 'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent<T>()' instead of 'new'
