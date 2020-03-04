@@ -155,5 +155,6 @@ object EditorPluginModel: Root() {
         sink("clearOnPlay", long)
 
         call("generateUIElementsSchema", void, bool)
+        call("exitUnity", void, bool)
     }
 }

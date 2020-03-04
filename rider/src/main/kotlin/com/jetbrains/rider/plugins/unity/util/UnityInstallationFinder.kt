@@ -33,7 +33,7 @@ class UnityInstallationFinder(private val project: Project) {
 
         val root = tryGetApplicationPathFromProtocol() ?: return null
         return when {
-            SystemInfo.isMac -> root.resolve("Contents")
+            SystemInfo.isMac -> root.parent.parent // Unity.app/Contents
             SystemInfo.isWindows -> root.parent.resolve("Data")
             SystemInfo.isLinux -> root.parent.resolve("Data")
             else -> null
@@ -46,8 +46,6 @@ class UnityInstallationFinder(private val project: Project) {
     // Linux: /home/ivan/Unity-2018.1.0f2/Editor/Unity
     fun getApplicationPath(): Path? {
         var path =  tryGetApplicationPathFromProtocol()
-        if (SystemInfo.isMac)
-            path = path?.resolve("Contents/MacOS/Unity")
         return path
     }
 
