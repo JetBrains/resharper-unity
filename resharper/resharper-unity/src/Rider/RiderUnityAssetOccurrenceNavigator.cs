@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return true;
 
                 var tooltipManager = solution.GetComponent<ITooltipManager>();
-                tooltipManager.Show("Start the Unity Editor to view changes in the Inspector", lifetime => textControl.PopupWindowContextFactory.CreatePopupWindowContext(lifetime));
+                tooltipManager.Show("Start the Unity Editor to view results", lifetime => textControl.PopupWindowContextFactory.CreatePopupWindowContext(lifetime));
                 return true;
             }
 

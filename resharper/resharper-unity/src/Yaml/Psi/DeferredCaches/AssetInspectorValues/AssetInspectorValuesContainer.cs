@@ -5,6 +5,9 @@ using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.SolutionAnalysis;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
@@ -36,8 +39,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         private readonly CountingSet<MonoBehaviourFieldWithValue> myValuesWhichAreUniqueInWholeFile = new CountingSet<MonoBehaviourFieldWithValue>();
         private readonly Dictionary<IPsiSourceFile, OneToListMap<string, InspectorVariableUsage>> myPsiSourceFileToInspectorValues = new Dictionary<IPsiSourceFile, OneToListMap<string, InspectorVariableUsage>>();
 
+        private readonly OneToCompactCountingSet<string, string> myNameToGuids = new OneToCompactCountingSet<string, string>();
         
-        public AssetInspectorValuesContainer(DeferredCachesLocks deferredCachesLocks, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
+        
+        public AssetInspectorValuesContainer(DeferredCachesLocks deferredCachesLocks,IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
         {
             myDeferredCachesLocks = deferredCachesLocks;
             myLogger = logger;
@@ -113,6 +118,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 RemoveUniqueValue(mbField, variableUsage);
                 myChangesInFiles.Remove(mbField, sourceFile);
                 RemoveChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name, sourceFile), variableUsage);
+                
+                if (variableUsage.ScriptReference is ExternalReference externalReference)
+                    myNameToGuids.Remove(variableUsage.Name, externalReference.ExternalAssetGuid);
             }
 
             myPsiSourceFileToInspectorValues.Remove(sourceFile);
@@ -168,6 +176,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 AddChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name, sourceFile), variableUsage);
                 
                 inspectorUsages.Add(variableUsage.Name, variableUsage);
+
+                if (variableUsage.ScriptReference is ExternalReference externalReference)
+                    myNameToGuids.Add(variableUsage.Name, externalReference.ExternalAssetGuid);
             }
             
             myPsiSourceFileToInspectorValues.Add(sourceFile, inspectorUsages);
@@ -235,6 +246,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return count;
         }
 
+        public bool IsIndexResultEstimated(string ownerGuid, ITypeElement containingType, IEnumerable<string> possibleNames)
+        {
+            // TODO: prefab modifications
+            // TODO: drop daemon dependency and inject compoentns in consructor
+            var configuration = containingType.GetSolution().GetComponent<SolutionAnalysisConfiguration>();
+            if (configuration.Enabled.Value && configuration.CompletedOnceAfterStart.Value && configuration.Loaded.Value)
+            {
+                var service = containingType.GetSolution().GetComponent<SolutionAnalysisService>();
+                var id = service.GetElementId(containingType);
+                if (id.HasValue && service.UsageChecker is IGlobalUsageChecker checker)
+                {
+                    // no inheritors
+                    if (checker.GetDerivedTypeElementsCount(id.Value) == 0)
+                        return false;
+                }
+            }
+            
+            var count = 0;
+            foreach (var possibleName in possibleNames)
+            {
+                count += myNameToGuids.GetValues(possibleName).Length;
+                if (count == 1 && !myNameToGuids.GetValues(possibleName)[0].Equals(ownerGuid))
+                    count++;
+            }
+            
+            return count > 1;
+        }
+        
+        
         public IEnumerable<IAssetValue> GetUniqueValues(string guid, IEnumerable<string> possibleNames)
         {
             var result = new List<IAssetValue>();
