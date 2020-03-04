@@ -1,5 +1,6 @@
 using JetBrains.Application;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -9,9 +10,10 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
     [ShellComponent]
-    public class StringBasedInvocationEdgeProvider : ICallGraphImplicitEdgeProvider
+    public class StringBasedInvocationEdgeProvider : ICallGraphEdgeProvider
     {
-        public LocalList<IDeclaredElement> ResolveImplicitlyInvokedDeclaredElements(ITreeNode treeNode)
+        public void FindEdges(ITreeNode treeNode, IDeclaredElement caller, ICallGraphEdgeConsumer consumer,
+            IElementIdProvider provider)
         {
             if (treeNode is IInvocationExpression invocationExpression)
             {
@@ -23,14 +25,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         ?.GetReferences<UnityEventFunctionReference>().FirstOrDefault()?.Resolve().DeclaredElement;
                     if (implicitlyInvokeDeclaredElement != null)
                     {
-                        var result =  new LocalList<IDeclaredElement>(1);
-                        result.Add(implicitlyInvokeDeclaredElement);
-                        return result;
+                        consumer.TryAddEdge(caller, implicitlyInvokeDeclaredElement, provider);
                     }
                 }
             }
-
-            return new LocalList<IDeclaredElement>();
         }
     }
 }
