@@ -45,16 +45,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         private string GetAttachedGameObjectName(AssetHierarchyProcessor processor, UnityAssetOccurrence occurrence)
         {
-            return occurrence.GetSolution()?.GetComponent<DeferredCachesLocks>().ExecuteUnderReadLock(_ =>
-            {
-                var consumer = new UnityScenePathGameObjectConsumer();
-                processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.AttachedElementLocation, consumer, true, true);
+            var consumer = new UnityScenePathGameObjectConsumer();
+            processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.AttachedElementLocation, consumer, true, true);
 
-                var parts = consumer.NameParts;
-                if (parts.Count == 0)
-                    return "...";
-                return string.Join("/", consumer.NameParts);
-            }) ?? "UNKNOWN";
+            var parts = consumer.NameParts;
+            if (parts.Count == 0)
+                return "...";
+            return string.Join("/", consumer.NameParts);
         }
     }
 }

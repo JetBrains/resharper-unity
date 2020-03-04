@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
@@ -10,11 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     [SolutionComponent]
     public class AssetHierarchyProcessor
     {
-        private readonly DeferredCachesLocks myLocks;
+        private readonly IShellLocks myLocks;
         private readonly PrefabImportCache myPrefabImportCache;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
 
-        public AssetHierarchyProcessor(DeferredCachesLocks locks, PrefabImportCache prefabImportCache, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer)
+        public AssetHierarchyProcessor(IShellLocks locks, PrefabImportCache prefabImportCache, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer)
         {
             myLocks = locks;
             myPrefabImportCache = prefabImportCache;
