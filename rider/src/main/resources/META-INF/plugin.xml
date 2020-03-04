@@ -302,6 +302,7 @@
   <li>Rider: Adding file to Unity Explorer will add to correct C# project (<a href="https://youtrack.jetbrains.com/issue/RIDER-23169">RIDER-23169</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1470">#1470</a>)</li>
   <li>Rider: Show folders ending with <tt>~</tt> by default in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/1444">#1444</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Move Unity Explorer settings to main "gear" icon (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
+  <li>Rider: Interesting content in builtin packages is now visible by default (<a href="https://github.com/JetBrains/resharper-unity/pull/1556">#1556</a>)</li>
   <li>Unity Editor: Move caret to correct column when opening file (<a href="https://youtrack.jetbrains.com/issue/RIDER-27450">RIDER-27450</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1486">#1486</a>)</li>
 </ul>
 <em>Fixed:</em>

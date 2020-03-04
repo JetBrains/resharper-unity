@@ -24,6 +24,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Rider: Adding file to Unity Explorer will add to correct C# project ([RIDER-23169](https://youtrack.jetbrains.com/issue/RIDER-23169), [#1470](https://github.com/JetBrains/resharper-unity/pull/1470))
 - Rider: Show folders ending with `~` by default in Unity Explorer ([#1444](https://github.com/JetBrains/resharper-unity/issues/1444), [1506](https://github.com/JetBrains/resharper-unity/pull/1506))
 - Rider: Move Unity Explorer settings to main "gear" icon ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+- Rider: Interesting content in builtin packages is now visible by default ([#1556](https://github.com/JetBrains/resharper-unity/pull/1556))
 - Unity Editor: Move caret to correct column when opening file ([RIDER-27450](https://youtrack.jetbrains.com/issue/RIDER-27450), [#1486](https://github.com/JetBrains/resharper-unity/pull/1486))
 
 ### Fixed
