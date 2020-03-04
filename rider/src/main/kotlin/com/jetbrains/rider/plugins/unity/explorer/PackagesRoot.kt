@@ -302,7 +302,7 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return FileSystemExplorerNode(project!!, virtualFile, nestedFiles, false)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets = false, isReadOnlyPackageFile = true)
     }
 
     override fun canNavigateToSource(): Boolean {
