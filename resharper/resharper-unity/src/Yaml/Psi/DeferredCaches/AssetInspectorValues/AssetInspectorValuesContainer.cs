@@ -273,8 +273,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var count = 0;
             foreach (var possibleName in possibleNames)
             {
-                count += myNameToGuids.GetValues(possibleName).Length;
-                if (count == 1 && !myNameToGuids.GetValues(possibleName)[0].Equals(ownerGuid))
+                var values = myNameToGuids.GetValues(possibleName);
+                count += values.Length;
+                if (values.Length == 1 && !values[0].Equals(ownerGuid))
                     count++;
             }
             
