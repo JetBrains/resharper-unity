@@ -87,6 +87,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             base.Drop(sourceFile);
         }
 
+        public override void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
+        {
+            // TODO : temp solution
+            if (sourceFile is UnityYamlExternalPsiSourceFile unityYamlExternalPsiSourceFile)
+            {
+                unityYamlExternalPsiSourceFile.MarkDocumentModified();
+            }
+            
+            base.OnDocumentChange(sourceFile, change);
+        }
+        
         private void AddToProcess(IPsiSourceFile sourceFile)
         {
             bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
