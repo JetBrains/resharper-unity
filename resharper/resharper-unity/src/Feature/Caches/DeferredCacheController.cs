@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Threading.Tasks;
 
@@ -60,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             myDeferredCaches = deferredCaches;
             myProgressBar = progressBar;
             myLogger = logger;
-            myCompletedOnce = new ViewableProperty<bool>();
+            myCompletedOnce = new ViewableProperty<bool>(false);
             
             
             tasksScheduler.EnqueueTask(new SolutionLoadTask("DeferredCacheControllerInitialization", SolutionLoadTaskKinds.AsLateAsPossible,
@@ -132,16 +133,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         private void RunBackgroundActivityInner()
         {
-            myPsiFiles.ExecuteAfterCommitAllDocuments(() =>
+            if (!myLifetime.IsAlive)
+                return;
+            
+            myShellLocks.QueueReadLock(myLifetime, "DeferredCacheControllerRunActivityInner", () =>
             {
-                myPsiFiles.AssertAllDocumentAreCommitted();
-          
-                new InterruptableReadActivityThe(myLifetime, myShellLocks, () => !myLifetime.IsAlive || myShellLocks.ContentModelLocks.IsWriteLockRequested)
+                myPsiFiles.ExecuteAfterCommitAllDocuments(() =>
                 {
-                    FuncRun = RunActivity,
-                    FuncCancelled = RunBackgroundActivityInner,
-                    FuncCompleted = () => { }
-                }.DoStart();
+                    myPsiFiles.AssertAllDocumentAreCommitted();
+          
+                    new InterruptableReadActivityThe(myLifetime, myShellLocks, () => !myLifetime.IsAlive || myShellLocks.ContentModelLocks.IsWriteLockRequested)
+                    {
+                        FuncRun = RunActivity,
+                        FuncCancelled = RunBackgroundActivityInner,
+                        FuncCompleted = () => { QueueCompletedOnce(true); }
+                    }.DoStart();
+                });
             });
         }
 
@@ -152,10 +159,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public void RunActivity()
         {
+            if (!myCurrentBackgroundActivityLifetime.IsAlive)
+                return;
+            
             var checker = new SeldomInterruptChecker();
 
-            if (FlushBuildDataIfNeed())
-                return;
+            FlushBuildDataIfNeed();
 
             foreach (var psiSourceFile in myDeferredHelperCache.FilesToProcess)
             {
@@ -194,16 +203,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                 myLogger.Verbose("Build finished {0}", psiSourceFile.GetPersistentIdForLogging());
 
-                if (FlushBuildDataIfNeed())
-                    return;
+                FlushBuildDataIfNeed();
             }
+
+            FlushBuildData();
             
-            if (FlushBuildData())
-                return;
             
-            QueueCompletedOnce(true);
-            myCurrentBackgroundActivityLifetimeDefinition.Terminate();
-            myCurrentBackgroundActivityLifetimeDefinition = null;
+            lock (myLockObject) {
+                myCurrentBackgroundActivityLifetimeDefinition.Terminate();
+                myCurrentBackgroundActivityLifetimeDefinition = null;
+            }
         }
 
         private bool FlushBuildData()
@@ -213,62 +222,60 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             
             myShellLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () =>
             {
-                var files = 0;
-                foreach (var sourceFile in myDeferredHelperCache.FilesToDrop)
+                using (WriteLockCookie.Create())
                 {
-                    myLogger.Verbose("Start dropping {0}", sourceFile.GetPersistentIdForLogging());
-
-                    if (files > BATCH_SIZE)
-                        break;
-
-                    foreach (var deferredCache in myDeferredCaches)
+                    var files = 0;
+                    foreach (var sourceFile in myDeferredHelperCache.FilesToDrop)
                     {
-                        try
+                        myLogger.Verbose("Start dropping {0}", sourceFile.GetPersistentIdForLogging());
+
+                        if (files > BATCH_SIZE)
+                            break;
+
+                        foreach (var deferredCache in myDeferredCaches)
                         {
-                            deferredCache.Drop(sourceFile);
+                            try
+                            {
+                                deferredCache.Drop(sourceFile);
+                            }
+                            catch (Exception e)
+                            {
+                                myLogger.Error(e, "An error occurred during dropping data in cache {0}", myDeferredCaches.GetType().Name);
+                            }
                         }
-                        catch (Exception e)
-                        {
-                            myLogger.Error(e, "An error occurred during dropping data in cache {0}", myDeferredCaches.GetType().Name);
-                        }
+
+                        myDeferredHelperCache.FilesToDrop.Remove(sourceFile);
+                        myLogger.Verbose("Finish dropping {0}", sourceFile.GetPersistentIdForLogging());
+                        files++;
                     }
 
-                    myDeferredHelperCache.FilesToDrop.Remove(sourceFile);
-                    myLogger.Verbose("Finish dropping {0}", sourceFile.GetPersistentIdForLogging());
-                    files++;
-                }
-
-                foreach (var sourceFile in myCalculatedData.Keys)
-                {
-                    if (files > BATCH_SIZE)
-                        break;
-
-                    myLogger.Verbose("Start merging for {0}", sourceFile);
-                    var cacheToData = myCalculatedData[sourceFile];
-
-                    foreach (var (cache, data) in cacheToData)
+                    foreach (var sourceFile in myCalculatedData.Keys)
                     {
-                        try
+                        if (files > BATCH_SIZE)
+                            break;
+
+                        myLogger.Verbose("Start merging for {0}", sourceFile);
+                        var cacheToData = myCalculatedData[sourceFile];
+
+                        foreach (var (cache, data) in cacheToData)
                         {
-                            cache.Merge(sourceFile, data);
+                            try
+                            {
+                                cache.Merge(sourceFile, data);
+                            }
+                            catch (Exception e)
+                            {
+                                myLogger.Error(e, "An error occurred during merging data to cache {0}", cache.GetType().Name);
+                            }
                         }
-                        catch (Exception e)
-                        {
-                            myLogger.Error(e, "An error occurred during merging data to cache {0}", cache.GetType().Name);
-                        }
+
+
+                        myCalculatedData.TryRemove(sourceFile, out _);
+
+                        myLogger.Verbose("Finish merging for {0}", sourceFile);
+                        files++;
                     }
-
-
-                    myCalculatedData.TryRemove(sourceFile, out _);
-
-                    myLogger.Verbose("Finish merging for {0}", sourceFile);
-                    files++;
                 }
-
-                myShellLocks.Tasks.StartNew(myLifetime, Scheduling.FreeThreaded, () =>
-                {
-                    RunBackgroundActivityInner();
-                });
             });
 
             return true;
@@ -279,7 +286,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             if (myCalculatedData.Count + myDeferredHelperCache.FilesToDrop.Count > BATCH_SIZE)
             {
                 FlushBuildData();
-                return true;
+                throw new OperationCanceledException();
             }
 
             return false;
