@@ -4,9 +4,9 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
@@ -26,94 +26,107 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
     public abstract class UnityHighlightingAbstractStage : CSharpDaemonStageBase
     {
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
-        private readonly PerformanceCriticalCodeCallGraphAnalyzer myPerformanceCriticalCodeCallGraphAnalyzer;
-        private readonly SolutionAnalysisService mySwa;
+        private readonly PerformanceCriticalCodeCallGraphMarksProvider myPerformanceCriticalCodeCallGraphMarksProvider;
         protected readonly IEnumerable<IUnityDeclarationHighlightingProvider> HiglightingProviders;
-        protected readonly IEnumerable<IPerformanceProblemAnalyzer> PerformanceProblemAnalyzers;
+        protected readonly IEnumerable<IUnityProblemAnalyzer> PerformanceProblemAnalyzers;
         protected readonly UnityApi API;
         private readonly UnityCommonIconProvider myCommonIconProvider;
+        private readonly IElementIdProvider myProvider;
         protected readonly ILogger Logger;
 
         protected UnityHighlightingAbstractStage(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            PerformanceCriticalCodeCallGraphAnalyzer performanceCriticalCodeCallGraphAnalyzer,
-            SolutionAnalysisService swa, IEnumerable<IUnityDeclarationHighlightingProvider> higlightingProviders,
-            IEnumerable<IPerformanceProblemAnalyzer> performanceProblemAnalyzers, UnityApi api,
-            UnityCommonIconProvider  commonIconProvider, ILogger logger)
+            PerformanceCriticalCodeCallGraphMarksProvider performanceCriticalCodeCallGraphMarksProvider,
+            IEnumerable<IUnityDeclarationHighlightingProvider> higlightingProviders,
+            IEnumerable<IUnityProblemAnalyzer> performanceProblemAnalyzers, UnityApi api,
+            UnityCommonIconProvider commonIconProvider, IElementIdProvider provider, ILogger logger)
         {
             myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
-            myPerformanceCriticalCodeCallGraphAnalyzer = performanceCriticalCodeCallGraphAnalyzer;
-            mySwa = swa;
+            myPerformanceCriticalCodeCallGraphMarksProvider = performanceCriticalCodeCallGraphMarksProvider;
             HiglightingProviders = higlightingProviders;
             PerformanceProblemAnalyzers = performanceProblemAnalyzers;
             API = api;
             myCommonIconProvider = commonIconProvider;
+            myProvider = provider;
             Logger = logger;
         }
-        protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
+
+        protected override IDaemonStageProcess CreateProcess(IDaemonProcess process,
+            IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
             if (!file.GetProject().IsUnityProject())
                 return null;
-            
-            var enabled = settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
+
+            var isPerformanceAnalysisEnabled =
+                settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
 
             
             return new UnityHighlightingProcess(process, file, myCallGraphSwaExtensionProvider,
-                myPerformanceCriticalCodeCallGraphAnalyzer, mySwa, enabled ,HiglightingProviders, PerformanceProblemAnalyzers,
-                API, myCommonIconProvider, processKind, Logger);
+                myPerformanceCriticalCodeCallGraphMarksProvider, isPerformanceAnalysisEnabled,
+                HiglightingProviders, PerformanceProblemAnalyzers,
+                API, myCommonIconProvider, processKind, myProvider, Logger);
         }
     }
     
     public class UnityHighlightingProcess : CSharpDaemonStageProcessBase
     {
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
-        private readonly PerformanceCriticalCodeCallGraphAnalyzer myPerformanceCriticalCodeCallGraphAnalyzer;
-        private readonly SolutionAnalysisService mySwa;
+        private readonly PerformanceCriticalCodeCallGraphMarksProvider myPerformanceCriticalCodeCallGraphMarksProvider;
         private readonly bool myIsPerformanceAnalysisEnabled;
         private readonly IEnumerable<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
-        private readonly IEnumerable<IPerformanceProblemAnalyzer> myPerformanceProblemAnalyzers;
+        private readonly IEnumerable<IUnityProblemAnalyzer> myPerformanceProblemAnalyzers;
         private readonly UnityApi myAPI;
         private readonly UnityCommonIconProvider myCommonIconProvider;
         private readonly DaemonProcessKind myProcessKind;
+        private readonly IElementIdProvider myProvider;
         private readonly ILogger myLogger;
         private readonly ISet<IDeclaredElement> myMarkedDeclarations = new HashSet<IDeclaredElement>();
         private readonly JetHashSet<IMethod> myEventFunctions;
-        private readonly Stack<bool> myPerformanceCriticalContext = new Stack<bool>();
+
+        private readonly Dictionary<UnityProblemAnalyzerContext, List<IUnityProblemAnalyzer>>
+            myProblemAnalyzersByContext;
+
+        private readonly Stack<List<UnityProblemAnalyzerContext>> myProblemAnalyzerContexts =
+            new Stack<List<UnityProblemAnalyzerContext>>();
 
         public UnityHighlightingProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            PerformanceCriticalCodeCallGraphAnalyzer performanceCriticalCodeCallGraphAnalyzer,
-            SolutionAnalysisService swa,
+            PerformanceCriticalCodeCallGraphMarksProvider performanceCriticalCodeCallGraphMarksProvider,
             bool isPerformanceAnalysisEnabled,
             IEnumerable<IUnityDeclarationHighlightingProvider> declarationHighlightingProviders,
-            IEnumerable<IPerformanceProblemAnalyzer> performanceProblemAnalyzers, UnityApi api, UnityCommonIconProvider commonIconProvider,
-            DaemonProcessKind processKind,
-            ILogger logger) : base(process, file)
+            IEnumerable<IUnityProblemAnalyzer> performanceProblemAnalyzers, UnityApi api,
+            UnityCommonIconProvider commonIconProvider,
+            DaemonProcessKind processKind, IElementIdProvider provider,
+            ILogger logger)
+            : base(process, file)
         {
             myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
-            myPerformanceCriticalCodeCallGraphAnalyzer = performanceCriticalCodeCallGraphAnalyzer;
-            mySwa = swa;
+            myPerformanceCriticalCodeCallGraphMarksProvider = performanceCriticalCodeCallGraphMarksProvider;
             myIsPerformanceAnalysisEnabled = isPerformanceAnalysisEnabled;
             myDeclarationHighlightingProviders = declarationHighlightingProviders;
             myPerformanceProblemAnalyzers = performanceProblemAnalyzers;
             myAPI = api;
             myCommonIconProvider = commonIconProvider;
             myProcessKind = processKind;
+            myProvider = provider;
             myLogger = logger;
 
             myEventFunctions = DaemonProcess.CustomData.GetData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey)
                 ?.Where(t => t != null && t.IsValid()).ToJetHashSet();
             
             DaemonProcess.CustomData.PutData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey, myEventFunctions);
-                
+
+            myProblemAnalyzersByContext = myPerformanceProblemAnalyzers.GroupBy(t => t.Context)
+                .ToDictionary(t => t.Key, t => t.ToList());
         }
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
-            var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,DaemonProcess.ContextBoundSettingsStore);
+            var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
+                DaemonProcess.ContextBoundSettingsStore);
             File.ProcessThisAndDescendants(this, highlightingConsumer);
 
-            foreach (var declaration in File.Descendants<ICSharpDeclaration>())
+            foreach (var declaration in File.Descendants<ICSharpFunctionDeclaration>())
             {
                 var declaredElement = declaration.DeclaredElement;
                 if (declaredElement == null)
@@ -143,53 +156,67 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
+        private List<UnityProblemAnalyzerContext> GetProblemAnalyzerContext(ITreeNode element)
+        {
+            var res = new List<UnityProblemAnalyzerContext>();
+            if (myIsPerformanceAnalysisEnabled && IsPerformanceCriticalDeclaration(element))
+                res.Add(UnityProblemAnalyzerContext.PERFOMANCE_CONTEXT);
+            return res;
+        }
+
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
-            if (IsMethodDeclaration(element))
-                myPerformanceCriticalContext.Push(IsPerformanceCriticalDeclaration(element));
+            if (IsFunctionNode(element))
+                myProblemAnalyzerContexts.Push(GetProblemAnalyzerContext(element));
 
             if (element is ICSharpDeclaration declaration)
             {
                 foreach (var unityDeclarationHiglightingProvider in myDeclarationHighlightingProviders)
                 {
-                    var result = unityDeclarationHiglightingProvider.AddDeclarationHighlighting(declaration, consumer, myProcessKind);
+                    var result =
+                        unityDeclarationHiglightingProvider.AddDeclarationHighlighting(declaration, consumer,
+                            myProcessKind);
                     if (result)
-                        myMarkedDeclarations.Add(declaration.DeclaredElement.NotNull("declaration.DeclaredElement != null"));
+                        myMarkedDeclarations.Add(
+                            declaration.DeclaredElement.NotNull("declaration.DeclaredElement != null"));
                 }
             }
 
-            if (myIsPerformanceAnalysisEnabled && myPerformanceCriticalContext.Count > 0 && myPerformanceCriticalContext.Peek())
+            try
             {
-                try
+                if (myProblemAnalyzerContexts.Count > 0)
                 {
-                    foreach (var performanceProblemAnalyzer in myPerformanceProblemAnalyzers)
+                    foreach (var context in myProblemAnalyzerContexts.Peek())
                     {
-                        performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer);
+                        foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[context])
+                        {
+                            performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer);
+                        }
                     }
                 }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch (Exception exception)
-                {
-                    myLogger.Error(exception, "An exception occured during performance problem analyzer execution");
-                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                myLogger.Error(exception, "An exception occured during performance problem analyzer execution");
             }
         }
 
         public override void ProcessAfterInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
             base.ProcessAfterInterior(element, consumer);
-            if (IsMethodDeclaration(element))
+            if (IsFunctionNode(element))
             {
-                Assertion.Assert(myPerformanceCriticalContext.Count > 0, "myPerformanceCriticalContext.Count > 0");
-                myPerformanceCriticalContext.Pop();
+                Assertion.Assert(myProblemAnalyzerContexts.Count > 0, "myProblemAnalyzerContexts.Count > 0");
+                myProblemAnalyzerContexts.Pop();
             }
         }
 
 
-        private bool IsMethodDeclaration(ITreeNode node)
+        private bool IsFunctionNode(ITreeNode node)
         {
             switch (node)
             {
@@ -213,13 +240,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             
             if (myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS)
             {
-                var id = mySwa.GetElementId(declaredElement);
+                var id = myProvider.GetElementId(declaredElement);
                 if (!id.HasValue)
                     return false;
 
                 return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(
-                    myPerformanceCriticalCodeCallGraphAnalyzer.Id,
-                    id.Value, true);
+                    myPerformanceCriticalCodeCallGraphMarksProvider.Id,
+                    true, id.Value);
             }
 
             return PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myAPI, declaration);
