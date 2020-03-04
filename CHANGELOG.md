@@ -15,15 +15,22 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix ([RIDER-22818](https://youtrack.jetbrains.com/issue/RIDER-22812), [#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
 - Exclude `Boo` and `UnityScript` namespaces, as well as the `System.Diagnostics.Debug` type from import completion ([#574](https://github.com/JetBrains/resharper-unity/issues/574), [#1473](https://github.com/JetBrains/resharper-unity/pull/1473))
 - Add more attributes to external annotations. E.g. `ShortcutAttribute` will mark the method as in use ([#1546](https://github.com/JetBrains/resharper-unity/issues/1546), [RIDER-40330](https://youtrack.jetbrains.com/issue/RIDER-40330), [#1548](https://github.com/JetBrains/resharper-unity/pull/1548))
+- Find Usages for serialised fields now includes asset usages ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
 
 ### Changed
 
+- Indexing of assets deferred until after project loaded and will not interfere with existing code insight features ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Improved memory usage while parsing assets ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Improved support of nested and variant prefabs ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Serialised field values Code Vision now includes values from FomerlySerialisedAs attribute ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Serialised field values Code Vision now includes derived classes ([#1550](https://github.com/JetBrains/resharper-unity/pull/1550))
 - Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
 - Stop marking a method as expensive if it only contains a null check ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
 - Move vector multiplication order inspection to performance critical context only ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
 - Rider: Adding file to Unity Explorer will add to correct C# project ([RIDER-23169](https://youtrack.jetbrains.com/issue/RIDER-23169), [#1470](https://github.com/JetBrains/resharper-unity/pull/1470))
 - Rider: Show folders ending with `~` by default in Unity Explorer ([#1444](https://github.com/JetBrains/resharper-unity/issues/1444), [1506](https://github.com/JetBrains/resharper-unity/pull/1506))
 - Rider: Move Unity Explorer settings to main "gear" icon ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+- Rider: Interesting content in builtin packages is now visible by default ([#1556](https://github.com/JetBrains/resharper-unity/pull/1556))
 - Unity Editor: Move caret to correct column when opening file ([RIDER-27450](https://youtrack.jetbrains.com/issue/RIDER-27450), [#1486](https://github.com/JetBrains/resharper-unity/pull/1486))
 
 ### Fixed
