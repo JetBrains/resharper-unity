@@ -293,9 +293,15 @@
   <li>Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix (<a href="https://youtrack.jetbrains.com/issue/RIDER-22812">RIDER-22812</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Exclude <tt>Boo</tt> and <tt>UnityScript</tt> namespaces, as well as the <tt>System.Diagnostics.Debug</tt> type from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1473">#1473</a>)</li>
   <li>Add more attributes to external annotations. E.g. <tt>ShortcutAttribute</tt> will mark the method as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/1546">#1546</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-40330">RIDER-40330</a> <a href="https://github.com/JetBrains/resharper-unity/pull/1548">#1548</a>)</li>
+  <li>Find Usages for serialised fields now includes asset usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Indexing of assets deferred until after project loaded and will not interfere with existing code insight features (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Improved memory usage while parsing assets (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Improved support of nested and variant prefabs (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Serialised field values Code Vision now includes values from FomerlySerialisedAs attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Serialised field values Code Vision now includes derived classes (<a href="https://github.com/JetBrains/resharper-unity/pull/1550">#1550</a>)</li>
   <li>Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Stop marking a method as expensive if it only contains a null check (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Move vector multiplication order inspection to performance critical context only (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
