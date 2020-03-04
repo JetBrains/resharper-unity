@@ -57,27 +57,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
 
-            return solution.GetComponent<DeferredCachesLocks>().ExecuteUnderReadLock(_ =>
-            {
-                if (Reference.LocalDocumentAnchor == 0)
-                    return "None";
+            if (Reference.LocalDocumentAnchor == 0)
+                return "None";
                 
-                var processor = solution.GetComponent<AssetHierarchyProcessor>();
-                var consumer = new UnityScenePathGameObjectConsumer(true);
-                var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
-                var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
-                if (element == null)
-                    return "...";
-                processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
-                if (consumer.NameParts.Count == 0)
-                    return "...";
-                var result = string.Join("/", consumer.NameParts);
+            var processor = solution.GetComponent<AssetHierarchyProcessor>();
+            var consumer = new UnityScenePathGameObjectConsumer(true);
+            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
+            var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
+            if (element == null)
+                return "...";
+            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
+            if (consumer.NameParts.Count == 0)
+                return "...";
+            var result = string.Join("/", consumer.NameParts);
 
-                if (element is IComponentHierarchy componentHierarchy)
-                    result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
+            if (element is IComponentHierarchy componentHierarchy)
+                result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
 
-                return result;
-            });
+            return result;
         }
     }
 }

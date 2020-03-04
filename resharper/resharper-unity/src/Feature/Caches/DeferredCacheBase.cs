@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         /// <summary>
         /// This method is executed under standard ReadLock
         /// </summary>
-        public abstract object Build(Lifetime lifetime, IPsiSourceFile psiSourceFile);
+        public abstract object Build(IPsiSourceFile psiSourceFile);
 
         /// <summary>
         /// This method is executed under DeferredCachesWriteLock

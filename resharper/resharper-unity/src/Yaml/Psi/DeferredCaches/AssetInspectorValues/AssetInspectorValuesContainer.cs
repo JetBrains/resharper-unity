@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -24,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
     [SolutionComponent]
     public class AssetInspectorValuesContainer : IUnityAssetDataElementContainer
     {
-        private readonly DeferredCachesLocks myDeferredCachesLocks;
+        private readonly IShellLocks myShellLocks;
         private readonly ILogger myLogger;
         private readonly List<IAssetInspectorValueDeserializer> myDeserializers;
         
@@ -42,14 +43,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         private readonly OneToCompactCountingSet<string, string> myNameToGuids = new OneToCompactCountingSet<string, string>();
         
         
-        public AssetInspectorValuesContainer(DeferredCachesLocks deferredCachesLocks,IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
+        public AssetInspectorValuesContainer(IShellLocks shellLocks,IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
         {
-            myDeferredCachesLocks = deferredCachesLocks;
+            myShellLocks = shellLocks;
             myLogger = logger;
             myDeserializers = assetInspectorValueDeserializer.OrderByDescending(t => t.Order).ToList();
         }
         
-        public IUnityAssetDataElement Build(Lifetime lifetime, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        public IUnityAssetDataElement Build(SeldomInterruptChecker seldomInterruptChecker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {
@@ -224,6 +225,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         public int GetValueCount(string guid, IEnumerable<string> possibleNames, IAssetValue assetValue)
         {
+            myShellLocks.AssertReadAccessAllowed();
+
             var count = 0;
             foreach (var name in possibleNames)
             {
@@ -236,6 +239,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         
         public int GetUniqueValuesCount(string guid, IEnumerable<string> possibleNames)
         {
+            myShellLocks.AssertReadAccessAllowed();
+
             var count = 0;
             foreach (var name in possibleNames)
             {
@@ -248,6 +253,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         public bool IsIndexResultEstimated(string ownerGuid, ITypeElement containingType, IEnumerable<string> possibleNames)
         {
+            myShellLocks.AssertReadAccessAllowed();
+
             // TODO: prefab modifications
             // TODO: drop daemon dependency and inject compoentns in consructor
             var configuration = containingType.GetSolution().GetComponent<SolutionAnalysisConfiguration>();
@@ -277,6 +284,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         
         public IEnumerable<IAssetValue> GetUniqueValues(string guid, IEnumerable<string> possibleNames)
         {
+            myShellLocks.AssertReadAccessAllowed();
+
             var result = new List<IAssetValue>();
             foreach (var possibleName in possibleNames)
             {
@@ -292,6 +301,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         public int GetAffectedFiles(string guid, IEnumerable<string> possibleNames)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             var result = 0;
             foreach (var possibleName in possibleNames)
             {
@@ -303,6 +314,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         
         public int GetAffectedFilesWithSpecificValue(string guid, IEnumerable<string> possibleNames, IAssetValue value)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             var result = 0;
             foreach (var possibleName in possibleNames)
             {
@@ -414,36 +427,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         public IEnumerable<InspectorVariableUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, IField element)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             var containingType = element?.GetContainingType();
 
             if (containingType == null)
                 return Enumerable.Empty<InspectorVariableUsage>();
             
-            return myDeferredCachesLocks.ExecuteUnderReadLock(lf =>
+            var result = new List<InspectorVariableUsage>();
+            if (!myPsiSourceFileToInspectorValues.TryGetValue(sourceFile, out var usages))
+                return EmptyList<InspectorVariableUsage>.Enumerable;
+
+            foreach (var name in AssetUtils.GetAllNamesFor(element))
             {
-                var result = new List<InspectorVariableUsage>();
-                if (!myPsiSourceFileToInspectorValues.TryGetValue(sourceFile, out var usages))
-                    return EmptyList<InspectorVariableUsage>.Enumerable;
-
-                foreach (var name in AssetUtils.GetAllNamesFor(element))
+                var usagesData = usages.GetValuesSafe(name);
+                foreach (var usage in usagesData)
                 {
-                    var usagesData = usages.GetValuesSafe(name);
-                    foreach (var usage in usagesData)
-                    {
-                        var guid = (usage.ScriptReference as ExternalReference)?.ExternalAssetGuid;
-                        if (guid == null)
-                            continue;
+                    var guid = (usage.ScriptReference as ExternalReference)?.ExternalAssetGuid;
+                    if (guid == null)
+                        continue;
 
-                        var typeElement = AssetUtils.GetTypeElementFromScriptAssetGuid(element.GetSolution(), guid);
-                        if (typeElement == null || !typeElement.IsDescendantOf(containingType))
-                            continue;
+                    var typeElement = AssetUtils.GetTypeElementFromScriptAssetGuid(element.GetSolution(), guid);
+                    if (typeElement == null || !typeElement.IsDescendantOf(containingType))
+                        continue;
 
-                        result.Add(usage);
-                    }
+                    result.Add(usage);
                 }
+            }
 
-                return result;
-            });
+            return result;
         }
     }
 }
