@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin url="https://github.com/JetBrains/resharper-unity">
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
   <version>2020.1.0.9999</version>
