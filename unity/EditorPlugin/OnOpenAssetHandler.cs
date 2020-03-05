@@ -95,7 +95,7 @@ namespace JetBrains.Rider.Unity.Editor
           else
             AllowSetForegroundWindow();
           
-          model.OpenFileLineCol.Start(new RdOpenFileArgs(assetFilePath, line, column));
+          model.OpenFileLineCol.Start(modelLifetime.Lifetime, new RdOpenFileArgs(assetFilePath, line, column));
 
           // todo: maybe fallback to CallRider, if returns false
           return true;

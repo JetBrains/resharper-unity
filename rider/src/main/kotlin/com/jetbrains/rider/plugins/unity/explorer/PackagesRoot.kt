@@ -4,6 +4,7 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
@@ -13,7 +14,6 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
-import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerNode
 import com.jetbrains.rider.projectView.views.navigateToSolutionView
 import icons.UnityIcons
 
@@ -122,38 +122,27 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
 
         val existingTooltip = presentation.tooltip ?: ""
 
-        var newTooltip = name
-        if (packageData.details.version.isNotEmpty()) {
-            newTooltip += " ${packageData.details.version}"
-        }
-        if (name != packageData.details.canonicalName) {
-            newTooltip += "\n" + packageData.details.canonicalName
-        }
-        if (packageData.details.author.isNotEmpty()) {
-            newTooltip += "\n${packageData.details.author}"
-        }
-        if (packageData.details.description.isNotEmpty()) {
-            newTooltip += "\n\n${packageData.details.description}"
-        }
-        newTooltip += when (packageData.source) {
-            PackageSource.Embedded -> if (virtualFile.name != name) "\n\nFolder name: ${virtualFile.name}" else ""
-            PackageSource.Local -> "\n\nFolder location: ${virtualFile.path}"
+        var tooltip = "<html>" + getPackageTooltip(name, packageData)
+        tooltip += when (packageData.source) {
+            PackageSource.Embedded -> if (virtualFile.name != name) "<br/><br/>Folder name: ${virtualFile.name}" else ""
+            PackageSource.Local -> "<br/><br/>Folder location: ${virtualFile.path}"
             PackageSource.Git -> {
-                var text = "\n\nGit URL: ${packageData.gitDetails?.url}"
+                var text = "<br/><br/>Git URL: ${packageData.gitDetails?.url}"
                 if (!packageData.gitDetails?.hash.isNullOrEmpty()) {
-                    text += "\nHash: ${packageData.gitDetails?.hash}"
+                    text += "<br/>Hash: ${packageData.gitDetails?.hash}"
                 }
                 if (!packageData.gitDetails?.revision.isNullOrEmpty()) {
-                    text += "\nRevision: ${packageData.gitDetails?.revision}"
+                    text += "<br/>Revision: ${packageData.gitDetails?.revision}"
                 }
                 text
             }
             else -> ""
         }
         if (existingTooltip.isNotEmpty()) {
-            newTooltip += "\n\n" + existingTooltip
+            tooltip += "<br/><br/>$existingTooltip"
         }
-        presentation.tooltip = newTooltip
+        tooltip += "</html>"
+        presentation.tooltip = tooltip
     }
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
@@ -301,18 +290,25 @@ class BuiltinPackagesRoot(project: Project, private val packageManager: PackageM
 // Note that a module can have dependencies. Perhaps we want to always show this as a folder, including the Dependencies
 // node?
 class BuiltinPackageNode(project: Project, private val packageData: PackageData)
-    : FileSystemNodeBase(project, packageData.packageFolder!!, listOf()) {
+    : UnityExplorerNode(project, packageData.packageFolder!!, listOf(), false, true) {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
-        if (!UnityExplorer.getInstance(project!!).showHiddenItems) {
-            return arrayListOf()
+        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
+            return super.calculateChildren()
+        }
+
+        // Show children if there's anything interesting to show. If it's just package.json or .icon.png, or their
+        // meta files, pretend there's no children. We'll show them when show hidden items is enabled
+        val children = super.calculateChildren()
+        if (children.all { it.name?.startsWith("package.json") == true || it.name?.startsWith(".icon.png") == true }) {
+            return mutableListOf()
         }
         return super.calculateChildren()
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return FileSystemExplorerNode(project!!, virtualFile, nestedFiles, false)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets = false, isReadOnlyPackageFile = true)
     }
 
     override fun canNavigateToSource(): Boolean {
@@ -338,22 +334,12 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.BuiltInPackage)
+        if (UnityExplorer.getInstance(myProject).showHiddenItems)
+            presentation.addNonIndexedMark(myProject, virtualFile)
 
-        var newTooltip = name
-        if (packageData.details.version.isNotEmpty()) {
-            newTooltip += " ${packageData.details.version}"
-        }
-        if (name != packageData.details.canonicalName) {
-            newTooltip += "\n${packageData.details.canonicalName}"
-        }
-        if (packageData.details.author.isNotEmpty()) {
-            newTooltip += "\n${packageData.details.author}"
-        }
-        if (packageData.details.description.isNotEmpty()) {
-            newTooltip += "\n\n${packageData.details.description}"
-        }
-        if (newTooltip != name) {
-            presentation.tooltip = newTooltip
+        val tooltip = getPackageTooltip(name, packageData)
+        if (tooltip != name) {
+            presentation.tooltip = tooltip
         }
     }
 }
@@ -377,8 +363,41 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(icon)
         if (packageData.details.description.isNotEmpty()) {
-            presentation.tooltip = packageData.details.description
+            presentation.tooltip = formatDescription(packageData)
         }
+    }
+}
+
+private fun getPackageTooltip(name: String, packageData: PackageData): String {
+    var tooltip = name
+    if (packageData.details.version.isNotEmpty()) {
+        tooltip += " ${packageData.details.version}"
+    }
+    if (name != packageData.details.canonicalName) {
+        tooltip += "<br/>${packageData.details.canonicalName}"
+    }
+    if (packageData.details.author.isNotEmpty()) {
+        tooltip += "<br/>${packageData.details.author}"
+    }
+    if (packageData.details.description.isNotEmpty()) {
+        tooltip += "<br/><br/>" + formatDescription(packageData)
+    }
+    return tooltip
+}
+
+private fun formatDescription(packageData: PackageData): String {
+    val description =  packageData.details.description.replace("\n", "<br/>").let {
+        StringUtil.shortenTextWithEllipsis(it, 600, 0, true)
+    }
+
+    // Very crude. This should really be measured by font + pixels, not characters.
+    // Hopefully we can replace all of this with QuickDoc though, which has smarter wrapping.
+    val shouldWrap = StringUtil.splitByLines(packageData.details.description).any { it.length > 50 }
+    return if (shouldWrap) {
+        "<div width=\"500\">$description</div>"
+    }
+    else {
+        description
     }
 }
 

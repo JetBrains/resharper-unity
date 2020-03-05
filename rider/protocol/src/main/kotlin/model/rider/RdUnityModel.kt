@@ -50,6 +50,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("applicationPath", string)
         field("applicationContentsPath", string)
         field("applicationVersion", string)
+        field("requiresRiderPackage", bool)
     }
 
     init {
@@ -96,6 +97,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         sink("startUnity", void)
         sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
+        sink("showDeferredCachesProgressNotification", void)
+        property("isDeferredCachesCompletedOnce", bool)
+
         property("ScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
 

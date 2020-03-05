@@ -31,6 +31,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     }
 
     // Note that we don't serialise these - they will change between sessions, possibly during a session
+    // TODO: We don't serialise these properties, but the base classes does serialise its own "address" and "port"
     @Transient override var port: Int = -1
     @Transient override var address: String = "127.0.0.1"
     @Transient var pid: Int? = null

@@ -1,6 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.codeInsight.css
 
-import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.components.service
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.psi.css.impl.descriptor.value.CssGroupValue
 import com.intellij.psi.css.impl.descriptor.value.CssNameValue
@@ -13,7 +13,7 @@ import java.lang.ref.Reference
 
 class UssCssElementDescriptorFactory {
     companion object {
-        fun getInstance(): UssCssElementDescriptorFactory = ServiceManager.getService(UssCssElementDescriptorFactory::class.java)
+        fun getInstance(): UssCssElementDescriptorFactory = service()
     }
 
     private var cssDescriptorsHolderRef: Reference<CssDescriptorsHolder>? = null

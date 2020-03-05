@@ -2,7 +2,6 @@
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.Explanatory;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
 {
@@ -19,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
                 },
                 // "Camera.main is inefficient in frequently called methods"
                 {
-                    PerformanceCameraMainHighlighting.SEVERITY_ID,
+                    UnityPerformanceCameraMainWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Camera.main-is-inefficient-in-frequently-called-methods"
                 },
                 // "MonoBehaviours must be instantiated with GameObject.AddComponent instead of new"
@@ -77,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
                     "https://github.com/JetBrains/resharper-unity/wiki/Prefer-using-generic-method-overload-instead-of-string"
                 },
                 {
-                    PerformanceInvocationHighlighting.SEVERITY_ID,
+                    UnityPerformanceInvocationWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Performance-critical-context-and-costly-methods"
                 },
                 {
@@ -97,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Explanatory
                     "https://github.com/JetBrains/resharper-unity/wiki/Avoid-using-allocating-versions-of-Physics-Raycast-functions"
                 },
                 {
-                    PerformanceNullComparisonHighlighting.SEVERITY_ID,
+                    UnityPerformanceNullComparisonWarning.HIGHLIGHTING_ID,
                     "https://github.com/JetBrains/resharper-unity/wiki/Avoid-null-comparisons-against-UnityEngine.Object-subclasses"
                 }
             };

@@ -1,16 +1,13 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -27,22 +24,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
+        private readonly IElementIdProvider myProvider;
 
-        public RiderUnityCommonIconProvider(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi api, UnityCodeInsightProvider codeInsightProvider,
-            UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker, IconHost iconHost)
-            : base(solution, swa, callGraphSwaExtensionProvider, settingsStore, analyzer, api)
+        public RiderUnityCommonIconProvider(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi api, UnityCodeInsightProvider codeInsightProvider,
+            UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker, IconHost iconHost, IElementIdProvider provider)
+            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, api, provider)
         {
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
+            myProvider = provider;
         }
 
         public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method, UnityEventFunction eventFunction,
             string text,DaemonProcessKind kind)
         {
-            var iconId = method.HasHotIcon(Swa, CallGraphSwaExtensionProvider, Settings, Analyzer, kind)
+            var iconId = method.HasHotIcon(CallGraphSwaExtensionProvider, Settings, MarksProvider, kind, myProvider)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
             
@@ -68,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         public override void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, string text,
             string tooltip, DaemonProcessKind kind)
         {
-            var isHot = declaration.HasHotIcon(Swa, CallGraphSwaExtensionProvider, Settings, Analyzer, kind);
+            var isHot = declaration.HasHotIcon(CallGraphSwaExtensionProvider, Settings, MarksProvider, kind, myProvider);
             if (!isHot)
                 return;
             

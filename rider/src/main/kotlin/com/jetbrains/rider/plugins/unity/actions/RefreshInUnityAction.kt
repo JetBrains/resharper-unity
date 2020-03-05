@@ -2,9 +2,9 @@ package com.jetbrains.rider.plugins.unity.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.application
 
 class RefreshInUnityAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {

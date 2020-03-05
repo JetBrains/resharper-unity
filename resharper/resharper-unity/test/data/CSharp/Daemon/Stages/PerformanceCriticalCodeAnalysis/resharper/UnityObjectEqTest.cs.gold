@@ -14,6 +14,7 @@ namespace DefaultNamespace
         {
             if (gameObject |==|(3) null)
             {
+                |GetComponent|(4)<Transform>();
                 // smth..
             }
         }
@@ -24,3 +25,4 @@ namespace DefaultNamespace
 (1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
 (2): ReSharper Unity Performance Critical Line Marker: Performance critical context
 (3): ReSharper Unity Expensive Null Comparison: Comparison to 'null' is expensive
+(4): ReSharper Unity Expensive Method Invocation: Expensive method invocation

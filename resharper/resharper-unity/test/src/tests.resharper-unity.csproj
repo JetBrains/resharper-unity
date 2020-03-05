@@ -9,6 +9,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\sign.snk</AssemblyOriginatorKeyFile>
+    <JetTestProject>True</JetTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER;$(CommandLineConstants)</DefineConstants>
@@ -17,7 +18,6 @@
     <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.ReSharper.SDK.Tests" Version="$(ReSharperSDKVersion)" />
     <PackageReference Include="NUnit.Console" Version="3.10.0" />
   </ItemGroup>
   <ItemGroup>
@@ -43,4 +43,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity.csproj" />
   </ItemGroup>
+    <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props')" />
+    <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props')" />
 </Project>

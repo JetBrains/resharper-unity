@@ -11,6 +11,7 @@ import com.jetbrains.rider.model.*
 import icons.UnityIcons
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
+import com.jetbrains.rider.projectView.views.ISolutionModelNodeOwner
 import com.jetbrains.rider.projectView.views.addAdditionalText
 
 class AssetsRoot(project: Project, virtualFile: VirtualFile)
@@ -49,7 +50,7 @@ class AssetsRoot(project: Project, virtualFile: VirtualFile)
         }
 
         state = RdSolutionState.Ready
-        val children = solutionNode.getChildren(false, false)
+        val children = solutionNode.getChildren(withInternalItems = false, performExpand = false)
         for (child in children) {
             if (child.isProject()) {
                 val projectDescriptor = child.descriptor as? RdProjectDescriptor ?: continue
@@ -108,7 +109,7 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
         val visitor = object : ProjectModelNodeVisitor() {
             override fun visitReference(node: ProjectModelNode): Result {
                 if (node.isAssemblyReference()) {
-                    val keys = referenceNames.getOrCreate(node.name) { _ -> arrayListOf() }
+                    val keys = referenceNames.getOrCreate(node.name) { arrayListOf() }
                     keys.add(node.key)
                 }
                 return Result.Stop
@@ -125,7 +126,7 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
 }
 
 class ReferenceItem(project: Project, private val referenceName: String, val keys: ArrayList<ProjectModelNodeKey>)
-    : AbstractTreeNode<String>(project, referenceName) {
+    : AbstractTreeNode<String>(project, referenceName), ISolutionModelNodeOwner, IProjectModeNodesOwner {
 
     override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
     override fun isAlwaysLeaf() = true
@@ -134,4 +135,16 @@ class ReferenceItem(project: Project, private val referenceName: String, val key
         presentation.presentableText = referenceName
         presentation.setIcon(UnityIcons.Explorer.Reference)
     }
+
+    // Allows View In Assembly Explorer and Properties actions to work
+    override val node: IProjectModelNode
+        get() = ProjectModelViewHost.getInstance(myProject).getItemById(keys.first().id)!!
+
+    override val nodes: Sequence<IProjectModelNode>
+        get() {
+            // Note that we lie here, and only return the first item. All actions that work on reference items work on
+            // single items, not multiple. Most nodes reference the same file, but will be different references for the
+            // sake of e.g. copy local
+            return sequenceOf(node)
+        }
 }

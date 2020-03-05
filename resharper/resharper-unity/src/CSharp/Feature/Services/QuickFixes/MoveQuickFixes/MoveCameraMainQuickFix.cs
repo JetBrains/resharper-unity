@@ -1,5 +1,5 @@
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes
@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.M
     [QuickFix]
     public class MoveCameraMainQuickFix : AbstractMoveQuickFix
     {
-        public MoveCameraMainQuickFix(PerformanceCameraMainHighlighting warning) : 
+        public MoveCameraMainQuickFix(UnityPerformanceCameraMainWarning warning) : 
             base(warning.ReferenceExpression.GetContainingNode<IClassDeclaration>(), warning.ReferenceExpression)
         {
         }

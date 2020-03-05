@@ -11,7 +11,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override val persistCaches: Boolean
         get() = true
 
-    @Test
+    // @Test
     @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {

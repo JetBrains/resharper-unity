@@ -8,6 +8,7 @@
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
     JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
   </Usings>
 
   <!-- Register the static severity groups. This is mostly used in grouping items in SWEA results.
@@ -77,13 +78,7 @@
         <Title>Incorrect method signature</Title>
         <Description>Method does not match expected signature.</Description>
       </Tag>
-
-      <Tag externalName="InefficientMultiplicationOrderWarning.HIGHLIGHTING_ID"
-           default="WARNING">
-          <Title>Order of multiplication operations is inefficient</Title>
-        <Description>Reordering multiplication operations will improve performance</Description>
-      </Tag>
-
+      
       <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Repeated access of property on built in component is inefficient</Title>
@@ -393,7 +388,7 @@
     <Range>EqualityExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
-
+  
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
     <Message value="'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
@@ -427,15 +422,6 @@
     <Parameter type="bool" name="inlineRestoreValue" />
     <Message value="Repeated property access of built in component is inefficient" />
     <Range>HighlightedReference.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
-  <Warning name="InefficientMultiplicationOrder" configurableSeverity="Unity.InefficientMultiplicationOrder">
-    <Parameter type="ICSharpExpression" name="expression"/>
-    <Parameter type="List&lt;ICSharpExpression&gt;" name="scalars" isValid="skip"/>
-    <Parameter type="List&lt;ICSharpExpression&gt;" name="matrices" isValid="skip"/>
-    <Message value="Order of multiplication operations is inefficient" />
-    <Range>Expression.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 

@@ -1,3 +1,4 @@
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.TextControl.DocumentMarkup;
@@ -37,6 +38,19 @@ using JetBrains.TextControl.DocumentMarkup;
         Layer = HighlighterLayer.SYNTAX),
 
     RegisterHighlighter(PerformanceHighlightingAttributeIds.CAMERA_MAIN,
+        GroupId = UnityHighlightingGroupIds.Unity,
+        EffectColor = "#ff7526",
+        NotRecyclable = true,
+        EffectType = EffectType.SOLID_UNDERLINE,
+        Layer = HighlighterLayer.SYNTAX),
+    
+    RegisterHighlighter(PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE,
+        GroupId = UnityHighlightingGroupIds.Unity,
+        EffectColor = "#ff7526",
+        NotRecyclable = true,
+        EffectType = EffectType.SOLID_UNDERLINE,
+        Layer = HighlighterLayer.SYNTAX),
+    RegisterHighlighter(PerformanceHighlightingAttributeIds.INEFFICIENT_MULTIPLICATION_ORDER,
         GroupId = UnityHighlightingGroupIds.Unity,
         EffectColor = "#ff7526",
         NotRecyclable = true,

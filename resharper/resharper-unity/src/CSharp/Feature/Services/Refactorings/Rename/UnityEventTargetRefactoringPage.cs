@@ -1,12 +1,15 @@
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.Rider.Model.UIAutomation;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
     public class UnityEventTargetRefactoringPage : SingleBeRefactoringPage
     {
+        private readonly DeferredCacheController myDeferredCacheController;
+
         // Scenarios:
         // 1. Unity is not connected - show confirmation prompt
         // 2. Unity plugin is not installed - show confirmation + save prompt
@@ -16,9 +19,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         //
         // We can't tell the difference between plugin not connected and not installed. Can't risk overwriting unsaved
         // open scenes, so we always show a confirmation prompt
-        public UnityEventTargetRefactoringPage(Lifetime lifetime)
+        public UnityEventTargetRefactoringPage(Lifetime lifetime, DeferredCacheController deferredCacheController)
             : base(lifetime)
         {
+            myDeferredCacheController = deferredCacheController;
         }
 
         public override string Title => "Rename Unity reference";
@@ -26,8 +30,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         public override BeControl GetPageContent()
         {
-            return BeControls.GetRichText(
-                "Please ensure the project is saved in the Unity Editor, or any changes will be lost.", true);
+            return BeControls.GetRichText(GetText(), wrap: true);
+        }
+
+
+        private string GetText()
+        {
+            if (myDeferredCacheController.IsProcessingFiles())
+            {
+                return "Asset index is not ready. Symbol will not be renamed in assets.";
+            }
+            
+            return "Please ensure the project is saved in the Unity Editor, or any changes will be lost.";
         }
     }
 }

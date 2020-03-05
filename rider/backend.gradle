@@ -6,72 +6,27 @@ import com.jetbrains.rider.plugins.gradle.tasks.*
 ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
 
 nuget {
-    version = "4.4.1"
+    version = "4.9.4"
 }
 
-// if there's no bundled SDK and we have to build R#, we download & unzip it, changing SDK path
-task unzipReSharperSdk(type: Sync) {
-    group backendGroup
-
-    if (!backend.bundledReSharperSdkPath.isDirectory()) {
-        dependsOn configurations.resharper
-        def zipFile = configurations.resharper.singleFile
-
-        // Unzip to the gradle cache folder, unless we're on Windows, where doing that hits the file path length limit
-        if (isWindows) {
-            backend.downloadedReSharperSdkPath = new File(repoRoot, "resharper/build/JetBrains.ReSharper.SDK")
-        }
-        else {
-            backend.downloadedReSharperSdkPath = new File(zipFile.parentFile, "JetBrains.ReSharper.SDK")
-        }
-
-        from { configurations.resharper.collect { zipTree(it) } }
-        into backend.downloadedReSharperSdkPath
-
-        doFirst {
-          buildServer.progress("Unzipping ReSharper SDK to $backend.downloadedReSharperSdkPath")
-        }
-    }
-}
-
-task prepareRiderBuildProps(type: GenerateBuildPropsTask) {
-    group backendGroup
-
-    packagesDirectory { backend.getRiderSdkPath() }
-    packageName "JetBrains.Rider.SDK"
-    msBuildParameter "RiderSDKVersion"
-}
-
-task prepareReSharperBuildProps(type: GenerateBuildPropsTask) {
-    group backendGroup
-    dependsOn unzipReSharperSdk
-
-    packagesDirectory { backend.getReSharperSdkPath() }
-    packageName "JetBrains.ReSharper.SDK"
-    msBuildParameter "ReSharperSDKVersion"
-}
-
-task prepareBuildProps {
-    dependsOn prepareRiderBuildProps, prepareReSharperBuildProps
+task prepareRiderBuildProps(type: GenerateDotNetSdkPathPropsTask) {
+    dotNetSdkPath { backend.getDotNetSdkPath() }
 }
 
 task prepareNuGetConfig {
-    dependsOn unzipReSharperSdk
+    dependsOn prepareRiderBuildProps
 
     doLast {
-        def riderSdkPath = backend.getRiderSdkPath()
-        def resharperSdkPath = backend.getReSharperSdkPath()
-
-        assert riderSdkPath.isDirectory()
-        assert resharperSdkPath.isDirectory()
+        def dotNetSdkPath = backend.getDotNetSdkPath()
+        logger.warn("dotNetSdkPath='$dotNetSdkPath'")
+        assert dotNetSdkPath.isDirectory()
 
         buildServer.progress("Preparing NuGet.Config")
 
         def nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
     <configuration>
     <packageSources>
-        <add key="local-rider-sdk" value="$riderSdkPath" />
-        <add key="local-resharper-sdk" value="$resharperSdkPath" />
+        <add key="local-dotnet-sdk" value="$dotNetSdkPath" />
     </packageSources>
     </configuration>
     """
@@ -83,7 +38,7 @@ task prepareNuGetConfig {
 task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
     group backendGroup
     description 'Restores packages for backend plugin'
-    dependsOn prepareBuildProps, prepareNuGetConfig
+    dependsOn prepareNuGetConfig
 
     solutionFile backend.resharperHostPluginSolution
     noCache = true
@@ -94,8 +49,7 @@ task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
         project.buildServer.progress("Restoring packages for $solutionFile")
 
         // Add in doFirst, so we get a chance to download the SDKs
-        sources.add(project.backend.getRiderSdkPath())
-        sources.add(project.backend.getReSharperSdkPath())
+        sources.add(project.backend.getDotNetSdkPath())
     }
 }
 
@@ -112,8 +66,7 @@ task restoreUnityEditorPluginPackages(type: nugetRestore.class) {
         project.buildServer.progress("Restoring packages for $solutionFile")
 
         // Add in doFirst, so we get a chance to download the SDKs
-        sources.add(project.backend.getRiderSdkPath())
-        sources.add(project.backend.getReSharperSdkPath())
+        sources.add(project.backend.getDotNetSdkPath())
     }
 }
 
@@ -148,8 +101,8 @@ task packReSharperPlugin(type: nugetPack.class) {
             'Configuration': BuildConfiguration
     ]
 
-    def nupkgFile = file(new File(destinationDir, "JetBrains.Unity.${version}.nupkg"))
-    outputs.files(nupkgFile)
+    def nuPkgFile = file(new File(destinationDir as String, "JetBrains.Unity.${version}.nupkg"))
+    outputs.files(nuPkgFile)
 
     doFirst {
         buildServer.progress("Packing: $nuspecFile.name")

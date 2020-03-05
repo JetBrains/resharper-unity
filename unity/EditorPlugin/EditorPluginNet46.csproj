@@ -10,7 +10,7 @@
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.RdFramework" Version="193.20191030.267" />
+    <PackageReference Include="JetBrains.RdFramework" Version="201.20200212.339" />
     <PackageReference Include="JetBrains.Unity.Libs.2017.3.0f3" Version="2018.3.5" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
   </ItemGroup>
@@ -26,4 +26,5 @@
     <Compile Remove="AssetPostprocessors\SlnAssetPostprocessor.cs" />
     <Compile Remove="RiderMenu.cs" />
   </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
 </Project>

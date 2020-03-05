@@ -1,15 +1,16 @@
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.exists
+import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
-import com.jetbrains.rider.util.idea.lifetime
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
@@ -74,16 +75,14 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
     }
 
     fun installPlugin() {
-        val unityHost = UnityHost.getInstance(project)
-        unityHost.model.installEditorPlugin.fire(Unit)
+        project.solution.rdUnityModel.installEditorPlugin.fire(Unit)
 
         val editorPluginPath = Paths.get(project.basePath).resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
         waitAndPump(project.lifetime, { editorPluginPath.exists() }, Duration.ofSeconds(10), { "EditorPlugin was not installed." })
     }
 
     fun waitConnection() {
-        val unityHost = UnityHost.getInstance(project)
-        waitAndPump(project.lifetime, { unityHost.sessionInitialized.hasTrueValue }, Duration.ofSeconds(100), { "unityHost is not initialized." })
+        waitAndPump(project.lifetime, { project.solution.rdUnityModel.sessionInitialized.hasTrueValue }, Duration.ofSeconds(100), { "unityHost is not initialized." })
     }
 
     fun killUnity(process : Process) {
@@ -94,7 +93,6 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
     fun executeScript(file : String) {
         val script = solutionSourceRootDirectory.combine("scripts", file)
         script.copyTo(activeSolutionDirectory.combine("Assets", file))
-        val unityHost = UnityHost.getInstance(project)
-        unityHost.model.refresh.fire(true)
+        project.solution.rdUnityModel.refresh.fire(true)
     }
 }

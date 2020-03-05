@@ -4,9 +4,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.isUnityProject
 import com.jetbrains.rider.plugins.unity.actions.isUnityProjectFolder
+import com.jetbrains.rider.projectView.solution
 import icons.UnityIcons
 
 class UnityImportantActions : DefaultActionGroup(), DumbAware {
@@ -25,7 +26,7 @@ class UnityDllImportantActions : DefaultActionGroup(), DumbAware {
     override fun update(e: AnActionEvent) {
         val project = e.project
         if (project == null || e.isUnityProject() ||
-            !UnityHost.getInstance(project).model.hasUnityReference.valueOrDefault(false)) {
+            !project.solution.rdUnityModel.hasUnityReference.valueOrDefault(false)) {
             e.presentation.isVisible = false
             return
         }

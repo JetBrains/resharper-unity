@@ -3,14 +3,13 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Resources.Icons;
@@ -23,17 +22,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         private readonly UnityApi myUnityApi;
 
-        public TypeDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, UnityApi unityApi,
-            PerformanceCriticalCodeCallGraphAnalyzer analyzer)
-            : base(solution, swa, callGraphSwaExtensionProvider, settingsStore, analyzer)
+        public TypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, UnityApi unityApi,
+            PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
+            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, provider)
         {
             myUnityApi = unityApi;
         }
 
-        public override IDeclaredElement Analyze(IDeclaration node, IHighlightingConsumer consumer, DaemonProcessKind kind)
+        public override bool AddDeclarationHighlighting(IDeclaration node, IHighlightingConsumer consumer, DaemonProcessKind kind)
         {
             if (!(node is IClassLikeDeclaration element))
-                return null;
+                return false;
 
             var typeElement = element.DeclaredElement;
             if (typeElement != null)
@@ -57,10 +56,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                         kind);
                 }
 
-                return typeElement;
+                return true;
             }
 
-            return null;
+            return false;
         }
 
         protected virtual void AddMonoBehaviourHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)

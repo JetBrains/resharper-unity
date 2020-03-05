@@ -1,0 +1,15 @@
+﻿using UnityEditor;
+
+public class Foo
+{
+    [InitializeOnLoadMethod]
+    public static int OnLoad()
+    {
+        var x = new int[5, 5];
+
+        var y = x;
+        return 0;
+    }
+}
+
+------------------------------------------------
