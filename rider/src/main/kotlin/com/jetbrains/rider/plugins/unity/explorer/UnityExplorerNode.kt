@@ -115,6 +115,8 @@ open class UnityExplorerNode(project: Project,
     }
 
     override fun getName(): String {
+        // Remember that *~ is a default ignore pattern for IntelliJ. Any files/folders in and under this folder won't
+        // be indexed. Hopefully this comment will stop someone wasting as much time as I did.
         if (virtualFile.isDirectory && !UnityExplorer.getInstance(myProject).showHiddenItems) {
             return super.getName().removeSuffix("~")
         }
@@ -248,6 +250,12 @@ open class UnityExplorerNode(project: Project,
             return UnityIcons.Explorer.AsmdefFolder
         }
 
+        // Note that its only the root node that's marked as "unloaded"/not imported. Child files and folder icons are
+        // rendered as normal
+        if (virtualFile.name.endsWith("~") && virtualFile.isDirectory) {
+            return UnityIcons.Explorer.UnloadedFolder
+        }
+
         return virtualFile.calculateFileSystemIcon(project!!)
     }
 
@@ -282,11 +290,7 @@ open class UnityExplorerNode(project: Project,
            to the generated .csproj files to allow for use as e.g. command line tools
         */
         if (file.name.endsWith("~")) {
-            if (file.isDirectory && UnityExplorer.getInstance(myProject).showTildeFolders) {
-                return true
-            }
-
-            return false
+            return file.isDirectory && UnityExplorer.getInstance(myProject).showTildeFolders
         }
 
         return true

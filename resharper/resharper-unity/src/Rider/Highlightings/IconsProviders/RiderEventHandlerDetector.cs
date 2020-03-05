@@ -1,7 +1,7 @@
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
@@ -29,14 +29,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
+        private readonly IElementIdProvider myProvider;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public RiderEventHandlerDetector(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, AssetIndexingSupport assetIndexingSupport, PerformanceCriticalCodeCallGraphAnalyzer analyzer,AssetMethodsElementContainer assetMethodsElementContainer,
+        public RiderEventHandlerDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
+            SettingsStore settingsStore, AssetIndexingSupport assetIndexingSupport, PerformanceCriticalCodeCallGraphMarksProvider marksProvider,AssetMethodsElementContainer assetMethodsElementContainer,
             UnityCodeInsightProvider codeInsightProvider, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, DeferredCacheController deferredCacheController,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost, AssetSerializationMode assetSerializationMode)
-            : base(solution, swa,  settingsStore, callGraphSwaExtensionProvider, assetMethodsElementContainer, analyzer)
+            IconHost iconHost, AssetSerializationMode assetSerializationMode, IElementIdProvider provider)
+            : base(solution, settingsStore, callGraphSwaExtensionProvider, assetMethodsElementContainer, marksProvider, provider)
         {
             myAssetIndexingSupport = assetIndexingSupport;
             myAssetMethodsElementContainer = assetMethodsElementContainer;
@@ -46,13 +47,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
+            myProvider = provider;
             myAssetSerializationMode = assetSerializationMode;
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
             DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(Swa, CallGraphSwaExtensionProvider, Settings, Analyzer, kind)
+            var iconId = element.HasHotIcon(CallGraphSwaExtensionProvider, Settings, MarksProvider, kind, myProvider)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
             

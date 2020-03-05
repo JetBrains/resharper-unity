@@ -6,6 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
@@ -55,15 +56,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 var solution = psiDocumentRangeView.Solution;
                 var swa = solution.GetComponent<SolutionAnalysisService>();
                 var callGraphExtension = solution.GetComponent<CallGraphSwaExtensionProvider>();
-                var callGraphAnalyzer = solution.GetComponent<PerformanceCriticalCodeCallGraphAnalyzer>();
+                var callGraphAnalyzer = solution.GetComponent<PerformanceCriticalCodeCallGraphMarksProvider>();
+                var elementIdProvider = solution.GetComponent<IElementIdProvider>();
                 var usageChecker = swa.UsageChecker;
                 if (usageChecker == null)
                     return;
-                var elementId = swa.GetElementId(declaredElement);
+                var elementId = elementIdProvider.GetElementId(declaredElement);
                 if (!elementId.HasValue)
                     return;
 
-                if (callGraphExtension.IsMarkedByCallGraphAnalyzer(callGraphAnalyzer.Id, elementId.Value))
+                if (callGraphExtension.IsMarkedByCallGraphAnalyzer(callGraphAnalyzer.Id, false, elementId.Value))
                 {
                     consumer.ConsumeHighlighting(new UnityPerformanceContextHighlightInfo(node.GetDocumentRange()));
                 }

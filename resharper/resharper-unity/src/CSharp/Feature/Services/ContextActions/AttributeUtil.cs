@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         }
 
         [CanBeNull, ContractAnnotation("attributesOwner:null => null")]
-        public static IAttribute GetAttribute([CanBeNull] IAttributesOwnerDeclaration attributesOwner,
+        public static IAttribute GetAttribute([CanBeNull] this IAttributesOwnerDeclaration attributesOwner,
             IClrTypeName requiredAttributeTypeName)
         {
             return GetAttributes(attributesOwner, requiredAttributeTypeName).FirstOrDefault(null);

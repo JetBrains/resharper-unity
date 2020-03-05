@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
@@ -19,15 +19,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtension;
+        private readonly IElementIdProvider myProvider;
         private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
 
-        public EventHandlerDetector(ISolution solution, SolutionAnalysisService swa, SettingsStore settingsStore,
-            CallGraphSwaExtensionProvider callGraphSwaExtension, AssetMethodsElementContainer assetMethodsElementContainer,
-             PerformanceCriticalCodeCallGraphAnalyzer analyzer)
-            : base(solution, swa, callGraphSwaExtension, settingsStore, analyzer)
+        public EventHandlerDetector(ISolution solution, SettingsStore settingsStore,
+            CallGraphSwaExtensionProvider callGraphSwaExtension, AssetMethodsElementContainer assetMethodsElementContainer, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
+            : base(solution, callGraphSwaExtension, settingsStore, marksProvider, provider)
         {
             myCallGraphSwaExtension = callGraphSwaExtension;
             myAssetMethodsElementContainer = assetMethodsElementContainer;
+            myProvider = provider;
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
@@ -55,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             consumer.AddImplicitConfigurableHighlighting(element);
 
-            var isIconHot = element.HasHotIcon(Swa, myCallGraphSwaExtension, Settings, Analyzer, kind);
+            var isIconHot = element.HasHotIcon(myCallGraphSwaExtension, Settings, MarksProvider, kind, myProvider);
 
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(GetActions(element), element, tooltip)
