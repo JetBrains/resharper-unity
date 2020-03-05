@@ -78,6 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         public bool Configurable => true;
         public bool PriorityDependsOnUsages => true;
         public double SortingPriority { get; }
+        public bool DefaultValue => true;
         public IDeclaredElement GetDeclaredElement(IOccurrence occurrence) => null;
         public IProjectItem GetProjectItem(IOccurrence occurrence) => null;
     }
