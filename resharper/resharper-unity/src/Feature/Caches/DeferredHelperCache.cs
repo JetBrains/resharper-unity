@@ -13,29 +13,28 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
-using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 {
     [SolutionComponent]
-    public class DeferredHelperCache : SimpleICache<bool>
+    public class DeferredHelperCache : IPsiSourceFileCache
     {
-        private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly IEnumerable<IDeferredCache> myCaches;
         public readonly SynchronizedSet<IPsiSourceFile> FilesToDrop = new SynchronizedSet<IPsiSourceFile>();
         public readonly SynchronizedSet<IPsiSourceFile> FilesToProcess = new SynchronizedSet<IPsiSourceFile>();
         
-        public DeferredHelperCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
-            IEnumerable<IDeferredCache> caches) : base(lifetime, persistentIndexManager, UnsafeMarshallers.BooleanMarshaller)
+        public DeferredHelperCache(Lifetime lifetime, IEnumerable<IDeferredCache> caches)
         {
-            myPersistentIndexManager = persistentIndexManager;
             myCaches = caches;
         }
         
-        public override object Load(IProgressIndicator progress, bool enablePersistence)
+        public void MarkAsDirty(IPsiSourceFile sourceFile)
         {
-            base.Load(progress, enablePersistence);
-            
+            AddToProcess(sourceFile);
+        }
+
+        public object Load(IProgressIndicator progress, bool enablePersistence)
+        {
             foreach (var cache in myCaches)
             {
                 cache.Load();
@@ -44,17 +43,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             return null;
         }
 
-        public override void MergeLoaded(object data)
+        public void MergeLoaded(object data)
         {
-            base.MergeLoaded(data);
-            
             foreach (var cache in myCaches)
             {
                 cache.MergeLoadedData();
             }
         }
         
-        public override bool UpToDate(IPsiSourceFile sourceFile)
+        public void Save(IProgressIndicator progress, bool enablePersistence)
+        {
+        }
+
+        public bool UpToDate(IPsiSourceFile sourceFile)
         {
             foreach (var cache in myCaches)
             {
@@ -65,29 +66,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             return true;
         }
 
-        public override object Build(IPsiSourceFile sourceFile, bool isStartup)
+        public object Build(IPsiSourceFile sourceFile, bool isStartup)
         {
             return true;
         }
 
-        public override void Merge(IPsiSourceFile sourceFile, object builtPart)
+        public void Merge(IPsiSourceFile sourceFile, object builtPart)
         {
-            if (Map.ContainsKey(sourceFile))
-                Drop(sourceFile);
-                
             AddToProcess(sourceFile);
-            FilesToDrop.Remove(sourceFile);
-            base.Merge(sourceFile, builtPart);
         }
 
-        public override void Drop(IPsiSourceFile sourceFile)
+        public void Drop(IPsiSourceFile sourceFile)
         {
-            DropFromProcess(sourceFile, true);
+            DropFromProcess(sourceFile);
             FilesToDrop.Add(sourceFile);
-            base.Drop(sourceFile);
         }
 
-        public override void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
+        public void OnPsiChange(ITreeNode elementContainingChanges, PsiChangedElementType type)
+        {
+            var sourceFile = elementContainingChanges?.GetSourceFile();
+            if (sourceFile != null)
+            {
+                AddToProcess(sourceFile);
+            }
+        }
+
+        public void OnDocumentChange(IPsiSourceFile sourceFile, ProjectFileDocumentCopyChange change)
         {
             // TODO : temp solution
             if (sourceFile is UnityYamlExternalPsiSourceFile unityYamlExternalPsiSourceFile)
@@ -95,9 +99,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                 unityYamlExternalPsiSourceFile.MarkDocumentModified();
             }
             
-            base.OnDocumentChange(sourceFile, change);
+            AddToProcess(sourceFile);
         }
-        
+
+        public void SyncUpdate(bool underTransaction)
+        {
+        }
+
+        public void Dump(TextWriter writer, IPsiSourceFile sourceFile)
+        {
+        }
+
         private void AddToProcess(IPsiSourceFile sourceFile)
         {
             bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
@@ -108,17 +120,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             }
         }
 
-        public void DropFromProcess(IPsiSourceFile sourceFile, bool isDropped)
+        public void DropFromProcess(IPsiSourceFile sourceFile)
         {
             bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
             if (isApplicable)
             {
                 FilesToProcess.Remove(sourceFile);
-                AfterRemoveFromProcess.Fire((sourceFile, isDropped));
+                AfterRemoveFromProcess.Fire(sourceFile);
             }
         }
         
+        public bool HasDirtyFiles => false;//!myDirtyFiles.IsEmpty();
+        
         public Signal<IPsiSourceFile> AfterAddToProcess = new Signal<IPsiSourceFile>();
-        public Signal<(IPsiSourceFile file, bool isDropped)> AfterRemoveFromProcess = new Signal<(IPsiSourceFile, bool)>();
+        public Signal<IPsiSourceFile> AfterRemoveFromProcess = new Signal<IPsiSourceFile>();
     }
 }

@@ -2,6 +2,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.ReSharper.Resources.Shell;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -39,9 +40,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public override string ToString()
         {
-            using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+            using (ReadLockCookie.Create())
             {
-                return $"{InspectorVariableUsage.Name} = {InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true)}";
+                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                {
+                    var value = InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true);
+                    return $"{InspectorVariableUsage.Name} = {value}";
+                }
             }
         }
     }
