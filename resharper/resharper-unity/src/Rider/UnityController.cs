@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             else
             {
                 var protocolTask = myUnityEditorProtocol.UnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance).AsTask();
-                var waitTask = Task.WhenAny(protocolTask, TaskEx.Delay(TimeSpan.FromMilliseconds(300))); // continue on timeout
+                var waitTask = Task.WhenAny(protocolTask, TaskEx.Delay(TimeSpan.FromSeconds(1))); // continue on timeout
                 waitTask.ContinueWith(t =>
                 {
                     lifetimeDef.Terminate();
@@ -92,9 +92,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (unityPath == null)
             {
                 unityPath = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "app_path");
+                if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+                    unityPath = FileSystemPath.Parse(unityPath).Combine("Contents/MacOS/Unity").FullPath;
             }
             
-            return unityPath !=null ? new[] {unityPath, "-projectPath", mySolution.SolutionDirectory.FullPath} : null;
+            return unityPath != null ? new[] {unityPath, "-projectPath", mySolution.SolutionDirectory.FullPath} : null;
         }
 
         public bool IsUnityGeneratedProject(IProject project)

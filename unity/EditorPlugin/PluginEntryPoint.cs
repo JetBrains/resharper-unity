@@ -319,6 +319,7 @@ namespace JetBrains.Rider.Unity.Editor
 
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
           AdviseGenerateUISchema(model);
+          AdviseExitUnity(model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -338,7 +339,7 @@ namespace JetBrains.Rider.Unity.Editor
       model.GenerateUIElementsSchema.Set(_ => UIElementsSupport.GenerateSchema());
     }
 
-    private static void AdviseExitUnity(EditorPluginModel model, Lifetime connectionLifetime)
+    private static void AdviseExitUnity(EditorPluginModel model)
     {
       model.ExitUnity.Set((_, rdVoid) =>
       {
