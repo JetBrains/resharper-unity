@@ -19,7 +19,7 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
@@ -27,6 +27,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.isUxmlFile
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
+import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
 
 class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNotificationPanel>() {
@@ -80,11 +81,10 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
                 val panel = EditorNotificationPanel()
                 panel.text("Generate UIElements schema to get validation and code completion.")
 
-                val unityHost = UnityHost.getInstance(project)
                 if (project.isConnectedToEditor()) {
                     var link: HyperlinkLabel? = null
                     link = panel.createActionLabel("Generate schema") {
-                        generateSchema(project, unityHost, panel, link)
+                        generateSchema(project, panel, link)
                     }
                 }
                 else {
@@ -93,9 +93,9 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
                         panel.text("Starting Unity. Please wait.")
 
                         val lifetimeDefinition = project.defineNestedLifetime()
-                        unityHost.model.sessionInitialized.advise(lifetimeDefinition.lifetime) {
+                        project.solution.rdUnityModel.sessionInitialized.advise(lifetimeDefinition.lifetime) {
                             if (project.isConnectedToEditor()) {
-                                generateSchema(project, unityHost, panel, link)
+                                generateSchema(project, panel, link)
                                 lifetimeDefinition.terminate()
                             }
                         }
@@ -112,11 +112,11 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
         return null
     }
 
-    private fun generateSchema(project: Project, unityHost: UnityHost, panel: EditorNotificationPanel, link: HyperlinkLabel?) {
+    private fun generateSchema(project: Project, panel: EditorNotificationPanel, link: HyperlinkLabel?) {
         panel.text("Generating. Please wait.")
         link?.isVisible = false
 
-        unityHost.model.generateUIElementsSchema.start(project.lifetime, Unit).result.adviseOnce(project.lifetime) {
+        project.solution.rdUnityModel.generateUIElementsSchema.start(project.lifetime, Unit).result.adviseOnce(project.lifetime) {
             if (it is RdTaskResult.Success && it.value) {
                 EditorNotifications.getInstance(project).updateAllNotifications()
 

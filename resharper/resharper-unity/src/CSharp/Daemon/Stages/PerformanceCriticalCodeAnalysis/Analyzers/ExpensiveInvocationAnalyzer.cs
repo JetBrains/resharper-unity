@@ -1,6 +1,6 @@
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
@@ -11,17 +11,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class ExpensiveInvocationAnalyzer : PerformanceProblemAnalyzerBase<IInvocationExpression>
     {
-        private readonly SolutionAnalysisService mySwa;
         private readonly CallGraphSwaExtensionProvider mySwaExtensionProvider;
         private readonly ExpensiveCodeCallGraphAnalyzer myExpensiveCodeCallGraphAnalyzer;
+        private readonly IElementIdProvider myProvider;
 
-        public ExpensiveInvocationAnalyzer(SolutionAnalysisService swa,
-            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            ExpensiveCodeCallGraphAnalyzer expensiveCodeCallGraphAnalyzer)
+        public ExpensiveInvocationAnalyzer(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+            ExpensiveCodeCallGraphAnalyzer expensiveCodeCallGraphAnalyzer,
+            IElementIdProvider provider)
         {
-            mySwa = swa;
             mySwaExtensionProvider = callGraphSwaExtensionProvider;
             myExpensiveCodeCallGraphAnalyzer = expensiveCodeCallGraphAnalyzer;
+            myProvider = provider;
         }
 
         protected override void Analyze(IInvocationExpression expression, IDaemonProcess daemonProcess, DaemonProcessKind kind,
@@ -32,15 +32,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 CreateHiglighting(expression, consumer);
             } else if (kind == DaemonProcessKind.GLOBAL_WARNINGS)
             {
-                var declaredElement = expression.Reference?.Resolve().DeclaredElement;
+                var declaredElement = expression.Reference.Resolve().DeclaredElement;
                 if (declaredElement == null)
                     return;
 
-                var id = mySwa.GetElementId(declaredElement);
+                var id = myProvider.GetElementId(declaredElement);
                 if (!id.HasValue)
                     return;
 
-                if (mySwaExtensionProvider.IsMarkedByCallGraphAnalyzer(myExpensiveCodeCallGraphAnalyzer.Id, id.Value, true))
+                if (mySwaExtensionProvider.IsMarkedByCallGraphAnalyzer(myExpensiveCodeCallGraphAnalyzer.Id, true, id.Value))
                 {
                     CreateHiglighting(expression, consumer);
                 }

@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin url="https://github.com/JetBrains/resharper-unity">
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
   <version>2020.1.0.9999</version>
@@ -108,13 +108,17 @@
     <statusBarWidgetFactory implementation="com.jetbrains.rider.plugins.unity.ui.UnityStatusBarWidget" order="after readOnlyWidget, before fatalErrorWidget" />
 
     <projectModelViewExtensions implementation="com.jetbrains.rider.plugins.unity.explorer.UnityProjectModelViewExtensions"/>
+
+    <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
+    <projectService serviceImplementation="com.jetbrains.rider.UnityProjectDiscoverer"/>
   </extensions>
 
+  <projectListeners>
+    <listener class="com.jetbrains.rider.plugins.unity.ContentModelUpdater" topic="com.intellij.openapi.project.ProjectManagerListener" />
+  </projectListeners>
+
   <project-components>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnitTest.UnitTestLauncherState</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.UnityProjectDiscoverer</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.UnityUIManager</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.ContentModelUpdater</implementation-class></component>
+    <component><implementation-class>com.jetbrains.rider.plugins.unity.ui.unitTesting.UnitTestLauncherState</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OutOfSyncEditorNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.YamlHugeFileNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.AssetModeForceTextNotification</implementation-class></component>
@@ -206,7 +210,7 @@
     <group id="Rider.UnitTesting.TopToolbar.MiscOptions.Unity">
       <add-to-group group-id="Rider.UnitTesting.TopToolbar.MiscOptions.Plugin" anchor="last"/>
       <action id="UnityTestLauncher"
-              class="com.jetbrains.rider.plugins.unity.ui.UnitTest.SwitchUnitTestLauncherComboBoxAction" />
+              class="com.jetbrains.rider.plugins.unity.ui.unitTesting.SwitchUnitTestLauncherComboBoxAction" />
     </group>
 
     <action id="InstallEditorPluginAction"
@@ -289,9 +293,15 @@
   <li>Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix (<a href="https://youtrack.jetbrains.com/issue/RIDER-22812">RIDER-22812</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Exclude <tt>Boo</tt> and <tt>UnityScript</tt> namespaces, as well as the <tt>System.Diagnostics.Debug</tt> type from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1473">#1473</a>)</li>
   <li>Add more attributes to external annotations. E.g. <tt>ShortcutAttribute</tt> will mark the method as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/1546">#1546</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-40330">RIDER-40330</a> <a href="https://github.com/JetBrains/resharper-unity/pull/1548">#1548</a>)</li>
+  <li>Find Usages for serialised fields now includes asset usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
+  <li>Indexing of assets deferred until after project loaded and will not interfere with existing code insight features (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Improved memory usage while parsing assets (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Improved support of nested and variant prefabs (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Serialised field values Code Vision now includes values from FomerlySerialisedAs attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Serialised field values Code Vision now includes derived classes (<a href="https://github.com/JetBrains/resharper-unity/pull/1550">#1550</a>)</li>
   <li>Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Stop marking a method as expensive if it only contains a null check (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Move vector multiplication order inspection to performance critical context only (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
@@ -300,6 +310,7 @@
   <li>Rider: Adding file to Unity Explorer will add to correct C# project (<a href="https://youtrack.jetbrains.com/issue/RIDER-23169">RIDER-23169</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1470">#1470</a>)</li>
   <li>Rider: Show folders ending with <tt>~</tt> by default in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/1444">#1444</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Move Unity Explorer settings to main "gear" icon (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
+  <li>Rider: Interesting content in builtin packages is now visible by default (<a href="https://github.com/JetBrains/resharper-unity/pull/1556">#1556</a>)</li>
   <li>Unity Editor: Move caret to correct column when opening file (<a href="https://youtrack.jetbrains.com/issue/RIDER-27450">RIDER-27450</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1486">#1486</a>)</li>
 </ul>
 <em>Fixed:</em>

@@ -20,10 +20,11 @@ import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -100,7 +101,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         }.installOn(this)
 
-        UnityHost.getInstance(project).model.clearOnPlay.adviseNotNull(lifetime) {
+        project.solution.rdUnityModel.clearOnPlay.adviseNotNull(lifetime) {
             logModel.events.clearBefore(it)
         }
     }

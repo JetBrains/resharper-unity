@@ -1,13 +1,13 @@
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
-import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
@@ -199,9 +199,7 @@ class FindUsagesAssetTest : BaseTestWithSolution() {
     }
 
     private fun doTest(line : Int, column : Int) {
-        val host = UnityHost.getInstance(project)
-
-        waitAndPump(project.lifetime, { host.model.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
+        waitAndPump(project.lifetime, { project.solution.rdUnityModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
 
         withOpenedEditor("Assets/NewBehaviourScript.cs") {
             setCaretToPosition(line, column)

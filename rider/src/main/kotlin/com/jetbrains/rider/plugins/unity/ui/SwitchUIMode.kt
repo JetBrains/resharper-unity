@@ -8,7 +8,7 @@ import com.jetbrains.rd.util.reactive.Property
 class SwitchUIMode : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val uiManager = UnityUIManager.tryGetInstance(project) ?: return
+        val uiManager = UnityUIManager.getInstance(project)
 
         if(uiManager.hasMinimizedUi.hasTrueValue())
             UnityUIMinimizer.recoverFullUI(project)
@@ -23,12 +23,6 @@ class SwitchUIMode : AnAction() {
             return
         }
 
-        val uiManager = UnityUIManager.tryGetInstance(project)
-        if (uiManager == null) {
-            e.presentation.isEnabled = false
-            return
-        }
-
         // Only enable UI switching for generated Unity projects. Sidecar projects
         // (class library in the main Unity folder) are fairly advanced anyway, so
         // leave things enabled. It also means these projects can access nuget
@@ -37,7 +31,7 @@ class SwitchUIMode : AnAction() {
             return
         }
 
-        if(uiManager.hasMinimizedUi.hasTrueValue())
+        if(UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue())
             e.presentation.text = "Switch to Full UI"
         else
             e.presentation.text = "Switch to Minimized UI"

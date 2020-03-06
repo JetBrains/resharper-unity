@@ -260,7 +260,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     // we have already cache guid in merge method for methodData in myLocalUsages
                     var guid = (assetMethodData.TargetScriptReference as ExternalReference).NotNull("Expected External Reference").ExternalAssetGuid;
                     var symbolTable = GetReferenceSymbolTable(solution, module, assetMethodData, guid);
-                    if (symbolTable.GetResolveResult(assetMethodData.MethodName).ResolveErrorType == ResolveErrorType.OK)
+                    var resolveResult = symbolTable.GetResolveResult(assetMethodData.MethodName);
+                    if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
                     {
                         usageCount += c;
                     }
@@ -294,7 +295,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                 foreach (var methodData in assetMethodData)
                 {
                     var symbolTable = GetReferenceSymbolTable(psiSourceFile.GetSolution(), psiSourceFile.GetPsiModule(), methodData, GetScriptGuid(methodData));
-                    if (symbolTable.GetResolveResult(methodData.MethodName).ResolveErrorType == ResolveErrorType.OK)
+                    var resolveResult = symbolTable.GetResolveResult(methodData.MethodName);
+                    if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
                     {
                         result.Add(methodData);
                     }
