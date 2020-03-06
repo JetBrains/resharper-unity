@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections;
+using JetBrains.Collections.Synchronized;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -12,21 +14,23 @@ using JetBrains.ProjectModel.Caches;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Daemon.Experimental;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
-using JetBrains.Util.Threading.Tasks;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 {
     [SolutionComponent]
-    public class DeferredCacheController
+    public class DeferredCacheController : IDaemonTaskBeforeInvisibleProcessProvider
     {
-        private const int BATCH_SIZE = 5;
+        private const int BATCH_SIZE = 100;
 
         private readonly Lifetime myLifetime;
+        private readonly ISolution mySolution;
+        private readonly SolutionCaches mySolutionCaches;
         private readonly IPsiFiles myPsiFiles;
         private readonly SolutionAnalysisConfiguration mySolutionAnalysisConfiguration;
         private readonly IShellLocks myShellLocks;
@@ -35,17 +39,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         private readonly DeferredCacheProgressBar myProgressBar;
         private readonly ILogger myLogger;
 
-        private readonly ConcurrentDictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>> myCalculatedData = new ConcurrentDictionary<IPsiSourceFile, Dictionary<IDeferredCache, object>>();
-        
-        
         public IReadonlyProperty<bool> CompletedOnce => myCompletedOnce;
-        private ViewableProperty<bool> myCompletedOnce;
+        private readonly ViewableProperty<bool> myCompletedOnce;
         
         private Lifetime myCurrentBackgroundActivityLifetime = Lifetime.Terminated;
         private LifetimeDefinition myCurrentBackgroundActivityLifetimeDefinition;
-        
-        
-        private readonly object myLockObject = new object();
 
         public DeferredCacheController(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches,
             ISolutionLoadTasksScheduler tasksScheduler, IPersistentIndexManager persistentIndexManager, IPsiFiles psiFiles,
@@ -54,6 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             DeferredCacheProgressBar progressBar, ILogger logger)
         {
             myLifetime = lifetime;
+            mySolution = solution;
+            mySolutionCaches = solutionCaches;
             myPsiFiles = psiFiles;
             mySolutionAnalysisConfiguration = solutionAnalysisConfiguration;
             myShellLocks = shellLocks;
@@ -61,113 +61,105 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             myDeferredCaches = deferredCaches;
             myProgressBar = progressBar;
             myLogger = logger;
-            myCompletedOnce = new ViewableProperty<bool>(false);
-            
-            
-            tasksScheduler.EnqueueTask(new SolutionLoadTask("DeferredCacheControllerInitialization", SolutionLoadTaskKinds.AsLateAsPossible,
-                () =>
-                {
-                    myShellLocks.QueueReadLock("DeferredCacheControllerInitializationRL", () =>
-                    {
-                        QueueCompletedOnce(solutionCaches.PersistentProperties.TryGetValue("DeferredCachesCompletedOnce", out var result) && result.Equals("True"));
-            
-                        myCompletedOnce.Advise(lifetime, b =>
-                        {
-                            solutionCaches.PersistentProperties["DeferredCachesCompletedOnce"] = b ? "True" : "False";
-                            if (b)
-                                solution.GetComponent<IDaemon>().Invalidate();
-                        });
-                    
-                        myDeferredHelperCache.AfterAddToProcess.Advise(lifetime, _ =>
-                        {
-                            RunBackgroundActivity();
-                        });
-                    
-                        myDeferredHelperCache.AfterRemoveFromProcess.Advise(lifetime, e =>
-                        {
-                            if (e.isDropped)
-                            {
-                                myCalculatedData.TryRemove(e.file, out _);
-                            }
-                            
-                            RunBackgroundActivity();
-                        });
-
-                        RunBackgroundActivity();
-                    });
-                }));
+            var defaultValue = solutionCaches.PersistentProperties.TryGetValue("DeferredCachesCompletedOnce", out var result) && result.Equals("True");
+            myCompletedOnce = new ViewableProperty<bool>(defaultValue);
         }
 
-
-        private void RunBackgroundActivity()
+        private void ScheduleBackgroundActivity()
         {
-            if (!IsProcessingFiles())
-            {
-                if (!CompletedOnce.Value)
-                    QueueCompletedOnce(true);
-                
+            myShellLocks.Dispatcher.AssertAccess();
+            if (myCurrentBackgroundActivityLifetime.IsAlive)
                 return;
-            }
-
-            lock (myLockObject)
-            {
-                if (myCurrentBackgroundActivityLifetime.IsAlive)
-                    return;
-
-                myCurrentBackgroundActivityLifetimeDefinition = new LifetimeDefinition(myLifetime);
-                myCurrentBackgroundActivityLifetime = myCurrentBackgroundActivityLifetimeDefinition.Lifetime;
-            }
             
-
-            myLogger.Verbose("Start processing files in deferred caches");
+            myCurrentBackgroundActivityLifetimeDefinition = new LifetimeDefinition(myLifetime);
+            myCurrentBackgroundActivityLifetime = myCurrentBackgroundActivityLifetimeDefinition.Lifetime;
+            
             mySolutionAnalysisConfiguration.Pause(myCurrentBackgroundActivityLifetime, "Calculating deferred index");
             myProgressBar.Start(myCurrentBackgroundActivityLifetime);
-            
-            myShellLocks.Tasks.StartNew(myLifetime, Scheduling.FreeThreaded, TaskPriority.Low, () => RunBackgroundActivityInner());
+            myIsProcessing = true;
+
+            myShellLocks.ExecuteOrQueueEx(myLifetime, "DeferredCachesCoreActivity", RunBackgroundActivity);
         }
 
-        private void QueueCompletedOnce(bool result)
+        //Start
+        private volatile bool myIsProcessing = false;
+        private void RunBackgroundActivity()
         {
-            myShellLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, TaskPriority.High, () => myCompletedOnce.Value = result);
-        }
+            myShellLocks.Dispatcher.AssertAccess();
 
-        private void RunBackgroundActivityInner()
-        {
-            if (!myLifetime.IsAlive)
-                return;
-            
-            myShellLocks.QueueReadLock(myLifetime, "DeferredCacheControllerRunActivityInner", () =>
+            using (ReadLockCookie.Create())
             {
-                myPsiFiles.ExecuteAfterCommitAllDocuments(() =>
+                Assertion.Assert(myCurrentBackgroundActivityLifetime.IsAlive, "myCurrentBackgroundActivityLifetime.IsAlive");
+                if (HasDirtyFiles())
                 {
-                    myPsiFiles.AssertAllDocumentAreCommitted();
+                    var filesToDelete = new SynchronizedList<IPsiSourceFile>(myDeferredHelperCache.FilesToDrop.Take(BATCH_SIZE));
+                    var filesToAdd = new SynchronizedList<IPsiSourceFile>(myDeferredHelperCache.FilesToProcess.Take(BATCH_SIZE));
+                
+                    var calculatedData = new ConcurrentDictionary<IPsiSourceFile, (long, Dictionary<IDeferredCache, object>)>();
+                    ScheduleBackgroundProcess(filesToDelete, filesToAdd, calculatedData);
+                }
+                else
+                {
+                    myCurrentBackgroundActivityLifetimeDefinition.Terminate();
+                    myCurrentBackgroundActivityLifetimeDefinition = null;
+                    myCompletedOnce.Value = true;
+                    myIsProcessing = false;
+                
+                    mySolution.GetComponent<IDaemon>().Invalidate();
+                }
+            }
+        }
+
+        private void ScheduleBackgroundProcess(SynchronizedList<IPsiSourceFile> toDelete, SynchronizedList<IPsiSourceFile> toProcess,
+            ConcurrentDictionary<IPsiSourceFile, (long, Dictionary<IDeferredCache, object>)> calculatedData)
+        {
+            myShellLocks.Dispatcher.AssertAccess();
+            
+            myPsiFiles.ExecuteAfterCommitAllDocuments(() =>
+            {
+                myPsiFiles.AssertAllDocumentAreCommitted();
           
-                    new InterruptableReadActivityThe(myLifetime, myShellLocks, () => !myLifetime.IsAlive || myShellLocks.ContentModelLocks.IsWriteLockRequested)
+                new InterruptableReadActivityThe(myLifetime, myShellLocks, () => !myLifetime.IsAlive || myShellLocks.ContentModelLocks.IsWriteLockRequested)
+                {
+                    FuncRun = () => RunActivity(toDelete, toProcess, calculatedData),
+                    FuncCancelled = () => myShellLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () => ScheduleBackgroundProcess(toDelete, toProcess, calculatedData)),
+                    FuncCompleted = () =>
                     {
-                        FuncRun = RunActivity,
-                        FuncCancelled = RunBackgroundActivityInner,
-                        FuncCompleted = () => { QueueCompletedOnce(true); }
-                    }.DoStart();
-                });
+                        myShellLocks.Dispatcher.AssertAccess();
+                        FlushData(toDelete, toProcess, calculatedData);
+                    }
+                }.DoStart();
             });
+        }
+        
+        public bool HasDirtyFiles()
+        {
+            return myDeferredHelperCache.FilesToDrop.Count > 0 || myDeferredHelperCache.FilesToProcess.Count > 0;
         }
 
         public bool IsProcessingFiles()
         {
-            return myDeferredHelperCache.FilesToDrop.Count > 0 || myDeferredHelperCache.FilesToProcess.Count > 0|| myCalculatedData.Count > 0;
+            return myIsProcessing;
         }
 
-        public void RunActivity()
+        // background tread
+        private void RunActivity(SynchronizedList<IPsiSourceFile> toDelete, SynchronizedList<IPsiSourceFile> toProcess,
+            ConcurrentDictionary<IPsiSourceFile, (long, Dictionary<IDeferredCache, object>)> calculatedData)
         {
-            if (!myCurrentBackgroundActivityLifetime.IsAlive)
-                return;
-            
+            myShellLocks.AssertReadAccessAllowed();
             var checker = new SeldomInterruptChecker();
-
-            FlushBuildDataIfNeed();
-
-            foreach (var psiSourceFile in myDeferredHelperCache.FilesToProcess)
+            foreach (var psiSourceFile in toProcess)
             {
+                if (calculatedData.TryGetValue(psiSourceFile, out var result))
+                {
+                    if (result.Item1 == psiSourceFile.GetAggregatedTimestamp())
+                        continue;
+                    
+                    // drop unactual data
+
+                    calculatedData.TryRemove(psiSourceFile, out _);
+                }
+
                 myProgressBar.SetCurrentProcessingFile(psiSourceFile);
                 myLogger.Verbose("Build started {0}", psiSourceFile.GetPersistentIdForLogging());
                 var cacheToData = new Dictionary<IDeferredCache, object>();
@@ -196,101 +188,95 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     checker.CheckForInterrupt();
                 }
 
-                myDeferredHelperCache.DropFromProcess(psiSourceFile, false);
-
-                Assertion.Assert(!myCalculatedData.ContainsKey(psiSourceFile), "!myCalculatedData.ContainsKey(psiSourceFile)");
-                myCalculatedData[psiSourceFile] = cacheToData;
+                Assertion.Assert(!calculatedData.ContainsKey(psiSourceFile), "!myCalculatedData.ContainsKey(psiSourceFile)");
+                calculatedData[psiSourceFile] = (psiSourceFile.GetAggregatedTimestamp(), cacheToData);
 
                 myLogger.Verbose("Build finished {0}", psiSourceFile.GetPersistentIdForLogging());
-
-                FlushBuildDataIfNeed();
-            }
-
-            FlushBuildData();
-            
-            
-            lock (myLockObject) {
-                myCurrentBackgroundActivityLifetimeDefinition.Terminate();
-                myCurrentBackgroundActivityLifetimeDefinition = null;
             }
         }
 
-        private bool FlushBuildData()
+        private void FlushData(SynchronizedList<IPsiSourceFile> toDelete, SynchronizedList<IPsiSourceFile> toProcess,
+            ConcurrentDictionary<IPsiSourceFile, (long, Dictionary<IDeferredCache, object>)> calculatedData)
         {
-            if (myDeferredHelperCache.FilesToDrop.Count == 0 && myCalculatedData.Count == 0)
-                return false;
-            
-            myShellLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () =>
+            myShellLocks.Dispatcher.AssertAccess();
+
+            using (WriteLockCookie.Create())
             {
-                using (WriteLockCookie.Create())
+                // TODO : assert that toProcess == calculatedData.Keys
+                foreach (var sourceFile in toProcess)
                 {
-                    var files = 0;
-                    foreach (var sourceFile in myDeferredHelperCache.FilesToDrop)
+                    // out toProcess is only snapshot and could be not actual, if file was removed, we could skip merging
+                    if (myDeferredHelperCache.FilesToDrop.Contains(sourceFile))
                     {
-                        myLogger.Verbose("Start dropping {0}", sourceFile.GetPersistentIdForLogging());
-
-                        if (files > BATCH_SIZE)
-                            break;
-
-                        foreach (var deferredCache in myDeferredCaches)
-                        {
-                            try
-                            {
-                                deferredCache.Drop(sourceFile);
-                            }
-                            catch (Exception e)
-                            {
-                                myLogger.Error(e, "An error occurred during dropping data in cache {0}", myDeferredCaches.GetType().Name);
-                            }
-                        }
-
-                        myDeferredHelperCache.FilesToDrop.Remove(sourceFile);
-                        myLogger.Verbose("Finish dropping {0}", sourceFile.GetPersistentIdForLogging());
-                        files++;
+                        Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(sourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(sourceFile)");
+                        calculatedData.TryRemove(sourceFile, out _);
+                        toProcess.Remove(sourceFile);
+                        continue;
                     }
 
-                    foreach (var sourceFile in myCalculatedData.Keys)
+                    Assertion.Assert(myDeferredHelperCache.FilesToProcess.Contains(sourceFile), "myDeferredHelperCache.FilesToProcess.Contains(sourceFile)");
+                    
+                    var (timeStamp, cacheToData) = calculatedData[sourceFile];
+                    
+                    // out calculated data is out-of-date
+                    if (timeStamp != sourceFile.GetAggregatedTimestamp())
                     {
-                        if (files > BATCH_SIZE)
-                            break;
-
-                        myLogger.Verbose("Start merging for {0}", sourceFile);
-                        var cacheToData = myCalculatedData[sourceFile];
-
-                        foreach (var (cache, data) in cacheToData)
-                        {
-                            try
-                            {
-                                cache.Merge(sourceFile, data);
-                            }
-                            catch (Exception e)
-                            {
-                                myLogger.Error(e, "An error occurred during merging data to cache {0}", cache.GetType().Name);
-                            }
-                        }
-
-
-                        myCalculatedData.TryRemove(sourceFile, out _);
-
-                        myLogger.Verbose("Finish merging for {0}", sourceFile);
-                        files++;
+                        calculatedData.TryRemove(sourceFile, out _);
+                        toProcess.Remove(sourceFile);
+                        continue;
                     }
+
+                    foreach (var (cache, data) in cacheToData)
+                    {
+                        try
+                        {
+                            cache.Merge(sourceFile, data);
+                        }
+                        catch (Exception e)
+                        {
+                            myLogger.Error(e, "An error occurred during merging data to cache {0}", cache.GetType().Name);
+                        }
+                    }
+
+                    myDeferredHelperCache.DropFromProcess(sourceFile);
+                    calculatedData.TryRemove(sourceFile, out _);
+                    toProcess.Remove(sourceFile);
                 }
-            });
+                
+                foreach (var sourceFile in toDelete)
+                {
+                    // toDelete is only snapshot and could be not actual, if file was added again, we could skip dropping for optimization
+                    if (myDeferredHelperCache.FilesToProcess.Contains(sourceFile))
+                    {
+                        Assertion.Assert(!myDeferredHelperCache.FilesToDrop.Contains(sourceFile), "!myDeferredHelperCache.FilesToDrop.Contains(sourceFile)");
+                        toDelete.Remove(sourceFile);
+                        continue;
+                    }
 
-            return true;
-        }
+                    Assertion.Assert(myDeferredHelperCache.FilesToDrop.Contains(sourceFile), "myDeferredHelperCache.FilesToDrop.Contains(sourceFile)");
 
-        private bool FlushBuildDataIfNeed()
-        {
-            if (myCalculatedData.Count + myDeferredHelperCache.FilesToDrop.Count > BATCH_SIZE)
-            {
-                FlushBuildData();
-                throw new OperationCanceledException();
+                    
+                    foreach (var cache in myDeferredCaches)
+                    {
+                        try
+                        {
+                            cache.Drop(sourceFile);
+                        }
+                        catch (Exception e)
+                        {
+                            myLogger.Error(e, "An error occurred during merging data to cache {0}", cache.GetType().Name);
+                        }
+                    }
+                    
+                    myDeferredHelperCache.FilesToDrop.Remove(sourceFile);
+                    toDelete.Remove(sourceFile);
+                }
             }
 
-            return false;
+            // requeue for next part
+            myShellLocks.Tasks.StartNew(myLifetime, Scheduling.MainGuard, () => { RunBackgroundActivity();});
         }
+
 
         public void Invalidate<T>() where T : IDeferredCache
         {
@@ -302,6 +288,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     deferredCache.Invalidate();
             }
         }
-        
+
+        private volatile bool myIsFirstTime = true;
+
+        public Action CreateTask(Lifetime lifetime)
+        {
+            if (myIsFirstTime)
+            {
+                myShellLocks.ExecuteOrQueueEx(myLifetime, "DeferredCacheInitialization", () =>
+                {
+                    myIsFirstTime = false;
+                    myCompletedOnce.Change.AdviseOnce(myLifetime, b =>
+                    {
+                        mySolutionCaches.PersistentProperties["DeferredCachesCompletedOnce"] = b ? "True" : "False";
+                    });
+
+                    myDeferredHelperCache.AfterAddToProcess.Advise(myLifetime, _ => ScheduleBackgroundActivity());
+                    myDeferredHelperCache.AfterRemoveFromProcess.Advise(myLifetime, _ => ScheduleBackgroundActivity());
+                    
+                    ScheduleBackgroundActivity();
+
+                });
+            }
+
+            return () => { };
+        }
     }
 }
