@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections;
@@ -19,14 +20,16 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Threading;
 using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 {
     [SolutionComponent]
     public class DeferredCacheController : IDaemonTaskBeforeInvisibleProcessProvider
     {
-        private const int BATCH_SIZE = 100;
+        private const int BATCH_SIZE = 10;
 
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
@@ -38,6 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         private readonly IEnumerable<IDeferredCache> myDeferredCaches;
         private readonly DeferredCacheProgressBar myProgressBar;
         private readonly ILogger myLogger;
+        private GroupingEvent myGroupingEvent;
 
         public IReadonlyProperty<bool> CompletedOnce => myCompletedOnce;
         private readonly ViewableProperty<bool> myCompletedOnce;
@@ -63,6 +67,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             myLogger = logger;
             var defaultValue = solutionCaches.PersistentProperties.TryGetValue("DeferredCachesCompletedOnce", out var result) && result.Equals("True");
             myCompletedOnce = new ViewableProperty<bool>(defaultValue);
+            
+            myGroupingEvent = solution.Locks.GroupingEvents.CreateEvent(lifetime, "DeferredCachesCoreActivity",  TimeSpan.FromMilliseconds(500), Rgc.Guarded, RunBackgroundActivity);
         }
 
         private void ScheduleBackgroundActivity()
@@ -77,12 +83,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             mySolutionAnalysisConfiguration.Pause(myCurrentBackgroundActivityLifetime, "Calculating deferred index");
             myProgressBar.Start(myCurrentBackgroundActivityLifetime);
             myIsProcessing = true;
+            myLogger.Verbose("Start processing files in deferred caches");
 
-            myShellLocks.ExecuteOrQueueEx(myLifetime, "DeferredCachesCoreActivity", RunBackgroundActivity);
+            myGroupingEvent.FireIncoming();
         }
 
         //Start
-        private volatile bool myIsProcessing = false;
+        private volatile bool myIsProcessing;
         private void RunBackgroundActivity()
         {
             myShellLocks.Dispatcher.AssertAccess();
@@ -104,7 +111,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
                     myCurrentBackgroundActivityLifetimeDefinition = null;
                     myCompletedOnce.Value = true;
                     myIsProcessing = false;
-                
+                    myLogger.Verbose("Finish processing files in deferred caches");
+
                     mySolution.GetComponent<IDaemon>().Invalidate();
                 }
             }
@@ -150,6 +158,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             var checker = new SeldomInterruptChecker();
             foreach (var psiSourceFile in toProcess)
             {
+                if (!psiSourceFile.IsValid())
+                {
+                    // file could be dropped, because we are working with snapshot, do not call build for invalid files
+                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile)");
+                    toProcess.Remove(psiSourceFile);
+                    calculatedData.TryRemove(psiSourceFile, out var _);
+                    continue;
+                }
+                
                 if (calculatedData.TryGetValue(psiSourceFile, out var result))
                 {
                     if (result.Item1 == psiSourceFile.GetAggregatedTimestamp())
@@ -202,74 +219,83 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
             using (WriteLockCookie.Create())
             {
-                // TODO : assert that toProcess == calculatedData.Keys
-                foreach (var sourceFile in toProcess)
+                using (myLogger.StopwatchCookie("DeferredCachesFlushData"))
                 {
-                    // out toProcess is only snapshot and could be not actual, if file was removed, we could skip merging
-                    if (myDeferredHelperCache.FilesToDrop.Contains(sourceFile))
+                    // TODO : assert that toProcess == calculatedData.Keys
+                    foreach (var sourceFile in toProcess)
                     {
-                        Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(sourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(sourceFile)");
+                        // out toProcess is only snapshot and could be not actual, if file was removed, we could skip merging
+                        if (myDeferredHelperCache.FilesToDrop.Contains(sourceFile))
+                        {
+                            Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(sourceFile),
+                                "!myDeferredHelperCache.FilesToProcess.Contains(sourceFile)");
+                            calculatedData.TryRemove(sourceFile, out _);
+                            toProcess.Remove(sourceFile);
+                            continue;
+                        }
+
+                        Assertion.Assert(myDeferredHelperCache.FilesToProcess.Contains(sourceFile),
+                            "myDeferredHelperCache.FilesToProcess.Contains(sourceFile)");
+
+                        var (timeStamp, cacheToData) = calculatedData[sourceFile];
+
+                        // out calculated data is out-of-date
+                        if (timeStamp != sourceFile.GetAggregatedTimestamp())
+                        {
+                            calculatedData.TryRemove(sourceFile, out _);
+                            toProcess.Remove(sourceFile);
+                            continue;
+                        }
+
+                        foreach (var (cache, data) in cacheToData)
+                        {
+                            try
+                            {
+                                cache.Merge(sourceFile, data);
+                            }
+                            catch (Exception e)
+                            {
+                                myLogger.Error(e, "An error occurred during merging data to cache {0}",
+                                    cache.GetType().Name);
+                            }
+                        }
+
+                        myDeferredHelperCache.DropFromProcess(sourceFile);
                         calculatedData.TryRemove(sourceFile, out _);
                         toProcess.Remove(sourceFile);
-                        continue;
                     }
 
-                    Assertion.Assert(myDeferredHelperCache.FilesToProcess.Contains(sourceFile), "myDeferredHelperCache.FilesToProcess.Contains(sourceFile)");
-                    
-                    var (timeStamp, cacheToData) = calculatedData[sourceFile];
-                    
-                    // out calculated data is out-of-date
-                    if (timeStamp != sourceFile.GetAggregatedTimestamp())
+                    foreach (var sourceFile in toDelete)
                     {
-                        calculatedData.TryRemove(sourceFile, out _);
-                        toProcess.Remove(sourceFile);
-                        continue;
-                    }
-
-                    foreach (var (cache, data) in cacheToData)
-                    {
-                        try
+                        // toDelete is only snapshot and could be not actual, if file was added again, we could skip dropping for optimization
+                        if (myDeferredHelperCache.FilesToProcess.Contains(sourceFile))
                         {
-                            cache.Merge(sourceFile, data);
+                            Assertion.Assert(!myDeferredHelperCache.FilesToDrop.Contains(sourceFile),
+                                "!myDeferredHelperCache.FilesToDrop.Contains(sourceFile)");
+                            toDelete.Remove(sourceFile);
+                            continue;
                         }
-                        catch (Exception e)
-                        {
-                            myLogger.Error(e, "An error occurred during merging data to cache {0}", cache.GetType().Name);
-                        }
-                    }
 
-                    myDeferredHelperCache.DropFromProcess(sourceFile);
-                    calculatedData.TryRemove(sourceFile, out _);
-                    toProcess.Remove(sourceFile);
-                }
-                
-                foreach (var sourceFile in toDelete)
-                {
-                    // toDelete is only snapshot and could be not actual, if file was added again, we could skip dropping for optimization
-                    if (myDeferredHelperCache.FilesToProcess.Contains(sourceFile))
-                    {
-                        Assertion.Assert(!myDeferredHelperCache.FilesToDrop.Contains(sourceFile), "!myDeferredHelperCache.FilesToDrop.Contains(sourceFile)");
+                        Assertion.Assert(myDeferredHelperCache.FilesToDrop.Contains(sourceFile),
+                            "myDeferredHelperCache.FilesToDrop.Contains(sourceFile)");
+
+
+                        foreach (var cache in myDeferredCaches)
+                        {
+                            try
+                            {
+                                cache.Drop(sourceFile);
+                            }
+                            catch (Exception e)
+                            {
+                                myLogger.Error(e, "An error occurred during merging data to cache {0}",
+                                    cache.GetType().Name);
+                            }
+                        }
+
+                        myDeferredHelperCache.FilesToDrop.Remove(sourceFile);
                         toDelete.Remove(sourceFile);
-                        continue;
                     }
-
-                    Assertion.Assert(myDeferredHelperCache.FilesToDrop.Contains(sourceFile), "myDeferredHelperCache.FilesToDrop.Contains(sourceFile)");
-
-                    
-                    foreach (var cache in myDeferredCaches)
-                    {
-                        try
-                        {
-                            cache.Drop(sourceFile);
-                        }
-                        catch (Exception e)
-                        {
-                            myLogger.Error(e, "An error occurred during merging data to cache {0}", cache.GetType().Name);
-                        }
-                    }
-                    
-                    myDeferredHelperCache.FilesToDrop.Remove(sourceFile);
-                    toDelete.Remove(sourceFile);
                 }
             }
 
