@@ -22,6 +22,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
 
+        private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
+
         public UnityController(UnityEditorProtocol unityEditorProtocol, ISolution solution, ILogger logger, Lifetime lifetime)
         {
             myUnityEditorProtocol = unityEditorProtocol;
@@ -66,13 +68,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public int? TryGetUnityProcessId()
         {
             var model = myUnityEditorProtocol.UnityModel.Value;
-            if (model == null)
-                return null;
-
-            if (!model.UnityProcessId.HasValue())
-                return null;
-
-            return model.UnityProcessId.Value;
+            if (model != null)
+            {
+                if (model.UnityProcessId.HasValue())
+                {
+                    return model.UnityProcessId.Value;    
+                }
+            }
+            // no protocol connection - try to fallback to EditorInstance.json
+            var processIdString = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "process_id");
+            return processIdString == null ? (int?) null : Convert.ToInt32(processIdString);
         }
 
         [CanBeNull]
@@ -83,6 +88,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return null;
             
             var unityPath = unityPathData?.Value?.ApplicationPath;
+
+            if (unityPath == null)
+            {
+                unityPath = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "app_path");
+            }
+            
             return unityPath !=null ? new[] {unityPath, "-projectPath", mySolution.SolutionDirectory.FullPath} : null;
         }
 
@@ -97,16 +108,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             try
             {
                 var possibleProcessId = TryGetUnityProcessId();
-                if (possibleProcessId == null)
-                {
-                    // no protocol connection - try to fallback to EditorInstance.json
-                    var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
-                    var processIdString = EditorInstanceJson.TryGetValue(editorInstanceJsonPath, "process_id");
-                    if (processIdString == null)
-                        return false;
-                    possibleProcessId = Convert.ToInt32(processIdString);
-                }
-
                 if (possibleProcessId > 0)
                 {
                     Process process = null;
