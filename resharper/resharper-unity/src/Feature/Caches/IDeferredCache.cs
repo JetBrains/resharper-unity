@@ -14,34 +14,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         void MergeLoadedData();
         void Invalidate();
     }
-    
-    // public interface IDeferredCache
-    // {
-    //     // WriteLock
-    //     void Load();
-    //     // WriteLock
-    //     void MergeLoadedData();
-    //     
-    //     // ReadLock
-    //     bool IsApplicable(IPsiSourceFile sourceFile);
-    //     
-    //     // ReadLock
-    //     bool UpToDate(IPsiSourceFile sourceFile);
-    //
-    //
-    //     // ReadLock
-    //     IDeferredIndex GetIndex();
-    //     // WriteLock
-    //     void ReplaceIndex(IDeferredIndex newIndex);
-    //     
-    //     // ReadLock
-    //     object CreateDataFor(IPsiSourceFile psiSourceFile);
-    //     
-    //     // No locks
-    //     void PersistData(IPsiSourceFile psiSourceFile);
-    //
-    //     // WriteLock
-    //     void Invalidate();
-    //     
-    // }
 }

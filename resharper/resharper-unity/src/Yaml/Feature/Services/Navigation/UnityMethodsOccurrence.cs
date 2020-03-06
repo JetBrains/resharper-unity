@@ -7,17 +7,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
     public class UnityMethodsOccurrence : UnityAssetOccurrence
     {
-        private readonly AssetMethodData myMethodData;
+        public readonly AssetMethodData MethodData;
 
         public UnityMethodsOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, IHierarchyElement attachedElement, AssetMethodData methodData)
             : base(sourceFile, declaredElement, attachedElement)
         {
-            myMethodData = methodData;
+            MethodData = methodData;
         }
 
         protected bool Equals(UnityMethodsOccurrence other)
         {
-            return base.Equals(other) && myMethodData.Equals(other.myMethodData);
+            return base.Equals(other) && MethodData.Equals(other.MethodData);
         }
 
         public override bool Equals(object obj)
@@ -32,13 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ myMethodData.GetHashCode();
+                return (base.GetHashCode() * 397) ^ MethodData.GetHashCode();
             }
         }
 
         public override string ToString()
         {
-            return $"m_MethodName: {myMethodData.MethodName}";
+            return $"m_MethodName: {MethodData.MethodName}";
         }
     }
 }
