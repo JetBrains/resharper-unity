@@ -96,18 +96,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             try
             {
-                var possibleProcess = TryGetUnityProcessId();
-                if (possibleProcess != null)
-                    return false;
-                var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
-                var val = EditorInstanceJson.TryGetValue(editorInstanceJsonPath, "process_id");
-                if (val == null)
-                    return false;
-                var id = Convert.ToInt32(val);
-                if (id > 0)
+                var possibleProcessId = TryGetUnityProcessId();
+                if (possibleProcessId == null)
                 {
-                    Process.GetProcessById(id).Kill();
-                    return true;
+                    // no protocol connection - try to fallback to EditorInstance.json
+                    var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
+                    var processIdString = EditorInstanceJson.TryGetValue(editorInstanceJsonPath, "process_id");
+                    if (processIdString == null)
+                        return false;
+                    possibleProcessId = Convert.ToInt32(processIdString);
+                }
+
+                if (possibleProcessId > 0)
+                {
+                    Process process = null;
+                    try
+                    {
+                        process = Process.GetProcessById((int)possibleProcessId);
+                    }
+                    catch (Exception)
+                    {
+                        // process may not be running
+                    }
+
+                    if (process != null)
+                    {
+                        process.Kill();
+                        return true;
+                    }
                 }
             }
             catch (Exception e)
