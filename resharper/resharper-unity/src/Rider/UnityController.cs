@@ -6,6 +6,7 @@ using JetBrains.Core;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Host.Features.Unity;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -77,6 +78,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             var unityPath = myUnityEditorProtocol.UnityModel.Value?.UnityApplicationData.Value?.ApplicationPath;
             return new[] {unityPath, "-projectPath", mySolution.SolutionDirectory.FullPath};
+        }
+
+        public bool IsUnityGeneratedProject(IProject project)
+        {
+            return project.IsUnityGeneratedProject();
         }
     }
 }
