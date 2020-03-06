@@ -11,7 +11,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 {
     [SolutionComponent]
-    public class UnityAssetRiderUsageGroupingProjectItemProvider : IRiderUsageGroupingProjectItemProvider
+    public class UnityAssetRiderUsageGroupingProjectItemProvider : ProjectItemRule.ICustomProjectItemProvider
     {
         private readonly ISolution mySolution;
         private readonly ProjectModelIcons myProjectModelIcons;

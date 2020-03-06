@@ -10,8 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Pencils
 {
     public class UnityPencilsFilter : PencilsFilterSettingsBase<UnitySettings>
     {
-        public UnityPencilsFilter(IContextBoundSettingsStore store)
-            : base("Unityh", "Plugins", "Unity", "", true, store, s => s.EnablePerformanceCriticalCodeHighlighting)
+        public UnityPencilsFilter(ISettingsStore store)
+            : base("Unity", "Plugins", "Unity", "", true, store, s => s.EnablePerformanceCriticalCodeHighlighting)
         {
         }
 
@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Pencils
     [SolutionComponent]
     public class UnityPencilsFilterProvider : IPencilsFiltersProvider
     {
-        public IEnumerable<IPencilsFilter> GetFilters(Lifetime lifetime, ISolution solution, IContextBoundSettingsStore store)
+        public IEnumerable<IPencilsFilter> GetFilters(Lifetime lifetime, ISolution solution, ISettingsStore store)
         {
             return new IPencilsFilter[] {new UnityPencilsFilter(store)};
         }
