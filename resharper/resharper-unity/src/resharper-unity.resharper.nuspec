@@ -51,6 +51,8 @@ Changed:
 - Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled (#1459)
 - Stop marking a method as expensive if it only contains a null check (#1459)
 - Move vector multiplication order inspection to performance critical context only (#1459)
+- Updated API information to 2020.1.0a25 (#1553)
+- Remove messages that use obsolete parameter types (#1545, #1553)
 
 Fixed:
 - Fix incorrect redundant SerializeField attribute warning for property backing field (#1016, #1464)
