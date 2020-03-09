@@ -28,8 +28,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
-        public UnityController(UnityEditorProtocol unityEditorProtocol, ISolution solution, ILogger logger, Lifetime lifetime, UnitySolutionTracker solutionTracker)
+        public UnityController(UnityEditorProtocol unityEditorProtocol, ISolution solution,
+            Lifetime lifetime, UnitySolutionTracker solutionTracker)
         {
+            if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
+                return;
+            
             myUnityEditorProtocol = unityEditorProtocol;
             mySolution = solution;
             myLifetime = lifetime;
