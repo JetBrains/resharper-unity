@@ -1,4 +1,5 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Generate;
+using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Generate
@@ -49,6 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Genera
         [Test] public void NonUnityType() { DoNamedTest(); }
     }
 
+    [TestNetFramework4]
     public class EventFunctionGeneratorNonUnityProjectTest : GenerateTestBase
     {
         protected override string RelativeTestDataPath => @"CSharp\Generate";

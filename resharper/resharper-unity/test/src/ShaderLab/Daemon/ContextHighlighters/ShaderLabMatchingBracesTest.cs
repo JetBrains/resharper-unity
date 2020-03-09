@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon.ContextHighlighters
 {
+    [TestNetFramework4]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabMatchingBracesTest : ContextHighlighterTestBase
     {
