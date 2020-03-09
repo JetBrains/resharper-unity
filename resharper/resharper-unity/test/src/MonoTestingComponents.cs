@@ -3,10 +3,12 @@ using JetBrains.Application.Environment;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.platforms;
 using JetBrains.Metadata.Utils;
-using JetBrains.ReSharper.Host.Features.Platforms;
-using JetBrains.ReSharper.Host.Features.Runtime;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
+#if RIDER
+using JetBrains.ReSharper.Host.Features.Platforms;
+using JetBrains.ReSharper.Host.Features.Runtime;
+#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
@@ -33,6 +35,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             if (PlatformUtil.IsRunningUnderWindows)
                 return EmptyList<PlatformInfo>.Collection;
 
+            // TODO: Get this working for ReSharper
+            // All of these interfaces/classes are ReSharper host only
+#if RIDER
             var monoPathProviders = new List<IMonoPathProvider>();
             monoPathProviders.Add(new EnvMonoPathProvider());
             monoPathProviders.Add(new LinuxDefaultMonoPathProvider());
@@ -42,6 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             var monoRuntimes = detector.DetectMonoRuntimes();
 
             return MonoPlatformsProvider.GetPlatforms(monoRuntimes[0]);
+#else
+            return EmptyList<PlatformInfo>.Collection;
+#endif
         }
 
         public IReadOnlyCollection<PlatformInfo> GetPlatformsForSolution()

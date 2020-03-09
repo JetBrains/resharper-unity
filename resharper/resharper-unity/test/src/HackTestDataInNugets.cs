@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.IO.Packaging;
 using HarmonyLib;
 using JetBrains.Reflection;
 using JetBrains.Util;
 using NuGet;
-using SharpCompress.Archive.Zip;
-using SharpCompress.Common;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedParameter.Local
@@ -57,13 +56,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         {
             ___parts = new Dictionary<Uri, ZipPackagePart>();
             var packageStream = __instance.GetFieldOrPropertyValue<Stream>("PackageStream");
-            using (var zipArchive = ZipArchive.Open(packageStream, Options.KeepStreamsOpen))
+            using (var zipArchive = new ZipArchive(packageStream, ZipArchiveMode.Read, true))
             {
                 foreach (var zipArchiveEntry in zipArchive.Entries)
                 {
                     // We don't care what Packaging thinks the content type is
                     System_IO_Packaging_ZipPackage_CreatePartCore(__instance,
-                        new Uri("/" + zipArchiveEntry.Key, UriKind.Relative), "application/octet",
+                        new Uri("/" + zipArchiveEntry.FullName, UriKind.Relative), "application/octet",
                         CompressionOption.Maximum);
                 }
             }
@@ -91,34 +90,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             ____expandedFolderPath = __instance.Id + "." + __instance.Version;
             using (var stream = __instance.GetStream())
             {
-                var zipArchive = ZipArchive.Open(stream, Options.KeepStreamsOpen);
-                foreach (var zipArchiveEntry in zipArchive.Entries)
+                using (var zipArchive = new ZipArchive(stream, ZipArchiveMode.Read, true))
                 {
-                    var path = zipArchiveEntry.Key;
-                    if (path.EndsWith(".nuspec") || path.EndsWith(".psmdcp") || path == "_rels/.rels" || path == "[ContentTypes].xml")
-                        continue;
-                    var localPath = Path.Combine(____expandedFolderPath, path);
-                    if (!____expandedFileSystem.FileExists(localPath))
+                    foreach (var zipArchiveEntry in zipArchive.Entries)
                     {
-                        using (var entryStream = zipArchiveEntry.OpenEntryStream())
+                        var path = zipArchiveEntry.FullName;
+                        if (path.EndsWith(".nuspec") || path.EndsWith(".psmdcp") || path == "_rels/.rels" ||
+                            path == "[Content_Types].xml")
+                            continue;
+                        var localPath = Path.Combine(____expandedFolderPath, path);
+                        if (!____expandedFileSystem.FileExists(localPath))
                         {
-                            try
+                            using (var entryStream = zipArchiveEntry.Open())
                             {
-                                using (var file = ____expandedFileSystem.CreateFile(localPath))
-                                    entryStream.CopyTo(file);
-                            }
-                            catch (Exception)
-                            {
+                                try
+                                {
+                                    using (var file = ____expandedFileSystem.CreateFile(localPath))
+                                        entryStream.CopyTo(file);
+                                }
+                                catch (Exception)
+                                {
+                                }
                             }
                         }
-                    }
 
-                    var physicalPackageFile = new PhysicalPackageFile
-                    {
-                        SourcePath = ____expandedFileSystem.GetFullPath(localPath),
-                        TargetPath = path
-                    };
-                    ____files[path] = physicalPackageFile;
+                        var physicalPackageFile = new PhysicalPackageFile
+                        {
+                            SourcePath = ____expandedFileSystem.GetFullPath(localPath), TargetPath = path
+                        };
+                        ____files[path] = physicalPackageFile;
+                    }
                 }
             }
 
