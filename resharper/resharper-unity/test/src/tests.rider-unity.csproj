@@ -6,7 +6,7 @@
     <LangVersion>7.2</LangVersion>
     <!-- This is needed for ReferenceAssemblyRedirects to pick up app.config -->
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\..\sign.snk</AssemblyOriginatorKeyFile>
     <JetTestProject>True</JetTestProject>
@@ -19,6 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NUnit.Console" Version="3.10.0" />
+    <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\rider-unity.csproj" />
