@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using JetBrains.Application.Progress;
+using JetBrains.Application.Threading;
 using JetBrains.Collections.Synchronized;
 using JetBrains.Collections.Viewable;
 using JetBrains.DocumentManagers.impl;
@@ -19,15 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
     [SolutionComponent]
     public class DeferredHelperCache : IPsiSourceFileCache
     {
-        private readonly IPersistentIndexManager myPersistentIndexManager;
+        private readonly IShellLocks myShellLocks;
         private readonly IEnumerable<IDeferredCache> myCaches;
         public readonly SynchronizedSet<IPsiSourceFile> FilesToDrop = new SynchronizedSet<IPsiSourceFile>();
         public readonly SynchronizedSet<IPsiSourceFile> FilesToProcess = new SynchronizedSet<IPsiSourceFile>();
         
-        public DeferredHelperCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
-            IEnumerable<IDeferredCache> caches)
+        public DeferredHelperCache(Lifetime lifetime, IShellLocks shellLocks, IEnumerable<IDeferredCache> caches)
         {
-            myPersistentIndexManager = persistentIndexManager;
+            myShellLocks = shellLocks;
             myCaches = caches;
         }
         
@@ -71,7 +71,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public object Build(IPsiSourceFile sourceFile, bool isStartup)
         {
-            AddToProcess(sourceFile);
             return true;
         }
 
@@ -116,6 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         private void AddToProcess(IPsiSourceFile sourceFile)
         {
+            myShellLocks.Dispatcher.AssertAccess();
             bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
             if (isApplicable)
             {
@@ -126,6 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
         public void DropFromProcess(IPsiSourceFile sourceFile)
         {
+            myShellLocks.Dispatcher.AssertAccess();
             bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
             if (isApplicable)
             {

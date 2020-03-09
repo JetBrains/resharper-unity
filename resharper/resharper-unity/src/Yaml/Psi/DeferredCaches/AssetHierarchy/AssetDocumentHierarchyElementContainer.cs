@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
@@ -21,9 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     [SolutionComponent]
     public class AssetDocumentHierarchyElementContainer : IUnityAssetDataElementContainer
     {
-        private readonly DeferredCachesLocks myLocks;
         private readonly IPersistentIndexManager myManager;
         private readonly PrefabImportCache myPrefabImportCache;
+        private readonly IShellLocks myShellLocks;
         private readonly UnityExternalFilesPsiModule myPsiModule;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
@@ -31,18 +32,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private readonly ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement> myAssetDocumentsHierarchy =
             new ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement>();
 
-        public AssetDocumentHierarchyElementContainer(DeferredCachesLocks locks, IPersistentIndexManager manager, PrefabImportCache prefabImportCache
-            , UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
+        public AssetDocumentHierarchyElementContainer(IPersistentIndexManager manager, PrefabImportCache prefabImportCache, IShellLocks shellLocks,
+            UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
         {
-            myLocks = locks;
             myManager = manager;
             myPrefabImportCache = prefabImportCache;
+            myShellLocks = shellLocks;
             myPsiModule = psiModuleProvider.PsiModule;
             myMetaFileGuidCache = metaFileGuidCache;
             myAssetInspectorValueDeserializers = assetInspectorValueDeserializers;
         }
 
-        public IUnityAssetDataElement Build(Lifetime lifetime, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        public IUnityAssetDataElement Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
             var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
             if (!anchorRaw.HasValue)
@@ -174,19 +175,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public IHierarchyElement GetHierarchyElement(IHierarchyReference reference, bool prefabImport)
         {
-            return myLocks.ExecuteUnderReadLock(lf =>
-            {
-                var sourceFile = GetSourceFile(reference, out var guid);
-                if (sourceFile == null || guid == null)
-                    return null;
+            myShellLocks.AssertReadAccessAllowed();
+            
+            var sourceFile = GetSourceFile(reference, out var guid);
+            if (sourceFile == null || guid == null)
+                return null;
                 
-                return myAssetDocumentsHierarchy[sourceFile].GetHierarchyElement(guid, reference.LocalDocumentAnchor, prefabImport ? myPrefabImportCache : null);
-            });
+            return myAssetDocumentsHierarchy[sourceFile].GetHierarchyElement(guid, reference.LocalDocumentAnchor, prefabImport ? myPrefabImportCache : null);
         }
 
         public AssetDocumentHierarchyElement GetAssetHierarchyFor(IPsiSourceFile sourceFile)
         {
-            myLocks.AssertReadAccessAllowed();
+            myShellLocks.AssertReadAccessAllowed();
+            
             if (myAssetDocumentsHierarchy.TryGetValue(sourceFile, out var result))
                 return result;
             
@@ -195,7 +196,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         
         public AssetDocumentHierarchyElement GetAssetHierarchyFor(LocalReference location, out string guid)
         {
-            myLocks.AssertReadAccessAllowed();
+            myShellLocks.AssertReadAccessAllowed();
+            
             var sourceFile = GetSourceFile(location, out guid);
             if (sourceFile == null || guid == null)
                 return null;

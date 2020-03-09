@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -26,14 +27,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
     [SolutionComponent]
     public class AssetMethodsElementContainer : IUnityAssetDataElementContainer
     {
+        private readonly IShellLocks myShellLocks;
         private readonly ISolution mySolution;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
-        private readonly DeferredCachesLocks myDeferredCachesLocks;
 
-        public AssetMethodsElementContainer(ISolution solution, AssetDocumentHierarchyElementContainer elementContainer, DeferredCachesLocks deferredCachesLocks)
+        public AssetMethodsElementContainer(IShellLocks shellLocks, ISolution solution, AssetDocumentHierarchyElementContainer elementContainer)
         {
+            myShellLocks = shellLocks;
             mySolution = solution;
-            myDeferredCachesLocks = deferredCachesLocks;
             myAssetDocumentHierarchyElementContainer = elementContainer;
         }
         
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
         private readonly CountingSet<string> myExternalCount = new CountingSet<string>();
         private readonly OneToCompactCountingSet<string, AssetMethodData> myLocalUsages = new OneToCompactCountingSet<string, AssetMethodData>();
         
-        public IUnityAssetDataElement Build(Lifetime lifetime, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        public IUnityAssetDataElement Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
             var buffer = assetDocument.Buffer;
             if (ourMethodNameSearcher.Find(buffer) < 0)
@@ -186,23 +187,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         public bool IsPossibleEventHandler(IDeclaredElement declaredElement)
         {
-            return myDeferredCachesLocks.ExecuteUnderReadLock(_ =>
+            myShellLocks.AssertReadAccessAllowed();
+            
+            if (declaredElement is IProperty property)
             {
-                if (declaredElement is IProperty property)
-                {
-                    var setter = property.Setter;
-                    if (setter != null && myShortNameToScriptTarget.GetValues(setter.ShortName).Length > 0)
-                        return true;
+                var setter = property.Setter;
+                if (setter != null && myShortNameToScriptTarget.GetValues(setter.ShortName).Length > 0)
+                    return true;
                     
-                    var getter = property.Getter;
-                    if (getter != null && myShortNameToScriptTarget.GetValues(getter.ShortName).Length > 0)
-                        return true;
+                var getter = property.Getter;
+                if (getter != null && myShortNameToScriptTarget.GetValues(getter.ShortName).Length > 0)
+                    return true;
 
-                    return false;
-                }
+                return false;
+            }
                 
-                return myShortNameToScriptTarget.GetValues(declaredElement.ShortName).Length > 0;
-            });
+            return myShortNameToScriptTarget.GetValues(declaredElement.ShortName).Length > 0;
         }
 
         public int GetAssetUsagesCount(IDeclaredElement declaredElement, out bool estimatedResult)
@@ -234,44 +234,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
         
         public int GetAssetUsagesCountInner(IDeclaredElement declaredElement, out bool estimatedResult)
         {
+            myShellLocks.AssertReadAccessAllowed();
             estimatedResult = false;
             if (!(declaredElement is IClrDeclaredElement clrDeclaredElement))
                 return 0;
-            
-            var (count, estimated) = myDeferredCachesLocks.ExecuteUnderReadLock(_ =>
+
+            if (!IsPossibleEventHandler(declaredElement))
+                return 0;
+
+            if (myExternalCount.GetCount(declaredElement.ShortName) > 0)
+                estimatedResult = true;
+
+            const int maxProcessCount = 5;
+            if (myLocalUsages.GetOrEmpty(declaredElement.ShortName).Count > maxProcessCount)
+                estimatedResult = true;
+
+            var usageCount = 0;
+            foreach (var (assetMethodData, c) in myLocalUsages.GetOrEmpty(declaredElement.ShortName).Take(maxProcessCount))
             {
-                bool isEstimated = false;
-                if (!IsPossibleEventHandler(declaredElement))
-                    return (0, false);
-
-                if (myExternalCount.GetCount(declaredElement.ShortName) > 0)
-                    isEstimated = true;
-
-                const int maxProcessCount = 5;
-                if (myLocalUsages.GetOrEmpty(declaredElement.ShortName).Count > maxProcessCount)
-                    isEstimated = true;
-
-                var usageCount = 0;
-                foreach (var (assetMethodData, c) in myLocalUsages.GetOrEmpty(declaredElement.ShortName).Take(maxProcessCount))
+                var solution = declaredElement.GetSolution();
+                var module = clrDeclaredElement.Module;
+                    
+                // we have already cache guid in merge method for methodData in myLocalUsages
+                var guid = (assetMethodData.TargetScriptReference as ExternalReference).NotNull("Expected External Reference").ExternalAssetGuid;
+                var symbolTable = GetReferenceSymbolTable(solution, module, assetMethodData, guid);
+                var resolveResult = symbolTable.GetResolveResult(assetMethodData.MethodName);
+                if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
                 {
-                    var solution = declaredElement.GetSolution();
-                    var module = clrDeclaredElement.Module;
-                    
-                    // we have already cache guid in merge method for methodData in myLocalUsages
-                    var guid = (assetMethodData.TargetScriptReference as ExternalReference).NotNull("Expected External Reference").ExternalAssetGuid;
-                    var symbolTable = GetReferenceSymbolTable(solution, module, assetMethodData, guid);
-                    var resolveResult = symbolTable.GetResolveResult(assetMethodData.MethodName);
-                    if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
-                    {
-                        usageCount += c;
-                    }
+                    usageCount += c;
                 }
-                    
-                return (usageCount, isEstimated);
-            });
+            }
 
-            estimatedResult = estimated;
-            return count;
+            return usageCount;
         }
 
         private string GetScriptGuid(AssetMethodData assetMethodData)
@@ -285,25 +279,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         public IEnumerable<AssetMethodData> GetAssetUsagesFor(IPsiSourceFile psiSourceFile, IDeclaredElement declaredElement)
         {
-            return myDeferredCachesLocks.ExecuteUnderReadLock(lf =>
+            myShellLocks.AssertReadAccessAllowed();
+            
+            var result = new List<AssetMethodData>();
+            if (!myPsiSourceFileToMethods.TryGetValue(psiSourceFile, out var methods))
+                return EmptyList<AssetMethodData>.Enumerable;
+                
+            var assetMethodData = methods.GetValuesSafe(declaredElement.ShortName);
+            foreach (var methodData in assetMethodData)
             {
-                var result = new List<AssetMethodData>();
-                if (!myPsiSourceFileToMethods.TryGetValue(psiSourceFile, out var methods))
-                    return EmptyList<AssetMethodData>.Enumerable;
-                
-                var assetMethodData = methods.GetValuesSafe(declaredElement.ShortName);
-                foreach (var methodData in assetMethodData)
+                var symbolTable = GetReferenceSymbolTable(psiSourceFile.GetSolution(), psiSourceFile.GetPsiModule(), methodData, GetScriptGuid(methodData));
+                var resolveResult = symbolTable.GetResolveResult(methodData.MethodName);
+                if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
                 {
-                    var symbolTable = GetReferenceSymbolTable(psiSourceFile.GetSolution(), psiSourceFile.GetPsiModule(), methodData, GetScriptGuid(methodData));
-                    var resolveResult = symbolTable.GetResolveResult(methodData.MethodName);
-                    if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
-                    {
-                        result.Add(methodData);
-                    }
+                    result.Add(methodData);
                 }
+            }
                 
-                return result;
-            });
+            return result;
         }
         
         private ISymbolTable GetReferenceSymbolTable(ISolution solution, IPsiModule psiModule, AssetMethodData assetMethodData, string assetGuid)

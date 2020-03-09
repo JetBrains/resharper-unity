@@ -8,17 +8,14 @@ using JetBrains.Util;
 
 namespace ApiParser
 {
-    public sealed class ApiNode
+    public sealed class SimpleHtmlNode
     {
-        private readonly HtmlNode node;
+        private readonly HtmlNode myNode;
 
-        private ApiNode([NotNull] HtmlNode node)
+        private SimpleHtmlNode([NotNull] HtmlNode node)
         {
-            this.node = node;
+            this.myNode = node;
         }
-
-        [NotNull]
-        private string Code => node.InnerHtml;
 
         [NotNull]
         public string Text
@@ -26,10 +23,10 @@ namespace ApiParser
             get
             {
                 // Fix up dodgy HTML in example text for Unity 5.5
-                if (node.Name == "pre")
+                if (myNode.Name == "pre")
                 {
                     var text = "";
-                    foreach (var childNode in node.ChildNodes)
+                    foreach (var childNode in myNode.ChildNodes)
                     {
                         if (childNode.NodeType == HtmlNodeType.Element && childNode.Name == "br")
                             text += Environment.NewLine;
@@ -38,48 +35,48 @@ namespace ApiParser
                     }
                     return text;
                 }
-                return node.InnerText.Trim();
+                return myNode.InnerText.Trim();
             }
         }
 
         [CanBeNull]
-        public ApiNode this[int index] => Wrap(node.ChildNodes[index]);
+        public SimpleHtmlNode this[int index] => Wrap(myNode.ChildNodes[index]);
 
         [NotNull]
-        public string this[[NotNull] string attributeName] => node.GetAttributeValue(attributeName, string.Empty);
+        public string this[[NotNull] string attributeName] => myNode.GetAttributeValue(attributeName, string.Empty);
 
         [CanBeNull]
-        public static ApiNode Load([NotNull] string path)
+        public static SimpleHtmlNode Load([NotNull] string path)
         {
             if (!File.Exists(path)) return null;
             var document = new HtmlDocument();
             document.Load(path);
-            return new ApiNode(document.DocumentNode);
+            return new SimpleHtmlNode(document.DocumentNode);
         }
 
-        [CanBeNull]
-        public static ApiNode LoadContent(string content)
+        [NotNull]
+        public static SimpleHtmlNode LoadContent(string content)
         {
             var document = new HtmlDocument();
             document.LoadHtml(content);
-            return new ApiNode(document.DocumentNode);
+            return new SimpleHtmlNode(document.DocumentNode);
         }
 
         [NotNull]
-        public ApiNode[] SelectMany([NotNull] string xpath)
+        public SimpleHtmlNode[] SelectMany([NotNull] string xpath)
         {
-            var nodes = node.SelectNodes(XPath.Resolve(xpath));
-            return nodes?.Select(Wrap).ToArray() ?? EmptyArray<ApiNode>.Instance;
+            var nodes = myNode.SelectNodes(XPath.Resolve(xpath));
+            return nodes?.Select(Wrap).ToArray() ?? EmptyArray<SimpleHtmlNode>.Instance;
         }
 
         [CanBeNull]
-        public ApiNode SelectOne([NotNull] string xpath)
+        public SimpleHtmlNode SelectOne([NotNull] string xpath)
         {
-            return Wrap(node.SelectSingleNode(XPath.Resolve(xpath)));
+            return Wrap(myNode.SelectSingleNode(XPath.Resolve(xpath)));
         }
 
         [NotNull]
-        public IEnumerable<ApiNode> Subsection([NotNull] string name)
+        public IEnumerable<SimpleHtmlNode> Subsection([NotNull] string name)
         {
             return SelectMany($@"div.subsection[h2='{name}']/table.list//tr");
         }
@@ -92,13 +89,13 @@ namespace ApiParser
         /// </returns>
         public override string ToString()
         {
-            return Code;
+            return myNode.InnerHtml;
         }
 
         [CanBeNull]
-        private static ApiNode Wrap([CanBeNull] HtmlNode node)
+        private static SimpleHtmlNode Wrap([CanBeNull] HtmlNode node)
         {
-            return node != null ? new ApiNode(node) : null;
+            return node != null ? new SimpleHtmlNode(node) : null;
         }
     }
 }
