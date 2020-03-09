@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Packaging;
 using HarmonyLib;
 using JetBrains.Reflection;
+using JetBrains.Util;
 using NuGet;
 using SharpCompress.Archive.Zip;
 using SharpCompress.Common;
@@ -23,6 +24,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     {
         public static void ApplyPatches()
         {
+            if (!PlatformUtil.IsRunningOnMono)
+                return;
+
             var harmony = new Harmony("com.jetbrains.resharper.tests::nuget_packaging");
 
             // Mono's System.IO.Packaging has a very naive implementation of Package. ZipPackage.LoadParts is the most
