@@ -2,14 +2,17 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
+using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.Unity;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting;
+using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.Rider.Model;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -19,20 +22,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly UnityEditorProtocol myUnityEditorProtocol;
         private readonly ISolution mySolution;
-        private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
+        private readonly UnitySolutionTracker mySolutionTracker;
+        private RdUnityModel myRdUnityModel;
 
         private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
-        public UnityController(UnityEditorProtocol unityEditorProtocol, ISolution solution, ILogger logger, Lifetime lifetime)
+        public UnityController(UnityEditorProtocol unityEditorProtocol, ISolution solution, ILogger logger, Lifetime lifetime, UnitySolutionTracker solutionTracker)
         {
             myUnityEditorProtocol = unityEditorProtocol;
             mySolution = solution;
-            myLogger = logger;
             myLifetime = lifetime;
+            mySolutionTracker = solutionTracker;
+            myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
         }
-        
-        public Task<bool> ExitUnityAsync(bool force)
+
+        public Task<ExitUnityResult> ExitUnityAsync(bool force)
         {
             var lifetimeDef = myLifetime.CreateNested();
             if (myUnityEditorProtocol.UnityModel.Value == null) // no connection
@@ -41,28 +46,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     return Task.FromResult(KillProcess());
                 }
-            }
-            else
-            {
-                var protocolTask = myUnityEditorProtocol.UnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance).AsTask();
-                var waitTask = Task.WhenAny(protocolTask, TaskEx.Delay(TimeSpan.FromSeconds(1))); // continue on timeout
-                waitTask.ContinueWith(t =>
-                {
-                    lifetimeDef.Terminate();
-                    if (protocolTask.Status != TaskStatus.RanToCompletion && force)
-                        return KillProcess();
-                    return false;
-                }, myLifetime);                
-            }
-            return Task.FromResult(false);
-        }
 
-        // todo: remove
-        public bool ExitUnity(bool force)
-        {
-            var task = ExitUnityAsync(force);
-            task.Wait(myLifetime);
-            return task.Result;
+                return Task.FromResult(new ExitUnityResult(false, "No connection to Unity Editor.", null));
+            }
+
+            var protocolTask = myUnityEditorProtocol.UnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance).AsTask();
+            var waitTask = Task.WhenAny(protocolTask, Task.Delay(TimeSpan.FromSeconds(0.5), lifetimeDef.Lifetime)); // continue on timeout
+            return waitTask.ContinueWith(t =>
+            {
+                lifetimeDef.Terminate();
+                if (protocolTask.Status != TaskStatus.RanToCompletion && force)
+                    return KillProcess();
+                return new ExitUnityResult(false, "Attempt to close Unity Editor failed.", null);
+            }, myLifetime);
         }
 
         public int? TryGetUnityProcessId()
@@ -104,9 +100,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return project.IsUnityGeneratedProject();
         }
 
-
-        private bool KillProcess()
+        public bool IsUnityEditorUnitTestRunStrategy(IUnitTestRunStrategy strategy)
         {
+            return UnityNUnitServiceProvider.IsUnityUnitTestStrategy(mySolutionTracker, myRdUnityModel, myUnityEditorProtocol);
+        }
+
+        private ExitUnityResult KillProcess()
+        {
+            ExitUnityResult result = null;
             try
             {
                 var possibleProcessId = TryGetUnityProcessId();
@@ -115,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     Process process = null;
                     try
                     {
-                        process = Process.GetProcessById((int)possibleProcessId);
+                        process = Process.GetProcessById((int) possibleProcessId);
                     }
                     catch (Exception)
                     {
@@ -125,16 +126,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     if (process != null)
                     {
                         process.Kill();
-                        return true;
+                        result = new ExitUnityResult(true, null, null);
                     }
                 }
             }
             catch (Exception e)
             {
-                myLogger.LogException(e);
+                result = new ExitUnityResult(false, "Exception on attempt to kill Unity Editor process", e);
             }
 
-            return false;
+            return result;
         }
     }
 }
