@@ -330,7 +330,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 });
                 while (lifetimeDef.Lifetime.IsAlive)
                 {
-                    await TaskEx.Delay(TimeSpan.FromMilliseconds(10), lifetimeDef.Lifetime);
+                    await Task.Delay(TimeSpan.FromMilliseconds(10), lifetimeDef.Lifetime);
                 }
             });
 
