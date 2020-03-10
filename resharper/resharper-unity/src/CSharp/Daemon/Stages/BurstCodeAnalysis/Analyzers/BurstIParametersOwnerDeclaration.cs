@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             {
                 if (parameterDeclaration is ICSharpParameterDeclaration cSharpParameterDeclaration)
                 {
-                    //CGTD does interfaces allowed as parameters?
+                    //interfaces also not suitable
                     if (!cSharpParameterDeclaration.Type.IsSuitableForBurst())
                     {
                         consumer.AddHighlighting(new BurstWarning(cSharpParameterDeclaration.TypeUsage.GetDocumentRange(),

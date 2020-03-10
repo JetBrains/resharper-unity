@@ -39,8 +39,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName EditorSceneManager = new ClrTypeName("UnityEditor.SceneManagement.EditorSceneManager");
         public static readonly IClrTypeName LayerMask = new ClrTypeName("UnityEngine.LayerMask");
         public static readonly IClrTypeName Input = new ClrTypeName("UnityEngine.Input");
-        public static readonly IClrTypeName BurstCompile = new ClrTypeName("Unity.Burst.BurstCompileAttribute");
+        public static readonly IClrTypeName BurstCompileAttribute = new ClrTypeName("Unity.Burst.BurstCompileAttribute");
         public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
+        public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");
 
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");

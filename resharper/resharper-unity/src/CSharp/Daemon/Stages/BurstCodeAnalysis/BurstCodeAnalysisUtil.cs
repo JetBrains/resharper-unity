@@ -1,3 +1,4 @@
+using System;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -21,16 +22,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             return conditionalAccessExpression?.ConditionalQualifier?.Type().IsOpenType ?? false;
         }
-        
-        public static bool InBurstAttribute(IReferenceExpression expression)
+
+        private static bool IsGetHashCode(this IFunction function)
         {
-            return expression.GetContainingNode<IAttribute>() is IAttribute attribute && attribute.Name.ShortName == "DllImport";
+            return function is IMethod && function.IsOverride && function.ShortName == "GetHashCode" && function.Parameters.Count == 0;
         }
 
-        public static bool IsGetHashCode(this IFunction function)
+        private static bool MayContainProhibitedMethods(this ITypeElement typeElement)
         {
-            return function is IMethod && function.ShortName == "GetHashCode" && function.Parameters.Count == 0 &&
-                   function.ReturnType.IsInt();
+            return typeElement is IClass @class && (@class.IsValueTypeClass() || @class.IsObjectClass());
+        }
+
+        public static bool IsBurstProhibitedMethod(this IFunction function)
+        {
+            if (function == null)
+                return false;
+            var containingType = function.GetContainingType();
+            if (containingType is IStruct && function.IsGetHashCode())
+                return false;
+            return containingType.MayContainProhibitedMethods() || 
+                   containingType is IStruct && function.IsOverride;
         }
         
     }

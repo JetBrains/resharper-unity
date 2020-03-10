@@ -14,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         protected override void Analyze(IObjectCreationExpression objectCreationExpression, IDaemonProcess daemonProcess,
             DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
+            //CGTD not getContaningParenthesized, i have to figure out throw new Exception(new object().ToString());
             if (!objectCreationExpression.Type().IsSuitableForBurst() && !(objectCreationExpression.GetContainingParenthesizedExpression().Parent is IThrowStatement))
             {
                 consumer.AddHighlighting(new BurstWarning(objectCreationExpression.GetDocumentRange(), "creating managed objects"));

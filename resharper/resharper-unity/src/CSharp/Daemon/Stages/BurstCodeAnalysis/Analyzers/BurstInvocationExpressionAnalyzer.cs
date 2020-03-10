@@ -37,6 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             //        if conditional qualifier is struct instance
             //            if function is virtual/abstract/override
             //                HIGHLIGHT: invocation expressio WITHOUT parameters
+            //                ALSO: struct's method are implicitle sealed!
             //                REASON: burst does not support any invocations that use virtual table.
             //                IMPORTANT: type parameters and open types may have some virtual invocations,
             //                but burst generic system allows only structures/primitives to instatiate generics. 
@@ -48,16 +49,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             //                then it would be highlighted as error
             //            else
             //                ok. burst alows invoking static functions.
-
-            //CGTD handle function pointers
-            var invokedMethod = invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as ITypeMember;
-            var containingType = invokedMethod?.GetContainingType();
-            if (containingType.Type().IsValueType() &&
-                invokedMethod is IFunction function && !function.IsGetHashCode() && 
-                (function.IsVirtual || function.IsOverride || function.IsAbstract))
+            var invokedMethod = invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
+            if(invokedMethod.IsBurstProhibitedMethod())
             {
                 consumer.AddHighlighting(new BurstWarning(invocationExpression.InvokedExpression.GetDocumentRange(),
                     "virtual method invocation"));
+            } else if ((invokedMethod?.IsStatic ?? false) || invokedMethod?.GetContainingType() is IStruct)
+            {
+                if (invokedMethod.ReturnKind != ReferenceKind.VALUE)
+                {
+                    consumer.AddHighlighting(new BurstWarning(invocationExpression.InvokedExpression.GetDocumentRange(), "method returns reference"));
+                }
             }
         }
     }

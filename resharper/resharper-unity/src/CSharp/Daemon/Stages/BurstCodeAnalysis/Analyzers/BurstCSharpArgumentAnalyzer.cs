@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
@@ -12,7 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         protected override void Analyze(ICSharpArgument argument, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
-            if (!(argument.MatchingParameter?.Type.IsSuitableForBurst() ?? true))
+            //CGTD not getContaningParenthesized, i have to figure out throw new Exception(new object().ToString());
+            if (!(argument.MatchingParameter?.Type.IsSuitableForBurst() ?? true) && !(argument.Value.GetContainingParenthesizedExpression()?.Parent is IThrowStatement))
             {
                 consumer.AddHighlighting(new BurstWarning(argument.GetDocumentRange() ,
                     $"parameter {argument.IndexOf()} is managed object"));
