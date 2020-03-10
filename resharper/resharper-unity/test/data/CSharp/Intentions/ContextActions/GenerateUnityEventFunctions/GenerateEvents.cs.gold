@@ -8,12 +8,12 @@ public class Foo : MonoBehaviour
     {selstart}throw new NotImplementedException();{selend}
   }
 
-  private void LateUpdate()
+  private void Update()
   {
     throw new NotImplementedException();
   }
 
-  private void Update()
+  private void LateUpdate()
   {
     throw new NotImplementedException();
   }

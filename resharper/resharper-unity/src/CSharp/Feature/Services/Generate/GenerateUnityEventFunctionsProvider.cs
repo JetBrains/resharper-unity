@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
@@ -38,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
             foreach (var typeMemberInstance in typeElement.GetAllClassMembers<IMethod>())
                 existingMethods.AddValue(typeMemberInstance.Member.ShortName, typeMemberInstance.Member);
 
-            var owningTypes = new Dictionary<IClrTypeName, ITypeElement>();
+            var groupingTypeLookup = new Dictionary<IClrTypeName, ITypeElement>();
 
             var factory = CSharpElementFactory.GetInstance(context.ClassDeclaration);
             var elements = new List<GeneratorDeclaredElement>();
@@ -46,16 +47,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
             var unityVersion = myUnityVersion.GetActualVersion(context.Project);
             var eventFunctions = myUnityApi.GetEventFunctions(typeElement, unityVersion);
 
-            foreach (var eventFunction in eventFunctions)
+            foreach (var eventFunction in eventFunctions.OrderBy(e => e.Name, new UnityEventFunctionComparer()))
             {
                 // Note that we handle grouping, but it's off by default, and Rider doesn't save and restore the last
                 // used grouping value. We can set EnforceGrouping, but that's a bit too much
                 // https://youtrack.jetbrains.com/issue/RIDER-25194
-                if (!owningTypes.TryGetValue(eventFunction.TypeName, out var groupingType))
+                if (!groupingTypeLookup.TryGetValue(eventFunction.TypeName, out var groupingType))
                 {
                     groupingType = TypeFactory.CreateTypeByCLRName(eventFunction.TypeName, context.PsiModule)
                         .GetTypeElement();
-                    owningTypes.Add(eventFunction.TypeName, groupingType);
+                    groupingTypeLookup.Add(eventFunction.TypeName, groupingType);
                 }
 
                 var makeVirtual = false;
@@ -100,5 +101,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
         }
 
         public override double Priority => 100;
+
+        // Sort event functions, mostly alphabetically, but with some commonly used messages at the top
+        private class UnityEventFunctionComparer : IComparer<string>
+        {
+            private static readonly OrderedHashSet<string> ourSpecialNames = new OrderedHashSet<string>();
+
+            static UnityEventFunctionComparer()
+            {
+                ourSpecialNames.Add("Awake");
+                ourSpecialNames.Add("Reset");
+                ourSpecialNames.Add("Start");
+                ourSpecialNames.Add("Update");
+                ourSpecialNames.Add("FixedUpdate");
+                ourSpecialNames.Add("LateUpdate");
+                ourSpecialNames.Add("OnEnable");
+                ourSpecialNames.Add("OnDisable");
+                ourSpecialNames.Add("OnDestroy");
+                ourSpecialNames.Add("OnGUI");
+            }
+
+            public int Compare(string x, string y)
+            {
+                var xi = ourSpecialNames.IndexOf(x);
+                var yi = ourSpecialNames.IndexOf(y);
+                // -1 -> x is less than y, so goes to top
+                if (xi == -1 && yi > -1)
+                    return 1;
+                if (xi > -1 && yi == -1)
+                    return -1;
+                if (xi == -1 && yi == -1)
+                    return string.Compare(x, y, StringComparison.InvariantCulture);
+                return xi > yi ? 1 : -1;
+            }
+        }
     }
 }
