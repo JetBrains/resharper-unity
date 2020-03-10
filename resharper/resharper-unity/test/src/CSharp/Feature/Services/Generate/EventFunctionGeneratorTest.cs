@@ -1,5 +1,4 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Generate;
-using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Generate
