@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml.Psi.Parsing
 {
-  [TestNetFramework4]
   [TestFileExtension(".unity")]
   public class ParserTests : TestFramework.ParserTestBase<YamlLanguage>
   {

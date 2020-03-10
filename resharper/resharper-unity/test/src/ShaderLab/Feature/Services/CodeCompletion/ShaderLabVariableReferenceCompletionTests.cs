@@ -6,7 +6,6 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Feature.Services.CodeCompletion
 {
-    [TestNetFramework4]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabVariableReferenceCompletionListTests : CodeCompletionTestBase
     {
@@ -16,7 +15,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Feature.Services.Cod
         [Test] public void TestList01() { DoNamedTest(); }
     }
 
-    [TestNetFramework4]
     [TestFileExtension(ShaderLabProjectFileType.SHADERLAB_EXTENSION)]
     public class ShaderLabVariableReferenceCompletionActionTests : CodeCompletionTestBase
     {

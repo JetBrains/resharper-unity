@@ -3,7 +3,6 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Feature.Services.Comment
 {
-    [TestNetFramework4]
     [TestFileExtension(".shader")]
     [TestFixture]
     public class ShaderLabCommentActionTests : ExecuteActionTestBase
