@@ -1,0 +1,20 @@
+﻿using System;
+using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+  private void Awake()
+  {
+    {selstart}throw new NotImplementedException();{selend}
+  }
+
+  private void LateUpdate()
+  {
+    throw new NotImplementedException();
+  }
+
+  private void Update()
+  {
+    throw new NotImplementedException();
+  }
+}

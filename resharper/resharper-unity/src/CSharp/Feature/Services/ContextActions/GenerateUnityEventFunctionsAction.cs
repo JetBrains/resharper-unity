@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Diagnostics;
@@ -25,18 +24,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
             myDataProvider = dataProvider;
         }
-        
+
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
             var node = myDataProvider.GetSelectedTreeNode<ITreeNode>();
             Assertion.Assert(node != null, "node != null");
             var classDeclaration = node.GetContainingNode<IClassLikeDeclaration>();
 
-            var fix = new GenerateUnityEventFunctionsFix(classDeclaration);
-            
+            var fix = new GenerateUnityEventFunctionsFix(classDeclaration, node);
+
             //RIDER-30526
             var action = new IntentionAction(fix, PsiFeaturesUnsortedThemedIcons.FuncZoneGenerate.Id,
-            new SubmenuAnchor(BulbMenuAnchors.PermanentBackgroundItems, SubmenuBehavior.Executable));
+                new SubmenuAnchor(BulbMenuAnchors.PermanentBackgroundItems, SubmenuBehavior.Executable));
 
             return new[] {action};
         }
