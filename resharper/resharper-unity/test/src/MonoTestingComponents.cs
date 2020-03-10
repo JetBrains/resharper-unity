@@ -1,14 +1,6 @@
-using System.Collections.Generic;
 using JetBrains.Application.Environment;
 using JetBrains.Application.FileSystemTracker;
-using JetBrains.Application.platforms;
-using JetBrains.Metadata.Utils;
 using JetBrains.Util;
-using JetBrains.Util.Dotnet.TargetFrameworkIds;
-#if RIDER
-using JetBrains.ReSharper.Host.Features.Platforms;
-using JetBrains.ReSharper.Host.Features.Runtime;
-#endif
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
@@ -24,52 +16,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             if (PlatformUtil.IsRunningOnMono)
                 fileSystemTracker.Enabled = false;
         }
-    }
-
-    // The existing Mono platform providers are part of the ReSharperHost zones, which aren't enabled during tests
-    [PlatformsProvider]
-    public class TestMonoPlatformProvider : IPlatformsProvider
-    {
-        public IReadOnlyCollection<PlatformInfo> GetPlatformsForShell()
-        {
-            if (PlatformUtil.IsRunningUnderWindows)
-                return EmptyList<PlatformInfo>.Collection;
-
-            // TODO: Get this working for ReSharper
-            // All of these interfaces/classes are ReSharper host only
-#if RIDER
-            var monoPathProviders = new List<IMonoPathProvider>();
-            monoPathProviders.Add(new EnvMonoPathProvider());
-            monoPathProviders.Add(new LinuxDefaultMonoPathProvider());
-            monoPathProviders.Add(new MacOsDefaultMonoPathProvider());
-
-            var detector = new MonoRuntimeDetector(monoPathProviders);
-            var monoRuntimes = detector.DetectMonoRuntimes();
-
-            return MonoPlatformsProvider.GetPlatforms(monoRuntimes[0]);
-#else
-            return EmptyList<PlatformInfo>.Collection;
-#endif
-        }
-
-        public IReadOnlyCollection<PlatformInfo> GetPlatformsForSolution()
-        {
-            return EmptyList<PlatformInfo>.Collection;
-        }
-
-        public TargetFrameworkId DetectPlatformIdByReferences(AssemblyNameInfo corlibReference,
-            IReadOnlyCollection<AssemblyNameInfo> otherReferences,
-            IReadOnlyCollection<PlatformInfo> platforms)
-        {
-            return null;
-        }
-
-        public IReadOnlyDictionary<IAdvancedGuessMatcher, TargetFrameworkId> GetAdvancedPlatformMatchers(
-            IReadOnlyCollection<PlatformInfo> platforms)
-        {
-            return EmptyDictionary<IAdvancedGuessMatcher, TargetFrameworkId>.Instance;
-        }
-
-        public int Priority => 200;
     }
 }
