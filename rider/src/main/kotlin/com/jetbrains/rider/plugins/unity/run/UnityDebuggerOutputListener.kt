@@ -28,10 +28,11 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
 
             val unityVersion: String? = UnityInstallationFinder.getInstance(project).getApplicationVersion(2)
             if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2018.2") >= 0) {
+                val url = "https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html"
                 if (isEditor) {
-                    text += "\nPlease follow <a href=\"https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html\">Debugging in the Editor</a> documentation.\n"
+                    text += "\nPlease follow <a href=\"$url\">Debugging in the Editor</a> documentation.\n"
                 } else {
-                    text += "\nPlease follow <a href=\"https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html\">Debugging in the Player</a> documentation.\n"
+                    text += "\nPlease follow <a href=\"$url\">Debugging in the Player</a> documentation.\n"
                 }
             } else
                 if (isEditor) {
@@ -46,7 +47,7 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
                 if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
                     return@setListener
 
-                BrowserUtil.browse("https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html")
+                BrowserUtil.browse(hyperlinkEvent.url)
                 notification.hideBalloon()
             }
 
