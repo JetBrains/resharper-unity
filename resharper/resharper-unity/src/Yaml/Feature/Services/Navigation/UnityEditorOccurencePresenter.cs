@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         protected RichText GetDisplayText(UnityAssetOccurrence occurrence)
         {
-            if (occurrence.SourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlFileExtensions.AssetFileExtensionWithDot))
+            if (occurrence.SourceFile.GetLocation().IsAsset())
                 return "Scriptable Object";
             var processor = occurrence.GetSolution().NotNull("occurrence.GetSolution() != null").GetComponent<AssetHierarchyProcessor>();
             var name =  GetAttachedGameObjectName(processor, occurrence);
@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             {
                 var solution = occurrence.GetSolution();
                 var valuePresentation = inspectorValuesOccurrence.InspectorVariableUsage.Value.GetPresentation(solution, occurrence.DeclaredElementPointer.FindDeclaredElement(), true);
-                if (inspectorValuesOccurrence.SourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlFileExtensions.AssetFileExtensionWithDot))
+                if (inspectorValuesOccurrence.SourceFile.GetLocation().IsAsset())
                     return valuePresentation;
                 return $"{valuePresentation} in {name}";
             }
