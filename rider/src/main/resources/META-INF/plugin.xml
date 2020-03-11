@@ -306,6 +306,8 @@
   <li>Stop marking a method as expensive if it only contains a null check (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Move vector multiplication order inspection to performance critical context only (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
   <li>Updated API information to 2020.1.0a25 (<a href="https://github.com/JetBrains/resharper-unity/pull/1553">#1553</a>)</li>
+  <li>Sort commonly used event functions higher in Generate dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
+  <li>Generate event functions at location of context action, rather than at end of class (<a href="https://github.com/JetBrains/resharper-unity/issues/1542">#1542</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
   <li>Remove messages that use obsolete parameter types (<a href="https://github.com/JetBrains/resharper-unity/issues/1545">#1545</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1553">#1553</a>)</li>
   <li>Rider: Adding file to Unity Explorer will add to correct C# project (<a href="https://youtrack.jetbrains.com/issue/RIDER-23169">RIDER-23169</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1470">#1470</a>)</li>
   <li>Rider: Show folders ending with <tt>~</tt> by default in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/1444">#1444</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
@@ -316,6 +318,8 @@
 <em>Fixed:</em>
 <ul>
   <li>Fix incorrect redundant <tt>SerializeField</tt> attribute warning for property backing field (<a href="https://github.com/JetBrains/resharper-unity/issues/1016">#1016</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1464">#1464</a>)</li>
+  <li>Fix overwriting <tt>IEnumerator</tt> when auto-completing an event function that can be a coroutine (<a href="https://github.com/JetBrains/resharper-unity/issues/1258">#1258</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
+  <li>Fix duplicate "Generate Unity event functions" context action when gutter icons are visible (<a href="https://github.com/JetBrains/resharper-unity/issues/1537">#1537</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
   <li>Rider: Fix tooltip display for packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Fix settings search not finding Unity pages (<a href="https://github.com/JetBrains/resharper-unity/issues/1516">#1516</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1520">#1520</a>)</li>
   <li>Rider: Fix discovery and running of all tests in a project (<a href="https://github.com/JetBrains/resharper-unity/issues/1509">#1509</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1500">#1500</a>)</li>
