@@ -15,27 +15,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         private readonly IProjectFileExtensions myProjectFileExtensions;
         private readonly PsiProjectFileTypeCoordinator myProjectFileTypeCoordinator;
-        private readonly UnityYamlSupport myUnityYamlSupport;
         private readonly DocumentManager myDocumentManager;
 
         public UnityYamlPsiSourceFileFactory(IProjectFileExtensions projectFileExtensions,
                                              PsiProjectFileTypeCoordinator projectFileTypeCoordinator,
-                                             UnityYamlSupport unityYamlSupport,
                                              DocumentManager documentManager)
         {
             myProjectFileExtensions = projectFileExtensions;
             myProjectFileTypeCoordinator = projectFileTypeCoordinator;
-            myUnityYamlSupport = unityYamlSupport;
             myDocumentManager = documentManager;
-        }
-
-        public IPsiSourceFile CreatePsiProjectFile(IPsiModule psiModule, IProjectFile projectFile)
-        {
-            var file = new UnityYamlAssetPsiSourceFile(projectFile, myProjectFileExtensions, myProjectFileTypeCoordinator,
-                psiModule, projectFile.Location, Memoize(PropertiesFactory), myDocumentManager, UniversalModuleReferenceContext.Instance);
-            // Prime the file system cache
-            file.GetCachedFileSystemData();
-            return file;
         }
 
         public IExternalPsiSourceFile CreateExternalPsiSourceFile(IPsiModule psiModule, FileSystemPath path)
@@ -46,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
             file.GetCachedFileSystemData();
             return file;
         }
-
+        
         // The PropertiesFactory passed to PsiSourceFileFromPath is called on EVERY access to IPsiSourceFile.Properties.
         // This function allows us to create a single instance for each file. The cache variable (as well as the func
         // parameter) are captured into a closure class. When the closure's is invoked, we can populate and return the
@@ -59,8 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         private IPsiSourceFileProperties PropertiesFactory(IPsiSourceFile psiSourceFile)
         {
-            var binaryUnityFileCache = psiSourceFile.GetSolution().GetComponent<BinaryUnityFileCache>();
-            return new UnityExternalFileProperties(psiSourceFile, myUnityYamlSupport, binaryUnityFileCache);
+            return new UnityExternalFileProperties();
         }
     }
 }

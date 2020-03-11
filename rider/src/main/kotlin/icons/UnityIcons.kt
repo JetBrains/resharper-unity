@@ -123,6 +123,7 @@ class UnityIcons {
             val PluginsFolder = IconLoader.getIcon("/Icons/Explorer/FolderPlugins.svg")
             val ResourcesFolder = IconLoader.getIcon("/Icons/Explorer/FolderResources.svg")
             val StreamingAssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderStreamingAssets.svg")
+            val UnloadedFolder = IconLoader.getIcon("/Icons/Explorer/FolderUnloaded.svg")
         }
     }
 

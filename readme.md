@@ -1,4 +1,4 @@
-[![official JetBrains project](http://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+[![official JetBrains project](https://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![Build status](https://ci.appveyor.com/api/projects/status/v8wgygg7jh7ern8x/branch/182?svg=true)](https://ci.appveyor.com/project/IvanPashchenko/resharper-unity/branch/182)
 [![Build Status](https://travis-ci.org/JetBrains/resharper-unity.svg?branch=182)](https://travis-ci.org/JetBrains/resharper-unity)
 [![Join the chat at https://gitter.im/JetBrains/resharper-unity](https://badges.gitter.im/JetBrains/resharper-unity.svg)](https://gitter.im/JetBrains/resharper-unity?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)

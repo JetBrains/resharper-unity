@@ -15,25 +15,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     public class UnityYamlDisableStrategy
     {
         public const string SolutionCachesId = "ShouldApplyYamlHugeFileHeuristic";
-        private const ulong AssetFileSizeThreshold = 40 * (1024 * 1024); // 40 MB
-        private const ulong TotalFileSizeThreshold = 700 * (1024 * 1024); // 700 MB
+        private const ulong AssetFileSizeThreshold = 500L * (1024 * 1024); // 500 MB
+        private const ulong TotalFileSizeThreshold = 10_000L * (1024 * 1024); // 10 GB
 
         private readonly bool myShouldRunHeuristic;
         private readonly SolutionCaches mySolutionCaches;
-        private readonly UnityYamlSupport myUnityYamlSupport;
-
+        private readonly AssetIndexingSupport myAssetIndexingSupport;
+        private readonly bool myAllowRunHeuristic;
         private ulong myTotalSize;
 
-        public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches, ISettingsStore settingsStore, UnityYamlSupport unityYamlSupport)
+        public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches, ISettingsStore settingsStore, AssetIndexingSupport assetIndexingSupport)
         {
             mySolutionCaches = solutionCaches;
-            myUnityYamlSupport = unityYamlSupport;
+            myAssetIndexingSupport = assetIndexingSupport;
             var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            var oldValue = boundStore.GetValue((UnitySettings s) => s.ShouldApplyYamlHugeFileHeuristic);
-            if (!oldValue)
-                mySolutionCaches.PersistentProperties[SolutionCachesId] = false.ToString();
+            myAllowRunHeuristic = boundStore.GetValue((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic);
 
-            if (mySolutionCaches.PersistentProperties.TryGetValue(SolutionCachesId, out var result))
+            if (solutionCaches.PersistentProperties.TryGetValue(SolutionCachesId, out var result))
             {
                 myShouldRunHeuristic = Boolean.Parse(result);
             }
@@ -45,12 +43,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
         public void Run(List<DirectoryEntryData> directoryEntries)
         {
-            if (myShouldRunHeuristic && myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
+            if (myAllowRunHeuristic && myShouldRunHeuristic && myAssetIndexingSupport.IsEnabled.Value)
             {
                 if (IsAnyFilePreventYamlParsing(directoryEntries) || myTotalSize > TotalFileSizeThreshold)
                 {
                     mySolutionCaches.PersistentProperties[SolutionCachesId] = false.ToString();
-                    myUnityYamlSupport.IsUnityYamlParsingEnabled.Value = false;
+                    myAssetIndexingSupport.IsEnabled.Value = false;
                     NotifyYamlParsingDisabled();
                 }
             }

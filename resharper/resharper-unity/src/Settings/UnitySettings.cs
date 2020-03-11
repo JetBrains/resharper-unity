@@ -26,10 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         // backward compability
         [SettingsEntry(true, "Should yaml heuristic be applied?")]
-        public bool ShouldApplyYamlHugeFileHeuristic;
+        public bool EnableAssetIndexingPerformanceHeuristic;
 
-        [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of YAML files for Unity")]
-        public bool IsYamlParsingEnabled;
+        [SettingsEntry(true, "Enables asset indexing")]
+        public bool IsAssetIndexingEnabled;
+        
+        [SettingsEntry(true, "Prefab cache")]
+        public bool IsPrefabCacheEnabled;
 
         // Analysis
         [SettingsEntry(true, "Enables performance analysis in frequently called code")]

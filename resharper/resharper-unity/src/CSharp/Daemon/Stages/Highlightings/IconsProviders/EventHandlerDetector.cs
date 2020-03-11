@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -19,15 +19,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtension;
-        private readonly UnitySceneDataLocalCache mySceneDataCache;
         private readonly IElementIdProvider myProvider;
+        private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
 
         public EventHandlerDetector(ISolution solution, SettingsStore settingsStore,
-            CallGraphSwaExtensionProvider callGraphSwaExtension, UnitySceneDataLocalCache sceneDataCache, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
+            CallGraphSwaExtensionProvider callGraphSwaExtension, AssetMethodsElementContainer assetMethodsElementContainer, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
             : base(solution, callGraphSwaExtension, settingsStore, marksProvider, provider)
         {
             myCallGraphSwaExtension = callGraphSwaExtension;
-            mySceneDataCache = sceneDataCache;
+            myAssetMethodsElementContainer = assetMethodsElementContainer;
             myProvider = provider;
         }
 
@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (declaredElement is IProperty property)
                 method = property.Setter;
 
-            if (method != null && mySceneDataCache.IsEventHandler(method))
+            if (method != null && myAssetMethodsElementContainer.GetAssetUsagesCount(method, out _) > 0)
             {
                 AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
                 return true;

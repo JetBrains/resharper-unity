@@ -14,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.VisualStudio.Psi.Modules
         private readonly UserNotifications myNotifications;
 
         public ReSharperUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches, ISettingsStore settingsStore,
-                                                 UnityYamlSupport unityYamlSupport, UserNotifications notifications)
-            : base(lifetime, solution, solutionCaches, settingsStore, unityYamlSupport)
+                                                 AssetIndexingSupport assetIndexingSupport, UserNotifications notifications)
+            : base(lifetime, solution, solutionCaches, settingsStore, assetIndexingSupport)
         {
             myLifetime = lifetime;
             myNotifications = notifications;

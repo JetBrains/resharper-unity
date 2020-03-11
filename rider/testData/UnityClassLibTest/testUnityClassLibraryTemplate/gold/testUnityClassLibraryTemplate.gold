@@ -4,7 +4,7 @@ Opened
 -Project
  -ClassLibrary1 * 1 project
   -ClassLibrary1
-   -References
+   -Dependencies
     -Assemblies
      System
      System.Core

@@ -11,10 +11,11 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.isUnityGeneratedProject
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.EditorState
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.util.isGeneratedUnityFile
 import com.jetbrains.rider.plugins.unity.util.isNonEditableUnityFile
 import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.solution
 import java.io.File
 
 class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNotificationPanel>(), DumbAware {
@@ -45,10 +46,9 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
     }
 
     private fun addShowInUnityAction(panel: EditorNotificationPanel, file: VirtualFile, project: Project) {
-        val host = UnityHost.getInstance(project)
-        if (host.model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected) {
+        if (project.solution.rdUnityModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected) {
             panel.createActionLabel("Show in unity") {
-                host.model.showFileInUnity.fire(File(file.path).relativeTo(File(project.projectDir.path)).invariantSeparatorsPath)
+                project.solution.rdUnityModel.showFileInUnity.fire(File(file.path).relativeTo(File(project.projectDir.path)).invariantSeparatorsPath)
             }
         }
     }

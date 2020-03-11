@@ -1,65 +1,66 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Util;
 
 namespace ApiParser
 {
-    public static class TypeResolver
+    internal class TypeResolver
     {
-        private static readonly HashSet<Assembly> Assemblies = new HashSet<Assembly>();
-        private static readonly OneToListMap<string, string> FullNames = new OneToListMap<string, string>();
+        private readonly OneToSetMap<string, string> myFullNames = new OneToSetMap<string, string>();
+        private readonly Dictionary<string, Version> myIsObsolete = new Dictionary<string, Version>();
 
-        static TypeResolver()
+        public TypeResolver()
         {
-            FullNames.Add("string", typeof(string).FullName);
-            FullNames.Add("int", typeof(int).FullName);
-            FullNames.Add("void", typeof(void).FullName);
-            FullNames.Add("bool", typeof(bool).FullName);
-            FullNames.Add("object", typeof(object).FullName);
-            FullNames.Add("float", typeof(float).FullName);
-            FullNames.Add("double", typeof(double).FullName);
-
-            // UnityEngine.Experimental.Director.Playable moved to UnityEngine.Playables in 2017.1
-            // We correctly set the max version to 5.6, but if we resolve against types in a newer
-            // UnityEngine.dll, we resolve PlayState incorrectly. The heuristic when we have multiple
-            // candidates (such as UnityEngine.Experimental.Director.PlayState and
-            // UnityEngine.Playables.PlayState) is to prefer the one in the same namespace. This
-            // works nicely, so let's give an extra candidate
-            FullNames.Add("FrameData", "UnityEngine.Experimental.Director.FrameData");
-            FullNames.Add("PlayState", "UnityEngine.Experimental.Director.PlayState");
+            myFullNames.Add("string", typeof(string).FullName);
+            myFullNames.Add("int", typeof(int).FullName);
+            myFullNames.Add("void", typeof(void).FullName);
+            myFullNames.Add("bool", typeof(bool).FullName);
+            myFullNames.Add("object", typeof(object).FullName);
+            myFullNames.Add("float", typeof(float).FullName);
+            myFullNames.Add("double", typeof(double).FullName);
+            myFullNames.Add("IEnumerator", typeof(IEnumerator).FullName);
         }
 
-        public static void AddAssembly([NotNull] Assembly assembly)
+        private string ResolveFullName([NotNull] string name, string namespaceHint)
         {
-            if (Assemblies.Contains(assembly)) return;
-            Assemblies.Add(assembly);
-
-            var types = assembly.GetExportedTypes();
-            Console.WriteLine($"Adding {types.Length} types from {assembly.FullName}...");
-
-            foreach (var type in types)
+            var suffix = "";
+            if (name.EndsWith("&"))
             {
-                FullNames.Add(type.Name, type.FullName);
-                FullNames.Add(
-                    type.FullName ?? throw new InvalidOperationException($"Got null full name for type: {type.Name}"),
-                    type.FullName);
+                suffix = "&";
+                name = name.Substring(0, name.Length - 1);
             }
-        }
+            else if (name.EndsWith("[]"))
+            {
+                suffix = "[]";
+                name = name.Substring(0, name.Length - 2);
+            }
 
-        [NotNull]
-        public static string ResolveFullName([NotNull] string name, string namespaceHint)
-        {
-            var candidates = FullNames[name];
+            var candidates = myFullNames[name];
             if (!candidates.Any())
-                throw new ApplicationException($"Unknown type '{name}'.");
+            {
+                var n = name;
+                candidates = myFullNames[n];
+                if (!candidates.Any())
+                {
+                    if (name.LastIndexOf('.') > 0)
+                    {
+                        n = name.Substring(name.LastIndexOf('.') + 1);
+
+                        candidates = myFullNames[n];
+                    }
+                }
+
+                if (!candidates.Any())
+                    throw new ApplicationException($"Unknown type '{name}'.");
+            }
 
             if (candidates.Count > 1)
             {
-                // If we have more than one type with the same name, choose the one in the
-                // same namespace as the owning message. This works for PlayState and Playable
+                // If we have more than one type with the same name, choose the one in the same namespace as the owning
+                // message. This works for experimental types that move namespaces PlayState and Playable
                 foreach (var candidate in candidates)
                 {
                     Console.WriteLine($"Namespace hint: {namespaceHint}");
@@ -77,7 +78,33 @@ namespace ApiParser
                 throw new InvalidOperationException("Cannot resolve type");
             }
 
-            return candidates.Single();
+            return candidates.Single() + suffix;
+        }
+
+        public bool IsObsolete(string fullName, Version currentVersion)
+        {
+            return myIsObsolete.TryGetValue(fullName, out var fromVersion) && currentVersion >= fromVersion;
+        }
+
+        public void MarkObsolete(string name, Version version)
+        {
+            var fullName = ResolveFullName(name, "");
+            if (myIsObsolete.TryGetValue(fullName, out var fromVersion) && fromVersion < version)
+                return;
+
+            myIsObsolete[fullName] = version;
+        }
+
+        public void AddType(string shortName, string fullName)
+        {
+            myFullNames.Add(shortName, fullName);
+            myFullNames.Add(fullName, fullName);
+        }
+
+        public ApiType CreateApiType(string name, string namespaceHint = "")
+        {
+            var fullname = ResolveFullName(name, namespaceHint);
+            return new ApiType(fullname);
         }
     }
 }
