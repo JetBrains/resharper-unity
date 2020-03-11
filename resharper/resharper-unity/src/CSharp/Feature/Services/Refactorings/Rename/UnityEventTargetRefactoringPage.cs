@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         }
 
         public override string Title => "Rename Unity reference";
-        public override string Description => "Rename references in Unity asset files?";
+        public override string Description => myDeferredCacheController.IsProcessingFiles() ? "" : "Rename references in Unity asset files?";
 
         public override BeControl GetPageContent()
         {

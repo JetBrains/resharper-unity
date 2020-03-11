@@ -71,14 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
                 return true;
 
             return false;
-        }
-
-        public static bool IsInterestingMeta([NotNull] this IPath path)
-        {
-            return SimplePathEndsWith(path, ".cs.meta")
-                   || SimplePathEndsWith(path, ".prefab.meta")
-                   || SimplePathEndsWith(path, ".unity.meta");
-        }
+        } 
 
         // Not to be confused with FileSystemPathEx.EndsWith, which handles path components. This is a simple text
         // comparison, which can handle extensions without allocating another string

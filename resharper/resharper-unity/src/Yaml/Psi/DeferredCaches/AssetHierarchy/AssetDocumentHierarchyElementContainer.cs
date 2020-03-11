@@ -22,11 +22,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     [SolutionComponent]
     public class AssetDocumentHierarchyElementContainer : IUnityAssetDataElementContainer
     {
-        private readonly IPersistentIndexManager myManager;
+        public readonly IPersistentIndexManager Manager;
+        public readonly UnityExternalFilesPsiModule PsiModule;
+        public readonly MetaFileGuidCache MetaFileGuidCache;
+        
         private readonly PrefabImportCache myPrefabImportCache;
         private readonly IShellLocks myShellLocks;
-        private readonly UnityExternalFilesPsiModule myPsiModule;
-        private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
 
         private readonly ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement> myAssetDocumentsHierarchy =
@@ -35,11 +36,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public AssetDocumentHierarchyElementContainer(IPersistentIndexManager manager, PrefabImportCache prefabImportCache, IShellLocks shellLocks,
             UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
         {
-            myManager = manager;
+            Manager = manager;
             myPrefabImportCache = prefabImportCache;
             myShellLocks = shellLocks;
-            myPsiModule = psiModuleProvider.PsiModule;
-            myMetaFileGuidCache = metaFileGuidCache;
+            PsiModule = psiModuleProvider.PsiModule;
+            MetaFileGuidCache = metaFileGuidCache;
             myAssetInspectorValueDeserializers = assetInspectorValueDeserializers;
         }
 
@@ -205,21 +206,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return myAssetDocumentsHierarchy.GetValueSafe(sourceFile);
         }
         
-        private IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference, out string guid)
+        public IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference, out string guid)
         {
+            myShellLocks.AssertReadAccessAllowed();
             switch (hierarchyReference)
             {
                 case LocalReference localReference:
-                    var sourceFile = myManager[localReference.OwnerId];
-                    guid = sourceFile != null ? myMetaFileGuidCache.GetAssetGuid(sourceFile) : null;
+                    var sourceFile = Manager[localReference.OwnerId];
+                    guid = sourceFile != null ? MetaFileGuidCache.GetAssetGuid(sourceFile) : null;
                     return sourceFile;
                 case ExternalReference externalReference:
                     guid = externalReference.ExternalAssetGuid;
-                    var paths = myMetaFileGuidCache.GetAssetFilePathsFromGuid(guid);
+                    var paths = MetaFileGuidCache.GetAssetFilePathsFromGuid(guid);
                     if (paths.Count != 1)
                         return null;
 
-                    return myPsiModule.TryGetFileByPath(paths[0], out var result) ? result : null;
+                    return PsiModule.TryGetFileByPath(paths[0], out var result) ? result : null;
 
                 default:
                     throw new InvalidOperationException();

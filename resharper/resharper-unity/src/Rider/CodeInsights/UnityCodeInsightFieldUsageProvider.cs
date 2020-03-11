@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             
             var presentationType = GetUnityPresentationType(type);
 
-            if (myDeferredCacheController.IsProcessingFiles() || ShouldShowUnknownPresentation(presentationType))
+            if (!myDeferredCacheController.CompletedOnce.Value || ShouldShowUnknownPresentation(presentationType))
             {
                 base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
@@ -205,6 +205,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (presentationType == UnityPresentationType.Bool && value is bool b)
                 return b ? new AssetSimpleValue("1") : new AssetSimpleValue("0");
 
+            if (presentationType == UnityPresentationType.ScriptableObject && value == null)
+                return new AssetReferenceValue(new LocalReference(0, 0));
+            
             if (presentationType == UnityPresentationType.FileId && value == null)
                 return new AssetReferenceValue(new LocalReference(0, 0));
 
@@ -219,6 +222,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         
         private UnityPresentationType GetUnityPresentationType(IType type)
         {
+            if (UnityApi.IsDescendantOfScriptableObject(type.GetTypeElement()))
+                return UnityPresentationType.ScriptableObject;
             if (type.IsBool())
                 return UnityPresentationType.Bool;
             if (type.IsEnumType())
@@ -244,8 +249,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (typeElement == null)
                 return false;
 
-            return myUnityApi.IsDescendantOf(KnownTypes.GameObject, typeElement) ||
-                   myUnityApi.IsDescendantOf(KnownTypes.Component, typeElement);
+            return UnityApi.IsDescendantOf(KnownTypes.GameObject, typeElement) ||
+                   UnityApi.IsDescendantOf(KnownTypes.Component, typeElement);
         }
         
         private bool ShouldShowUnknownPresentation(UnityPresentationType presentationType)
@@ -263,6 +268,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             FileId,
             ValueType,
             Other,
+            ScriptableObject
         }
     }
 }

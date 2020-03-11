@@ -158,7 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (typeElement == null)
                 return false;
 
-            if (!api.IsDescendantOfMonoBehaviour(typeElement))
+            if (!UnityApi.IsDescendantOfMonoBehaviour(typeElement))
                 return false;
             
             if (node is ICSharpDeclaration declaration &&
