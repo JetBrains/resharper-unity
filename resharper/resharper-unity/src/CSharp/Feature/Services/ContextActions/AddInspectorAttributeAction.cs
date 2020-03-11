@@ -107,8 +107,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             // Only for UnityObject types, not [Serialized] types
             var classDeclaration = fieldDeclaration.GetContainingTypeDeclaration();
             var classElement = classDeclaration?.DeclaredElement;
-            return unityApi.IsDescendantOfMonoBehaviour(classElement) ||
-                   unityApi.IsDescendantOfScriptableObject(classElement);
+            return UnityApi.IsDescendantOfMonoBehaviour(classElement) ||
+                   UnityApi.IsDescendantOfScriptableObject(classElement);
         }
 
         private BulbActionBase GetActionToApplyToEntireFieldDeclaration(
@@ -182,12 +182,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 if (mySelectedFieldDeclaration == null)
                 {
                     attribute = AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
-                        myAttributeTypeName, myAttributeValues, myModule, myElementFactory);
+                        myAttributeTypeName, myAttributeValues, null, myModule, myElementFactory);
                 }
                 else
                 {
                     attribute = AttributeUtil.AddAttributeToSingleDeclaration(mySelectedFieldDeclaration,
-                        myAttributeTypeName, myAttributeValues, myModule, myElementFactory);
+                        myAttributeTypeName, myAttributeValues, null, myModule, myElementFactory);
                 }
 
                 if (myAttributeValues.Length == 0)

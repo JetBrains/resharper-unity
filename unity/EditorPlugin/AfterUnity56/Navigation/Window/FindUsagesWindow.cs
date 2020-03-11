@@ -35,7 +35,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       return window;
     }
 
-    public void SetDataToEditor(RdFindUsageResultElement[] data)
+    public void SetDataToEditor(AssetFindUsagesResultBase[] data)
     {
       IsDirty = false;
       myTreeViewState = new FindUsagesWindowTreeState(data);

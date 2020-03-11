@@ -5,7 +5,9 @@ using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Psi;
 using JetBrains.UI.RichText;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -32,13 +34,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         protected RichText GetDisplayText(UnityAssetOccurrence occurrence)
         {
+            if (occurrence.SourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlFileExtensions.AssetFileExtensionWithDot))
+                return "Scriptable Object";
             var processor = occurrence.GetSolution().NotNull("occurrence.GetSolution() != null").GetComponent<AssetHierarchyProcessor>();
             var name =  GetAttachedGameObjectName(processor, occurrence);
 
             if (occurrence is UnityInspectorValuesOccurrence inspectorValuesOccurrence)
             {
                 var solution = occurrence.GetSolution();
-                return $"{inspectorValuesOccurrence.InspectorVariableUsage.Value.GetPresentation(solution, occurrence.DeclaredElementPointer.FindDeclaredElement(), true)} in {name}";
+                var valuePresentation = inspectorValuesOccurrence.InspectorVariableUsage.Value.GetPresentation(solution, occurrence.DeclaredElementPointer.FindDeclaredElement(), true);
+                if (inspectorValuesOccurrence.SourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlFileExtensions.AssetFileExtensionWithDot))
+                    return valuePresentation;
+                return $"{valuePresentation} in {name}";
             }
             return name;
         }

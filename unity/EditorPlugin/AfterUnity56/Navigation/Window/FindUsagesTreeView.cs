@@ -29,14 +29,17 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       var prefabNode = CreatePrefabSubTree();
       root.AddChild(prefabNode);
       
-      SetupDepthsFromParentsAndChildren (root);
+      var scriptableObjectNode = CreateScriptableObjectSubTree();
+      root.AddChild(scriptableObjectNode);
+      
+      SetupDepthsFromParentsAndChildren(root);
       return root;
     }
 
     private TreeViewItem CreateSceneSubTree()
     {
       var scenes = new FindUsagePathElement(0) {id = 1, displayName = "Scenes"};
-      CreateSubTree(scenes, myState.SceneElements.ToArray(), 3);
+      CreateSubTree(scenes, myState.SceneElements.ToArray(), 4);
       return scenes;
     }
     
@@ -46,6 +49,27 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       CreateSubTree(prefabs, myState.PrefabElements.ToArray(), 1_000_000_000);
       return prefabs;
     }
+    
+    private TreeViewItem CreateScriptableObjectSubTree()
+    {
+      var scriptableObject = new FindUsagePathElement(2) {id = 3, displayName = "Scriptable Objects"};
+
+      var startId = 2_000_000_000;
+      foreach (var usageElement in myState.ScriptableObjectElements.ToArray())
+      {
+        var id = startId++;
+        findResultItems[id] = new FindUsagesTreeViewItem(-1, usageElement)
+        {
+          id = id,
+          displayName = usageElement.FilePath,
+          icon = (Texture2D) EditorGUIUtility.IconContent(usageElement.TerminalNodeImage).image
+        };
+        scriptableObject.AddChild(findResultItems[id]); 
+      }
+
+      return scriptableObject;
+    }
+    
 
     private void CreateSubTree(FindUsagePathElement element, IEnumerable<AbstractUsageElement> data, int startId)
     {
@@ -118,8 +142,8 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       if (request is SceneElement sceneElement)
         ShowUtil.ShowUsageOnScene(sceneElement.FilePath, sceneElement.FileName, sceneElement.Path, sceneElement.RootIndices);
       
-      if (request is PrefabElement prefabElement)
-        ShowUtil.ShowFileUsage(prefabElement.FilePath);
+      if (request is PrefabElement || request is ScriptableObjectElement)
+        ShowUtil.ShowFileUsage(request.FilePath);
     }
   }
 }

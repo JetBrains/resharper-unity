@@ -7,8 +7,11 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Serialization;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values
 {
@@ -56,13 +59,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
+            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
 
+            if (UnityApi.IsDescendantOfScriptableObject((declaredElement as IField)?.Type.GetTypeElement()))
+            {
+                if (Reference is LocalReference localReference && localReference.LocalDocumentAnchor == 0)
+                    return "None";
+                
+                var sourceFile = hierarchyContainer.GetSourceFile(Reference, out _);
+                if (sourceFile == null)
+                    return "...";
+
+                var relativePath = sourceFile.DisplayName.Replace('\\', '/').RemoveStart("Assets/");
+
+                return relativePath;
+            }
+            
             if (Reference.LocalDocumentAnchor == 0)
                 return "None";
                 
             var processor = solution.GetComponent<AssetHierarchyProcessor>();
             var consumer = new UnityScenePathGameObjectConsumer(true);
-            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
             var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
             if (element == null)
                 return "...";

@@ -16,6 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         public static IAttribute AddAttributeToSingleDeclaration([CanBeNull] IAttributesOwnerDeclaration fieldDeclaration,
                                                                  IClrTypeName attributeTypeName,
                                                                  [NotNull] AttributeValue[] attributeValues,
+                                                                 [CanBeNull] Pair<string, AttributeValue>[] namedValues,
                                                                  IPsiModule module,
                                                                  CSharpElementFactory elementFactory, bool allowMultiply = false)
         {
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var existingAttribute = GetAttribute(fieldDeclaration, attributeTypeName);
             if (existingAttribute != null && !allowMultiply) return null;
 
-            var attribute = CreateAttribute(attributeTypeName, attributeValues, module, elementFactory);
+            var attribute = CreateAttribute(attributeTypeName, attributeValues, namedValues, module, elementFactory);
             if (attribute != null)
             {
                 // This will split a multiple declaration, if necessary
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             IClrTypeName attributeTypeName, IPsiModule module, CSharpElementFactory elementFactory)
         {
             return AddAttributeToSingleDeclaration(fieldDeclaration, attributeTypeName,
-                EmptyArray<AttributeValue>.Instance, module, elementFactory);
+                EmptyArray<AttributeValue>.Instance, null, module, elementFactory);
         }
 
         // Given a multiple field declaration (a declaration with multiple fields declared at once), adds an attribute
@@ -50,6 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             [NotNull] IMultipleFieldDeclaration multipleFieldDeclaration,
             IClrTypeName attributeTypeName,
             [NotNull] AttributeValue[] attributeValues,
+            [CanBeNull] Pair<string, AttributeValue>[] namedValues,
             IPsiModule module,
             CSharpElementFactory elementFactory)
         {
@@ -57,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var existingAttribute = GetAttribute(multipleFieldDeclaration.Attributes, attributeTypeName);
             if (existingAttribute != null) return null;
 
-            var attribute = CreateAttribute(attributeTypeName, attributeValues, module, elementFactory);
+            var attribute = CreateAttribute(attributeTypeName, attributeValues, namedValues, module, elementFactory);
             if (attribute != null)
             {
                 // It doesn't matter which declaration we use, it will be applied to the multiple field declaration
@@ -70,13 +72,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
         private static IAttribute CreateAttribute(IClrTypeName attributeTypeName,
                                                   [NotNull] AttributeValue[] attributeValues,
+                                                  [CanBeNull] Pair<string, AttributeValue>[] namedValues,
                                                   IPsiModule module,
                                                   CSharpElementFactory elementFactory)
         {
             var typeElement = TypeFactory.CreateTypeByCLRName(attributeTypeName, module).GetTypeElement();
             return typeElement != null
                 ? elementFactory.CreateAttribute(typeElement, attributeValues,
-                    EmptyArray<Pair<string, AttributeValue>>.Instance)
+                    namedValues ?? EmptyArray<Pair<string, AttributeValue>>.Instance)
                 : null;
         }
 
