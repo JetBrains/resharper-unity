@@ -16,6 +16,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
 
@@ -97,9 +98,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
             {
                 if (occurrence is UnityAssetOccurrence assetOccurrence)
                 {
-                    var solution = occurrence.GetSolution();
-                    return solution.GetComponent<DeferredCachesLocks>().ExecuteUnderReadLock(_ =>
+                    using (ReadLockCookie.Create())
                     {
+                        var solution = occurrence.GetSolution();
                         var processor = solution.GetComponent<AssetHierarchyProcessor>();
                         var consumer = new UnityScenePathGameObjectConsumer();
                         processor.ProcessSceneHierarchyFromComponentToRoot(assetOccurrence.AttachedElementLocation, consumer, true, true);
@@ -107,8 +108,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                         if (consumer.NameParts.Count > 0)
                             name = string.Join("\\", consumer.NameParts);
 
-                        return CreateModel(name);
-                    });
+                        return CreateModel(name); 
+                    }
                 }
             }
 

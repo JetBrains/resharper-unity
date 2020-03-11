@@ -25,16 +25,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     [SolutionComponent]
     public class PrefabImportCache
     {
-        private readonly DeferredCachesLocks myDeferredCachesLocks;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly IShellLocks myShellLocks;
         private readonly OneToSetMap<string, string> myDependencies = new OneToSetMap<string, string>();
         private readonly DirectMappedCache<string, IDictionary<ulong, IHierarchyElement>> myCache = new DirectMappedCache<string, IDictionary<ulong, IHierarchyElement>>(100);
         private readonly UnityExternalFilesPsiModule myUnityExternalFilesPsiModule;
         private readonly IProperty<bool> myCacheEnabled;
-        public PrefabImportCache(Lifetime lifetime, ISolution solution, ISettingsStore store, DeferredCachesLocks deferredCachesLocks, MetaFileGuidCache metaFileGuidCache, UnityExternalFilesModuleFactory unityExternalFilesModuleFactory, IShellLocks shellLocks)
+        public PrefabImportCache(Lifetime lifetime, ISolution solution, ISettingsStore store, MetaFileGuidCache metaFileGuidCache, UnityExternalFilesModuleFactory unityExternalFilesModuleFactory, IShellLocks shellLocks)
         {
-            myDeferredCachesLocks = deferredCachesLocks;
             myMetaFileGuidCache = metaFileGuidCache;
             myShellLocks = shellLocks;
             metaFileGuidCache.GuidChanged.Advise(lifetime, e =>
@@ -61,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public void Remove(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
         {
-            myDeferredCachesLocks.AssertWriteAccessAllowed();
+            myShellLocks.AssertWriteAccessAllowed();
             var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
             if (guid == null) // we have already clear content due to advice on GuidChanged in consructor
                 return;
@@ -92,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public IDictionary<ulong, IHierarchyElement> GetImportedElementsFor(string ownerGuid,
             AssetDocumentHierarchyElement assetDocumentHierarchyElement)
         {
-            myDeferredCachesLocks.AssertReadAccessAllowed();
+            myShellLocks.AssertReadAccessAllowed();
             if (!myCache.TryGetFromCache(ownerGuid, out var result))
             {
                 lock (myLockObject)

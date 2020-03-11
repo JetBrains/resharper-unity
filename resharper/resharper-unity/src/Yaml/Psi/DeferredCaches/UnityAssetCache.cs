@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentManagers;
@@ -78,8 +79,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
 
         private const int BUFFER_SIZE = 4096;
-        public override object Build(Lifetime lifetime, IPsiSourceFile psiSourceFile)
+        public override object Build(IPsiSourceFile psiSourceFile)
         {
+            var checker = new SeldomInterruptChecker();
             if (!myAssetIndexingSupport.IsEnabled.Value)
                 return null;
                 
@@ -95,8 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 var docId = 0;
                 while (lexer.TokenType != null)
                 {
-                    if (!lifetime.IsAlive)
-                        throw new OperationCanceledException();
+                    checker.CheckForInterrupt();
                         
                     docId++;
 
@@ -105,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                         if (lexer.TokenType == UnityYamlTokenType.DOCUMENT)
                         {
                             var documentBuffer = ProjectedBuffer.Create(buffer, new TextRange(lexer.TokenStart, lexer.TokenEnd));
-                            BuildDocument(result, lifetime, psiSourceFile, lexer.TokenStart, documentBuffer);
+                            BuildDocument(result, checker, psiSourceFile, lexer.TokenStart, documentBuffer);
                         }
 
                         myDocumentNumber[psiSourceFile] = (result, docId);
@@ -155,17 +156,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return myDocumentNumber[psiSourceFile];
         }
 
-        private void BuildDocument(UnityAssetData data, Lifetime lifetime, IPsiSourceFile sourceFile, int start, IBuffer buffer)
+        private void BuildDocument(UnityAssetData data, SeldomInterruptChecker checker, IPsiSourceFile sourceFile, int start, IBuffer buffer)
         {
             var assetDocument = new AssetDocument(start, buffer);
             var results = new LocalList<IUnityAssetDataElement>();
             foreach (var unityAssetDataElementContainer in myOrderedContainers)
             {
-                if (!lifetime.IsAlive)
-                    throw new OperationCanceledException();
+                checker.CheckForInterrupt();
+                
                 try
                 {
-                    var result = unityAssetDataElementContainer.Build(lifetime, sourceFile, assetDocument);
+                    var result = unityAssetDataElementContainer.Build(checker, sourceFile, assetDocument);
                     if (result != null)
                         results.Add(result);
                 }

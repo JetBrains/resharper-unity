@@ -1,4 +1,4 @@
-﻿# 789 ITEMS #
+﻿# 781 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -21,16 +21,12 @@ private OnConnectedToServer() { ... }
 private OnControllerColliderHit(ControllerColliderHit) { ... }
 private OnDestroy() { ... }
 private OnDisable() { ... }
-private OnDisconnectedFromServer(NetworkDisconnection) { ... }
 private OnDrawGizmos() { ... }
 private OnDrawGizmosSelected() { ... }
 private OnEnable() { ... }
-private OnFailedToConnect(NetworkConnectionError) { ... }
-private OnFailedToConnectToMasterServer(NetworkConnectionError) { ... }
 private OnGUI() { ... }
 private OnJointBreak(float) { ... }
 private OnJointBreak2D(Joint2D) { ... }
-private OnMasterServerEvent(MasterServerEvent) { ... }
 private OnMouseDown() { ... }
 private OnMouseDrag() { ... }
 private OnMouseEnter() { ... }
@@ -38,18 +34,14 @@ private OnMouseExit() { ... }
 private OnMouseOver() { ... }
 private OnMouseUp() { ... }
 private OnMouseUpAsButton() { ... }
-private OnNetworkInstantiate(NetworkMessageInfo) { ... }
 private OnParticleCollision(GameObject) { ... }
 private OnParticleSystemStopped() { ... }
 private OnParticleTrigger() { ... }
-private OnPlayerConnected(NetworkPlayer) { ... }
-private OnPlayerDisconnected(NetworkPlayer) { ... }
 private OnPostRender() { ... }
 private OnPreCull() { ... }
 private OnPreRender() { ... }
 private OnRenderImage(RenderTexture, RenderTexture) { ... }
 private OnRenderObject() { ... }
-private OnSerializeNetworkView(BitStream, NetworkMessageInfo) { ... }
 private OnServerInitialized() { ... }
 private OnTransformChildrenChanged() { ... }
 private OnTransformParentChanged() { ... }
@@ -790,7 +782,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 789 ITEMS #
+# 781 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -813,16 +805,12 @@ private OnConnectedToServer() { ... }
 private OnControllerColliderHit(ControllerColliderHit) { ... }
 private OnDestroy() { ... }
 private OnDisable() { ... }
-private OnDisconnectedFromServer(NetworkDisconnection) { ... }
 private OnDrawGizmos() { ... }
 private OnDrawGizmosSelected() { ... }
 private OnEnable() { ... }
-private OnFailedToConnect(NetworkConnectionError) { ... }
-private OnFailedToConnectToMasterServer(NetworkConnectionError) { ... }
 private OnGUI() { ... }
 private OnJointBreak(float) { ... }
 private OnJointBreak2D(Joint2D) { ... }
-private OnMasterServerEvent(MasterServerEvent) { ... }
 private OnMouseDown() { ... }
 private OnMouseDrag() { ... }
 private OnMouseEnter() { ... }
@@ -830,18 +818,14 @@ private OnMouseExit() { ... }
 private OnMouseOver() { ... }
 private OnMouseUp() { ... }
 private OnMouseUpAsButton() { ... }
-private OnNetworkInstantiate(NetworkMessageInfo) { ... }
 private OnParticleCollision(GameObject) { ... }
 private OnParticleSystemStopped() { ... }
 private OnParticleTrigger() { ... }
-private OnPlayerConnected(NetworkPlayer) { ... }
-private OnPlayerDisconnected(NetworkPlayer) { ... }
 private OnPostRender() { ... }
 private OnPreCull() { ... }
 private OnPreRender() { ... }
 private OnRenderImage(RenderTexture, RenderTexture) { ... }
 private OnRenderObject() { ... }
-private OnSerializeNetworkView(BitStream, NetworkMessageInfo) { ... }
 private OnServerInitialized() { ... }
 private OnTransformChildrenChanged() { ... }
 private OnTransformParentChanged() { ... }

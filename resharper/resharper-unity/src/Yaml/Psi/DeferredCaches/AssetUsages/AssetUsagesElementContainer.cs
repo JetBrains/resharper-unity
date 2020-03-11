@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Threading;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
@@ -17,12 +18,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
     [SolutionComponent]
     public class AssetUsagesElementContainer : IUnityAssetDataElementContainer
     {
-        private readonly DeferredCachesLocks myDeferredCachesLocks;
+        private readonly IShellLocks myShellLocks;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
 
-        public AssetUsagesElementContainer(DeferredCachesLocks deferredCachesLocks, MetaFileGuidCache metaFileGuidCache)
+        public AssetUsagesElementContainer(IShellLocks shellLocks, MetaFileGuidCache metaFileGuidCache)
         {
-            myDeferredCachesLocks = deferredCachesLocks;
+            myShellLocks = shellLocks;
             myMetaFileGuidCache = metaFileGuidCache;
         }
         
@@ -30,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         private Dictionary<IPsiSourceFile, OneToCompactCountingSet<string, AssetUsage>> myAssetUsagesPerFile = new Dictionary<IPsiSourceFile, OneToCompactCountingSet<string, AssetUsage>>();
         
         
-        public IUnityAssetDataElement Build(Lifetime lifetime, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        public IUnityAssetDataElement Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
             // TODO: deps for other assets
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
@@ -111,23 +112,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         public int GetUsagesCount(IClassLikeDeclaration classLikeDeclaration, out bool estimatedResult)
         {
+            myShellLocks.AssertReadAccessAllowed();
+            
             // TODO : prefabs
             estimatedResult = false;
             
-            return myDeferredCachesLocks.ExecuteUnderReadLock(_ =>
-            {
-                var sourceFile = classLikeDeclaration.GetSourceFile();
-                if (sourceFile == null)
-                    return 0;
+            var sourceFile = classLikeDeclaration.GetSourceFile();
+            if (sourceFile == null)
+                return 0;
 
-                var declaredElement = classLikeDeclaration.DeclaredElement;
-                if (declaredElement == null)
-                    return 0;
+            var declaredElement = classLikeDeclaration.DeclaredElement;
+            if (declaredElement == null)
+                return 0;
 
-                var guid = GetGuidFor(declaredElement);
+            var guid = GetGuidFor(declaredElement);
 
-                return myAssetUsages.GetOrEmpty(guid).Count;
-            });
+            return myAssetUsages.GetOrEmpty(guid).Count;
         }
         
         public string Id => nameof(AssetUsagesElementContainer);
@@ -140,14 +140,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         public IEnumerable<AssetUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
         {
-            return myDeferredCachesLocks.ExecuteUnderReadLock(_ =>
-            {
-                var guid = GetGuidFor(declaredElement);
+            myShellLocks.AssertReadAccessAllowed();
+            
+            var guid = GetGuidFor(declaredElement);
                 
-                if (myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
-                    return set.GetValues(guid).ToList();
-                return Enumerable.Empty<AssetUsage>();
-            });
+            if (myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
+                return set.GetValues(guid).ToList();
+            return Enumerable.Empty<AssetUsage>();
         }
 
         private string GetGuidFor(ITypeElement typeElement)
