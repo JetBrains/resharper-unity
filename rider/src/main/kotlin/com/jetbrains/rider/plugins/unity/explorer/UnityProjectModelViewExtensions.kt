@@ -43,8 +43,8 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
             }
         }
 
-        // we are in a folder, which is contained in a single project - choose it
-        val candidates = items.filter { node -> node.containingProject() != null }
+        // we are in a folder, which contains scripts - choose same node as scripts
+        val candidates = items.filter { node -> node.getChildren().any {it.isProjectFile()} }
         if (candidates.count() == 1)
             return candidates.single()
 
