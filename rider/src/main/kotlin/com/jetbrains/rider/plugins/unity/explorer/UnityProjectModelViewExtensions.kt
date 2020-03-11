@@ -13,14 +13,14 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (!project.isUnityGeneratedProject())
             return super.getBestParentProjectModelNode(virtualFile)
 
-        val recursive1 = recursive(virtualFile, virtualFile)
-        return recursive1 ?: super.getBestParentProjectModelNode(virtualFile)
+        val host = ProjectModelViewHost.getInstance(project)
+
+        return recursive(virtualFile, virtualFile, host) ?: super.getBestParentProjectModelNode(virtualFile)
     }
 
-    private fun recursive(origin : VirtualFile, virtualFile: VirtualFile): ProjectModelNode?
+    private fun recursive(origin : VirtualFile, virtualFile: VirtualFile, host: ProjectModelViewHost): ProjectModelNode?
     {
-        // stop going up
-        val host = ProjectModelViewHost.getInstance(project)
+        // when to stop going up
         val items = host.getItemsByVirtualFile(virtualFile).toList()
         if (items.filter { it.isSolutionFolder()}.any() || items.filter{it.isSolution()}.any())
             return null
@@ -43,11 +43,11 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
             }
         }
 
-        // we are in a folder, which contains scripts - choose same node as scripts
-        val candidates = items.filter { node -> node.getChildren().any {it.isProjectFile()} }
+        // we are in a folder, which is contained in a single project - choose it
+        val candidates = items.filter { node -> node.containingProject() != null }
         if (candidates.count() == 1)
             return candidates.single()
 
-        return recursive(origin, virtualFile.parent)
+        return recursive(origin, virtualFile.parent, host)
     }
 }
