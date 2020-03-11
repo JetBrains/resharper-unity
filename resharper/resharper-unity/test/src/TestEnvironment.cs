@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
     }
 
     [SetUpFixture]
-    public class TestEnvironment : Temporary_ExtensionTestEnvironmentAssembly<IUnityTestZone>
+    public class TestEnvironment : ExtensionTestEnvironmentAssembly<IUnityTestZone>
     {
         static TestEnvironment()
         {
@@ -43,7 +43,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             {
                 // SetupLogging();
                 SetJetTestPackagesDir();
-                TemporaryPlatformHacks.ApplyPatches();
                 HackTestDataInNugets.ApplyPatches();
             }
             catch (Exception e)
