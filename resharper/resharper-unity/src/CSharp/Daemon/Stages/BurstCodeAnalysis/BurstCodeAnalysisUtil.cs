@@ -1,4 +1,6 @@
 using System;
+using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -12,12 +14,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             return type.IsValueType() || type.IsPointerType() || type.IsOpenType;
         }
-        
+
         public static bool IsQualifierOpenType(IConditionalAccessExpression conditionalAccessExpression)
         {
             if (conditionalAccessExpression is IInvocationExpression)
             {
-                conditionalAccessExpression = conditionalAccessExpression.ConditionalQualifier as IConditionalAccessExpression;
+                conditionalAccessExpression =
+                    conditionalAccessExpression.ConditionalQualifier as IConditionalAccessExpression;
             }
 
             return conditionalAccessExpression?.ConditionalQualifier?.Type().IsOpenType ?? false;
@@ -25,7 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         private static bool IsGetHashCode(this IFunction function)
         {
-            return function is IMethod && function.IsOverride && function.ShortName == "GetHashCode" && function.Parameters.Count == 0;
+            return function is IMethod && function.IsOverride && function.ShortName == "GetHashCode" &&
+                   function.Parameters.Count == 0;
         }
 
         private static bool MayContainProhibitedMethods(this ITypeElement typeElement)
@@ -33,6 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return typeElement is IClass @class && (@class.IsValueTypeClass() || @class.IsObjectClass());
         }
 
+        [ContractAnnotation("null => false")]
         public static bool IsBurstProhibitedMethod(this IFunction function)
         {
             if (function == null)
@@ -40,9 +45,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var containingType = function.GetContainingType();
             if (containingType is IStruct && function.IsGetHashCode())
                 return false;
-            return containingType.MayContainProhibitedMethods() || 
+            return containingType.MayContainProhibitedMethods() ||
                    containingType is IStruct && function.IsOverride;
         }
-        
+
+        [ContractAnnotation("null => false")]
+        public static bool IsReturnValueProhibited(this IFunction invokedMethod)
+        {
+            return ((invokedMethod?.IsStatic ?? false) || invokedMethod?.GetContainingType() is IStruct)
+                   && invokedMethod.ReturnType.Classify == TypeClassification.REFERENCE_TYPE;
+        }
+
+        public static bool HasProhibitedArguments([NotNull] this IArgumentList argumentList)
+        {
+            if (argumentList.Parent?.Parent is IThrowStatement)
+                return false;
+            foreach (var argument in argumentList.Arguments)
+            {
+                if (!(argument.MatchingParameter?.Type.IsSuitableForBurst() ?? true))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

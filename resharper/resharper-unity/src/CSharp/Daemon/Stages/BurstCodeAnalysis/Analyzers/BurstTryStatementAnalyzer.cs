@@ -11,8 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         protected override void Analyze(ITryStatement tryStatement, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
-            consumer.AddHighlighting(new BurstWarning(tryStatement.TryKeyword.GetDocumentRange(), "try statements"));
-            consumer.AddHighlighting(new BurstWarning(tryStatement.FinallyKeyword.GetDocumentRange(), "finally statements"));
+            consumer.AddHighlighting(new BC1005Error(tryStatement.TryKeyword.GetDocumentRange()));
+            consumer.AddHighlighting(new BC1036Error(tryStatement.FinallyKeyword.GetDocumentRange()));
         }
     }
 }

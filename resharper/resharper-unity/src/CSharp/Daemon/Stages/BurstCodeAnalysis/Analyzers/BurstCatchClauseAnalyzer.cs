@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         protected override void Analyze(ICatchClause catchClause, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
-            consumer.AddHighlighting(new BurstWarning(catchClause.CatchKeyword.GetDocumentRange(), "catching exceptions"));
+            consumer.AddHighlighting(new BC1037Error(catchClause.CatchKeyword.GetDocumentRange()));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             //juding by latest documentation, foreach is prohibited to use.
             //burst compiler does not allow to use it either, even with struct enumerator
             //despite all of that, foreach is used in unity sources with burst ¯\_(ツ)_/¯
-            consumer.AddHighlighting(new BurstWarning(foreachStatement.ForeachKeyword.GetDocumentRange(), "foreach statements"));
+            consumer.AddHighlighting(new BC1037Error(foreachStatement.ForeachKeyword.GetDocumentRange()));
         }
     }
 }

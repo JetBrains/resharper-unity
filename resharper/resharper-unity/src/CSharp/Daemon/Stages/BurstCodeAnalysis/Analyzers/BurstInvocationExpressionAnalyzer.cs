@@ -4,7 +4,6 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
@@ -49,17 +48,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             //                then it would be highlighted as error
             //            else
             //                ok. burst alows invoking static functions.
-            var invokedMethod = invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
-            if(invokedMethod.IsBurstProhibitedMethod())
+            var invokedMethod =
+                invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
+            if (invokedMethod == null)
+                return;
+            if (invokedMethod.IsBurstProhibitedMethod())
             {
-                consumer.AddHighlighting(new BurstWarning(invocationExpression.InvokedExpression.GetDocumentRange(),
-                    "virtual method invocation"));
-            } else if ((invokedMethod?.IsStatic ?? false) || invokedMethod?.GetContainingType() is IStruct)
+                consumer.AddHighlighting(new BC1001Error(invocationExpression.GetDocumentRange(),
+                    invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
+            }
+            else if (invokedMethod.IsReturnValueProhibited() ||
+                     invocationExpression.ArgumentList.HasProhibitedArguments())
             {
-                if (invokedMethod.ReturnKind != ReferenceKind.VALUE)
-                {
-                    consumer.AddHighlighting(new BurstWarning(invocationExpression.InvokedExpression.GetDocumentRange(), "method returns reference"));
-                }
+                consumer.AddHighlighting(new BC1016Error(invocationExpression.GetDocumentRange(),
+                    invokedMethod.ShortName));
             }
         }
     }

@@ -11,7 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstReferenceExpressionAnalyzer : BurstProblemAnalyzerBase<IReferenceExpression>
     {
-        protected override void Analyze(IReferenceExpression referenceExpression, IDaemonProcess daemonProcess, DaemonProcessKind kind,
+        protected override void Analyze(IReferenceExpression referenceExpression, IDaemonProcess daemonProcess,
+            DaemonProcessKind kind,
             IHighlightingConsumer consumer)
         {
             var element = referenceExpression.Reference.Resolve().DeclaredElement;
@@ -27,28 +28,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 if (referenceExpression.GetAccessType().HasFlag(ExpressionAccessType.Read) &&
                     typeMember.IsStatic &&
                     !typeMember.IsReadonly &&
-                    !typeMember.IsConstant() && 
+                    !typeMember.IsConstant() &&
                     !typeMember.IsEnumMember() &&
                     !(typeMember is IProperty prop && !prop.IsWritable && prop.IsReadable))
                 {
-                    consumer.AddHighlighting(new BurstWarning(referenceExpression.GetDocumentRange(),
-                        "read access to static non-readonly element"));
+                    consumer.AddHighlighting(new BC1042Error(referenceExpression.GetDocumentRange(),
+                        typeMember.GetContainingType()?.ShortName, element.ShortName));
+                    return;
                 }
                 if (referenceExpression.GetAccessType().HasFlag(ExpressionAccessType.Write) && typeMember.IsStatic)
-                {    
+                {
                     //there are no static write-only auto properties
-                    consumer.AddHighlighting(new BurstWarning(referenceExpression.GetDocumentRange(), "write access to static element"));
+                    var field = element.ShortName;
+                    if (element is IProperty)
+                        field += "__backing_field";
+                    consumer.AddHighlighting(new BC1034Error(referenceExpression.GetDocumentRange(), field));
+                    return;
                 }
             }
-
+            
             if (element is ITypeOwner typeOwner)
             {
-                if (!typeOwner.Type().IsSuitableForBurst() ||
-                    element is IModifiersOwner modifiersOwner &&
+                if (element is IModifiersOwner modifiersOwner &&
                     (modifiersOwner.IsVirtual || modifiersOwner.IsOverride || modifiersOwner.IsAbstract))
                 {
+                    //CGTD this may be not good
                     //virtual and abstract cannot be in struct. only override is getHashCode -> function
-                    consumer.AddHighlighting(new BurstWarning(referenceExpression.GetDocumentRange(), "accessing to managed object"));
+                    consumer.AddHighlighting(new BC1042Error(referenceExpression.GetDocumentRange(),
+                        typeOwner.Type().GetTypeElement()?.ShortName, element.ShortName));
+                    return;
+                }
+
+                if (!typeOwner.Type().IsSuitableForBurst())
+                {
+                    consumer.AddHighlighting(new BC1042ShortError(referenceExpression.GetDocumentRange(),
+                        typeOwner.Type().GetTypeElement()?.ShortName));
+                    return;
                 }
             }
         }

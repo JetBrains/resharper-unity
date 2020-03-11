@@ -47,13 +47,6 @@
         <Description>Event function with the same name is already declared.</Description>
       </Tag>
 
-      <Tag externalName="BurstWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Burst</Title>
-        <Description>
-          Burst
-        </Description>
-      </Tag>
-      
       <Tag externalName="ExpectedComponentWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>Expected type derived from 'Component' or 'MonoBehaviour'</Title>
         <Description>Expected built in type derived from 'Component', or user type derived from 'MonoBehaviour'.</Description>
@@ -274,6 +267,84 @@
           The same shortcut is defined for another menu item
         </Description>
       </Tag>
+
+      <Tag externalName="BC1001Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1001</Title>
+        <Description>
+          Unable to access the managed method from type
+        </Description>
+      </Tag>
+      
+      <Tag externalName="BC1005Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1005</Title>
+        <Description>
+          The `try` construction is not supported
+        </Description>
+      </Tag>
+      
+      <Tag externalName="BC1016Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1016</Title>
+        <Description>
+          The managed function is not supported
+        </Description>
+      </Tag>
+      
+      <Tag externalName="BC1020Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1020</Title>
+        <Description>
+          Boxing a valuetype to a managed object is not supported
+        </Description>
+      </Tag>
+
+      <Tag externalName="BC1021Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1021</Title>
+        <Description>
+          Creating a managed object is not supported
+        </Description>
+      </Tag>
+
+      <Tag externalName="BC1033Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1033</Title>
+        <Description>
+          Loading a managed string literal is not supported
+        </Description>
+      </Tag>
+      
+      <Tag externalName="BC1034Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1034</Title>
+        <Description>
+          Writing to a static field is not supported
+        </Description>
+      </Tag>
+      
+      <Tag externalName="BC1036Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1036</Title>
+        <Description>
+          The `finally` construction (e.g `foreach`/`using`) is not supported
+        </Description>
+      </Tag>
+
+      <Tag externalName="BC1037Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1037</Title>
+        <Description>
+          The `try` construction (e.g `foreach`/`using`) is not supported
+        </Description>
+      </Tag>
+
+      <Tag externalName="BC1042Error.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1042</Title>
+        <Description>
+          The managed class type is not supported. Loading from a non-readonly static field is not supported
+        </Description>
+      </Tag>
+
+      <Tag externalName="BC1042ShortError.HIGHLIGHTING_ID" default="ERROR">
+        <Title>Burst error BC1042</Title>
+        <Description>
+          The managed class type is not supported. Loading from a non-readonly static field is not supported
+        </Description>
+      </Tag>
+      
     </Group>
   </SeverityConfiguration>
 
@@ -295,15 +366,111 @@
          for this highlight. Only used when the file is processed in QUICKFIX mode (default is
          to use ERROR mode)
        -->
-  <Warning name="Burst" configurableSeverity="Unity.Burst">\
+
+  <Error name="BC1001" configurableSeverity="Unity.BC1001">
     <Parameter type="DocumentRange" name="range" />
-    <Parameter type="string" name="warningText"/>
-    <Message value="Prohibited in Burst: {0}.">
-      <Argument>WarningText</Argument>
+    <Parameter type="string" name="methodQualification"/>
+    <Parameter type="string" name="typeQualification"/>
+    <Message value="Burst error BC1001: Unable to access the managed method `{0}` from type `{1}`.">
+      <Argument>MethodQualification</Argument>
+      <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
+  </Error>
+
+  <Error name="BC1005" configurableSeverity="Unity.BC1005">
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Burst error BC1005: The `try` construction is not supported.">
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1016" configurableSeverity="Unity.BC1016">
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="functionSignature"/>
+    <Message value="Burst error BC1016: The managed function `{0}` is not supported.">
+      <Argument>FunctionSignature</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1020" configurableSeverity="Unity.BC1020">
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="typeQualification"/>
+    <Message value="Burst error BC1020: Boxing a value type `{0}` to a managed object is not supported">
+      <Argument>TypeQualification</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1021" configurableSeverity="Unity.BC1021">
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="typeQualification"/>
+    <Message value="Burst error BC1021: Creating a managed object `{0}` is not supported">
+      <Argument>TypeQualification</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1033" configurableSeverity="Unity.BC1033">
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Burst error BC1033: Loading a managed string literal is not supported"/>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1034" configurableSeverity="Unity.BC1034">
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="fieldQualification"/>
+    <Message value="Burst error BC1034: Writing to a static field `{0}` is not supported">
+      <Argument>FieldQualification</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1036" configurableSeverity="Unity.BC1036">
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Burst error BC1036: The `finally` construction (e.g `foreach`/`using`) is not supported">
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1037" configurableSeverity="Unity.BC1037">
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Burst error BC1037: The `try` construction (e.g `foreach`/`using`) is not supported">
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1042" configurableSeverity="Unity.BC1042">
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="typeQualification"/>
+    <Parameter type="string" name="fieldQualification"/>
+    <Message value="Burst error BC1042: The managed class type `{0}` is not supported. Loading from a non-readonly static field `{1}` is not supported">
+      <Argument>TypeQualification</Argument>
+      <Argument>FieldQualification</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1042Short" configurableSeverity="Unity.BC1042Short">
+    <Parameter type="DocumentRange" name="range" />
+    <Parameter type="string" name="typeQualification"/>
+    <Message value="Burst error BC1042: The managed class type `{0}` is not supported.">
+      <Argument>TypeQualification</Argument>
+    </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
   
   <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
     <Parameter type="ITreeNode" name="node" />
