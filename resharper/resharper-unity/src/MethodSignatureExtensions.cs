@@ -120,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static bool HasMatchingReturnType(UnityEventFunction eventFunction, IMethod method)
         {
             return DoTypesMatch(method.ReturnType, eventFunction.ReturnType, eventFunction.ReturnTypeIsArray)
-                   || (eventFunction.Coroutine && DoTypesMatch(method.ReturnType, ourEnumeratorType, false));
+                   || (eventFunction.CanBeCoroutine && DoTypesMatch(method.ReturnType, ourEnumeratorType, false));
         }
 
         private static bool DoTypesMatch(IType type, IClrTypeName expectedTypeName, bool isArray)

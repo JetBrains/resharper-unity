@@ -32,6 +32,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
         public void ImplicitAccessibilityModifier08() { DoNamedTest(); }
         [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
         public void ImplicitAccessibilityModifier09() { DoNamedTest(); }
+        [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        public void ImplicitAccessibilityModifier10() { DoNamedTest(); }
+        [Test, TestSetting(typeof(CSharpCodeStyleSettingsKey), nameof(CSharpCodeStyleSettingsKey.DEFAULT_PRIVATE_MODIFIER), DefaultModifierDefinition.Implicit)]
+        public void ImplicitAccessibilityModifier11() { DoNamedTest(); }
 
         [Test] public void ExplicitAccessibilityModifier01() { DoNamedTest(); }
         [Test] public void ExplicitAccessibilityModifier02() { DoNamedTest(); }
@@ -42,6 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
         [Test] public void ExplicitAccessibilityModifier07() { DoNamedTest(); }
         [Test] public void ExplicitAccessibilityModifier08() { DoNamedTest(); }
         [Test] public void ExplicitAccessibilityModifier09() { DoNamedTest(); }
+        [Test] public void ExplicitAccessibilityModifier10() { DoNamedTest(); }
+        [Test] public void ExplicitAccessibilityModifier11() { DoNamedTest(); }
 
         [Test] public void GeneratedCodeResolvesNamespaceGlobally() { DoNamedTest(); }
         [Test] public void RetypeNameOnExistingMethod() { DoNamedTest(); }
