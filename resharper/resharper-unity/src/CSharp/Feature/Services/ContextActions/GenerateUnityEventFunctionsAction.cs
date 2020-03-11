@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
@@ -6,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Resources.Icons;
@@ -43,17 +46,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         public bool IsAvailable(IUserDataHolder cache)
         {
             var node = myDataProvider.GetSelectedTreeNode<ITreeNode>();
-            if (node == null)
-                return false;
-
-            var classDeclaration = node.GetContainingNode<IClassLikeDeclaration>();
-            if (node.GetContainingNode<IMethodDeclaration>() == null && classDeclaration != null)
+            var classDeclaration = node?.GetContainingNode<IClassLikeDeclaration>();
+            if (classDeclaration != null)
             {
-                var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
-                return unityApi.IsUnityType(classDeclaration.DeclaredElement);
+                // This context action is already visible on the method declaration when the gutter icons are visible
+                if (IsShowingGutterIcons(myDataProvider.Solution) && node.GetContainingNode<IClassBody>() == null)
+                    return false;
+
+                if (node.GetContainingNode<IMethodDeclaration>() == null &&
+                    node.GetContainingNode<IPropertyDeclaration>() == null)
+                {
+                    var unityApi = myDataProvider.Solution.GetComponent<UnityApi>();
+                    return unityApi.IsUnityType(classDeclaration.DeclaredElement);
+                }
             }
 
             return false;
+        }
+
+        private static bool IsShowingGutterIcons(ISolution solution)
+        {
+            var settings = solution.GetSettingsStore();
+            switch (settings.GetValue((UnitySettings key) => key.GutterIconMode))
+            {
+                case GutterIconMode.Always:  return true;
+                case GutterIconMode.None:    return false;
+                case GutterIconMode.CodeInsightDisabled:
+
+                    // TODO: Let's avoid #defines
+#if RIDER
+                    var provider = solution.GetComponent<JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights.UnityCodeInsightProvider>();
+                    return settings.GetIndexedValue((JetBrains.ReSharper.Host.Platform.CodeInsights.CodeInsightsSettings key) => key.DisabledProviders,
+                        provider.ProviderId);
+#else
+                    return true;
+#endif
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
