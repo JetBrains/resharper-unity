@@ -63,6 +63,11 @@ class UnityInstallationFinder(private val project: Project) {
         return tryGetApplicationVersionFromProtocol()
     }
 
+    fun getApplicationVersion(count:Int):String? {
+        val fullVersion = getApplicationVersion()
+        return fullVersion?.split('.')?.take(count)?.joinToString(".")
+    }
+
     private fun tryGetApplicationVersionFromProtocol(): String? {
         return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.applicationVersion
     }
