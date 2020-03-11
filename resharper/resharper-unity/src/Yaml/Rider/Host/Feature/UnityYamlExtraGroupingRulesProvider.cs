@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                if (occurrence is UnityAssetOccurrence assetOccurrence && !assetOccurrence.SourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlFileExtensions.AssetFileExtensionWithDot))
+                if (occurrence is UnityAssetOccurrence assetOccurrence && !assetOccurrence.SourceFile.GetLocation().IsAsset())
                 {
                     using (ReadLockCookie.Create())
                     {
