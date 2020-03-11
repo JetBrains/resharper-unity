@@ -4,6 +4,33 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedType.Local
+// ReSharper disable ArrangeTypeMemberModifiers
+// ReSharper disable MemberCanBePrivate.Local
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable ConvertToConstant.Local
+// ReSharper disable StringLiteralTypo
+// ReSharper disable NotAccessedVariable
+// ReSharper disable RedundantAssignment
+// ReSharper disable UnusedVariable
+// ReSharper disable HeuristicUnreachableCode
+// ReSharper disable ObjectCreationAsStatement
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedParameter.Local
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable FieldCanBeMadeReadOnly.Global
+// ReSharper disable UnusedMethodReturnValue.Local
+// ReSharper disable RedundantOverriddenMember
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+// ReSharper disable EqualExpressionComparison
+// ReSharper disable UnusedMember.Local
+// ReSharper disable ArrangeModifiersOrder
+// ReSharper disable UnusedAutoPropertyAccessor.Local
+// ReSharper disable UnassignedGetOnlyAutoProperty
 
 #pragma warning disable 168
 #pragma warning disable 162
@@ -11,6 +38,7 @@ using Unity.Jobs;
 #pragma warning disable 414
 #pragma warning disable 1717
 
+//for attributes to work
 namespace Unity
 {
     namespace Jobs
@@ -62,30 +90,17 @@ public class NewBehaviourScript
     [BurstCompile]
     struct PrimitiveTest : IJob
     {
-        // public char ch;//CGTD for struct to have characters as field they must declared CharSet=CharSetUnicode StructLayout. direct exception next. not supported currently.
-        /*
-         (0,0): Burst error BC1066: Unsupported parameter `ref NewBehaviourScript.PrimitiveTest` `data` in function `Unity.Jobs.IJobExtensions.JobStruct`1.Execute(ref T data, System.IntPtr additionalPtr, System.IntPtr bufferRangePatchData, ref Unity.Jobs.LowLevel.Unsafe.JobRanges ranges, int jobIndex)`: structs with characters that do not have the 'CharSet=CharSet.Unicode' StructLayout are not supported for external functions
-        
-        While compiling job: System.Void Unity.Jobs.IJobExtensions/JobStruct`1<NewBehaviourScript/PrimitiveTest>::Execute(T&,System.IntPtr,System.IntPtr,Unity.Jobs.LowLevel.Unsafe.JobRanges&,System.Int32)
-        at <empty>:line 0
-         */
-        // public int kek;
         public void MustBeProhibited()
         {
-            string str2 = "asdasd"; //Burst error BC1033: Loading a managed string literal is not supported
-            string str1 = null; //null is ok, it can be on stack
-            str1 = str2; //CGTD may be some day it will become warning
-            //CGTD it's different error, but some day...
-            char
-                c = str2[0]; //Burst error BC1016: The managed function `System.String.get_Chars(System.String* this, int index)` is not supported
+            string str2 = "asdasd"; 
+            string str1 = null; 
+            str1 = str2; 
+            char c = str2[0];
             var ch = 'a';
             char ch2 = 'b';
             ch2 = ch;
             ch = 'd';
             char ch3 = new char();
-            // var decel = new decimal();//CGTD dont care bout decimal, cuz it has extern methods. someday...
-            // decel = 12m;
-            // int kek = (int) decel;
         }
 
         public void Execute()
@@ -108,18 +123,17 @@ public class NewBehaviourScript
 
         private void F()
         {
-            throw new ArgumentException("kek");
-            new ArgumentException(
-                nameof(F)); //Burst error BC1021: Creating a managed object `here placed object ref' is not supported
-            try //Burst error BC1005: The `try` construction is not supported
+            throw new ArgumentException("exception");
+            new ArgumentException(nameof(F)); 
+            try 
             {
                 int a = 1;
             }
-            catch (Exception e) //Burst error BC1037: The `catch` construction (e.g `foreach`/`using`) is not supported - only if try is ok but not empty. show only in pair with catch or finally
+            catch (Exception e) 
             {
                 int b = 2;
             }
-            finally //Burst error BC1036: The `finally` construction (e.g `foreach`/`using`) is not supported - only if try is ok but not empty. show only in pair with catch or finally
+            finally 
             {
                 int c = 2;
             }
@@ -129,14 +143,14 @@ public class NewBehaviourScript
     [BurstCompile]
     struct FunctionParametersReturnValueTest : IJob
     {
-        public interface IKek
+        public interface IInterface
         {
-            void kek();
+            void function();
         }
 
-        public struct Lol : IKek
+        public struct strct : IInterface
         {
-            public void kek()
+            public void function()
             {
             }
         }
@@ -145,31 +159,31 @@ public class NewBehaviourScript
         {
         }
 
-        public void Fkek(IKek kek)
+        public void Finterface(IInterface @interface)
         {
         }
 
-        public void Flol(Lol lol)
+        public void Fstruct(strct strct)
         {
         }
 
-        public IKek FReturn()
+        public IInterface FReturn()
         {
-            return new Lol();
+            return new strct();
         }
 
-        public void GenericF<T>(T a) where T : struct, IKek
+        public void GenericF<T>(T a) where T : struct, IInterface
         {
-            a.kek();
+            a.function();
         }
 
         public void Execute()
         {
-            Fobject(null); //Burst error BC1016: The managed function `NewBehaviourScript.FunctionParametersReturnValueTest.Fobject(NewBehaviourScript.FunctionParametersReturnValueTest* this, object a)` is not supported
-            Fkek(null); //-+-
-            Flol(new Lol());
-            FReturn(); //-+-
-            GenericF(new Lol());
+            Fobject(null); 
+            Finterface(null); 
+            Fstruct(new strct());
+            FReturn(); 
+            GenericF(new strct());
         }
     }
 
@@ -178,9 +192,11 @@ public class NewBehaviourScript
     {
         public void Execute()
         {
-            foreach (var kek in new NativeArray<int>()) //Burst error BC1037: The `try` construction (e.g `foreach`/`using`) is not supported - only if try is ok but not empty. show only in pair with catch or finally
+            //throw new ArgumentException(new object().ToString());
+            throw new ArgumentException(new object().ToString());
+            foreach (var integer in new NativeArray<int>())
             {
-                Console.WriteLine(kek);
+                Console.WriteLine(integer);
             }
         }
     }
@@ -197,23 +213,19 @@ public class NewBehaviourScript
 
         public override int GetHashCode()
         {
-            //CGTD boxing is very hard
-            return
-                base.GetHashCode(); // Burst error BC1020: Boxing a valuetype `NewBehaviourScript.MethodsInvocationTest` to a managed object is not supported
+             return base.GetHashCode();
         }
 
         private void F()
         {
             SimpleClass.StaticMethod();
-            GetType(); //Burst error BC1001: Unable to access the managed method `object.GetType()` from type `object`
-            Equals(null,
-                null); //Burst error BC1001: Unable to access the managed method `object.Equals(object)` from type `NewBehaviourScript.MethodsInvocationTest`
-            Equals(null); //Burst error BC1001: Unable to access the managed method `object.Equals(object)` from type `NewBehaviourScript.MethodsInvocationTest`
-            ToString(); //Unable to access the managed method `object.ToString()` from type `NewBehaviourScript.MethodsInvocationTest`
-            GetHashCode(); // Burst error BC1001: Unable to access the managed method `object.GetHashCode()` from type `NewBehaviourScript.MethodsInvocationTest`
-            var
-                kek = myClasss; //Burst error BC1042: The managed class type `NewBehaviourScript/SimpleClass` is not supported. Loading from a non-readonly static field `NewBehaviourScript.myClasss` is not supported
-            myClasss.PlainMethod(); //Burst error BC1042: The managed class type `NewBehaviourScript/SimpleClass` is not supported. Loading from a non-readonly static field `NewBehaviourScript.myClasss` is not supported
+            GetType(); 
+            Equals(null, null);
+            Equals(null);
+            ToString(); 
+            GetHashCode();
+            var cls = myClasss;
+            myClasss.PlainMethod(); 
         }
     }
 
@@ -230,23 +242,14 @@ public class NewBehaviourScript
         private static int field1 = 2;
         private readonly static int field2 = 2;
         private const int field3 = 2;
-
         private static int getProp { get; }
-
-        //CGTD ReferenceExpressionTest.myClass is not a value type. Job structs may not contain any reference types. Also there is problem with transitive class usage in structs.
-        //private SimpleClass myClass;
         private MyEnum ourEnum;
 
         public void Execute()
         {
-            SimpleClass
-                myClass =
-                    new SimpleClass(); //Burst error BC1021: Creating a managed object `here placed object ref' is not supported
-
-            getSetProp =
-                2; //Burst error BC1034: Writing to a static field `NewBehaviourScript.ReferenceExpressionTest.<getSetProp>k__BackingField` is not supported.
-            field1 = 2; //Burst error BC1034: Writing to a static field `fullname till field` is not supported
-
+            SimpleClass myClass = new SimpleClass();
+            getSetProp = 2;
+            field1 = 2;
             ourEnum = ourEnum;
         }
     }

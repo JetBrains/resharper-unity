@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
             var isBurstAnalysisEnabled = settings.GetValue((UnitySettings s) => s.EnableBurstCodeHighlighting);
 
-            
+
             return new UnityHighlightingProcess(process, file, myCallGraphSwaExtensionProvider,
                 myPerformanceCriticalCodeCallGraphMarksProvider, isPerformanceAnalysisEnabled,
                 myCallGraphBurstMarksProvider, isBurstAnalysisEnabled,
@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 API, myCommonIconProvider, processKind, myProvider, Logger);
         }
     }
-    
+
     public class UnityHighlightingProcess : CSharpDaemonStageProcessBase
     {
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
@@ -96,6 +96,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
         private readonly Stack<List<UnityProblemAnalyzerContext>> myProblemAnalyzerContexts =
             new Stack<List<UnityProblemAnalyzerContext>>();
+
+        private readonly Stack<UnityProblemAnalyzerContext> myProhibitedContexts =
+            new Stack<UnityProblemAnalyzerContext>();
 
         public UnityHighlightingProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
@@ -124,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
             myEventFunctions = DaemonProcess.CustomData.GetData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey)
                 ?.Where(t => t != null && t.IsValid()).ToJetHashSet();
-            
+
             DaemonProcess.CustomData.PutData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey, myEventFunctions);
 
             myProblemAnalyzersByContext = myPerformanceProblemAnalyzers.GroupBy(t => t.Context)
@@ -142,14 +145,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 var declaredElement = declaration.DeclaredElement;
                 if (declaredElement == null)
                     continue;
-                
+
                 if (myEventFunctions != null && Enumerable.Contains(myEventFunctions, declaredElement))
                 {
                     var method = (declaredElement as IMethod).NotNull("method != null");
                     var eventFunction = myAPI.GetUnityEventFunction(method);
                     if (eventFunction == null) // happens after event function refactoring 
                         continue;
-                    
+
                     myCommonIconProvider.AddEventFunctionHighlighting(highlightingConsumer, method, eventFunction,
                         "Event function", myProcessKind);
                     myMarkedDeclarations.Add(method);
@@ -158,12 +161,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 {
                     if (myMarkedDeclarations.Contains(declaredElement))
                         continue;
-                    
+
                     myCommonIconProvider.AddFrequentlyCalledMethodHighlighting(highlightingConsumer, declaration,
                         "Frequently called", "Frequently called code", myProcessKind);
                 }
             }
-            
+
             committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
@@ -177,10 +180,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             return res;
         }
 
+        private bool IsContextProhibited(UnityProblemAnalyzerContext context)
+        {
+            return myProhibitedContexts.Count > 0 && myProhibitedContexts.Peek().HasFlag(context);
+        }
+
+        private bool IsProhibitedNode(ITreeNode node)
+        {
+            switch (node)
+            {
+                case IThrowStatement _:
+                case IThrowExpression _:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private UnityProblemAnalyzerContext GetProhibitedContexts(ITreeNode node)
+        {
+            var context = UnityProblemAnalyzerContext.NONE;
+            if (node is IThrowStatement || node is IThrowExpression)
+                context |= UnityProblemAnalyzerContext.BURST_CONTEXT;
+            return context;
+        }
+
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
             if (IsFunctionNode(element))
                 myProblemAnalyzerContexts.Push(GetProblemAnalyzerContext(element));
+            if (IsProhibitedNode(element))
+                myProhibitedContexts.Push(GetProhibitedContexts(element));
 
             if (element is ICSharpDeclaration declaration)
             {
@@ -200,12 +230,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 if (myProblemAnalyzerContexts.Count > 0)
                 {
                     foreach (var context in myProblemAnalyzerContexts.Peek())
-                    {
-                        foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[context])
+                        if (!IsContextProhibited(context))
                         {
-                            performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer);
+                            foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[context])
+                            {
+                                performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind,
+                                    consumer);
+                            }
                         }
-                    }
                 }
             }
             catch (OperationCanceledException)
@@ -226,6 +258,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 Assertion.Assert(myProblemAnalyzerContexts.Count > 0, "myProblemAnalyzerContexts.Count > 0");
                 myProblemAnalyzerContexts.Pop();
             }
+
+            if (IsProhibitedNode(element))
+            {
+                Assertion.Assert(myProhibitedContexts.Count > 0, "myProhibitedContexts.Count > 0");
+                myProhibitedContexts.Pop();
+            }
         }
 
 
@@ -240,7 +278,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                     return false;
             }
         }
-        
+
 
         private bool IsPerformanceCriticalDeclaration(ITreeNode element)
         {
@@ -250,7 +288,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             var declaredElement = declaration.DeclaredElement;
             if (declaredElement == null)
                 return false;
-            
+
             if (myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS)
             {
                 var id = myProvider.GetElementId(declaredElement);
@@ -277,7 +315,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 var id = myProvider.GetElementId(declaredElement);
                 if (!id.HasValue)
                     return false;
-                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(myCallGraphBurstMarksProvider.Id, true,
+                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(myCallGraphBurstMarksProvider.Id,
+                    true,
                     id.Value);
             }
 
