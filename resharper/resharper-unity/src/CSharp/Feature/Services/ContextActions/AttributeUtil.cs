@@ -1,11 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.DocumentModel;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
+using JetBrains.TextControl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
@@ -142,6 +149,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                         yield return attribute;
                 }
             }
+        }
+        
+        public static Action<ITextControl> CreateHotspotSession(this IAttribute attribute)
+        {
+            var hotspotsRegistry = new HotspotsRegistry(attribute.GetSolution().GetPsiServices());
+
+            var arguments = attribute.Arguments;
+            for (var i = 0; i < arguments.Count; i++)
+            {
+                if (arguments[i].Value is ICSharpLiteralExpression literalExpression)
+                {
+                    var range = literalExpression.Literal.GetUnquotedDocumentRange().CreateRangeMarker();
+                    hotspotsRegistry.Register(range, new NameSuggestionsExpression(new[] { literalExpression.ConstantValue.GetPresentation(attribute.Language)}));
+                }
+            }
+            
+            var propertyAssignments = attribute.PropertyAssignments;
+            for (var i = 0; i < propertyAssignments.Count; i++)
+            {
+                if (propertyAssignments[i].Source is ICSharpLiteralExpression literalExpression)
+                {
+                    var range = literalExpression.Literal.GetUnquotedDocumentRange().CreateRangeMarker();
+                    hotspotsRegistry.Register(range, new NameSuggestionsExpression(new[] { literalExpression.ConstantValue.GetPresentation(attribute.Language)}));
+                }
+            }
+            
+            return BulbActionUtils.ExecuteHotspotSession(hotspotsRegistry, DocumentOffset.InvalidOffset);
         }
     }
 }
