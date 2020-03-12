@@ -15,15 +15,17 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
         val host = ProjectModelViewHost.getInstance(project)
 
-        return recursive(virtualFile, virtualFile, host) ?: super.getBestParentProjectModelNode(virtualFile)
+        return recursiveSearch(virtualFile, host) ?: super.getBestParentProjectModelNode(virtualFile)
     }
 
-    private fun recursive(origin : VirtualFile, virtualFile: VirtualFile, host: ProjectModelViewHost): ProjectModelNode?
+    private fun recursiveSearch(virtualFile: VirtualFile, host: ProjectModelViewHost): ProjectModelNode?
     {
         // when to stop going up
         val items = host.getItemsByVirtualFile(virtualFile).toList()
-        if (items.filter { it.isSolutionFolder()}.any() || items.filter{it.isSolution()}.any())
+        if (items.filter { it.isSolutionFolder()}.any())
             return null
+
+        assert(items.all{it.isProjectFolder()}) {"Only ProjectFolders are expected."}
 
         // one of the predefined projects
         if (items.count() > 1) {
@@ -48,6 +50,6 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (candidates.count() == 1)
             return candidates.single()
 
-        return recursive(origin, virtualFile.parent, host)
+        return recursiveSearch(virtualFile.parent, host)
     }
 }
