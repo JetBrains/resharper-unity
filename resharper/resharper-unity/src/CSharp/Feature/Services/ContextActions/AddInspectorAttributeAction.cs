@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
@@ -193,33 +194,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 if (myAttributeValues.Length == 0)
                     return null;
 
-                return CreateHotspotSession(attribute);
-            }
-
-            private Action<ITextControl> CreateHotspotSession(IAttribute attribute)
-            {
-                var hotspotsRegistry = new HotspotsRegistry(myMultipleFieldDeclaration.GetSolution().GetPsiServices());
-
-                for (var i = 0; i < myAttributeValues.Length; i++)
-                {
-                    var attributeValue = myAttributeValues[i];
-                    if (attributeValue.ConstantValue.IsString())
-                    {
-                        var value = $"\"{attributeValue.ConstantValue.Value}\"";
-                        hotspotsRegistry.Register(new ITreeNode[] {attribute.Arguments[i]},
-                            new NameSuggestionsExpression(new[] {value}));
-                    }
-                    else
-                    {
-                        hotspotsRegistry.Register(new ITreeNode[] {attribute.Arguments[i]},
-                            new NameSuggestionsExpression(new[]
-                            {
-                                attributeValue.ConstantValue.GetPresentation(attribute.Language)
-                            }));
-                    }
-                }
-
-                return BulbActionUtils.ExecuteHotspotSession(hotspotsRegistry, DocumentOffset.InvalidOffset);
+                return attribute.CreateHotspotSession();
             }
 
             public override string Text

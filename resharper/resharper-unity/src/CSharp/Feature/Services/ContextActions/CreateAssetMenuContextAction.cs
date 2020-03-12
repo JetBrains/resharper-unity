@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
@@ -83,20 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 var attribute = AttributeUtil.AddAttributeToSingleDeclaration(myClassLikeDeclaration, KnownTypes.CreateAssetMenu, EmptyArray<AttributeValue>.Instance, 
                     values, myModule, myElementFactory);
                 
-                return CreateHotspotSession(attribute);
-            }
-
-            private Action<ITextControl> CreateHotspotSession(IAttribute attribute)
-            {
-                var hotspotsRegistry = new HotspotsRegistry(myClassLikeDeclaration.GetSolution().GetPsiServices());
-
-                var arguments = attribute.PropertyAssignments;
-                for (var i = 0; i < arguments.Count; i++)
-                {
-                    hotspotsRegistry.Register(new ITreeNode[] {arguments[i].Source}, new NameSuggestionsExpression(new[] {""}));
-                }
-
-                return BulbActionUtils.ExecuteHotspotSession(hotspotsRegistry, DocumentOffset.InvalidOffset);
+                return attribute.CreateHotspotSession();
             }
 
             public override string Text => "Add to Unity's 'Assets/Create' menu";
