@@ -1,0 +1,36 @@
+﻿using System;
+using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public void Method1()
+    {
+    }
+
+    public void Method2()
+    {
+    }
+
+    private void Awake()
+    {
+      {selstart}throw new NotImplementedException();{selend}
+    }
+
+    private void Update()
+    {
+      throw new NotImplementedException();
+    }
+
+    private void LateUpdate()
+    {
+      throw new NotImplementedException();
+    }
+
+    public void Method3()
+    {
+    }
+
+    public void Method4()
+    {
+    }
+}

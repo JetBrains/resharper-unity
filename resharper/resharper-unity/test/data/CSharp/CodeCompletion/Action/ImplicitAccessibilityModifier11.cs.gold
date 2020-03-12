@@ -1,0 +1,15 @@
+﻿// ${COMPLETE_ITEM:Start() { ... \}}
+
+using System;
+using System.Collections;
+using Sytem.Collections;
+using UnityEngine;
+using JetBrains.Annotations;
+
+public class A : MonoBehaviour
+{
+  IEnumerator Start()
+  {
+    throw new NotImplementedException();{caret}
+  }
+}

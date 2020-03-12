@@ -1,10 +1,10 @@
 ﻿Provided elements:
  0: Awake():System.Void
- 1: OnDestroy():System.Void
- 2: OnDisable():System.Void
- 3: OnEnable():System.Void
- 4: OnValidate():System.Void
- 5: Reset():System.Void
+ 1: Reset():System.Void
+ 2: OnEnable():System.Void
+ 3: OnDisable():System.Void
+ 4: OnDestroy():System.Void
+ 5: OnValidate():System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEngine;
