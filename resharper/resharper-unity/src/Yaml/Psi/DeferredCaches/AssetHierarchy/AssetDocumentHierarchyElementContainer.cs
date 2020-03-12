@@ -22,9 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     [SolutionComponent]
     public class AssetDocumentHierarchyElementContainer : IUnityAssetDataElementContainer
     {
-        public readonly IPersistentIndexManager Manager;
-        public readonly UnityExternalFilesPsiModule PsiModule;
-        public readonly MetaFileGuidCache MetaFileGuidCache;
+        private readonly IPersistentIndexManager myManager;
+        private readonly UnityExternalFilesPsiModule myPsiModule;
+        private readonly MetaFileGuidCache myMetaFileGuidCache;
         
         private readonly PrefabImportCache myPrefabImportCache;
         private readonly IShellLocks myShellLocks;
@@ -36,11 +36,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public AssetDocumentHierarchyElementContainer(IPersistentIndexManager manager, PrefabImportCache prefabImportCache, IShellLocks shellLocks,
             UnityExternalFilesModuleFactory psiModuleProvider, MetaFileGuidCache metaFileGuidCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializers)
         {
-            Manager = manager;
+            myManager = manager;
             myPrefabImportCache = prefabImportCache;
             myShellLocks = shellLocks;
-            PsiModule = psiModuleProvider.PsiModule;
-            MetaFileGuidCache = metaFileGuidCache;
+            myPsiModule = psiModuleProvider.PsiModule;
+            myMetaFileGuidCache = metaFileGuidCache;
             myAssetInspectorValueDeserializers = assetInspectorValueDeserializers;
         }
 
@@ -212,16 +212,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             switch (hierarchyReference)
             {
                 case LocalReference localReference:
-                    var sourceFile = Manager[localReference.OwnerId];
-                    guid = sourceFile != null ? MetaFileGuidCache.GetAssetGuid(sourceFile) : null;
+                    var sourceFile = myManager[localReference.OwnerId];
+                    guid = sourceFile != null ? myMetaFileGuidCache.GetAssetGuid(sourceFile) : null;
                     return sourceFile;
                 case ExternalReference externalReference:
                     guid = externalReference.ExternalAssetGuid;
-                    var paths = MetaFileGuidCache.GetAssetFilePathsFromGuid(guid);
+                    var paths = myMetaFileGuidCache.GetAssetFilePathsFromGuid(guid);
                     if (paths.Count != 1)
                         return null;
 
-                    return PsiModule.TryGetFileByPath(paths[0], out var result) ? result : null;
+                    return myPsiModule.TryGetFileByPath(paths[0], out var result) ? result : null;
 
                 default:
                     throw new InvalidOperationException();

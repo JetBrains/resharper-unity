@@ -21,8 +21,11 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
 {
     [ContextAction(Group = UnityContextActions.GroupID,
-        Name = "Add 'CreateAssetMenu' attribute for scriptable object",
-        Description = "Add 'CreateAssetMenu' attribute for scriptable object which allows to create asset from context menu for that scriptable object")]
+        Name = "Add 'CreateAssetMenu' attribute",
+        Description = "Adds the 'CreateAssetMenu' attribute to a scriptable object. " +
+                      "This marks a 'ScriptableObject'-derived type to be automatically listed in " +
+                      "Unity's 'Assets/Create' menu, so that instances of the type can be easily created " +
+                      "and stored in the project as '.asset' files")]
     public class CreateAssetMenuContextAction : IContextAction
     {
         [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
@@ -45,7 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
         public bool IsAvailable(IUserDataHolder cache)
         {
-            var classLikeDeclaration = myDataProvider.GetSelectedElement<IClassLikeDeclaration>();
+            var identifier = myDataProvider.GetSelectedElement<ICSharpIdentifier>();
+
+            var classLikeDeclaration = ClassLikeDeclarationNavigator.GetByNameIdentifier(identifier);
             if (classLikeDeclaration == null)
                 return false;
             
@@ -94,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 return BulbActionUtils.ExecuteHotspotSession(hotspotsRegistry, DocumentOffset.InvalidOffset);
             }
 
-            public override string Text => "Create asset menu";
+            public override string Text => "Add to Unity's 'Assets/Create' menu";
         }
     }
 }
