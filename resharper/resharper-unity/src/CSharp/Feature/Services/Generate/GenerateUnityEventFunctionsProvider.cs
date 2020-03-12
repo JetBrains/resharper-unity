@@ -132,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
                     return -1;
                 if (xi == -1 && yi == -1)
                     return string.Compare(x, y, StringComparison.InvariantCulture);
-                return xi > yi ? 1 : -1;
+                return xi > yi ? 1 : (xi < yi ? -1 : 0);
             }
         }
     }
