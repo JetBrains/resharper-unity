@@ -175,7 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
             {
                 AttributeUtil.AddAttributeToSingleDeclaration(myClassDeclaration, KnownTypes.RequireComponent,
-                    new[] {new AttributeValue(myType)}, myClassDeclaration.GetPsiModule(), myFactory, true);
+                    new[] {new AttributeValue(myType)}, null, myClassDeclaration.GetPsiModule(), myFactory, true);
                 return null;
             }
 

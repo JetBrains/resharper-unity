@@ -40,14 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 const string displayText = "Serializable";
                 const string baseTooltip = "This field is initialized from Inspector";
-                if (myUnityApi.IsDescendantOfMonoBehaviour(declaredElement.GetContainingType()))
+                if (UnityApi.IsDescendantOfMonoBehaviour(declaredElement.GetContainingType()) ||
+                    UnityApi.IsDescendantOfScriptableObject(declaredElement.GetContainingType()))
                 {
                     AddMonoBehaviourHighlighting(consumer, field, displayText, baseTooltip, kind);
-                    return true;
-
-                } else if (myUnityApi.IsDescendantOfScriptableObject(declaredElement.GetContainingType()))
-                {
-                    AddScriptableObjectHighlighting(consumer, field, displayText, baseTooltip, kind);
                     return true;
 
                 } else if (myUnityApi.IsInjectedField(declaredElement))

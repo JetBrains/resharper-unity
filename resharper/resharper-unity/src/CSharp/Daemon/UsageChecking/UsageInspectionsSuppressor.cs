@@ -225,7 +225,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                 return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
             var deferredCaches = solution.GetComponent<DeferredCacheController>();
-            if (deferredCaches.IsProcessingFiles())
+            if (!deferredCaches.CompletedOnce.Value)
             {
                 return solution.GetComponent<AssetMethodsElementContainer>().IsPossibleEventHandler(method);
             }

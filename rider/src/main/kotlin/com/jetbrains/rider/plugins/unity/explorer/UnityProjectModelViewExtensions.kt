@@ -22,7 +22,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     {
         // when to stop going up
         val items = host.getItemsByVirtualFile(virtualFile).toList()
-        if (items.filter { it.isSolutionFolder()}.any())
+        if (items.filter { it.isSolutionFolder()}.any() || items.filter{it.isSolution()}.any()) // don't forget to check File System Explorer
             return null
 
         assert(items.all{it.isProjectFolder()}) {"Only ProjectFolders are expected."}

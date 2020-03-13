@@ -6,8 +6,10 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
@@ -92,18 +94,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private static FindUsageResultElement CreateRequest(FileSystemPath solutionDirPath, AssetHierarchyProcessor assetDocumentHierarchy, 
+        private static AssetFindUsagesResultBase CreateRequest(FileSystemPath solutionDirPath, AssetHierarchyProcessor assetDocumentHierarchy, 
             LocalReference location, IPsiSourceFile sourceFile, bool needExpand = false)
         {
             if (!GetPathFromAssetFolder(solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
                 return null;
-            
-            bool isPrefab = extension.Equals(UnityYamlConstants.Prefab, StringComparison.OrdinalIgnoreCase);
-            
+
+            if (sourceFile.GetLocation().ExtensionWithDot.EndsWith(UnityYamlFileExtensions.AssetFileExtensionWithDot))
+            {
+                return new AssetFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
+            }
+
             var consumer = new UnityScenePathGameObjectConsumer();
             assetDocumentHierarchy.ProcessSceneHierarchyFromComponentToRoot(location, consumer, true, true);
             
-            return new FindUsageResultElement(isPrefab, needExpand, pathFromAsset, fileName, consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray());
+            return new HierarchyFindUsagesResult(consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray(), needExpand, pathFromAsset, fileName, extension);
         }
 
         private static bool GetPathFromAssetFolder([NotNull] FileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file, 
@@ -133,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private readonly FileSystemPath mySolutionDirectoryPath;
             private FindExecution myFindExecution = FindExecution.Continue;
             
-            public List<FindUsageResultElement> Result = new List<FindUsageResultElement>();
+            public List<AssetFindUsagesResultBase> Result = new List<AssetFindUsagesResultBase>();
 
             public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor, IPersistentIndexManager persistentIndexManager,
                 FileSystemPath solutionDirectoryPath)
@@ -172,10 +177,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private readonly UnityEditorProtocol myEditorProtocol;
             private readonly IShellLocks myShellLocks;
             private readonly string myDisplayName;
-            private readonly FindUsageResultElement mySelected;
+            private readonly AssetFindUsagesResultBase mySelected;
 
             public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, UnityHost unityHost, UnityEditorProtocol editorProtocol, IShellLocks shellLocks, 
-                string displayName, FindUsageResultElement selected, bool focusUnity)
+                string displayName, AssetFindUsagesResultBase selected, bool focusUnity)
             {
                 myProgressBarLifetimeDefinition = progressBarLifetimeDefinition;
                 myComponentLifetime = componentLifetime;
@@ -201,10 +206,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 {
                                     var model = myEditorProtocol.UnityModel.Value;
                                     if (mySelected != null)
-                                        model.ShowGameObjectOnScene.Fire(mySelected.ConvertToUnityModel());
+                                        model.ShowUsagesInUnity.Fire(mySelected);
                                     // pass all references to Unity TODO temp workaround, replace with async api
-                                    model.FindUsageResults.Fire(new FindUsageResult(myDisplayName,
-                                        myConsumer.Result.ToArray()).ConvertToUnityModel());
+                                    model.SendFindUsagesSessionResult.Fire(new FindUsagesSessionResult(myDisplayName, myConsumer.Result.ToArray()));
                                 }));
                     }
 

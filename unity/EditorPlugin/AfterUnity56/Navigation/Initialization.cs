@@ -1,5 +1,7 @@
+using System;
 using System.Diagnostics;
 using System.Linq;
+using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
 using JetBrains.Rider.Unity.Editor.NonUnity;
@@ -14,7 +16,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
     {
       var modelValue = modelAndLifetime.Model;
       var connectionLifetime = modelAndLifetime.Lifetime;
-      modelValue.ShowGameObjectOnScene.Advise(connectionLifetime,  findUsagesResult =>
+      modelValue.ShowUsagesInUnity.Advise(connectionLifetime,  findUsagesResult =>
       {
         if (findUsagesResult != null)
         {
@@ -24,19 +26,27 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
             
             EditorUtility.FocusProjectWindow();
 
-            if (findUsagesResult.IsPrefab)
+            if (findUsagesResult is HierarchyFindUsagesResult hierarchyFindUsagesResult)
             {
-              ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
+              if (findUsagesResult.Extension.Equals(".prefab", StringComparison.OrdinalIgnoreCase))
+              {
+                ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
+              }
+              else
+              {
+                ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, hierarchyFindUsagesResult.PathElements, hierarchyFindUsagesResult.RootIndices);
+              }
             }
             else
             {
-              ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, findUsagesResult.PathElements, findUsagesResult.RootIndices);
+              ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
             }
+
           });  
         }
       });
       
-      modelValue.FindUsageResults.Advise(connectionLifetime, result =>
+      modelValue.SendFindUsagesSessionResult.Advise(connectionLifetime, result =>
       {
         if (result != null)
         {
