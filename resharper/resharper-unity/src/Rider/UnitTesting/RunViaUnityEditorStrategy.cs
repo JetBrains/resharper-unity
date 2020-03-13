@@ -442,6 +442,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     return;
                 }
                 
+                // Can't use ConnectionTracker because it pauses without focus
                 waitingLifetime.StartMainUnguardedAsync(async ()=>
                 {
                     while (waitingLifetime.IsAlive)
