@@ -25,6 +25,8 @@
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
     <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
 
+    <spellchecker.bundledDictionaryProvider implementation="com.jetbrains.rider.plugins.unity.spellchecker.UnityBundledDictionaryProvider"/>
+
     <!-- This has to be first, as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
     <lang.documentationProvider language="C#" implementationClass="com.jetbrains.rider.plugins.unity.quickDoc.UnityDocumentationProvider"
                                 order="first" />
@@ -228,6 +230,11 @@
       <action id="Unity_Internal_DumpDuplicateTypeNames"
               class="com.jetbrains.rider.plugins.unity.actions.internal.DumpDuplicateTypeNamesAction"
               text="Dump Duplicate Type Names"
+              internal="true" />
+
+      <action id="Unity_Internal_DumpSpellCheckWordLists"
+              class="com.jetbrains.rider.plugins.unity.actions.internal.DumpSpellCheckWordListsAction"
+              text="Dump Spell Check Word Lists"
               internal="true" />
     </group>
   </actions>

@@ -106,6 +106,8 @@
   <ItemGroup>
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
+    <None Remove="CSharp\Feature\Respeller\Abbreviations.txt" />
+    <EmbeddedResource Include="CSharp\Feature\Respeller\Abbreviations.txt" />
   </ItemGroup>
   <ItemGroup>
     <LiveTemplate Include="Templates\**\*.md">
@@ -137,6 +139,9 @@
     <Compile Remove="**\VisualStudio\**" />
     <EmbeddedResource Remove="**\VisualStudio\**" />
     <None Remove="**\VisualStudio\**" />
+    <Compile Remove="**\ReSharper\**" />
+    <EmbeddedResource Remove="**\ReSharper\**" />
+    <None Remove="**\ReSharper\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="AsmDef\**" />
