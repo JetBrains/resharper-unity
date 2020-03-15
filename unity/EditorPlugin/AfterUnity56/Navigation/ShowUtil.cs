@@ -10,7 +10,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
   {
     public static void ShowFileUsage(string filePath)
     {
-      var prefab = AssetDatabase.LoadAssetAtPath(filePath, typeof(GameObject));
+      var prefab = AssetDatabase.LoadAssetAtPath(filePath, typeof(Object));
       Selection.activeObject = prefab;
       EditorGUIUtility.PingObject(prefab);
     }

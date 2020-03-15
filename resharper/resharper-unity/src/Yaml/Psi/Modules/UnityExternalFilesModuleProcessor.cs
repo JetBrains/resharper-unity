@@ -366,7 +366,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
                             projectFilesToAdd.Add(delta.NewPath);
                         }
                     }
-                    else if (delta.NewPath.IsInterestingMeta())
+                    else if (delta.NewPath.IsMeta())
                         AddExternalPsiSourceFile(builder, delta.NewPath);
                     break;
 
@@ -457,7 +457,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 
             public void AddFile(DirectoryEntryData directoryEntry)
             {
-                if (directoryEntry.RelativePath.IsInterestingMeta())
+                if (directoryEntry.RelativePath.IsMeta())
                     MetaFiles.Add(directoryEntry);
                 else if (directoryEntry.RelativePath.IsInterestingAsset())
                 {
