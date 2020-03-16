@@ -16,6 +16,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Exclude `Boo` and `UnityScript` namespaces, as well as the `System.Diagnostics.Debug` type from import completion ([#574](https://github.com/JetBrains/resharper-unity/issues/574), [#1473](https://github.com/JetBrains/resharper-unity/pull/1473))
 - Add more attributes to external annotations. E.g. `ShortcutAttribute` will mark the method as in use ([#1546](https://github.com/JetBrains/resharper-unity/issues/1546), [RIDER-40330](https://youtrack.jetbrains.com/issue/RIDER-40330), [#1548](https://github.com/JetBrains/resharper-unity/pull/1548))
 - Find Usages for serialised fields now includes asset usages ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Add Unity specific spell check dictionary ([#1187](https://github.com/JetBrains/resharper-unity/issues/1187), [#1570](https://github.com/JetBrains/resharper-unity/pull/1570))
 
 ### Changed
 
