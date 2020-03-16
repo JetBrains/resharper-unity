@@ -208,6 +208,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         
         public IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference, out string guid)
         {
+            guid = null;
+            if (hierarchyReference == null)
+                return null;
+            
             myShellLocks.AssertReadAccessAllowed();
             switch (hierarchyReference)
             {
