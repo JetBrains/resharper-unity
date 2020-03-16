@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Respeller
             var entry = GetIndexedEntry();
             if (entry == null)
                 return;
-            var path = FileSystemPath.Parse(GetType().Assembly.Location).Parent / "Extensions/JetBrains.unity/dictionary/unity.dic";
+            var path = (FileSystemPath.Parse(GetType().Assembly.Location).Parent / "Extensions/JetBrains.unity/dictionaries/unity.dic").FullPath;
             ScalarSettingsStoreAccess.SetIndexedValue(mountPoint, entry, path, null, true, null, myLogger);
         }
 

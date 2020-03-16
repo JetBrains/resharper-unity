@@ -79,6 +79,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     <file src="..\..\build\resharper-unity\bin\$Configuration$\net461\JetBrains.ReSharper.Plugins.Yaml.pdb" target="DotFiles" />
     <file src="annotations\UnityEngine*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
     <file src="annotations\UnityEditor*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
-    <file src="..\..\..\common\dictionaries\*" target="DotFiles\Extensions\JetBrains.Unity\dictionaries" />
+    <file src="..\..\..\common\dictionaries\*.dic" target="DotFiles\Extensions\JetBrains.Unity\dictionaries" />
+    <file src="..\..\..\common\dictionaries\*.aff" target="DotFiles\Extensions\JetBrains.Unity\dictionaries" />
   </files>
 </package>
