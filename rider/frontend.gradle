@@ -164,6 +164,13 @@ task validatePluginXml {
 }
 prepareSandbox.dependsOn validatePluginXml
 
+processResources {
+    copy {
+        from "../common/dictionaries/unity.dic"
+        into "src/main/resources/com/jetbrains/rider/plugins/unity/spellchecker/"
+    }
+}
+
 test {
     useTestNG() {}
     testLogging {
