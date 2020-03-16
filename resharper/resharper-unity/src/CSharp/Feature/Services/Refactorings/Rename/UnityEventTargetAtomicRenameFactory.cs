@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
@@ -29,14 +32,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         private static bool IsPossibleEventHandler(IDeclaredElement declaredElement)
         {
+
             var clrDeclaredElement = declaredElement as IClrDeclaredElement;
 
-            var containingType = clrDeclaredElement?.GetContainingType();
-            if (containingType == null)
-                return false;
-            
-            var unityObjectType = TypeFactory.CreateTypeByCLRName(KnownTypes.Object, clrDeclaredElement.Module).GetTypeElement();
-            return containingType.IsDescendantOf(unityObjectType);
+            switch (clrDeclaredElement)
+            {
+                case IProperty _:
+                case IMethod _:
+                    var containingType = clrDeclaredElement.GetContainingType();
+                    if (containingType == null)
+                        return false;
+
+                    var unityObjectType = TypeFactory.CreateTypeByCLRName(KnownTypes.Object, clrDeclaredElement.Module).GetTypeElement();
+                    var result = containingType.IsDescendantOf(unityObjectType);
+                    if (!result)
+                        return false;
+                    var solution = clrDeclaredElement.GetSolution();
+                    var cacheController = solution.GetComponent<DeferredCacheController>();
+
+                    if (cacheController.IsProcessingFiles())
+                        return true;
+                    
+                    var methods = solution.GetComponent<AssetMethodsElementContainer>();
+                    return methods.GetAssetUsagesCount(clrDeclaredElement, out bool estimatedResult) > 0 || estimatedResult;
+                default:
+                    return false;
+            }
         }
     }
 }
