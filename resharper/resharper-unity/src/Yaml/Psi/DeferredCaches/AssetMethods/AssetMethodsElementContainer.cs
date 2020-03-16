@@ -256,7 +256,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                 var module = clrDeclaredElement.Module;
                     
                 // we have already cache guid in merge method for methodData in myLocalUsages
-                var guid = (assetMethodData.TargetScriptReference as ExternalReference).NotNull("Expected External Reference").ExternalAssetGuid;
+                var guid = (assetMethodData.TargetScriptReference as ExternalReference)?.ExternalAssetGuid;
+                if (guid == null)
+                    continue;
+                
                 var symbolTable = GetReferenceSymbolTable(solution, module, assetMethodData, guid);
                 var resolveResult = symbolTable.GetResolveResult(assetMethodData.MethodName);
                 if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
