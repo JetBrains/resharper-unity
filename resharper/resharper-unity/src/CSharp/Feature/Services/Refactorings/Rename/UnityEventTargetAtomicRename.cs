@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
             var elements = de is IProperty property ? new[] {de, property.Getter, property.Setter} : new[] {de};
             
-            finder.Find(elements, searchDomain, new FindResultConsumer(result =>
+            finder.Find(elements.Where(t => t != null).ToArray(), searchDomain, new FindResultConsumer(result =>
             {
                 if (result is UnityMethodsFindResult fr)
                 {
