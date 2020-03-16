@@ -41,6 +41,10 @@ Added:
 - Exclude Boo and UnityScript namespaces, as well as the System.Diagnostics.Debug type from import completion (#574, #1473)
 - Add more attributes to external annotations. E.g. ShortcutAttribute will mark the method as in use (#1546, RIDER-40330, #1548)
 - Find Usages for serialised fields now includes asset usages (#1530)
+- Add file to correct project when moving with drag and drop in Unity Explorer (#1501)
+- Add context menu to create Unity Assets menu item for a ScriptableObject (#1567)
+- Show serialised field values for scriptable objects (#1567)
+- Show usage count, and support find usages of scriptable objects (#1567)
 - Add Unity specific spell check dictionary (#1187, #1570)
 
 Changed:
