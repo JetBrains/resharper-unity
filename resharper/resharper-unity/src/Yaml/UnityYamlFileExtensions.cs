@@ -65,7 +65,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
 
         public static bool IsMetaOrProjectSettings(ISolution solution, FileSystemPath location)
         {
-            var components = location.MakeRelativeTo(solution.SolutionDirectory).Components.ToArray();
+            var components = location.TryMakeRelativeTo(solution.SolutionDirectory).Components.ToArray();
+            
             if (location.ExtensionNoDot.Equals("meta", StringComparison.InvariantCultureIgnoreCase) || components.Length == 2 &&
                 components[0].Equals("ProjectSettings", StringComparison.InvariantCultureIgnoreCase))
                 return true;
