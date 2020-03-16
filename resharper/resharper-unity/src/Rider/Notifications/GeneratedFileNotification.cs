@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
@@ -20,8 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
     {
         private readonly NotificationPanelHost myNotificationPanelHost;
 
-        public GeneratedFileNotification(Lifetime lifetime, UnityHost unityHost, ConnectionTracker connectionTracker, UnityEditorProtocol editorProtocol, ISolution solution, SolutionLifecycleHost solutionLifecycleHost, AsmDefNameCache asmDefNameCache, NotificationPanelHost notificationPanelHost, TextControlHost textControlHost)
+        public GeneratedFileNotification(Lifetime lifetime, UnityHost unityHost, ConnectionTracker connectionTracker, UnityEditorProtocol editorProtocol, ISolution solution,
+            AsmDefNameCache asmDefNameCache, [CanBeNull] TextControlHost textControlHost = null, [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,
+            [CanBeNull] NotificationPanelHost notificationPanelHost = null)
         {
+            if (solutionLifecycleHost == null)
+                return;
+            
             myNotificationPanelHost = notificationPanelHost;
                 
             solutionLifecycleHost.FullStartupFinished.Advise(lifetime, _ =>
