@@ -7,11 +7,11 @@ public class A : MonoBehaviour
 {
   // Potential event handler, but YAML is enabled and a reference isn't found
   // Should be unused
-  public void |UnusedMethod|(0)()
+  public void UnusedMethod()
   {
   }
 
-  private void |UnusedPrivateMethod|(1)()
+  private void |UnusedPrivateMethod|(0)()
   {
   }
 
@@ -32,18 +32,18 @@ public class A : MonoBehaviour
   }
 
   // Should be unused - invalid parameters!
-  public void |OnAudioFilterRead|(2)|()|(3)
+  public void |OnAudioFilterRead|(1)|()|(2)
   {
   }
 
   // Should be unused - invalid return type!
-  public |bool|(4) |FixedUpdate|(5)()
+  public |bool|(3) |FixedUpdate|(4)()
   {
       return true;
   }
 
   // Should be unused - invalid static modifier!
-  public |static|(6) void |LateUpdate|(7)()
+  public |static|(5) void |LateUpdate|(6)()
   {
   }
 
@@ -53,7 +53,7 @@ public class A : MonoBehaviour
   }
 
   // Should mark collisionInfo as unused
-  public void OnCollisionExit(Collision |collisionInfo|(8))
+  public void OnCollisionExit(Collision |collisionInfo|(7))
   {
   }
 
@@ -65,13 +65,12 @@ public class A : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: Method 'UnusedMethod' is never used
-(1): ReSharper Dead Code: Method 'UnusedPrivateMethod' is never used
-(2): ReSharper Dead Code: Method 'OnAudioFilterRead' is never used
-(3): ReSharper Warning: Incorrect method parameters. Expected '(float[] data, int channels)'
-(4): ReSharper Warning: Incorrect return type. Expected 'void'
-(5): ReSharper Dead Code: Method 'FixedUpdate' is never used
-(6): ReSharper Warning: Incorrect static modifier
-(7): ReSharper Dead Code: Method 'LateUpdate' is never used
-(8): ReSharper Dead Code: Parameter 'collisionInfo' is never used
+(0): ReSharper Dead Code: Method 'UnusedPrivateMethod' is never used
+(1): ReSharper Dead Code: Method 'OnAudioFilterRead' is never used
+(2): ReSharper Warning: Incorrect method parameters. Expected '(float[] data, int channels)'
+(3): ReSharper Warning: Incorrect return type. Expected 'void'
+(4): ReSharper Dead Code: Method 'FixedUpdate' is never used
+(5): ReSharper Warning: Incorrect static modifier
+(6): ReSharper Dead Code: Method 'LateUpdate' is never used
+(7): ReSharper Dead Code: Parameter 'collisionInfo' is never used
 
