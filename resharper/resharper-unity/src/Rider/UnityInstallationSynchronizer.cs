@@ -36,32 +36,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             host.PerformModelAction(rd =>
             {
                 // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more correct than any counted value
-                if (myUnityEditorProtocol.UnityModel.Value != null)
+                if (myUnityEditorProtocol.UnityModel.Value != null) 
                     return;
 
                 var version = unityVersion.GetActualVersionForSolution();
-                FileSystemPath applicationPath;
+                var applicationPath = unityVersion.GetActualAppPathForSolution();
 
-                // path found by version is preferable
-                var info = UnityInstallationFinder.GetApplicationInfo(version);
-                if (info == null)
+                if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX && !applicationPath.ExistsDirectory
+                    || PlatformUtil.RuntimePlatform != PlatformUtil.Platform.MacOsX && !applicationPath.ExistsFile)
                 {
-                    // nothing found by version - get version by path then
-                    applicationPath = unityVersion.GetActualAppPathForSolution();
-                    version = UnityVersion.GetVersionByAppPath(applicationPath);
-                }
-                else
-                {
+                    var info = UnityInstallationFinder.GetApplicationInfo(version);
+                    if (info == null)
+                        return;
                     applicationPath = info.Path;
                     version = info.Version;
                 }
-
+                
                 var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(applicationPath);
-                rd.UnityApplicationData.SetValue(new UnityApplicationData(applicationPath.FullPath,
-                    contentsPath.FullPath,
+                rd.UnityApplicationData.SetValue(new UnityApplicationData(applicationPath.FullPath, 
+                    contentsPath.FullPath, 
                     UnityVersion.VersionToString(version),
                     UnityVersion.RequiresRiderPackage(version)
-                ));
+                    ));
             });
         }
     }
