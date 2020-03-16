@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.PerformanceData;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -14,20 +16,25 @@ using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Impl.Resolve;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.Util;
+using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches
 {
     [PsiComponent]
     public class AsmDefNameCache : SimpleICache<AsmDefCacheItem>
     {
+        private readonly IShellLocks myShellLocks;
         private readonly ISolution mySolution;
 
         private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements =
             new Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement>();
 
-        public AsmDefNameCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, ISolution solution)
+        private readonly OneToListMap<string, IPsiSourceFile> myNames = new OneToListMap<string, IPsiSourceFile>();
+        
+        public AsmDefNameCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ISolution solution)
             : base(lifetime, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
+            myShellLocks = shellLocks;
             mySolution = solution;
         }
 
@@ -100,12 +107,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches
         {
             if (asmDefCacheItem == null) return;
 
+            myNames.Add(asmDefCacheItem.Name, sourceFile);
             if (!myDeclaredElements.ContainsKey(sourceFile))
                 myDeclaredElements.Add(sourceFile, CreateDeclaredElement(sourceFile, asmDefCacheItem));
         }
 
         private void RemoveFromLocalCache(IPsiSourceFile sourceFile)
         {
+            var item = Map.GetValueSafe(sourceFile);
+            if (item != null)
+                myNames.Remove(item.Name, sourceFile);
+            
+            
             myDeclaredElements.Remove(sourceFile);
         }
 
@@ -117,6 +130,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
             return base.IsApplicable(sf) && sf.IsAsmDef() && sf.IsLanguageSupported<JsonNewLanguage>();
+        }
+
+        public FileSystemPath GetPathFor(string name)
+        {
+            return myNames.GetValuesSafe(name).FirstOrDefault(null)?.GetLocation();
         }
     }
 }
