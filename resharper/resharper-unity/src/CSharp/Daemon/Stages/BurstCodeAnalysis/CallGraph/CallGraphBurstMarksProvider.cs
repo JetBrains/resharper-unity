@@ -14,13 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class CallGraphBurstMarksProvider : CallGraphRootMarksProviderBase
     {
-        private readonly UnityApi myAPI;
-
-        public CallGraphBurstMarksProvider(ISolution solution, UnityApi api)
+        public CallGraphBurstMarksProvider(ISolution solution)
             : base(nameof(CallGraphBurstMarksProvider),
                 new CallGraphOutcomingPropagator(solution, nameof(CallGraphBurstMarksProvider)))
         {
-            myAPI = api;
         }
 
         public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode,
@@ -32,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case IMethodDeclaration methodDeclaration
                     when methodDeclaration.GetContainingTypeDeclaration() is IStructDeclaration structDeclaration &&
                          structDeclaration.GetAttribute(KnownTypes.BurstCompileAttribute) != null &&
-                         myAPI.IsDescendantOf(KnownTypes.Job, structDeclaration.DeclaredElement):
+                         UnityApi.IsDescendantOf(KnownTypes.Job, structDeclaration.DeclaredElement):
                 {
                     var declaredElement = methodDeclaration.DeclaredElement;
                     if (declaredElement != null &&
