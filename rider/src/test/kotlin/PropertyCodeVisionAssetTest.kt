@@ -84,6 +84,13 @@ class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
         true
     }
 
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "RiderSample")
+    fun propertyCodeVisionScriptableObject(caseName: String, showProperties: String) = doUnityTest(showProperties,
+        "Assets/TestScriptableObject.cs") {
+        true
+    }
+
     fun doUnityTest(showProperties: String, file: String, action: EditorImpl.() -> Boolean) {
         setReSharperSetting("CodeEditing/Unity/EnableInspectorPropertiesEditor/@EntryValue", showProperties)
         waitAndPump(project.lifetime, { project.solution.rdUnityModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })

@@ -58,9 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.Name.EndsWith("cs.meta", StringComparison.InvariantCultureIgnoreCase) ||
-                   sf.Name.EndsWith("unity.meta", StringComparison.InvariantCultureIgnoreCase) ||
-                   sf.Name.EndsWith("prefab.meta", StringComparison.InvariantCultureIgnoreCase);
+            return sf.Name.EndsWith(".meta", StringComparison.InvariantCultureIgnoreCase);
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)

@@ -1,15 +1,15 @@
 ﻿Provided elements:
  0: Awake():System.Void
- 1: OnDestroy():System.Void
- 2: OnDisable():System.Void
- 3: OnEnable():System.Void
- 4: OnValidate():System.Void
- 5: Reset():System.Void
- 6: OnStateEnter(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
- 7: OnStateExit(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
- 8: OnStateIK(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
- 9: OnStateMove(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
- 10: OnStateUpdate(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 1: Reset():System.Void
+ 2: OnEnable():System.Void
+ 3: OnDisable():System.Void
+ 4: OnDestroy():System.Void
+ 5: OnStateEnter(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 6: OnStateExit(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 7: OnStateIK(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 8: OnStateMove(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 9: OnStateUpdate(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void
+ 10: OnValidate():System.Void
 
 // ${KIND:Unity.EventFunctions}
 // ${SELECT0:OnStateEnter(UnityEngine.Animator,UnityEngine.AnimatorStateInfo,System.Int32):System.Void}

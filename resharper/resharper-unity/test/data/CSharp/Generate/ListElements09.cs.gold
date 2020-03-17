@@ -1,18 +1,18 @@
 ﻿Provided elements:
  0: Awake():System.Void
- 1: OnDestroy():System.Void
- 2: OnFocus():System.Void
- 3: OnGUI():System.Void
- 4: OnHierarchyChange():System.Void
- 5: OnInspectorUpdate():System.Void
- 6: OnLostFocus():System.Void
- 7: OnProjectChange():System.Void
- 8: OnSelectionChange():System.Void
- 9: Update():System.Void
- 10: OnDisable():System.Void
- 11: OnEnable():System.Void
- 12: OnValidate():System.Void
- 13: Reset():System.Void
+ 1: Reset():System.Void
+ 2: Update():System.Void
+ 3: OnEnable():System.Void
+ 4: OnDisable():System.Void
+ 5: OnDestroy():System.Void
+ 6: OnGUI():System.Void
+ 7: OnFocus():System.Void
+ 8: OnHierarchyChange():System.Void
+ 9: OnInspectorUpdate():System.Void
+ 10: OnLostFocus():System.Void
+ 11: OnProjectChange():System.Void
+ 12: OnSelectionChange():System.Void
+ 13: OnValidate():System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;

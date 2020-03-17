@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         }
 
         public override string Title => "Rename Unity reference";
-        public override string Description => "Rename references in Unity asset files?";
+        public override string Description => myDeferredCacheController.IsProcessingFiles() ? "Asset index is not ready." : "Rename references in Unity asset files?";
 
         public override BeControl GetPageContent()
         {
@@ -37,9 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         private string GetText()
         {
             if (myDeferredCacheController.IsProcessingFiles())
-            {
-                return "Asset index is not ready. Symbol will not be renamed in assets.";
-            }
+                return "Symbol will not be renamed in assets.";
             
             return "Please ensure the project is saved in the Unity Editor, or any changes will be lost.";
         }

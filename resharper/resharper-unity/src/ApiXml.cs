@@ -110,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             var description = node.Attributes?["description"]?.Value;
             var isStatic = bool.Parse(node.Attributes?["static"]?.Value ?? "false");
-            var isCoroutine = bool.Parse(node.Attributes?["coroutine"]?.Value ?? "false");
+            var canBeCoroutine = bool.Parse(node.Attributes?["coroutine"]?.Value ?? "false");
             var isUndocumented = bool.Parse(node.Attributes?["undocumented"]?.Value ?? "false");
 
             var minimumVersion = ParseVersionAttribute(node, "minimumVersion", defaultMinimumVersion);
@@ -135,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             return new UnityEventFunction(GetInternedIdentifier(name), typeName, returnType, returnsArray, isStatic,
-                isCoroutine, description, isUndocumented, minimumVersion, maximumVersion, parameters);
+                canBeCoroutine, description, isUndocumented, minimumVersion, maximumVersion, parameters);
         }
 
         private UnityEventFunctionParameter LoadParameter([NotNull] XmlNode node, int i)

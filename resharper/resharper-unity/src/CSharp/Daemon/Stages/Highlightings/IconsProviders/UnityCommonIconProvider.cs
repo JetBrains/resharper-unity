@@ -117,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var tooltip = "Unity event function";
             if (!string.IsNullOrEmpty(eventFunction.Description))
                 tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
-            if (eventFunction.Coroutine)
+            if (eventFunction.CanBeCoroutine)
                 tooltip += Environment.NewLine + "This function can be a coroutine.";
 
             return tooltip;
@@ -155,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (method == null) return null;
 
             var function = unityApi.GetUnityEventFunction(method);
-            if (function == null || !function.Coroutine) return null;
+            if (function == null || !function.CanBeCoroutine) return null;
 
             var type = method.ReturnType.GetScalarType();
             if (type == null) return false;

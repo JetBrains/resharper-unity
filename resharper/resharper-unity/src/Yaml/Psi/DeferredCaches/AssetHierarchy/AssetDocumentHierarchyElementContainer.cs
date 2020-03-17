@@ -23,10 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public class AssetDocumentHierarchyElementContainer : IUnityAssetDataElementContainer
     {
         private readonly IPersistentIndexManager myManager;
-        private readonly PrefabImportCache myPrefabImportCache;
-        private readonly IShellLocks myShellLocks;
         private readonly UnityExternalFilesPsiModule myPsiModule;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
+        
+        private readonly PrefabImportCache myPrefabImportCache;
+        private readonly IShellLocks myShellLocks;
         private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
 
         private readonly ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement> myAssetDocumentsHierarchy =
@@ -205,8 +206,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return myAssetDocumentsHierarchy.GetValueSafe(sourceFile);
         }
         
-        private IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference, out string guid)
+        public IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference, out string guid)
         {
+            myShellLocks.AssertReadAccessAllowed();
             switch (hierarchyReference)
             {
                 case LocalReference localReference:
