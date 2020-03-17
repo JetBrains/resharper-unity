@@ -55,7 +55,8 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectService(project
     // Returns false when opening a Unity project as a plain folder
     private fun isCorrectlyLoadedSolution(project: Project): Boolean {
         val solutionFile = project.solutionFile
-        return project.solutionDescription is RdExistingSolution && solutionFile.isFile && solutionFile.extension.equals("sln", true)
+        return project.solutionDescription is RdExistingSolution && solutionFile.isFile &&
+            (solutionFile.extension.equals("sln", true) || solutionFile.extension.equals("slnf", true))
     }
 
     private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {
