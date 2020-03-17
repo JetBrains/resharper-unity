@@ -191,16 +191,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             {
                 case IThrowStatement _:
                 case IThrowExpression _:
+                case IInvocationExpression _:
                     return true;
                 default:
                     return false;
             }
         }
 
+        private static bool IsBurstDiscarded(ITreeNode node)
+        {
+            if (!(node is IInvocationExpression expression))
+                return false;
+            var invokedMethod = expression.InvocationExpressionReference.Resolve().DeclaredElement as IMethod;
+            if (invokedMethod == null)
+                return false;
+            return invokedMethod.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self).Count != 0;
+        }
+
         private UnityProblemAnalyzerContext GetProhibitedContexts(ITreeNode node)
         {
             var context = UnityProblemAnalyzerContext.NONE;
-            if (node is IThrowStatement || node is IThrowExpression)
+            if (node is IThrowStatement || node is IThrowExpression || IsBurstDiscarded(node))
                 context |= UnityProblemAnalyzerContext.BURST_CONTEXT;
             return context;
         }

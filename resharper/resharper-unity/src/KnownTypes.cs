@@ -40,6 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName LayerMask = new ClrTypeName("UnityEngine.LayerMask");
         public static readonly IClrTypeName Input = new ClrTypeName("UnityEngine.Input");
         public static readonly IClrTypeName BurstCompileAttribute = new ClrTypeName("Unity.Burst.BurstCompileAttribute");
+        public static readonly IClrTypeName BurstDiscardAttribute = new ClrTypeName("Unity.Burst.BurstDiscardAttribute");
         public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");
 
