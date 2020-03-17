@@ -39,9 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         private void SetValues()
         {
             IsUnityProjectFolder.SetValue(HasUnityFileStructure(mySolution.SolutionDirectory));
-            IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() &&
-                                    (mySolution.SolutionFilePath.ExtensionNoDot.ToLower() == "sln"
-                                    ||mySolution.SolutionFilePath.ExtensionNoDot.ToLower() == "slnf"));
+            IsUnityProject.SetValue(IsUnityProjectFolder.Value && mySolution.IsValid() && mySolution.SolutionFilePath.ExistsFile);
             IsUnityGeneratedProject.SetValue(IsUnityProject.Value && SolutionNameMatchesUnityProjectName());
         }
 
