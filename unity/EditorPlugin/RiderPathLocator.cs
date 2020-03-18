@@ -171,7 +171,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static string GetToolboxRiderRootPath(string localAppData)
     {
-      var toolboxPath = Path.Combine(localAppData, @"JetBrains\Toolbox");
+      var toolboxPath = Path.Combine(localAppData, @"JetBrains/Toolbox");
       var settingsJson = Path.Combine(toolboxPath, ".settings.json");
 
       if (File.Exists(settingsJson))
@@ -181,7 +181,7 @@ namespace JetBrains.Rider.Unity.Editor
           toolboxPath = path;
       }
 
-      var toolboxRiderRootPath = Path.Combine(toolboxPath, @"apps\Rider");
+      var toolboxRiderRootPath = Path.Combine(toolboxPath, @"apps/Rider");
       return toolboxRiderRootPath;
     }
 
