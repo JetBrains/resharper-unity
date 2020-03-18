@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
-            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myUnityApi, currentNode))
+            if (containingFunction != null && PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myUnityApi, currentNode))
             {
                 result.Add(containingFunction);
             }

@@ -25,6 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         
         public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
+            if(containingFunction == null)
+                return new LocalList<IDeclaredElement>();
+            
             var result = new LocalList<IDeclaredElement>();
             switch (currentNode)
             {
