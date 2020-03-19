@@ -1,16 +1,18 @@
 using System;
 using JetBrains.Annotations;
 using JetBrains.Core;
+using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.Tasks;
 using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
 using JetBrains.ReSharper.Features.XamlRendererHost.Preview;
 using JetBrains.ReSharper.Host.Features.Notifications;
 using JetBrains.ReSharper.Host.Features.ProjectModel;
 using JetBrains.ReSharper.Host.Features.TextControls;
 using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
@@ -19,18 +21,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
     [SolutionComponent]
     public class GeneratedFileNotification
     {
-        private readonly NotificationPanelHost myNotificationPanelHost;
-
-        public GeneratedFileNotification(Lifetime lifetime, UnityHost unityHost, ConnectionTracker connectionTracker, UnityEditorProtocol editorProtocol, ISolution solution,
-            AsmDefNameCache asmDefNameCache, [CanBeNull] TextControlHost textControlHost = null, [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,
-            [CanBeNull] NotificationPanelHost notificationPanelHost = null)
+        public GeneratedFileNotification(Lifetime lifetime, UnityHost unityHost, UnitySolutionTracker solutionTracker,
+            ConnectionTracker connectionTracker, UnityEditorProtocol editorProtocol, ISolution solution,
+            AsmDefNameCache asmDefNameCache, [CanBeNull] TextControlHost textControlHost = null,
+            [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,  [CanBeNull] NotificationPanelHost notificationPanelHost = null)
         {
             if (solutionLifecycleHost == null)
                 return;
             
-            myNotificationPanelHost = notificationPanelHost;
-                
-            solutionLifecycleHost.FullStartupFinished.Advise(lifetime, _ =>
+            if (!solutionTracker.IsUnityGeneratedProject.Value)
+                return;
+            
+            var fullStartupFinishedLifetimeDefinition = new LifetimeDefinition(lifetime);
+            solutionLifecycleHost.FullStartupFinished.Advise(fullStartupFinishedLifetimeDefinition.Lifetime, _ =>
             {
                 textControlHost.ViewHostTextControls(lifetime, (lt, id, host) =>
                 {
@@ -43,7 +46,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                         connectionTracker.State.View(lt, (unityStateLifetime, state) =>
                         {
                             var name = projectFile.Location.NameWithoutExtension;
-                            var path = asmDefNameCache.GetPathFor(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
+
+                            IPath path;
+                            using (ReadLockCookie.Create())
+                            {
+                                path = asmDefNameCache.GetPathFor(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
+                            }
 
                             var elements = new LocalList<INotificationPanelHyperlink>();
                             if (path != null && state != UnityEditorState.Disconnected)
@@ -65,6 +73,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
 
                     }
                 });
+                
+                fullStartupFinishedLifetimeDefinition.Terminate();
             });
         }
     }
