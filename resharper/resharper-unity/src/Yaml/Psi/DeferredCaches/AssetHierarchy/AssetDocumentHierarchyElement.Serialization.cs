@@ -20,14 +20,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         
         private static object Read(UnsafeReader reader)
         {
-            var count = reader.ReadInt32();
             var result = new AssetDocumentHierarchyElement();
 
-            for (int i = 0; i < count; i++)
+            
+            var otherCount = reader.ReadInt32();
+            for (int i = 0; i < otherCount; i++)
             {
                 var hierarchyElement = ReadHieraerchyElement(reader);
-                result.myElements.Add(hierarchyElement);
+                result.myOtherElements.Add(hierarchyElement);
             }
+            
+            var gameObjectCount = reader.ReadInt32();
+            for (int i = 0; i < gameObjectCount; i++)
+            {
+                result.myGameObjectHierarchies.Add(GameObjectHierarchy.Read(reader));
+            }
+            
+            var transformCount = reader.ReadInt32();
+            for (int i = 0; i < transformCount; i++)
+            {
+                result.myTransformElements.Add(TransformHierarchy.Read(reader));
+            }
+            
+            var scriptCount = reader.ReadInt32();
+            for (int i = 0; i < scriptCount; i++)
+            {
+                result.myScriptComponentElements.Add(ScriptComponentHierarchy.Read(reader));
+            }
+            
+            var componentCount = reader.ReadInt32();
+            for (int i = 0; i < componentCount; i++)
+            {
+                result.myComponentElements.Add(ComponentHierarchy.Read(reader));
+            }
+            
             return result;
         }
 
@@ -54,10 +80,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private static void Write(UnsafeWriter writer, AssetDocumentHierarchyElement value)
         {
-            writer.Write(value.myElements.Count);
-            foreach (var v in value.myElements)
+            writer.Write(value.myOtherElements.Count);
+            foreach (var v in value.myOtherElements)
             {
                 WriteHierarchyElement(writer, v);
+            }
+            
+            writer.Write(value.myGameObjectHierarchies.Count);
+            foreach (var v in value.myGameObjectHierarchies)
+            {
+                GameObjectHierarchy.Write(writer, v);
+            }
+            
+            writer.Write(value.myTransformElements.Count);
+            foreach (var v in value.myTransformElements)
+            {
+                TransformHierarchy.Write(writer, v);
+            }
+            
+            writer.Write(value.myScriptComponentElements.Count);
+            foreach (var v in value.myScriptComponentElements)
+            {
+                ScriptComponentHierarchy.Write(writer, v);
+            }
+            
+            writer.Write(value.myComponentElements.Count);
+            foreach (var v in value.myComponentElements)
+            {
+                ComponentHierarchy.Write(writer, v);
             }
         }
 
