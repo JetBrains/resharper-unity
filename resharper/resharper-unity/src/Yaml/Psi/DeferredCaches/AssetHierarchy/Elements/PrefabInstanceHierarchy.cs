@@ -33,5 +33,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public LocalReference GetParentTransform(UnityInterningCache cache) => cache.GetReference<LocalReference>(myParentTransform);
         public string SourcePrefabGuid { get; }
         public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy) => null;
+
+        public static void Write(UnsafeWriter writer, PrefabInstanceHierarchy prefabInstanceHierarchy)
+        {
+            ReferenceIndex.Write(writer, prefabInstanceHierarchy.myLocation);
+            ReferenceIndex.Write(writer, prefabInstanceHierarchy.myParentTransform);
+            
+            writer.Write(prefabInstanceHierarchy.PrefabModifications.Count);
+            foreach (var prefabModification in prefabInstanceHierarchy.PrefabModifications)
+            {
+                writer.WritePolymorphic(prefabModification);
+            }
+
+            writer.Write(prefabInstanceHierarchy.SourcePrefabGuid);
+        }
+
+        public static PrefabInstanceHierarchy Read(UnsafeReader reader)
+        {
+            var location = ReferenceIndex.Read(reader);
+            var parentTransform = ReferenceIndex.Read(reader);
+            var count = reader.ReadInt32();
+            var modifications = new List<PrefabModification>();
+            for (int i = 0; i < count; i++)
+                modifications.Add(reader.ReadPolymorphic<PrefabModification>());
+            
+            var sourcePrefabGuid = reader.ReadString();
+            return new PrefabInstanceHierarchy(location, parentTransform, modifications, sourcePrefabGuid);
+        }
     }
 }

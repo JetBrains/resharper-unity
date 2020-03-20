@@ -1,17 +1,13 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
-using JetBrains.Serialization;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
 {
-    [PolymorphicMarshaller]
-    public class AssetDocumentHierarchyElement : IUnityAssetDataElement
+    public partial class AssetDocumentHierarchyElement : IUnityAssetDataElement
     {
         
         private readonly List<IHierarchyElement> myElements = new List<IHierarchyElement>();
@@ -21,36 +17,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private readonly List<int> myPrefabInstanceHierarchies = new List<int>();
 
-        [UsedImplicitly] 
-        public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
-        [UsedImplicitly]
-        public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetDocumentHierarchyElement);
 
         public bool IsScene { get; internal set; }
 
         public AssetDocumentHierarchyElementContainer AssetDocumentHierarchyElementContainer { get; internal set; }
-
-        private static object Read(UnsafeReader reader)
-        {
-            var count = reader.ReadInt32();
-            var result = new AssetDocumentHierarchyElement();
-
-            for (int i = 0; i < count; i++)
-            {
-                var hierarchyElement = reader.ReadPolymorphic<IHierarchyElement>();
-                result.myElements.Add(hierarchyElement);
-            }
-            return result;
-        }
-
-        private static void Write(UnsafeWriter writer, AssetDocumentHierarchyElement value)
-        {
-            writer.Write(value.myElements.Count);
-            foreach (var v in value.myElements)
-            {
-                writer.WritePolymorphic(v);
-            }
-        }
+        
         public AssetDocumentHierarchyElement(IHierarchyElement hierarchyElements)
         {
             myElements.Add(hierarchyElements);

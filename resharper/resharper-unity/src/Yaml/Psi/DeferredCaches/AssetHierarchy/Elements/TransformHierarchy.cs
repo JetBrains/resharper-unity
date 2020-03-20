@@ -35,5 +35,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public LocalReference GetParent(UnityInterningCache cache) => cache.GetReference<LocalReference>(myParent);
         public int GetRootIndex(UnityInterningCache cache) => myRootIndex;
+
+        public static void Write(UnsafeWriter writer, TransformHierarchy transformHierarchy)
+        {
+            ReferenceIndex.Write(writer, transformHierarchy.myLocation);
+            ReferenceIndex.Write(writer, transformHierarchy.myOwner);
+            ReferenceIndex.Write(writer, transformHierarchy.myParent);
+            writer.Write(transformHierarchy.myRootIndex);
+        }
+
+        public static TransformHierarchy Read(UnsafeReader reader)
+        {
+            return new TransformHierarchy(
+                ReferenceIndex.Read(reader),
+                ReferenceIndex.Read(reader),
+                ReferenceIndex.Read(reader),
+                reader.ReadInt32());
+        }
     }
 }

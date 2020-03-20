@@ -31,5 +31,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             return owner.GetTransformHierarchy(cache, this);
         }
+
+        public static void Write(UnsafeWriter writer, GameObjectHierarchy gameObjectHierarchy)
+        {
+            ReferenceIndex.Write(writer, gameObjectHierarchy.myLocation);
+            StringIndex.Write(writer, gameObjectHierarchy.myName);
+        }
+
+        public static GameObjectHierarchy Read(UnsafeReader reader)
+        {
+            return new GameObjectHierarchy(
+                ReferenceIndex.Read(reader),
+                StringIndex.Read(reader));
+        }
     }
 }
