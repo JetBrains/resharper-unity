@@ -16,12 +16,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class ConnectionTracker
     {
-        private readonly IProperty<UnityEditorState> myState;
+        public readonly IProperty<UnityEditorState> State;
 
         public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol,
             IThreading locks, UnitySolutionTracker unitySolutionTracker)
         {
-            myState = new Property<UnityEditorState>(lifetime, "UnityEditorPlugin::ConnectionState", UnityEditorState.Disconnected);
+            State = new Property<UnityEditorState>(lifetime, "UnityEditorPlugin::ConnectionState", UnityEditorState.Disconnected);
             
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
                 return;
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     var model = editorProtocol.UnityModel.Value;
                     if (model == null)
                     {
-                        myState.SetValue(UnityEditorState.Disconnected);
+                        State.SetValue(UnityEditorState.Disconnected);
                     }
                     else
                     {
@@ -46,8 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
                             rdTask?.Result.Advise(lifetime, result =>
                             {
-                                myState.SetValue(result.Result);
-                                logger.Trace($"myIsConnected = {myState.Value}");
+                                State.SetValue(result.Result);
+                                logger.Trace($"myIsConnected = {State.Value}");
                             });
                         }
                         catch (Exception e)
@@ -57,8 +57,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }
                     }
 
-                    logger.Trace($"Sending connection state. State: {myState.Value}");
-                    host.PerformModelAction(m => m.EditorState.Value = Wrap(myState.Value));
+                    logger.Trace($"Sending connection state. State: {State.Value}");
+                    host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
                 });
             });
         }
@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public bool IsConnectionEstablished()
         {
-            return myState.Value != UnityEditorState.Refresh && myState.Value != UnityEditorState.Disconnected;
+            return State.Value != UnityEditorState.Refresh && State.Value != UnityEditorState.Disconnected;
         }
     }
 }
