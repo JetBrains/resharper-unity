@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -53,8 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var assetUsagesContainer = solution.GetComponent<AssetUsagesElementContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
+            var interningCache = solution.GetComponent<UnityInterningCache>();
             
-            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, assetUsagesContainer, methodsContainer, assetValuesContainer, metaFileGuidCache, elements, findCandidates);
+            return new UnityAssetReferenceSearcher(controller, interningCache, hierarchyContainer, assetUsagesContainer, methodsContainer, assetValuesContainer, metaFileGuidCache, elements, findCandidates);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An

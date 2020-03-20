@@ -2,6 +2,7 @@
 using System;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs
 {
@@ -16,41 +17,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myTransformHierarchy = transformHierarchy;
         }
 
-        public LocalReference Location => myTransformHierarchy.Location.GetImportedReference(myPrefabInstanceHierarchy);
-        public LocalReference GameObjectReference => myTransformHierarchy.GameObjectReference?.GetImportedReference(myPrefabInstanceHierarchy);
-        public bool IsStripped => false;
-        public LocalReference PrefabInstance => null;
-        public ExternalReference CorrespondingSourceObject => null;
-        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public LocalReference GetLocation(UnityInterningCache cache)
+        {
+            return myTransformHierarchy.GetLocation(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
+        }
+
+        public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedTransformHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public string Name => myTransformHierarchy.Name;
+        public string GetName(UnityInterningCache cache) => myTransformHierarchy.GetName(cache);
 
-        public LocalReference Parent
+        public LocalReference GetOwner(UnityInterningCache cache)
         {
-            get
-            {
-                if (myTransformHierarchy.Parent.LocalDocumentAnchor == 0)
-                    return myPrefabInstanceHierarchy.ParentTransform;
-                
-                return myTransformHierarchy.Parent.GetImportedReference(myPrefabInstanceHierarchy);
-            }
+            return myTransformHierarchy.GetOwner(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
         }
-        
-        public int RootIndex
-        {
-            get
-            {
-                if (myPrefabInstanceHierarchy.Modifications.TryGetValue((myTransformHierarchy.Location.LocalDocumentAnchor, "m_RootOrder"), out var result) && result is AssetSimpleValue simpleValue)
-                {
-                    if (int.TryParse(simpleValue.SimpleValue, out var index))
-                        return index;
-                }
 
-                return myTransformHierarchy.RootIndex;
+        public LocalReference GetParent(UnityInterningCache cache)
+        {
+            if (myTransformHierarchy.GetParent(cache).LocalDocumentAnchor == 0)
+                return myPrefabInstanceHierarchy.GetParentTransform(cache);
+                
+            return myTransformHierarchy.GetParent(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
+        }
+
+        public int GetRootIndex(UnityInterningCache cache)
+        {
+            if (myPrefabInstanceHierarchy.Modifications.TryGetValue((myTransformHierarchy.GetLocation(cache).LocalDocumentAnchor, "m_RootOrder"),
+                out var result) && result is AssetSimpleValue simpleValue)
+            {
+                if (int.TryParse(simpleValue.SimpleValue, out var index))
+                    return index;
             }
+
+            return myTransformHierarchy.GetRootIndex(cache);
         }
     }
 }

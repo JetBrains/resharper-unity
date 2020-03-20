@@ -2,7 +2,9 @@ using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.Serialization;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues
 {
@@ -12,37 +14,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new InspectorVariableUsage(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<IHierarchyReference>(),
-            reader.ReadString(), reader.ReadPolymorphic<IAssetValue>());
+        private static object Read(UnsafeReader reader) => new InspectorVariableUsage(
+            ReferenceIndex.Read(reader),
+            ReferenceIndex.Read(reader),
+            reader.ReadString(), 
+            reader.ReadPolymorphic<IAssetValue>());
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as InspectorVariableUsage);
 
         private static void Write(UnsafeWriter writer, InspectorVariableUsage value)
         {
-            writer.WritePolymorphic(value.Location);
-            writer.WritePolymorphic(value.ScriptReference);
-            writer.Write(value.Name);
+            ReferenceIndex.Write(writer, value.Location);
+            ReferenceIndex.Write(writer, value.ScriptReference);
+            writer.Write(value.NameHash);
             writer.WritePolymorphic(value.Value);
         }
 
-        public InspectorVariableUsage(LocalReference location, IHierarchyReference scriptReference, string name,
+        public InspectorVariableUsage(ReferenceIndex locationIndex, ReferenceIndex scriptReferenceIndex, string name,
             IAssetValue assetValue)
         {
-            Location = location;
-            ScriptReference = scriptReference;
-            Name = name;
+            Location = locationIndex;
+            ScriptReference = scriptReferenceIndex;
+            NameHash = name.GetPlatformIndependentHashCode();
             Value = assetValue;
         }
         
-        public LocalReference Location { get; }
-        public IHierarchyReference ScriptReference { get; }
-        public string Name { get; }
+        public ReferenceIndex Location { get; }
+        public ReferenceIndex ScriptReference { get; }
+        public int NameHash { get; }
         public IAssetValue Value { get; }
 
         protected bool Equals(InspectorVariableUsage other)
         {
-            return Location.Equals(other.Location) && ScriptReference.Equals(other.ScriptReference) && Name == other.Name && Value.Equals(other.Value);
+            return Location.Equals(other.Location) && ScriptReference.Equals(other.ScriptReference) && NameHash == other.NameHash && Value.Equals(other.Value);
         }
 
         public override bool Equals(object obj)
@@ -59,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             {
                 var hashCode = Location.GetHashCode();
                 hashCode = (hashCode * 397) ^ ScriptReference.GetHashCode();
-                hashCode = (hashCode * 397) ^ Name.GetHashCode();
+                hashCode = (hashCode * 397) ^ NameHash;
                 hashCode = (hashCode * 397) ^ Value.GetHashCode();
                 return hashCode;
             }

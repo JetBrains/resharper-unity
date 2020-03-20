@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
@@ -38,11 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityHost myUnityHost;
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly IPersistentIndexManager myPersistentIndexManager;
+        private readonly UnityInterningCache myUnityInterningCache;
         private readonly FileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
             AssetHierarchyProcessor assetHierarchyProcessor, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory,
-            UnityEditorProtocol editorProtocol, IPersistentIndexManager persistentIndexManager,
+            UnityEditorProtocol editorProtocol, IPersistentIndexManager persistentIndexManager, UnityInterningCache unityInterningCache,
             [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
             myLifetime = lifetime;
@@ -54,13 +56,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnityHost = unityHost;
             myEditorProtocol = editorProtocol;
             myPersistentIndexManager = persistentIndexManager;
+            myUnityInterningCache = unityInterningCache;
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
 
         public void CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, LocalReference location, bool focusUnity)
         {
             var finder = mySolution.GetPsiServices().AsyncFinder;
-            var consumer = new UnityUsagesFinderConsumer(myAssetHierarchyProcessor, myPersistentIndexManager, mySolutionDirectoryPath);
+            var consumer = new UnityUsagesFinderConsumer(myUnityInterningCache, myAssetHierarchyProcessor, myPersistentIndexManager, mySolutionDirectoryPath);
 
             var sourceFile = myPersistentIndexManager[location.OwnerId];
             if (sourceFile == null)
@@ -133,6 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         
         private class UnityUsagesFinderConsumer : IFindResultConsumer<UnityAssetFindResult>
         {
+            private readonly UnityInterningCache myUnityInterningCache;
             private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
             private readonly IPersistentIndexManager myPersistentIndexManager;
             private readonly FileSystemPath mySolutionDirectoryPath;
@@ -140,9 +144,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             
             public List<AssetFindUsagesResultBase> Result = new List<AssetFindUsagesResultBase>();
 
-            public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor, IPersistentIndexManager persistentIndexManager,
+            public UnityUsagesFinderConsumer(UnityInterningCache unityInterningCache,AssetHierarchyProcessor assetHierarchyProcessor, IPersistentIndexManager persistentIndexManager,
                 FileSystemPath solutionDirectoryPath)
             {
+                myUnityInterningCache = unityInterningCache;
                 myAssetHierarchyProcessor = assetHierarchyProcessor;
                 myPersistentIndexManager = persistentIndexManager;
                 mySolutionDirectoryPath = solutionDirectoryPath;
@@ -155,11 +160,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public FindExecution Merge(UnityAssetFindResult data)
             {
-                var sourceFile = myPersistentIndexManager[data.AttachedElement.Location.OwnerId];
+                var sourceFile = myPersistentIndexManager[data.AttachedElement.GetLocation(myUnityInterningCache).OwnerId];
                 if (sourceFile == null)
                     return myFindExecution;
                 
-                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.AttachedElement.Location, sourceFile);
+                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.AttachedElement.GetLocation(myUnityInterningCache), sourceFile);
                 if (request != null)
                     Result.Add(request);
                 

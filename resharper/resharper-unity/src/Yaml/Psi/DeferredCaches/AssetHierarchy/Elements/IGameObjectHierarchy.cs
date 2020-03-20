@@ -1,8 +1,10 @@
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
+
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
     public interface IGameObjectHierarchy : IHierarchyElement
     {
-        string Name { get; }
-        ITransformHierarchy GetTransformHierarchy(AssetDocumentHierarchyElement owner);
+        string GetName(UnityInterningCache cache);
+        ITransformHierarchy GetTransformHierarchy(UnityInterningCache cache, AssetDocumentHierarchyElement owner);
     }
 }

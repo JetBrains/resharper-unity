@@ -28,21 +28,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         private static void Write(UnsafeWriter writer, AssetInspectorValuesDataElement value)
         {
-            writer.Write(value.VariableUsages.Count);
-            foreach (var v in value.VariableUsages)
+            writer.Write(value.myVariableUsages.Count);
+            foreach (var v in value.myVariableUsages)
             {
                 writer.WritePolymorphic(v);
             }
         }
         
-        public readonly List<InspectorVariableUsage> VariableUsages = new List<InspectorVariableUsage>();
+        private readonly List<InspectorVariableUsage> myVariableUsages = new List<InspectorVariableUsage>();
         public string ContainerId => nameof(AssetInspectorValuesContainer);
 
         public AssetInspectorValuesDataElement(IEnumerable<InspectorVariableUsage> usages)
         {
             foreach (var inspectorVariableUsage in usages)
             {
-                VariableUsages.Add(inspectorVariableUsage);
+                myVariableUsages.Add(inspectorVariableUsage);
             }    
         }
         
@@ -50,10 +50,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         public void AddData(IUnityAssetDataElement unityAssetDataElement)
         {
             var valuesElement = unityAssetDataElement as AssetInspectorValuesDataElement;
-            foreach (var variableUsage in valuesElement.VariableUsages)
+            foreach (var variableUsage in valuesElement.myVariableUsages)
             {
-                VariableUsages.Add(variableUsage);
+                myVariableUsages.Add(variableUsage);
             }
+        }
+
+        public IEnumerable<InspectorVariableUsagePointer> EnumeratePointers()
+        {
+            for (int i = 0; i < myVariableUsages.Count; i++)
+                yield return new InspectorVariableUsagePointer(i);
+        }
+
+        public InspectorVariableUsage GetVariableUsage(InspectorVariableUsagePointer pointer)
+        {
+            return myVariableUsages[pointer.Index];
         }
     }
 }

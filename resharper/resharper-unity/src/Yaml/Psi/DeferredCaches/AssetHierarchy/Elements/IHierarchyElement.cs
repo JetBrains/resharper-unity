@@ -1,19 +1,15 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
     public interface IHierarchyElement
     {
         [NotNull]
-        LocalReference Location { get; }
+        LocalReference GetLocation(UnityInterningCache cache);
+        
         [CanBeNull]
-        LocalReference GameObjectReference { get; }
-        bool IsStripped { get; }
-        [CanBeNull]
-        LocalReference PrefabInstance { get; }
-        [CanBeNull]
-        ExternalReference CorrespondingSourceObject { get; }
-        IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy);
+        IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy);
     }
 }

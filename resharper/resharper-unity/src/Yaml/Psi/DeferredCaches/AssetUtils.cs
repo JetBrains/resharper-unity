@@ -8,6 +8,7 @@ using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -229,16 +230,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return sb.ToString();
         }
         
-        public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
+        public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, UnityInterningCache interningCache, IComponentHierarchy componentHierarchy)
         {
-            if (componentHierarchy is IScriptComponentHierarchy scriptComponent && scriptComponent.ScriptReference != null)
+            if (componentHierarchy is IScriptComponentHierarchy scriptComponent && scriptComponent.GetScriptReference(interningCache) != null)
             {
-                var result = metaFileGuidCache.GetAssetNames(scriptComponent.ScriptReference.ExternalAssetGuid).FirstOrDefault();
+                var result = metaFileGuidCache.GetAssetNames(scriptComponent.GetScriptReference(interningCache).ExternalAssetGuid).FirstOrDefault();
                 if (result != null)
                     return result;
             }
 
-            return componentHierarchy.Name;
+            return componentHierarchy.GetName(interningCache);
         }
 
         [CanBeNull]
