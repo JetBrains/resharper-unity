@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
@@ -26,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class UnityYamlExtraGroupingRulesProvider : IRiderExtraGroupingRulesProvider
     {
         // IconHost is optional so that we don't fail if we're in tests
-        public UnityYamlExtraGroupingRulesProvider(MetaFileGuidCache metaFileGuidCache = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
+        public UnityYamlExtraGroupingRulesProvider(UnityInterningCache unityInterningCache, MetaFileGuidCache metaFileGuidCache = null, UnitySolutionTracker unitySolutionTracker = null, IconHost iconHost = null)
         {
             if (unitySolutionTracker != null && unitySolutionTracker.IsUnityProject.HasValue() && unitySolutionTracker.IsUnityProject.Value
                 && iconHost != null && metaFileGuidCache != null)
@@ -34,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 ExtraRules = new IRiderUsageGroupingRule[]
                 {
                     new GameObjectUsageGroupingRule(iconHost),
-                    new ComponentUsageGroupingRule(metaFileGuidCache, iconHost)
+                    new ComponentUsageGroupingRule(metaFileGuidCache, unityInterningCache, iconHost)
                 };
             }
             else
@@ -127,11 +128,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class ComponentUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         private readonly MetaFileGuidCache myMetaFileGuidCache;
+        private readonly UnityInterningCache myUnityInterningCache;
 
-        public ComponentUsageGroupingRule(MetaFileGuidCache metaFileGuidCache, [NotNull] IconHost iconHost)
+        public ComponentUsageGroupingRule(MetaFileGuidCache metaFileGuidCache, UnityInterningCache unityInterningCache, [NotNull] IconHost iconHost)
             : base("Unity Component", UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
         {
             myMetaFileGuidCache = metaFileGuidCache;
+            myUnityInterningCache = unityInterningCache;
         }
 
         public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
@@ -143,7 +146,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                     var hierarchyContainer = assetOccurrence.GetSolution()?.GetComponent<AssetDocumentHierarchyElementContainer>();
                     var element = hierarchyContainer?.GetHierarchyElement(assetOccurrence.AttachedElementLocation, true);
                     if (element is IComponentHierarchy componentHierarchyElement)
-                        return CreateModel(AssetUtils.GetComponentName(myMetaFileGuidCache, componentHierarchyElement));
+                        return CreateModel(AssetUtils.GetComponentName(myMetaFileGuidCache, myUnityInterningCache, componentHierarchyElement));
                 }
             }
 

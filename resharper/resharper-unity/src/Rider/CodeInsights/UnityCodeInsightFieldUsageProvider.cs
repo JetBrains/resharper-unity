@@ -157,24 +157,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 var initValueCount =
                     myInspectorValuesContainer.GetValueCount(guid, propertyNames, initValueUnityPresentation);
 
-                if (initValueCount == 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 1
-                ) // only modified value
+                if (initValueCount == 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 1) // only modified value
                 {
-                    var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray();
-                    Assertion.Assert(values.Length == 1, "valueWithLocations.Length == 1"); //performance assertion
-                    var value = values[0];
+                    var value  = myInspectorValuesContainer.GetUniqueValueDifferTo(guid, propertyNames, null);
                     displayName = value.GetPresentation(solution, field, false);
                 }
-                else if (initValueCount > 0 &&
-                         myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 2)
+                else if (initValueCount > 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 2)
                 {
 
                     // original value & only one modified value
-                    var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray();
-                    Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
-
-                    var anotherValueWithLocation = values.FirstOrDefault(t => !t.Equals(initValueUnityPresentation));
-                    displayName = anotherValueWithLocation?.GetPresentation(solution, field, false);
+                    var anotherValueWithLocation = myInspectorValuesContainer.GetUniqueValueDifferTo(guid, propertyNames, initValueUnityPresentation);
+                    displayName = anotherValueWithLocation.GetPresentation(solution, field, false);
                 }
 
                 if (displayName == null || displayName.Equals("..."))

@@ -1,4 +1,5 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Psi;
 
@@ -8,8 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         public AssetUsage AssetUsage { get; }
 
-        public UnityScriptsFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetUsage assetUsage, IHierarchyElement attachedElement)
-            : base(sourceFile, declaredElement, attachedElement)
+        public UnityScriptsFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetUsage assetUsage, 
+            IHierarchyElement attachedElement, LocalReference attachedElementLocation)
+            : base(sourceFile, declaredElement, attachedElement, attachedElementLocation)
         {
             AssetUsage = assetUsage;
         }

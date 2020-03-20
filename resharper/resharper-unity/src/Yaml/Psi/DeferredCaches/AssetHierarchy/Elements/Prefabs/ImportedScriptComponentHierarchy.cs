@@ -1,4 +1,5 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs
 {
@@ -14,19 +15,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myScriptComponentHierarchy = scriptComponentHierarchy;
         }
 
-        public LocalReference Location => myScriptComponentHierarchy.Location.GetImportedReference(myPrefabInstanceHierarchy);
+        public LocalReference GetLocation(UnityInterningCache cache)
+        {
+            return myScriptComponentHierarchy.GetLocation(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
+        }
 
-        public LocalReference GameObjectReference => myScriptComponentHierarchy.GameObjectReference?.GetImportedReference(myPrefabInstanceHierarchy);
-        public bool IsStripped => false;
-        public LocalReference PrefabInstance => null;
-        public ExternalReference CorrespondingSourceObject => null;
-        
-        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedScriptComponentHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public ExternalReference ScriptReference => myScriptComponentHierarchy.ScriptReference;
-        public string Name => myScriptComponentHierarchy.Name;
+        public string GetName(UnityInterningCache cache) => myScriptComponentHierarchy.GetName(cache);
+
+        public LocalReference GetOwner(UnityInterningCache cache)
+        {
+            return myScriptComponentHierarchy.GetOwner(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
+        }
+
+        public ExternalReference GetScriptReference(UnityInterningCache cache) => myScriptComponentHierarchy.GetScriptReference(cache);
     }
 }

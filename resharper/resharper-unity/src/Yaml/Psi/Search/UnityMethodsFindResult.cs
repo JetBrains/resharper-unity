@@ -1,4 +1,5 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Psi;
 
@@ -8,8 +9,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         public AssetMethodData AssetMethodData { get; }
 
-        public UnityMethodsFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodData assetMethodData, IHierarchyElement attachedElement)
-            : base(sourceFile, declaredElement, attachedElement)
+        public UnityMethodsFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodData assetMethodData, 
+            IHierarchyElement attachedElement, LocalReference attachedElementLocation)
+            : base(sourceFile, declaredElement, attachedElement, attachedElementLocation)
         {
             AssetMethodData = assetMethodData;
             

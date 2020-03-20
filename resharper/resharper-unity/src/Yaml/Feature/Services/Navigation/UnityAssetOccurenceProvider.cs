@@ -14,17 +14,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             if (findResult is UnityScriptsFindResults unityScriptsFindResults)
             {
                 var guid = (unityScriptsFindResults.AssetUsage.Dependencies.FirstOrDefault() as ExternalReference)?.ExternalAssetGuid ?? "INVALID";
-                return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer, unityScriptsFindResults.AttachedElement, guid); 
+                return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer,
+                    unityScriptsFindResults.AttachedElement, unityScriptsFindResults.AttachedElementLocation, guid); 
             }
             
             if (findResult is UnityInspectorFindResults unityInspectorFindResults)
             {
-                return new UnityInspectorValuesOccurrence(unityInspectorFindResults.SourceFile, unityInspectorFindResults.InspectorVariableUsage, unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.AttachedElement); 
+                return new UnityInspectorValuesOccurrence(unityInspectorFindResults.SourceFile, unityInspectorFindResults.InspectorVariableUsage,
+                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.AttachedElement, unityInspectorFindResults.AttachedElementLocation); 
             }
             
             if (findResult is UnityMethodsFindResult unityMethodsFindResult)
             {
-                return new UnityMethodsOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer, unityMethodsFindResult.AttachedElement,unityMethodsFindResult.AssetMethodData); 
+                return new UnityMethodsOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer,
+                    unityMethodsFindResult.AttachedElement, unityMethodsFindResult.AttachedElementLocation, unityMethodsFindResult.AssetMethodData); 
             }
             
             return null;

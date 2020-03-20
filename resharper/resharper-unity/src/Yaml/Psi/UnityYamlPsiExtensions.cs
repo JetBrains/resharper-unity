@@ -90,10 +90,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         {
             if (!ulong.TryParse(LocalDocumentAnchor, out var result))
                 return null;
-            
+
             if (ExternalAssetGuid == null)
+            {
+                if (result == 0)
+                    return null;
+                
                 return new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, result);
-            
+            }
+
             return new ExternalReference(ExternalAssetGuid, result);
         }
     }
