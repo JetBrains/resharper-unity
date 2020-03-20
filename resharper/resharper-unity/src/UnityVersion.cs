@@ -194,9 +194,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public static string VersionToString(Version version)
         {
-            if (version == null)
-                return string.Empty;
-            
             var type = string.Empty;
             var rev = string.Empty;
             try
