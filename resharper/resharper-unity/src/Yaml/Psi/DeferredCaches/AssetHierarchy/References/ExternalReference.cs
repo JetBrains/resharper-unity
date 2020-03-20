@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Serialization;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References
 {
@@ -51,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             unchecked
             {
-                return (ExternalAssetGuid.GetHashCode() * 397) ^ LocalDocumentAnchor.GetHashCode();
+                return (ExternalAssetGuid.GetPlatformIndependentHashCode() * 397) ^ LocalDocumentAnchor.GetHashCode();
             }
         }
     }

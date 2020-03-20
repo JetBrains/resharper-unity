@@ -1,4 +1,5 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
@@ -9,8 +10,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         public InspectorVariableUsage InspectorVariableUsage { get; }
 
-        public UnityInspectorFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, InspectorVariableUsage inspectorVariableUsage, IHierarchyElement attachedElement)
-            : base(sourceFile, declaredElement, attachedElement)
+        public UnityInspectorFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, InspectorVariableUsage inspectorVariableUsage, 
+            IHierarchyElement attachedElement, LocalReference attachedElementLocation)
+            : base(sourceFile, declaredElement, attachedElement, attachedElementLocation)
         {
             InspectorVariableUsage = inspectorVariableUsage;
         }

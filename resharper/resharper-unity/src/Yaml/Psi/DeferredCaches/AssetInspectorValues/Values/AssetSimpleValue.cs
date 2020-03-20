@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Serialization;
+using JetBrains.Util;
 using static JetBrains.Serialization.UnsafeWriter;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         public override int GetHashCode()
         {
-            return SimpleValue.GetHashCode();
+            return SimpleValue.GetPlatformIndependentHashCode();
         }
 
         public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)

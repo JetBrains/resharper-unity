@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
     [PolymorphicMarshaller]
     public class AssetUsagesDataElement : IUnityAssetDataElement
     {
-        public readonly List<AssetUsage> AssetUsages = new List<AssetUsage>();
+        private readonly List<AssetUsage> myAssetUsages = new List<AssetUsage>();
         [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader)
@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             var result =  new AssetUsagesDataElement();
 
             for (int i = 0; i < count; i++)
-                result.AssetUsages.Add(AssetUsage.ReadFrom(reader));
+                result.myAssetUsages.Add(AssetUsage.ReadFrom(reader));
 
             return result;
         }
@@ -27,8 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         private static void Write(UnsafeWriter writer, AssetUsagesDataElement value)
         {
-            writer.Write(value.AssetUsages.Count);
-            foreach (var v in value.AssetUsages)
+            writer.Write(value.myAssetUsages.Count);
+            foreach (var v in value.myAssetUsages)
             {
                 v.WriteTo(writer);
             }
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         public AssetUsagesDataElement(AssetUsage assetUsage)
         {
-            AssetUsages.Add(assetUsage);
+            myAssetUsages.Add(assetUsage);
         }
 
         private AssetUsagesDataElement()
@@ -48,10 +48,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         public void AddData(IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetUsagesDataElement;
-            foreach (var usage in element.AssetUsages)
+            foreach (var usage in element.myAssetUsages)
             {
-                AssetUsages.Add(usage);
+                myAssetUsages.Add(usage);
             }
+        }
+
+        public IEnumerable<AssetUsagePointer> EnumerateAssetUsages()
+        {
+            for (int i = 0; i < myAssetUsages.Count; i++)
+                yield return new AssetUsagePointer(i);
+        }
+
+        public AssetUsage GetAssetUsage(AssetUsagePointer assetUsagePointer)
+        {
+            return myAssetUsages[assetUsagePointer.Index];
         }
     }
 }

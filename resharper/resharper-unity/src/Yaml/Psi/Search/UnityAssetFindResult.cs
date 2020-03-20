@@ -1,4 +1,5 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
@@ -11,11 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public IPsiSourceFile SourceFile { get; }
         public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
         public IHierarchyElement AttachedElement { get; }
+        public LocalReference AttachedElementLocation { get; }
 
-        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, IHierarchyElement attachedElement)
+        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, IHierarchyElement attachedElement, LocalReference attachedElementLocation)
         {
             SourceFile = sourceFile;
             AttachedElement = attachedElement;
+            AttachedElementLocation = attachedElementLocation;
             DeclaredElementPointer = new SourceElementPointer<IDeclaredElement>(declaredElement);
         }
         

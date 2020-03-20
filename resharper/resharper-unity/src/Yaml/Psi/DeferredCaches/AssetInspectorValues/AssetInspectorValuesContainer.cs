@@ -4,16 +4,14 @@ using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.SolutionAnalysis;
 using JetBrains.ReSharper.Daemon.UsageChecking;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Deserializers;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
@@ -26,27 +24,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
     public class AssetInspectorValuesContainer : IUnityAssetDataElementContainer
     {
         private readonly IShellLocks myShellLocks;
+        private readonly UnityInterningCache myUnityInterningCache;
         private readonly ILogger myLogger;
         private readonly List<IAssetInspectorValueDeserializer> myDeserializers;
         
-        private readonly OneToCompactCountingSet<MonoBehaviourField, IAssetValue> myUniqueValuesCount = new OneToCompactCountingSet<MonoBehaviourField, IAssetValue>();
-        private readonly OneToCompactCountingSet<MonoBehaviourField, IPsiSourceFile> myChangesInFiles = new OneToCompactCountingSet<MonoBehaviourField, IPsiSourceFile>();
-        private readonly Dictionary<MonoBehaviourField, OneToCompactCountingSet<IAssetValue, InspectorVariableUsage>> myUniqueValues = 
-            new Dictionary<MonoBehaviourField, OneToCompactCountingSet<IAssetValue, InspectorVariableUsage>>();
         
-        private readonly OneToCompactCountingSet<MonoBehaviourField, IAssetValue> myValueCountPerPropertyAndFile = 
-            new OneToCompactCountingSet<MonoBehaviourField, IAssetValue>();
+        private readonly OneToSetMap<MonoBehaviourField, IAssetValue> myUniqueValuesInstances = new OneToSetMap<MonoBehaviourField, IAssetValue>();
+        private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
+        
+        private readonly OneToCompactCountingSet<MonoBehaviourField, int> myUniqueValuesCount = new OneToCompactCountingSet<MonoBehaviourField, int>();
+        private readonly OneToCompactCountingSet<MonoBehaviourField, IPsiSourceFile> myChangesInFiles = new OneToCompactCountingSet<MonoBehaviourField, IPsiSourceFile>();
+        private readonly Dictionary<MonoBehaviourField, OneToCompactCountingSet<int, InspectorVariableUsagePointer>> myUniqueValues = 
+            new Dictionary<MonoBehaviourField, OneToCompactCountingSet<int, InspectorVariableUsagePointer>>();
+        
+        private readonly OneToCompactCountingSet<MonoBehaviourField, int> myValueCountPerPropertyAndFile = 
+            new OneToCompactCountingSet<MonoBehaviourField, int>();
         
         private readonly CountingSet<MonoBehaviourFieldWithValue> myValuesWhichAreUniqueInWholeFile = new CountingSet<MonoBehaviourFieldWithValue>();
-        private readonly Dictionary<IPsiSourceFile, OneToListMap<string, InspectorVariableUsage>> myPsiSourceFileToInspectorValues = new Dictionary<IPsiSourceFile, OneToListMap<string, InspectorVariableUsage>>();
+        private readonly Dictionary<IPsiSourceFile, OneToListMap<int, InspectorVariableUsagePointer>> myPsiSourceFileToInspectorValues = new Dictionary<IPsiSourceFile, OneToListMap<int, InspectorVariableUsagePointer>>();
 
-        private readonly OneToCompactCountingSet<string, string> myNameToGuids = new OneToCompactCountingSet<string, string>();
+        private readonly OneToCompactCountingSet<int, int> myNameToGuids = new OneToCompactCountingSet<int, int>();
         
-        private readonly OneToCompactCountingSet<string, IPsiSourceFile> myNameToSourceFile = new OneToCompactCountingSet<string, IPsiSourceFile>();
+        private readonly OneToCompactCountingSet<int, IPsiSourceFile> myNameToSourceFile = new OneToCompactCountingSet<int, IPsiSourceFile>();
         
-        public AssetInspectorValuesContainer(IShellLocks shellLocks,IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
+        public AssetInspectorValuesContainer(IShellLocks shellLocks, UnityInterningCache unityInterningCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
         {
             myShellLocks = shellLocks;
+            myUnityInterningCache = unityInterningCache;
             myLogger = logger;
             myDeserializers = assetInspectorValueDeserializer.OrderByDescending(t => t.Order).ToList();
         }
@@ -94,7 +98,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                     var list = new List<InspectorVariableUsage>();
                     foreach (var (key, value) in dictionary)
                     {
-                        list.Add(new InspectorVariableUsage(location, script, key, value));
+                        if  (key.Equals("m_Script") || key.Equals("m_GameObject"))
+                            continue;
+
+                        var locationIndex = myUnityInterningCache.InternReference(location);
+                        var scriptIndex = myUnityInterningCache.InternReference(script);
+                        list.Add(new InspectorVariableUsage(locationIndex, scriptIndex, key, value));
                     }
 
                     var result = new AssetInspectorValuesDataElement(list);
@@ -109,82 +118,103 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         public void Drop(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetInspectorValuesDataElement;
-            foreach (var variableUsage in element.VariableUsages)
+            foreach (var variableUsagePointer in element.EnumeratePointers())
             {
-                var guid = (variableUsage.ScriptReference as ExternalReference)?.ExternalAssetGuid;
+                var variableUsage = element.GetVariableUsage(variableUsagePointer);
+
+                var scriptReference = myUnityInterningCache.GetReference(variableUsage.ScriptReference);
+                var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
                 if (guid == null)
                     continue;
-
-                myNameToSourceFile.Remove(variableUsage.Name, sourceFile);
-
-                var mbField = new MonoBehaviourField(guid, variableUsage.Name);
-                myUniqueValuesCount.Remove(mbField, variableUsage.Value);
-                RemoveUniqueValue(mbField, variableUsage);
-                myChangesInFiles.Remove(mbField, sourceFile);
-                RemoveChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name, sourceFile), variableUsage);
                 
-                if (variableUsage.ScriptReference is ExternalReference externalReference)
-                    myNameToGuids.Remove(variableUsage.Name, externalReference.ExternalAssetGuid);
+                myNameToSourceFile.Remove(variableUsage.NameHash, sourceFile);
+                var mbField = new MonoBehaviourField(guid, variableUsage.NameHash);
+                
+                RemoveUniqueValue(mbField, variableUsagePointer, variableUsage);
+                myChangesInFiles.Remove(mbField, sourceFile);
+                RemoveChangesPerFile(new MonoBehaviourField(guid, variableUsage.NameHash, sourceFile), variableUsage);
+                
+                if (scriptReference is ExternalReference externalReference)
+                    myNameToGuids.Remove(variableUsage.NameHash, externalReference.ExternalAssetGuid.GetPlatformIndependentHashCode());
             }
 
             myPsiSourceFileToInspectorValues.Remove(sourceFile);
+
+            myPointers.Remove(sourceFile);
         }
 
         private void RemoveChangesPerFile(MonoBehaviourField monoBehaviourField, InspectorVariableUsage variableUsage)
         {
                 var beforeRemoveDifferentValuesCount = myValueCountPerPropertyAndFile.GetOrEmpty(monoBehaviourField).Count;
-                myValueCountPerPropertyAndFile.Remove(monoBehaviourField, variableUsage.Value);
+                myValueCountPerPropertyAndFile.Remove(monoBehaviourField, variableUsage.Value.GetHashCode());
                 var afterRemoveDifferentValuesCount = myValueCountPerPropertyAndFile.GetOrEmpty(monoBehaviourField).Count;
 
                 if (beforeRemoveDifferentValuesCount == 2 && afterRemoveDifferentValuesCount == 1)
                 {
                     var uniqueValue = myValueCountPerPropertyAndFile.GetOrEmpty(monoBehaviourField).First().Key;
-                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuid, monoBehaviourField.Name), uniqueValue);
+                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuidHash, monoBehaviourField.NameHash), uniqueValue);
                     myValuesWhichAreUniqueInWholeFile.Add(fieldWithValue);
                 } else if (beforeRemoveDifferentValuesCount == 1 && afterRemoveDifferentValuesCount == 0)
                 {
-                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuid, monoBehaviourField.Name), variableUsage.Value);
+                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuidHash, monoBehaviourField.NameHash), variableUsage.Value.GetHashCode());
                     myValuesWhichAreUniqueInWholeFile.Remove(fieldWithValue);
                 }
         }
 
-        private void RemoveUniqueValue(MonoBehaviourField mbField, InspectorVariableUsage variableUsage)
+        private void RemoveUniqueValue(MonoBehaviourField mbField, InspectorVariableUsagePointer pointer, InspectorVariableUsage variableUsage)
         {
+            var valueHash = variableUsage.Value.GetHashCode();
+
+            var previousCount = myUniqueValuesCount.GetOrEmpty(mbField).Count;
+            myUniqueValuesCount.Add(mbField, valueHash);
+            var newCount = myUniqueValuesCount.GetOrEmpty(mbField).Count;
+            if (newCount < 2 && newCount != previousCount)
+            {
+                var isRemoved = myUniqueValuesInstances.Remove(mbField, variableUsage.Value);
+                Assertion.Assert(isRemoved, "value should be presented");
+            }
+
+            
+            
             if (!myUniqueValues.TryGetValue(mbField, out var oneToCompactCountingSet))
             {
                 Assertion.Fail("mbField is not presented");
             }
             else
             {
-                oneToCompactCountingSet.Remove(variableUsage.Value, variableUsage);
+                oneToCompactCountingSet.Remove(variableUsage.Value.GetHashCode(), pointer);
                 if (oneToCompactCountingSet.Count == 0)
                     myUniqueValues.Remove(mbField);
             }
         }
 
-        public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement,IUnityAssetDataElement unityAssetDataElement)
+        public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
         {
+            myPointers[sourceFile] = unityAssetDataElementPointer;
+            
             var element = unityAssetDataElement as AssetInspectorValuesDataElement;
-            var inspectorUsages = new OneToListMap<string, InspectorVariableUsage>();
+            var inspectorUsages = new OneToListMap<int, InspectorVariableUsagePointer>();
 
-            foreach (var variableUsage in element.VariableUsages)
+            foreach (var variableUsagePointer in element.EnumeratePointers())
             {
-                var guid = (variableUsage.ScriptReference as ExternalReference)?.ExternalAssetGuid;
+                var variableUsage = element.GetVariableUsage(variableUsagePointer);
+
+                var scriptReference = myUnityInterningCache.GetReference(variableUsage.ScriptReference);
+                var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
                 if (guid == null)
                     continue;
-
-                myNameToSourceFile.Add(variableUsage.Name, sourceFile);
                 
-                var mbField = new MonoBehaviourField(guid, variableUsage.Name);
-                myUniqueValuesCount.Add(mbField ,variableUsage.Value);
-                AddUniqueValue(mbField, variableUsage);
+                myNameToSourceFile.Add(variableUsage.NameHash, sourceFile);
+
+                var mbField = new MonoBehaviourField(guid, variableUsage.NameHash);
+                AddUniqueValue(mbField, variableUsagePointer, variableUsage);
                 myChangesInFiles.Add(mbField, sourceFile);
-                AddChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name, sourceFile), variableUsage);
+                AddChangesPerFile(new MonoBehaviourField(guid, variableUsage.NameHash, sourceFile), variableUsage);
                 
-                inspectorUsages.Add(variableUsage.Name, variableUsage);
+                inspectorUsages.Add(variableUsage.NameHash, variableUsagePointer);
 
-                if (variableUsage.ScriptReference is ExternalReference externalReference)
-                    myNameToGuids.Add(variableUsage.Name, externalReference.ExternalAssetGuid);
+                if (scriptReference is ExternalReference externalReference)
+                    myNameToGuids.Add(variableUsage.NameHash, externalReference.ExternalAssetGuid.GetPlatformIndependentHashCode());
             }
             
             myPsiSourceFileToInspectorValues.Add(sourceFile, inspectorUsages);
@@ -195,37 +225,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var beforeAddDifferentValuesCount = myValueCountPerPropertyAndFile.GetOrEmpty(monoBehaviourField).Count;
             if (beforeAddDifferentValuesCount == 0)
             {
-                myValueCountPerPropertyAndFile.Add(monoBehaviourField, variableUsage.Value);
+                myValueCountPerPropertyAndFile.Add(monoBehaviourField, variableUsage.Value.GetHashCode());
                 
-                var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuid, monoBehaviourField.Name), variableUsage.Value);
+                var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuidHash, monoBehaviourField.NameHash), variableUsage.Value.GetHashCode());
                 myValuesWhichAreUniqueInWholeFile.Add(fieldWithValue);
             } else if (beforeAddDifferentValuesCount == 1)
             {
                 var previousValue = myValueCountPerPropertyAndFile.GetOrEmpty(monoBehaviourField).First().Key;
-                myValueCountPerPropertyAndFile.Add(monoBehaviourField, variableUsage.Value);
+                myValueCountPerPropertyAndFile.Add(monoBehaviourField, variableUsage.Value.GetHashCode());
                 var afterAddDifferentValuesCount = myValueCountPerPropertyAndFile.GetOrEmpty(monoBehaviourField).Count;
 
                 if (afterAddDifferentValuesCount == 2)
                 {
-                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuid, monoBehaviourField.Name), previousValue);
+                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuidHash, monoBehaviourField.NameHash), previousValue);
                     myValuesWhichAreUniqueInWholeFile.Remove(fieldWithValue);
                 }
             }
             else
             {
-                myValueCountPerPropertyAndFile.Add(monoBehaviourField, variableUsage.Value);
+                myValueCountPerPropertyAndFile.Add(monoBehaviourField, variableUsage.Value.GetHashCode());
             }
         }
 
-        private void AddUniqueValue(MonoBehaviourField field, InspectorVariableUsage variableUsage)
+        private void AddUniqueValue(MonoBehaviourField field, InspectorVariableUsagePointer pointer, InspectorVariableUsage variableUsage)
         {
+            var uniqueValuePtr = variableUsage.Value.GetHashCode();
+
+            var previousCount = myUniqueValuesCount.GetOrEmpty(field).Count;
+            myUniqueValuesCount.Add(field, uniqueValuePtr);
+            var newCount = myUniqueValuesCount.GetOrEmpty(field).Count;
+            if (previousCount < 2 && newCount != previousCount)
+            {
+                var isAdded =  myUniqueValuesInstances.Add(field, variableUsage.Value);
+                Assertion.Assert(isAdded, "value should not be presented");
+            }
+
+            
             if (!myUniqueValues.TryGetValue(field, out var oneToCompactCountingSet))
             {
-                oneToCompactCountingSet = new OneToCompactCountingSet<IAssetValue, InspectorVariableUsage>();
+                oneToCompactCountingSet = new OneToCompactCountingSet<int, InspectorVariableUsagePointer>();
                 myUniqueValues[field] = oneToCompactCountingSet;
             }
 
-            oneToCompactCountingSet.Add(variableUsage.Value, variableUsage);
+            oneToCompactCountingSet.Add(variableUsage.Value.GetHashCode(), pointer);
         }
 
         public int GetValueCount(string guid, IEnumerable<string> possibleNames, IAssetValue assetValue)
@@ -235,8 +277,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var count = 0;
             foreach (var name in possibleNames)
             {
-                var mbField = new MonoBehaviourField(guid, name);
-                count += myUniqueValuesCount.GetCount(mbField, assetValue);
+                var mbField = new MonoBehaviourField(guid, name.GetPlatformIndependentHashCode());
+                count += myUniqueValuesCount.GetCount(mbField, assetValue.GetHashCode());
             }
 
             return count;
@@ -249,7 +291,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var count = 0;
             foreach (var name in possibleNames)
             {
-                var mbField = new MonoBehaviourField(guid, name);
+                var mbField = new MonoBehaviourField(guid, name.GetPlatformIndependentHashCode());
                 count += myUniqueValuesCount.GetOrEmpty(mbField).Count;
             }
 
@@ -278,7 +320,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var count = 0;
             foreach (var possibleName in possibleNames)
             {
-                var values = myNameToGuids.GetValues(possibleName);
+                var values = myNameToGuids.GetValues(possibleName.GetPlatformIndependentHashCode());
                 count += values.Length;
                 if (values.Length == 1 && !values[0].Equals(ownerGuid))
                     count++;
@@ -288,21 +330,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         }
         
         
-        public IEnumerable<IAssetValue> GetUniqueValues(string guid, IEnumerable<string> possibleNames)
+        public IAssetValue GetUniqueValueDifferTo(string guid, IEnumerable<string> possibleNames, IAssetValue assetValue)
         {
             myShellLocks.AssertReadAccessAllowed();
 
             var result = new List<IAssetValue>();
             foreach (var possibleName in possibleNames)
             {
-                var mbField = new MonoBehaviourField(guid, possibleName);
-                foreach (var value in myUniqueValuesCount.GetOrEmpty(mbField))
+                var mbField = new MonoBehaviourField(guid, possibleName.GetPlatformIndependentHashCode());
+                foreach (var value in myUniqueValuesInstances.GetValuesSafe(mbField))
                 {
-                    result.Add(value.Key);
+                    result.Add(value);
                 }
             }
 
-            return result;
+            Assertion.Assert(result.Count <= 2, "result.Count <= 2");
+            if (assetValue == null)
+                return result.First();
+            return result.First(t => !t.Equals(assetValue));
         }
 
         public int GetAffectedFiles(string guid, IEnumerable<string> possibleNames)
@@ -312,7 +357,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var result = 0;
             foreach (var possibleName in possibleNames)
             {
-                result += myChangesInFiles.GetOrEmpty(new MonoBehaviourField(guid, possibleName)).Count;
+                result += myChangesInFiles.GetOrEmpty(new MonoBehaviourField(guid, possibleName.GetPlatformIndependentHashCode())).Count;
             }
             
             return result;
@@ -325,7 +370,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var result = 0;
             foreach (var possibleName in possibleNames)
             {
-                result += myValuesWhichAreUniqueInWholeFile.GetCount(new MonoBehaviourFieldWithValue(new MonoBehaviourField(guid, possibleName), value));
+                result += myValuesWhichAreUniqueInWholeFile.GetCount(new MonoBehaviourFieldWithValue(new MonoBehaviourField(guid, possibleName.GetPlatformIndependentHashCode()), value.GetHashCode()));
             }
             
             return result;
@@ -334,10 +379,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         
         private static readonly HashSet<string> ourIgnoredMonoBehaviourEntries = new HashSet<string>()
         {
+            "serializedVersion",
             "m_ObjectHideFlags",
             "m_CorrespondingSourceObject",
             "m_PrefabInstance",
-            "m_PrefabAsset",
             "m_PrefabAsset",
             "m_Enabled",
             "m_EditorHideFlags",
@@ -354,31 +399,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             myValuesWhichAreUniqueInWholeFile.Clear();
             myPsiSourceFileToInspectorValues.Clear();
             myValueCountPerPropertyAndFile.Clear();
+            myPointers.Clear();
         }
 
         private class MonoBehaviourField
         {
-            public readonly string ScriptGuid;
-            public readonly string Name;
+            public readonly int ScriptGuidHash;
+            public readonly int NameHash;
             public readonly IPsiSourceFile SourceFile;
 
-            public MonoBehaviourField(string scriptGuid, string name)
+            public MonoBehaviourField(string scriptGuid, int nameHash, IPsiSourceFile sourceFile = null)
             {
-                ScriptGuid = scriptGuid;
-                Name = name;
-                SourceFile = null;
-            }
-            
-            public MonoBehaviourField(string scriptGuid, string name, IPsiSourceFile sourceFile)
-            {
-                ScriptGuid = scriptGuid;
-                Name = name;
+                ScriptGuidHash = scriptGuid.GetPlatformIndependentHashCode();
+                NameHash = nameHash;
                 SourceFile = sourceFile;
             }
 
+            public MonoBehaviourField(int scriptGuid, int name, IPsiSourceFile sourceFile = null)
+            {
+                ScriptGuidHash = scriptGuid;
+                NameHash = name;
+                SourceFile = sourceFile;
+            }
+            
             public bool Equals(MonoBehaviourField other)
             {
-                return ScriptGuid == other.ScriptGuid && Name == other.Name && Equals(SourceFile, other.SourceFile);
+                return ScriptGuidHash == other.ScriptGuidHash && NameHash == other.NameHash && Equals(SourceFile, other.SourceFile);
             }
 
             public override bool Equals(object obj)
@@ -390,8 +436,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             {
                 unchecked
                 {
-                    var hashCode = ScriptGuid.GetHashCode();
-                    hashCode = (hashCode * 397) ^ Name.GetHashCode();
+                    var hashCode = ScriptGuidHash.GetHashCode();
+                    hashCode = (hashCode * 397) ^ NameHash.GetHashCode();
                     hashCode = (hashCode * 397) ^ (SourceFile != null ? SourceFile.GetHashCode() : 0);
                     return hashCode;
                 }
@@ -401,17 +447,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         private class MonoBehaviourFieldWithValue
         {
             private readonly MonoBehaviourField myField;
-            private readonly IAssetValue myValue;
+            private readonly int myValueHash;
 
-            public MonoBehaviourFieldWithValue(MonoBehaviourField field, IAssetValue value)
+            public MonoBehaviourFieldWithValue(MonoBehaviourField field, int valueHash)
             {
                 myField = field;
-                myValue = value;
+                myValueHash = valueHash;
             }
 
             protected bool Equals(MonoBehaviourFieldWithValue other)
             {
-                return Equals(myField, other.myField) && Equals(myValue, other.myValue);
+                return Equals(myField, other.myField) && Equals(myValueHash, other.myValueHash);
             }
 
             public override bool Equals(object obj)
@@ -426,7 +472,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             {
                 unchecked
                 {
-                    return ((myField != null ? myField.GetHashCode() : 0) * 397) ^ (myValue != null ? myValue.GetHashCode() : 0);
+                    return ((myField != null ? myField.GetHashCode() : 0) * 397) ^ (myValueHash.GetHashCode());
                 }
             }
         }
@@ -434,7 +480,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         public IEnumerable<InspectorVariableUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, IField element)
         {
             myShellLocks.AssertReadAccessAllowed();
-            
+
+            var dataElement = myPointers.GetValueSafe(sourceFile)?.Element as AssetInspectorValuesDataElement;
+            if (dataElement == null)
+                return Enumerable.Empty<InspectorVariableUsage>();
             var containingType = element?.GetContainingType();
 
             if (containingType == null)
@@ -446,10 +495,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
             foreach (var name in AssetUtils.GetAllNamesFor(element))
             {
-                var usagesData = usages.GetValuesSafe(name);
-                foreach (var usage in usagesData)
+                var usagesData = usages.GetValuesSafe(name.GetPlatformIndependentHashCode());
+                foreach (var usagePointer in usagesData)
                 {
-                    var guid = (usage.ScriptReference as ExternalReference)?.ExternalAssetGuid;
+                    var usage = dataElement.GetVariableUsage(usagePointer);
+                    var scriptReference = myUnityInterningCache.GetReference(usage.ScriptReference);
+                    var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
                     if (guid == null)
                         continue;
 
@@ -469,7 +520,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var result = new LocalList<IPsiSourceFile>();
             foreach (var name in AssetUtils.GetAllNamesFor(element))
             {
-                foreach (var sourceFile in myNameToSourceFile.GetValues(name))
+                foreach (var sourceFile in myNameToSourceFile.GetValues(name.GetPlatformIndependentHashCode()))
                 {
                     result.Add(sourceFile);
                 }

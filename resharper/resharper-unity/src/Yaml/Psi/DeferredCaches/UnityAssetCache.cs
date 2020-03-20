@@ -12,6 +12,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
@@ -19,6 +20,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Text;
 using JetBrains.Util;
+using JetBrains.Util.Caches;
 using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
@@ -30,22 +32,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private readonly DocumentToProjectFileMappingStorage myDocumentToProjectFileMappingStorage;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly PrefabImportCache myPrefabImportCache;
+        private readonly UnityInterningCache myInterningCache;
+        private readonly IShellLocks myShellLocks;
         private readonly ILogger myLogger;
         private readonly List<IUnityAssetDataElementContainer> myOrderedContainers;
         private readonly List<IUnityAssetDataElementContainer> myOrderedIncreasingContainers;
         private readonly ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)> myDocumentNumber = new ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)>();
         private readonly ConcurrentDictionary<IPsiSourceFile, long> myCurrentTimeStamp = new ConcurrentDictionary<IPsiSourceFile, long>();
-        public UnityAssetCache(Lifetime lifetime, DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage, AssetIndexingSupport assetIndexingSupport, PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers, ILogger logger)
+        public UnityAssetCache(Lifetime lifetime, DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage, AssetIndexingSupport assetIndexingSupport,
+            PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers,
+            UnityInterningCache interningCache, IShellLocks shellLocks, ILogger logger)
             : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate))
         {
             myDocumentToProjectFileMappingStorage = documentToProjectFileMappingStorage;
             myAssetIndexingSupport = assetIndexingSupport;
             myPrefabImportCache = prefabImportCache;
+            myInterningCache = interningCache;
+            myShellLocks = shellLocks;
             myLogger = logger;
             myOrderedContainers = unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList();
             myOrderedIncreasingContainers = myOrderedContainers.OrderBy(t => t.Order).ToList();
 
             myHierarchyElementContainer = myOrderedContainers.First(t => t is AssetDocumentHierarchyElementContainer) as AssetDocumentHierarchyElementContainer;
+            
+            Map.Cache = new DirectMappedCache<IPsiSourceFile, UnityAssetData>(10);
         }
 
         public override bool IsApplicable(IPsiSourceFile sourceFile)
@@ -58,6 +68,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData data)
         {
+            myDocumentNumber.TryRemove(sourceFile, out _);
+            myCurrentTimeStamp.TryRemove(sourceFile, out _);
+
             if (!data.UnityAssetDataElements.TryGetValue(myHierarchyElementContainer.Id, out var hierarchyElement))
                 return;
             
@@ -68,7 +81,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     Assertion.Assert(container != null, "container != null");
                     try
                     {
-                        container.Merge(sourceFile,hierarchyElement as AssetDocumentHierarchyElement, element);
+                        container.Merge(sourceFile, hierarchyElement as AssetDocumentHierarchyElement,
+                            new UnityAssetDataElementPointer(() =>
+                            {
+                                myShellLocks.AssertReadAccessAllowed();
+                                var restoredElement =  Map[sourceFile].UnityAssetDataElements[container.Id];
+                                if (restoredElement is AssetDocumentHierarchyElement hierarchy)
+                                    hierarchy.RestoreHierarchy(myInterningCache);
+                                
+                                return restoredElement;
+                            }), element);
                     }
                     catch (Exception e)
                     {
