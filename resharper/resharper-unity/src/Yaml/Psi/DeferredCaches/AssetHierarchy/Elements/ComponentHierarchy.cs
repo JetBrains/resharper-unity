@@ -31,5 +31,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public string GetName(UnityInterningCache cache) => cache.GetString(myName);
 
         public LocalReference GetOwner(UnityInterningCache cache) => cache.GetReference<LocalReference>(myOwner);
+
+        public static void Write(UnsafeWriter writer, ComponentHierarchy componentHierarchy)
+        {
+            ReferenceIndex.Write(writer, componentHierarchy.myLocation);
+            ReferenceIndex.Write(writer, componentHierarchy.myOwner);
+            StringIndex.Write(writer, componentHierarchy.myName);
+        }
+
+        public static ComponentHierarchy Read(UnsafeReader reader)
+        {
+            return new ComponentHierarchy(
+                ReferenceIndex.Read(reader),
+                ReferenceIndex.Read(reader),
+                StringIndex.Read(reader));
+        }
     }
 }
