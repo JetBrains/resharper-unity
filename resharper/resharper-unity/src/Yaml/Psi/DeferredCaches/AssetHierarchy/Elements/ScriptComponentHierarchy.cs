@@ -28,5 +28,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public LocalReference GetOwner(UnityInterningCache cache) => cache.GetReference<LocalReference>(myOwnerIndex);
 
         public ExternalReference GetScriptReference(UnityInterningCache cache) => cache.GetReference<ExternalReference>(myScriptReference);
+
+        public static void Write(UnsafeWriter writer, ScriptComponentHierarchy scriptComponentHierarchy)
+        {
+            ReferenceIndex.Write(writer, scriptComponentHierarchy.myLocation);
+            ReferenceIndex.Write(writer, scriptComponentHierarchy.myOwnerIndex);
+            ReferenceIndex.Write(writer, scriptComponentHierarchy.myScriptReference);
+        }
+
+        public static ScriptComponentHierarchy Read(UnsafeReader reader)
+        {
+            return  new ScriptComponentHierarchy(
+                ReferenceIndex.Read(reader),
+                ReferenceIndex.Read(reader),
+                ReferenceIndex.Read(reader));
+        }
     }
 }

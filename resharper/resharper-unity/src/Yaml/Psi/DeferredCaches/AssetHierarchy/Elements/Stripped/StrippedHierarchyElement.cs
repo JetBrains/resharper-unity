@@ -1,5 +1,6 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
+using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped
 {
@@ -23,5 +24,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public LocalReference GetPrefabInstance(UnityInterningCache cache) => cache.GetReference<LocalReference>(myPrefabInstance);
 
         public ExternalReference GetCoresspondingSourceObject(UnityInterningCache cache) => cache.GetReference<ExternalReference>(myCorrespondingSourceObject);
+
+        public static void Write(UnsafeWriter writer, StrippedHierarchyElement strippedHierarchyElement)
+        {
+            ReferenceIndex.Write(writer, strippedHierarchyElement.myLocation);
+            ReferenceIndex.Write(writer, strippedHierarchyElement.myPrefabInstance);
+            ReferenceIndex.Write(writer, strippedHierarchyElement.myCorrespondingSourceObject);
+        }
+
+        public static StrippedHierarchyElement Read(UnsafeReader reader)
+        {
+            return new StrippedHierarchyElement(
+                ReferenceIndex.Read(reader),
+                ReferenceIndex.Read(reader),
+                ReferenceIndex.Read(reader));
+        }
     }
 }
