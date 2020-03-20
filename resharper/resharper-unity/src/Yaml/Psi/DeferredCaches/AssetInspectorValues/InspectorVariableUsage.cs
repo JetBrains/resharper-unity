@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         private static object Read(UnsafeReader reader) => new InspectorVariableUsage(
             ReferenceIndex.Read(reader),
             ReferenceIndex.Read(reader),
-            reader.ReadString(), 
+            reader.ReadInt32(), 
             reader.ReadPolymorphic<IAssetValue>());
 
         [UsedImplicitly]
@@ -37,6 +37,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             Location = locationIndex;
             ScriptReference = scriptReferenceIndex;
             NameHash = name.GetPlatformIndependentHashCode();
+            Value = assetValue;
+        }
+        
+        private InspectorVariableUsage(ReferenceIndex locationIndex, ReferenceIndex scriptReferenceIndex, int name,
+            IAssetValue assetValue)
+        {
+            Location = locationIndex;
+            ScriptReference = scriptReferenceIndex;
+            NameHash = name;
             Value = assetValue;
         }
         

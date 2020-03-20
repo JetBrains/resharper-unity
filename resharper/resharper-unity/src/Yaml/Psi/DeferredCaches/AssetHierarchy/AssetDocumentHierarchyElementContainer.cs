@@ -64,7 +64,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 
                 var prefabInstanceIndex = myUnityInterningCache.InternReference(prefabInstance);
                 var correspondingSourceObjectIndex = myUnityInterningCache.InternReference(correspondingSourceObject);
-                return new AssetDocumentHierarchyElement(new StrippedHierarchyElement(locationIndex, prefabInstanceIndex, correspondingSourceObjectIndex));
+                
+                var element = new AssetDocumentHierarchyElement();
+                element.AddHierarchyElement(new StrippedHierarchyElement(locationIndex, prefabInstanceIndex, correspondingSourceObjectIndex));
+                return element;
             }
             
             var gameObject = AssetUtils.GetGameObject(assetDocument.Buffer)?.ToReference(currentSourceFile) as LocalReference;
@@ -94,17 +97,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     var scriptReference = new ExternalReference(scriptGuid, scriptAnchor.Value);
                     var scriptReferenceIndex = myUnityInterningCache.InternReference(scriptReference);
 
-                    var scriptHierarchy = new ScriptComponentHierarchy(locationIndex, scriptReferenceIndex, gameObjectIndex);
+                    var scriptHierarchy = new ScriptComponentHierarchy(locationIndex, gameObjectIndex, scriptReferenceIndex);
                     
-                    return new AssetDocumentHierarchyElement(scriptHierarchy);
+                    var element = new AssetDocumentHierarchyElement();
+                    element.AddScriptComponentElement(scriptHierarchy);
+                    return element;
                 }
             } else if (AssetUtils.IsTransform(assetDocument.Buffer))
             {
                 var father = AssetUtils.GetTransformFather(assetDocument.Buffer)?.ToReference(currentSourceFile) as LocalReference;
                 var fatherIndex = myUnityInterningCache.InternReference(father);
                 var rootIndex = AssetUtils.GetRootIndex(assetDocument.Buffer);
-                var transformHierarchy = new TransformHierarchy(locationIndex, gameObjectIndex, fatherIndex, rootIndex);
-                return new AssetDocumentHierarchyElement(transformHierarchy);
+                var transformHierarchy = new TransformHierarchy(locationIndex,gameObjectIndex, fatherIndex, rootIndex);
+                var element = new AssetDocumentHierarchyElement();
+                element.AddTransformElement(transformHierarchy);
+                return element;
             } else if (AssetUtils.IsGameObject(assetDocument.Buffer))
             {
                 var name = AssetUtils.GetGameObjectName(assetDocument.Buffer);
@@ -112,7 +119,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 {
                     var nameIndex = myUnityInterningCache.InternString(name ?? "");
                     var gameObjectHierarchy = new GameObjectHierarchy(locationIndex, nameIndex);
-                    return new AssetDocumentHierarchyElement(gameObjectHierarchy);
+                    var element = new AssetDocumentHierarchyElement();
+                    element.AddGameObjectElement(gameObjectHierarchy);
+                    return element;
                 }
             } else if (AssetUtils.IsPrefabModification(assetDocument.Buffer))
             {
@@ -158,7 +167,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     return null;
 
                 var parentTransformIndex = myUnityInterningCache.InternReference(parentTransform);
-                return new AssetDocumentHierarchyElement(new PrefabInstanceHierarchy(locationIndex, parentTransformIndex, result, sourcePrefabGuid.ExternalAssetGuid));
+                var element = new AssetDocumentHierarchyElement();
+                element.AddHierarchyElement(new PrefabInstanceHierarchy(locationIndex, parentTransformIndex, result, sourcePrefabGuid.ExternalAssetGuid));
+                return element;
             }
             else // regular component
             {
@@ -168,7 +179,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
                 var nameIndex = myUnityInterningCache.InternString(name);
                 var componentHierarchy = new ComponentHierarchy(locationIndex, gameObjectIndex, nameIndex);
-                return new AssetDocumentHierarchyElement(componentHierarchy);
+                var element =  new AssetDocumentHierarchyElement();
+                element.AddComponentElement(componentHierarchy);
+                return element;
             }
             return null;
         }

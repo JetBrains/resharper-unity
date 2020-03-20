@@ -140,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     }
                 }
 
-                foreach (var element in prefabHierarchy.Elements)
+                foreach (var element in prefabHierarchy.Elements())
                 {
                     if (element is IStrippedHierarchyElement)
                         continue;
