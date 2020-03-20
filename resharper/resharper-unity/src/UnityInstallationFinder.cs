@@ -17,17 +17,27 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static readonly ILogger ourLogger = Logger.GetLogger(typeof(UnityInstallationFinder));
 
         [CanBeNull]
-        public static UnityInstallationInfo GetApplicationInfo(Version version)
+        public static UnityInstallationInfo GetApplicationInfo(Version version, UnityVersion unityVersion)
         {
             var possible = GetPossibleInstallationInfos().ToArray();
-            var possibleWithVersion = possible.Where(a => a.Version != null).ToArray();
+            var possibleWithVersion = possible.Where(a => a.Version != null).ToList();
 
-            var bestChoice = possibleWithVersion.Where(a =>
-                a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
-                a.Version.Build == version.Build && a.Version.Revision == version.Revision
-                ).OrderBy(b=>b.Version).LastOrDefault();
+            // fast check is we have a best choice
+            var bestChoice = TryGetBestChoice(version, possibleWithVersion);
             if (bestChoice != null)
                 return bestChoice;
+            
+            // best choice not found by version - try version by path then
+            var pathForSolution = unityVersion.GetActualAppPathForSolution();
+            var versionByAppPath = UnityVersion.GetVersionByAppPath(pathForSolution);
+            if (versionByAppPath!=null)
+                possibleWithVersion.Add(new UnityInstallationInfo(versionByAppPath, pathForSolution));
+            
+            // check best choice again, since newly added version may be best one
+            bestChoice = TryGetBestChoice(version, possibleWithVersion);
+            if (bestChoice != null)
+                return bestChoice;
+
             var choice1 = possibleWithVersion.Where(a =>
                 a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
                 a.Version.Build == version.Build).OrderBy(b=>b.Version).LastOrDefault();
@@ -48,6 +58,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             var worstChoice = possible.LastOrDefault();
             return worstChoice;
+        }
+
+        private static UnityInstallationInfo TryGetBestChoice(Version version, List<UnityInstallationInfo> possibleWithVersion)
+        {
+            var bestChoice = possibleWithVersion.Where(a =>
+                a.Version.Major == version.Major && a.Version.Minor == version.Minor &&
+                a.Version.Build == version.Build && a.Version.Revision == version.Revision
+            ).OrderBy(b => b.Version).LastOrDefault();
+            return bestChoice;
         }
 
         [NotNull]
