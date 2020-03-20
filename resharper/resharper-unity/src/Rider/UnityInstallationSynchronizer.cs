@@ -1,10 +1,8 @@
-using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -40,27 +38,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     return;
 
                 var version = unityVersion.GetActualVersionForSolution();
-                FileSystemPath applicationPath;
-
-                // path found by version is preferable
-                var info = UnityInstallationFinder.GetApplicationInfo(version);
-                if (info == null)
-                {
-                    // nothing found by version - get version by path then
-                    applicationPath = unityVersion.GetActualAppPathForSolution();
-                    version = UnityVersion.GetVersionByAppPath(applicationPath);
-                }
-                else
-                {
-                    applicationPath = info.Path;
-                    version = info.Version;
-                }
-
-                var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(applicationPath);
-                rd.UnityApplicationData.SetValue(new UnityApplicationData(applicationPath.FullPath,
+                var info = UnityInstallationFinder.GetApplicationInfo(version, unityVersion);
+                if (info == null) 
+                    return;
+                
+                var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(info.Path);
+                rd.UnityApplicationData.SetValue(new UnityApplicationData(info.Path.FullPath,
                     contentsPath.FullPath,
-                    UnityVersion.VersionToString(version),
-                    UnityVersion.RequiresRiderPackage(version)
+                    UnityVersion.VersionToString(info.Version),
+                    UnityVersion.RequiresRiderPackage(info.Version)
                 ));
             });
         }
