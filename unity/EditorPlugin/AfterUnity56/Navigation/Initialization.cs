@@ -68,6 +68,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
         {
           MainThreadDispatcher.Instance.Queue(() =>
           {
+            ExpandMinimizedUnityWindow();
             EditorUtility.FocusProjectWindow();
             ShowUtil.ShowFileUsage(result);
           });  

@@ -30,8 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 
         public override PsiLanguageType GetPsiLanguageType(IPsiSourceFile sourceFile)
         {
-            var location = sourceFile.GetLocation();
-            var components = location.MakeRelativeTo(sourceFile.GetSolution().SolutionDirectory).Components.ToArray();
             if (UnityYamlFileExtensions.IsMetaOrProjectSettings(sourceFile.GetSolution(), sourceFile.GetLocation()))
                 return base.GetPsiLanguageType(sourceFile);
             

@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         public LocalReference Location => myTransformHierarchy.Location.GetImportedReference(myPrefabInstanceHierarchy);
-        public LocalReference GameObjectReference => myTransformHierarchy.GameObjectReference.GetImportedReference(myPrefabInstanceHierarchy);
+        public LocalReference GameObjectReference => myTransformHierarchy.GameObjectReference?.GetImportedReference(myPrefabInstanceHierarchy);
         public bool IsStripped => false;
         public LocalReference PrefabInstance => null;
         public ExternalReference CorrespondingSourceObject => null;
