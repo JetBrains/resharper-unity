@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     public class UnityYamlDisableStrategy
     {
         public const string SolutionCachesId = "ShouldApplyYamlHugeFileHeuristic";
-        private const ulong AssetFileSizeThreshold = 500L * (1024 * 1024); // 500 MB
-        private const ulong TotalFileSizeThreshold = 10_000L * (1024 * 1024); // 10 GB
+        private const ulong AssetFileSizeThreshold = 250L * (1024 * 1024); // 250 MB
+        private const ulong TotalFileSizeThreshold = 4_000L * (1024 * 1024); // 4 GB
 
         private readonly bool myShouldRunHeuristic;
         private readonly SolutionCaches mySolutionCaches;
