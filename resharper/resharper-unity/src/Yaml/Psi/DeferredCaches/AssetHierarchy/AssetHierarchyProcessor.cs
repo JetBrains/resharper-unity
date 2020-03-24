@@ -46,6 +46,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 return;
 
             var hierarchyElement = owner.GetHierarchyElement(guid, location.LocalDocumentAnchor, forcePrefabImportForStartPoint ? myPrefabImportCache : null);
+            if (hierarchyElement.IsStripped && !forcePrefabImportForStartPoint)
+                return;
+            
             ProcessSceneHierarchyFromComponentToRoot(hierarchyElement, consumer, forcePrefabImport);            
         }
 
@@ -84,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (!consumer.AddGameObject(owner, gameObject))
                 return;
                 
-            var parentTransform = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(gameObject.GetTransformHierarchy(owner).Parent, true) as ITransformHierarchy;
+            var parentTransform = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(gameObject.GetTransformHierarchy(owner).Parent, prefabImport) as ITransformHierarchy;
             if (parentTransform == null)
                 return;
 
