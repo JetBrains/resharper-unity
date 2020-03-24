@@ -110,6 +110,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 case IProperty _:
                 case IMethod _:
                     return solution.GetComponent<AssetMethodsElementContainer>().GetAssetUsagesCount(element, out var estimatedResult) > 0 || estimatedResult;
+                case IField field:
+                    return unityApi.IsSerialisedField(field);
             }
 
             return false;
