@@ -85,10 +85,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
             if (element == null)
                 return "...";
-            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
-            if (consumer.NameParts.Count == 0)
-                return "...";
-            var result = string.Join("/", consumer.NameParts);
+            string result = "";
+
+            if (!element.IsStripped)
+            {
+                processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
+                if (consumer.NameParts.Count == 0)
+                    return "...";
+                result += string.Join("/", consumer.NameParts);
+            }
 
             if (element is IComponentHierarchy componentHierarchy)
                 result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
