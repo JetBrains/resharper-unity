@@ -18,11 +18,15 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         return recursiveSearch(virtualFile, host) ?: super.getBestParentProjectModelNode(virtualFile)
     }
 
-    private fun recursiveSearch(virtualFile: VirtualFile, host: ProjectModelViewHost): ProjectModelNode?
+    private fun recursiveSearch(virtualFile: VirtualFile?, host: ProjectModelViewHost): ProjectModelNode?
     {
+        if (virtualFile == null) // may happen for packages outside of solution folder
+          return null
+
         // when to stop going up
         val items = host.getItemsByVirtualFile(virtualFile).toList()
-        if (items.filter { it.isSolutionFolder()}.any() || items.filter{it.isSolution()}.any()) // don't forget to check File System Explorer
+        if (items.filter { it.isSolutionFolder()}.any()
+            || items.filter{it.isSolution()}.any()) // don't forget to check File System Explorer
             return null
 
         assert(items.all{it.isProjectFolder()}) {"Only ProjectFolders are expected."}
