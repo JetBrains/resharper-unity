@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Psi;
@@ -12,11 +13,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
         private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
+        private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
 
-        public UnityYamlSearchGuru(UnityApi unityApi, AssetUsagesElementContainer assetUsagesElementContainer, AssetMethodsElementContainer assetMethodsElementContainer)
+        public UnityYamlSearchGuru(UnityApi unityApi, AssetUsagesElementContainer assetUsagesElementContainer,
+            AssetMethodsElementContainer assetMethodsElementContainer, AssetInspectorValuesContainer container)
         {
             myAssetUsagesElementContainer = assetUsagesElementContainer;
             myAssetMethodsElementContainer = assetMethodsElementContainer;
+            myInspectorValuesContainer = container;
         }
 
         // Allows us to filter the words that are collected from IDomainSpecificSearchFactory.GetAllPossibleWordsInFile
@@ -44,6 +48,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 case IProperty _:
                 case IMethod _:
                     foreach (var sourceFile in myAssetMethodsElementContainer.GetPossibleFilesWithUsage(element))
+                        set.Add(sourceFile);
+                    break;
+                case IField field:
+                    foreach (var sourceFile in myInspectorValuesContainer.GetPossibleFilesWithUsage(field))
                         set.Add(sourceFile);
                     break;
             }
