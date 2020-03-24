@@ -67,10 +67,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
             var tokenType = myLexer.TokenType;
 
             if (tokenType == CgTokenNodeTypes.WHITESPACE)
-                return new CgWhitespaceTokenNode(myWhitespaceIntern.Intern(myLexer));
+                return new CgWhitespaceTokenNode(WhitespaceIntern.Intern(myLexer));
 
             if (tokenType == CgTokenNodeTypes.NEW_LINE)
-                return new CgNewLineTokenNode(myWhitespaceIntern.Intern(myLexer));
+                return new CgNewLineTokenNode(WhitespaceIntern.Intern(myLexer));
 
             return TreeElementFactory.CreateLeafElement(myLexer);
         }
