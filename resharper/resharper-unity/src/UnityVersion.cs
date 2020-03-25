@@ -190,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return version;
         }
-
+        
         public static string VersionToString([NotNull] Version version)
         {
             var type = string.Empty;

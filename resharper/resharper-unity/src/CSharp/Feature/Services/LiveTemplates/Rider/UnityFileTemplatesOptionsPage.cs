@@ -6,13 +6,13 @@ using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Settings;
 using JetBrains.ReSharper.LiveTemplates.UI;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Rider
 {
     [ZoneMarker(typeof(IRiderModelZone))]
-    [OptionsPage("RiderUnityFileTemplatesSettings", "Unity", typeof(LogoThemedIcons.UnityLogo))]
+    [OptionsPage("RiderUnityFileTemplatesSettings", "Unity", typeof(LogoIcons.Unity))]
     public class UnityFileTemplatesOptionsPage : RiderFileTemplatesOptionPageBase
     {
         public UnityFileTemplatesOptionsPage(Lifetime lifetime,

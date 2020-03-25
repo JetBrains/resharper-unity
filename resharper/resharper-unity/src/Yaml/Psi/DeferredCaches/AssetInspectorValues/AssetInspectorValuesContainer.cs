@@ -42,6 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         private readonly OneToCompactCountingSet<string, string> myNameToGuids = new OneToCompactCountingSet<string, string>();
         
+        private readonly OneToCompactCountingSet<string, IPsiSourceFile> myNameToSourceFile = new OneToCompactCountingSet<string, IPsiSourceFile>();
         
         public AssetInspectorValuesContainer(IShellLocks shellLocks,IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
         {
@@ -114,6 +115,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 if (guid == null)
                     continue;
 
+                myNameToSourceFile.Remove(variableUsage.Name, sourceFile);
+
                 var mbField = new MonoBehaviourField(guid, variableUsage.Name);
                 myUniqueValuesCount.Remove(mbField, variableUsage.Value);
                 RemoveUniqueValue(mbField, variableUsage);
@@ -170,6 +173,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 if (guid == null)
                     continue;
 
+                myNameToSourceFile.Add(variableUsage.Name, sourceFile);
+                
                 var mbField = new MonoBehaviourField(guid, variableUsage.Name);
                 myUniqueValuesCount.Add(mbField ,variableUsage.Value);
                 AddUniqueValue(mbField, variableUsage);
@@ -453,6 +458,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                         continue;
 
                     result.Add(usage);
+                }
+            }
+
+            return result;
+        }
+
+        public LocalList<IPsiSourceFile> GetPossibleFilesWithUsage(IField element)
+        {
+            var result = new LocalList<IPsiSourceFile>();
+            foreach (var name in AssetUtils.GetAllNamesFor(element))
+            {
+                foreach (var sourceFile in myNameToSourceFile.GetValues(name))
+                {
+                    result.Add(sourceFile);
                 }
             }
 

@@ -135,7 +135,7 @@ open class UnityExplorerNode(project: Project,
                 description += ", …"
                 presentation.tooltip = "Contains files from multiple projects:<br/>" + projectNames.joinToString("<br/>")
             }
-            presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
+            presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
     }
 

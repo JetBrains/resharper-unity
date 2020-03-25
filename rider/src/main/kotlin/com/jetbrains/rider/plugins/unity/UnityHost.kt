@@ -26,6 +26,7 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.util.idea.getComponent
 import com.sun.jna.Native
@@ -97,15 +98,12 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
 
         model.allowSetForegroundWindow.set { _, _ ->
             val task = RdTask<Boolean>()
-            if (SystemInfo.isWindows) {
-                val id = model.unityProcessId.valueOrNull
-                if (id != null && id > 0)
-                    task.set(user32!!.AllowSetForegroundWindow(id))
-                else
-                    logger.warn("unityProcessId is null or 0")
-            }
+
+            val id = model.unityProcessId.valueOrNull
+            if (id == null)
+                task.set(false)
             else
-                task.set(true)
+                task.set(AllowUnitySetForegroundWindow(id))
 
             task
         }
@@ -116,12 +114,6 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
         fun getInstance(project: Project) = project.getComponent<UnityHost>()
     }
 
-    @Suppress("FunctionName")
-    private interface User32 : StdCallLibrary {
-        fun AllowSetForegroundWindow(id:Int) : Boolean
-    }
-
-    private val user32 = if (SystemInfo.isWindows) Native.load("user32", User32::class.java) else null
 }
 
 fun Project.isConnectedToEditor() = this.solution.rdUnityModel.sessionInitialized.valueOrDefault(false)

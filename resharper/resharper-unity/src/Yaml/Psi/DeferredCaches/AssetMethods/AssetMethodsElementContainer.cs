@@ -3,9 +3,7 @@ using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
@@ -14,6 +12,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Modules;
@@ -29,12 +28,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
     {
         private readonly IShellLocks myShellLocks;
         private readonly ISolution mySolution;
+        private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
 
-        public AssetMethodsElementContainer(IShellLocks shellLocks, ISolution solution, AssetDocumentHierarchyElementContainer elementContainer)
+        public AssetMethodsElementContainer(IShellLocks shellLocks, ISolution solution, IPersistentIndexManager persistentIndexManager, AssetDocumentHierarchyElementContainer elementContainer)
         {
             myShellLocks = shellLocks;
             mySolution = solution;
+            myPersistentIndexManager = persistentIndexManager;
             myAssetDocumentHierarchyElementContainer = elementContainer;
         }
         
@@ -256,7 +257,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                 var module = clrDeclaredElement.Module;
                     
                 // we have already cache guid in merge method for methodData in myLocalUsages
-                var guid = (assetMethodData.TargetScriptReference as ExternalReference).NotNull("Expected External Reference").ExternalAssetGuid;
+                var guid = (assetMethodData.TargetScriptReference as ExternalReference)?.ExternalAssetGuid;
+                if (guid == null)
+                    continue;
+                
                 var symbolTable = GetReferenceSymbolTable(solution, module, assetMethodData, guid);
                 var resolveResult = symbolTable.GetResolveResult(assetMethodData.MethodName);
                 if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
@@ -319,6 +323,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             myExternalCount.Clear();
             myPsiSourceFileToMethods.Clear();
             myLocalUsages.Clear();
+        }
+
+        public LocalList<IPsiSourceFile> GetPossibleFilesWithUsage(IDeclaredElement element)
+        {
+            if (element == null)
+                return new LocalList<IPsiSourceFile>();
+
+            var shortName = element.ShortName;
+
+            var result = new LocalList<IPsiSourceFile>();
+            foreach (var assetMethodData in myShortNameToScriptTarget.GetValues(shortName))
+            {
+                var location = assetMethodData.Location.OwnerId;
+                var sourceFile = myPersistentIndexManager[location];
+                if (sourceFile != null)
+                    result.Add(sourceFile);
+            }
+
+            return result;
         }
     }
 }

@@ -87,17 +87,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         // The repositoryPath setting in nuget.config points to the location of the test nuget packages that are
         // downloaded as part of running tests. We can't have a path that is both Windows and *NIX friendly, so we set
         // an environment variable.
-        // If the ~/JetTestPackages folder exists, we'll use that. If not, put it next to the TestDataPath, e.g.
-        // test/data/../JetTestPackages
+        // If the ~/JetTestPackages folder exists, we'll use that. This is recommended, as it means packages are shared
+        // across different plugin instances. If the folder doesn't exist, we put it next to the TestDataPath, e.g.
+        // test/data/../JetTestPackages.
+        // Note that repositoryPath can be a relative path, and it's resolved against the location of the nuget.config
+        // file it's set in - remember that nuget.config files are discovered and resolved hierarchically.
         private static void SetJetTestPackagesDir()
         {
             if (Environment.GetEnvironmentVariable("JET_TEST_PACKAGES_DIR") == null)
             {
-                // If path is relative, it's relative to the folder of the NuGet.config file
                 var packages = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                     "JetTestPackages");
                 if (!Directory.Exists(packages))
                 {
+                    TestUtil.SetHomeDir(typeof(TestEnvironment).Assembly);
                     var testData = TestUtil.GetTestDataPathBase(typeof(TestEnvironment).Assembly);
                     packages = testData.Parent.Combine("JetTestPackages").FullPath;
                 }

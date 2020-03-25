@@ -15,8 +15,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 var fileId = node.Value.AsFileID();
                 if (fileId == null)
                     return null;
-                
-                return new AssetReferenceValue(fileId.ToReference(owner));
+
+                var reference = fileId.ToReference(owner);
+                if (reference != null)
+                    return new AssetReferenceValue(reference);
             }
 
             return null;

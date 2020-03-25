@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
@@ -19,11 +19,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
     public class AssetUsagesElementContainer : IUnityAssetDataElementContainer
     {
         private readonly IShellLocks myShellLocks;
+        private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
 
-        public AssetUsagesElementContainer(IShellLocks shellLocks, MetaFileGuidCache metaFileGuidCache)
+        public AssetUsagesElementContainer(IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, MetaFileGuidCache metaFileGuidCache)
         {
             myShellLocks = shellLocks;
+            myPersistentIndexManager = persistentIndexManager;
             myMetaFileGuidCache = metaFileGuidCache;
         }
         
@@ -166,6 +168,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
             var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
             return guid;
+        }
+
+
+        public LocalList<IPsiSourceFile>  GetPossibleFilesWithUsage(ITypeElement declaredElement)
+        {
+            var guid = GetGuidFor(declaredElement);
+            if (guid == null) 
+                return new LocalList<IPsiSourceFile>();
+
+            var result = new LocalList<IPsiSourceFile>();
+            foreach (var assetUsage in myAssetUsages.GetValues(guid))
+            {
+                var location = assetUsage.Location.OwnerId;
+                var sourceFile = myPersistentIndexManager[location];
+                if (sourceFile != null)
+                    result.Add(sourceFile);
+            }
+
+            return result;
         }
     }
 }
