@@ -147,4 +147,5 @@
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio.Props')" />
 </Project>
