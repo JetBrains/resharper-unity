@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
@@ -82,15 +84,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             return EmptySearchDomain.Instance;
         }
 
-        private static bool IsInterestingElement(IDeclaredElement element)
+        public static bool IsInterestingElement(IDeclaredElement element)
         {
+            var solution = element.GetSolution();
+            var settings = solution.GetSettingsStore();
+            if (!settings.GetValue((UnitySettings key) => key.IsAssetIndexingEnabled))
+                return false;
+            
             var unityApi = element.GetSolution().TryGetComponent<UnityApi>();
             if (unityApi == null)
                 return false;
-            return unityApi.IsUnityType(element as IClass)
-                   || unityApi.IsPotentialEventHandler(element as IMethod)
-                   || unityApi.IsPotentialEventHandler(element as IProperty)
-                   || unityApi.IsSerialisedField(element as IField);
+
+            var assetSerializationMode = solution.GetComponent<AssetSerializationMode>();
+            var yamlParsingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled;
+            var deferredController = solution.GetComponent<DeferredCacheController>();
+
+            
+            if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText || !deferredController.CompletedOnce.Value)
+                return false;
+
+            switch (element)
+            {
+                case IClass c:
+                    return unityApi.IsUnityType(c);
+                case IProperty _:
+                case IMethod _:
+                    return solution.GetComponent<AssetMethodsElementContainer>().GetAssetUsagesCount(element, out var estimatedResult) > 0 || estimatedResult;
+                case IField field:
+                    return unityApi.IsSerialisedField(field);
+            }
+
+            return false;
         }
     }
 }
