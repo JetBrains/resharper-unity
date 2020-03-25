@@ -116,15 +116,6 @@
       <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <!-- This requires WPF and PresentationFramework to build -->
-    <ThemedIconsXamlV3 Include="Resources\Logo\unity-logo.xaml" Condition=" '$(OS)' != 'Unix' ">
-      <ThemeColumns>Gray;GrayDark;Color</ThemeColumns>
-      <RemoveBackgroundElement>False</RemoveBackgroundElement>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ThemedIconsXamlV3>
-  </ItemGroup>
   <!-- References -->
   <ItemGroup>
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.4.2" />
