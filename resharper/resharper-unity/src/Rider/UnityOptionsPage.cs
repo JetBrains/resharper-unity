@@ -12,7 +12,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Plugins.Unity.Application.UI.Options;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Elements;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.ReSharper.Psi.Naming.Settings;
@@ -20,7 +20,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
-    [OptionsPage(PID, Name, typeof(LogoThemedIcons.UnityLogo), Sequence = 0.01,
+    [OptionsPage(PID, Name, typeof(LogoIcons.Unity), Sequence = 0.01,
         ParentId = CodeEditingPage.PID)]
     public class UnityOptionsPage : OptionsPageBase
     {
@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 "Cache prefab data to improve find usage performance");
             CheckBox((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic,
                 "Automatically disable asset indexing for large solutions");
-            
+
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
                 "Enable simple word-based completion in ShaderLab files");
