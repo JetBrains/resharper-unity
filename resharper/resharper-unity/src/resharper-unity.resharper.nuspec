@@ -41,6 +41,9 @@ Added:
 - Exclude Boo and UnityScript namespaces, as well as the System.Diagnostics.Debug type from import completion (#574, #1473)
 - Add more attributes to external annotations. E.g. ShortcutAttribute will mark the method as in use (#1546, RIDER-40330, #1548)
 - Find Usages for serialised fields now includes asset usages (#1530)
+- Add context action to create Unity Assets menu item for a ScriptableObject (#1567)
+- Show serialised field values for scriptable objects (#1567)
+- Show usages of scriptable objects in assets (#1567)
 
 Changed:
 - Indexing of assets deferred until after project loaded and will not interfere with existing code insight features (#1530)
@@ -51,6 +54,8 @@ Changed:
 - Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled (#1459)
 - Stop marking a method as expensive if it only contains a null check (#1459)
 - Move vector multiplication order inspection to performance critical context only (#1459)
+- Sort commonly used event functions higher in Generate dialog (#1566)
+- Generate event functions at location of context action, rather than at end of class (#1542, #1566)
 - Updated API information to 2020.1.0a25 (#1553)
 - Remove messages that use obsolete parameter types (#1545, #1553)
 
