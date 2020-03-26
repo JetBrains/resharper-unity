@@ -428,11 +428,17 @@ namespace JetBrains.Rider.Unity.Editor
 
             ourLogger.Verbose("Refresh: SyncSolution Started");
             UnityUtils.SyncSolution();
+            
+            EditorApplication.update += () =>
+            {
+              if (!EditorApplication.isCompiling) 
+                task.Set(Unit.Instance);
+            };
+            
             ourLogger.Verbose("Refresh: SyncSolution Completed");
           }
           else
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
-          task.Set(Unit.Instance);
         });
         return task;
       });
