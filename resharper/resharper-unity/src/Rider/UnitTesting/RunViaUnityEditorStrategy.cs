@@ -214,9 +214,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             var cancellationTs = run.GetData(ourCancellationTokenSourceKey);
 
-            myLogger.Verbose("Before calling Refresh.");
+            myLogger.Trace("Before calling Refresh.");
             Refresh(run.Lifetime, cancellationTs.NotNull().Token).GetAwaiter().OnCompleted(() =>
             {
+                myLogger.Trace("Refresh. OnCompleted.");
                 // KS: Can't use run.Lifetime for ExecuteOrQueueEx here and in all similar places: run.Lifetime is terminated when
                 // Unit Test Session is closed from UI without cancelling the run. This will leave task completion source in running state forever.
                 mySolution.Locks.ExecuteOrQueueEx(myLifetime, "Check compilation", () =>
@@ -322,9 +323,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 var lifetimeDef = lifetime.CreateNested();
                 myRiderSolutionSaver.Save(lifetime, mySolution, () =>
                 {
+                    myLogger.Trace("onSavedCallback.");
                     if (!cancellationToken.IsCancellationRequested)
-                        myUnityRefresher.Refresh(RefreshType.Force);
-                    lifetimeDef.Terminate();
+                        myUnityRefresher.Refresh(RefreshType.Force, ()=>lifetimeDef.Terminate());
+                    myLogger.Trace("onSavedCallback. After refresh.");
                 });
                 while (lifetimeDef.Lifetime.IsAlive)
                 {
@@ -332,8 +334,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 }
             });
 
-            await refreshTask;
-            await WaitForUnityEditorConnectedAndIdle(lifetime, cancellationToken);
+            await refreshTask
+                .ContinueWith(__ =>
+                {
+                    WaitForUnityEditorConnectedAndIdle(lifetime, cancellationToken).Wait(cancellationToken);
+                }, cancellationToken);
         }
 
         private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
@@ -426,6 +431,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private Task WaitForUnityEditorConnectedAndIdle(Lifetime lifetime, CancellationToken cancellationToken)
         {
+            myLogger.Trace("WaitForUnityEditorConnectedAndIdle");
             var tcs = new TaskCompletionSource<Unit>();
 
             var waitingLifetimeDef = Lifetime.Define(lifetime);
@@ -434,34 +440,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             tcs.Task.ContinueWith(_ => waitingLifetimeDef.Terminate(), lifetime);
 
-            mySolution.Locks.ExecuteOrQueue(lifetime, "WaitForUnityEditorConnectedAndIdle", () =>
+            if (cancellationToken.IsCancellationRequested)
             {
-                if (cancellationToken.IsCancellationRequested)
+                tcs.TrySetCanceled();
+            }
+
+            // Can't use ConnectionTracker because it pauses without focus
+            waitingLifetime.StartMainUnguardedAsync(async () =>
+            {
+                while (waitingLifetime.IsAlive)
                 {
-                    tcs.TrySetCanceled();
-                    return;
-                }
-                
-                // Can't use ConnectionTracker because it pauses without focus
-                waitingLifetime.StartMainUnguardedAsync(async ()=>
-                {
-                    while (waitingLifetime.IsAlive)
+                    var model = myEditorProtocol.UnityModel.Value;
+                    if (model != null)
                     {
-                        var model = myEditorProtocol.UnityModel.Value;
-                        if (model != null)
+                        var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
+                        rdTask?.Result.Advise(waitingLifetime, result =>
                         {
-                            var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
-                            rdTask?.Result.Advise(waitingLifetime, result =>
+                            if (result.Result == UnityEditorState.Idle)
                             {
-                                if (result.Result == UnityEditorState.Idle)
-                                    tcs.TrySetResult(Unit.Instance);
-                            });
-                        }
-                        await Task.Delay(1000, waitingLifetime);
+                                tcs.TrySetResult(Unit.Instance);
+                                myLogger.Trace($"tcs ended with WaitForUnityEditorConnectedAndIdle {result.Result}");
+                            }
+                        });
                     }
-                });
-                
-                myUnityProcessId.When(waitingLifetime, (int?)null, _ => tcs.TrySetException(new Exception("Unity Editor has been closed.")));
+
+                    await Task.Delay(300, waitingLifetime);
+                }
+
+                myUnityProcessId.When(waitingLifetime, (int?) null, _ => tcs.TrySetException(new Exception("Unity Editor has been closed.")));
                 waitingLifetime.TryOnTermination(cancellationToken.Register(() => tcs.TrySetCanceled()));
             });
 

@@ -56,7 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         /// Calls Refresh in Unity, and RefreshPaths in vfs. If called multiple times while already running, schedules itself again
         /// </summary>
         /// <param name="refreshType"></param>
-        public async void Refresh(RefreshType refreshType)
+        /// <param name="onFinished"></param>
+        public async void Refresh(RefreshType refreshType, Action onFinished)
         {
             myLocks.AssertMainThread();
             if (myEditorProtocol.UnityModel.Value == null)
@@ -79,13 +80,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myIsRunning = false;
 
             if (myRefreshType == null)
+            {
+                onFinished();
                 return;
+            }
 
             var type = myRefreshType.Value;
             myRefreshType = null;
-
+            
             myLogger.Verbose($"Secondary execution with {type}");
-            Refresh(type); // if refresh signal came during execution preserve it and execute after finish
+            Refresh(type, onFinished); // if refresh signal came during execution preserve it and execute after finish
         }
 
         private async Task RefreshInternal(RefreshType force)
@@ -114,8 +118,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myLogger.Verbose($"RefreshPaths.StartAsTask Started.");
                 await solution.GetFileSystemModel().RefreshPaths.Start(new RdRefreshRequest(list, true)).AsTask();
                 myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-
-                myLogger.Verbose($"lifetimeDef.Terminate");
                 lifetimeDef.Terminate();
             }
             catch (Exception e)
@@ -128,7 +130,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        private readonly UnityRefresher myRefresher;
         private readonly ILogger myLogger;
         private GroupingEvent myGroupingEvent;
 
@@ -138,7 +139,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
-            myRefresher = refresher;
             myLogger = logger;
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -152,13 +152,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     TimeSpan.FromMilliseconds(500),
                     Rgc.Guarded, () =>
                     {
-                        refresher.Refresh(RefreshType.Normal);
+                        refresher.Refresh(RefreshType.Normal, () => {});
                     });
                 
                 host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force =>
                     {
                         if (force)
-                            refresher.Refresh(RefreshType.ForceRequestScriptReload);
+                            refresher.Refresh(RefreshType.ForceRequestScriptReload, () => {});
                         else
                             myGroupingEvent.FireIncoming();
                     }));
