@@ -30,7 +30,6 @@ using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Notifications;
-using JetBrains.Threading;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Threading;
@@ -317,16 +316,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             return WaitForUnityEditorConnectedAndIdle(lifetime, cancellationToken).ContinueWith(_ =>
                 {
-                    RefreshTask(lifetime, cancellationToken).ContinueWith(__ =>
-                        {
-                            WaitForUnityEditorConnectedAndIdle(lifetime, cancellationToken);
-                        }, cancellationToken);
-                }, cancellationToken);
+                    return RefreshTask(lifetime, cancellationToken)
+                        .ContinueWith(__ => 
+                            WaitForUnityEditorConnectedAndIdle(lifetime, cancellationToken), cancellationToken)
+                        .Unwrap();
+                }, cancellationToken)
+                .Unwrap();
         }
 
         private Task RefreshTask(Lifetime lifetime, CancellationToken cancellationToken)
         {
             var waitingLifetimeDefinition = Lifetime.Define(lifetime);
+            cancellationToken.Register(() => waitingLifetimeDefinition.Terminate());
             mySolution.Locks.Tasks.StartNew(lifetime, Scheduling.MainDispatcher, () =>
             {
                 if (cancellationToken.IsCancellationRequested)
