@@ -63,13 +63,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         /// </summary>
         /// <param name="lifetime"></param>
         /// <param name="refreshType"></param>
-        public Task Refresh(Lifetime lifetime, RefreshType? refreshType)
+        public Task Refresh(Lifetime lifetime, RefreshType refreshType)
         {
             myLocks.AssertMainThread();
-            
-            if (refreshType == null)
-                return Task.CompletedTask;
-            
+
             if (myEditorProtocol.UnityModel.Value == null)
                 return Task.CompletedTask;
 
@@ -83,14 +80,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return myRunningRefreshTask;
             }
 
-            myRunningRefreshTask = RefreshInternal((RefreshType) refreshType);
+            myRunningRefreshTask = RefreshInternal(refreshType);
             return myRunningRefreshTask.ContinueWith(_ =>
             {
+                myRunningRefreshTask = null;
                 // if refresh signal came during execution preserve it and execute after finish
                 if (mySecondaryRefreshType != null)
                 {
                     myLogger.Verbose($"Secondary execution with {mySecondaryRefreshType}");
-                    return Refresh(lifetime, mySecondaryRefreshType).ContinueWith(___ => { mySecondaryRefreshType = null; }, lifetime);
+                    return Refresh(lifetime, (RefreshType)mySecondaryRefreshType).ContinueWith(___ => { mySecondaryRefreshType = null; }, lifetime);
                 }
 
                 return Task.CompletedTask;
@@ -101,8 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             var lifetimeDef = Lifetime.Define(myLifetime);
 
-            myLogger.Verbose(
-                $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
+            myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
             try
             {
                 using (mySolution.GetComponent<VfsListener>().PauseChanges())
