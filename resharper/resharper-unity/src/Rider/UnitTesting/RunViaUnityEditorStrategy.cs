@@ -338,7 +338,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     myLogger.Trace("onSavedCallback.");
                     if (!cancellationToken.IsCancellationRequested)
                     {
-                        myUnityRefresher.Refresh(RefreshType.Force, waitingLifetimeDefinition.Lifetime)
+                        myUnityRefresher.Refresh(waitingLifetimeDefinition.Lifetime, RefreshType.Force)
                             .ContinueWith(_ =>
                             {
                                 myLogger.Trace("After onSavedCallback and myUnityRefresher.Refresh");

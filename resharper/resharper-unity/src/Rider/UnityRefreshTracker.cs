@@ -54,16 +54,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public void StartRefresh(RefreshType refreshType)
         {
 #pragma warning disable 4014
-            Refresh(refreshType, myLifetime);
+            Refresh(myLifetime, refreshType);
 #pragma warning restore 4014
         }
 
         /// <summary>
         /// Calls Refresh in Unity, and RefreshPaths in vfs. If called multiple times while already running, schedules itself again
         /// </summary>
-        /// <param name="refreshType"></param>
         /// <param name="lifetime"></param>
-        public Task Refresh(RefreshType? refreshType, Lifetime lifetime)
+        /// <param name="refreshType"></param>
+        public Task Refresh(Lifetime lifetime, RefreshType? refreshType)
         {
             myLocks.AssertMainThread();
             
@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (mySecondaryRefreshType != null)
                 {
                     myLogger.Verbose($"Secondary execution with {mySecondaryRefreshType}");
-                    return Refresh(mySecondaryRefreshType, lifetime).ContinueWith(___ => { mySecondaryRefreshType = null; }, lifetime);
+                    return Refresh(lifetime, mySecondaryRefreshType).ContinueWith(___ => { mySecondaryRefreshType = null; }, lifetime);
                 }
 
                 return Task.CompletedTask;
