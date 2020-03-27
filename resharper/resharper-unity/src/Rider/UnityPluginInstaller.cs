@@ -131,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myQueue.Enqueue(() =>
             {
                 mySolution.Locks.Tasks.StartNew(myLifetime, Scheduling.MainDispatcher,
-                    () => myRefresher.Refresh(RefreshType.Normal, ()=>{}));
+                    () => myRefresher.StartRefresh(RefreshType.Normal));
             });
         }
 

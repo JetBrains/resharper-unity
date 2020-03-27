@@ -49,63 +49,67 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
         }
 
-        private RefreshType? myRefreshType;
-        private bool myIsRunning;
+        private RefreshType? mySecondaryRefreshType;
+        private Task myRunningRefreshTask;
+        public void StartRefresh(RefreshType refreshType)
+        {
+#pragma warning disable 4014
+            Refresh(refreshType, myLifetime);
+#pragma warning restore 4014
+        }
 
         /// <summary>
         /// Calls Refresh in Unity, and RefreshPaths in vfs. If called multiple times while already running, schedules itself again
         /// </summary>
         /// <param name="refreshType"></param>
-        /// <param name="onFinished"></param>
-        public async void Refresh(RefreshType refreshType, Action onFinished)
+        /// <param name="lifetime"></param>
+        public Task Refresh(RefreshType? refreshType, Lifetime lifetime)
         {
             myLocks.AssertMainThread();
+            
+            if (refreshType == null)
+                return Task.CompletedTask;
+            
             if (myEditorProtocol.UnityModel.Value == null)
-                return;
+                return Task.CompletedTask;
 
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && refreshType == RefreshType.Normal)
-                return;
+                return Task.CompletedTask;
 
-            if (myIsRunning)
+            if (myRunningRefreshTask != null && !myRunningRefreshTask.IsCompleted)
             {
                 myLogger.Verbose($"Secondary execution with {refreshType} type saved.");
-                myRefreshType = refreshType;
-                return;
+                mySecondaryRefreshType = refreshType;
             }
 
-            myIsRunning = true;
-
-            await RefreshInternal(refreshType);
-
-            myIsRunning = false;
-
-            if (myRefreshType == null)
+            myRunningRefreshTask = RefreshInternal((RefreshType) refreshType);
+            return myRunningRefreshTask.ContinueWith(_ =>
             {
-                onFinished();
-                return;
-            }
+                // if refresh signal came during execution preserve it and execute after finish
+                if (mySecondaryRefreshType != null)
+                {
+                    myLogger.Verbose($"Secondary execution with {mySecondaryRefreshType}");
+                    return Refresh(mySecondaryRefreshType, lifetime).ContinueWith(___ => { mySecondaryRefreshType = null; }, lifetime);
+                }
 
-            var type = myRefreshType.Value;
-            myRefreshType = null;
-            
-            myLogger.Verbose($"Secondary execution with {type}");
-            Refresh(type, onFinished); // if refresh signal came during execution preserve it and execute after finish
+                return Task.CompletedTask;
+            }, lifetime).Unwrap();
         }
 
-        private async Task RefreshInternal(RefreshType force)
+        private async Task RefreshInternal(RefreshType refreshType)
         {
             var lifetimeDef = Lifetime.Define(myLifetime);
 
             myLogger.Verbose(
-                $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Started");
+                $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
             try
             {
                 using (mySolution.GetComponent<VfsListener>().PauseChanges())
                 {
-                    await myEditorProtocol.UnityModel.Value.Refresh.Start(force).AsTask();
+                    await myEditorProtocol.UnityModel.Value.Refresh.Start(refreshType).AsTask();
                 }
                 myLogger.Verbose(
-                    $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Finished");
+                    $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished");
 
                 var solution = mySolution.GetProtocolSolution();
                 var solFolder = mySolution.SolutionDirectory;
@@ -152,13 +156,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     TimeSpan.FromMilliseconds(500),
                     Rgc.Guarded, () =>
                     {
-                        refresher.Refresh(RefreshType.Normal, () => {});
+                        refresher.StartRefresh(RefreshType.Normal);
                     });
                 
                 host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force =>
                     {
                         if (force)
-                            refresher.Refresh(RefreshType.ForceRequestScriptReload, () => {});
+                            refresher.StartRefresh(RefreshType.ForceRequestScriptReload);
                         else
                             myGroupingEvent.FireIncoming();
                     }));

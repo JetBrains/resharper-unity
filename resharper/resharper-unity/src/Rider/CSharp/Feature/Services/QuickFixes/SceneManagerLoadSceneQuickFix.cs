@@ -150,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
                 solution.GetComponent<IDaemon>().Invalidate();
             
-                solution.GetComponent<UnityRefresher>().Refresh(RefreshType.Normal, ()=>{});
+                solution.GetComponent<UnityRefresher>().StartRefresh(RefreshType.Normal);
                 return null;
             }
 

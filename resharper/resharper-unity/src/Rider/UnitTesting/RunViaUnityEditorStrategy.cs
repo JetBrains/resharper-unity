@@ -338,8 +338,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     myLogger.Trace("onSavedCallback.");
                     if (!cancellationToken.IsCancellationRequested)
                     {
-                        myUnityRefresher.Refresh(RefreshType.Force, () => { waitingLifetimeDefinition.Terminate(); });
-                        myLogger.Trace("onSavedCallback. After refresh.");
+                        myUnityRefresher.Refresh(RefreshType.Force, waitingLifetimeDefinition.Lifetime)
+                            .ContinueWith(_ =>
+                            {
+                                myLogger.Trace("After onSavedCallback and myUnityRefresher.Refresh");
+                                waitingLifetimeDefinition.Terminate();
+                            }, cancellationToken);
                     }
                 });
             });
