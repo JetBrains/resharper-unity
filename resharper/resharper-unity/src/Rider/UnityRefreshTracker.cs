@@ -80,6 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 myLogger.Verbose($"Secondary execution with {refreshType} type saved.");
                 mySecondaryRefreshType = refreshType;
+                return myRunningRefreshTask;
             }
 
             myRunningRefreshTask = RefreshInternal((RefreshType) refreshType);
