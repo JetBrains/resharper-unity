@@ -409,13 +409,23 @@ namespace JetBrains.Rider.Unity.Editor
         return UnityEditorState.Idle;
       });
     }
-    
-    private static readonly RdTask<Unit> ourRefreshTask = new RdTask<Unit>();
 
     private static void AdviseRefresh(EditorPluginModel model)
     {
       model.Refresh.Set((l, force) =>
       {
+        var refreshTask = new RdTask<Unit>();
+        void SendResult()
+        {
+          if (!EditorApplication.isCompiling)
+          {
+            // ReSharper disable once DelegateSubtraction
+            EditorApplication.update -= SendResult;
+            ourLogger.Verbose("Refresh: SyncSolution Completed");
+            refreshTask.Set(Unit.Instance);
+          }
+        }
+        
         ourLogger.Verbose("Refresh: SyncSolution Enqueue");
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -435,19 +445,8 @@ namespace JetBrains.Rider.Unity.Editor
           else
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
         });
-        return ourRefreshTask;
+        return refreshTask;
       });
-    }
-
-    private static void SendResult()
-    {
-      if (!EditorApplication.isCompiling)
-      {
-        // ReSharper disable once DelegateSubtraction
-        EditorApplication.update -= SendResult;
-        ourLogger.Verbose("Refresh: SyncSolution Completed");
-        ourRefreshTask.Set(Unit.Instance);
-      }
     }
 
     private static void AdviseUnityActions(EditorPluginModel model, Lifetime connectionLifetime)
