@@ -121,14 +121,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
                 finally
                 {
-                    myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished");
-                    var solution = mySolution.GetProtocolSolution();
-                    var solFolder = mySolution.SolutionDirectory;
-                    var list = new List<string> {solFolder.FullPath};
-                    myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-                    await solution.GetFileSystemModel().RefreshPaths.Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask();
-                    myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-                    lifetimeDef.Terminate();
+                    try
+                    {
+                        myLogger.Verbose(
+                            $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished");
+                        var solution = mySolution.GetProtocolSolution();
+                        var solFolder = mySolution.SolutionDirectory;
+                        var list = new List<string> {solFolder.FullPath};
+                        myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
+                        await solution.GetFileSystemModel().RefreshPaths.Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask();
+                    }
+                    finally
+                    {
+                        myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
+                        lifetimeDef.Terminate();
+                    }
                 }
             }
             catch (Exception e)
