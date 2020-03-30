@@ -12,7 +12,6 @@
     <ProjectReference Include="..\EditorPlugin\EditorPlugin.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.RdFramework" Version="201.20200319.351" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
     <PackageReference Include="xunit" Version="1.9.2" />
   </ItemGroup>
