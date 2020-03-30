@@ -19,7 +19,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Host.Features.Services;
 using JetBrains.ReSharper.Host.Features.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Packages;
 using JetBrains.ReSharper.Resources.Shell;
@@ -57,7 +56,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
-        private readonly RiderIsApplicationActiveStateTracker myApplicationActiveStateTracker;
         private readonly ConnectionTracker myConnectionTracker;
 
         private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
@@ -80,7 +78,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             ILogger logger,
             Lifetime lifetime,
             PackageValidator packageValidator,
-            RiderIsApplicationActiveStateTracker applicationActiveStateTracker,
             ConnectionTracker connectionTracker
         )
         {
@@ -96,7 +93,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
-            myApplicationActiveStateTracker = applicationActiveStateTracker;
             myConnectionTracker = connectionTracker;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
 
@@ -455,11 +451,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             waitingLifetime.OnTermination(() => tcs.TrySetCanceled());
             tcs.Task.ContinueWith(_ => waitingLifetimeDef.Terminate(), lifetime);
             if (cancellationToken.IsCancellationRequested) tcs.TrySetCanceled();
-
-            // Avoid pausing without focus
-            waitingLifetime.Bracket(() => { myApplicationActiveStateTracker.IsApplicationActive.SetValue(true); },
-                () => {myApplicationActiveStateTracker.IsApplicationActive.SetValue(true); });
             
+            // todo: Avoid pausing without focus
             waitingLifetime.StartMainUnguarded(() =>
             {
                 if (myConnectionTracker.State.Value == UnityEditorState.Idle)
