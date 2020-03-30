@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.packageManager
 import com.google.gson.Gson
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.diagnostic.ControlFlowException
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
@@ -263,7 +264,9 @@ class PackageManager(private val project: Project) {
                 ?: PackageData.unknown(name, version)
         }
         catch (throwable: Throwable) {
-            logger.error("Error resolving package", throwable)
+            if (throwable !is ControlFlowException) {
+                logger.error("Error resolving package", throwable)
+            }
             PackageData.unknown(name, version)
         }
     }
@@ -370,7 +373,9 @@ class PackageManager(private val project: Project) {
                 return PackageDetails.fromPackageJson(packageFolder, packageJson!!)
             }
             catch (t: Throwable) {
-                logger.error("Error reading package.json", t)
+                if (t !is ControlFlowException) {
+                    logger.error("Error reading package.json", t)
+                }
             }
         }
         return null
