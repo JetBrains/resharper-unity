@@ -158,6 +158,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             var checker = new SeldomInterruptChecker();
             foreach (var psiSourceFile in toProcess)
             {
+                if (!psiSourceFile.GetLocation().ExistsFile)
+                {
+                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile)");
+                    toProcess.Remove(psiSourceFile);
+                }
+                
                 if (!psiSourceFile.IsValid())
                 {
                     // file could be dropped, because we are working with snapshot, do not call build for invalid files
