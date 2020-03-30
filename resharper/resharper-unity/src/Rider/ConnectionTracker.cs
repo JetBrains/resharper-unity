@@ -48,6 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             {
                                 State.SetValue(result.Result);
                                 logger.Trace($"myIsConnected = {State.Value}");
+                                logger.Trace($"Inside Result. Sending connection state. State: {State.Value}");
+                                host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
                             });
                         }
                         catch (Exception e)

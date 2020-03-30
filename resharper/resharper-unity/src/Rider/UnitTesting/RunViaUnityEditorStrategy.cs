@@ -19,6 +19,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Host.Features;
+using JetBrains.ReSharper.Host.Features.Services;
 using JetBrains.ReSharper.Host.Features.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Packages;
 using JetBrains.ReSharper.Resources.Shell;
@@ -56,6 +57,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
+        private readonly RiderIsApplicationActiveStateTracker myApplicationActiveStateTracker;
+        private readonly ConnectionTracker myConnectionTracker;
 
         private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private readonly WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
@@ -76,7 +79,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             UnityHost unityHost,
             ILogger logger,
             Lifetime lifetime,
-            PackageValidator packageValidator
+            PackageValidator packageValidator,
+            RiderIsApplicationActiveStateTracker applicationActiveStateTracker,
+            ConnectionTracker connectionTracker
         )
         {
             mySolution = solution;
@@ -91,6 +96,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
+            myApplicationActiveStateTracker = applicationActiveStateTracker;
+            myConnectionTracker = connectionTracker;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
@@ -449,28 +456,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             tcs.Task.ContinueWith(_ => waitingLifetimeDef.Terminate(), lifetime);
             if (cancellationToken.IsCancellationRequested) tcs.TrySetCanceled();
 
-            // Can't use ConnectionTracker because it pauses without focus
-            waitingLifetime.StartMainUnguardedAsync(async () =>
+            // Avoid pausing without focus
+            waitingLifetime.Bracket(() => { myApplicationActiveStateTracker.IsApplicationActive.SetValue(true); },
+                () => {myApplicationActiveStateTracker.IsApplicationActive.SetValue(true); });
+            
+            waitingLifetime.StartMainUnguarded(() =>
             {
-                while (waitingLifetime.IsAlive)
+                if (myConnectionTracker.State.Value == UnityEditorState.Idle)
                 {
-                    var model = myEditorProtocol.UnityModel.Value;
-                    if (model != null)
-                    {
-                        var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
-                        rdTask?.Result.Advise(waitingLifetime, result =>
-                        {
-                            if (result.Result == UnityEditorState.Idle)
-                            {
-                                tcs.TrySetResult(Unit.Instance);
-                                myLogger.Trace($"tcs ended with WaitForUnityEditorConnectedAndIdle {result.Result}");
-                            }
-                        });
-                    }
-
-                    await Task.Delay(300, waitingLifetime);
+                    tcs.TrySetResult(Unit.Instance);
+                    return;
                 }
 
+                myConnectionTracker.State.Change.Advise_When(waitingLifetimeDef.Lifetime, UnityEditorState.Idle, () => tcs.TrySetResult(Unit.Instance));
+                
                 myUnityProcessId.When(waitingLifetime, (int?) null, _ => tcs.TrySetException(new Exception("Unity Editor has been closed.")));
                 waitingLifetime.TryOnTermination(cancellationToken.Register(() => tcs.TrySetCanceled()));
             });
