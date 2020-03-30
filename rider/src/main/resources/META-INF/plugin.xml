@@ -81,10 +81,6 @@
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
 
-    <!-- USS support -->
-    <!-- Add basic file type support only (icons, etc.) all functionality is optional, based on the CSS plugin being available -->
-    <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileType" extensions="uss" />
-
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UssDisabledEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
