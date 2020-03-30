@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return sourceFile.Name.Equals("TagManager.asset");
+            return sourceFile.Name.Equals("TagManager.asset") && sourceFile.GetLocation().SniffYamlHeader();
         }
 
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
