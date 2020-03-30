@@ -111,8 +111,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
                         var range = new TextRange(assetDocument.StartOffset + methodNameRange.StartOffset.Offset,
                             assetDocument.StartOffset + methodNameRange.EndOffset.Offset);
-                        result.Add(new AssetMethodData(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), methodName, range,
-                            argMode, type, fileID.ToReference(currentSourceFile)));                        
+
+                        var target = fileID.ToReference(currentSourceFile);
+                        if (target != null)
+                        {
+                            result.Add(new AssetMethodData(
+                                new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), methodName,
+                                range,
+                                argMode, type, target));
+                        }
                     }
                 }
             }
