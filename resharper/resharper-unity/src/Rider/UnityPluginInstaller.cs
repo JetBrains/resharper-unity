@@ -112,7 +112,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var versionForSolution = myUnityVersion.GetActualVersionForSolution();
             if (versionForSolution >= new Version("2019.2")) // 2019.2+ would not work fine either without Rider package, and when package is present it loads EditorPlugin directly from Rider installation.
+            {
+                var installationInfoToRemove = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: FileSystemPath.Empty);
+                if (installationInfoToRemove.PluginDirectory.ExistsDirectory)
+                {
+                    myQueue.Enqueue(() =>
+                    {
+                        myLogger.Info($"Remove {installationInfoToRemove.PluginDirectory}. Rider package should be used instead.");
+                        installationInfoToRemove.PluginDirectory.Delete();
+                    });
+                }
                 return;
+            }
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression

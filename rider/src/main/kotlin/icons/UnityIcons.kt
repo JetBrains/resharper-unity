@@ -18,7 +18,7 @@ import javax.swing.Icon
 class UnityIcons {
     class Icons {
         companion object {
-            val UnityLogo = IconLoader.getIcon("/resharper/Logo/UnityLogo.svg")
+            val UnityLogo = IconLoader.getIcon("/resharper/Logo/Unity.svg")
         }
     }
 
