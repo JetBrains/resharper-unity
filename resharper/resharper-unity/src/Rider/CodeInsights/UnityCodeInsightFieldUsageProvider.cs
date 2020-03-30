@@ -174,8 +174,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                     var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray();
                     Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
 
-                    var anotherValueWithLocation = values.FirstOrDefault(t => !t.Equals(initValueUnityPresentation)) ?? values.First();
-                    displayName = anotherValueWithLocation.GetPresentation(solution, field, false);
+                    var anotherValueWithLocation = values.FirstOrDefault(t => !t.Equals(initValueUnityPresentation));
+                    displayName = anotherValueWithLocation?.GetPresentation(solution, field, false);
                 }
 
                 if (displayName == null || displayName.Equals("..."))
