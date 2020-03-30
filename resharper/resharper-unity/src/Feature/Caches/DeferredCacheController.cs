@@ -160,14 +160,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             {
                 if (!psiSourceFile.GetLocation().ExistsFile)
                 {
-                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile)");
+                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), removed");
                     toProcess.Remove(psiSourceFile);
                 }
                 
                 if (!psiSourceFile.IsValid())
                 {
                     // file could be dropped, because we are working with snapshot, do not call build for invalid files
-                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile)");
+                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), invalid");
                     toProcess.Remove(psiSourceFile);
                     calculatedData.TryRemove(psiSourceFile, out var _);
                     continue;
