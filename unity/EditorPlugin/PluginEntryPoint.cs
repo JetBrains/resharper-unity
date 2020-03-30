@@ -431,19 +431,31 @@ namespace JetBrains.Rider.Unity.Editor
         {
           if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force != RefreshType.Normal)
           {
-            if (force == RefreshType.ForceRequestScriptReload)
+            try
             {
-              ourLogger.Verbose("Refresh: RequestScriptReload");
-              UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
-            }
+              if (force == RefreshType.ForceRequestScriptReload)
+              {
+                ourLogger.Verbose("Refresh: RequestScriptReload");
+                UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
+              }
 
-            ourLogger.Verbose("Refresh: SyncSolution Started");
-            UnityUtils.SyncSolution();
-            
-            EditorApplication.update += SendResult;
+              ourLogger.Verbose("Refresh: SyncSolution Started");
+              UnityUtils.SyncSolution();
+            }
+            catch (Exception e)
+            {
+              ourLogger.Error("Refresh failed with exception", e);
+            }
+            finally
+            {
+              EditorApplication.update += SendResult;
+            }
           }
           else
+          {
+            refreshTask.Set(Unit.Instance);
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
+          }
         });
         return refreshTask;
       });
