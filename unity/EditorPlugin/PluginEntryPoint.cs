@@ -414,7 +414,18 @@ namespace JetBrains.Rider.Unity.Editor
     {
       model.Refresh.Set((l, force) =>
       {
-        var task = new RdTask<Unit>();
+        var refreshTask = new RdTask<Unit>();
+        void SendResult()
+        {
+          if (!EditorApplication.isCompiling)
+          {
+            // ReSharper disable once DelegateSubtraction
+            EditorApplication.update -= SendResult;
+            ourLogger.Verbose("Refresh: SyncSolution Completed");
+            refreshTask.Set(Unit.Instance);
+          }
+        }
+        
         ourLogger.Verbose("Refresh: SyncSolution Enqueue");
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -428,13 +439,13 @@ namespace JetBrains.Rider.Unity.Editor
 
             ourLogger.Verbose("Refresh: SyncSolution Started");
             UnityUtils.SyncSolution();
-            ourLogger.Verbose("Refresh: SyncSolution Completed");
+            
+            EditorApplication.update += SendResult;
           }
           else
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
-          task.Set(Unit.Instance);
         });
-        return task;
+        return refreshTask;
       });
     }
 
