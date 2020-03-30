@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.NonUrgentExecutor
+import com.intellij.util.io.inputStream
 import com.intellij.util.io.isDirectory
 import com.intellij.util.pooledThreadSingleAlarm
 import com.jetbrains.rd.platform.util.lifetime
@@ -51,6 +52,9 @@ class PackageManager(private val project: Project) {
     private val gson = Gson()
     private val listeners = EventDispatcher.create(PackageManagerListener::class.java)
     private val alarm = pooledThreadSingleAlarm(MILLISECONDS_BEFORE_REFRESH, project, ::refreshAndNotify)
+
+    private var lastEditorManifestLocation: String? = null
+    private var editorManifestJson: EditorManifestJson? = null
 
     private var packagesByCanonicalName: Map<String, PackageData> = mutableMapOf()
     private var packagesByFolderName: Map<String, PackageData> = mutableMapOf()
@@ -126,6 +130,9 @@ class PackageManager(private val project: Project) {
             .submit(NonUrgentExecutor.getInstance())
     }
 
+    private data class EditorPackageDetails(val introduced: String?, val minimumVersion: String?, val version: String?)
+    private data class EditorManifestJson(val recommended: Map<String, String>?, val defaultDependencies: Map<String, String>?, val packages: Map<String, EditorPackageDetails>?)
+
     private fun getPackages(): Packages {
         logger.debug("Refreshing packages manager")
 
@@ -134,6 +141,18 @@ class PackageManager(private val project: Project) {
 
         val manifestJson = getManifestJsonFile() ?: return Packages(byCanonicalName, byFolderName)
         val builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
+
+        val editorManifestPath = UnityInstallationFinder.getInstance(project).getPackageManagerDefaultManifest()
+        if (editorManifestPath != null && editorManifestPath.toString() != lastEditorManifestLocation) {
+            editorManifestJson = try {
+                gson.fromJson(editorManifestPath.inputStream().reader(), EditorManifestJson::class.java)
+            } catch (e: Throwable) {
+                logger.error("Error deserializing Resources/PackageManager/Editor/manifest.json")
+                EditorManifestJson(emptyMap(), emptyMap(), emptyMap())
+            }
+
+            lastEditorManifestLocation = editorManifestPath.toString()
+        }
 
         val manifest = try {
             gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
@@ -206,7 +225,13 @@ class PackageManager(private val project: Project) {
                 val thisVersion = SemVer.parse(version)
                 if (thisVersion == null || (lastVersion != null && lastVersion >= thisVersion)) continue
 
-                dependencies[name] = thisVersion
+                val minimumVersion = SemVer.parse(editorManifestJson?.packages?.get(name)?.minimumVersion ?: "")
+                dependencies[name] = if (minimumVersion != null && minimumVersion > thisVersion) {
+                    minimumVersion
+                }
+                else {
+                    thisVersion
+                }
             }
         }
 

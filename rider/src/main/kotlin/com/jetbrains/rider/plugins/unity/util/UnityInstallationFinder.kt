@@ -19,6 +19,10 @@ class UnityInstallationFinder(private val project: Project) {
         return getApplicationContentsPath()?.resolve("Resources/PackageManager/BuiltInPackages")
     }
 
+    fun getPackageManagerDefaultManifest(): Path? {
+        return getApplicationContentsPath()?.resolve("Resources/PackageManager/Editor/manifest.json")
+    }
+
     fun getDocumentationRoot(): Path? {
         return getApplicationContentsPath()?.resolve("Documentation/en")
     }
