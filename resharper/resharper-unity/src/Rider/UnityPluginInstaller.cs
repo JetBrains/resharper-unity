@@ -126,15 +126,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         
                         // jetbrainsDir is usually "Assets\Plugins\Editor\JetBrains", however custom locations were also possible   
                         var jetbrainsDir = installationInfoToRemove.PluginDirectory;
-                        if (jetbrainsDir.GetChildren().Any()) return;
+                        if (jetbrainsDir.GetChildren().Any() || jetbrainsDir.Name != "JetBrains") return;
                         jetbrainsDir.DeleteDirectoryNonRecursive();
                         FileSystemPath.Parse(jetbrainsDir.FullPath + ".meta").DeleteFile();
                         var pluginsEditorDir = jetbrainsDir.Directory;
-                        if (pluginsEditorDir.GetChildren().Any()) return;
+                        if (pluginsEditorDir.GetChildren().Any() || pluginsEditorDir.Name != "Editor") return;
                         pluginsEditorDir.DeleteDirectoryNonRecursive();
                         FileSystemPath.Parse(pluginsEditorDir.FullPath + ".meta").DeleteFile();
                         var pluginsDir = pluginsEditorDir.Directory;
-                        if (pluginsDir.GetChildren().Any()) return;
+                        if (pluginsDir.GetChildren().Any() || pluginsDir.Name != "Plugins") return;
                         pluginsDir.DeleteDirectoryNonRecursive();
                         FileSystemPath.Parse(pluginsDir.FullPath+ ".meta").DeleteFile();
                     });
