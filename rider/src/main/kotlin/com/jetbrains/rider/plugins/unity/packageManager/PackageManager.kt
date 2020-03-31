@@ -145,20 +145,27 @@ class PackageManager(private val project: Project) {
 
         val editorManifestPath = UnityInstallationFinder.getInstance(project).getPackageManagerDefaultManifest()
         if (editorManifestPath != null && editorManifestPath.toString() != lastEditorManifestLocation) {
+            lastEditorManifestLocation = editorManifestPath.toString()
             editorManifestJson = try {
                 gson.fromJson(editorManifestPath.inputStream().reader(), EditorManifestJson::class.java)
             } catch (e: Throwable) {
-                logger.error("Error deserializing Resources/PackageManager/Editor/manifest.json")
+                if (e is ControlFlowException) {
+                    // Don't cache an empty manifest if it's a control flow exception
+                    lastEditorManifestLocation = null
+                }
+                else {
+                    logger.error("Error deserializing Resources/PackageManager/Editor/manifest.json")
+                }
                 EditorManifestJson(emptyMap(), emptyMap(), emptyMap())
             }
-
-            lastEditorManifestLocation = editorManifestPath.toString()
         }
 
         val manifest = try {
             gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
         } catch (e: Throwable) {
-            logger.error("Error deserializing Packages/manifest.json", e)
+            if (e !is ControlFlowException) {
+                logger.error("Error deserializing Packages/manifest.json", e)
+            }
             ManifestJson(emptyMap(), emptyArray(), null, emptyMap())
         }
 
