@@ -81,10 +81,6 @@
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
 
-    <!-- USS support -->
-    <!-- Add basic file type support only (icons, etc.) all functionality is optional, based on the CSS plugin being available -->
-    <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileType" extensions="uss" />
-
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UssDisabledEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
@@ -294,6 +290,10 @@
   <li>Exclude <tt>Boo</tt> and <tt>UnityScript</tt> namespaces, as well as the <tt>System.Diagnostics.Debug</tt> type from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1473">#1473</a>)</li>
   <li>Add more attributes to external annotations. E.g. <tt>ShortcutAttribute</tt> will mark the method as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/1546">#1546</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-40330">RIDER-40330</a> <a href="https://github.com/JetBrains/resharper-unity/pull/1548">#1548</a>)</li>
   <li>Find Usages for serialised fields now includes asset usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
+  <li>Add context action to create Unity Assets menu item for a <tt>ScriptableObject</tt> (<a href="https://github.com/JetBrains/resharper-unity/pull/1567">#1567</a>)</li>
+  <li>Show serialised field values for scriptable objects (<a href="https://github.com/JetBrains/resharper-unity/pull/1567">#1567</a>)</li>
+  <li>Show usages of scriptable objects in assets (<a href="https://github.com/JetBrains/resharper-unity/pull/1567">#1567</a>)</li>
+  <li>Rider: Open corresponding <tt>.asmdef</tt> in Unity Inspector from <tt>.csproj</tt> editor notification (<a href="https://github.com/JetBrains/resharper-unity/pull/1574">#1574</a>)</li>
 </ul>
 <em>Changed:</em>
 <ul>
@@ -309,10 +309,11 @@
   <li>Sort commonly used event functions higher in Generate dialog (<a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
   <li>Generate event functions at location of context action, rather than at end of class (<a href="https://github.com/JetBrains/resharper-unity/issues/1542">#1542</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
   <li>Remove messages that use obsolete parameter types (<a href="https://github.com/JetBrains/resharper-unity/issues/1545">#1545</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1553">#1553</a>)</li>
-  <li>Rider: Adding file to Unity Explorer will add to correct C# project (<a href="https://youtrack.jetbrains.com/issue/RIDER-23169">RIDER-23169</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1470">#1470</a>)</li>
+  <li>Rider: Adding file to Unity Explorer will add to correct C# project (<a href="https://youtrack.jetbrains.com/issue/RIDER-23169">RIDER-23169</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1470">#1470</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1501">#1501</a>)</li>
   <li>Rider: Show folders ending with <tt>~</tt> by default in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/1444">#1444</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Move Unity Explorer settings to main "gear" icon (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Interesting content in builtin packages is now visible by default (<a href="https://github.com/JetBrains/resharper-unity/pull/1556">#1556</a>)</li>
+  <li>Rider: Only show "Show in Unity" link for Unity generated files when connected to Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1574">#1574</a>)</li>
   <li>Unity Editor: Move caret to correct column when opening file (<a href="https://youtrack.jetbrains.com/issue/RIDER-27450">RIDER-27450</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1486">#1486</a>)</li>
 </ul>
 <em>Fixed:</em>
@@ -320,6 +321,7 @@
   <li>Fix incorrect redundant <tt>SerializeField</tt> attribute warning for property backing field (<a href="https://github.com/JetBrains/resharper-unity/issues/1016">#1016</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1464">#1464</a>)</li>
   <li>Fix overwriting <tt>IEnumerator</tt> when auto-completing an event function that can be a coroutine (<a href="https://github.com/JetBrains/resharper-unity/issues/1258">#1258</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
   <li>Fix duplicate "Generate Unity event functions" context action when gutter icons are visible (<a href="https://github.com/JetBrains/resharper-unity/issues/1537">#1537</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
+  <li>Rider: Fix Unity tests working with <tt>.slnf</tt> files (<a href="https://github.com/JetBrains/resharper-unity/issues/1571">#1571</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1577">#1577</a>)</li>
   <li>Rider: Fix tooltip display for packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Fix settings search not finding Unity pages (<a href="https://github.com/JetBrains/resharper-unity/issues/1516">#1516</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1520">#1520</a>)</li>
   <li>Rider: Fix discovery and running of all tests in a project (<a href="https://github.com/JetBrains/resharper-unity/issues/1509">#1509</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1500">#1500</a>)</li>

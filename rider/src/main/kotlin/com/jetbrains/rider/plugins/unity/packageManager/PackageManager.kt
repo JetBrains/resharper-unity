@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.packageManager
 import com.google.gson.Gson
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.diagnostic.ControlFlowException
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
@@ -15,6 +16,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.util.EventDispatcher
 import com.intellij.util.concurrency.NonUrgentExecutor
+import com.intellij.util.io.inputStream
 import com.intellij.util.io.isDirectory
 import com.intellij.util.pooledThreadSingleAlarm
 import com.jetbrains.rd.platform.util.lifetime
@@ -51,6 +53,9 @@ class PackageManager(private val project: Project) {
     private val gson = Gson()
     private val listeners = EventDispatcher.create(PackageManagerListener::class.java)
     private val alarm = pooledThreadSingleAlarm(MILLISECONDS_BEFORE_REFRESH, project, ::refreshAndNotify)
+
+    private var lastEditorManifestLocation: String? = null
+    private var editorManifestJson: EditorManifestJson? = null
 
     private var packagesByCanonicalName: Map<String, PackageData> = mutableMapOf()
     private var packagesByFolderName: Map<String, PackageData> = mutableMapOf()
@@ -126,6 +131,9 @@ class PackageManager(private val project: Project) {
             .submit(NonUrgentExecutor.getInstance())
     }
 
+    private data class EditorPackageDetails(val introduced: String?, val minimumVersion: String?, val version: String?)
+    private data class EditorManifestJson(val recommended: Map<String, String>?, val defaultDependencies: Map<String, String>?, val packages: Map<String, EditorPackageDetails>?)
+
     private fun getPackages(): Packages {
         logger.debug("Refreshing packages manager")
 
@@ -135,10 +143,29 @@ class PackageManager(private val project: Project) {
         val manifestJson = getManifestJsonFile() ?: return Packages(byCanonicalName, byFolderName)
         val builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
 
+        val editorManifestPath = UnityInstallationFinder.getInstance(project).getPackageManagerDefaultManifest()
+        if (editorManifestPath != null && editorManifestPath.toString() != lastEditorManifestLocation) {
+            lastEditorManifestLocation = editorManifestPath.toString()
+            editorManifestJson = try {
+                gson.fromJson(editorManifestPath.inputStream().reader(), EditorManifestJson::class.java)
+            } catch (e: Throwable) {
+                if (e is ControlFlowException) {
+                    // Don't cache an empty manifest if it's a control flow exception
+                    lastEditorManifestLocation = null
+                }
+                else {
+                    logger.error("Error deserializing Resources/PackageManager/Editor/manifest.json")
+                }
+                EditorManifestJson(emptyMap(), emptyMap(), emptyMap())
+            }
+        }
+
         val manifest = try {
             gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
         } catch (e: Throwable) {
-            logger.error("Error deserializing Packages/manifest.json", e)
+            if (e !is ControlFlowException) {
+                logger.error("Error deserializing Packages/manifest.json", e)
+            }
             ManifestJson(emptyMap(), emptyArray(), null, emptyMap())
         }
 
@@ -206,7 +233,13 @@ class PackageManager(private val project: Project) {
                 val thisVersion = SemVer.parse(version)
                 if (thisVersion == null || (lastVersion != null && lastVersion >= thisVersion)) continue
 
-                dependencies[name] = thisVersion
+                val minimumVersion = SemVer.parse(editorManifestJson?.packages?.get(name)?.minimumVersion ?: "")
+                dependencies[name] = if (minimumVersion != null && minimumVersion > thisVersion) {
+                    minimumVersion
+                }
+                else {
+                    thisVersion
+                }
             }
         }
 
@@ -238,7 +271,9 @@ class PackageManager(private val project: Project) {
                 ?: PackageData.unknown(name, version)
         }
         catch (throwable: Throwable) {
-            logger.error("Error resolving package", throwable)
+            if (throwable !is ControlFlowException) {
+                logger.error("Error resolving package", throwable)
+            }
             PackageData.unknown(name, version)
         }
     }
@@ -345,7 +380,9 @@ class PackageManager(private val project: Project) {
                 return PackageDetails.fromPackageJson(packageFolder, packageJson!!)
             }
             catch (t: Throwable) {
-                logger.error("Error reading package.json", t)
+                if (t !is ControlFlowException) {
+                    logger.error("Error reading package.json", t)
+                }
             }
         }
         return null

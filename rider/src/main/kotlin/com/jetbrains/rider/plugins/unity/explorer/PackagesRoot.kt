@@ -301,7 +301,9 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
         // Show children if there's anything interesting to show. If it's just package.json or .icon.png, or their
         // meta files, pretend there's no children. We'll show them when show hidden items is enabled
         val children = super.calculateChildren()
-        if (children.all { it.name?.startsWith("package.json") == true || it.name?.startsWith(".icon.png") == true }) {
+        if (children.all { it.name?.startsWith("package.json") == true
+                || it.name?.startsWith(".icon.png") == true
+                || it.name?.startsWith("package.ModuleCompilationTrigger") == true }) {
             return mutableListOf()
         }
         return super.calculateChildren()
