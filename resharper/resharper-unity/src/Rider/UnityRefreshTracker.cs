@@ -67,6 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public Task Refresh(Lifetime lifetime, RefreshType refreshType)
         {
             myLocks.AssertMainThread();
+            myLocks.ReentrancyGuard.AssertGuarded();
 
             if (myEditorProtocol.UnityModel.Value == null)
                 return Task.CompletedTask;
