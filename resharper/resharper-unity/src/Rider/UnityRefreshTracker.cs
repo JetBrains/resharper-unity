@@ -111,10 +111,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 try
                 {
-                    using (mySolution.GetComponent<VfsListener>().PauseChanges())
+                    var version = UnityVersion.Parse(myEditorProtocol.UnityModel.Value.UnityApplicationData.Value.ApplicationVersion);
+                    if (version != null && version.Major < 2018)
                     {
-                        await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                        using (mySolution.GetComponent<VfsListener>().PauseChanges())
+                        {
+                            await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                        }
                     }
+                    // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
+                    await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                 }
                 catch (Exception e)
                 {
