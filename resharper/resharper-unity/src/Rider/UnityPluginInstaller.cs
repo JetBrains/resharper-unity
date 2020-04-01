@@ -158,7 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             QueueInstall(installationInfo);
             myQueue.Enqueue(() =>
             {
-                mySolution.Locks.Tasks.StartNew(myLifetime, Scheduling.MainDispatcher,
+                mySolution.Locks.Tasks.StartNew(myLifetime, Scheduling.MainGuard,
                     () => myRefresher.StartRefresh(RefreshType.Normal));
             });
         }
