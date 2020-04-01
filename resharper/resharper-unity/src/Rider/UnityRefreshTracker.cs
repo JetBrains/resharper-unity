@@ -119,8 +119,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                         }
                     }
-                    // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
-                    await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                    else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
+                        await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                 }
                 catch (Exception e)
                 {
