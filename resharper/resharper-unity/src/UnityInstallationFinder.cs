@@ -112,10 +112,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     var hubLocations = new List<FileSystemPath> {defaultHubLocation};
 
                     // Hub custom location
-                    var appData = FileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-                    var hubCustomLocation = GetCustomHubInstallPath(appData);
-                    if (!hubCustomLocation.IsEmpty)
-                        hubLocations.Add(hubCustomLocation);
+                    var home = Environment.GetEnvironmentVariable("HOME");
+                    if (!string.IsNullOrEmpty(home))
+                    {
+                        var localAppData = FileSystemPath.Parse(home).Combine("Library/Application Support");
+                        var hubCustomLocation = GetCustomHubInstallPath(localAppData);
+                        if (!hubCustomLocation.IsEmpty)
+                            hubLocations.Add(hubCustomLocation);
+                    }
 
                     // /Applications/Unity/Hub/Editor/2018.1.0b4/Unity.app
                     unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
