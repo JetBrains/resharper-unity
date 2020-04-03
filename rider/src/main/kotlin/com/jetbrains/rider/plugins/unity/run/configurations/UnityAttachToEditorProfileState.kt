@@ -79,12 +79,14 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                         addPlayModeArguments(args)
                     }
 
-                    val process = ProcessBuilder(args).start()
-                    val actualPid = OSProcessUtil.getProcessID(process)
-                    remoteConfiguration.pid = actualPid
-                    remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
+                    val processBuilder = ProcessBuilder(args)
+                    val port = 50013
+                    processBuilder.environment().set("MONO_ARGUMENTS", "--debugger-agent=transport=dt_socket,address=127.0.0.1:$port,embedding=1,server=n")
+                    processBuilder.start()
 
-                    Thread.sleep(2000)
+                    remoteConfiguration.listenPortForConnections = true
+                    remoteConfiguration.port = port
+
                 }
                 UIUtil.invokeLaterIfNeeded {
                     logger.trace("DebuggerWorker port: $port")
