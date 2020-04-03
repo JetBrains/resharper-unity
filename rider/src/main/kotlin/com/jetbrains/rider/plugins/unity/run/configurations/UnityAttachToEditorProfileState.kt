@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.RuntimeConfigurationError
-import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
