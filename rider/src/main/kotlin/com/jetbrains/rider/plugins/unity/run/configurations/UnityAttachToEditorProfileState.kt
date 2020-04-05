@@ -26,6 +26,7 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
+import com.jetbrains.rider.util.NetUtils
 import com.jetbrains.rider.util.idea.getComponent
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -78,7 +79,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                         addPlayModeArguments(args)
                     }
 
-                    val p = 50013
+                    val p = NetUtils.findFreePort(500013)
                     val processBuilder = ProcessBuilder(args)
                     processBuilder.environment().set("MONO_ARGUMENTS", "--debugger-agent=transport=dt_socket,address=127.0.0.1:$p,embedding=1,server=n")
                     processBuilder.start()
