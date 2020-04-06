@@ -1,4 +1,5 @@
 using JetBrains.Application.PersistentMap;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.Serialization;
@@ -17,6 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         public AssetMethodData(LocalReference location, string methodName, TextRange textRange, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
         {
+            Assertion.Assert(location != null, "location != null");
+            Assertion.Assert(targetReference != null, "targetReference != null");
+            Assertion.Assert(methodName != null, "methodName != null");
             Location = location;
             MethodName = methodName;
             TextRange = textRange;
