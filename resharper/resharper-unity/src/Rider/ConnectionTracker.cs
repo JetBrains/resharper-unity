@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
@@ -6,6 +7,7 @@ using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
+using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
@@ -45,9 +47,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         rdTask?.Result.Advise(lifetime, result =>
                         {
                             State.SetValue(result.Result);
-                            logger.Trace($"myIsConnected = {State.Value}");
                             logger.Trace($"Inside Result. Sending connection state. State: {State.Value}");
                             host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
+                        });
+
+                        var waitTask = Task.Delay(1000);
+                        waitTask.ContinueWith(_ =>
+                        {
+                            if (rdTask != null && !rdTask.AsTask().IsCompleted)
+                            {
+                                logger.Trace($"There were no response from Unity in one second. Set connection state to Disconnected.");
+                                State.SetValue(UnityEditorState.Disconnected);
+                            }
                         });
                     }
 
