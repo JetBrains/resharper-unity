@@ -75,13 +75,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     }
                 }
 
-                if (isStripped || documentReference != null)
+                var scriptAnchor = documentReference?.AnchorLong;
+                var scriptGuid = documentReference?.ExternalAssetGuid;
+                if (isStripped || scriptAnchor != null && scriptGuid != null)
                 {
-                    var scriptAnchorRaw = documentReference?.AnchorLong;
-                    
                     return new AssetDocumentHierarchyElement(
                             new ScriptComponentHierarchy(location,
-                            !scriptAnchorRaw.HasValue ? null : new ExternalReference(documentReference.ExternalAssetGuid, scriptAnchorRaw.Value),
+                                isStripped ? null : new ExternalReference(scriptGuid, scriptAnchor.Value),
                             gameObject,
                             prefabInstance,
                             correspondingSourceObject,
