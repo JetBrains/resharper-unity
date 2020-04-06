@@ -314,7 +314,9 @@
   <li>Rider: Move Unity Explorer settings to main "gear" icon (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Interesting content in builtin packages is now visible by default (<a href="https://github.com/JetBrains/resharper-unity/pull/1556">#1556</a>)</li>
   <li>Rider: Only show "Show in Unity" link for Unity generated files when connected to Unity (<a href="https://github.com/JetBrains/resharper-unity/pull/1574">#1574</a>)</li>
+  <li>Rider: Improve detection of Unity version, especially after upgrading project (<a href="https://github.com/JetBrains/resharper-unity/issues/1507">#1507</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1572">#1572</a>)</li>
   <li>Unity Editor: Move caret to correct column when opening file (<a href="https://youtrack.jetbrains.com/issue/RIDER-27450">RIDER-27450</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1486">#1486</a>)</li>
+  <li>Unity Editor: Delete the old Rider plugin when opening a project in Unity 2019.2+ (<a href="https://github.com/JetBrains/resharper-unity/pull/1591">#1591</a>)</li>
 </ul>
 <em>Fixed:</em>
 <ul>
@@ -325,6 +327,7 @@
   <li>Rider: Fix tooltip display for packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
   <li>Rider: Fix settings search not finding Unity pages (<a href="https://github.com/JetBrains/resharper-unity/issues/1516">#1516</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1520">#1520</a>)</li>
   <li>Rider: Fix discovery and running of all tests in a project (<a href="https://github.com/JetBrains/resharper-unity/issues/1509">#1509</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1500">#1500</a>)</li>
+  <li>Rider: Fix finding location of Unity based on custom Hub install location (<a href="https://youtrack.jetbrains.com/issue/RIDER-42118">RIDER-42118</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1604">#1604</a>)</li>
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net201/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
