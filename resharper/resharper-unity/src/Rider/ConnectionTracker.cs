@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
                         });
 
-                        var waitTask = Task.Delay(1000);
+                        var waitTask = Task.Delay(TimeSpan.FromSeconds(2));
                         waitTask.ContinueWith(_ =>
                         {
                             if (rdTask != null && !rdTask.AsTask().IsCompleted)
