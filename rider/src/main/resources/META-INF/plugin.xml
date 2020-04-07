@@ -85,6 +85,8 @@
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
 
+    <fileType name="JSON" extensions="inputactions"/>
+
     <!-- Unity Explorer -->
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
     <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerProjectModelViewUpdater"/>
