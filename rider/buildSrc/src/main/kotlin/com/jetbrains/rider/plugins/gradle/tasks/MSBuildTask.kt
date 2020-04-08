@@ -63,7 +63,7 @@ open class MSBuildTask: DefaultTask() {
         val stdout = ByteArrayOutputStream()
         project.exec {
             executable = File(project.projectDir, "../tools/vswhere.exe").absolutePath
-            args = listOf("-all", "-version", "[15.0,)", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath")
+            args = listOf("-all", "-version", "[15.0,)", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-requires", "Microsoft.NetCore.Component.SDK", "-property", "installationPath")
             standardOutput = stdout
         }
         val buildToolsDirs = stdout.toString().trim().split("\r\n", "\n")
