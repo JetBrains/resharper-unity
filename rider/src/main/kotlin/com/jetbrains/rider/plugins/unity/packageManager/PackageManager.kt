@@ -30,6 +30,7 @@ import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
+import java.lang.Integer.min
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
@@ -309,7 +310,9 @@ class PackageManager(private val project: Project) {
 
         // If we have lockDetails, we know this is a git based package, so always return something
         return try {
+            // 2019.3 changed the format of the cached folder to only use the first 10 characters of the hash
             val packageFolder = project.findFile("Library/PackageCache/$name@${lockDetails.hash}")
+                ?: project.findFile("Library/PackageCache/$name@${lockDetails.hash.substring(0, min(lockDetails.hash.length, 10))}")
             getPackageDataFromFolder(name, packageFolder, PackageSource.Git, GitDetails(version, lockDetails.revision, lockDetails.hash))
         }
         catch (throwable: Throwable) {
