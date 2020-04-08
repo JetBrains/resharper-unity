@@ -327,6 +327,7 @@
   <li>Fix duplicate "Generate Unity event functions" context action when gutter icons are visible (<a href="https://github.com/JetBrains/resharper-unity/issues/1537">#1537</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1566">#1566</a>)</li>
   <li>Rider: Fix Unity tests working with <tt>.slnf</tt> files (<a href="https://github.com/JetBrains/resharper-unity/issues/1571">#1571</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1577">#1577</a>)</li>
   <li>Rider: Fix tooltip display for packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
+  <li>Rider: Fix resolving git based packages in Unity 2019.3+ (<a href="https://github.com/JetBrains/resharper-unity/pull/1616">#1616</a>)</li>
   <li>Rider: Fix settings search not finding Unity pages (<a href="https://github.com/JetBrains/resharper-unity/issues/1516">#1516</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1520">#1520</a>)</li>
   <li>Rider: Fix discovery and running of all tests in a project (<a href="https://github.com/JetBrains/resharper-unity/issues/1509">#1509</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1500">#1500</a>)</li>
   <li>Rider: Fix finding location of Unity based on custom Hub install location (<a href="https://youtrack.jetbrains.com/issue/RIDER-42118">RIDER-42118</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1604">#1604</a>)</li>

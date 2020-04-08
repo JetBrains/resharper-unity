@@ -52,6 +52,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Fix duplicate "Generate Unity event functions" context action when gutter icons are visible ([#1537](https://github.com/JetBrains/resharper-unity/issues/1537), [#1566](https://github.com/JetBrains/resharper-unity/pull/1566))
 - Rider: Fix Unity tests working with `.slnf` files ([#1571](https://github.com/JetBrains/resharper-unity/issues/1571), [#1577](https://github.com/JetBrains/resharper-unity/pull/1577))
 - Rider: Fix tooltip display for packages in Unity Explorer ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+- Rider: Fix resolving git based packages in Unity 2019.3+ ([#1616](https://github.com/JetBrains/resharper-unity/pull/1616))
 - Rider: Fix settings search not finding Unity pages (from 2019.3.3) ([#1516](https://github.com/JetBrains/resharper-unity/issues/1516), [#1520](https://github.com/JetBrains/resharper-unity/pull/1520))
 - Rider: Fix discovery and running of all tests in a project ([#1509](https://github.com/JetBrains/resharper-unity/issues/1509), [#1500](https://github.com/JetBrains/resharper-unity/pull/1500))
 - Rider: Fix finding location of Unity based on custom Hub install location ([RIDER-42118](https://youtrack.jetbrains.com/issue/RIDER-42118), [#1604](https://github.com/JetBrains/resharper-unity/pull/1604))
