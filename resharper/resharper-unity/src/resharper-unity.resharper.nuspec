@@ -64,6 +64,8 @@ Fixed:
 - Avoid creating meta files outside of Asset or Packages folders (from 2019.3.2) (#1481, #1491, #1489)
 - Fix overwriting IEnumerator when auto-completing an event function that can be a coroutine (#1258, #1566)
 - Fix duplicate "Generate Unity event functions" context action when gutter icons are visible (#1537, #1566)
+- Fix completion of tag value adding extra closing quote (RIDER-33067)
+- Fix exception with building shortcut cache (RIDER-41206)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
