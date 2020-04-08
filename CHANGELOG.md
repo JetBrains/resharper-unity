@@ -20,6 +20,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Show serialised field values for scriptable objects ([#1567](https://github.com/JetBrains/resharper-unity/pull/1567))
 - Show usages of scriptable objects in assets ([#1567](https://github.com/JetBrains/resharper-unity/pull/1567))
 - Rider: Open corresponding `.asmdef` in Unity Inspector from `.csproj` editor notification ([#1574](https://github.com/JetBrains/resharper-unity/pull/1574))
+- Rider: Treat `.inputactions` as a JSON file ([RIDER-38538](https://youtrack.jetbrains.com/issue/RIDER-38538))
 
 ### Changed
 
@@ -50,11 +51,17 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 - Avoid creating meta files outside of Asset or Packages folders (from 2019.3.2) ([#1481](https://github.com/JetBrains/resharper-unity/issues/1481), [#1491](https://github.com/JetBrains/resharper-unity/pull/1491), [#1489](https://github.com/JetBrains/resharper-unity/pull/1489))
 - Fix overwriting `IEnumerator` when auto-completing an event function that can be a coroutine ([#1258](https://github.com/JetBrains/resharper-unity/issues/1258), [#1566](https://github.com/JetBrains/resharper-unity/pull/1566))
 - Fix duplicate "Generate Unity event functions" context action when gutter icons are visible ([#1537](https://github.com/JetBrains/resharper-unity/issues/1537), [#1566](https://github.com/JetBrains/resharper-unity/pull/1566))
+- Fix completion of tag value adding extra closing quote ([RIDER-33067](https://youtrack.jetbrains.com/issue/RIDER-33067))
+- Fix exception with building shortcut cache ([RIDER-41206](https://youtrack.jetbrains.com/issue/RIDER-41206))
 - Rider: Fix Unity tests working with `.slnf` files ([#1571](https://github.com/JetBrains/resharper-unity/issues/1571), [#1577](https://github.com/JetBrains/resharper-unity/pull/1577))
 - Rider: Fix tooltip display for packages in Unity Explorer ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+- Rider: Fix resolving git based packages in Unity 2019.3+ ([#1616](https://github.com/JetBrains/resharper-unity/pull/1616))
 - Rider: Fix settings search not finding Unity pages (from 2019.3.3) ([#1516](https://github.com/JetBrains/resharper-unity/issues/1516), [#1520](https://github.com/JetBrains/resharper-unity/pull/1520))
 - Rider: Fix discovery and running of all tests in a project ([#1509](https://github.com/JetBrains/resharper-unity/issues/1509), [#1500](https://github.com/JetBrains/resharper-unity/pull/1500))
 - Rider: Fix finding location of Unity based on custom Hub install location ([RIDER-42118](https://youtrack.jetbrains.com/issue/RIDER-42118), [#1604](https://github.com/JetBrains/resharper-unity/pull/1604))
+- Rider: Use correct process ID for profiling and coverage ([DTRC-26621](https://youtrack.jetbrains.com/issue/DTRC-26621), [#1612](https://github.com/JetBrains/resharper-unity/pull/1612))
+- Rider: Mark editor as disconnected if response is not timely ([#1610](https://github.com/JetBrains/resharper-unity/pull/1610))
+- Unity Editor: Fix jumping to default desktop when opening files on Mac ([#1611](https://github.com/JetBrains/resharper-unity/pull/1611))
 
 
 
