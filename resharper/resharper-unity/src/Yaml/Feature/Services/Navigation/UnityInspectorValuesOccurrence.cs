@@ -2,7 +2,9 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -17,6 +19,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             InspectorVariableUsage = inspectorVariableUsage;
         }
 
+        public override string GetDisplayText()
+        {
+            var declaredElement = DeclaredElementPointer.FindDeclaredElement();
+            if (declaredElement == null)
+                return base.GetDisplayText();
+            
+            var solution = GetSolution();
+            var valuePresentation = InspectorVariableUsage.Value.GetPresentation(solution, declaredElement , true);
+            if (SourceFile.GetLocation().IsAsset())
+                return valuePresentation;
+            return $"{valuePresentation} in {base.GetDisplayText()}";
+        }
+
+        private bool IsRelatedToScriptableObject() => UnityApi.IsDescendantOfScriptableObject((DeclaredElementPointer.FindDeclaredElement() as IField)?.Type.GetTypeElement());
+        
         protected bool Equals(UnityInspectorValuesOccurrence other)
         {
             return base.Equals(other) && InspectorVariableUsage.Equals(other.InspectorVariableUsage);
@@ -44,8 +61,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             {
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
                 {
-                    var value = InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true);
-                    return $"{InspectorVariableUsage.Name} = {value}";
+                    if (IsRelatedToScriptableObject())
+                    {
+                        var value = InspectorVariableUsage.Value.GetFullPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true);
+                        return $"{InspectorVariableUsage.Name} = {value}";
+                    }
+                    else
+                    {
+                        var value = InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true);
+                        return $"{InspectorVariableUsage.Name} = {value}";
+                    }
                 }
             }
         }

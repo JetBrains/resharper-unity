@@ -79,6 +79,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return $"\"{SimpleValue ?? "..." }\"";
         }
 
+        public string GetFullPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport) => GetPresentation(solution, declaredElement, prefabImport);
+
         public string SimpleValue { get; }
     }
 }

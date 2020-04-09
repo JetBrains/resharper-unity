@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return Reference.GetHashCode();
         }
 
-        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport, bool isFull)
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
             var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
@@ -72,9 +72,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 if (sourceFile == null)
                     return "...";
 
-                var relativePath = sourceFile.DisplayName.Replace('\\', '/').RemoveStart("Assets/");
+                if (!isFull)
+                    return sourceFile.GetLocation().Name;
 
-                return relativePath;
+                return sourceFile.GetLocation().Name + $" (in {sourceFile.DisplayName.Replace('\\', '/').RemoveStart("Assets/").RemoveEnd("/" + sourceFile.GetLocation().Name)})";
             }
             
             if (Reference.LocalDocumentAnchor == 0)
@@ -94,11 +95,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                     return "...";
                 result += string.Join("/", consumer.NameParts);
             }
+            else
+            {
+                return "...";
+            }
 
             if (element is IComponentHierarchy componentHierarchy)
                 result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
 
             return result;
         }
+
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport) => GetPresentation(solution, declaredElement, prefabImport, false);
+        public string GetFullPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport) => GetPresentation(solution, declaredElement, prefabImport, true);
     }
 }
