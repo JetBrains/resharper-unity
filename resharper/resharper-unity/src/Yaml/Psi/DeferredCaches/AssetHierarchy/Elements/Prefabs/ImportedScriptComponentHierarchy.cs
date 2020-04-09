@@ -27,5 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         public ExternalReference ScriptReference => myScriptComponentHierarchy.ScriptReference;
+        public string Name => myScriptComponentHierarchy.Name;
     }
 }

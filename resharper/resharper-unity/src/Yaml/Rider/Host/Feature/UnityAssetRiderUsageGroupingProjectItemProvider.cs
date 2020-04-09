@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         {
             var solutionFolder = mySolution.SolutionFile?.Location.Parent;
             if (solutionFolder != null && solutionFolder.IsPrefixOf(assetFile))
-                return assetFile.MakeRelativeTo(solutionFolder).FullPath;
+                return assetFile.MakeRelativeTo(solutionFolder).FullPath.Replace('\\', '/');
             return null;
         }
     }
