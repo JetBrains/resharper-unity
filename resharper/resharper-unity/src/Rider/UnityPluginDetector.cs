@@ -249,8 +249,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (!pluginDirectory.IsAbsolute && ShouldInstallPlugin)
                     logger.Error($"pluginDirectory ${pluginDirectory} Is Not Absolute ${installReason}, ${existingVersion}, ${existingFiles.Count}");
                 else
-                    logger.Info(
-                        $"pluginDirectory ${pluginDirectory} ${installReason}, ${existingVersion}, ${existingFiles.Count}");
+                    logger.Info($"pluginDirectory ${pluginDirectory} ${installReason}, ${existingVersion}, ${existingFiles.Count}");
                 
                 InstallReason = installReason;
                 PluginDirectory = pluginDirectory;

@@ -114,8 +114,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (versionForSolution >= new Version("2019.2")) // 2019.2+ would not work fine either without Rider package, and when package is present it loads EditorPlugin directly from Rider installation.
             {
                 var installationInfoToRemove = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: FileSystemPath.Empty);
-                var pluginDll =
-                    installationInfoToRemove.PluginDirectory.Combine(PluginPathsProvider.BasicPluginDllFile);
+                if (!installationInfoToRemove.PluginDirectory.IsAbsolute)
+                    return;
+                
+                var pluginDll = installationInfoToRemove.PluginDirectory.Combine(PluginPathsProvider.BasicPluginDllFile);
                 if (pluginDll.ExistsFile)
                 {
                     myQueue.Enqueue(() =>
