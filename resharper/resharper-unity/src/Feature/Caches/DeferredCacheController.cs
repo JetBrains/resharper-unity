@@ -76,7 +76,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             myShellLocks.Dispatcher.AssertAccess();
             if (myCurrentBackgroundActivityLifetime.IsAlive)
                 return;
-            
+
+            if (!HasDirtyFiles())
+            {
+                myCompletedOnce.Value = true;
+                return;
+            }
+
             myCurrentBackgroundActivityLifetimeDefinition = new LifetimeDefinition(myLifetime);
             myCurrentBackgroundActivityLifetime = myCurrentBackgroundActivityLifetimeDefinition.Lifetime;
             
