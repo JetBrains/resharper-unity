@@ -22,6 +22,8 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
         ourLogger.Verbose("Start ControllerTask...");
 
         Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer");
+        Wire.BackwardsCompatibleWireFormat = true;
+        
         ourLogger.Verbose($"Created SocketWire with port = {Wire.Port}");
       }
       catch (Exception ex)

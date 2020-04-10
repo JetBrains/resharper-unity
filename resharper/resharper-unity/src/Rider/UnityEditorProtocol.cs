@@ -156,7 +156,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
-
+                wire.BackwardsCompatibleWireFormat = true;
+                    
                 var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
                     new Identities(IdKind.Client), myDispatcher, wire, lifetime);
 
