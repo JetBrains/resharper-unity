@@ -1,0 +1,392 @@
+options {
+  // Parser options
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+  // Parser class name and namespace
+  parserPackage="JetBrains.ReSharper.Plugins.Yaml.Psi.Gen";
+  parserClassName="YamlParserGenerated";
+
+  // Strongly type the lexer we're using. ILexer<int> is the caching lexer instance
+  "lexerClassName"="JetBrains.ReSharper.Psi.Parsing.ILexer<int>";
+
+  // FQN of (non-generated) class that provides messages for the parser
+  parserMessagesClass="JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing.ParserMessages";
+
+  // Parser, error messages + token bitsets target folder
+  parserTargetSubdir="Parsing/Yaml";
+
+  // Don't generate a bitset unless there's 4 or more comparisons to be made
+  tokenBitsetThreshold=4;
+
+  // Composite node type/element generation options
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+  // Existing language specific ITreeNode
+  "psiElementClassFQName"="JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.IYamlTreeNode";
+
+  // Existing token type containing class + namespace
+  tokenTypePackageName="JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing";
+  tokenTypeClassName="YamlTokenType";
+
+  // Set base index for generated (element, not token) node types. Defaults to 2000, tokens default to 1000
+  // tokenTypeBaseIndex=2000;
+
+  // Tree node interface namespace + target folder (also target folder for navigators + visitors)
+  psiInterfacePackageName="JetBrains.ReSharper.Plugins.Yaml.Psi.Tree";
+  psiInterfacesTargetSubdir="Psi/Yaml/Tree";
+
+  // Tree node implementation namespace, base type and target folder
+  psiStubsPackageName="JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl";
+  psiStubsBaseClass="YamlCompositeElement";
+  psiStubsTargetSubdir="Psi/Yaml/Tree/Impl";
+
+  // Existing composite node type base class
+  elementTypeBaseClass="YamlCompositeNodeType";
+
+  // Namespace for generating custom interface when `customInterface` option used
+  customInterfacePackage="JetBrains.ReSharper.Plugins.Yaml.Psi.Tree";
+
+  // Any role used in this file that begins with this prefix must be defined in `ChildRole`
+  publicChildRolePrefix="YAML_";
+
+
+  // Namespace and suffix for custom element instance implementation created by
+  // node type when `customImpl` option is specfied.
+  // Default suffix is `Impl`
+  customImplPackage="JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl";
+  "customImplSuffix"="";
+
+
+  // Required on. Changes behaviour of various things, e.g. public child role values based on prefix
+  disableReflection;
+
+  // Required. If missing, generates Add/Remove methods for each collection
+  generateWorkingPsi;
+}
+
+
+// **************************************************************************
+//
+// Note that this file describes the shape of the PSI, not how to parse YAML.
+// The order of items in the elements does not always match what's requried
+// in the file. And the repetition values can be more complex than they seem.
+// E.g. blockHeader has chomping and indentation indicators. These can be in
+// any order, and are both marked as optional. We'd expect at least one to be
+// provided if we were adding the blockHeader node. The parser handles this.
+//
+// **************************************************************************
+
+
+// **************************************************************************
+//
+// File (streams and documents)
+//
+// **************************************************************************
+
+yamlFile
+options {
+  stubBase="YamlFileElement";
+}
+:
+  yamlDocument<DOCUMENT, Documents>*
+;
+
+yamlDocument
+:
+  directives<DIRECTIVES, Directives>?
+  documentBody<BODY, Body>
+
+  // TODO: Documents must either be separated with one or more document end markers or directive end marker
+  // We can't easily capture that without using interface, and I don't want to do that
+  DOCUMENT_END<DOCUMENT_END, DocumentEndMarker>*
+;
+
+// This node is a chameleon
+documentBody
+:
+  node<NODE, BlockNode>?
+;
+
+
+// **************************************************************************
+//
+// Directives
+//
+// **************************************************************************
+
+directives
+:
+  directive<DIRECTIVE, Directive>+
+  DIRECTIVES_END<DIRECTIVES_END, DirectivesEndMarker>*
+;
+
+directive
+:
+  PERCENT<YAML_INDICATOR, PercentIndicator>
+  NS_CHARS<NAME, Name>
+  NS_CHARS<PARAMETERS, Parameters>*
+;
+
+
+// **************************************************************************
+//
+// Nodes
+//
+// **************************************************************************
+
+interface node
+:
+  // Block scalars
+  literalScalarNode
+  | foldedScalarNode
+
+  // Block collections
+  | blockSequenceNode
+  | blockMappingNode
+
+  | aliasNode
+
+  // Flow scalars
+  | plainScalarNode
+  | singleQuotedScalarNode
+  | doubleQuotedScalarNode
+  | emptyScalarNode
+
+  // Flow collections
+  | flowSequenceNode
+  | flowMappingNode
+;
+
+nodeProperties
+:
+  tagProperty<TAG_PROPERTY, TagProperty>?
+  anchorProperty<ANCHOR_PROPERTY, AnchorProperty>?
+;
+
+interface tagProperty
+:
+  verbatimTagProperty
+  | shorthandTagProperty
+  | nonSpecificTagProperty
+;
+
+verbatimTagProperty
+:
+  BANG_LT<BANG_LT_INDICATOR, BangLtIndicator>
+  NS_URI_CHARS<YAML_TEXT, Text>
+  GT<GT_INDICATOR, GtIndicator>
+;
+
+shorthandTagProperty
+:
+  tagHandle<TAG_HANDLE, TagHandle>
+  NS_TAG_CHARS<YAML_TEXT, Text>
+;
+
+nonSpecificTagProperty
+:
+  BANG<YAML_INDICATOR, BangIndicator>
+;
+
+interface tagHandle
+:
+  namedTagHandle
+  | secondaryTagHandle
+  | primaryTagHandle
+;
+
+namedTagHandle
+:
+  BANG<BANG_INDICATOR, BangIndicator>
+  (
+    // TODO: Merge NS_WORD_CHARS and NS_TAG_CHARS tokens?
+    NS_WORD_CHARS<YAML_TEXT, Text>
+    | NS_TAG_CHARS<YAML_TEXT, Text>
+  )?
+  BANG<END_BANG_INDICATOR, EndBangIndicator>
+;
+
+secondaryTagHandle
+:
+  BANG<BANG_INDICATOR, BangIndicator>
+  BANG<END_BANG_INDICATOR, EndBangIndicator>
+;
+
+primaryTagHandle
+:
+  BANG<YAML_INDICATOR, BangIndicator>
+;
+
+anchorProperty
+:
+  AMP<YAML_INDICATOR, AmpIndicator>
+  NS_ANCHOR_NAME<YAML_TEXT, Text>
+;
+
+
+// **************************************************************************
+//
+// Block scalar nodes
+//
+// **************************************************************************
+
+blockHeader
+:
+  chompingIndicator<CHOMPING_INDICATOR, ChompingIndicator>?
+  indentationIndicator<INDENTATION_INDICATOR, IndentationIndicator>?
+;
+
+chompingIndicator
+:
+  PLUS<PLUS_INDICATOR, PlusIndicator>
+  | MINUS<MINUS_INDICATOR, MinusIndicator>
+;
+
+indentationIndicator
+:
+  NS_DEC_DIGIT<DIGIT, Digit>
+;
+
+literalScalarNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  PIPE<YAML_INDICATOR, PipeIndicator>
+  blockHeader<BLOCK_HEADER, BlockHeader>?
+  SCALAR_TEXT<YAML_TEXT, Text>+
+;
+
+foldedScalarNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  GT<YAML_INDICATOR, GtIndicator>
+  blockHeader<BLOCK_HEADER, BlockHeader>?
+  SCALAR_TEXT<YAML_TEXT, Text>+
+;
+
+
+// **************************************************************************
+//
+// Block collection nodes
+//
+// **************************************************************************
+
+blockSequenceNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  // These can actually be zero or more, but if we have this, blockMappingNode
+  // and emptyScalarNode with potentially empty contents, PsiGen generates bad
+  // code. It doesn't affect the shape of the generated PSI types
+  sequenceEntry<ENTRIES, Entries>+
+;
+
+blockMappingNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  blockMappingEntry<ENTRIES, Entries>+
+;
+
+sequenceEntry
+:
+  INDENT<YAML_INDENT, Indent>
+  MINUS<YAML_INDICATOR, MinusIndicator>
+  node<VALUE, Value>
+;
+
+blockMappingEntry
+:
+  INDENT<YAML_INDENT, Indent>?
+  QUESTION<QUESTION_INDICATOR, QuestionIndicator>?
+  node<KEY, Key>
+  COLON<COLON_INDICATOR, ColonIndicator>
+  contentNode<CONTENT, Content>
+;
+
+contentNode
+:
+  node<VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Flow scalar nodes
+//
+// **************************************************************************
+
+aliasNode
+:
+  ASTERISK<YAML_INDICATOR, Asterisk>
+  NS_ANCHOR_NAME<YAML_TEXT, AnchorName>
+;
+
+plainScalarNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  NS_PLAIN_ONE_LINE_IN<YAML_TEXT, Text>
+  | NS_PLAIN_ONE_LINE_OUT<YAML_TEXT, Text>
+  | NS_PLAIN_MULTI_LINE<YAML_TEXT, Text>
+;
+
+singleQuotedScalarNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  C_SINGLE_QUOTED_SINGLE_LINE<YAML_TEXT, Text>
+  | C_SINGLE_QUOTED_MULTI_LINE<YAML_TEXT, Text>
+;
+
+doubleQuotedScalarNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  C_DOUBLE_QUOTED_SINGLE_LINE<YAML_TEXT, Text>
+  | C_DOUBLE_QUOTED_MULTI_LINE<YAML_TEXT, Text>
+;
+
+emptyScalarNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+;
+
+
+// **************************************************************************
+//
+// Flow collection nodes
+//
+// **************************************************************************
+
+flowSequenceNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  LBRACK<LBRACK, LBrack>
+  (LIST flowSequenceEntry<ENTRY, Entries> SEP COMMA<COMMA, Comma>)?
+  RBRACK<RBRACK, RBrack>
+;
+
+flowSequenceEntry
+:
+  flowPair<PAIR, Pair>
+  | node<NODE, Node>
+;
+
+flowPair
+:
+  QUESTION<QUESTION, QuestionIndicator>?
+  node<KEY_NODE, Key>
+  COLON<YAML_INDICATOR, ColonIndicator>
+  node<VALUE_NODE, Value>
+;
+
+flowMappingNode
+:
+  nodeProperties<YAML_PROPERTIES, Properties>?
+  LBRACE<LBRACE, LBrace>
+  (LIST flowMapEntry<ENTRY, Entries> SEP COMMA<COMMA, Comma>)?
+  RBRACE<RBRACE, RBrace>
+;
+
+flowMapEntry
+:
+  QUESTION<QUESTION, QuestionIndicator>?
+  node<KEY_NODE, Key>
+  COLON<YAML_INDICATOR, ColonIndicator>
+  node<VALUE_NODE, Value>
+;

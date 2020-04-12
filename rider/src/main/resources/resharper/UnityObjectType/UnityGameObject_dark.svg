@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>UnityGameObject(GrayDark)</title>
+  <g>
+    <rect width="16" height="16" fill="#ffd3ff" opacity="0"/>
+    <g>
+      <g>
+        <polygon points="1 12.749 1 13.629 2.217 15 3 15 8.5 10.875 14 15 14.781 15 16 13.63 16 12.75 10 8.25 10 0 7 0 7 8.25 1 12.749" fill="#252525"/>
+        <polygon points="9 8.75 9 1 8 1 8 8.75 2 13.249 2.666 14 8.5 9.625 14.332 14 15 13.25 9 8.75" fill="#c4c4c4"/>
+      </g>
+      <g>
+        <circle cx="8.5" cy="8.5" r="4.5" fill="#252525"/>
+        <circle cx="8.5" cy="8.5" r="3.5" fill="#2baae8"/>
+        <circle cx="7.5" cy="7.5" r="1.5" fill="#fff"/>
+      </g>
+    </g>
+  </g>
+</svg>

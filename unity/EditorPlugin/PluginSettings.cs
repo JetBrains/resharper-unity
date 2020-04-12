@@ -1,7 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using JetBrains.Util;
+using System.Reflection;
+using JetBrains.Diagnostics;
+using JetBrains.Diagnostics.Internal;
+using JetBrains.Lifetimes;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +13,6 @@ namespace JetBrains.Rider.Unity.Editor
   public interface IPluginSettings
   {
     OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
-    string RiderPath { get; set; }
   }
 
   public enum AssemblyReloadSettings
@@ -22,16 +24,24 @@ namespace JetBrains.Rider.Unity.Editor
 
   public class PluginSettings : IPluginSettings
   {
-    private static LoggingLevel ourSelectedLoggingLevel = (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 4);
-
-    internal static LoggingLevel SelectedLoggingLevel
+    private static readonly ILog ourLogger = Log.GetLog<PluginSettings>();
+    
+    public static LoggingLevel SelectedLoggingLevel
     {
-      get => ourSelectedLoggingLevel;
-      private set
+      get => (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 0);
+      set
       {
         EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
-        ourSelectedLoggingLevel = value;
+        InitLog();
       }
+    }
+
+    public static void InitLog()
+    {
+      if (SelectedLoggingLevel > LoggingLevel.OFF) 
+        Log.DefaultFactory = Log.CreateFileLogFactory(Lifetime.Eternal, PluginEntryPoint.LogPath, true, SelectedLoggingLevel);
+      else
+        Log.DefaultFactory = new SingletonLogFactory(NullLog.Instance); // use profiler in Unity - this is faster than leaving TextWriterLogFactory with LoggingLevel OFF 
     }
 
     public static string[] GetInstalledNetFrameworks()
@@ -91,7 +101,13 @@ namespace JetBrains.Rider.Unity.Editor
           return AssemblyReloadSettings.RecompileAndContinuePlaying;
         return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.RecompileAndContinuePlaying);
       }
-      private set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
+      set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
+    }
+    
+    public static bool UseLatestRiderFromToolbox
+    {
+      get { return EditorPrefs.GetBool("UseLatestRiderFromToolbox", true); }
+      set { EditorPrefs.SetBool("UseLatestRiderFromToolbox", value); }
     }
 
     private static string TargetFrameworkVersionDefault = "4.6";
@@ -134,53 +150,10 @@ namespace JetBrains.Rider.Unity.Editor
       set { EditorPrefs.SetBool("RiderInitializedOnce", value); }
     }
 
-    private static string RiderPathInternal
+    public static bool LogEventsCollectorEnabled
     {
-      get { return EditorPrefs.GetString("Rider_RiderPath", null); }
-      set { EditorPrefs.SetString("Rider_RiderPath", value); }
-    }
-
-    // The default "Open C# Project" menu item will use the external script editor to load the .sln
-    // file, but unless Unity knows the external script editor can properly load solutions, it will
-    // also launch MonoDevelop (or the OS registered app for .sln files). This menu item side steps
-    // that issue, and opens the solution in Rider without opening MonoDevelop as well.
-    // Unity 2017.1 and later recognise Rider as an app that can load solutions, so this menu isn't
-    // needed in newer versions.
-    [MenuItem("Assets/Open C# Project in Rider", false, 1000)]
-    private static void MenuOpenProject()
-    {
-      // Force the project files to be sync
-      UnityUtils.SyncSolution();
-
-      // Load Project
-      PluginEntryPoint.CallRider(string.Format("{0}{1}{0}", "\"", PluginEntryPoint.SlnFile));
-    }
-
-    [MenuItem("Assets/Open C# Project in Rider", true, 1000)]
-    private static bool ValidateMenuOpenProject()
-    {
-      if (!PluginEntryPoint.Enabled)
-        return false;
-      var model = PluginEntryPoint.UnityModels.FirstOrDefault(a => !a.Lifetime.IsTerminated);
-      if (model == null)
-        return true;
-      return false;
-    }
-
-    /// <summary>
-    /// Forces regeneration of .csproj / .sln files.
-    /// </summary>
-    [MenuItem("Assets/Sync C# Project", false, 1001)]
-    private static void MenuSyncProject()
-    {
-      // Force the project files to be sync
-      UnityUtils.SyncSolution();
-    }
-
-    [MenuItem("Assets/Sync C# Project", true, 1001)]
-    private static bool ValidateMenuSyncProject()
-    {
-      return PluginEntryPoint.Enabled;
+      get { return EditorPrefs.GetBool("Rider_LogEventsCollectorEnabled", true); }
+      private set { EditorPrefs.SetBool("Rider_LogEventsCollectorEnabled", value); }
     }
 
     /// <summary>
@@ -192,35 +165,43 @@ namespace JetBrains.Rider.Unity.Editor
     [PreferenceItem("Rider")]
     private static void RiderPreferencesItem()
     {
+      EditorGUIUtility.labelWidth = 200f;
       EditorGUILayout.BeginVertical();
-      EditorGUI.BeginChangeCheck();
 
       var alternatives = RiderPathLocator.GetAllFoundInfos(SystemInfoRiderPlugin.operatingSystemFamily);
-      var paths = alternatives.Select(a => a.Path).ToArray();
-      if (alternatives.Any())
+      if (alternatives.Any()) // from known locations
       {
-        var index = Array.IndexOf(paths, RiderPathInternal);
-        var alts = alternatives.Select(s => s.Presentation).ToArray();
-        RiderPathInternal = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts)];
-        EditorGUILayout.HelpBox(RiderPathInternal, MessageType.None);
+        var paths = alternatives.Select(a => a.Path).ToList();
+        var externalEditor = EditorPrefsWrapper.ExternalScriptEditor;
+        var alts = alternatives.Select(s => s.Presentation).ToList();
 
-        if (EditorGUILayout.Toggle(new GUIContent("Rider is default editor"), PluginEntryPoint.Enabled))
+        if (!paths.Contains(externalEditor))
         {
-          EditorPrefsWrapper.ExternalScriptEditor = RiderPathInternal;
-          EditorGUILayout.HelpBox("Unckecking will restore default external editor.", MessageType.None);
+          paths.Add(externalEditor);
+          alts.Add(externalEditor);
         }
-        else
-        {
-          EditorPrefsWrapper.ExternalScriptEditor = string.Empty;
-          EditorGUILayout.HelpBox("Checking will set Rider as default external editor", MessageType.None);
-        }
+
+        var index = paths.IndexOf(externalEditor);
+        
+        
+        var result = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts.ToArray())];
+        
+        EditorPrefsWrapper.ExternalScriptEditor = result;
+      }
+      
+      if (PluginEntryPoint.IsRiderDefaultEditor() && !RiderPathProvider.RiderPathExist(EditorPrefsWrapper.ExternalScriptEditor, SystemInfoRiderPlugin.operatingSystemFamily))
+      {
+        EditorGUILayout.HelpBox($"Rider is selected as preferred ExternalEditor, but doesn't exist on disk {EditorPrefsWrapper.ExternalScriptEditor}", MessageType.Warning);
       }
 
+      UseLatestRiderFromToolbox = EditorGUILayout.Toggle(new GUIContent("Update Rider to latest version"),  UseLatestRiderFromToolbox);
+      
       GUILayout.BeginVertical();
+      LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider:"), LogEventsCollectorEnabled);
 
       if (UnityUtils.ScriptingRuntime > 0)
       {
-        OverrideTargetFrameworkVersion = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion"), OverrideTargetFrameworkVersion);
+        OverrideTargetFrameworkVersion = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion:"), OverrideTargetFrameworkVersion);
         if (OverrideTargetFrameworkVersion)
         {
           var help = @"TargetFramework >= 4.6 is recommended.";
@@ -233,7 +214,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
       else
       {
-        OverrideTargetFrameworkVersionOldMono = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion"), OverrideTargetFrameworkVersionOldMono);
+        OverrideTargetFrameworkVersionOldMono = EditorGUILayout.Toggle(new GUIContent("Override TargetFrameworkVersion:"), OverrideTargetFrameworkVersionOldMono);
         if (OverrideTargetFrameworkVersionOldMono)
         {
           var helpOldMono = @"TargetFramework = 3.5 is recommended.
@@ -247,7 +228,8 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows)
+      // Unity 2018.1 doesn't require installed dotnet framework, it references everything from Unity installation
+      if (SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.Windows && UnityUtils.UnityVersion < new Version(2018, 1))
       {
         var detectedDotnetText = string.Empty;
         var installedFrameworks = GetInstalledNetFrameworks();
@@ -258,11 +240,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       GUILayout.EndVertical();
 
-      EditorGUI.EndChangeCheck();
-
-      EditorGUI.BeginChangeCheck();
-
-      OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion"), OverrideLangVersion);
+      OverrideLangVersion = EditorGUILayout.Toggle(new GUIContent("Override LangVersion:"), OverrideLangVersion);
       if (OverrideLangVersion)
       {
         var workaroundUrl = "https://gist.github.com/van800/875ce55eaf88d65b105d010d7b38a8d4";
@@ -276,31 +254,47 @@ namespace JetBrains.Rider.Unity.Editor
         LinkButton(caption: workaroundText, url: workaroundUrl);
         EditorGUILayout.HelpBox(helpLangVersion, MessageType.None);
       }
-
-
+      GUILayout.Label("");
+      
+      EditorGUILayout.BeginHorizontal();
+      EditorGUILayout.PrefixLabel("Log file:");
+      var previous = GUI.enabled;
+      GUI.enabled = previous && SelectedLoggingLevel != LoggingLevel.OFF;
+      var button = GUILayout.Button(new GUIContent("Open log"));
+      if (button)
+      {
+        //UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
+        // works much faster than the commented code, when Rider is already started
+        PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(PluginEntryPoint.LogPath, 0, 0);
+      }
+      GUI.enabled = previous;
+      GUILayout.EndHorizontal();
+      
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
       SelectedLoggingLevel =
-        (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level", loggingMsg),
+        (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level:", loggingMsg),
           SelectedLoggingLevel);
-      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
       
-      EditorGUI.EndChangeCheck();
+      EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
+      
 
       if (UnityUtils.UnityVersion < new Version(2018, 2))
       {
         EditorGUI.BeginChangeCheck();
-        AssemblyReloadSettings= (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes While Playing", AssemblyReloadSettings);
+        AssemblyReloadSettings = (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes during Playing:", AssemblyReloadSettings);
 
         if (EditorGUI.EndChangeCheck())
         {
           if (AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
           {
+            ourLogger.Info("LockReloadAssemblies");
             EditorApplication.LockReloadAssemblies();
           }
           else
           {
+            ourLogger.Info("UnlockReloadAssemblies");
             EditorApplication.UnlockReloadAssemblies();
           }
         }  
@@ -309,7 +303,23 @@ namespace JetBrains.Rider.Unity.Editor
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
       var caption = $"<color=#0000FF>{githubRepo}</color>";
       LinkButton(caption: caption, url: githubRepo);
-
+      
+      GUILayout.FlexibleSpace();
+      GUILayout.BeginHorizontal();
+      
+      GUILayout.FlexibleSpace();
+      var version = Assembly.GetExecutingAssembly().GetName().Version;
+      GUILayout.Label("Plugin version: " + version, new GUIStyle()
+      {
+        normal = new GUIStyleState()
+        {
+          textColor = new Color(0, 0, 0, .6f),
+        }, 
+        margin = new RectOffset(4, 4, 4, 4),
+      });
+      
+      GUILayout.EndHorizontal();
+      
       // left for testing purposes
 /*      if (GUILayout.Button("reset RiderInitializedOnce = false"))
       {
@@ -336,18 +346,12 @@ namespace JetBrains.Rider.Unity.Editor
 
     public OperatingSystemFamilyRider OperatingSystemFamilyRider => SystemInfoRiderPlugin.operatingSystemFamily;
 
-    string IPluginSettings.RiderPath
-    {
-      get { return RiderPathInternal; }
-      set { RiderPathInternal = value; }
-    }
-
     internal static class SystemInfoRiderPlugin
     {
       // This call on Linux is extremely slow, so cache it
       private static readonly string ourOperatingSystem = SystemInfo.operatingSystem;
 
-      // Do not rename. Expicitly disabled for consistency/compatibility with future Unity API
+      // Do not rename. Explicitly disabled for consistency/compatibility with future Unity API
       // ReSharper disable once InconsistentNaming
       public static OperatingSystemFamilyRider operatingSystemFamily
       {
@@ -372,6 +376,5 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
     }
-
   }
 }

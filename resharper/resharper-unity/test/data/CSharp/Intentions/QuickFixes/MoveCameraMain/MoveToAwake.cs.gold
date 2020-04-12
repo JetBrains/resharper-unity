@@ -1,0 +1,23 @@
+﻿//${RUN:1}
+using UnityEngine;
+
+namespace Test
+{
+    public class TestClass : MonoBehaviour
+    {
+      private Camera myCamera;
+
+      private void Awake()
+      {
+        myCamera = Camera.main;
+      }
+
+      public void Update()
+        {
+            if (myCamera{caret}) 
+            {
+            
+            }
+        }
+    }
+}

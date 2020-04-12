@@ -1,0 +1,8 @@
+﻿0000: NS_PLAIN 'key'
+0003: COLON ':'
+0004: WHITESPACE '    '
+0008: COMMENT '# Comment'
+0017: NEW_LINE '\n'
+0018: INDENT '  '
+0020: NS_PLAIN 'value'
+0025: NEW_LINE '\n'

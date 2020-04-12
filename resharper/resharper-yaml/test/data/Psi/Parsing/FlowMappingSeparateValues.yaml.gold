@@ -1,0 +1,41 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IFlowMappingNode
+        YamlTokenType+FixedTokenElement(0,1)(type:LBRACE, text:{)
+        NewLine(1,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        IFlowMapEntry
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(2,8)(type:NS_PLAIN, text:unquoted)
+          Whitespace(10,1)(type:WHITESPACE, text: ) spaces: " "
+          YamlTokenType+FixedTokenElement(11,1)(type:COLON, text::)
+          Whitespace(12,1)(type:WHITESPACE, text: ) spaces: " "
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(13,10)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"separate")
+        YamlTokenType+FixedTokenElement(23,1)(type:COMMA, text:,)
+        NewLine(24,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        IFlowMapEntry
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(25,14)(type:NS_PLAIN, text:http://foo.com)
+          IEmptyScalarNode
+        YamlTokenType+FixedTokenElement(39,1)(type:COMMA, text:,)
+        NewLine(40,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        IFlowMapEntry
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(41,13)(type:NS_PLAIN, text:omitted value)
+          YamlTokenType+FixedTokenElement(54,1)(type:COLON, text::)
+          IEmptyScalarNode
+        YamlTokenType+FixedTokenElement(55,1)(type:COMMA, text:,)
+        NewLine(56,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        IFlowMapEntry
+          IEmptyScalarNode
+          YamlTokenType+FixedTokenElement(57,1)(type:COLON, text::)
+          Whitespace(58,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(59,11)(type:NS_PLAIN, text:omitted key)
+        YamlTokenType+FixedTokenElement(70,1)(type:COMMA, text:,)
+        NewLine(71,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+FixedTokenElement(72,1)(type:RBRACE, text:})
+      NewLine(73,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

@@ -1,4 +1,0 @@
-﻿(method) void A.OnMouseExit()
-
-Called when the mouse is not any longer over the GUIElement or Collider.
-This function can be a coroutine.

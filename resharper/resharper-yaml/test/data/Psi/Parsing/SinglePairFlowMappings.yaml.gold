@@ -1,0 +1,19 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IFlowSequenceNode
+        YamlTokenType+FixedTokenElement(0,1)(type:LBRACK, text:[)
+        NewLine(1,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        IFlowSequenceEntry
+          IFlowPair
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(2,3)(type:NS_PLAIN, text:foo)
+            YamlTokenType+FixedTokenElement(5,1)(type:COLON, text::)
+            Whitespace(6,1)(type:WHITESPACE, text: ) spaces: " "
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(7,3)(type:NS_PLAIN, text:bar)
+        NewLine(10,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+FixedTokenElement(11,1)(type:RBRACK, text:])
+      NewLine(12,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

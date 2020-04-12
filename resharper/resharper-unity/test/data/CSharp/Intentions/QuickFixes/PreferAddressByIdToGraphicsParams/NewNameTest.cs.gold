@@ -1,0 +1,15 @@
+﻿using UnityEngine;
+
+namespace JetBrains.ReSharper.Psi.CSharp.Tree
+{
+    public class NewNameTest
+    {
+        private static int Test = 0;
+        private static readonly int Test1 = Shader.PropertyToID("test");
+
+        public void Method(Material material)
+        {
+            material.SetFloat(Te{caret}st1, 10.0f);
+        }
+    }
+}

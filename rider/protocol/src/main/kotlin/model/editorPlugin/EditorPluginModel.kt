@@ -1,18 +1,11 @@
 package model.editorPlugin
 
-import com.jetbrains.rider.generator.nova.*
-import com.jetbrains.rider.generator.nova.PredefinedType.*
-import com.jetbrains.rider.generator.nova.csharp.CSharp50Generator
-import com.jetbrains.rider.generator.nova.kotlin.Kotlin11Generator
-
-import java.io.File
+import com.jetbrains.rd.generator.nova.*
+import com.jetbrains.rd.generator.nova.PredefinedType.*
 
 @Suppress("unused")
-object EditorPluginModel: Root(
-    CSharp50Generator(FlowTransform.AsIs, "JetBrains.Platform.Unity.EditorPluginModel", File("../resharper/src/resharper-unity/Rider/RdEditorProtocol")),
-    CSharp50Generator(FlowTransform.Reversed, "JetBrains.Platform.Unity.EditorPluginModel", File("../unity/EditorPlugin/NonUnity/RdEditorProtocol")),
-    Kotlin11Generator(FlowTransform.AsIs, "com.jetbrains.rider.plugins.unity.editorPlugin.model", File("src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol"))
-){
+object EditorPluginModel: Root() {
+
     var RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
@@ -24,6 +17,26 @@ object EditorPluginModel: Root(
         field("mode", RdLogEventMode)
         field("message", string)
         field("stackTrace", string)
+    }
+
+    val FindUsagesSessionResult = structdef {
+        field("target", string)
+        field("elements", array(AssetFindUsagesResultBase))
+    }
+
+    val AssetFindUsagesResultBase = basestruct {
+        field("expandInTreeView", bool)
+        field("filePath", string)
+        field("fileName", string)
+        field("extension", string)
+    }
+
+    val AssetFindUsagesResult = structdef extends  AssetFindUsagesResultBase {
+    }
+
+    val HierarchyFindUsagesResult = structdef extends  AssetFindUsagesResultBase {
+        field("pathElements", array(string))
+        field("rootIndices", array(int))
     }
 
     val RdLogEventType = enum {
@@ -39,13 +52,16 @@ object EditorPluginModel: Root(
 
     val TestResult = structdef {
         field("testId", string)
+        field("projectName", string)
         field("output", string)
         field("duration", int)
         field("status", enum {
             +"Pending"
             +"Running"
-            +"Passed"
-            +"Failed"
+            +"Inconclusive"
+            +"Ignored"
+            +"Success"
+            +"Failure"
         })
         field("parentId", string)
     }
@@ -54,32 +70,74 @@ object EditorPluginModel: Root(
         field("passed", bool)
     }
 
-    val UnitTestLaunch = classdef {
+    val TestMode = enum {
+        +"Both"
+        +"Edit"
+        +"Play"
+    }
+
+    val TestFilter = structdef {
+        field("assemblyName", string)
         field("testNames", immutableList(string))
+    }
+
+    val UnitTestLaunchClientControllerInfo = structdef {
+        field("codeBase", string)
+        field("codeBaseDependencies", immutableList(string).nullable)
+        field("typeName", string)
+    }
+
+    val UnitTestLaunch = classdef {
+        field("sessionId", string)
+        field("testFilters", immutableList(TestFilter))
         field("testGroups", immutableList(string))
         field("testCategories", immutableList(string))
+        field("testMode", TestMode)
+        field("clientControllerInfo", UnitTestLaunchClientControllerInfo.nullable)
+        property("runStarted", bool)
         sink("testResult", TestResult)
         sink("runResult", RunResult)
+        call("abort", void, bool)
     }
 
     val UnityEditorState = enum {
         +"Disconnected"
         +"Idle"
         +"Play"
+        +"Pause"
         +"Refresh"
+    }
+
+    val RefreshType = enum {
+        +"ForceRequestScriptReload"
+        +"Force"
+        +"Normal"
+    }
+
+    val CompiledAssembly = structdef {
+        field("name", string)
+        field("outputPath", string)
+    }
+
+    val UnityApplicationData = structdef{
+        field("applicationPath", string)
+        field("applicationContentsPath", string)
+        field("applicationVersion", string)
     }
 
     init {
         property("play", bool)
         property("pause", bool)
-        call("step", void, void)
+        source("step", void)
+        signal("showFileInUnity", string)
+        signal("showUsagesInUnity", AssetFindUsagesResultBase)
+        signal("sendFindUsagesSessionResult", FindUsagesSessionResult)
+        signal("showPreferences", void)
 
-        property("unityPluginVersion", string)
         property("riderProcessId", int)
+        property("unityProcessId", int)
 
-        property("applicationPath", string)
-        property("applicationContentsPath", string)
-        property("applicationVersion", string)
+        property("unityApplicationData", UnityApplicationData)
         property("scriptingRuntime", int)
 
         sink("log", RdLogEvent)
@@ -88,13 +146,19 @@ object EditorPluginModel: Root(
         call("getUnityEditorState", void, UnityEditorState)
         callback("openFileLineCol", RdOpenFileArgs, bool)
         call("updateUnityPlugin", string, bool)
-        call("refresh", bool, void)
+        call("refresh", RefreshType, void)
+        call("getCompilationResult", void, bool)
+        sink("compiledAssemblies", immutableList(CompiledAssembly))
 
         property("unitTestLaunch", UnitTestLaunch)
-
-        property("fullPluginPath", string)
+        call("runUnitTestLaunch", void, bool)
 
         property("editorLogPath", string)
         property("playerLogPath", string)
+
+        property("ScriptCompilationDuringPlay", int)
+        sink("clearOnPlay", long)
+
+        call("generateUIElementsSchema", void, bool)
     }
 }

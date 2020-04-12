@@ -1,0 +1,78 @@
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.Callbacks;
+
+[assembly: |PostProcessScene|(0)]
+
+[|PostProcessScene|(1)]
+public class Foo
+{
+    [|PostProcessScene|(2)]
+    public Foo()
+    {
+    }
+
+    [|PostProcessScene|(3)]
+    public string Field;
+
+    [|PostProcessScene|(4)]
+    public const string ConstField = "Hello world";
+
+    [|PostProcessScene|(5)]
+    public string Property { get; set; }
+
+    [PostProcessScene]
+    public static void DoPostProcessScene()
+    {
+    }
+
+    [return: |PostProcessScene|(6)]
+    public string Method<[|PostProcessScene|(7)] T>([|PostProcessScene|(8)] int param1)
+    {
+        return null;
+    }
+
+    [|PostProcessScene|(9)]
+    public event EventHandler MyEvent;
+
+    [field: |PostProcessScene|(10)]
+    public event EventHandler MyEvent2;
+}
+
+[|PostProcessScene|(11)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+[|PostProcessScene|(12)]
+public struct Bar
+{
+}
+
+[|PostProcessScene|(13)]
+public enum Baz
+{
+    One,
+    Two
+}
+
+[|PostProcessScene|(14)]
+public interface Quux
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(1): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(2): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(3): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(4): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(5): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(6): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(7): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(8): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(9): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(10): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(11): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(12): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(13): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(14): ReSharper Dead Code: Attribute 'UnityEditor.Callbacks.PostProcessSceneAttribute' is redundant on this declaration type. It is only used when applied to 'Method' declarations

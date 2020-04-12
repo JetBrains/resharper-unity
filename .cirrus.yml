@@ -1,15 +1,15 @@
-linux_build_task:
-  container:
-    image: jetbrainsinfra/rider-plugins
-  build_script: ./build.sh
+#linux_build_task:
+#  container:
+#    image: jetbrainsinfra/rider-plugins
+#  build_script: ./build.sh --info --stacktrace
 
-# windows_build_task:
+#windows_build_task:
 #  windows_container:
 #   image: ivanpashchenko/rider-plugins
-#  build_script: powershell -File ./build.ps1 -RunTests
+#  build_script: powershell -File ./build.ps1 -RunTests -Verbose
 
-osx_build_task:
-  osx_instance:
-    image: high-sierra-xcode-9.4
-  install_dependencies_script: brew update && brew tap caskroom/versions && brew cask install java8 mono-mdk dotnet-sdk
-  build_script: export PATH=${PATH}:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands && ./build.sh
+#osx_build_task:
+#  osx_instance:
+#    image: high-sierra-xcode-9.4
+#  install_dependencies_script: brew update && brew tap caskroom/versions && brew cask install java8 mono-mdk dotnet-sdk
+#  build_script: export PATH=${PATH}:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands && ./build.sh

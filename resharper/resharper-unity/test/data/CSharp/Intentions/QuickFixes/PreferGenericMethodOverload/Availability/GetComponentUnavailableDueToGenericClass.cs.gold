@@ -1,0 +1,25 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class Foo<|T|(0)> : MonoBehaviour
+    {
+        
+    }
+
+    public class Test06
+    {
+        public void Test(GameObject go)
+        {
+            go.|AddComponent|(1)("|Foo|(2)");
+        }
+    }
+}
+------------------------------------------------
+0: Type parameter 'T' is never used
+QUICKFIXES:
+Remove redundant type parameter T
+1: Method 'UnityEngine.GameObject.AddComponent' is obsolete: GameObject.AddComponent with string argument has been deprecated. Use GameObject.AddComponent<T>() instead. (UnityUpgradable).
+NO QUICKFIXES
+2: Incorrect number of type parameters in reference to class 'DefaultNamespace.Foo<T>'
+NO QUICKFIXES

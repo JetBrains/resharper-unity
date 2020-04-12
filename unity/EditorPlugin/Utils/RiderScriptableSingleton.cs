@@ -17,6 +17,5 @@ namespace JetBrains.Rider.Unity.Editor.Utils
         Save(true);
       }
     }
-
   }
 }

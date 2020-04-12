@@ -1,0 +1,14 @@
+using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class Test01 : MonoBehaviour
+    {
+        public void Update()
+        {
+            int a =5;
+            var b = Vector3.up;
+            var c = b *{caret} (a * 5) * 1;
+        }
+    }
+}

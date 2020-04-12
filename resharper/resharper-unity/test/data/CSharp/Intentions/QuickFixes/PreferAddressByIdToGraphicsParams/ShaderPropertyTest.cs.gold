@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class ShaderPropertyTest
+    {
+      private static readonly int MainColor = Shader.PropertyToID("MainColor");
+
+      public void Test()
+        {
+            Shader.SetGlobalColor(Main{caret}Color, Color.black);
+        }
+    }
+}

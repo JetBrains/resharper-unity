@@ -1,0 +1,6 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    [Header("myValue{caret}")] public int myValue;
+}

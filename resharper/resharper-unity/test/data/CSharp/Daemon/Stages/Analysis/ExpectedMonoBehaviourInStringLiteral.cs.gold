@@ -1,0 +1,35 @@
+﻿using UnityEngine;
+
+public class Test
+{
+    public void Method(GameObject go)
+    {
+        // User components must implement MonoBehaviour
+        go.AddComponent("|MyPlainOldClass|(0)");
+        go.GetComponent("|MyPlainOldClass|(1)");
+
+        go.AddComponent("|MyComponent|(2)");
+        go.GetComponent("|MyComponent|(3)");
+
+        go.AddComponent("MyMonoBehaviour");
+        go.GetComponent("MyMonoBehaviour");
+    }
+}
+
+public class MyPlainOldClass
+{
+}
+
+public class MyComponent : Component
+{
+}
+
+public class MyMonoBehaviour : MonoBehaviour
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
+(1): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
+(2): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'
+(3): ReSharper Warning: Expected type derived from 'UnityEngine.MonoBehaviour'

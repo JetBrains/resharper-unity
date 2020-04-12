@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace JetBrains.ReSharper.Psi.CSharp.Tree
+{
+    public class UnderscoreNameTest
+    {
+      private static readonly int Test = Shader.PropertyToID("_test");
+
+      public void Method(Material material)
+        {
+            material.SetFloat(Te{caret}st, 10.0f);
+        }
+    }
+}

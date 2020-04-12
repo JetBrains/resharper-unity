@@ -1,0 +1,77 @@
+﻿Provided elements:
+ 0: Awake():System.Void
+ 1: Reset():System.Void
+ 2: Start():System.Void
+ 3: Update():System.Void
+ 4: FixedUpdate():System.Void
+ 5: LateUpdate():System.Void
+ 6: OnEnable():System.Void
+ 7: OnDisable():System.Void
+ 8: OnDestroy():System.Void
+ 9: OnGUI():System.Void
+ 10: OnAnimatorIK(System.Int32):System.Void
+ 11: OnAnimatorMove():System.Void
+ 12: OnApplicationFocus(System.Boolean):System.Void
+ 13: OnApplicationPause(System.Boolean):System.Void
+ 14: OnApplicationQuit():System.Void
+ 15: OnAudioFilterRead(System.Single[],System.Int32):System.Void
+ 16: OnBecameInvisible():System.Void
+ 17: OnBecameVisible():System.Void
+ 18: OnBeforeTransformParentChanged():System.Void
+ 19: OnCanvasGroupChanged():System.Void
+ 20: OnCanvasHierarchyChanged():System.Void
+ 21: OnCollisionEnter(UnityEngine.Collision):System.Void
+ 22: OnCollisionEnter2D(UnityEngine.Collision2D):System.Void
+ 23: OnCollisionExit(UnityEngine.Collision):System.Void
+ 24: OnCollisionExit2D(UnityEngine.Collision2D):System.Void
+ 25: OnCollisionStay(UnityEngine.Collision):System.Void
+ 26: OnCollisionStay2D(UnityEngine.Collision2D):System.Void
+ 27: OnConnectedToServer():System.Void
+ 28: OnControllerColliderHit(UnityEngine.ControllerColliderHit):System.Void
+ 29: OnDidApplyAnimationProperties():System.Void
+ 30: OnDrawGizmos():System.Void
+ 31: OnDrawGizmosSelected():System.Void
+ 32: OnJointBreak(System.Single):System.Void
+ 33: OnJointBreak2D(UnityEngine.Joint2D):System.Void
+ 34: OnMouseDown():System.Void
+ 35: OnMouseDrag():System.Void
+ 36: OnMouseEnter():System.Void
+ 37: OnMouseExit():System.Void
+ 38: OnMouseOver():System.Void
+ 39: OnMouseUp():System.Void
+ 40: OnMouseUpAsButton():System.Void
+ 41: OnParticleCollision(UnityEngine.GameObject):System.Void
+ 42: OnParticleSystemStopped():System.Void
+ 43: OnParticleTrigger():System.Void
+ 44: OnPostRender():System.Void
+ 45: OnPreCull():System.Void
+ 46: OnPreRender():System.Void
+ 47: OnRectTransformDimensionsChange():System.Void
+ 48: OnRenderImage(UnityEngine.RenderTexture,UnityEngine.RenderTexture):System.Void
+ 49: OnRenderObject():System.Void
+ 50: OnServerInitialized():System.Void
+ 51: OnTransformChildrenChanged():System.Void
+ 52: OnTransformParentChanged():System.Void
+ 53: OnTriggerEnter(UnityEngine.Collider):System.Void
+ 54: OnTriggerEnter2D(UnityEngine.Collider2D):System.Void
+ 55: OnTriggerExit(UnityEngine.Collider):System.Void
+ 56: OnTriggerExit2D(UnityEngine.Collider2D):System.Void
+ 57: OnTriggerStay(UnityEngine.Collider):System.Void
+ 58: OnTriggerStay2D(UnityEngine.Collider2D):System.Void
+ 59: OnValidate():System.Void
+ 60: OnWillRenderObject():System.Void
+
+// ${KIND:Unity.EventFunctions}
+using UnityEngine;
+
+class Base : MonoBehaviour
+{
+  protected virtual void Update()
+  {
+  }
+}
+
+class Derived : Base
+{
+  {caret}
+}

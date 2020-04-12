@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+namespace JetBrains.ReSharper.Psi.CSharp.Tree
+{
+    public class NestedClassTest
+    {
+      private static readonly int Test1 = Shader.PropertyToID("test");
+
+      public class Nested
+        {
+            private string Test = null;  // for  unique name testing.
+            
+            public void Method(Material material)
+            {
+                material.SetFloat(Te{caret}st1, 10.0f);
+            }
+        }
+    }
+}

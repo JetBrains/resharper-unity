@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class InvalidLiteralForProperyNameTest
+    {
+      private static readonly int Property = Shader.PropertyToID("float");
+
+      public void Test(Material material)
+        {
+            material.SetFloat(Pr{caret}operty, 10.0f);
+        }
+    }
+}

@@ -1,0 +1,47 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(0,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(1,3)(type:NS_CHARS, text:TAG)
+        Whitespace(4,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(5,3)(type:NS_CHARS, text:!e!)
+        Whitespace(8,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(9,21)(type:NS_CHARS, text:tag:example,2000:app/)
+        NewLine(30,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(31,3)(type:DIRECTIVES_END, text:---)
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        NewLine(34,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(35,1)(type:MINUS, text:-)
+          Whitespace(36,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                INamedTagHandle
+                  YamlTokenType+FixedTokenElement(37,1)(type:BANG, text:!)
+                  YamlTokenType+GenericTokenElement(38,1)(type:NS_TAG_CHARS, text:e)
+                  YamlTokenType+FixedTokenElement(39,1)(type:BANG, text:!)
+                ErrorElement:Text expected
+            Whitespace(40,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(41,3)(type:NS_PLAIN, text:foo)
+          NewLine(44,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(45,1)(type:MINUS, text:-)
+          Whitespace(46,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                INamedTagHandle
+                  YamlTokenType+FixedTokenElement(47,1)(type:BANG, text:!)
+                  YamlTokenType+GenericTokenElement(48,1)(type:NS_TAG_CHARS, text:h)
+                  YamlTokenType+FixedTokenElement(49,1)(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(50,3)(type:NS_TAG_CHARS, text:bar)
+            Whitespace(53,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(54,3)(type:NS_PLAIN, text:baz)
+          Whitespace(57,2)(type:WHITESPACE, text:  ) spaces: "  "
+          Comment(59,38)(type:COMMENT, text:# Valid lexically, but doesn't resolve) comment: "# Valid lexically, but doesn't resolve"
+          NewLine(97,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

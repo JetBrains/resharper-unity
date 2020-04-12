@@ -1,0 +1,15 @@
+﻿using UnityEngine;
+
+public class NotAvailableDueToWrongMethodNameTest : MonoBehaviour
+{
+    public void Method()
+    {
+        Physics.|Raycas|(0)(new Ray(Vector3.zero, Vector3.back));
+    }
+}
+
+------------------------------------------------
+0: Cannot resolve symbol 'Raycas'
+QUICKFIXES:
+Change all 'Raycas'
+Change all local 'Raycas'

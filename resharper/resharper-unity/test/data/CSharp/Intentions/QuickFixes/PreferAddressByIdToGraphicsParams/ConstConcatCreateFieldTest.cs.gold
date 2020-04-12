@@ -1,0 +1,15 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class ConstConcatCreateFieldTest
+    {
+      private static readonly int TestFootest = Shader.PropertyToID(test + "Foo" +  test);
+      public const string test = "test";
+            
+        public void Method(Material material)
+        {
+            material.SetFloat(TestFoo{caret}test, 10.0f)};
+        }
+    }
+}

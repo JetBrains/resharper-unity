@@ -1,0 +1,26 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  Comment(0,50)(type:COMMENT, text:# Folding indicator followed by chomping indicator) comment: "# Folding indicator followed by chomping indicator"
+  NewLine(50,1)(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    ChameleonDocumentBody
+      IFoldedScalarNode
+        YamlTokenType+FixedTokenElement(51,1)(type:GT, text:>)
+        IBlockHeader
+          YamlTokenType+FixedTokenElement(52,1)(type:MINUS, text:-)
+        NewLine(53,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(54,2)(type:INDENT, text:  )
+        YamlTokenType+GenericTokenElement(56,7)(type:SCALAR_TEXT, text:trimmed)
+        NewLine(63,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(64,2)(type:INDENT, text:  )
+        NewLine(66,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(67,1)(type:INDENT, text: )
+        NewLine(68,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(69,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(70,2)(type:INDENT, text:  )
+        YamlTokenType+GenericTokenElement(72,2)(type:SCALAR_TEXT, text:as)
+        NewLine(74,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(75,2)(type:INDENT, text:  )
+        YamlTokenType+GenericTokenElement(77,5)(type:SCALAR_TEXT, text:space)
+      NewLine(82,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

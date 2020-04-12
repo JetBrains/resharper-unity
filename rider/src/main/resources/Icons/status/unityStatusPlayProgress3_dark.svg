@@ -1,22 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <title>unityStatusPlayProgress3(GrayDark)</title>
-  <g>
-    <rect width="16" height="16" fill="#f0f" opacity="0"/>
-    <g>
-      <g>
-        <polygon points="16 7.158 11.399 1.219 4.445 0 3.657 0 1 7.325 1 7.675 3.657 15 4.445 15 11.399 13.781 16 7.842 16 7.158" fill="#252525"/>
-        <polygon points="15 7.5 10.846 12.863 4.359 14 2 7.5 4.359 1 10.846 2.137 15 7.5" fill="#c4c4c4"/>
-        <polygon points="10.292 11.945 13.735 7.5 10.292 3.055 5.013 2.13 3.064 7.5 5.013 12.87 10.292 11.945" fill="#ebebeb"/>
-      </g>
-      <g>
-        <polygon points="13.735 7.5 7.901 7.5 10.292 3.055 13.735 7.5" fill="#292929"/>
-        <polygon points="13.735 7.5 7.901 7.5 10.292 11.945 13.735 7.5" fill="#292929"/>
-        <polygon points="5.013 12.87 3.064 7.5 7.901 7.5 5.013 12.87" fill="#c4c4c4"/>
-        <polygon points="7.901 7.5 5.013 2.13 10.292 3.055 7.901 7.5" fill="#292929"/>
-        <polygon points="7.901 7.5 5.013 12.87 10.292 11.945 7.901 7.5" fill="#292929"/>
-        <polygon points="3.064 7.5 5.013 2.13 7.901 7.5 3.064 7.5" fill="#292929"/>
-      </g>
-      <polygon points="6 3.824 11.844 7.5 6 11.176 6 3.824" fill="#8dcf8d"/>
-    </g>
+  <g id="unityStatusPlayProgress3_dark" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
+    <path id="Fill-2" fill="#AFB1B3" d="M10.292,11.9453 L5.013,12.8703 L7.901,7.5003 L3.064,7.5003 L5.013,2.1303 L10.292,3.0543 L13.734,7.5003 L10.292,11.9453 Z M10.846,2.1373 L4.358,1.0003 L2,7.5003 L4.358,14.0003 L10.846,12.8623 L15,7.5003 L10.846,2.1373 Z"/>
+    <polygon id="Fill-3" fill="#499C54" points="6 3.824 11.844 7.5 6 11.176"/>
   </g>
 </svg>

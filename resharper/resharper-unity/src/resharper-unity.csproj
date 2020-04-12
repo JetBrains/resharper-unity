@@ -1,0 +1,153 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Unity</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
+    <!-- TODO: Fix up the .psi files so we don't get the obsolete warnings -->
+    <NoWarn>0618</NoWarn>
+    <LangVersion>7.2</LangVersion>
+    <!-- This is needed for ReferenceAssemblyRedirects to pick up app.config -->
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RESHARPER;$(CommandLineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- C# -->
+    <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
+      <DependentUpon>CSharpErrors.xml</DependentUpon>
+    </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\CSharpPerformanceErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs">
+      <DependentUpon>CSharpPerformanceErrors.xml</DependentUpon>
+    </Compile>
+    <!-- Cg language -->
+    <PsiLanguageNames Include="Cg">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="Cg\Psi\Parsing\Cg.lex" />
+    <None Remove="Cg\Psi\Parsing\Cg_lex.depends" />
+    <Compile Update="Cg\Psi\Parsing\Cg_lex.cs">
+      <DependentUpon>Cg.lex</DependentUpon>
+    </Compile>
+    <TokenGenerator Include="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
+      <OutputFile>Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <Compile Update="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs">
+      <DependentUpon>CgTokenNodeTypes.Tokens.xml</DependentUpon>
+    </Compile>
+    <ParserGen Include="Cg\Psi\Parsing\Cg.psi" />
+    <ErrorsGen Include="Cg\Daemon\Errors\CgErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Errors</Namespace>
+      <OutputFile>Cg\Daemon\Errors\CgErrors.Generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="Cg\Daemon\Errors\CgErrors.Generated.cs">
+      <DependentUpon>CgErrors.xml</DependentUpon>
+    </Compile>
+    <!-- ShaderLab language -->
+    <PsiLanguageNames Include="ShaderLab">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
+    <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
+    <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">
+      <DependentUpon>ShaderLab.lex</DependentUpon>
+    </Compile>
+    <TokenGenerator Include="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.xml">
+      <OutputFile>ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <Compile Update="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs">
+      <DependentUpon>ShaderLabTokenType.Tokens.xml</DependentUpon>
+    </Compile>
+    <ParserGen Include="ShaderLab\Psi\Parsing\ShaderLab.psi" />
+    <ErrorsGen Include="ShaderLab\Daemon\Errors\ShaderLabErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors</Namespace>
+      <OutputFile>ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
+      <DependentUpon>ShaderLabErrors.xml</DependentUpon>
+    </Compile>
+    <!-- AsmDef/JSON "language" -->
+    <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
+      <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
+      <DependentUpon>AsmDefErrors.xml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <!-- Resources - Unity3dRider, api.xml, icons -->
+  <ItemGroup>
+    <None Remove="api.xml" />
+    <EmbeddedResource Include="api.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <LiveTemplate Include="Templates\**\*.md">
+      <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
+      <ReadmeFile>Templates\README.md</ReadmeFile>
+    </LiveTemplate>
+    <EmbeddedResource Include="Templates\templates.generated.dotSettings">
+      <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <!-- References -->
+  <ItemGroup>
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.4.2" />
+    <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
+    <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="**\Rider\**" />
+    <EmbeddedResource Remove="**\Rider\**" />
+    <None Remove="**\Rider\**" />
+  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="JsonNew\**" />
+        <EmbeddedResource Remove="JsonNew\**" />
+        <None Remove="JsonNew\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="AsmdefNew\**" />
+        <EmbeddedResource Remove="AsmdefNew\**" />
+        <None Remove="AsmdefNew\**" />
+    </ItemGroup>
+    <ItemGroup>
+    <!-- Format definitions can't compile on Mac/Linux due to missing PresentationCore dependencies -->
+    <Compile Remove="**\VisualStudio\**\*FormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ShaderLab\Host\**" />
+    <EmbeddedResource Remove="ShaderLab\Host\**" />
+    <None Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AsmDefCommon\Daemon\ContextHighlighters" />
+  </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props')" />
+</Project>

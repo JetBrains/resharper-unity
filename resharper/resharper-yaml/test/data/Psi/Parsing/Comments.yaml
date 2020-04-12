@@ -1,0 +1,7 @@
+{caret}# Single line comment
+key:    # Comment
+  value # Comment 2
+
+# Multi line comment 1
+# Multi line comment 2
+

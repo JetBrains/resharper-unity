@@ -1,0 +1,58 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(0,1)(type:MINUS, text:-)
+          Whitespace(1,1)(type:WHITESPACE, text: ) spaces: " "
+          ILiteralScalarNode
+            YamlTokenType+FixedTokenElement(2,1)(type:PIPE, text:|)
+            Whitespace(3,1)(type:WHITESPACE, text: ) spaces: " "
+            Comment(4,14)(type:COMMENT, text:# Empty header) comment: "# Empty header"
+            NewLine(18,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(19,1)(type:INDENT, text: )
+            YamlTokenType+GenericTokenElement(20,7)(type:SCALAR_TEXT, text:literal)
+          NewLine(27,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(28,1)(type:MINUS, text:-)
+          Whitespace(29,1)(type:WHITESPACE, text: ) spaces: " "
+          IFoldedScalarNode
+            YamlTokenType+FixedTokenElement(30,1)(type:GT, text:>)
+            IBlockHeader
+              YamlTokenType+GenericTokenElement(31,1)(type:NS_DEC_DIGIT, text:1)
+            Whitespace(32,1)(type:WHITESPACE, text: ) spaces: " "
+            Comment(33,23)(type:COMMENT, text:# Indentation indicator) comment: "# Indentation indicator"
+            NewLine(56,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(57,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(59,6)(type:SCALAR_TEXT, text:folded)
+          NewLine(65,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(66,1)(type:MINUS, text:-)
+          Whitespace(67,1)(type:WHITESPACE, text: ) spaces: " "
+          ILiteralScalarNode
+            YamlTokenType+FixedTokenElement(68,1)(type:PIPE, text:|)
+            IBlockHeader
+              YamlTokenType+FixedTokenElement(69,1)(type:PLUS, text:+)
+            Whitespace(70,1)(type:WHITESPACE, text: ) spaces: " "
+            Comment(71,20)(type:COMMENT, text:# Chomping indicator) comment: "# Chomping indicator"
+            NewLine(91,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(92,1)(type:INDENT, text: )
+            YamlTokenType+GenericTokenElement(93,4)(type:SCALAR_TEXT, text:keep)
+          NewLine(97,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          NewLine(98,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(99,1)(type:MINUS, text:-)
+          Whitespace(100,1)(type:WHITESPACE, text: ) spaces: " "
+          IFoldedScalarNode
+            YamlTokenType+FixedTokenElement(101,1)(type:GT, text:>)
+            IBlockHeader
+              YamlTokenType+GenericTokenElement(102,1)(type:NS_DEC_DIGIT, text:1)
+              YamlTokenType+FixedTokenElement(103,1)(type:MINUS, text:-)
+            Whitespace(104,1)(type:WHITESPACE, text: ) spaces: " "
+            Comment(105,17)(type:COMMENT, text:# Both indicators) comment: "# Both indicators"
+            NewLine(122,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(123,2)(type:INDENT, text:  )
+            YamlTokenType+GenericTokenElement(125,5)(type:SCALAR_TEXT, text:strip)
+          NewLine(130,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

@@ -1,0 +1,9 @@
+﻿using UnityEditor;
+using UnityEngine;
+
+public class Foo : AssetPostprocessor
+{
+    public Mater{caret}ial OnAssignMaterialModel(Material material, Renderer renderer)
+    {
+    }
+}

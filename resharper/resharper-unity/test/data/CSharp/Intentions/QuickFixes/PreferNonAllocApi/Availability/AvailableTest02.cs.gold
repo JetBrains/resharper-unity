@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Available02 : MonoBehaviour
+{
+    public void Method()
+    {
+        Physics.|OverlapBox|(0)(Vector3.zero, new Vector3(1, 1, 1), Quaternion.identity); 
+    }
+}
+
+------------------------------------------------
+0: Use non-allocating method 'OverlapBoxNonAlloc'
+QUICKFIXES:
+Convert to 'OverlapBoxNonAlloc'

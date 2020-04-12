@@ -1,8 +1,0 @@
-﻿using UnityEngine;
-
-public class Foo : UnityEditor.AssetPostprocessor
-{
-    public {caret}Material OnAssignMaterialModel(UnityEngine.Material material, UnityEngine.Renderer renderer)
-    {
-    }
-}

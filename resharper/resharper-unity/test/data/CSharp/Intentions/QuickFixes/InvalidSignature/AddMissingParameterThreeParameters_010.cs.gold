@@ -1,0 +1,9 @@
+﻿using UnityEngine;
+using UnityEditor;
+
+public class FooProcessor : AssetPostprocessor
+{
+    private void OnPostprocessGameObjectWithUserProperties(GameObject go, {caret}string[] propNames, object[] values)
+    {
+    }
+}

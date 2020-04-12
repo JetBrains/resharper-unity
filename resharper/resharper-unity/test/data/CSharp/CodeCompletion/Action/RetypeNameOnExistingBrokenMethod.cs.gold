@@ -1,0 +1,12 @@
+﻿// ${COMPLETE_ITEM:LateUpdate() { ... \}}
+
+using System;
+using UnityEngine;
+
+public class A : MonoBehaviour
+{
+  public void LateUpdate()
+  {
+    throw new NotImplementedException();{caret}
+  }
+}

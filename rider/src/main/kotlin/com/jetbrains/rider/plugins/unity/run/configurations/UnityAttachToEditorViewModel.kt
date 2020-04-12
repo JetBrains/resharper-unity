@@ -2,60 +2,58 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.process.ProcessInfo
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.run.attach.UnityRunUtil
+import com.jetbrains.rd.platform.util.application
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.IProperty
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.ViewableList
+import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
-import com.jetbrains.rider.util.lifetime.Lifetime
-import com.jetbrains.rider.util.reactive.IProperty
-import com.jetbrains.rider.util.reactive.Property
-import com.jetbrains.rider.util.reactive.ViewableList
+import com.jetbrains.rider.projectDir
 
-class UnityAttachToEditorViewModel(val lifetime: Lifetime, project: Project) {
-    val editorInstanceJsonStatus: EditorInstanceJsonStatus
+class UnityAttachToEditorViewModel(val lifetime: Lifetime, private val project: Project) {
+
+    data class EditorProcessInfo(val name: String, val pid: Int?, val projectName: String?)
+
+    val editorInstanceJsonStatus: IProperty<EditorInstanceJsonStatus?> = Property(null)
     val editorProcesses: ViewableList<EditorProcessInfo> = ViewableList()
     val pid: IProperty<Int?> = Property(null)
-
-    data class EditorProcessInfo(val name: String, val pid: Int?)
+    private val editorInstanceJson = EditorInstanceJson.getInstance(project)
 
     init {
-        val processList = OSProcessUtil.getProcessList()
-        updateProcessList(processList)
-
-        val (status, editorInstanceJson) = readEditorInstanceJson(project, processList)
-        editorInstanceJsonStatus = status
-        this.pid.value = if (status != EditorInstanceJsonStatus.Valid && editorProcesses.count() == 1) {
-            editorProcesses[0].pid
-        }
-        else {
-            editorInstanceJson?.let { it.process_id }
-        }
+        refreshProcessList()
     }
 
-    private fun updateProcessList(processList: Array<out ProcessInfo>) {
-        processList.forEach {
-            if (UnityRunUtil.isUnityEditorProcess(it))
-                editorProcesses.add(EditorProcessInfo(it.executableName, it.pid))
-        }
-    }
-
-    private fun readEditorInstanceJson(project: Project, processList: Array<ProcessInfo>): Pair<EditorInstanceJsonStatus, EditorInstanceJson?> {
-        val editorInstanceJson = EditorInstanceJson.load(project)
-        if (editorInstanceJson.first == EditorInstanceJsonStatus.Valid && !isValidProcessId(editorInstanceJson.second!!, processList)) {
-            return Pair(EditorInstanceJsonStatus.Outdated, editorInstanceJson.second)
-        }
-        return editorInstanceJson
-    }
-
-    private fun isValidProcessId(editorInstanceJson: EditorInstanceJson, processList: Array<ProcessInfo>): Boolean {
-        // Look for processes, if it exists and has the correct name, return it unchanged,
-        // else return invalidValue. Do not throw, as we'll attempt to recover
-        return processList.any { it.pid == editorInstanceJson.process_id && UnityRunUtil.isUnityEditorProcess(it) }
-    }
-
-    fun updateProcessList() {
+    fun refreshProcessList() {
         editorProcesses.clear()
-        val processList = OSProcessUtil.getProcessList()
-        updateProcessList(processList)
+
+        application.executeOnPooledThread {
+            val processList = OSProcessUtil.getProcessList()
+            val editors = getEditorProcessInfos(processList)
+
+            application.invokeLater({
+                editorProcesses.addAll(editors)
+                editorInstanceJsonStatus.set(editorInstanceJson.validateStatus(processList))
+                pid.value = if (editorInstanceJsonStatus.value != EditorInstanceJsonStatus.Valid && editors.count() == 1) {
+                    editors[0].pid
+                } else if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
+                    editorInstanceJson.contents?.process_id
+                } else {
+                    // If we're a class library project in the same folder as a Unity project, we can still guess the name
+                    editors.firstOrNull { project.projectDir.name.equals(it.projectName, true) }?.pid
+                }
+            }, ModalityState.any())
+        }
+    }
+
+    private fun getEditorProcessInfos(processList: Array<ProcessInfo>): List<EditorProcessInfo> {
+        val unityProcesses = processList.filter { UnityRunUtil.isUnityEditorProcess(it) }
+        val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
+        return unityProcesses.map {
+            EditorProcessInfo(it.executableName, it.pid, unityProcessInfoMap[it.pid]?.projectName)
+        }
     }
 }

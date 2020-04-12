@@ -1,0 +1,13 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class Test02 : MonoBehaviour
+    {
+        public void Update()
+        {
+	    var result = Quaternion.Euler(0, 0, 0) * ({caret}Quaternion.Euler(0, 0, 0) * Vector3.back) * (7f * 7f * (5 * 7));        
+
+        }
+    }
+}

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Platform.RdFramework;
-using JetBrains.Util;
-using JetBrains.Util.Logging;
+using JetBrains.Collections.Viewable;
+using JetBrains.Diagnostics;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor

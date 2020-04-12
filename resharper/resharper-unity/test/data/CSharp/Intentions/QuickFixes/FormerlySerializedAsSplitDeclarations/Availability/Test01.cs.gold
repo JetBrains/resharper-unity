@@ -1,0 +1,12 @@
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test : MonoBehaviour
+{
+  [|FormerlySerializedAs("foo")|(0)] public int value1, value2, value3;
+}
+
+------------------------------------------------
+0: Possible incorrect application of 'FormerlySerializedAs' attribute to multiple fields
+QUICKFIXES:
+Split into separate declarations

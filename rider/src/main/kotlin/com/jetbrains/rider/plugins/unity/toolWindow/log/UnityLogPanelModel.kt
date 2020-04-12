@@ -3,12 +3,13 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
-import com.jetbrains.rider.util.lifetime.Lifetime
-import com.jetbrains.rider.util.reactive.Property
-import com.jetbrains.rider.util.reactive.Signal
-import com.jetbrains.rider.util.reactive.fire
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.reactive.Property
+import com.jetbrains.rd.util.reactive.Signal
+import com.jetbrains.rd.util.reactive.fire
+import java.util.function.Predicate
 
-class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
+class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
     private val lock = Object()
     private val maxItemsCount = 10000
 
@@ -68,7 +69,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
         private var searchTerm = ""
 
         fun getShouldBeShown(text: String):Boolean {
-            return text.contains(searchTerm)
+            return text.contains(searchTerm, true)
         }
 
         fun setPattern(value: String) {
@@ -89,6 +90,23 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
             onCleared.fire()
         }
 
+        fun clearBefore(time:Long) {
+            var changed = false
+            synchronized(lock) {
+                changed = allEvents.removeIf { t -> t.time < time }
+            }
+
+            if (changed)
+            {
+                if (selectedItem != null)
+                if (selectedItem!!.time < time) {
+                    selectedItem = null
+                    onCleared.fire()
+                }
+                onChanged.fire()
+            }
+        }
+
         fun addEvent(event: RdLogEvent) {
             synchronized(lock) {
                 if (allEvents.count() > maxItemsCount)
@@ -107,7 +125,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
 
     private fun isVisibleEvent(event: RdLogEvent):Boolean
     {
-        return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode) && textFilter.getShouldBeShown(event.message);
+        return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode) && textFilter.getShouldBeShown(event.message)
     }
 
     private fun getVisibleEvents(): List<RdLogEvent> {
@@ -121,7 +139,7 @@ class UnityLogPanelModel(val lifetime: Lifetime, val project: com.intellij.opena
     val modeFilters = ModeFilters()
     val textFilter = TextFilter()
     val events = Events()
-    var mergeSimilarItems = Property<Boolean>(false)
+    val mergeSimilarItems = Property(false)
 
     val onAdded = Signal<RdLogEvent>()
     val onChanged = Signal<List<RdLogEvent>>()

@@ -1,0 +1,4 @@
+{caret}# Assuming conventional resolution:
+- "12"  # Resolves to !!str
+- 12    # Resolves to !!int
+- ! 12  # Resolves to !!str

@@ -1,3 +1,0 @@
-﻿(method) void A.OnDestroy()
-
-Destroying the attached Behaviour will result in the game or scene receiving OnDestroy.

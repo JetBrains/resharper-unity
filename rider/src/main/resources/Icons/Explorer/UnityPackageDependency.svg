@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>UnityPackageDependency(Gray)</title>
+  <g>
+    <rect width="16" height="16" fill="#ffe3ff" opacity="0"/>
+    <g>
+      <polygon points="8.244 1 2 4.407 2 11.594 8.246 15 8.754 15 15 11.594 15 4.407 8.756 1 8.244 1" fill="#f4f4f4"/>
+      <polygon points="8.5 2 3 5.001 3 11 8.5 14 14 11 14 5.001 8.5 2" fill="#323232"/>
+      <polygon points="4 10.406 4 5.595 8.5 3.14 13 5.595 13 10.406 8.5 12.861 4 10.406" fill="#ebebeb"/>
+      <polygon points="12.5 10.109 12.5 5.892 12.459 5.869 8.5 8 8.5 12.292 12.5 10.109" fill="#323232"/>
+      <polygon points="6.5 9.431 6.5 6.963 10.508 4.805 9.46 4.233 5.5 6.365 5.5 8.897 6.5 9.431" fill="#323232"/>
+    </g>
+  </g>
+</svg>

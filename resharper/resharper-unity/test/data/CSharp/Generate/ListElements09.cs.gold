@@ -1,0 +1,23 @@
+﻿Provided elements:
+ 0: Awake():System.Void
+ 1: Reset():System.Void
+ 2: Update():System.Void
+ 3: OnEnable():System.Void
+ 4: OnDisable():System.Void
+ 5: OnDestroy():System.Void
+ 6: OnGUI():System.Void
+ 7: OnFocus():System.Void
+ 8: OnHierarchyChange():System.Void
+ 9: OnInspectorUpdate():System.Void
+ 10: OnLostFocus():System.Void
+ 11: OnProjectChange():System.Void
+ 12: OnSelectionChange():System.Void
+ 13: OnValidate():System.Void
+
+// ${KIND:Unity.EventFunctions}
+using UnityEditor;
+
+class A : EditorWindow
+{
+    {caret}
+}

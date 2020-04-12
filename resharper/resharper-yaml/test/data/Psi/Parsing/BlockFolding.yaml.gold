@@ -1,0 +1,21 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IFoldedScalarNode
+        YamlTokenType+FixedTokenElement(0,1)(type:GT, text:>)
+        NewLine(1,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(2,2)(type:INDENT, text:  )
+        YamlTokenType+GenericTokenElement(4,4)(type:SCALAR_TEXT, text:foo )
+        NewLine(8,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(9,1)(type:INDENT, text: )
+        NewLine(10,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(11,4)(type:INDENT, text:  	 )
+        YamlTokenType+GenericTokenElement(15,3)(type:SCALAR_TEXT, text:bar)
+        NewLine(18,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        NewLine(19,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(20,2)(type:INDENT, text:  )
+        YamlTokenType+GenericTokenElement(22,3)(type:SCALAR_TEXT, text:baz)
+      NewLine(25,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      NewLine(26,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

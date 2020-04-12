@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace JetBrains.ReSharper.Psi.CSharp.Tree
+{
+    public class SimpleTest
+    {
+      private static readonly int Test = Shader.PropertyToID("test");
+
+      public void Method(Material material)
+        {
+            material.SetFloat(Te{caret}st, 10.0f);
+        }
+    }
+}

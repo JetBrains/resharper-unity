@@ -1,0 +1,5 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="JavaScript">
+    <packageJson.configuration.handler implementation="com.jetbrains.rider.plugins.unity.javascript.UnityPackageJsonConfiguratorHandler"/>
+  </extensions>
+</idea-plugin>

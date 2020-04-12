@@ -1,0 +1,28 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  Comment(0,21)(type:COMMENT, text:# Single line comment) comment: "# Single line comment"
+  NewLine(21,1)(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockMappingNode
+        IBlockMappingEntry
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(22,3)(type:NS_PLAIN, text:key)
+          YamlTokenType+FixedTokenElement(25,1)(type:COLON, text::)
+          IContentNode
+            Whitespace(26,4)(type:WHITESPACE, text:    ) spaces: "    "
+            Comment(30,9)(type:COMMENT, text:# Comment) comment: "# Comment"
+            NewLine(39,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(40,2)(type:INDENT, text:  )
+            IPlainScalarNode
+              YamlTokenType+GenericTokenElement(42,5)(type:NS_PLAIN, text:value)
+            Whitespace(47,1)(type:WHITESPACE, text: ) spaces: " "
+            Comment(48,11)(type:COMMENT, text:# Comment 2) comment: "# Comment 2"
+            NewLine(59,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(60,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            Comment(61,22)(type:COMMENT, text:# Multi line comment 1) comment: "# Multi line comment 1"
+            NewLine(83,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            Comment(84,22)(type:COMMENT, text:# Multi line comment 2) comment: "# Multi line comment 2"
+            NewLine(106,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            NewLine(107,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

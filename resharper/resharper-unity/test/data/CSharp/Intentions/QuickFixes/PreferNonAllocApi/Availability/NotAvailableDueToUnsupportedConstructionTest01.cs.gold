@@ -1,0 +1,17 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class NotAvailableDueToUnsupportedConstructionTest01
+    {
+        private readonly RaycastHit[] myResult = Physics.|RaycastAll|(0)(new Ray());
+
+        public RaycastHit[] Get()
+        {
+            return myResult;
+        }
+    }
+}
+------------------------------------------------
+0: Use non-allocating method 'RaycastNonAlloc'
+NO QUICKFIXES

@@ -1,0 +1,76 @@
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+
+[assembly: |HideInInspector|(0)]
+
+[|HideInInspector|(1)]
+public class ||Foo|(2)|(3) : MonoBehaviour
+{
+    [|HideInInspector|(4)]
+    public Foo()
+    {
+    }
+
+    [HideInInspector]
+    public string ||Field|(5)|(6);
+
+    [|HideInInspector|(7)]
+    public const string ConstField = "Hello world";
+
+    [|HideInInspector|(8)]
+    public string Property { get; set; }
+
+    [|HideInInspector|(9)]
+    [return: |HideInInspector|(10)]
+    public string Method<[|HideInInspector|(11)] T>([|HideInInspector|(12)] int param1)
+    {
+        return null;
+    }
+
+    [|HideInInspector|(13)]
+    public event EventHandler MyEvent;
+
+    [field: HideInInspector]
+    public event EventHandler MyEvent2;
+}
+
+[|HideInInspector|(14)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+[|HideInInspector|(15)]
+public struct Bar
+{
+}
+
+[|HideInInspector|(16)]
+public enum Baz
+{
+    One,
+    Two
+}
+
+[|HideInInspector|(17)]
+public interface Quux
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(1): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): Unity Gutter Icon: Unity script
+(4): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(5): ReSharper Unity Implicitly Used Identifier: 
+(6): Unity Gutter Icon: This field is initialized from Inspector
+(7): ReSharper Dead Code: Redundant 'HideInInspector' attribute
+(8): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(9): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(10): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(11): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(12): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(13): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(14): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(15): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(16): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+(17): ReSharper Dead Code: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations

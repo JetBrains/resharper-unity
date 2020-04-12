@@ -1,0 +1,2 @@
+﻿0000: C_DOUBLE_QUOTED_MULTILINE '"folded \nto a space,\t\n \nto a line feed, or \t\\n \ \tnon-content"'
+0062: NEW_LINE '\n'

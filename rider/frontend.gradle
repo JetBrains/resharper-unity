@@ -1,8 +1,28 @@
-sourceSets {
-    test {
-        java.srcDir 'testSrc'
-        resources.srcDir 'testData'
+import org.jetbrains.intellij.tasks.PrepareSandboxTask
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// Set -PwarningsAsErrors to disable warnings as errors. Useful in TeamCity where the build of the bundled plugin
+// shouldn't cause the rest of the build to fail for warnings (e.g. some APIs are deprecated)
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        allWarningsAsErrors = warningsAsErrors.toBoolean()
+        freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
     }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        allWarningsAsErrors = false
+    }
+}
+
+runIde {
+    // Match Rider's default heap size of 1.5Gb (default for runIde is 512Mb)
+    maxHeapSize = "1500m"
 }
 
 intellij {
@@ -20,182 +40,65 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "F:\\RiderSDK"
 
-    if (dependenciesDir.exists()) {
-        localPath = dependenciesDir.canonicalPath
+    if (bundledRiderSdkRoot.exists()) {
+        localPath = bundledRiderSdkRoot.canonicalPath
     } else {
-        version = "2018.2-SNAPSHOT"
+        version = "${productVersion}-SNAPSHOT"
     }
     
     intellijRepo = "https://cache-redirector.jetbrains.com/intellij-repository"
 
+    // The gradle intellij plugin has special handling for Rider to unzip the SDK into project.buildDir, because we
+    // needed to reference files from it. The ideaDependencyCachePath property allows us to put it somewhere else, and
+    // takes precedence to the Rider special handling. If we set it to an invalid path, we get the default IntelliJ SDK
+    // handling of unzipping inside the gradle cache folder. We'll prefer this to the build folder, so we don't get
+    // multiple copies if we have multiple working directories
+    // BUT... using the default gradle cache means we hit Windows path length limit. Sigh
+    if (!isWindows) {
+        ideaDependencyCachePath = "/this/is/not/a/valid/path"
+    }
+
     // Sources aren't available for Rider
     downloadSources = false
+    instrumentCode = false
+
+    plugins = [ 'rider-plugins-appender', 'CSS', 'yaml' ]
 }
 
-task validatePluginXml {
-    def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
-    assert pluginXml.isFile()
-
-    def parsed = new XmlParser().parse(pluginXml).text()
-    assert parsed.length() > 0
-
-    def rawBytes = pluginXml.bytes
-    assert rawBytes.length > 0
-
-    def invalid = rawBytes.findAll { it < 0 }
-    assert invalid.size() == 0
-
-    logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
-}
-
-def frontendSdkRoot = dependenciesDir
-// bundled build configuration on TC
-if (dependenciesDir.exists() && dependenciesDir.isDirectory()) {
-    logger.lifecycle("dependencies dir found, using as frontend SDK root")    
-}
-else {
-    def frontendSdkVersion = "2018.2-SNAPSHOT"
-    def frontendSdkDirs = []
-    def frontendSdkSearchPath = new File(repoRoot, "rider/build")
-
-    if (frontendSdkDirs.size() > 0) {
-        assert frontendSdkDirs.size() == 1
-
-        def frontendSdkSingleDir = frontendSdkDirs.first()
-        def match = frontendSdkSingleDir.name =~ /riderRD-(.+)/
-        assert match.matches()
-
-        frontendSdkVersion = match[0][1]
-    }
-
-    frontendSdkRoot = new File(frontendSdkSearchPath, "riderRD-$frontendSdkVersion")
-}
-
-ext.rdLibDirectory = new File(frontendSdkRoot, "lib/rd").canonicalFile
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-apply plugin: 'com.jetbrains.rdgen'
-
-ext.modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
-
-// TODO: Add an msbuild task for this, too?
-// Because we sometimes skip building the C# solutions (calling runIde from the C# IDE), we might
-// get into the situation where we rebuild the protocol for .kt, but not .cs
-// Maybe we should have an msbuild task to run rdgen if the input model .kt is newer than the output
-// .cs. Or make sure we don't skip the msbuild tasks if this task runs
-
-task generateRiderModel(type: RdGen) {
-    def csOutput = new File(repoRoot, "resharper/src/resharper-unity/Rider/RdUnityProtocol")
-    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
-
-    params {
-        verbose = true
-        classpath "$rdLibDirectory/rider-model.jar"
-        sources "$modelDir/rider"
-        hashFolder = 'build/rdgen/rider'
-        packages = "model.rider"
-
-        generator {
-            language = "kotlin"
-            transform = "asis"
-            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
-            namespace = "com.jetbrains.rider.model"
-            directory = "$ktOutput"
-        }
-
-        generator {
-            language = "csharp"
-            transform = "reversed"
-            root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
-            namespace = "JetBrains.Rider.Model"
-            directory = "$csOutput"
-        }
-
-    }
-}
-
-task generateEditorPluginModel(type: RdGen) {
-    params {
-        verbose = true
-        classpath "$rdLibDirectory/rider-model.jar"
-        hashFolder = "build/rdgen/editorPlugin"
-        sources "$modelDir/editorPlugin"
-        packages = "model.editorPlugin"
-    }
-}
-
-task generateModel {
-    group = 'other'
-    description = 'Generates protocol models.'
-}
-
-generateModel.dependsOn(generateRiderModel, generateEditorPluginModel)
-
-
-// When running in CI, we call `gradle buildPlugin`
-// When running interactively, we call `gradle runIde`
-// When running from the open rider solution, we call `gradle runIde -PDotNetUpToDate=true`
-//   to skip slow, no-op nuget restore and msbuild. Maybe .NET Core 2.1 will speed that up for us
-
-// buildPlugin depends on prepareSandbox, then zips up the sandbox dir
-// runIde depends on prepareSandbox, then executes IJ inside that dir
-// prepareSandbox dependsOn standard java build/jar then copies everything to the sandbox dir
-
-// When calling buildPlugin, we should build everything on the backend
-// When calling runIde, we should only build Rider and the Unity editor
-// prepareSandbox should also make sure that all of the Rider and Unity editor bits are copied
-//   (who owns this, frontend, or backend?)
-
-
-task publishCiBuildNumber {
-    doLast {
-        ci.SetBuildNumber(version)
-    }
-}
-
-task publishCiBuildData {
-    if (project.isBuildingUnderCi) {
-        dependsOn publishCiBuildNumber
-        dependsOn publishCiBackendArtifacts
-    }
-}
-
-buildPlugin.finalizedBy publishCiBuildData
-buildPlugin.dependsOn generateModel, validatePluginXml
-
-// If we're building `runIde`, only build Rider bits. We only know this once the task graph
-// has been evaluated. It's now too late to change inputs/outputs or dependencies. An alternative
-// approach would be to set the appropriate tasks `enabled` flag
-gradle.taskGraph.whenReady { taskGraph ->
-    project.shouldBuildRiderOnly = (taskGraph.hasTask(runIde) && !taskGraph.hasTask(buildPlugin)) || (taskGraph.hasTask(buildRiderOnlyPlugin) && !taskGraph.hasTask(buildFullReSharperPlugin))
-    logger.lifecycle("project.shouldBuildRiderOnly=$project.shouldBuildRiderOnly")
-}
 
 def dllFiles = [
-    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
-    "../resharper/build/resharper-unity.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.dll",
+    "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.pdb",
 ]
 
-def annotationsFrom = '../resharper/src/resharper-unity/annotations'
-def annotationsTo = 'Extensions/JetBrains.Unity/annotations'
+def debuggerDllFiles = [
+    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
+    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
+]
 
-def unityeditorplugin_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll"
-def unityeditorplugin_full_path = "$projectDir/../unity/build/JetBrains.Rider.Unity.Editor.Plugin.Full/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll"
+def unityEditorDllFiles = [
+    "../unity/build/EditorPlugin/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll",
+    "../unity/build/EditorPlugin/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Repacked.pdb",
+    "../unity/build/EditorPluginUnity56/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.dll",
+    "../unity/build/EditorPluginUnity56/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Unity56.Repacked.pdb",
+    "../unity/build/EditorPluginFull/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.dll",
+    "../unity/build/EditorPluginFull/bin/$BuildConfiguration/net35/JetBrains.Rider.Unity.Editor.Plugin.Full.Repacked.pdb",
+    "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.dll",
+    "../unity/build/EditorPluginNet46/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.Editor.Plugin.Net46.Repacked.pdb"
+]
 
-prepareSandbox {
-    // Already depends on the standard Java build/jar task
-    dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
-    dependsOn nunit // will only get run when passed RunTests
+tasks.withType(PrepareSandboxTask).configureEach {
+    // Default dependsOn includes the standard Java build/jar task
 
-    // Have dependent tasks use uptodateWhen { project.isRunningUnderCi etc. }
+    // "skipDotnet" is easier to type (and remember), but "dotNetUpToDate" is already in use
+    if (skipDotnet.equalsIgnoreCase("false") &&
+        dotNetUpToDate.equalsIgnoreCase("false")) {
+        dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
+    }
+
+    // Have dependent tasks use uptodateWhen { project.buildServer.automatedBuild etc. }
     //inputs.files(buildRiderPlugin.outputs)
     //inputs.files(buildUnityEditorPlugin.packedPath)
 
@@ -207,36 +110,59 @@ prepareSandbox {
     // Frontend:
     // Copy projectTemplates to `rider-unity/projectTemplates`
 
-    // Assert these files exist?
-
     doLast {
-        assert file(unityeditorplugin_path).exists()
-        assert file(unityeditorplugin_full_path).exists()
-
         dllFiles.forEach({ f ->
             def file = file("$f")
             if (!file.exists()) throw new RuntimeException("File $file does not exist")
         })
+
+        debuggerDllFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists()) throw new RuntimeException("File $file does not exist")
+        })
+
+        unityEditorDllFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists() && !f.endsWith("pdb")) throw new RuntimeException("File $file does not exist")
+        })
     }
 
-    from(unityeditorplugin_path, {
-        into "$intellij.pluginName/EditorPlugin"
-    })
+    dllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/dotnet" }) })
+    debuggerDllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/dotnetDebuggerWorker" }) })
+    unityEditorDllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/EditorPlugin" }) })
 
-    from(unityeditorplugin_full_path, {
-        into "$intellij.pluginName/EditorPlugin"
-    })
-
-    dllFiles.forEach({ f ->
-        def file = file(f)
-        from(file, { into "$intellij.pluginName/dotnet" })
-    })
-
-    from(annotationsFrom, { into "$intellij.pluginName/dotnet/$annotationsTo" })
-    into("$intellij.pluginName/projectTemplates") {
-        from 'projectTemplates'
-    }
+    from('../resharper/resharper-unity/src/annotations', { into "$intellij.pluginName/dotnet/Extensions/com.intellij.resharper.unity/annotations" })
+    from('projectTemplates', { into "$intellij.pluginName/projectTemplates" })
 }
+
+// It might be better to make it top-level task that is called separately, e.g. gradle buildPlugin nunit
+// (and we could get rid of RunTests then, too)
+if (RunTests.equalsIgnoreCase("true")) {
+    runNunit.shouldRunAfter(buildReSharperHostPlugin, buildUnityEditorPlugin)
+    buildReSharperHostPlugin.finalizedBy(runNunit)
+}
+
+task validatePluginXml {
+  def pluginXml = new File(repoRoot, "rider/src/main/resources/META-INF/plugin.xml")
+  assert pluginXml.isFile()
+
+  inputs.file(pluginXml)
+  outputs.file(pluginXml)
+
+  doLast {
+    def parsed = new XmlParser().parse(pluginXml).text()
+    assert parsed.length() > 0
+
+    def rawBytes = pluginXml.bytes
+    assert rawBytes.length > 0
+
+    def invalid = rawBytes.findAll { it < 0 }
+    assert invalid.size() == 0
+
+    logger.lifecycle("$pluginXml.path is valid XML and contains only US-ASCII symbols, bytes: $rawBytes.length")
+  }
+}
+prepareSandbox.dependsOn validatePluginXml
 
 test {
     useTestNG() {}

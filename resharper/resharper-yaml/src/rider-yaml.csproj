@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <AssemblyName>JetBrains.ReSharper.Plugins.Yaml</AssemblyName>
+    <RootNamespace>JetBrains.ReSharper.Plugins.Yaml</RootNamespace>
+    <LangVersion>7.2</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;JET_MODE_ASSERT;JET_MODE_REPORT_EXCEPTIONS;RIDER</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RIDER</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PsiLanguageNames Include="Yaml">
+      <Visible>False</Visible>
+    </PsiLanguageNames>
+    <CsLex Include="Psi\Parsing\Yaml.lex" />
+    <None Remove="Psi\Parsing\Yaml_lex.depends" />
+    <Compile Update="Psi\Parsing\Yaml_lex.cs">
+      <DependentUpon>Yaml.lex</DependentUpon>
+    </Compile>
+    <TokenGenerator Include="Psi\Parsing\YamlTokenType.Tokens.xml">
+      <OutputFile>Psi\Parsing\YamlTokenType.Tokens.generated.cs</OutputFile>
+    </TokenGenerator>
+    <Compile Update="Psi\Parsing\YamlTokenType.Tokens.generated.cs">
+      <DependentUpon>YamlTokenType.Tokens.xml</DependentUpon>
+    </Compile>
+    <ParserGen Include="Psi\Parsing\Yaml.psi" />
+    <ErrorsGen Include="Daemon\Errors\YamlErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Yaml.Daemon.Errors</Namespace>
+      <OutputFile>Daemon\Errors\YamlErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="Daemon\Errors\YamlErrors.generated.cs">
+      <DependentUpon>YamlErrors.xml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props')" />
+</Project>

@@ -1,0 +1,57 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(0,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(1,3)(type:NS_CHARS, text:TAG)
+        Whitespace(4,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(5,3)(type:NS_CHARS, text:!m!)
+        Whitespace(8,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(9,4)(type:NS_CHARS, text:!my-)
+        NewLine(13,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(14,3)(type:DIRECTIVES_END, text:---)
+    ChameleonDocumentBody
+      Whitespace(17,1)(type:WHITESPACE, text: ) spaces: " "
+      Comment(18,11)(type:COMMENT, text:# Bulb here) comment: "# Bulb here"
+      NewLine(29,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      IPlainScalarNode
+        INodeProperties
+          IShorthandTagProperty
+            INamedTagHandle
+              YamlTokenType+FixedTokenElement(30,1)(type:BANG, text:!)
+              YamlTokenType+GenericTokenElement(31,1)(type:NS_TAG_CHARS, text:m)
+              YamlTokenType+FixedTokenElement(32,1)(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(33,5)(type:NS_TAG_CHARS, text:light)
+        Whitespace(38,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(39,11)(type:NS_PLAIN, text:fluorescent)
+      NewLine(50,1)(type:NEW_LINE, text:\n) spaces: "\n"
+    YamlTokenType+FixedTokenElement(51,3)(type:DOCUMENT_END, text:...)
+    NewLine(54,1)(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(55,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(56,3)(type:NS_CHARS, text:TAG)
+        Whitespace(59,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(60,3)(type:NS_CHARS, text:!m!)
+        Whitespace(63,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(64,4)(type:NS_CHARS, text:!my-)
+        NewLine(68,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(69,3)(type:DIRECTIVES_END, text:---)
+    ChameleonDocumentBody
+      Whitespace(72,1)(type:WHITESPACE, text: ) spaces: " "
+      Comment(73,12)(type:COMMENT, text:# Color here) comment: "# Color here"
+      NewLine(85,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      IPlainScalarNode
+        INodeProperties
+          IShorthandTagProperty
+            INamedTagHandle
+              YamlTokenType+FixedTokenElement(86,1)(type:BANG, text:!)
+              YamlTokenType+GenericTokenElement(87,1)(type:NS_TAG_CHARS, text:m)
+              YamlTokenType+FixedTokenElement(88,1)(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(89,5)(type:NS_TAG_CHARS, text:light)
+        Whitespace(94,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(95,5)(type:NS_PLAIN, text:green)
+      NewLine(100,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

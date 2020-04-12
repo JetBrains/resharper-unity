@@ -1,0 +1,19 @@
+﻿# 7 ITEMS #
+
++ NonSerialized (in System)
+NotNull (in JetBrains.Annotations)
+DebuggerNonUserCode (in System.Diagnostics)
+NativeContainerIsAtomicWriteOnly (in Unity.Collections.LowLevel.Unsafe)
+NativeContainerIsReadOnly (in Unity.Collections.LowLevel.Unsafe)
+NativeContainerSupportsDeallocateOnJobCompletion (in Unity.Collections.LowLevel.Unsafe)
+NativeSetClassTypeToNullOnSchedule (in Unity.Collections.LowLevel.Unsafe)
+# AUTOMATIC #
+# 7 ITEMS #
+
++ NonSerialized (in System)
+NotNull (in JetBrains.Annotations)
+DebuggerNonUserCode (in System.Diagnostics)
+NativeContainerIsAtomicWriteOnly (in Unity.Collections.LowLevel.Unsafe)
+NativeContainerIsReadOnly (in Unity.Collections.LowLevel.Unsafe)
+NativeContainerSupportsDeallocateOnJobCompletion (in Unity.Collections.LowLevel.Unsafe)
+NativeSetClassTypeToNullOnSchedule (in Unity.Collections.LowLevel.Unsafe)

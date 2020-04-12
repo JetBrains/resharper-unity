@@ -1,0 +1,12 @@
+<assembly name="UnityEngine.CoreModule">
+
+  <!-- Attribute usage. Grouped by namespace -->
+
+  <!-- N:UnityEngine -->
+  <member name="T:UnityEngine.CustomGridBrushAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.GridBrushBase</argument>
+    </attribute>
+  </member>
+</assembly>

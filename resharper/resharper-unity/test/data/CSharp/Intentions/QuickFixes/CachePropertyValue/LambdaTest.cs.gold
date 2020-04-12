@@ -1,0 +1,16 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class LabmdaTest
+    {
+        public void Test(Transform t)
+        {
+            var lambda = () =>
+            {
+              Vector3 position;
+              return (position = t.position) + position + posi{caret}tion;
+            };
+        }
+    }
+}

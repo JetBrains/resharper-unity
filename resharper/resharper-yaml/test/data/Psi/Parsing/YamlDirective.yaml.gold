@@ -1,0 +1,22 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(0,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(1,4)(type:NS_CHARS, text:YAML)
+        Whitespace(5,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(6,3)(type:NS_CHARS, text:1.3)
+        Whitespace(9,1)(type:WHITESPACE, text: ) spaces: " "
+        Comment(10,17)(type:COMMENT, text:# Attempt parsing) comment: "# Attempt parsing"
+        NewLine(27,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(28,11)(type:INDENT, text:           )
+        Comment(39,16)(type:COMMENT, text:# with a warning) comment: "# with a warning"
+        NewLine(55,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(56,3)(type:DIRECTIVES_END, text:---)
+    ChameleonDocumentBody
+      NewLine(59,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      IDoubleQuotedScalarNode
+        YamlTokenType+GenericTokenElement(60,5)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
+      NewLine(65,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

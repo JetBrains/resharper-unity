@@ -1,0 +1,142 @@
+﻿using UnityEngine;
+
+// Note that GameObject.AddComponent(string) is obsolete, and flagged as an error in Unity 2018.2
+
+public class Test
+{
+    public void Method(GameObject go)
+    {
+        go.AddComponent("||(0)");
+        go.AddComponent("|UnknownType|(1)");
+        go.AddComponent("|INotAClass|(2)");
+        go.AddComponent("|   MonoBehaviourInGlobalNamespace|(3)");
+        go.AddComponent("|MonoBehaviourInGlobalNamespace   |(4)");
+        go.AddComponent("|InvalidNamespace|(5).|UnknownType|(6)");
+        go.AddComponent("|Other|(7).|InvalidNamespace|(8).|UnknownType|(9)");
+        go.AddComponent("|WrongBaseType|(10)");
+        go.AddComponent("|WrongComponentBaseType|(11)");
+        go.AddComponent("|MonoBehaviourWithTypeParameter|(12)");
+        go.AddComponent("|MonoBehaviourInGlobalNamespace|(13)");
+        go.AddComponent("|MonoBehaviourInOtherNamespace|(14)");
+        go.AddComponent("|MonoBehaviourInNestedNamespace|(15)");
+        go.AddComponent("|Other|(16).|MonoBehaviourInOtherNamespace|(17)");
+        go.AddComponent("|Nested1|(18).|Nested2|(19).|Nested3|(20).|Nested4|(21).|MonoBehaviourInNestedNamespace|(22)");
+        go.AddComponent("|Other|(23).|MonoBehaviourInOtherNamespace|(24).|InvalidTrailingType|(25)");
+
+        go.AddComponent("|CrashReporting|(26)");  // Multiple candidates
+        go.AddComponent("|Grid|(27)");            // Multiple candidates
+        go.AddComponent("|Caching|(28)");
+        go.AddComponent("|UnityEngine|(29).|Caching|(30)");
+        go.AddComponent("|HingeJoint|(31)");
+
+        // TODO: What about trailing dots?
+        go.AddComponent("|Other|(32).|MonoBehaviourInOtherNamespace|(33).||(34)");
+
+        new GameObject("Fake").AddComponent("|Grid|(35)");
+    }
+}
+
+public class WrongBaseType
+{
+}
+
+public class WrongComponentBaseType : Component
+{
+}
+
+public interface INotAClass
+{
+}
+
+public class MonoBehaviourInGlobalNamespace : MonoBehaviour
+{
+}
+
+// This isn't a legal construct in Unity
+public class MonoBehaviourWithTypeParameter<T> : MonoBehaviour
+{
+}
+
+namespace Other
+{
+    public class MonoBehaviourInOtherNamespace : MonoBehaviour
+    {
+    }
+}
+
+namespace Nested1
+{
+    namespace Nested2
+    {
+        namespace Nested3
+        {
+            namespace Nested4
+            {
+                public class MonoBehaviourInNestedNamespace : MonoBehaviour
+                {
+                }
+            }
+        }
+    }
+}
+
+public class Grid : MonoBehaviour
+{
+}
+
+namespace Other
+{
+    public class Grid : MonoBehaviour
+    {
+    }
+}
+
+------------------------------------------------
+0: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+1: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+2: result=TYPE_EXPECTED declaredElem=INotAClass
+3: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+4: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+5: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+6: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+7: result=OK declaredElem=Other
+8: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+9: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+10: result=EXPECTED_MONO_BEHAVIOUR declaredElem=WrongBaseType
+11: result=EXPECTED_MONO_BEHAVIOUR declaredElem=WrongComponentBaseType
+12: result=INCORRECT_TYPE_PARAMETER_NUMBER declaredElem=MonoBehaviourWithTypeParameter<T>
+13: result=OK declaredElem=MonoBehaviourInGlobalNamespace
+14: result=OK declaredElem=Other.MonoBehaviourInOtherNamespace
+15: result=OK declaredElem=Nested1.Nested2.Nested3.Nested4.MonoBehaviourInNestedNamespace
+16: result=OK declaredElem=Other
+17: result=OK declaredElem=Other.MonoBehaviourInOtherNamespace
+18: result=OK declaredElem=Nested1
+19: result=OK declaredElem=Nested1.Nested2
+20: result=OK declaredElem=Nested1.Nested2.Nested3
+21: result=OK declaredElem=Nested1.Nested2.Nested3.Nested4
+22: result=OK declaredElem=Nested1.Nested2.Nested3.Nested4.MonoBehaviourInNestedNamespace
+23: result=OK declaredElem=Other
+24: result=OK declaredElem=Other.MonoBehaviourInOtherNamespace
+25: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+26: result=EXPECTED_COMPONENT declaredElem=null
+Candidates:
+  UnityEditor.CrashReporting
+  UnityEditor.CrashReporting.CrashReporting
+  UnityEngine.Windows.CrashReporting
+27: result=MULTIPLE_CANDIDATES declaredElem=null
+Candidates:
+  Grid
+  Other.Grid
+  UnityEngine.Grid
+28: result=EXPECTED_COMPONENT declaredElem=UnityEngine.Caching
+29: result=OK declaredElem=UnityEngine
+30: result=EXPECTED_COMPONENT declaredElem=UnityEngine.Caching
+31: result=OK declaredElem=UnityEngine.HingeJoint
+32: result=OK declaredElem=Other
+33: result=OK declaredElem=Other.MonoBehaviourInOtherNamespace
+34: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+35: result=MULTIPLE_CANDIDATES declaredElem=null
+Candidates:
+  Grid
+  Other.Grid
+  UnityEngine.Grid

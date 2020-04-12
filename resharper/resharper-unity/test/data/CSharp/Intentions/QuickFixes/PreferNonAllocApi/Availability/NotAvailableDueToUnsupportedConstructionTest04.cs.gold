@@ -1,0 +1,17 @@
+﻿using UnityEngine;
+using System;
+
+namespace DefaultNamespace
+{
+    public class NotAvailableDueToUnsupportedConstructionTest04
+    {
+        public void SomeMethod()
+        {
+            int size = Physics.|OverlapBox|(0)(Vector3.zero, new Vector3(1, 1, 1), Quaternion.identity, 0, QueryTriggerInteraction.Collide).Length, b = size;
+            Console.WriteLine(size + b);
+        }
+    }
+}
+------------------------------------------------
+0: Use non-allocating method 'OverlapBoxNonAlloc'
+NO QUICKFIXES

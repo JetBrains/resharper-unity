@@ -1,0 +1,731 @@
+﻿# 363 ITEMS #
+
++ ADBannerView
++ ADInterstitialAd
+AI
+Accessibility
++ AddComponentMenu
+Advertisements
+Analytics
++ AnchoredJoint2D
+Android
++ AndroidInput
++ AndroidJNI
++ AndroidJNIHelper
++ AndroidJavaClass
++ AndroidJavaException
++ AndroidJavaObject
++ AndroidJavaProxy
++ Animation
++ AnimationClip
++ AnimationClipPair
++ AnimationCurve
++ AnimationEvent
++ AnimationState
+Animations
++ Animator
++ AnimatorControllerParameter
++ AnimatorOverrideController
++ AnimatorUtility
+Apple
++ Application
++ AreaEffector2D
++ AssemblyIsEditorAssembly
+Assertions
++ AssetBundle
++ AssetBundleCreateRequest
++ AssetBundleManifest
++ AssetBundleRecompressOperation
++ AssetBundleRequest
++ AsyncOperation
+Audio
++ AudioBehaviour
++ AudioChorusFilter
++ AudioClip
++ AudioDistortionFilter
++ AudioEchoFilter
++ AudioHighPassFilter
++ AudioListener
++ AudioLowPassFilter
++ AudioRenderer
++ AudioReverbFilter
++ AudioReverbZone
++ AudioSettings
++ AudioSource
++ Avatar
++ AvatarBuilder
++ AvatarMask
++ BeforeRenderOrderAttribute
++ Behaviour
++ BillboardAsset
++ BillboardRenderer
+Bindings
++ BitStream
++ BoxCollider
++ BoxCollider2D
++ BuoyancyEffector2D
++ Caching
++ Camera
++ Canvas
++ CanvasGroup
++ CanvasRenderer
++ CapsuleCollider
++ CapsuleCollider2D
++ CharacterController
++ CharacterJoint
++ CircleCollider2D
++ Cloth
++ ClusterInput
++ ClusterNetwork
++ Collider
++ Collider2D
++ Collision
++ Collision2D
++ ColorUsageAttribute
++ ColorUtility
++ Compass
++ Component
++ CompositeCollider2D
++ ComputeBuffer
++ ComputeShader
++ ConfigurableJoint
+Connect
++ ConstantForce
++ ConstantForce2D
++ ContextMenu
++ ContextMenuItemAttribute
++ ControllerColliderHit
++ Coroutine
++ CrashReport
+CrashReportHandler
++ CreateAssetMenuAttribute
++ Cubemap
++ CubemapArray
++ CullingGroup
++ Cursor
++ CustomGridBrushAttribute
++ CustomRenderTexture
++ CustomYieldInstruction
++ Debug
++ DefaultExecutionOrder
++ DelayedAttribute
++ DetailPrototype
+Diagnostics
++ DisallowMultipleComponent
++ Display
++ DistanceJoint2D
++ DynamicGI
++ EdgeCollider2D
++ Effector2D
++ Event
++ EventProvider
+Events
++ ExcludeFromObjectFactoryAttribute
++ ExcludeFromPresetAttribute
++ ExecuteAlways
++ ExecuteInEditMode
++ ExitGUIException
+Experimental
++ FixedJoint
++ FixedJoint2D
++ Flare
++ FlareLayer
++ Font
++ FrameTimingManager
++ FrictionJoint2D
++ GL
++ GUI
++ GUIContent
++ GUIElement
++ GUILayer
++ GUILayout
++ GUILayoutOption
++ GUILayoutUtility
++ GUISettings
++ GUISkin
++ GUIStyle
++ GUIStyleState
++ GUITargetAttribute
++ GUIText
++ GUITexture
++ GUIUtility
++ GameObject
++ GeometryUtility
++ Gizmos
++ Gradient
++ GradientUsageAttribute
++ Graphics
++ Grid
++ GridBrushBase
++ GridLayout
++ Gyroscope
++ Handheld
++ HashUnsafeUtilities
++ HashUtilities
++ HeaderAttribute
++ HelpURLAttribute
++ HideInInspector
++ HingeJoint
++ HingeJoint2D
++ HostData
++ HumanPoseHandler
++ HumanTrait
++ ImageConversion
++ ImageEffectAfterScale
++ ImageEffectAllowedInSceneView
++ ImageEffectOpaque
++ ImageEffectTransformsToLDR
++ Input
+Internal
+Jobs
++ Joint
++ Joint2D
++ JsonUtility
++ LODGroup
++ LensFlare
++ Light
++ LightProbeGroup
++ LightProbeProxyVolume
++ LightProbes
++ LightmapData
++ LightmapSettings
++ LineRenderer
++ LineUtility
++ LocalNotification
++ LocalizationAsset
++ LocationService
++ Logger
++ MasterServer
++ Material
++ MaterialPropertyBlock
++ Mesh
++ MeshCollider
++ MeshFilter
++ MeshRenderer
++ Microphone
++ MinAttribute
++ MissingComponentException
++ MissingReferenceException
++ MonoBehaviour
++ Motion
++ MovieTexture
++ MultilineAttribute
++ Network
++ NetworkView
+Networking
++ NotificationServices
++ Object
++ OcclusionArea
++ OcclusionPortal
++ ParticlePhysicsExtensions
++ ParticleSystem
++ ParticleSystemForceField
++ ParticleSystemRenderer
++ PhysicMaterial
++ Physics
++ Physics2D
++ PhysicsMaterial2D
++ PhysicsSceneExtensions
++ PhysicsSceneExtensions2D
++ PhysicsUpdateBehaviour2D
++ Ping
++ PlatformEffector2D
+Playables
++ PlayerPrefs
++ PlayerPrefsException
++ PointEffector2D
++ PolygonCollider2D
++ PreferBinarySerialization
++ ProceduralMaterial
++ ProceduralPropertyDescription
++ ProceduralTexture
+Profiling
++ Projector
++ PropertyAttribute
++ QualitySettings
++ RPC
++ Random
++ RangeAttribute
++ RectOffset
++ RectTransform
++ RectTransformUtility
++ ReflectionProbe
++ RelativeJoint2D
++ RemoteConfigSettings
++ RemoteNotification
++ RemoteSettings
++ RenderSettings
++ RenderTexture
++ Renderer
++ RendererExtensions
+Rendering
++ RequireComponent
++ ResourceRequest
++ Resources
++ Rigidbody
++ Rigidbody2D
++ RuntimeAnimatorController
++ RuntimeInitializeOnLoadMethodAttribute
++ ScalableBufferManager
+SceneManagement
++ Screen
++ ScreenCapture
++ ScriptableObject
+Scripting
++ Security
++ SelectionBaseAttribute
+Serialization
++ SerializeField
++ SerializePrivateVariables
++ Shader
++ ShaderVariantCollection
++ SharedBetweenAnimatorsAttribute
++ SkinnedMeshRenderer
++ Skybox
++ SleepTimeout
++ SliderJoint2D
++ Social
+SocialPlatforms
++ SpaceAttribute
++ SparseTexture
++ SphereCollider
++ SplatPrototype
++ SpringJoint
++ SpringJoint2D
++ Sprite
++ SpriteMask
++ SpriteRenderer
+Sprites
++ StackTraceUtility
++ StateMachineBehaviour
++ StaticBatchingUtility
++ StreamingController
+StyleSheets
++ SurfaceEffector2D
++ SystemInfo
++ TargetJoint2D
++ Terrain
++ TerrainCollider
++ TerrainData
++ TerrainExtensions
++ TerrainLayer
++ TextAreaAttribute
++ TextAsset
+TextCore
++ TextEditor
++ TextGenerator
++ TextMesh
++ Texture
++ Texture2D
++ Texture2DArray
++ Texture3D
+Tilemaps
++ Time
++ TooltipAttribute
++ TouchScreenKeyboard
++ TrackedReference
++ TrailRenderer
++ Transform
++ Tree
++ TreePrototype
++ Types
+U2D
+UIR
++ UISystemProfilerApi
++ UnassignedReferenceException
++ UnityAPICompatibilityVersionAttribute
++ UnityEventQueueSystem
++ UnityException
+VR
+Video
+WSA
++ WWW
++ WWWAudioExtensions
++ WWWForm
++ WaitForEndOfFrame
++ WaitForFixedUpdate
++ WaitForSeconds
++ WaitForSecondsRealtime
++ WaitUntil
++ WaitWhile
++ WebCamTexture
++ WheelCollider
++ WheelJoint2D
++ WindZone
+Windows
+XR
++ YieldInstruction
+Yoga
+iOS
++ iPhone
++ iPhoneInput
++ iPhoneKeyboard
++ iPhoneSettings
++ iPhoneUtils
+tvOS
+# AUTOMATIC #
+# 363 ITEMS #
+
++ ADBannerView
++ ADInterstitialAd
+AI
+Accessibility
++ AddComponentMenu
+Advertisements
+Analytics
++ AnchoredJoint2D
+Android
++ AndroidInput
++ AndroidJNI
++ AndroidJNIHelper
++ AndroidJavaClass
++ AndroidJavaException
++ AndroidJavaObject
++ AndroidJavaProxy
++ Animation
++ AnimationClip
++ AnimationClipPair
++ AnimationCurve
++ AnimationEvent
++ AnimationState
+Animations
++ Animator
++ AnimatorControllerParameter
++ AnimatorOverrideController
++ AnimatorUtility
+Apple
++ Application
++ AreaEffector2D
++ AssemblyIsEditorAssembly
+Assertions
++ AssetBundle
++ AssetBundleCreateRequest
++ AssetBundleManifest
++ AssetBundleRecompressOperation
++ AssetBundleRequest
++ AsyncOperation
+Audio
++ AudioBehaviour
++ AudioChorusFilter
++ AudioClip
++ AudioDistortionFilter
++ AudioEchoFilter
++ AudioHighPassFilter
++ AudioListener
++ AudioLowPassFilter
++ AudioRenderer
++ AudioReverbFilter
++ AudioReverbZone
++ AudioSettings
++ AudioSource
++ Avatar
++ AvatarBuilder
++ AvatarMask
++ BeforeRenderOrderAttribute
++ Behaviour
++ BillboardAsset
++ BillboardRenderer
+Bindings
++ BitStream
++ BoxCollider
++ BoxCollider2D
++ BuoyancyEffector2D
++ Caching
++ Camera
++ Canvas
++ CanvasGroup
++ CanvasRenderer
++ CapsuleCollider
++ CapsuleCollider2D
++ CharacterController
++ CharacterJoint
++ CircleCollider2D
++ Cloth
++ ClusterInput
++ ClusterNetwork
++ Collider
++ Collider2D
++ Collision
++ Collision2D
++ ColorUsageAttribute
++ ColorUtility
++ Compass
++ Component
++ CompositeCollider2D
++ ComputeBuffer
++ ComputeShader
++ ConfigurableJoint
+Connect
++ ConstantForce
++ ConstantForce2D
++ ContextMenu
++ ContextMenuItemAttribute
++ ControllerColliderHit
++ Coroutine
++ CrashReport
+CrashReportHandler
++ CreateAssetMenuAttribute
++ Cubemap
++ CubemapArray
++ CullingGroup
++ Cursor
++ CustomGridBrushAttribute
++ CustomRenderTexture
++ CustomYieldInstruction
++ Debug
++ DefaultExecutionOrder
++ DelayedAttribute
++ DetailPrototype
+Diagnostics
++ DisallowMultipleComponent
++ Display
++ DistanceJoint2D
++ DynamicGI
++ EdgeCollider2D
++ Effector2D
++ Event
++ EventProvider
+Events
++ ExcludeFromObjectFactoryAttribute
++ ExcludeFromPresetAttribute
++ ExecuteAlways
++ ExecuteInEditMode
++ ExitGUIException
+Experimental
++ FixedJoint
++ FixedJoint2D
++ Flare
++ FlareLayer
++ Font
++ FrameTimingManager
++ FrictionJoint2D
++ GL
++ GUI
++ GUIContent
++ GUIElement
++ GUILayer
++ GUILayout
++ GUILayoutOption
++ GUILayoutUtility
++ GUISettings
++ GUISkin
++ GUIStyle
++ GUIStyleState
++ GUITargetAttribute
++ GUIText
++ GUITexture
++ GUIUtility
++ GameObject
++ GeometryUtility
++ Gizmos
++ Gradient
++ GradientUsageAttribute
++ Graphics
++ Grid
++ GridBrushBase
++ GridLayout
++ Gyroscope
++ Handheld
++ HashUnsafeUtilities
++ HashUtilities
++ HeaderAttribute
++ HelpURLAttribute
++ HideInInspector
++ HingeJoint
++ HingeJoint2D
++ HostData
++ HumanPoseHandler
++ HumanTrait
++ ImageConversion
++ ImageEffectAfterScale
++ ImageEffectAllowedInSceneView
++ ImageEffectOpaque
++ ImageEffectTransformsToLDR
++ Input
+Internal
+Jobs
++ Joint
++ Joint2D
++ JsonUtility
++ LODGroup
++ LensFlare
++ Light
++ LightProbeGroup
++ LightProbeProxyVolume
++ LightProbes
++ LightmapData
++ LightmapSettings
++ LineRenderer
++ LineUtility
++ LocalNotification
++ LocalizationAsset
++ LocationService
++ Logger
++ MasterServer
++ Material
++ MaterialPropertyBlock
++ Mesh
++ MeshCollider
++ MeshFilter
++ MeshRenderer
++ Microphone
++ MinAttribute
++ MissingComponentException
++ MissingReferenceException
++ MonoBehaviour
++ Motion
++ MovieTexture
++ MultilineAttribute
++ Network
++ NetworkView
+Networking
++ NotificationServices
++ Object
++ OcclusionArea
++ OcclusionPortal
++ ParticlePhysicsExtensions
++ ParticleSystem
++ ParticleSystemForceField
++ ParticleSystemRenderer
++ PhysicMaterial
++ Physics
++ Physics2D
++ PhysicsMaterial2D
++ PhysicsSceneExtensions
++ PhysicsSceneExtensions2D
++ PhysicsUpdateBehaviour2D
++ Ping
++ PlatformEffector2D
+Playables
++ PlayerPrefs
++ PlayerPrefsException
++ PointEffector2D
++ PolygonCollider2D
++ PreferBinarySerialization
++ ProceduralMaterial
++ ProceduralPropertyDescription
++ ProceduralTexture
+Profiling
++ Projector
++ PropertyAttribute
++ QualitySettings
++ RPC
++ Random
++ RangeAttribute
++ RectOffset
++ RectTransform
++ RectTransformUtility
++ ReflectionProbe
++ RelativeJoint2D
++ RemoteConfigSettings
++ RemoteNotification
++ RemoteSettings
++ RenderSettings
++ RenderTexture
++ Renderer
++ RendererExtensions
+Rendering
++ RequireComponent
++ ResourceRequest
++ Resources
++ Rigidbody
++ Rigidbody2D
++ RuntimeAnimatorController
++ RuntimeInitializeOnLoadMethodAttribute
++ ScalableBufferManager
+SceneManagement
++ Screen
++ ScreenCapture
++ ScriptableObject
+Scripting
++ Security
++ SelectionBaseAttribute
+Serialization
++ SerializeField
++ SerializePrivateVariables
++ Shader
++ ShaderVariantCollection
++ SharedBetweenAnimatorsAttribute
++ SkinnedMeshRenderer
++ Skybox
++ SleepTimeout
++ SliderJoint2D
++ Social
+SocialPlatforms
++ SpaceAttribute
++ SparseTexture
++ SphereCollider
++ SplatPrototype
++ SpringJoint
++ SpringJoint2D
++ Sprite
++ SpriteMask
++ SpriteRenderer
+Sprites
++ StackTraceUtility
++ StateMachineBehaviour
++ StaticBatchingUtility
++ StreamingController
+StyleSheets
++ SurfaceEffector2D
++ SystemInfo
++ TargetJoint2D
++ Terrain
++ TerrainCollider
++ TerrainData
++ TerrainExtensions
++ TerrainLayer
++ TextAreaAttribute
++ TextAsset
+TextCore
++ TextEditor
++ TextGenerator
++ TextMesh
++ Texture
++ Texture2D
++ Texture2DArray
++ Texture3D
+Tilemaps
++ Time
++ TooltipAttribute
++ TouchScreenKeyboard
++ TrackedReference
++ TrailRenderer
++ Transform
++ Tree
++ TreePrototype
++ Types
+U2D
+UIR
++ UISystemProfilerApi
++ UnassignedReferenceException
++ UnityAPICompatibilityVersionAttribute
++ UnityEventQueueSystem
++ UnityException
+VR
+Video
+WSA
++ WWW
++ WWWAudioExtensions
++ WWWForm
++ WaitForEndOfFrame
++ WaitForFixedUpdate
++ WaitForSeconds
++ WaitForSecondsRealtime
++ WaitUntil
++ WaitWhile
++ WebCamTexture
++ WheelCollider
++ WheelJoint2D
++ WindZone
+Windows
+XR
++ YieldInstruction
+Yoga
+iOS
++ iPhone
++ iPhoneInput
++ iPhoneKeyboard
++ iPhoneSettings
++ iPhoneUtils
+tvOS

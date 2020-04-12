@@ -1,0 +1,12 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class Test02 : MonoBehaviour
+    {
+        public void Update()
+        {
+            var z = Vector2.down * (Vector2.down * {caret}Vector2.down) * (7f * 10f * 5f * 6f);
+        }
+    }
+}

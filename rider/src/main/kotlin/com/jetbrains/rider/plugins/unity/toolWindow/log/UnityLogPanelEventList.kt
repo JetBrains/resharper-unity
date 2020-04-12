@@ -1,24 +1,28 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
+import com.intellij.application.subscribe
 import com.intellij.ide.CopyProvider
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.editor.colors.EditorColorsListener
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.pom.Navigatable
 import com.intellij.ui.TreeUIHelper
 import com.intellij.ui.components.JBList
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.*
-import com.jetbrains.rider.util.first
-import com.jetbrains.rider.util.idea.toVirtualFile
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rdclient.util.idea.toVirtualFile
+import java.awt.Font
 import java.awt.datatransfer.StringSelection
 import java.io.File
 import javax.swing.DefaultListModel
 import javax.swing.ListSelectionModel
 
-class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
+class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyList()), DataProvider, CopyProvider {
     val riderModel: DefaultListModel<LogPanelItem>
         get() = model as DefaultListModel<LogPanelItem>
 
@@ -27,36 +31,46 @@ class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, 
         selectionMode = ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
         emptyText.text = "Log is empty"
         TreeUIHelper.getInstance().installListSpeedSearch(this)
+
+        EditorColorsManager.TOPIC.subscribe(lifetime.createNestedDisposable(), EditorColorsListener { updateFont() })
+        updateFont()
+    }
+
+    private fun updateFont() {
+        val sc = EditorColorsManager.getInstance().globalScheme
+        font = Font(sc.consoleFontName, Font.PLAIN, sc.consoleFontSize)
     }
 
     fun getNavigatableForSelected(list: UnityLogPanelEventList, project: Project): Navigatable? {
-        val node = list.selectedValue
-        if (node!=null && (node.stackTrace=="")) {
-            var index = node.message.indexOf("(");
-            if (index<0)
-                return null
-            var path = node.message.substring(0, index)
-            var regex = Regex("^\\(\\d{1,}\\,\\d{1,}\\)")
-            var res = regex.find(node.message.substring(index), 0)
-            if (res==null)
-                return null
-            var coordinates = res.value.substring(1, res.value.length-1).split(",")
-            var line = (coordinates[0])
-            var col = coordinates[1]
+        val node = list.selectedValue ?: return null
 
-            val file = File(project.baseDir.path, path)
-            if (!file.exists())
-                return null
-            var virtualFile = file.toVirtualFile()
-            if (virtualFile != null)
-                return OpenFileDescriptor(project, virtualFile , line.toInt()-1, col.toInt()-1, true)
-            else
-                return null
+        val match: MatchResult?
+        var col = 0
+        if (node.stackTrace=="") {
+            val regex = Regex("""(?<path>^.*(?=\())\((?<line>\d+(?=,)),(?<col>\d+(?=\)))""")
+            match = regex.find(node.message) ?: return null
+            col =  (match.groups["col"]?.value?.toInt() ?: return null)-1
         }
-        return null;
+        else {
+            // Use first (at Assets/NewBehaviourScript.cs:16) in stacktrace
+            val regex = Regex("""\(at (?<path>.*(?=:)):(?<line>\d+(?=\)))""")
+            match = regex.find(node.stackTrace) ?: return null
+        }
+
+        val path = match.groups["path"]?.value ?: return null
+        val line = (match.groups["line"]?.value?.toInt() ?: return null) - 1
+
+        val file = File(project.basePath, path)
+        if (!file.exists())
+            return null
+        val virtualFile = file.toVirtualFile()
+        return if (virtualFile != null)
+            OpenFileDescriptor(project, virtualFile, line, col, true)
+        else
+            null
     }
 
-    override fun getData(dataId: String?): Any? = when {
+    override fun getData(dataId: String): Any? = when {
         PlatformDataKeys.COPY_PROVIDER.`is`(dataId) -> this
         else -> null
     }
@@ -75,10 +89,10 @@ class UnityLogPanelEventList : JBList<LogPanelItem>(emptyList()), DataProvider, 
     private fun LogPanelItem.getStackTraceForCopy() = stackTrace
         .split('\r', '\n')
         .filter { it.isNotEmpty() }
-        .joinToString("\n") { "    " + it }
+        .joinToString("\n") { "    $it" }
 
     private fun LogPanelItem.getTextForCopy(): String {
         val header = "[$type $mode] $message"
-        return if (stackTrace.isBlank()) header else header + "\n" + getStackTraceForCopy()
+        return if (stackTrace.trim().isEmpty()) header else header + "\n" + getStackTraceForCopy()
     }
 }

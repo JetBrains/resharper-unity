@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Test05
+{
+    public void Method(GameObject o)
+    {
+        o.GetComponent(|"Transform"|(0));
+    }
+}
+
+------------------------------------------------
+0: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'GetComponent<UnityEngine.Transform>()'

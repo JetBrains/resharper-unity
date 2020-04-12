@@ -1,0 +1,21 @@
+﻿using UnityEngine;
+
+public class Test
+{
+    public void Method()
+    {
+        var so = ScriptableObject.CreateInstance("|WrongBaseType|(0)");
+        so = ScriptableObject.CreateInstance("MyScriptableObject");
+    }
+}
+
+public class WrongBaseType
+{
+}
+
+public class MyScriptableObject : ScriptableObject
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Expected type derived from 'UnityEngine.ScriptableObject'

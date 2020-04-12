@@ -1,0 +1,42 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IFlowMappingNode
+        YamlTokenType+FixedTokenElement(0,1)(type:LBRACE, text:{)
+        NewLine(1,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(2,2)(type:INDENT, text:  )
+        IFlowMapEntry
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(4,3)(type:NS_PLAIN, text:foo)
+          Whitespace(7,1)(type:WHITESPACE, text: ) spaces: " "
+          YamlTokenType+FixedTokenElement(8,1)(type:COLON, text::)
+          Whitespace(9,1)(type:WHITESPACE, text: ) spaces: " "
+          IEmptyScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                ISecondaryTagHandle
+                  YamlTokenType+FixedTokenElement(10,1)(type:BANG, text:!)
+                  YamlTokenType+FixedTokenElement(11,1)(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(12,3)(type:NS_TAG_CHARS, text:str)
+        YamlTokenType+FixedTokenElement(15,1)(type:COMMA, text:,)
+        NewLine(16,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(17,2)(type:INDENT, text:  )
+        IFlowMapEntry
+          IEmptyScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                ISecondaryTagHandle
+                  YamlTokenType+FixedTokenElement(19,1)(type:BANG, text:!)
+                  YamlTokenType+FixedTokenElement(20,1)(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(21,3)(type:NS_TAG_CHARS, text:str)
+            Whitespace(24,1)(type:WHITESPACE, text: ) spaces: " "
+          YamlTokenType+FixedTokenElement(25,1)(type:COLON, text::)
+          Whitespace(26,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(27,3)(type:NS_PLAIN, text:bar)
+        YamlTokenType+FixedTokenElement(30,1)(type:COMMA, text:,)
+        NewLine(31,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+FixedTokenElement(32,1)(type:RBRACE, text:})
+      NewLine(33,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

@@ -1,0 +1,31 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockMappingNode
+        IBlockMappingEntry
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(0,20)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"implicit block key")
+          Whitespace(20,1)(type:WHITESPACE, text: ) spaces: " "
+          YamlTokenType+FixedTokenElement(21,1)(type:COLON, text::)
+          IContentNode
+            Whitespace(22,1)(type:WHITESPACE, text: ) spaces: " "
+            IFlowSequenceNode
+              YamlTokenType+FixedTokenElement(23,1)(type:LBRACK, text:[)
+              NewLine(24,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              YamlTokenType+GenericTokenElement(25,2)(type:INDENT, text:  )
+              IFlowSequenceEntry
+                IFlowPair
+                  IDoubleQuotedScalarNode
+                    YamlTokenType+GenericTokenElement(27,19)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"implicit flow key")
+                  Whitespace(46,1)(type:WHITESPACE, text: ) spaces: " "
+                  YamlTokenType+FixedTokenElement(47,1)(type:COLON, text::)
+                  Whitespace(48,1)(type:WHITESPACE, text: ) spaces: " "
+                  IPlainScalarNode
+                    YamlTokenType+GenericTokenElement(49,5)(type:NS_PLAIN, text:value)
+              YamlTokenType+FixedTokenElement(54,1)(type:COMMA, text:,)
+              NewLine(55,1)(type:NEW_LINE, text:\n) spaces: "\n"
+              YamlTokenType+GenericTokenElement(56,1)(type:INDENT, text: )
+              YamlTokenType+FixedTokenElement(57,1)(type:RBRACK, text:])
+            NewLine(58,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

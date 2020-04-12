@@ -1,0 +1,40 @@
+﻿using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
+
+public class A : IPreprocessBuildWithReport
+{
+    public int callbackOrder { get; }
+    public int ||RandomProperty|(0)|(1) { get; }
+    
+	public virtual void OnPreprocessBuild(BuildReport report)
+    {
+        throw new System.NotImplementedException();
+    }
+	
+	public void |RandomMethod|(2)()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class B : A, IPostprocessBuildWithReport
+{
+    public void OnPostprocessBuild(BuildReport report)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class C : A
+{
+	public override void OnPreprocessBuild(BuildReport report)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Get-only auto-property 'RandomProperty' is never assigned
+(1): ReSharper Dead Code: Property 'RandomProperty' is never used
+(2): ReSharper Dead Code: Method 'RandomMethod' is never used
+

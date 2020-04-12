@@ -1,0 +1,30 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(0,1)(type:MINUS, text:-)
+          Whitespace(1,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            INodeProperties
+              IVerbatimTagProperty
+                YamlTokenType+FixedTokenElement(2,2)(type:BANG_LT, text:!<)
+                YamlTokenType+GenericTokenElement(4,1)(type:NS_URI_CHARS, text:!)
+                YamlTokenType+FixedTokenElement(5,1)(type:GT, text:>)
+            Whitespace(6,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(7,3)(type:NS_PLAIN, text:foo)
+          NewLine(10,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(11,1)(type:MINUS, text:-)
+          Whitespace(12,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            INodeProperties
+              IVerbatimTagProperty
+                YamlTokenType+FixedTokenElement(13,2)(type:BANG_LT, text:!<)
+                YamlTokenType+GenericTokenElement(15,3)(type:NS_URI_CHARS, text:$:?)
+                YamlTokenType+FixedTokenElement(18,1)(type:GT, text:>)
+            Whitespace(19,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(20,3)(type:NS_PLAIN, text:bar)
+          NewLine(23,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

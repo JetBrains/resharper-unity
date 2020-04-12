@@ -1,0 +1,447 @@
+<assembly name="UnityEngine.CoreModule">
+
+  <!-- Nullness -->
+  <member name="P:UnityEngine.Component.transform">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:UnityEngine.Component.gameObject">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:UnityEngine.GameObject.transform">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+  <member name="P:UnityEngine.Object.name">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+
+
+  <!-- UnityEngine.Object -->
+  <!-- Tell R#'s analysis engine to ignore our custom equality members. See RSRP-468462 -->
+  <member name="M:UnityEngine.Object.op_Equality(UnityEngine.Object,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>x: null, y: null =&gt; true</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Object.op_Inequality(UnityEngine.Object,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>x: null, y: null =&gt; false</argument>
+    </attribute>
+  </member>
+
+
+  <!-- UnityEngine.Camera -->
+  <member name="P:UnityEngine.Camera.main">
+    <!-- https://docs.unity3d.com/ScriptReference/Camera-main.html - "Returns null if there is no camera tagged 'MainCamera' in the scene" -->
+    <attribute ctor="M:JetBrains.Annotations.CanBeNullAttribute.#ctor" />
+  </member>
+
+
+  <!-- UnityEngine.GameObject -->
+  <member name="M:UnityEngine.GameObject.AddComponent``1">
+    <typeparameter name="T">
+      <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
+        <!-- ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature = 8 -->
+        <argument>8</argument>
+      </attribute>
+    </typeparameter>
+  </member>
+
+
+  <!-- UnityEngine.ScriptableObject -->
+  <member name="M:UnityEngine.ScriptableObject.CreateInstance``1">
+    <typeparameter name="T">
+      <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
+        <!-- ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature = 8 -->
+        <argument>8</argument>
+      </attribute>
+    </typeparameter>
+  </member>
+
+  <!-- Assertion methods -->
+
+  <!-- UnityEngine.Assertions.Assert -->
+  <member name="M:UnityEngine.Assertions.Assert.IsTrue(System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsTrue(System.Boolean,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsFalse(System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:true=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsFalse(System.Boolean,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:true=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreApproximatelyEqual(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreApproximatelyEqual(System.Single,System.Single,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreApproximatelyEqual(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreApproximatelyEqual(System.Single,System.Single,System.Single,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreNotApproximatelyEqual(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreNotApproximatelyEqual(System.Single,System.Single,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreNotApproximatelyEqual(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreNotApproximatelyEqual(System.Single,System.Single,System.Single,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreEqual``1(``0,``0)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreEqual``1(``0,``0,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreEqual``1(``0,``0,System.Collections.Generic.IEqualityComparer{``0})">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <parameter name="comparer">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreEqual(UnityEngine.Object,UnityEngine.Object,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreNotEqual``1(``0,``0)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreNotEqual``1(``0,``0,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreNotEqual``1(``0,``0,System.Collections.Generic.IEqualityComparer{``0})">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <parameter name="comparer">
+      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+    </parameter>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.AreNotEqual(UnityEngine.Object,UnityEngine.Object,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsNull``1(``0)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:notnull =&gt; halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsNull``1(``0,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:notnull =&gt; halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsNull(UnityEngine.Object,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:notnull =&gt; halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsNotNull``1(``0)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:null =&gt; halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsNotNull``1(``0,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:null =&gt; halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Assert.IsNotNull(UnityEngine.Object,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:null =&gt; halt</argument>
+    </attribute>
+  </member>
+
+
+  <!-- UnityEngine.Assertions.Must -->
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeTrue(System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeTrue(System.Boolean,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeFalse(System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:true=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeFalse(System.Boolean,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>value:true=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeApproximatelyEqual(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeApproximatelyEqual(System.Single,System.Single,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeApproximatelyEqual(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeApproximatelyEqual(System.Single,System.Single,System.Single,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustNotBeApproximatelyEqual(System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustNotBeApproximatelyEqual(System.Single,System.Single,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustNotBeApproximatelyEqual(System.Single,System.Single,System.Single)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustNotBeApproximatelyEqual(System.Single,System.Single,System.Single,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeEqual``1(``0,``0)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeEqual``1(``0,``0,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustNotBeEqual``1(``0,``0)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustNotBeEqual``1(``0,``0,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeNull``1(``0)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>expected:notnull =&gt; halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustBeNull``1(``0,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>expected:notnull =&gt; halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustNotBeNull``1(``0)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>expected:null =&gt; halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Assertions.Must.MustExtensions.MustNotBeNull``1(``0,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>expected:null =&gt; halt</argument>
+    </attribute>
+  </member>
+
+
+  <!-- UnityEngine.Debug -->
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,System.Object)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,System.String)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,System.Object,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.Assert(System.Boolean,System.String,UnityEngine.Object)">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.AssertFormat(System.Boolean,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.AssertFormat(System.Boolean,UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.AssertionMethodAttribute.#ctor"/>
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>condition:false=&gt;halt</argument>
+    </attribute>
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogAssertionFormat(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogAssertionFormat(UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogErrorFormat(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogErrorFormat(UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogFormat(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogFormat(UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogWarningFormat(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.Debug.LogWarningFormat(UnityEngine.Object,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+
+
+  <!-- String formatting -->
+  <member name="M:UnityEngine.ILogger.LogFormat(UnityEngine.LogType,System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>format</argument>
+    </attribute>
+  </member>
+  <member name="M:UnityEngine.UnityString.Format(System.String,System.Object[])">
+    <attribute ctor="M:JetBrains.Annotations.StringFormatMethodAttribute.#ctor(System.String)">
+      <argument>fmt</argument>
+    </attribute>
+  </member>
+
+
+  <!-- Attribute usage. Grouped by namespace -->
+
+  <!-- N:UnityEngine -->
+  <member name="T:UnityEngine.AddComponentMenu">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.ContextMenu">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEngine.CreateAssetMenuAttribute">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.ScriptableObject</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.DisallowMultipleComponent">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.ExecuteAlways">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.ExecuteInEditMode">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.HelpURLAttribute">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.ImageEffectAllowedInSceneView">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.Component</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.PreferBinarySerialization">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.ScriptableObject</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.RequireComponent">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.Component</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEngine.RuntimeInitializeOnLoadMethodAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEngine.SelectionBaseAttribute">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.MonoBehaviour</argument>
+    </attribute>
+  </member>
+  
+  <!-- N:UnityEngine.Scripting -->
+  <member name="T:UnityEngine.Scripting.PreserveAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+
+  <!-- N:AOT -->
+  <member name="T:AOT.MonoPInvokeCallbackAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+</assembly>

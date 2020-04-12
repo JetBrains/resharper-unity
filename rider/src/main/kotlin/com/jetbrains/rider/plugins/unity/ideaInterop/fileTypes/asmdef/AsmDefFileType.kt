@@ -1,9 +1,12 @@
 package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef
 
+import com.intellij.json.JsonFileType
+import com.intellij.json.JsonLanguage
+import com.intellij.openapi.fileTypes.LanguageFileType
 import com.jetbrains.rider.ideaInterop.fileTypes.RiderLanguageFileTypeBase
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import icons.UnityIcons
 
-object AsmDefFileType : RiderLanguageFileTypeBase(AsmDefLanguage) {
+object AsmDefFileType : JsonFileType() {
     override fun getDefaultExtension() = "asmdef"
     override fun getDescription() = "Assembly Definition File (Unity)"
     override fun getIcon() = UnityIcons.FileTypes.AsmDef

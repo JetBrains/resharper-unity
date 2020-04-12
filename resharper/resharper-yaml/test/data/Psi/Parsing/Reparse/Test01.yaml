@@ -1,0 +1,4 @@
+# ${ACTION0:+123}
+key1: 0
+key2: 0{caret}
+key3: 0

@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+
+public class ||MyScriptableObject|(0)|(1) : ScriptableObject
+{
+}
+
+public class Whatever
+{
+    public static void DoSomething()
+    {
+        var so = |new MyScriptableObject()|(2);
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Unity Implicitly Used Identifier: 
+(1): Unity Gutter Icon: Scriptable Object
+(2): ReSharper Warning: 'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance<T>()' instead of 'new'

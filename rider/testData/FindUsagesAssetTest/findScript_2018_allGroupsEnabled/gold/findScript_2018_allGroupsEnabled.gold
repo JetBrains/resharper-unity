@@ -1,0 +1,17 @@
+Search target
+    NewBehaviourScript
+Found usages  (3 usages found)
+    Assets  (3 usages found)
+        Button (1).prefab  (1 usage found)
+            Button (1)  (1 usage found)
+                Text  (1 usage found)
+                    NewBehaviourScript  (1 usage found)
+                        Guid: 8db260203ccdf7840a338bea5f51c7e8
+        Sphere.prefab  (1 usage found)
+            Sphere  (1 usage found)
+                NewBehaviourScript  (1 usage found)
+                    Guid: 8db260203ccdf7840a338bea5f51c7e8
+        scene.unity  (1 usage found)
+            Cube  (1 usage found)
+                NewBehaviourScript  (1 usage found)
+                    Guid: 8db260203ccdf7840a338bea5f51c7e8

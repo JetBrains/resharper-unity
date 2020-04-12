@@ -4,15 +4,18 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
+import com.jetbrains.rider.plugins.unity.packageManager.PackageData
+import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
+import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
-import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerNode
 import com.jetbrains.rider.projectView.views.navigateToSolutionView
+import icons.UnityIcons
 
 // Packages are included in a project by listing in the "dependencies" node of Packages/manifest.json. Packages can
 // contain assets, such as source, resources, and .dlls. They can also include .asmdef files
@@ -43,8 +46,8 @@ import com.jetbrains.rider.projectView.views.navigateToSolutionView
 //    click action to add to manifest.json
 // b) Right click on a referenced package to convert to embedded - simply copy into the project's Packages folder
 
-class PackagesRoot(project: Project, private val packagesManager: PackagesManager)
-    : UnityExplorerNode(project, packagesManager.packagesFolder, listOf()) {
+class PackagesRoot(project: Project, private val packageManager: PackageManager)
+    : UnityExplorerNode(project, packageManager.packagesFolder, listOf(), false) {
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -59,27 +62,20 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
 
         // We want the children to be file system folders and editable packages, which means embedded packages and local
         // packages. We've already added the embedded packages by including file system folders
-        val localPackages = packagesManager.localPackages
-        for (localPackage in localPackages) {
-            if (localPackage.packageFolder != null) {
-                children.add(PackageNode(project!!, packagesManager, localPackage.packageFolder, localPackage))
-            }
-            else {
-                children.add(UnknownPackageNode(project!!, localPackage))
-            }
-        }
+        packageManager.localPackages.forEach { addPackage(children, it) }
+        packageManager.unknownPackages.forEach { addPackage(children, it) }
 
-        if (packagesManager.immutablePackages.any())
-            children.add(0, ReadOnlyPackagesRoot(project!!, packagesManager))
+        if (packageManager.immutablePackages.any())
+            children.add(0, ReadOnlyPackagesRoot(project!!, packageManager))
 
         return children
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
         if (virtualFile.isDirectory) {
-            packagesManager.getPackageData(virtualFile)?.let {
+            packageManager.getPackageData(virtualFile)?.let {
                 val embeddedPackageData = PackageData(it.name, virtualFile, it.details, PackageSource.Embedded)
-                return PackageNode(project!!, packagesManager, virtualFile, embeddedPackageData)
+                return PackageNode(project!!, packageManager, virtualFile, embeddedPackageData)
             }
         }
         return super.createNode(virtualFile, nestedFiles)
@@ -88,10 +84,19 @@ class PackagesRoot(project: Project, private val packagesManager: PackagesManage
     // Required for "Locate in Solution Explorer" to work. If we return false, the solution view visitor stops walking.
     // True is effectively "maybe"
     override fun contains(file: VirtualFile) = true
+
+    private fun addPackage(children: MutableList<AbstractTreeNode<*>>, thePackage: PackageData) {
+        if (thePackage.packageFolder != null) {
+            children.add(PackageNode(project!!, packageManager, thePackage.packageFolder, thePackage))
+        }
+        else {
+            children.add(UnknownPackageNode(project!!, thePackage))
+        }
+    }
 }
 
-class PackageNode(project: Project, private val packagesManager: PackagesManager, packageFolder: VirtualFile, private val packageData: PackageData)
-    : UnityExplorerNode(project, packageFolder, listOf()), Comparable<AbstractTreeNode<*>> {
+class PackageNode(project: Project, private val packageManager: PackageManager, packageFolder: VirtualFile, private val packageData: PackageData)
+    : UnityExplorerNode(project, packageFolder, listOf(), false, !packageData.source.isEditable()), Comparable<AbstractTreeNode<*>> {
 
     init {
         icon = when (packageData.source) {
@@ -112,53 +117,52 @@ class PackageNode(project: Project, private val packagesManager: PackagesManager
         presentation.addNonIndexedMark(myProject, virtualFile)
 
         // Note that this might also set the tooltip if we have too many projects underneath
-        addProjects(presentation)
+        if (UnityExplorer.getInstance(myProject).showProjectNames)
+            addProjects(presentation)
 
-        // Richer tooltip
         val existingTooltip = presentation.tooltip ?: ""
-        var newTooltip = ""
-        if (name != virtualFile.name) {
-            newTooltip += virtualFile.name + "\n"
-        }
-        if (name != packageData.details.canonicalName) {
-            newTooltip += packageData.details.canonicalName + "\n"
-        }
-        if (!packageData.details.version.isEmpty()) {
-            newTooltip += packageData.details.version
-        }
-        if (!packageData.details.description.isEmpty()) {
-            newTooltip += "\n${packageData.details.description}"
+
+        var tooltip = "<html>" + getPackageTooltip(name, packageData)
+        tooltip += when (packageData.source) {
+            PackageSource.Embedded -> if (virtualFile.name != name) "<br/><br/>Folder name: ${virtualFile.name}" else ""
+            PackageSource.Local -> "<br/><br/>Folder location: ${virtualFile.path}"
+            PackageSource.Git -> {
+                var text = "<br/><br/>Git URL: ${packageData.gitDetails?.url}"
+                if (!packageData.gitDetails?.hash.isNullOrEmpty()) {
+                    text += "<br/>Hash: ${packageData.gitDetails?.hash}"
+                }
+                if (!packageData.gitDetails?.revision.isNullOrEmpty()) {
+                    text += "<br/>Revision: ${packageData.gitDetails?.revision}"
+                }
+                text
+            }
+            else -> ""
         }
         if (existingTooltip.isNotEmpty()) {
-            newTooltip += "\n" + existingTooltip
+            tooltip += "<br/><br/>$existingTooltip"
         }
-        presentation.tooltip = newTooltip
+        tooltip += "</html>"
+        presentation.tooltip = tooltip
     }
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = super.calculateChildren()
 
-        if (!packageData.details.dependencies.isEmpty()) {
-            children.add(0, DependenciesRoot(project!!, packagesManager, packageData))
+        if (packageData.details.dependencies.isNotEmpty()) {
+            children.add(0, DependenciesRoot(project!!, packageManager, packageData))
         }
 
         return children
     }
 
     override fun compareTo(other: AbstractTreeNode<*>): Int {
-        if (other is PackageNode) {
-            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
-        }
-        else if (other is ReadOnlyPackagesRoot || other is BuiltinPackagesRoot) {
-            return 1
-        }
-        // Other is UnresolvedPackageNode
-        return -1
+        // Compare by name, rather than ID
+        return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
     }
 }
 
-class DependenciesRoot(project: Project, private val packagesManager: PackagesManager, private val packageData: PackageData)
-    : AbstractTreeNode<Any>(project, packageData), Comparable<AbstractTreeNode<*>> {
+class DependenciesRoot(project: Project, private val packageManager: PackageManager, private val packageData: PackageData)
+    : AbstractTreeNode<Any>(project, packageData) {
 
     override fun update(presentation: PresentationData) {
         presentation.presentableText = "Dependencies"
@@ -168,16 +172,14 @@ class DependenciesRoot(project: Project, private val packagesManager: PackagesMa
     override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
         for ((name, version) in packageData.details.dependencies) {
-            children.add(DependencyItemNode(project!!, packagesManager, name, version))
+            children.add(DependencyItemNode(project!!, packageManager, name, version))
         }
         return children
     }
-
-    override fun compareTo(other: AbstractTreeNode<*>) = -1
 }
 
-class DependencyItemNode(project: Project, private val packagesManager: PackagesManager, private val packageName: String, version: String)
-    : AbstractTreeNode<Any>(project, "$packageName@$version"), Comparable<AbstractTreeNode<*>> {
+class DependencyItemNode(project: Project, private val packageManager: PackageManager, private val packageName: String, version: String)
+    : AbstractTreeNode<Any>(project, "$packageName@$version") {
 
     init {
         myName = "$packageName@$version"
@@ -192,17 +194,13 @@ class DependencyItemNode(project: Project, private val packagesManager: Packages
     }
 
     override fun canNavigate(): Boolean {
-        return packagesManager.getPackageData(packageName) != null
+        return packageManager.getPackageData(packageName) != null
     }
 
     override fun navigate(requestFocus: Boolean) {
-        val packageData = packagesManager.getPackageData(packageName)
+        val packageData = packageManager.getPackageData(packageName)
         if (packageData?.packageFolder == null) return
         project!!.navigateToSolutionView(packageData.packageFolder, requestFocus)
-    }
-
-    override fun compareTo(other: AbstractTreeNode<*>): Int {
-        return String.CASE_INSENSITIVE_ORDER.compare(this.name, other.name)
     }
 }
 
@@ -225,8 +223,8 @@ abstract class CompositeFolderRoot(project: Project, key: Any)
     }
 }
 
-class ReadOnlyPackagesRoot(project: Project, private val packagesManager: PackagesManager)
-    : CompositeFolderRoot(project, key), Comparable<AbstractTreeNode<*>> {
+class ReadOnlyPackagesRoot(project: Project, private val packageManager: PackageManager)
+    : CompositeFolderRoot(project, key) {
 
     companion object {
         val key = Any()
@@ -240,28 +238,26 @@ class ReadOnlyPackagesRoot(project: Project, private val packagesManager: Packag
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
 
-        if (packagesManager.hasBuiltInPackages)
-            children.add(BuiltinPackagesRoot(project!!, packagesManager))
+        if (packageManager.hasBuiltInPackages)
+            children.add(BuiltinPackagesRoot(project!!, packageManager))
 
-        for (packageData in packagesManager.immutablePackages) {
+        for (packageData in packageManager.immutablePackages) {
             if (packageData.source == PackageSource.BuiltIn) continue
 
             if (packageData.packageFolder == null) {
                 children.add(UnknownPackageNode(project!!, packageData))
             }
             else {
-                children.add(PackageNode(project!!, packagesManager, packageData.packageFolder, packageData))
+                children.add(PackageNode(project!!, packageManager, packageData.packageFolder, packageData))
                 addPackageFolder(packageData.packageFolder)
             }
         }
         return children
     }
-
-    override fun compareTo(other: AbstractTreeNode<*>) = -1
 }
 
-class BuiltinPackagesRoot(project: Project, private val packagesManager: PackagesManager)
-    : CompositeFolderRoot(project, key), Comparable<AbstractTreeNode<*>> {
+class BuiltinPackagesRoot(project: Project, private val packageManager: PackageManager)
+    : CompositeFolderRoot(project, key) {
 
     companion object {
         val key = Any()
@@ -274,7 +270,7 @@ class BuiltinPackagesRoot(project: Project, private val packagesManager: Package
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
-        for (packageData in packagesManager.immutablePackages) {
+        for (packageData in packageManager.immutablePackages) {
             if (packageData.source != PackageSource.BuiltIn) continue
 
             if (packageData.packageFolder == null) {
@@ -287,8 +283,6 @@ class BuiltinPackagesRoot(project: Project, private val packagesManager: Package
         }
         return children
     }
-
-    override fun compareTo(other: AbstractTreeNode<*>) = -1
 }
 
 // Represents a module, built in part of the Unity product. We show it as a single node with no children, unless we have
@@ -296,29 +290,38 @@ class BuiltinPackagesRoot(project: Project, private val packagesManager: Package
 // Note that a module can have dependencies. Perhaps we want to always show this as a folder, including the Dependencies
 // node?
 class BuiltinPackageNode(project: Project, private val packageData: PackageData)
-    : FileSystemNodeBase(project, packageData.packageFolder!!, listOf()), Comparable<AbstractTreeNode<*>> {
+    : UnityExplorerNode(project, packageData.packageFolder!!, listOf(), false, true) {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
-        if (!UnityExplorer.getInstance(project!!).myShowHiddenItems) {
-            return arrayListOf()
+        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
+            return super.calculateChildren()
+        }
+
+        // Show children if there's anything interesting to show. If it's just package.json or .icon.png, or their
+        // meta files, pretend there's no children. We'll show them when show hidden items is enabled
+        val children = super.calculateChildren()
+        if (children.all { it.name?.startsWith("package.json") == true
+                || it.name?.startsWith(".icon.png") == true
+                || it.name?.startsWith("package.ModuleCompilationTrigger") == true }) {
+            return mutableListOf()
         }
         return super.calculateChildren()
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return FileSystemExplorerNode(project!!, virtualFile, nestedFiles, false)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets = false, isReadOnlyPackageFile = true)
     }
 
     override fun canNavigateToSource(): Boolean {
-        if (UnityExplorer.getInstance(project!!).myShowHiddenItems) {
+        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
             return super.canNavigateToSource()
         }
         return true
     }
 
     override fun navigate(requestFocus: Boolean) {
-        if (UnityExplorer.getInstance(project!!).myShowHiddenItems) {
+        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
             return super.navigate(requestFocus)
         }
 
@@ -333,35 +336,19 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.BuiltInPackage)
+        if (UnityExplorer.getInstance(myProject).showHiddenItems)
+            presentation.addNonIndexedMark(myProject, virtualFile)
 
-        var newTooltip = ""
-        if (name != virtualFile.name) {
-            newTooltip = virtualFile.name + "\n"
+        val tooltip = getPackageTooltip(name, packageData)
+        if (tooltip != name) {
+            presentation.tooltip = tooltip
         }
-        if (!packageData.details.version.isEmpty()) {
-            newTooltip += packageData.details.version
-        }
-        if (!packageData.details.description.isEmpty()) {
-            newTooltip += "\n${packageData.details.description}"
-        }
-        presentation.tooltip = newTooltip
-    }
-
-    override fun compareTo(other: AbstractTreeNode<*>): Int {
-        if (other is BuiltinPackageNode) {
-            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
-        }
-        else if (other is PackageNode) {
-            return 1
-        }
-        // other is UnknownPackageNode
-        return -1
     }
 }
 
 // Note that this might get a PackageData with source == PackageSource.Unknown
 class UnknownPackageNode(project: Project, private val packageData: PackageData)
-    : AbstractTreeNode<Any>(project, packageData), Comparable<AbstractTreeNode<*>> {
+    : AbstractTreeNode<Any>(project, packageData) {
 
     init {
         icon = when (packageData.source) {
@@ -377,17 +364,47 @@ class UnknownPackageNode(project: Project, private val packageData: PackageData)
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(icon)
-    }
-
-    override fun compareTo(other: AbstractTreeNode<*>): Int {
-        if (other is UnknownPackageNode) {
-            return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
+        if (packageData.details.description.isNotEmpty()) {
+            presentation.tooltip = formatDescription(packageData)
         }
-        // other is PackageNode or BuiltinPackageNode
-        return 1
     }
 }
 
+private fun getPackageTooltip(name: String, packageData: PackageData): String {
+    var tooltip = name
+    if (packageData.details.version.isNotEmpty()) {
+        tooltip += " ${packageData.details.version}"
+    }
+    if (name != packageData.details.canonicalName) {
+        tooltip += "<br/>${packageData.details.canonicalName}"
+    }
+    if (packageData.details.author.isNotEmpty()) {
+        tooltip += "<br/>${packageData.details.author}"
+    }
+    if (packageData.details.description.isNotEmpty()) {
+        tooltip += "<br/><br/>" + formatDescription(packageData)
+    }
+    return tooltip
+}
+
+private fun formatDescription(packageData: PackageData): String {
+    val description =  packageData.details.description.replace("\n", "<br/>").let {
+        StringUtil.shortenTextWithEllipsis(it, 600, 0, true)
+    }
+
+    // Very crude. This should really be measured by font + pixels, not characters.
+    // Hopefully we can replace all of this with QuickDoc though, which has smarter wrapping.
+    val shouldWrap = StringUtil.splitByLines(packageData.details.description).any { it.length > 50 }
+    return if (shouldWrap) {
+        "<div width=\"500\">$description</div>"
+    }
+    else {
+        description
+    }
+}
+
+class LockDetails(val hash: String?, val revision: String?)
+
 // TODO: What are "testables"?
-class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?)
+class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?, val lock: Map<String, LockDetails>?)
 

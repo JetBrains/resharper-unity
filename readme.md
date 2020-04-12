@@ -1,4 +1,4 @@
-[![official JetBrains project](http://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+[![official JetBrains project](https://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![Build status](https://ci.appveyor.com/api/projects/status/v8wgygg7jh7ern8x/branch/182?svg=true)](https://ci.appveyor.com/project/IvanPashchenko/resharper-unity/branch/182)
 [![Build Status](https://travis-ci.org/JetBrains/resharper-unity.svg?branch=182)](https://travis-ci.org/JetBrains/resharper-unity)
 [![Join the chat at https://gitter.im/JetBrains/resharper-unity](https://badges.gitter.im/JetBrains/resharper-unity.svg)](https://gitter.im/JetBrains/resharper-unity?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -12,13 +12,19 @@ Rider is JetBrains' cross platform .NET IDE, based on ReSharper and the IntelliJ
 
 The plugin adds code completion and generation of Unity event functions, inspections for common errors, quick fixes, support for `.shader` files, automatic handling of `.meta` files and more. The Rider plugin includes additional support for attaching the debugger to the Editor instance and a Unity Editor plugin to improve integration.
 
-## Installation
+## Installation 2019.2+ with Rider package
+
+In Unity just setting External Editor to Rider should be enough.
+
+## Installation 2019.1-
 
 This plugin comes bundled with Rider, and manual installation is not required. However, it is necessary to configure Unity to use Rider as the external script editor:
 
-* Start Rider and open the `.sln` file of an existing Unity project.
-* Rider will install a Unity Editor plugin into the project ([see below for more details](#unity-editor-plugin)).
+* Check if `.sln` file is present:  
+    - Start Rider and open the `.sln` file. Rider will install a Unity Editor plugin into the project ([see below for more details](#unity-editor-plugin))
+    - Otherwise, start Rider and open project folder in Rider. Rider will show Notification, which allows to install Unity Editor plugin. 
 * Switch back to the Unity Editor, with the same Unity project open. The new Unity Editor plugin will automatically configure Rider as the external script editor.
+
 
 This only needs to be done once, and can also be done manually, via the Unity Editor's _External Editor_ Preference pane.
 
@@ -189,6 +195,8 @@ The plugin also adds some functionality just for Rider:
 Please [suggest new features in the issues](https://github.com/JetBrains/resharper-unity/issues)!
 
 ## Unity Editor plugin
+
+> For `Unity 2019.2+ with Rider package` Editor plugin is loaded directly from Rider installation. 
 
 By default, when Rider opens a Unity project, it will automatically install a Unity Editor plugin, and keep it up to date with new versions. This behaviour can be disabled in Rider's _Preferences &rarr; Languages &amp; Frameworks &rarr; Unity Engine_.
 

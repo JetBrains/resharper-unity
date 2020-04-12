@@ -1,0 +1,23 @@
+﻿//${RUN:1}
+using UnityEngine;
+
+namespace Test
+{
+    public class TestClass : MonoBehaviour
+    {
+      private bool myIsTransformNull;
+
+      private void Awake()
+      {
+        myIsTransformNull = GetComponent<Transform>() == null;
+      }
+
+      public void Update()
+        {
+            if (myIsTransformN{caret}ull)
+            {
+                
+            }
+        }
+    }
+}

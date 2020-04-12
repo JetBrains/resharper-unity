@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Available01 : MonoBehaviour
+{
+    public void Method()
+    {
+        Physics.|RaycastAll|(0)(new Ray(Vector3.zero, Vector3.zero));   
+    }
+}
+
+------------------------------------------------
+0: Use non-allocating method 'RaycastNonAlloc'
+QUICKFIXES:
+Convert to 'RaycastNonAlloc'

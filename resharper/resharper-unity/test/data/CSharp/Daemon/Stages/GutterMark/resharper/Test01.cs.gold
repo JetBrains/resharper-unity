@@ -1,0 +1,220 @@
+﻿using System;
+using System.Collections;
+using UnityEngine;
+using UnityEditor;
+
+public class ||A|(0)|(1) : MonoBehaviour
+{
+    // All serialised by Unity - gutter icons
+    public string ||ImplicitlyAssignedField|(2)|(3);
+    public string ||ImplicitlyAssignedMultiField1|(4)|(5), ||ImplicitlyAssignedMultiField2|(6)|(7);
+    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(8)|(9);
+
+    // Not serialized by Unity
+    public const string UnusedConst = "hello";
+    private const string UnusedPrivateConst = "hello";
+    [|SerializeField|(10)] private const string UnusedPrivateConst2 = "hello";
+    private string myUnusedField;
+    public readonly string UnusedReadonlyField;
+    [NonSerialized] public string ExplicitlyUnusedField;
+    [NonSerialized, |SerializeField|(11)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(12)] private string myExplicitlyUnusedField3;
+    public static string UnusedStaticField;
+    [|SerializeField|(13)] private static string ourUnusedPrivateStaticField;
+
+    // Unity function
+    |private void ||OnDestroy|(15)|(16)()
+    {
+    }|(14)
+
+    // Not a Unity function
+    private void NotMessage()
+    {
+    }
+
+    // Unity message as coroutine
+    private IEnumerator ||Start|(17)|(18)()
+    {
+        return null;
+    }
+
+    // Optional parameter
+    |private void ||OnCollisionStay|(20)|(21)()
+    {
+    }|(19)
+}
+
+[InitializeOnLoad]
+public class Startup
+{
+    static |Startup|(22)()
+    {
+        Debug.Log("Up and running");
+    }
+
+    public Startup()
+    {
+        // Not used
+    }
+}
+
+class MyClass
+{
+    [RuntimeInitializeOnLoadMethod]
+    static void OnRuntimeMethodLoad()
+    {
+        Debug.Log("After scene is loaded and game is running");
+    }
+
+    [RuntimeInitializeOnLoadMethod]
+    public static void OnSecondRuntimeMethodLoad()
+    {
+        Debug.Log("SecondMethod After scene is loaded and game is running.");
+    }
+
+    [RuntimeInitializeOnLoadMethod]
+    public void |NotAppliedToInstanceMethods|(23)()
+    {
+    }
+
+    [InitializeOnLoadMethod]
+    private static void OnProjectLoadedInEditor()
+    {
+        Debug.Log("Project loaded in Unity Editor");
+    }
+
+    [InitializeOnLoadMethod]
+    public static void OnProjectLoadedInEditor2()
+    {
+        Debug.Log("Project loaded in Unity Editor");
+    }
+
+    [InitializeOnLoadMethod]
+    public void |NotAppliedToInstanceMethod|(24)()
+    {
+        Debug.Log("Project loaded in Unity Editor");
+    }
+}
+
+[Serializable]
+class SerialisableClass
+{
+    // All serialised by Unity - gutter icons
+    public string ||ImplicitlyAssignedField|(25)|(26);
+    public string ||ImplicitlyAssignedMultiField1|(27)|(28), ||ImplicitlyAssignedMultiField2|(29)|(30);
+    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(31)|(32);
+
+    // Not serialized by Unity
+    public const string UnusedConst = "hello";
+    private const string UnusedPrivateConst = "hello";
+    [|SerializeField|(33)] private const string UnusedPrivateConst2 = "hello";
+    private string myUnusedField;
+    public readonly string UnusedReadonlyField;
+    [NonSerialized] public string ExplicitlyUnusedField;
+    [NonSerialized, |SerializeField|(34)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(35)] private string myExplicitlyUnusedField3;
+    public static string UnusedStaticField;
+    [|SerializeField|(36)] private static string ourUnusedPrivateStaticField;
+}
+
+[Serializable]
+struct SerialisableStruct
+{
+    // All serialised by Unity - gutter icons
+    public string ||ImplicitlyAssignedField|(37)|(38);
+    public string ||ImplicitlyAssignedMultiField1|(39)|(40), ||ImplicitlyAssignedMultiField2|(41)|(42);
+    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(43)|(44);
+
+    // Not serialized by Unity
+    public const string UnusedConst = "hello";
+    private const string UnusedPrivateConst = "hello";
+    [|SerializeField|(45)] private const string UnusedPrivateConst2 = "hello";
+    private string myUnusedField;
+    public readonly string UnusedReadonlyField;
+    [NonSerialized] public string ExplicitlyUnusedField;
+    [NonSerialized, |SerializeField|(46)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(47)] private string myExplicitlyUnusedField3;
+    public static string UnusedStaticField;
+    [|SerializeField|(48)] private static string ourUnusedPrivateStaticField;
+}
+
+class NotSerialisableClass
+{
+    public string NotSerialised1;
+    [|SerializeField|(49)] public string NotSerialised2;
+}
+
+struct NotSerialisableStruct
+{
+    public string NotSerialised1;
+    [|SerializeField|(50)] public string NotSerialised2;
+}
+
+[Serializable]
+static class NotSerialisableClass
+{
+    public string NotSerialised1;
+    [|SerializeField|(51)] public string NotSerialised2;
+}
+
+---------------------------------------------------------
+(0): ReSharper Unity Implicitly Used Identifier: 
+(1): Unity Gutter Icon: Unity script
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): Unity Gutter Icon: This field is initialized from Inspector
+(4): ReSharper Unity Implicitly Used Identifier: 
+(5): Unity Gutter Icon: This field is initialized from Inspector
+(6): ReSharper Unity Implicitly Used Identifier: 
+(7): Unity Gutter Icon: This field is initialized from Inspector
+(8): ReSharper Unity Implicitly Used Identifier: 
+(9): Unity Gutter Icon: This field is initialized from Inspector
+(10): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(11): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(12): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(13): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(14): ReSharper Dead Code: Redundant Unity event function
+(15): ReSharper Unity Implicitly Used Identifier: 
+(16): Unity Gutter Icon: Unity event function
+
+Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
+(17): ReSharper Unity Implicitly Used Identifier: 
+(18): Unity Gutter Icon: Unity event function
+
+Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
+This function can be a coroutine.
+(19): ReSharper Dead Code: Redundant Unity event function
+(20): ReSharper Unity Implicitly Used Identifier: 
+(21): Unity Gutter Icon: Unity event function
+
+OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
+This function can be a coroutine.
+(22): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
+(23): ReSharper Warning: Missing static modifier
+(24): ReSharper Warning: Missing static modifier
+(25): ReSharper Unity Implicitly Used Identifier: 
+(26): Unity Gutter Icon: This field is serialized by Unity
+(27): ReSharper Unity Implicitly Used Identifier: 
+(28): Unity Gutter Icon: This field is serialized by Unity
+(29): ReSharper Unity Implicitly Used Identifier: 
+(30): Unity Gutter Icon: This field is serialized by Unity
+(31): ReSharper Unity Implicitly Used Identifier: 
+(32): Unity Gutter Icon: This field is serialized by Unity
+(33): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(34): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(35): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(36): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(37): ReSharper Unity Implicitly Used Identifier: 
+(38): Unity Gutter Icon: This field is serialized by Unity
+(39): ReSharper Unity Implicitly Used Identifier: 
+(40): Unity Gutter Icon: This field is serialized by Unity
+(41): ReSharper Unity Implicitly Used Identifier: 
+(42): Unity Gutter Icon: This field is serialized by Unity
+(43): ReSharper Unity Implicitly Used Identifier: 
+(44): Unity Gutter Icon: This field is serialized by Unity
+(45): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(46): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(47): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(48): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(49): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(50): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(51): ReSharper Dead Code: Redundant 'SerializeField' attribute

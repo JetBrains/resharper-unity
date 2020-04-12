@@ -1,0 +1,13 @@
+﻿# 4 ITEMS #
+
++ OnAnimatorIK(int) { ... }
+OnAnimatorMove() { ... }
+OnDidApplyAnimationProperties() { ... }
+myOnAnima
+# AUTOMATIC #
+# 4 ITEMS #
+
++ OnAnimatorIK(int) { ... }
+OnAnimatorMove() { ... }
+OnDidApplyAnimationProperties() { ... }
+myOnAnima

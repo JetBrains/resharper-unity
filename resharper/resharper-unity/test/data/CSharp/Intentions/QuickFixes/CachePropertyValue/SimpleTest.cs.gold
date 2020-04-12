@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class SimpleTest
+    {
+        public void Test(Transform t)
+        {
+          var position = t.position;
+          position = position + position + posit{caret}ion;
+          t.position = position;
+        }
+    }
+}

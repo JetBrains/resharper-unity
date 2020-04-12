@@ -1,0 +1,78 @@
+﻿using UnityEngine;
+using UnityEditor;
+
+public class TestDrawGizmoMethod
+{
+    [DrawGizmo]
+    public void |NotStatic|(0)(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    public static |int|(1) WrongReturnType(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    public static void OneCorrectParameter(|GameObject arg1|(2), GizmoType arg2) { }
+    
+    [DrawGizmo]
+    public static void OneCorrectParameter1(|Editor arg1|(3), GizmoType arg2) { }
+    
+    [DrawGizmo]
+    public static void OneCorrectParameter2(|MonoBehaviour arg1, string arg2|(4)) { }
+    
+    [DrawGizmo]
+    public static void OneCorrectParameter3(|Collider arg1, string arg2|(5)) { }
+	
+    [DrawGizmo]
+    public static void OneParameter(|GizmoType arg2|(6)) { }
+	
+    [DrawGizmo]
+    public static void WrongTypeParameters|<T>|(7)(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    private static void TooManyParams(|string arg1, Transform arg2, GizmoType arg3|(8)) { }
+    
+    [DrawGizmo]
+    private static void TooManyParams2(|Transform arg1, GizmoType arg2, string arg3|(9)) { }
+    
+    [DrawGizmo]
+    public static void JustRight(Component arg1, GizmoType arg2) { }
+
+    [DrawGizmo]
+    private static void JustRight2(MonoBehaviour arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight3(TestClass1 arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight4(TestClass2 arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight5(Transform arg1, GizmoType arg2) { }
+    
+    [DrawGizmo]
+    private static void JustRight6(Collider arg1, GizmoType arg2) { }
+    
+    public class ||TestClass1|(10)|(11) : MonoBehaviour
+    {
+    }
+    
+    public class ||TestClass2|(12)|(13) : TestClass1
+    {
+    }
+}
+
+
+---------------------------------------------------------
+(0): ReSharper Warning: Missing static modifier
+(1): ReSharper Warning: Incorrect return type. Expected 'void'
+(2): ReSharper Warning: Parameter 'arg1' should be derived from 'Component'
+(3): ReSharper Warning: Parameter 'arg1' should be derived from 'Component'
+(4): ReSharper Warning: Incorrect method parameters. Expected '(MonoBehaviour arg1, GizmoType gizmoType)'
+(5): ReSharper Warning: Incorrect method parameters. Expected '(Collider arg1, GizmoType gizmoType)'
+(6): ReSharper Warning: Incorrect method parameters. Expected '(Component component, GizmoType arg2)'
+(7): ReSharper Warning: Incorrect type parameters
+(8): ReSharper Warning: Incorrect method parameters. Expected '(Transform arg2, GizmoType arg3)'
+(9): ReSharper Warning: Incorrect method parameters. Expected '(Transform arg1, GizmoType arg2)'
+(10): ReSharper Unity Implicitly Used Identifier: 
+(11): Unity Gutter Icon: Unity script
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): Unity Gutter Icon: Unity script

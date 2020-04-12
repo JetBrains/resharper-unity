@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>FolderDependencies(Gray)</title>
+  <g>
+    <rect width="16" height="16" fill="#ffe3ff" opacity="0"/>
+    <g>
+      <path d="M13,13.5a1.487,1.487,0,0,1-1.06-.44L8,9.121,4.06,13.06a1.5,1.5,0,0,1-2.12-2.12l5-5a1.5,1.5,0,0,1,2.12,0l5,5A1.5,1.5,0,0,1,13,13.5Z" fill="#f4f4f4"/>
+      <circle cx="3" cy="12" r="3" fill="#f4f4f4"/>
+      <circle cx="8" cy="5" r="4" fill="#f4f4f4"/>
+      <circle cx="13" cy="12" r="3" fill="#f4f4f4"/>
+      <path d="M13,12.5a.5.5,0,0,1-.353-.147L8,7.707,3.354,12.353a.5.5,0,1,1-.707-.706l5-5a.5.5,0,0,1,.707,0l5,5A.5.5,0,0,1,13,12.5Z" fill="#323232"/>
+      <circle cx="3" cy="12" r="2" fill="#323232"/>
+      <circle cx="13" cy="12" r="2" fill="#323232"/>
+      <circle cx="8" cy="5" r="3" fill="#323232"/>
+      <circle cx="8" cy="5" r="2" fill="#ebebeb"/>
+    </g>
+  </g>
+</svg>

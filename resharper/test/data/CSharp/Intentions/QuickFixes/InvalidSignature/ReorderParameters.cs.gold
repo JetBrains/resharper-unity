@@ -1,8 +1,0 @@
-﻿using UnityEngine;
-
-public class Foo : MonoBehaviour
-{
-    public void OnAudioFilterRead({caret}float[] data, int channels)
-    {
-    }
-}

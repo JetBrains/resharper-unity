@@ -1,0 +1,29 @@
+﻿using UnityEngine;
+
+namespace A
+{
+    namespace B
+    {
+        namespace C
+        {
+            public class TestMono : MonoBehaviour
+            {
+                
+            }
+        }
+    }
+}
+
+namespace DefaultNamespace
+{
+    public class GetComponentWithNamespaceUnavailableTest
+    {
+        public void TestMethod(GameObject go)
+        {
+            go.GetComponent("|B|(0).C.TestMono");
+        }
+    }
+}
+------------------------------------------------
+0: Cannot resolve symbol 'B'
+NO QUICKFIXES

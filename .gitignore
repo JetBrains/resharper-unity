@@ -24,11 +24,12 @@
 # See https://youtrack.jetbrains.com/issue/IDEA-55923 for some more information
 .gradle/
 rider/.idea/**/libraries
+rider/dependencies
 
 # NOTE: We normally include *.iml for JetBrains IDEs, but Gradle based projects auto generate
 # this on import, so we can happily ignore them. Don't do this for the Rider controlled project!
 rider/.idea/**/modules.xml
-rider/.idea/**/modules/*.iml
+rider/.idea/**/*.iml
 rider/.idea/**/compiler.xml
 
 
@@ -41,10 +42,10 @@ rider/.idea/**/compiler.xml
 # modules.xml and .iml files
 # contentModel.xml
 # (indexLayout.xml should be committed if you add existing folder)
-resharper/src/.idea/**/.name
-resharper/src/.idea/**/modules.xml
-resharper/src/.idea/**/*.iml
-resharper/src/.idea/**/contentModel.xml
+resharper/**/.idea/**/.name
+resharper/**/.idea/**/modules.xml
+resharper/**/.idea/**/*.iml
+resharper/**/.idea/**/contentModel.xml
 
 apiParser/.idea/**/.name
 apiParser/.idea/**/modules.xml
@@ -55,7 +56,9 @@ apiParser/.idea/**/contentModel.xml
 # Gradle output
 
 rider/build/
+rider/buildSrc/build/
 resharper/build/
+unity/build/
 
 
 # IntelliJ build output (shouldn't really see these if we're using gradle projects)
@@ -78,21 +81,12 @@ rider/**/out/*
 **/*.generated.xaml
 **/*.generated.props
 
-resharper/src/**/*_lex.cs
-resharper/src/**/*_lex.depends
-resharper/test/data/**/*.tmp
+resharper/**/*_lex.cs
+resharper/**/*_lex.depends
+resharper/**/test/data/**/*.tmp
+resharper/**/test/JetTestPackages
 
-
-resharper/src/resharper-unity/_Generated/
 resharper/NuGet.Config
-
-resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/*.dll
-resharper/src/resharper-unity/Unity3dRider/Assets/Plugins/Editor/JetBrains/Rider.Plugin.Distribution.DoNotRemove
-resharper/src/resharper-unity/Unity3dRider/Packages/manifest.json
-resharper/test/Unity3dRiderCompileTest/.idea/*
-resharper/test/Unity3dRiderCompileTest/packages/*
-
-unity/build/**
 
 # Backup & report files from converting an old project file to a newer Visual Studio version
 _UpgradeReport_Files/
@@ -102,3 +96,6 @@ UpgradeLog*.XML
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+build/
+resharper/_ReSharper.Caches/*

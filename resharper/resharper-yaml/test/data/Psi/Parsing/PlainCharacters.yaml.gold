@@ -1,0 +1,76 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  Comment(0,26)(type:COMMENT, text:# Outside flow collection:) comment: "# Outside flow collection:"
+  NewLine(26,1)(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(27,1)(type:MINUS, text:-)
+          Whitespace(28,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(29,8)(type:NS_PLAIN, text:::vector)
+          NewLine(37,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(38,1)(type:MINUS, text:-)
+          Whitespace(39,1)(type:WHITESPACE, text: ) spaces: " "
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(40,8)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:": - ()")
+          NewLine(48,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(49,1)(type:MINUS, text:-)
+          Whitespace(50,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(51,17)(type:NS_PLAIN, text:Up, up, and away!)
+          NewLine(68,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(69,1)(type:MINUS, text:-)
+          Whitespace(70,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(71,4)(type:NS_PLAIN, text:-123)
+          NewLine(75,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(76,1)(type:MINUS, text:-)
+          Whitespace(77,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(78,26)(type:NS_PLAIN, text:http://example.com/foo#bar)
+          NewLine(104,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          Comment(105,25)(type:COMMENT, text:# Inside flow collection:) comment: "# Inside flow collection:"
+          NewLine(130,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(131,1)(type:MINUS, text:-)
+          Whitespace(132,1)(type:WHITESPACE, text: ) spaces: " "
+          IFlowSequenceNode
+            YamlTokenType+FixedTokenElement(133,1)(type:LBRACK, text:[)
+            Whitespace(134,1)(type:WHITESPACE, text: ) spaces: " "
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(135,8)(type:NS_PLAIN, text:::vector)
+            YamlTokenType+FixedTokenElement(143,1)(type:COMMA, text:,)
+            NewLine(144,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(145,2)(type:INDENT, text:  )
+            IFlowSequenceEntry
+              IDoubleQuotedScalarNode
+                YamlTokenType+GenericTokenElement(147,8)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:": - ()")
+            YamlTokenType+FixedTokenElement(155,1)(type:COMMA, text:,)
+            NewLine(156,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(157,2)(type:INDENT, text:  )
+            IFlowSequenceEntry
+              IDoubleQuotedScalarNode
+                YamlTokenType+GenericTokenElement(159,18)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"Up, up and away!")
+            YamlTokenType+FixedTokenElement(177,1)(type:COMMA, text:,)
+            NewLine(178,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(179,2)(type:INDENT, text:  )
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(181,4)(type:NS_PLAIN, text:-123)
+            YamlTokenType+FixedTokenElement(185,1)(type:COMMA, text:,)
+            NewLine(186,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(187,2)(type:INDENT, text:  )
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(189,26)(type:NS_PLAIN, text:http://example.com/foo#bar)
+            Whitespace(215,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+FixedTokenElement(216,1)(type:RBRACK, text:])
+          NewLine(217,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

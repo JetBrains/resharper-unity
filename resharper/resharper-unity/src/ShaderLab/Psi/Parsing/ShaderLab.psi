@@ -1,0 +1,2288 @@
+﻿options{
+
+  // Parser options
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+  // Parser class name and namespace
+  parserPackage="JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Gen";
+  parserClassName="ShaderLabParserGenerated";
+
+  // Strongly type the lexer we're using. ILexer<int> is the caching lexer instance
+  "lexerClassName"="JetBrains.ReSharper.Psi.Parsing.ILexer<int>";
+
+  // FQN of (non-generated) class that provides messages for the parser
+  parserMessagesClass="JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing.ParserMessages";
+
+  // Parser, error messages + token bitsets target folder
+  parserTargetSubdir="Parsing/ShaderLab";
+
+  // Don't generate a bitset unless there's 4 or more comparisons to be made
+  tokenBitsetThreshold=4;
+
+
+  // Composite node type/element generation options
+  // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+  // Existing language specific ITreeNode
+  "psiElementClassFQName"="JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.IShaderLabTreeNode";
+
+  // Existing token type containing class + namespace
+  tokenTypePackageName="JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing";
+  tokenTypeClassName="ShaderLabTokenType";
+
+  // Set base index for generated (element, not token) node types. Defaults to 2000, tokens default to 1000
+  // tokenTypeBaseIndex=2000;
+
+  // Tree node interface namespace + target folder (also target folder for navigators + visitors)
+  psiInterfacePackageName="JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree";
+  psiInterfacesTargetSubdir="Psi/ShaderLab/Tree";
+
+  // Tree node implementation namespace, base type and target folder
+  psiStubsPackageName="JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl";
+  psiStubsBaseClass="ShaderLabCompositeElement";
+  psiStubsTargetSubdir="Psi/ShaderLab/Tree/Impl";
+
+  // Existing composite node type base class
+  elementTypeBaseClass="ShaderLabCompositeNodeType";
+
+  // Namespace for generating custom interface when `customInterface` option used
+  customInterfacePackage="JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree";
+
+  // Any role used in this file that begins with this prefix must be defined in `ChildRole`
+  publicChildRolePrefix="SHADER_LAB_";
+
+
+  // Namespace and suffix for custom element instance implementation created by
+  // node type when `customImpl` option is specfied.
+  // Default suffix is `Impl`
+  customImplPackage="JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree.Impl";
+  "customImplSuffix"="";
+
+
+  // Required on. Changes behaviour of various things, e.g. public child role values based on prefix
+  disableReflection;
+
+  // Required. If missing, generates Add/Remove methods for each collection
+  generateWorkingPsi;
+}
+
+
+
+// Modifiers:
+//
+// `errorhandling` - includes following tokens in error handling. Checks next token is
+//   valid following token. Generates virtual HandleErrorInXXX method that will skip to
+//   the next valid following token. All tokens in between are added to the current error.
+// `noerrorhandling` - same as omitting `errorhandling`
+// `private` - the rule is effectively expanded inline, as part of the parent rule. Parent
+//   rule references it with no role information
+// `abstract` - does not create an element, interface or parse function.
+// `interface` - defines a rule that can match one of multiple rules, all of which will have
+//   a common base, e.g. `expression`, which can match `stringLiteralExpression`, `numericExpression`, etc.
+//
+// options:
+//
+// (not exhaustive)
+// `customImpl` - the parser generates the element interface and a "stub" base implementation, but
+//  generated node type will create an instance of a derived type that must be implemented manually.
+//  The custom name ends with the `"customImplSuffix"` global option, and must be declared in the
+//  `customImplPackage` namespace. It is named after the nonterminal, as usual. The generated base
+//  element instance ends with the suffix `Stub`
+// `customInterface` - generate element tree node with a custom interface. Name is the same
+//   as would be generated, but uses `customInterfacePackage` for namespace
+// `customParseFunction` - the parse function is abstract. The usually generated parse function is
+//   also generated as a protected method with the suffix `Internal`
+// `noInternalParseFunction` - stops the standard parse function being generated as parseXxxInernal
+//   when `customParseFunction` is specified. If `customParseFunction` isn't specified, this creates
+//   an error - a virtual method without an implementation.
+// `parsingContext` - push a new parsing context. This sets a "global" token follows set for the
+//   duration of the parsing context. Any nested nonterminals that implement `errorhandling` will
+//   also check this follow set when skipping tokens after an error
+// `stubBase="Foo"` - use `Foo` as the base class for the generated element instance. Overrides
+//   `psiStubsBaseClass` global option
+// `customVisit`
+// `customNavigator`
+// `customConstructor`
+// `customToString`
+// `interfaceName`
+// `elementType`
+// `elementTypeSet`
+// `fakeStub`
+// `result`
+// `multilevel`
+// `interfaceBaseName`
+// `customFollows`
+// `hasSemanticInterface`
+// `noInterface`
+// `expectedSymbol`
+// `overrideGetters`
+//
+// Rules:
+//
+// (terminal|nonterminal) `customParseFunction? <ROLE, PropertyName>? Quantifier?
+//
+// * A new tree element is generated for each rule definition, with properties for each child rule
+// * Rule starts with a terminal or a nonterminal token. If it's a terminal, it's a token from
+//   the lexer (e.g. IDENTIFIER), otherwise, it's an identifier for another rule
+// * An optional custom parse function comes next, preceded by a backtick. If specified, abstract
+//   methods called matchXXX and expectXXX are generated and called. The implementation of matchXXX
+//   should call expectXXX and return a TreeElement that represents what's been matched. The
+//   expectXXX method should look at the current token and return true if it's what's expected
+// * ROLE is the name of the child role generated. This can be a common role from the ChildRoles
+//   class, or a name for a private role. If no role definition is given, the node isn't added to
+//   the interface. A single property name can be used multiple times, in which case it is exposed
+//   as either a collection, or the lowest common node type.
+// * PropertyName is the name of the generated property to access this token
+// * Quantifier can be ommitted, meaning nonoptional, optional (?), zero or more (*) or one or more (+)
+//   Pipes and parentheses can also be used to separate and group rules
+//
+// !(#name:terminal|nonterminal) - e.g. !(#id:IDENTIFIER) or !(#id:shaderLabIdentifier)
+//
+// Captures the element into a named variable, to pass to another nonterminal. Parsing continues with the
+// next matching token in the following rules. This allows switching on the second or third rule of multiple
+// nonterminals that have a common prolog. E.g. two nonterminals starting with identifier but followed by
+// DOT and COMMA respectively. The captured element is passed to the nonterminal with square brackets, e.g.
+// qualifiedValue[id] and the parameter must be part of the nonterminal declaration, e.g. qualifiedValue[identifier id]
+// where the first part is the token type and the second is the name. Multiple parameters can be sepcified,
+// separated by commas. The captured element is used in the rules with an ampersand, and can have normal
+// role definitions, e.g. &id or &id<IDENTIFIER, Identifier>. A rule may also pass null
+//
+// nonterminal({ROLE, Getter})*
+//
+// Allows declaring a private nonterminal (that's expanded inline) without having to specify the roles and
+// getter names up front. Can be specified multiple times. Referenced in the rules with `@`. E.g.:
+//
+//     private theThing{ROLE, Getter}
+//     :
+//       MY_KEYWORD{@ROLE, @Getter}
+//     ;
+
+
+// The Tao of Error Handling
+//
+// * If a nonterminal fails to match the expected token, an exception is thrown
+//   * The remaining rules and subsequent tokens are unmatched and unconsumed
+// * The exception is rethrown by all parent nonterminals
+//   * The current work in progress elements are attached as it goes
+//   * Remaining rules and subsequent tokens are unmatched and unconsumed
+// * The first nonterminal that implements errorhandling:
+//   * Creates an error element from the exception text
+//   * Adds it as a child to the current work in progress element
+//   * Stops rethrowing
+//   * All remaining rules are not parsed
+//   * Skips tokens until one is in the valid follows set
+// * If a nonterminal implements errorhandling and successfully matches all of its rules, it must also
+//   be followed by a valid follow token, or an exception is thrown
+// * If no nonterminals implement errorhandling, the error element is not added to the tree
+// * If a nonterminal specifies a parsingContext option, it pushes a "global" follow set that any nested
+//   errorhandling nonterminal will also use when skipping tokens
+//   * Allows breaking the skip if there are no matching valid follows
+//
+// Custom error elements:
+// * Create an abstract errorElement nonterminal
+//   * It matches all tokens (make one optional so it also matches missing elements)
+//   * Use this as a rule to match if correct rules have failed
+//   * Options should include interfaceName="JB.RS.Psi.Tree.IErrorElement" and elementType="ERROR_ELEMENT"
+//   * This will create an abstract parse method - implement with TreeElementFactory.CreateErrorElement
+//     (no need to do any parsing - it's definitely an error)
+// * Abstract means it has a custom parse method
+//   * Implementation simply creates an error element and returns it
+//   * Does not advance or consume children, etc.
+//   * Means patterns in nonterminal definition are only useful as follow tokens
+// * Can create similar elements
+//   * Different set of tokens for different purposes, e.g. don't match closing braces
+//   * Again, only useful for follow tokens
+//   * Custom parse function can create error element, then skip all tokens until it finds a match,
+//     based on whatever rules are required. Skipping will add token as child to error element
+//
+// Guidance:
+//
+// * The root nonterminal should implement errorhandling, or the error element will not get attached to anything
+// * Split things up into smaller nested nonterminals that can be errorhandling
+// * If a token or nonterminal is to be used as a resync point, the nonterminal directly
+//   BEFORE it needs to implement errrorhandling
+// * Or, resync AFTER a token, not on it. E.g. don't resync on a closing paren, only on
+//   what follows a closing paren
+// * A private nonterminal with errorhandling can help without generating a node for the tree
+// * Use parsingContext when you have an errorhandling nested inside an errorhandling. The
+//   parsinngContext adds new follow rules to the inner errorhandling follow set. ParsingContext
+//   requires errorhandling somewhere, or no-one will ever check for the follow token override
+
+// CSharp parser
+//
+// Argument list is set to error handling. Doesn't resync on closing paren, but on following token
+// argumentListAux is LPAREN argumentList RPAREN, errorhandling
+// argumentList is custom parse function. Of course. Handles leading comma, trailing comma,
+//   cSharpArgument. Missing arguments (due to trailing/leading comma) are added as FakeArgument
+// cSharpArgument is custom function (and error handling)
+//   include ParseCSharpArgumentInternal + HandleErrorInCSharpArgument
+//   ParseCSharpArgumentInternal doesn't get called. Custom function calls error handler
+
+
+// Matches all (non-filtered) tokens, but doesn't advance!
+abstract errorElement
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+:
+  IDENTIFIER?
+
+  | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
+
+  | CG_PROGRAM | CG_INCLUDE | CG_END
+  | GLSL_PROGRAM | GLSL_INCLUDE | GLSL_END
+  | HLSL_PROGRAM | HLSL_INCLUDE | HLSL_END
+  | CG_CONTENT
+
+  | LPAREN
+  | RPAREN
+  | LBRACK
+  | RBRACK
+  | LBRACE
+  | RBRACE
+  | COMMA
+  | DOT
+  | EQUALS
+  | PLUS
+  | MINUS
+  | MULTIPLY
+  | PLUS_MINUS
+
+  | SHADER_KEYWORD
+  | PROPERTIES_KEYWORD
+  | CATEGORY_KEYWORD
+  | SUB_SHADER_KEYWORD
+  | FALLBACK_KEYWORD
+  | CUSTOM_EDITOR_KEYWORD
+  | DEPENDENCY_KEYWORD
+
+  | COLOR_KEYWORD
+  | FLOAT_KEYWORD
+  | INT_KEYWORD
+  | RANGE_KEYWORD
+  | VECTOR_KEYWORD
+
+  | ANY_KEYWORD
+  | CUBE_KEYWORD
+  | CUBE_ARRAY_KEYWORD
+  | RECT_KEYWORD
+  | TEXTURE_2D_KEYWORD
+  | TEXTURE_2D_ARRAY_KEYWORD
+  | TEXTURE_3D_KEYWORD
+
+  | TAGS_KEYWORD
+  | PASS_KEYWORD
+  | USEPASS_KEYWORD
+  | GRABPASS_KEYWORD
+
+  | CULL_KEYWORD
+  | ZCLIP_KEYWORD
+  | ZTEST_KEYWORD
+  | ZWRITE_KEYWORD
+  | OFFSET_KEYWORD
+  | BLEND_KEYWORD
+  | BLEND_OP_KEYWORD
+  | ALPHA_TO_MASK_KEYWORD
+  | COLOR_MASK_KEYWORD
+  | STENCIL_KEYWORD
+  | NAME_KEYWORD
+  | LOD_KEYWORD
+  | BIND_CHANNELS_KEYWORD
+
+  | BACK_KEYWORD
+  | FRONT_KEYWORD
+
+  | LIGHTING_KEYWORD
+  | MATERIAL_KEYWORD
+  | SEPARATE_SPECULAR_KEYWORD
+  | COLOR_MATERIAL_KEYWORD
+  | FOG_KEYWORD
+  | ALPHA_TEST_KEYWORD
+  | SET_TEXTURE_KEYWORD
+
+  | DIFFUSE_KEYWORD
+  | AMBIENT_KEYWORD
+  | SPECULAR_KEYWORD
+  | SHININESS_KEYWORD
+
+  | COMBINE_KEYWORD
+  | CONSTANT_COLOR_KEYWORD
+  | MATRIX_KEYWORD
+  | LIGHTMAP_MODE_KEYWORD
+  | TEX_GEN_KEYWORD
+
+  | PREVIOUS_KEYWORD
+  | PRIMARY_KEYWORD
+  | TEXTURE_KEYWORD
+  | CONSTANT_KEYWORD
+  | DOUBLE_KEYWORD
+  | QUAD_KEYWORD
+  | LERP_KEYWORD
+  | ONE_KEYWORD
+  | ALPHA_KEYWORD
+  | DOT3_KEYWORD
+  | DOT3RGBA_KEYWORD
+
+  | SPHERE_MAP_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
+
+  | BIND_KEYWORD
+
+  | AMBIENT_AND_DIFFUSE_KEYWORD
+  | EMISSION_KEYWORD
+
+  | MODE_KEYWORD
+  | DENSITY_KEYWORD
+
+  | GLOBAL_KEYWORD
+  | LINEAR_KEYWORD
+  | EXP_KEYWORD
+  | EXP2_KEYWORD
+
+  | REF_KEYWORD
+  | READ_MASK_KEYWORD
+  | WRITE_MASK_KEYWORD
+  | PASS_FRONT_KEYWORD
+  | PASS_BACK_KEYWORD
+  | COMP_KEYWORD
+  | COMP_FRONT_KEYWORD
+  | COMP_BACK_KEYWORD
+  | FAIL_KEYWORD
+  | FAIL_FRONT_KEYWORD
+  | FAIL_BACK_KEYWORD
+  | ZFAIL_KEYWORD
+  | ZFAIL_FRONT_KEYWORD
+  | ZFAIL_BACK_KEYWORD
+
+  | GREATER_KEYWORD
+  | GEQUAL_KEYWORD
+  | LESS_KEYWORD
+  | LEQUAL_KEYWORD
+  | EQUAL_KEYWORD
+  | NOT_EQUAL_KEYWORD
+  | ALWAYS_KEYWORD
+  | NEVER_KEYWORD
+
+  | KEEP_KEYWORD
+  | ZERO_KEYWORD
+  | REPLACE_KEYWORD
+  | INCR_SAT_KEYWORD
+  | DECR_SAT_KEYWORD
+  | INVERT_KEYWORD
+  | INCR_WRAP_KEYWORD
+  | DECR_WRAP_KEYWORD
+
+  | TRUE_KEYWORD
+  | FALSE_KEYWORD
+  | ON_KEYWORD
+  | OFF_KEYWORD
+
+  | BAD_CHARACTER
+;
+
+abstract errorElementWithoutRBrace
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+:
+  IDENTIFIER?
+
+  | STRING_LITERAL | NUMERIC_LITERAL | UNQUOTED_STRING_LITERAL
+
+  | CG_PROGRAM | CG_INCLUDE | CG_END
+  | GLSL_PROGRAM | GLSL_INCLUDE | GLSL_END
+  | HLSL_PROGRAM | HLSL_INCLUDE | HLSL_END
+  | CG_CONTENT
+
+  | LPAREN
+  | RPAREN
+  | LBRACK
+  | RBRACK
+  | LBRACE
+  | COMMA
+  | DOT
+  | EQUALS
+  | PLUS
+  | MINUS
+  | MULTIPLY
+  | PLUS_MINUS
+
+  | SHADER_KEYWORD
+  | PROPERTIES_KEYWORD
+  | CATEGORY_KEYWORD
+  | SUB_SHADER_KEYWORD
+  | FALLBACK_KEYWORD
+  | CUSTOM_EDITOR_KEYWORD
+  | DEPENDENCY_KEYWORD
+
+  | COLOR_KEYWORD
+  | FLOAT_KEYWORD
+  | INT_KEYWORD
+  | RANGE_KEYWORD
+  | VECTOR_KEYWORD
+
+  | ANY_KEYWORD
+  | CUBE_KEYWORD
+  | CUBE_ARRAY_KEYWORD
+  | RECT_KEYWORD
+  | TEXTURE_2D_KEYWORD
+  | TEXTURE_2D_ARRAY_KEYWORD
+  | TEXTURE_3D_KEYWORD
+
+  | TAGS_KEYWORD
+  | PASS_KEYWORD
+  | USEPASS_KEYWORD
+  | GRABPASS_KEYWORD
+
+  | CULL_KEYWORD
+  | ZCLIP_KEYWORD
+  | ZTEST_KEYWORD
+  | ZWRITE_KEYWORD
+  | OFFSET_KEYWORD
+  | BLEND_KEYWORD
+  | BLEND_OP_KEYWORD
+  | ALPHA_TO_MASK_KEYWORD
+  | COLOR_MASK_KEYWORD
+  | STENCIL_KEYWORD
+  | NAME_KEYWORD
+  | LOD_KEYWORD
+  | BIND_CHANNELS_KEYWORD
+
+  | LIGHTING_KEYWORD
+  | MATERIAL_KEYWORD
+  | SEPARATE_SPECULAR_KEYWORD
+  | COLOR_MATERIAL_KEYWORD
+  | FOG_KEYWORD
+  | ALPHA_TEST_KEYWORD
+  | SET_TEXTURE_KEYWORD
+
+  | DIFFUSE_KEYWORD
+  | AMBIENT_KEYWORD
+  | SPECULAR_KEYWORD
+  | SHININESS_KEYWORD
+
+  | COMBINE_KEYWORD
+  | CONSTANT_COLOR_KEYWORD
+  | MATRIX_KEYWORD
+  | LIGHTMAP_MODE_KEYWORD
+  | TEX_GEN_KEYWORD
+
+  | PREVIOUS_KEYWORD
+  | PRIMARY_KEYWORD
+  | TEXTURE_KEYWORD
+  | CONSTANT_KEYWORD
+  | DOUBLE_KEYWORD
+  | QUAD_KEYWORD
+  | LERP_KEYWORD
+  | ONE_KEYWORD
+  | ALPHA_KEYWORD
+  | DOT3_KEYWORD
+  | DOT3RGBA_KEYWORD
+
+  | SPHERE_MAP_KEYWORD
+  | EYE_LINEAR_KEYWORD
+  | CUBE_REFLECT_KEYWORD
+  | CUBE_NORMAL_KEYWORD
+  | OBJECT_LINEAR_KEYWORD
+
+  | BIND_KEYWORD
+
+  | AMBIENT_AND_DIFFUSE_KEYWORD
+  | EMISSION_KEYWORD
+
+  | MODE_KEYWORD
+  | DENSITY_KEYWORD
+
+  | GLOBAL_KEYWORD
+  | LINEAR_KEYWORD
+  | EXP_KEYWORD
+  | EXP2_KEYWORD
+
+  | REF_KEYWORD
+  | READ_MASK_KEYWORD
+  | WRITE_MASK_KEYWORD
+  | PASS_FRONT_KEYWORD
+  | PASS_BACK_KEYWORD
+  | COMP_KEYWORD
+  | COMP_FRONT_KEYWORD
+  | COMP_BACK_KEYWORD
+  | FAIL_KEYWORD
+  | FAIL_FRONT_KEYWORD
+  | FAIL_BACK_KEYWORD
+  | ZFAIL_KEYWORD
+  | ZFAIL_FRONT_KEYWORD
+  | ZFAIL_BACK_KEYWORD
+
+  | GREATER_KEYWORD
+  | GEQUAL_KEYWORD
+  | LESS_KEYWORD
+  | LEQUAL_KEYWORD
+  | EQUAL_KEYWORD
+  | NOT_EQUAL_KEYWORD
+  | ALWAYS_KEYWORD
+  | NEVER_KEYWORD
+
+  | KEEP_KEYWORD
+  | ZERO_KEYWORD
+  | REPLACE_KEYWORD
+  | INCR_SAT_KEYWORD
+  | DECR_SAT_KEYWORD
+  | INVERT_KEYWORD
+  | INCR_WRAP_KEYWORD
+  | DECR_WRAP_KEYWORD
+
+  | TRUE_KEYWORD
+  | FALSE_KEYWORD
+  | ON_KEYWORD
+  | OFF_KEYWORD
+
+  | BAD_CHARACTER
+;
+
+// Making command names their own tokens makes it easier to parse (especially
+// with regard to follow tokens and error messages), but makes it trickier to
+// parse actually identifiers, such as property names. This nonterminal matches
+// the IDENTIFIER token, as well as all of the keywords
+//
+// Option 1. Call this `identifier`. This generates `IIdentifier` as a partial interface. Add another
+//   implementation and derive it from `Psi.Tree.IIdentifier`. We need to use `customImpl` so we can add
+//   a derived instance that will implement `IIdentifier.Name`
+// Option 2. Call this `shaderLabIdentifier` to distinguish with the `IDENTIFIER` token. All else as
+//   above. Downside is that this is a composite element (big deal?)
+// Option 3. Create an abstract nonterminal, which then requires a `ParseIdentifier` method. This would
+//   check the current token is either `IDENTIFIER` or belongs to the Keywords set. Then can return any
+//   element, e.g. `IDENTIFER` as a token, not a composite
+// Option 4. As above, but create another private non terminal that
+//
+// Note that C# does context sensitive keywords the other way - all context sensitive keywords are identifiers
+// and parsed via custom match/expect methods. This has implications on follow tokens (on error, can skip to
+// any following identifier, rather than expected keyword)
+//
+// TODO: I can't remember why this is customImpl!?
+shaderLabIdentifier
+options {
+  customImpl;
+}
+:
+  IDENTIFIER<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | SHADER_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | PROPERTIES_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CATEGORY_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | SUB_SHADER_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | FALLBACK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CUSTOM_EDITOR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | DEPENDENCY_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | COLOR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | FLOAT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | INT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | RANGE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | VECTOR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | ANY_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CUBE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CUBE_ARRAY_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | RECT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | TEXTURE_2D_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | TEXTURE_2D_ARRAY_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | TEXTURE_3D_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | TAGS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | PASS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | USEPASS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | GRABPASS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | CULL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ZCLIP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ZTEST_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ZWRITE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | OFFSET_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | BLEND_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | BLEND_OP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ALPHA_TO_MASK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | COLOR_MASK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | STENCIL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | NAME_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | LOD_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | BIND_CHANNELS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | BACK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | FRONT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | LIGHTING_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | MATERIAL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | SEPARATE_SPECULAR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | COLOR_MATERIAL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | FOG_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ALPHA_TEST_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | SET_TEXTURE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | DIFFUSE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | AMBIENT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | SPECULAR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | SHININESS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | COMBINE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CONSTANT_COLOR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | MATRIX_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | LIGHTMAP_MODE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | TEX_GEN_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | PREVIOUS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | PRIMARY_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | TEXTURE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CONSTANT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | DOUBLE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | QUAD_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | LERP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ONE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ALPHA_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | DOT3_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | DOT3RGBA_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | SPHERE_MAP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | EYE_LINEAR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CUBE_REFLECT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | CUBE_NORMAL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | OBJECT_LINEAR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | BIND_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | AMBIENT_AND_DIFFUSE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | EMISSION_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | MODE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | DENSITY_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | GLOBAL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | LINEAR_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | EXP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | EXP2_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | REF_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | READ_MASK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | WRITE_MASK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | PASS_FRONT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | PASS_BACK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | COMP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | COMP_FRONT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | COMP_BACK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | FAIL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | FAIL_FRONT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | FAIL_BACK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ZFAIL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ZFAIL_FRONT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ZFAIL_BACK_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | GREATER_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | GEQUAL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | LESS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | LEQUAL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | EQUAL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | NOT_EQUAL_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ALWAYS_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | NEVER_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | KEEP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ZERO_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | REPLACE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | INCR_SAT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | DECR_SAT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | INVERT_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | INCR_WRAP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | DECR_WRAP_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+
+  | TRUE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | FALSE_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | ON_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+  | OFF_KEYWORD<SHADER_LAB_IDENTIFIER, IdentifierToken>
+;
+
+
+referenceName
+:
+  shaderLabIdentifier<SHADER_LAB_REFERENCE, Identifier>
+;
+
+// **************************************************************************
+//
+// Values
+//
+// **************************************************************************
+
+private trueLiteral{ROLE, Getter}
+:
+  TRUE_KEYWORD<@ROLE, @Getter>
+  | ON_KEYWORD<@ROLE, @Getter>
+;
+
+// NOTE NOTE NOTE
+// This private terminal is expanded inline a couple of places, to workaround
+// a warning in generating setters. Please search for falseLiteral when modifying
+private falseLiteral{ROLE, Getter}
+:
+  FALSE_KEYWORD<@ROLE, @Getter>
+  | OFF_KEYWORD<@ROLE, @Getter>
+;
+
+boolLiteral
+:
+  trueLiteral{SHADER_LAB_KEYWORD, Keyword}
+  | falseLiteral{SHADER_LAB_KEYWORD, Keyword}
+;
+
+vectorLiteral
+:
+  LPAREN<LPAREN, LParen>
+  vectorLiteralValues
+  RPAREN<RPAREN, RParen>
+;
+
+// Private and error handling to allow resync on vectorLiteralValue::RPAREN
+private errorhandling vectorLiteralValues
+:
+  LIST numericValue<NUMBER, Numbers> SEP COMMA<COMMA, Comma>
+;
+
+variableReference
+:
+  LBRACK<LBRACK, LBrack>
+  referenceName<SHADER_LAB_REFERENCE, Name>
+  // Technically, Unity parses a variable reference exactly as it does an attribute
+  // The parameters aren't an error, but are silently ignored
+  invalidVariableReferenceParameters<INVALID_PARAMETERS, InvalidParameters>?
+  RBRACK<RBRACK, RBrack>
+;
+
+invalidVariableReferenceParameters
+:
+  (
+    LPAREN
+    | RPAREN
+    | COMMA
+    | DOT
+    | UNQUOTED_STRING_LITERAL
+    | shaderLabIdentifier
+  )*
+;
+
+interface value
+:
+  numericValue
+  | colorValue
+  | boolValue
+;
+
+boolValue
+:
+  TRUE_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | ON_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | FALSE_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | OFF_KEYWORD<SHADER_LAB_CONSTANT, Constant>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+numericValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_CONSTANT, Constant>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+colorValue
+:
+  vectorLiteral<SHADER_LAB_CONSTANT, Constant>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+
+
+// **************************************************************************
+//
+// Preprocessor
+//
+// **************************************************************************
+
+// This rule isn't used by anything. It forces a following token set of any token
+// which allows us to use `errorhandling`. If we don't have this rule, the following
+// token is expected to be null, and then we don't get `errorhandling` and would
+// have to handle thrown syntax errors manually
+errorhandling preprocessorDirectiveForceFollows
+:
+  preprocessorDirective
+  (errorElement | WHITESPACE | NEW_LINE)
+;
+
+// This rule isn't called by anything in the generated parser, but is used by the
+// preprocessor. Note that have to handle whitespace here, because the preprocessor
+// doesn't use the filtering lexer. Fortunately, this is easy because we don't need
+// to handle comments
+errorhandling interface preprocessorDirective
+:
+  ppWarningDirective
+  | ppErrorDirective
+  | ppLineDirective
+;
+
+ppWarningDirective
+:
+  PP_WARNING<PP_DIRECTIVE, Directive>
+  WHITESPACE*
+  // Message isn't optional, but I want control of the error message if it's missing
+  PP_MESSAGE<PP_MESSAGE, Message>?
+;
+
+ppErrorDirective
+:
+  PP_ERROR<PP_DIRECTIVE, Directive>
+  WHITESPACE*
+  // Message isn't optional, but I want control of the error message if it's missing
+  PP_MESSAGE<PP_MESSAGE, Message>?
+;
+
+ppLineDirective
+:
+  PP_LINE<PP_DIRECTIVE, Directive>
+  WHITESPACE*
+  // Missing digits is legal, and treated the same as 0
+  PP_DIGITS<PP_DIGITS, Digits>?
+  WHITESPACE*
+  // The #line directive keeps reading until it's out of digits, but that last non-digit
+  // character (usually a new line) gets swallowed. We can track it and warn
+  PP_SWALLOWED<PP_SWALLOWED, Swallowed>?
+;
+
+
+
+// **************************************************************************
+//
+// ShaderLab
+//
+// **************************************************************************
+
+errorhandling shaderLabFile options { stubBase="ShaderLabFileElement"; }
+:
+  shaderCommand<SHADER_LAB_COMMAND, Command>
+;
+
+
+// Identify commands that have block values. Used for brace matching and folding
+interface blockCommand
+:
+  shaderCommand
+  | propertiesCommand
+  | categoryCommand
+  | subShaderCommand
+  | tagsCommand
+  | stencilCommand
+  | materialCommand
+  | setTextureCommand
+  | fogCommand
+  | bindChannelsCommand
+;
+
+interface blockValue
+:
+  shaderValue
+  | propertiesValue
+  | texturePropertyValue
+  | categoryValue
+  | subShaderValue
+  | tagsValue
+  | stencilValue
+  | materialValue
+  | setTextureValue
+  | fogValue
+  | bindChannelsValue
+  | grabPassValue
+  | texturePassValue
+;
+
+
+// **************************************************************************
+//
+// Shader
+//
+// **************************************************************************
+
+shaderCommand
+:
+  SHADER_KEYWORD<SHADER_LAB_KEYWORD, ShaderKeyword>
+  shaderValue<SHADER_LAB_VALUE, Value>
+;
+
+shaderValue
+:
+  shaderValueName
+  LBRACE<LBRACE, LBrace>
+  propertiesCommand<PROPERTIES_COMMAND, PropertiesCommand>?
+  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
+  RBRACE<RBRACE, RBrace>
+;
+
+shaderBlock
+:
+  categoryCommand<CATEGORY_COMMAND, CategoryCommand>
+  | subShaderCommand<SUBSHADER_COMMAND, SubShaderCommand>
+  | fallbackCommand<FALLBACK_COMMAND, FallbackCommands>
+  | dependencyCommand<DEPENDENCY_COMMAND, DependencyCommands>
+  | customEditorCommand<CUSTOM_EDITOR_COMMAND, CustomEditorCommands>
+;
+
+// Errorhandling to resync on next following token - LBRACE
+// Swallows everything up to LBRACE
+private errorhandling shaderValueName
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+;
+
+
+
+// **************************************************************************
+//
+// Properties
+//
+// **************************************************************************
+
+// Parsing context so nested errors will resync on following rules
+// Must also be errorhandling, or else no-one will check IsInFollow
+errorhandling propertiesCommand
+options {
+  parsingContext;
+}
+:
+  PROPERTIES_KEYWORD<SHADER_LAB_KEYWORD, PropertiesKeyword>
+  propertiesValue<SHADER_LAB_VALUE, Value>
+;
+
+propertiesValue
+:
+  LBRACE<LBRACE, LBrace>
+  propertyDeclaration<PROPERTY_DECLARATIONS, Declarations>*
+  RBRACE<RBRACE, RBrace>
+;
+
+propertyDeclaration
+options {
+  customInterface;
+  stubBase="ShaderLabDeclarationBase";
+}
+:
+  propertyHeader
+  EQUALS<EQUALS, Equals>
+  propertyValue<PROPERTY_VALUE, PropertValue>
+;
+
+// Error handling, to make propertyDeclaration::EQUALS a resync point
+// parsing context so that a missing RPAREN in propertyType/propertyParams doesn't overflow to end of file
+private errorhandling propertyHeader
+options {
+  parsingContext;
+}
+:
+  attribute<ATTRIBUTE, Attributes>*
+  propertyName
+  propertyParameters
+;
+
+private propertyName
+:
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Name>
+  | errorElementWithoutRBrace
+;
+
+private propertyParameters
+:
+  LPAREN<LPAREN, LParen>
+  STRING_LITERAL<SHADER_LAB_NAME, DisplayName>
+  COMMA<COMMA, Comma>
+  propertyType<PROPERTY_TYPE, PropertyType>
+  RPAREN<RPAREN, RParen>
+;
+
+interface propertyType
+:
+  simplePropertyType
+  | textureDimensionPropertyType
+  | rangePropertyType
+;
+
+simplePropertyType
+:
+  COLOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | FLOAT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | INT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>    // Note, treated same as FLOAT_KEYWORD
+  | VECTOR_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+;
+
+textureDimensionPropertyType
+:
+  textureDimensionKeyword
+;
+
+// Errorhandling to allow resync on RPAREN in propertyParameters
+errorhandling rangePropertyType
+:
+  RANGE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  LPAREN<LPAREN, LParen>
+  NUMERIC_LITERAL<MIN, Min>
+  COMMA<COMMA, Comma>
+  NUMERIC_LITERAL<MAX, Max>
+  RPAREN<RPAREN, RParen>
+;
+
+interface propertyValue
+:
+  scalarPropertyValue
+  | vectorPropertyValue
+  | texturePropertyValue
+  | errorPropertyValue
+;
+
+scalarPropertyValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Number>
+;
+
+vectorPropertyValue
+:
+  vectorLiteral<SHADER_LAB_VALUE, Vector>
+;
+
+texturePropertyValue
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  (
+    LBRACE<LBRACE, LBrace>
+    texEnvProperty<TEX_ENV_PROPERTY, TexEnvProperty>*
+    errorTexturePropertyBlockValues
+    RBRACE<RBRACE, RBrace>
+  )?
+;
+
+interface texEnvProperty
+:
+  textureDimensionTexEnvProperty
+  | texGenTexEnvProperty
+  | matrixTexEnvProperty
+  | lightmapTexEnvProperty
+;
+
+textureDimensionTexEnvProperty
+:
+  textureDimensionKeyword
+;
+
+private textureDimensionKeyword
+:
+  TEXTURE_2D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_3D_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | CUBE_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | TEXTURE_2D_ARRAY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | CUBE_ARRAY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | RECT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | ANY_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+;
+
+// TODO: Shader compiler error - obsolete
+// "Fixed function TexGen used; it doesn't do anything now"
+texGenTexEnvProperty
+:
+  TEX_GEN_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  texGenMode
+;
+
+private texGenMode
+:
+  SPHERE_MAP_KEYWORD<MODE, Mode>
+  | EYE_LINEAR_KEYWORD<MODE, Mode>
+  | CUBE_REFLECT_KEYWORD<MODE, Mode>
+  | CUBE_NORMAL_KEYWORD<MODE, Mode>
+  | OBJECT_LINEAR_KEYWORD<MODE, Mode>
+;
+
+// TODO: Shader compiler error - obsolete
+// "Fixed function text matrix '...' used; they don't do anything now"
+matrixTexEnvProperty
+:
+  MATRIX_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+// TODO: Does nothing, ignored
+lightmapTexEnvProperty
+:
+  LIGHTMAP_MODE_KEYWORD<SHADER_LAB_KEYWORD>
+;
+
+// The spec says there shouldn't be anything here. Use a custom parse function to eat
+// everything up to RBRACE
+private abstract errorTexturePropertyBlockValues
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+:
+  errorElementWithoutRBrace*
+;
+
+abstract errorPropertyValue
+options {
+  interfaceName = "JetBrains.ReSharper.Psi.Tree.IErrorElement";
+  elementType="ERROR_ELEMENT";
+}
+:
+  errorElementWithoutRBrace*
+;
+
+
+// **************************************************************************
+//
+// Property attributes
+//
+// **************************************************************************
+
+// TODO: Error handling of attributes - especially parameters
+// Unity's own parsing is very lax. Attributes and variable references
+// are interchangeable as far as their parser is concerned. An attribute
+// with parameters isn't structured - it just includes more characters.
+// If attribute parameters have invalid syntax, they're not treated as errors,
+// but silently ignored
+attribute
+:
+  LBRACK<LBRACK, LBrack>
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  attributeParameters<PARAMETERS, Parameters>?
+  RBRACK<RBRACK, RBrack>
+;
+
+attributeParameters
+:
+  LPAREN<LPAREN, LParen>
+  attributeParameterValues<PARAMETER_VALUES, ParameterValues>?
+  RPAREN<RPAREN, RParen>
+;
+
+attributeParameterValues
+:
+  attributeParameterValue<SHADER_LAB_VALUE, Value>
+  (
+    COMMA<COMMA, Comma>
+    attributeParameterValue<SHADER_LAB_VALUE, Value>
+  )*
+;
+
+// Number, unquoted(!) string literal, fully qualified type name, comma separated list of number/space containing identifiers
+interface attributeParameterValue
+:
+  numberAttributeParameterValue
+  | stringAttributeParameterValue
+;
+
+numberAttributeParameterValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+stringAttributeParameterValue
+:
+  UNQUOTED_STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// TODO: Common interface for commands?
+// TODO: Strongly typed accessors?
+//
+// **************************************************************************
+
+
+// **************************************************************************
+//
+// Category
+//
+// **************************************************************************
+
+categoryCommand
+:
+  CATEGORY_KEYWORD<SHADER_LAB_KEYWORD, CategoryKeyword>
+  categoryValue<SHADERLAB_VALUE, Value>
+;
+
+categoryValue
+:
+  LBRACE<LBRACE, LBrace>
+  stateCommand<STATE_COMMAND, StateCommands>*
+  shaderBlock<SHADER_BLOCK, ShaderBlocks>*
+  RBRACE<RBRACE, RBrace>
+;
+
+
+
+// **************************************************************************
+//
+// SubShader
+//
+// **************************************************************************
+
+// TODO: Sort out error handling for subtree
+subShaderCommand
+:
+  SUB_SHADER_KEYWORD<SHADER_LAB_KEYWORD, SubShaderKeyword>
+  subShaderValue<SHADER_LAB_VALUE, Value>
+;
+
+subShaderValue
+:
+  LBRACE<LBRACE, LBrace>
+  pass<PASS, Passes>*
+  RBRACE<RBRACE, RBrace>
+;
+
+pass
+:
+  stateCommand<STATE_COMMANDS, StateCommands>*
+  // ShaderLab syntax requires at least one Pass definition, but this might
+  // be automatically generated by a CGPROGRAM surface shader
+  passDef<PASSDEF, PassDefinition>?
+;
+
+interface stateCommand
+:
+  tagsCommand
+  | renderStateCommand
+  | legacyRenderStateCommand
+;
+
+
+
+// **************************************************************************
+//
+// Tags
+//
+// **************************************************************************
+
+tagsCommand
+:
+  TAGS_KEYWORD<SHADER_LAB_KEYWORD, TagsKeyword>
+  tagsValue<SHADER_KAB_VALUE, Value>
+;
+
+tagsValue
+:
+  LBRACE<LBRACE, LBrace>
+  tagDeclaration<TAG_DECLARATIONS, Declarations>*
+  RBRACE<RBRACE, RBrace>
+;
+
+interface tagDeclaration
+:
+  stringLiteralTagDeclaration
+  | identifierTagDeclaration
+;
+
+stringLiteralTagDeclaration
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  EQUALS<EQUALS, Equals>
+  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+identifierTagDeclaration
+:
+  shaderLabIdentifier<SHADER_LAB_NAME, Name>
+  EQUALS<EQUALS, Equals>
+  shaderLabIdentifier<SHADER_LAB_VALUE, Value>
+;
+
+
+
+// **************************************************************************
+//
+// Render state setup
+//
+// **************************************************************************
+
+interface renderStateCommand
+:
+  cullCommand
+  | zwriteCommand
+  | ztestCommand
+  | zclipCommand
+  | offsetCommand
+  | colorMaskCommand
+  | blendCommand
+  | blendOpCommand
+  | alphaToMaskCommand
+  | stencilCommand
+  | nameCommand
+  | lodCommand
+;
+
+interface legacyRenderStateCommand
+:
+  legacyLightingCommand
+  | alphaTestCommand
+  | fogCommand
+  | bindChannelsCommand
+;
+
+interface legacyLightingCommand
+:
+  colorCommand
+  | lightingCommand
+  | separateSpecularCommand
+  | colorMaterialCommand
+  | materialCommand
+;
+
+
+
+// **************************************************************************
+//
+// Common values
+//
+// **************************************************************************
+
+comparisonFunctionValue
+:
+  GREATER_KEYWORD<SHADER_LAB_VALUE, Value>
+  | GEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | LESS_KEYWORD<SHADER_LAB_VALUE, Value>
+  | LEQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | NOT_EQUAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | ALWAYS_KEYWORD<SHADER_LAB_VALUE, Value>
+  | NEVER_KEYWORD<SHADER_LAB_VALUE, Value>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+
+// **************************************************************************
+//
+// Render state commands
+//
+// **************************************************************************
+
+cullCommand
+:
+  CULL_KEYWORD<SHADER_LAB_KEYWORD, CullKeyword>
+  cullValue<SHADER_LAB_VALUE, Value>
+;
+
+cullValue
+:
+  // Expand falseLiteral to remove the warning "Generation of setters for complex alternatives is not fully supported yet"
+  // falseLiteral{FALSE_LITERAL, FalseLiteral}
+  FALSE_KEYWORD<FALSE_LITERAL, FalseLiteral>
+  | OFF_KEYWORD<FALSE_LITERAL, FalseLiteral>
+  | cullOrientation<ORIENTATION, Orientation>
+;
+
+cullOrientation
+:
+  FRONT_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | BACK_KEYWORD<SHADER_LAB_KEYWORD, Keyword>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>  // See UnityEngine.Rendering.CullMode for values
+;
+
+zwriteCommand
+:
+  ZWRITE_KEYWORD<SHADER_LAB_KEYWORD, ZWriteKeyword>
+  boolValue<SHADER_LAB_VALUE, Value>
+;
+
+zclipCommand
+:
+  ZCLIP_KEYWORD<SHADER_LAB_KEYWORD, ZClipKeyword>
+  boolValue<SHADER_LAB_VALUE, Value>
+;
+
+ztestCommand
+:
+  ZTEST_KEYWORD<SHADER_LAB_KEYWORD, ZTestKeyword>
+  ztestValue<SHADER_LAB_VALUE, Value>
+;
+
+ztestValue
+:
+  // True -> LEqual, False -> Disabled (not same as never)
+  boolLiteral<SHADER_LAB_VALUE, Value>
+  | comparisonFunctionValue<SHADER_LAB_VALUE, Value>
+;
+
+offsetCommand
+:
+  OFFSET_KEYWORD<SHADER_LAB_KEYWORD, OffsetKeyword>
+  offsetValue<SHADER_LAB_VALUE, Value>
+;
+
+offsetValue
+:
+  numericValue<FACTOR, Factor>
+  COMMA<COMMA, Comma>
+  numericValue<UNITS, Units>
+;
+
+colorMaskCommand
+:
+  COLOR_MASK_KEYWORD<SHADER_LAB_KEYWORD, ColorMaskKeyword>
+  colorMaskValue<SHADER_LAB_VALUE, Value>
+;
+
+colorMaskValue
+:
+  (
+    // Order is important. `False` could get parsed as an identifier
+    // Expand falseLiteral to remove the warning "Generation of setters for complex alternatives is not fully supported yet"
+    // falseLiteral{FALSE_LITERAL, FalseLiteral}
+    FALSE_KEYWORD<FALSE_LITERAL, FalseLiteral>
+    | OFF_KEYWORD<FALSE_LITERAL, FalseLiteral>
+    | colorMaskRgbaFlags<RGBA_FLAGS, RgbaFlags>
+    | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+  )
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
+;
+
+colorMaskRgbaFlags
+:
+  // RGB, A, 0, any combination of R, G, B, A
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Identifier>
+  | NUMERIC_LITERAL<ZERO_LITERAL, ZeroLiteral>
+;
+
+
+// **************************************************************************
+//
+// Blend
+//
+// **************************************************************************
+
+blendCommand
+:
+  BLEND_KEYWORD<SHADER_LAB_KEYWORD, BlendKeyword>
+  blendValue<SHADER_LAB_VALUE, Value>
+;
+
+blendValue
+:
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
+  (
+    falseLiteral{FALSE_LITERAL, FalseLiteral}
+    | blendValues
+  )
+;
+
+private blendValues
+:
+  blendFactor<SRCFACTOR, SrcFactor>
+  blendFactor<DSTFACTOR, DstFactor>
+  (
+    COMMA<COMMA, Comma>
+    blendFactor<SRCFACTORA, SrcFactorA>
+    blendFactor<DSTFACTORA, DstFactorA>
+  )?
+;
+
+blendFactor
+:
+  shaderLabIdentifier<FACTOR, Factor>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+blendOpCommand
+:
+  BLEND_OP_KEYWORD<SHADER_LAB_KEYWORD, BlendOpKeyword>
+  blendOpValue<SHADER_LAB_VALUE, Value>
+;
+
+blendOpValue
+:
+  NUMERIC_LITERAL<RENDER_TARGET_INDEX, RenderTargetIndex>?
+  blendOpValueAux{OP_COLOR, OpColor, OP_COLOR_REFERENCE, OpColorReference}
+  (
+    COMMA<COMMA, Comma>
+    blendOpValueAux{OP_ALPHA, OpAlpha, OP_ALPHA_REFERENCE, OpAlphaReference}
+  )?
+;
+
+private blendOpValueAux{OP_ROLE, OpGetter, OP_REFERENCE_ROLE, OpReferenceGetter}
+:
+  // TODO: Add keywords for expected op mode?
+  shaderLabIdentifier{@OP_ROLE, @OpGetter}
+  | variableReference{@OP_REFERENCE_ROLE, @OpReferenceGetter}
+;
+
+alphaToMaskCommand
+:
+  ALPHA_TO_MASK_KEYWORD<SHADER_LAB_KEYWORD, AlphaToMaskKeyword>
+  boolValue<SHADER_LAB_VALUE, Value>
+;
+
+
+
+// **************************************************************************
+//
+// Stencil
+//
+// **************************************************************************
+
+stencilOperation
+:
+  KEEP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | ZERO_KEYWORD<SHADER_LAB_VALUE, Value>
+  | REPLACE_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INCR_SAT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | DECR_SAT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INVERT_KEYWORD<SHADER_LAB_VALUE, Value>
+  | INCR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | DECR_WRAP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+stencilCommand
+:
+  STENCIL_KEYWORD<SHADER_LAB_KEYWORD, StencilKeyword>
+  stencilValue<SHADER_LAB_VALUE, Value>
+;
+
+stencilValue
+:
+  LBRACE<LBRACE, LBrace>
+  stencilContents{COMMAND, Commands}*
+  RBRACE<RBRACE, RBrace>
+;
+
+private stencilContents{ROLE, Getter}
+:
+  refCommand{ROLE, Getter}
+  | readMaskCommand{ROLE, Getter}
+  | writeMaskCommand{ROLE, Getter}
+  | compCommand{ROLE, Getter}
+  | compFrontCommand{ROLE, Getter}
+  | compBackCommand{ROLE, Getter}
+  | passCommand{ROLE, Getter}
+  | passFrontCommand{ROLE, Getter}
+  | passBackCommand{ROLE, Getter}
+  | failCommand{ROLE, Getter}
+  | failFrontCommand{ROLE, Getter}
+  | failBackCommand{ROLE, Getter}
+  | zfailCommand{ROLE, Getter}
+  | zfailFrontCommand{ROLE, Getter}
+  | zfailBackCommand{ROLE, Getter}
+;
+
+refCommand
+:
+  REF_KEYWORD<SHADER_LAB_KEYWORD, RefKeyword>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+readMaskCommand
+:
+  READ_MASK_KEYWORD<SHADER_LAB_KEYWORD, ReadMaskKeyword>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+writeMaskCommand
+:
+  WRITE_MASK_KEYWORD<SHADER_LAB_KEYWORD, WriteMaskKeyword>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+compCommand
+:
+  COMP_KEYWORD<SHADER_LAB_KEYWORD, CompKeyword>
+  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
+;
+
+compFrontCommand
+:
+  COMP_FRONT_KEYWORD<SHADER_LAB_KEYWORD, CompFrontKeyword>
+  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
+;
+
+compBackCommand
+:
+  COMP_BACK_KEYWORD<SHADER_LAB_KEYWORD, CompBackKeyword>
+  comparisonFunctionValue<SHADER_LAB_VALUE, Value>
+;
+
+passCommand
+:
+  PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+passFrontCommand
+:
+  PASS_FRONT_KEYWORD<SHADER_LAB_KEYWORD, PassFrontKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+passBackCommand
+:
+  PASS_BACK_KEYWORD<SHADER_LAB_KEYWORD, PassBackKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+failCommand
+:
+  FAIL_KEYWORD<SHADER_LAB_KEYWORD, FailKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+failFrontCommand
+:
+  FAIL_FRONT_KEYWORD<SHADER_LAB_KEYWORD, FailFrontKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+failBackCommand
+:
+  FAIL_BACK_KEYWORD<SHADER_LAB_KEYWORD, FailBackKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+zfailCommand
+:
+  ZFAIL_KEYWORD<SHADER_LAB_KEYWORD, ZFailKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+zfailFrontCommand
+:
+  ZFAIL_FRONT_KEYWORD<SHADER_LAB_KEYWORD, ZFailFrontKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+zfailBackCommand
+:
+  ZFAIL_BACK_KEYWORD<SHADER_LAB_KEYWORD, ZFailBackKeyword>
+  stencilOperation<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Name
+//
+// **************************************************************************
+
+nameCommand
+:
+  NAME_KEYWORD<SHADER_LAB_KEYWORD, NameKeyword>
+  nameValue<SHADER_LAB_VALUE>
+;
+
+nameValue
+:
+  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// LOD
+//
+// **************************************************************************
+
+lodCommand
+:
+  LOD_KEYWORD<SHADER_LAB_KEYWORD, LodKeyword>
+  lodValue<SHADER_LAB_VALUE, Value>
+;
+
+lodValue
+:
+  NUMERIC_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Legacy lighting commands
+//
+// **************************************************************************
+
+colorCommand
+:
+  COLOR_KEYWORD<SHADER_LAB_KEYWORD, ColorKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+lightingCommand
+:
+  LIGHTING_KEYWORD<SHADER_LAB_KEYWORD, LightingKeyword>
+  boolLiteral<SHADER_LAB_VALUE, Value>
+;
+
+separateSpecularCommand
+:
+  SEPARATE_SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, SeparateSpecularKeyword>
+  boolLiteral<SHADER_LAB_VALUE, Value>
+;
+
+colorMaterialCommand
+:
+  COLOR_MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, ColorMaterialKeyword>
+  colorMaterialValue<SHADER_LAB_VALUE, Value>
+;
+
+colorMaterialValue
+:
+  AMBIENT_AND_DIFFUSE_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EMISSION_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
+materialCommand
+:
+  MATERIAL_KEYWORD<SHADER_LAB_KEYWORD, MaterialKeyword>
+  materialValue<SHADER_LAB_VALUE, Value>
+;
+
+materialValue
+:
+  LBRACE<LBRACE, LBrace>
+  materialContents*
+  RBRACE<RBRACE, RBrace>
+;
+
+private materialContents
+:
+  diffuseCommand<SHADER_LAB_COMMAND, Commands>
+  | ambientCommand<SHADER_LAB_COMMAND, Commands>
+  | specularCommand<SHADER_LAB_COMMAND, Commands>
+  | shininessCommand<SHADER_LAB_COMMAND, Commands>
+  | emissionCommand<SHADER_LAB_COMMAND, Commands>
+;
+
+diffuseCommand
+:
+  DIFFUSE_KEYWORD<SHADER_LAB_KEYWORD, DiffuseKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+ambientCommand
+:
+  AMBIENT_KEYWORD<SHADER_LAB_KEYWORD, AmbientKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+specularCommand
+:
+  SPECULAR_KEYWORD<SHADER_LAB_KEYWORD, SpecularKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+shininessCommand
+:
+  SHININESS_KEYWORD<SHADER_LAB_KEYWORD, ShininessKeyword>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+emissionCommand
+:
+  EMISSION_KEYWORD<SHADER_LAB_KEYWORD, EmissionKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Legacy texture combiners
+//
+// **************************************************************************
+
+setTextureCommand
+:
+  SET_TEXTURE_KEYWORD<SHADER_LAB_KEYWORD, SetTextureKeyword>
+  setTextureValue<SHADER_LAB_VALUE, Value>
+;
+
+setTextureValue
+:
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
+  (
+    LBRACE<LBRACE, LBrace>
+    textureBinding<BINDINGS, Bindings>*
+    RBRACE<RBRACE, RBrace>
+  )?
+;
+
+interface textureBinding
+:
+  matrixCommand
+  | constantColorCommand
+  | combineCommand
+;
+
+matrixCommand
+:
+  // TODO: The only supported value is [unity_LightmapMatrix]
+  // Otherwise compiler error:
+  // "Fixed function texture '{varref}' used; they don't do anything now"
+  MATRIX_KEYWORD<SHADER_LAB_KEYWORD, MatrixKeyword>
+  variableReference<SHADER_LAB_REFERENCE, VariableReference>
+;
+
+constantColorCommand
+:
+  CONSTANT_COLOR_KEYWORD<SHADER_LAB_KEYWORD, ConstantColorKeyword>
+  colorValue<SHADER_LAB_VALUE, Value>
+;
+
+combineCommand
+:
+  COMBINE_KEYWORD<SHADER_LAB_KEYWORD, CombineKeyword>
+  combineValue<SHADER_LAB_VALUE, Value>
+;
+
+combineValue
+:
+  combineCalculation<DEFAULT_CALCULATION, DefaultCalculation>
+  (
+    COMMA<COMMA, Comma>
+    combineCalculation<ALPHA_CALCULATION, AlphaCalculation>
+  )?
+;
+
+combineCalculation
+:
+  // Both operation and interpolation start with combineSrc, so match it
+  // and pass in so it can be owned by that type, and so we can match on
+  // the second token (operator or `lerp`)
+  !(#src1:combineSrc)
+  (
+    combineOperation<OPERATION, Operation>[src1]
+    | combineInterpolation<INTERPOLATION, Interpolation>[src1]
+  )
+  brightnessModifier?
+;
+
+private brightnessModifier
+:
+  DOUBLE_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
+  | QUAD_KEYWORD<BRIGHTNESS_MODIFIER, BrightnessModifier>
+;
+
+combineOperation[combineSrc src1]
+:
+  &src1<SRC1, Src1>
+  (
+    operator
+    combineSrc<SRC2, Src2>
+    (
+      operator
+      combineSrc<SRC3, Src3>
+    )?
+  )?
+;
+
+private operator
+:
+  PLUS<OPERATOR, Operator>
+  | MINUS<OPERATOR, Operator>
+  | MULTIPLY<OPERATOR, Operator>
+  | legacyOperator{OPERATOR, Operator}
+;
+
+private legacyOperator{ROLE, Getter}
+:
+  // Compiler errors
+  // "Support for SetTexture combiner '{Operator}' has been removed"
+  PLUS_MINUS{ROLE, Getter}
+  | DOT3_KEYWORD{ROLE, Getter}
+  | DOT3RGBA_KEYWORD{ROLE, Getter}
+;
+
+combineInterpolation[combineSrc src1]
+:
+  &src1<SRC1, Src2>
+  LERP_KEYWORD<SHADER_LAB_KEYWORD, LerpKeyword>
+  LPAREN<LPAREN, LParen>
+  combineSrc<SRC2, Src2>
+  RPAREN<RPAREN, RParen>
+  combineSrc<SRC3, Src3>
+;
+
+combineSrc
+:
+  colorNegationModifier<COLOR_NEGATION_MODIFIER, ColorNegationModifier>?
+  (
+    PREVIOUS_KEYWORD<SRC, Src>
+    | PRIMARY_KEYWORD<SRC, Src>
+    | TEXTURE_KEYWORD<SRC, Src>
+    | CONSTANT_KEYWORD<SRC, Src>
+  )
+  ALPHA_KEYWORD<ALPHA_CHANNEL_MODIFIER, AlphaChannelModifier>?
+;
+
+colorNegationModifier
+:
+  ONE_KEYWORD<SHADER_LAB_KEYWORD, OneKeyword>
+  MINUS<MINUS, Minus>
+;
+
+
+// **************************************************************************
+//
+// Legacy AlphaTesting
+//
+// **************************************************************************
+
+alphaTestCommand
+:
+  ALPHA_TEST_KEYWORD<SHADER_LAB_KEYWORD, AlphaTestKeyword>
+  alphaTestValue<SHADER_LAB_VALUE, Value>
+;
+
+alphaTestValue
+:
+  falseLiteral{SHADER_LAB_KEYWORD, BoolKeyword}
+  | alphaTestLEqualValue
+  | alphaTestComparisonValue
+;
+
+private alphaTestLEqualValue
+:
+  // Treated as LEQUAL
+  trueLiteral{SHADER_LAB_KEYWORD, BoolKeyword}
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+private alphaTestComparisonValue
+:
+  comparisonFunctionValue<COMPARISON_FUNCTION, ComparisonFunction>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Legacy Fog
+//
+// **************************************************************************
+
+fogCommand
+:
+  FOG_KEYWORD<SHADER_LAB_KEYWORD, FogKeyword>
+  fogValue<SHADER_LAB_VALUE, Value>
+;
+
+fogValue
+:
+  LBRACE<LBRACE, LBrace>
+  fogContents*
+  RBRACE<RBRACE, RBrace>
+;
+
+private fogContents
+:
+  modeCommand<SHADER_LAB_COMMAND, Commands>
+  | colorCommand<SHADER_LAB_COMMAND, Commands>
+  | densityCommand<SHDAER_LAB_COMMAND, Commands>
+  | rangeCommand<SHDAER_LAB_COMMAND, Commands>
+;
+
+modeCommand
+:
+  MODE_KEYWORD<SHADER_LAB_KEYWORD, ModeKeyword>
+  modeValue<SHADER_LAB_VALUE, Value>
+;
+
+modeValue
+:
+  OFF_KEYWORD<SHADER_LAB_VALUE, Value>
+  | GLOBAL_KEYWORD<SHADER_LAB_VALUE, Value>
+  | LINEAR_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EXP_KEYWORD<SHADER_LAB_VALUE, Value>
+  | EXP2_KEYWORD<SHADER_LAB_VALUE, Value>
+;
+
+densityCommand
+:
+  DENSITY_KEYWORD<SHADER_LAB_KEYWORD, DensityKeyword>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+rangeCommand
+:
+  RANGE_KEYWORD<SHADER_LAB_KEYWORD, RangeKeyword>
+  rangeValue<SHADER_LAB_VALUE, Value>
+;
+
+rangeValue
+:
+  numericValue<SHADER_LAB_VALUE, Value>
+  COMMA<COMMA, Comma>
+  numericValue<SHADER_LAB_VALUE, Value>
+;
+
+
+// **************************************************************************
+//
+// Legacy BindChannels
+//
+// **************************************************************************
+
+bindChannelsCommand
+:
+  BIND_CHANNELS_KEYWORD<SHADER_LAB_KEYWORD, BindChannelsKeyword>
+  bindChannelsValue<SHADER_LAB_VALUE, Value>
+;
+
+bindChannelsValue
+:
+  LBRACE<LBRACE, LBrace>
+  bindCommand<SHADER_LAB_COMMAND, BindCommand>+
+  RBRACE<RBRACE, RBrace>
+;
+
+bindCommand
+:
+  BIND_KEYWORD<SHADER_LAB_KEYWORD, BindKeyword>
+  bindValue<SHADER_LAB_VALUE, Values>
+;
+
+bindValue
+:
+  STRING_LITERAL<SOURCE, Source>
+  COMMA<COMMA, Comma>
+  // TODO: Make these into keywords as channel type?
+  shaderLabIdentifier<SHADER_LAB_IDENTIFIER, Target>
+;
+
+
+// **************************************************************************
+//
+// CGINCLUDE/CGPROGRAM
+// GLSLINCLUDE/GLSLPROGRAM
+// HLSLINCLUDE/HLSLPROGRAM
+//
+// **************************************************************************
+
+// This rule isn't used by anything. It forces a following token set of any token
+// which allows us to use `errorhandling`. If we don't have this rule, the following
+// token is expected to be null, and then we don't get `errorhandling` and would
+// have to handle thrown syntax errors manually
+errorhandling cgBlockForceFollows
+:
+  (includeBlock | programBlock)
+  (errorElement | WHITESPACE | NEW_LINE)
+;
+
+// This rule isn't called by anything in the generated parser, but is used
+// by the preprocessor. When a shader is compiled, the CG_INCLUDE blocks et al
+// are pre-processed and removed. This means they can appear anywhere in the
+// file. We treat them like pre-processor directive tokens, parse them separately
+// filter them, and then reinsert them after normal parsing. Also note that we
+// have to handle whitespace here, as the pre-processor doesn't use the filtering
+// lexer. As it happens, this construct doesn't care about whitespace
+// (Technically, this is also true of CG_PROGRAM et al; they are pre-processed
+// and replaced with a GpuProgramId command that takes the index of the
+// compiled shader code. But this still has to be in a Pass or SubShader, so we
+// can treat them as normal tokens)
+errorhandling interface includeBlock
+:
+  cgIncludeBlock
+  | glslIncludeBlock
+  | hlslIncludeBlock
+;
+
+cgIncludeBlock
+:
+  CG_INCLUDE<START_DELIMITER, StartDelimiter>
+  cgContent<CONTENT, Content>
+  CG_END<END_DELIMITER, EndDelimiter>
+;
+
+glslIncludeBlock
+:
+  GLSL_INCLUDE<START_DELIMITER, StartDelimiter>
+  cgContent<GLSL_CONTENT, Content>
+  GLSL_END<END_DELIMITER, EndDelimiter>
+;
+
+hlslIncludeBlock
+:
+  HLSL_INCLUDE<START_DELIMITER, StartDelimiter>
+  cgContent<CONTENT, Content>
+  HLSL_END<END_DELIMITER, EndDelimiter>
+;
+
+
+errorhandling interface programBlock
+:
+  cgProgramBlock
+  | glslProgramBlock
+  | hlslProgramBlock
+;
+
+cgProgramBlock
+:
+  CG_PROGRAM<CG_PROGRAM, Program>
+  cgContent<CG_CONTENT, Content>
+  CG_END<CG_END, End>
+;
+
+glslProgramBlock
+:
+  GLSL_PROGRAM<GLSL_PROGRAM, Program>
+  cgContent<GLSL_CONTENT, Content>
+  GLSL_END<GLSL_END, End>
+;
+
+hlslProgramBlock
+:
+  HLSL_PROGRAM<HLSL_PROGRAM, Program>
+  cgContent<HLSL_CONTENT, Content>
+  HLSL_END<HLSL_END, End>
+;
+
+cgContent
+:
+  CG_CONTENT<CG_CONTENT, Content>
+;
+
+
+// **************************************************************************
+//
+// Pass definitions
+//
+// **************************************************************************
+
+interface passDef
+:
+  usePassDef
+  | grabPassDef
+  | texturePassDef
+;
+
+usePassDef
+:
+  USEPASS_KEYWORD<SHADER_LAB_KEYWORD, UsePassKeyword>
+  STRING_LITERAL<SHADER_LAB_VALUE, Value>
+;
+
+grabPassDef
+:
+  GRABPASS_KEYWORD<SHADER_LAB_KEYWORD, GrabPassKeyword>
+  grabPassValue<SHADER_LAB_VALUE, Value>
+;
+
+grabPassValue
+:
+  LBRACE<LBRACE, LBrace>
+  grabPassContents*
+  RBRACE<RBRACE, RBrace>
+;
+
+private grabPassContents
+:
+  optionalNameCommand<SHADER_LAB_COMMAND, Commands>
+  | tagsCommand<TAGS_COMMAND, TagsCommands>
+;
+
+optionalNameCommand
+:
+  NAME_KEYWORD<SHADER_LAB_KEYWORD, NameKeyword>?
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+;
+
+texturePassDef
+:
+  PASS_KEYWORD<SHADER_LAB_KEYWORD, PassKeyword>
+  texturePassValue<SHADER_LAB_VALUE, Value>
+;
+
+texturePassValue
+:
+  LBRACE<LBRACE, LBrace>
+  texturePassContents
+  RBRACE<RBRACE, RBrace>
+;
+
+private texturePassContents
+:
+  stateCommand<STATE_COMMAND, StateCommands>*
+  setTextureCommand<SET_TEXTURE_COMMAND, SetTextureCommands>*
+;
+
+
+// **************************************************************************
+//
+// Fallback
+//
+// **************************************************************************
+
+// TODO: Verify error handling
+fallbackCommand
+:
+  FALLBACK_KEYWORD<SHADER_LAB_KEYWORD, FallbackKeyword>
+  fallbackValue<SHADER_LAB_VALUE, Value>
+;
+
+fallbackValue
+:
+  (
+    STRING_LITERAL<SHADER_LAB_NAME, Name>
+    (
+      COMMA<COMMA, Comma>
+      lodValue<SHADER_LAB_VALUE, LodValue> // legacy, not actually used by Unity
+    )?
+  )
+  | falseLiteral{FALSE_LITERAL, FalseLiteral}
+  | errorElementWithoutRBrace   // TODO: Will this match `CustomEditor`?
+;
+
+
+// **************************************************************************
+//
+// CustomEditor
+//
+// **************************************************************************
+
+// TODO: Verify error handling
+customEditorCommand
+:
+  CUSTOM_EDITOR_KEYWORD<SHADER_LAB_KEYWORD, CustomEditorKeyword>
+  customEditorValue<SHADER_LAB_VALUE, Value>
+;
+
+customEditorValue
+:
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+  | errorElementWithoutRBrace
+;
+
+
+// **************************************************************************
+//
+// Dependency
+//
+// **************************************************************************
+
+// https://forum.unity3d.com/threads/shaderlab-dependency-property.215130/
+// https://forum.unity3d.com/threads/solved-pass-data-from-a-shader-to-its-dependency-shader-or-set-dependecy-shader-data.437961/
+// https://alastaira.wordpress.com/2013/12/07/custom-unity-terrain-material-shaders/
+// e.g. Dependency "AddPassShader" = "Custom/ToonTerrainAddPass"
+// Looks like first string literal is a known value, called by the terrain shader
+errorhandling dependencyCommand
+:
+  DEPENDENCY_KEYWORD<SHADER_LAB_KEYWORD, DependencyKeyword>
+  dependencyValue<SHADER_LAB_VALUE, Value>
+;
+
+dependencyValue
+:
+  STRING_LITERAL<DEPENDENCY_KIND, Kind>
+  EQUALS<EQUALS, Equals>
+  STRING_LITERAL<SHADER_LAB_NAME, Name>
+;

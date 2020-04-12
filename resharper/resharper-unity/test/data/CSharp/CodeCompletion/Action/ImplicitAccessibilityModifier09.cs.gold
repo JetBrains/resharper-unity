@@ -1,0 +1,16 @@
+﻿// ${COMPLETE_ITEM:OnAnimatorIK(int) { ... \}}
+
+using System;
+using UnityEngine;
+using JetBrains.Annotations;
+
+public class A : MonoBehaviour
+{
+  [NotNull]
+  void OnAnimatorIK(int layerIndex)
+  {
+    throw new NotImplementedException();{caret}
+  }
+
+  [SerializeField] public int Value;
+}

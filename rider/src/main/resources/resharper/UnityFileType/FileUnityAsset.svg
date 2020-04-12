@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>FileUnityAsset(Gray)</title>
+  <g>
+    <rect width="16" height="16" fill="#ffd3ff" opacity="0"/>
+    <g>
+      <polygon points="8 1 2 4.232 2 10.692 8 13.923 14 10.692 14 4.232 8 1" fill="#f4f4f4"/>
+      <polygon points="3.1 10.035 3.1 4.889 8 2.25 12.9 4.889 12.9 10.035 8 12.673 3.1 10.035" fill="#ebebeb"/>
+      <polygon points="13 5.338 13 10.095 8 12.787 3 10.095 3 5.338 8 8.03 13 5.338" fill="#393"/>
+      <polygon points="11.616 4.948 12.544 4.448 8 2 3.456 4.448 4.384 4.948 8 3 11.616 4.948" fill="#393"/>
+    </g>
+  </g>
+</svg>

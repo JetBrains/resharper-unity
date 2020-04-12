@@ -1,9 +1,0 @@
-﻿using UnityEngine;
-
-public class Foo : MonoBehaviour
-{
-    public voi{caret}d Start()
-    {
-        return 0;
-    }
-}

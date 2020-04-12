@@ -3,4 +3,5 @@ set -e
 set -o pipefail
 
 pushd rider
-./gradlew --info --stacktrace buildPlugin
+# Use --info and/or --stacktrace to get logging
+./gradlew buildPlugin $@

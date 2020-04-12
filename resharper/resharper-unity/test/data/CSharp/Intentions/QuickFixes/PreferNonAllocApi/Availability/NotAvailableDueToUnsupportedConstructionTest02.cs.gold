@@ -1,0 +1,20 @@
+﻿using UnityEngine;
+using System;
+
+namespace DefaultNamespace
+{
+    public class NotAvailableDueToUnsupportedConstructionTest02
+    {
+        public void SomeMethod()
+        {
+            RaycastHit[] data;
+            var length = (data = Physics.|RaycastAll|(0)(new Ray())).Length;
+
+            Console.WriteLine(length);
+            Console.WriteLine(data.Length);
+        }
+    }
+}
+------------------------------------------------
+0: Use non-allocating method 'RaycastNonAlloc'
+NO QUICKFIXES

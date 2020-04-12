@@ -1,0 +1,12 @@
+﻿PsiLanguageType:YAML: reparsed node type: JetBrains.ReSharper.Plugins.Yaml.Psi.Tree.Impl.ChameleonDocumentBody, text:  !u!1001 &498889474
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 397386422}
+    m_Modifications:
+    - target: {fileID: 22446900, guid: 00000000000000000000000000000000, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+

@@ -1,0 +1,21 @@
+﻿# 8 ITEMS #
+
++ GameObject
+GUILayoutOption
+ParticleSystemGameObjectFilter
+AddedGameObject (in UnityEditor.SceneManagement)
+ComponentGuaranteesOptions (in System.Runtime.Versioning)
+GameObjectRecorder (in UnityEditor.Animations)
+GameObjectUtility (in UnityEditor)
+TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)
+# AUTOMATIC #
+# 8 ITEMS #
+
++ GameObject
+GUILayoutOption
+ParticleSystemGameObjectFilter
+AddedGameObject (in UnityEditor.SceneManagement)
+ComponentGuaranteesOptions (in System.Runtime.Versioning)
+GameObjectRecorder (in UnityEditor.Animations)
+GameObjectUtility (in UnityEditor)
+TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)

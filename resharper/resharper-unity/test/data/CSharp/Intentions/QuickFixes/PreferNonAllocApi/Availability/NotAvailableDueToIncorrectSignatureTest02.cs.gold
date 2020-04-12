@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+
+public class NotAvailableDueToIncorrectSignatureTest02: MonoBehaviour
+{
+    public void Method()
+    {
+        Physics.BoxCastAll(|new Ray(Vector3.zero, Vector3.back)|(0));
+    }
+}
+
+------------------------------------------------
+0: Cannot resolve method 'BoxCastAll(UnityEngine.Ray)', candidates are:
+  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3) (in class Physics)
+  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Quaternion) (in class Physics)
+  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Quaternion, float) (in class Physics)
+  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Quaternion, float, int) (in class Physics)
+  UnityEngine.RaycastHit[] BoxCastAll(UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Vector3, UnityEngine.Quaternion, float, int, UnityEngine.QueryTriggerInteraction) (in class Physics)
+NO QUICKFIXES

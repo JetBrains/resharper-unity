@@ -1,0 +1,2 @@
+{caret}anchored: !local &anchor value
+alias: *anchor

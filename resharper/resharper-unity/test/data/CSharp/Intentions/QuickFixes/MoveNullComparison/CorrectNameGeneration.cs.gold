@@ -1,0 +1,22 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class CorrectNameGeneration : MonoBehaviour
+    {
+      private bool myIstransformNotNull;
+
+      private void Start()
+      {
+        myIstransformNotNull = transform != null;
+      }
+
+      public void Update()
+        {
+            var localTransform = GetComponent<Transform>();
+            if (myIstransformNotN{caret}ull) {
+                
+            }
+        }
+    }
+}

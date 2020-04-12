@@ -1,395 +1,164 @@
 def backendGroup = 'backend'
 
-import org.apache.tools.ant.taskdefs.condition.Os
+import com.jetbrains.rider.plugins.gradle.BackendPaths
+import com.jetbrains.rider.plugins.gradle.tasks.*
 
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
 
-ext.backend = new BackendHelper(ext.repoRoot, buildDir, ext.dependenciesDir, logger)
-
-def teamcityVersion = System.env['TEAMCITY_VERSION']
-project.ci.Progress("teamcityVersion = $teamcityVersion")
-ext.isTeamcity = teamcityVersion != null
-
-// Used to provide a package version to both msbuild and dotnet restore
-ext.extraMSBuildArgs = []
-
-class BackendHelper {
-    File repositoryRoot
-    File unityRoot
-    File backendRoot
-    File resharperHostPluginSolution
-    File unityPluginSolution
-    File unityPluginSingleProject   // For "rider only" configuration
-    File riderTestsProject  // For "rider only" configuration
-    File riderSdkPath
-    File reSharperSdkPath
-
-    BackendHelper(File repoRoot, File buildDir, File dependenciesDir, Logger logger) {
-        repositoryRoot = repoRoot
-        assert repositoryRoot.isDirectory()
-
-        backendRoot = new File(repositoryRoot, 'resharper')
-        assert backendRoot.isDirectory()
-
-        unityRoot = new File(repositoryRoot, 'unity')
-        unityPluginSolution = new File(unityRoot, 'JetBrains.Rider.Unity.Editor.sln')
-        unityPluginSingleProject = new File(unityRoot, 'EditorPlugin/EditorPlugin.csproj')
-
-        resharperHostPluginSolution = new File(backendRoot, 'src/resharper-unity.sln')
-        assert resharperHostPluginSolution.isFile()
-
-        riderTestsProject = new File(backendRoot, 'test/src/tests.rider.csproj')
-        assert riderTestsProject.isFile()
-
-        if (dependenciesDir.isDirectory()) {            
-            riderSdkPath = new File(dependenciesDir.canonicalPath, "lib/ReSharperHostSdk")
-            assert riderSdkPath.isDirectory()
-
-            logger.lifecycle("Rider SDK bundle found: $riderSdkPath.canonicalPath")
-        }
-        else {
-            logger.lifecycle("Rider SDK is not bundled")
-            riderSdkPath = new File(repoRoot.canonicalPath, "rider/build/riderRD-2018.2-SNAPSHOT/lib/ReSharperHostSdk")
-        }
-
-        // bundled SDK, if there isn't one we'll patch the path and download an SDK in the unzip task
-        reSharperSdkPath = new File(repositoryRoot, "rider/build/JetBrains.ReSharperUltimate.Packages")
-    }
+nuget {
+    version = "4.9.4"
 }
 
-class MSBuildTask extends DefaultTask {
-    @InputFile
-    File buildFile
-
-    MSBuildTask() {
-        onlyIf { !project.dotNetUpToDate }
-    }
-
-    // TODO: Set msbuild verbosity based on gradle log level
-
-    @TaskAction
-    def build() {
-        project.ci.Progress("Building $buildFile ($project.BuildConfiguration)")
-
-        def arguments = [ buildFile, "/p:Configuration=$project.BuildConfiguration", "/p:Version=$project.version", '/v:normal', '/nologo'] //, "/bl:${buildFile.name}.binlog" ]
-        arguments.addAll(project.extraMSBuildArgs)
-
-        def msbuildPath = findMSBuildPath()
-        logger.lifecycle("msbuild call=$msbuildPath " + arguments.toString())
-
-        project.exec {
-            executable = msbuildPath
-            args = arguments
-            standardOutput = System.out
-        }
-    }
-
-    def findMSBuildPath() {
-        if (project.ext.has('msbuildPath')) {
-            logger.lifecycle("msbuildPath (cached): $project.msbuildPath")
-            return project.msbuildPath
-        }
-
-        project.ext.msbuildPath = project.isWindows ? findMSBuildPathWindows() : findMSBuildPathUnix()
-        logger.lifecycle "msbuildPath: $project.msbuildPath"
-        return project.msbuildPath
-    }
-
-    def findMSBuildPathWindows() {
-        def stdout = new ByteArrayOutputStream()
-        project.exec {
-            executable = project.file(new File(project.backend.repositoryRoot, 'tools/vswhere.exe'))
-            args = [ "-latest", "-products", "*", "-requires", "Microsoft.Component.MSBuild", "-property", "installationPath" ]
-            standardOutput = stdout
-        }
-
-        def buildToolsDir = project.file(stdout.toString().trim())
-        assert buildToolsDir.isDirectory()
-
-        return project.file(new File(buildToolsDir, 'MSBuild/15.0/Bin/MSBuild.exe'))
-    }
-
-    def findMSBuildPathUnix() {
-        def stdout = new ByteArrayOutputStream()
-        project.exec {
-            executable = 'which'
-            args = [ 'msbuild' ]
-            standardOutput = stdout
-        }
-
-        return project.file(stdout.toString().trim())
-    }
-}
-
-class MonoExecTask extends AbstractExecTask {
-    MonoExecTask() {
-        super(MonoExecTask.class)
-    }
-
-    @TaskAction
-    protected void exec() {
-        if (!project.isWindows) {
-            def newCommandLine = [ 'mono' ]
-            newCommandLine.addAll(commandLine)
-            commandLine = newCommandLine
-        }
-
-        super.exec()
-    }
-}
-
-class RestorePackagesTask extends DefaultTask {
-    @InputFile
-    File packagesFile
-
-    RestorePackagesTask() {
-        onlyIf { !project.dotNetUpToDate }
-    }
-
-    @TaskAction
-    def restore() {
-        project.ci.Progress("Restoring packages for $packagesFile")
-
-        // TODO: Map verbosity to gradle logging verbosity
-        def restoreArguments = [ 'restore', '--verbosity', 'normal' ]        
-        restoreArguments << '--source' << 'https://api.nuget.org/v3/index.json'
-        restoreArguments << '--source' << project.backend.riderSdkPath
-        restoreArguments << '--source' << project.backend.reSharperSdkPath
-
-        restoreArguments.addAll project.extraMSBuildArgs
-        restoreArguments << packagesFile
-        project.exec {
-            executable = 'dotnet'
-            args = restoreArguments
-            standardOutput = System.out
-        }
-    }
-}
-
-class GenerateBuildPropsTask extends DefaultTask {    
-    File packagesDirectory
-    String packageName
-    String msBuildParameter
-
-    @TaskAction
-    def generate() {
-        project.ci.Progress("Generating Build.props for $packageName")
-        def packageVersion = parsePackageVersion()
-        logger.lifecycle("$msBuildParameter=$packageVersion")
-
-        new File("$project.repoRoot/resharper/$packageName" + ".generated.props").text = """<Project>
-  <PropertyGroup>
-    <$msBuildParameter>[$packageVersion]</$msBuildParameter>    
-  </PropertyGroup>
-</Project>
-"""
-    }
-
-    def parsePackageVersion() {        
-        assert packagesDirectory.isDirectory()
-        def escapedPackageName = Pattern.quote(packageName)
-
-        logger.lifecycle("Looking for package $packageName in $packagesDirectory")
-
-        def packageVersion = packagesDirectory.listFiles().collect { File f ->
-            if (f.isFile()) {
-                logger.trace(f.name)
-
-                def match = (f.name =~ /^(?i)$escapedPackageName\.((\d+\.)+\d+((-eap|-snapshot)\d+(d?)(pre|internal)?)?)\.nupkg\u0024/)
-                if (match.matches()) {
-                    return match[0][1]
-                }
-            }
-
-            return null
-        }.find { String s -> s != null }
-
-        assert packageVersion != null : 'No files found matching the package version regex'
-        return packageVersion
-    }
-}
-
-// if there's no bundled SDK and we have to build R#, we download & unzip it, changing SDK path
-task unzipReSharperSdk(type: Sync){
-    group backendGroup
-    onlyIf { !project.shouldBuildRiderOnly }    
-    dependsOn configurations.reSharper
-
-    
-    if (backend.reSharperSdkPath.isDirectory()) {
-        logger.lifecycle("R# SDK bundle found: $backend.reSharperSdkPath.canonicalPath")
-        return
-    }
-    else {
-        logger.lifecycle("R# SDK is not bundled")
-        backend.reSharperSdkPath = new File(repoRoot, "rider/build/DownloadedReSharperSDK")
-    }
-    
-    ci.Progress("Downloading/unzipping ReSharper SDK to $backend.reSharperSdkPath")
-    from { configurations.reSharper.collect { zipTree(it) } }
-    into backend.reSharperSdkPath
-}
-
-task prepareRiderBuildProps(type: GenerateBuildPropsTask) {
-    group backendGroup
-
-    packagesDirectory backend.riderSdkPath
-    packageName "JetBrains.Rider.SDK"
-    msBuildParameter "RiderSDKVersion"
-}
-
-task prepareReSharperBuildProps(type: GenerateBuildPropsTask) {
-    group backendGroup
-    dependsOn unzipReSharperSdk
-
-    packagesDirectory backend.reSharperSdkPath
-    packageName "JetBrains.ReSharper.SDK"
-    msBuildParameter "ReSharperSDKVersion"
+task prepareRiderBuildProps(type: GenerateDotNetSdkPathPropsTask) {
+    dotNetSdkPath { backend.getDotNetSdkPath() }
 }
 
 task prepareNuGetConfig {
-    dependsOn unzipReSharperSdk
+    dependsOn prepareRiderBuildProps
 
     doLast {
-        assert backend.riderSdkPath.isDirectory()
-        assert backend.reSharperSdkPath.isDirectory()
+        def dotNetSdkPath = backend.getDotNetSdkPath()
+        logger.warn("dotNetSdkPath='$dotNetSdkPath'")
+        assert dotNetSdkPath.isDirectory()
 
-        ci.Progress("Preparing NuGet.Config")
+        buildServer.progress("Preparing NuGet.Config")
 
         def nugetConfigText = """<?xml version="1.0" encoding="utf-8"?>
     <configuration>
     <packageSources>
-        <add key="local-rider-sdk" value="$backend.riderSdkPath" />
-        <add key="local-resharper-sdk" value="$backend.reSharperSdkPath" />
+        <add key="local-dotnet-sdk" value="$dotNetSdkPath" />
     </packageSources>
     </configuration>
     """
-        logger.lifecycle(nugetConfigText)
+        logger.info(nugetConfigText)
         new File("$repoRoot/resharper/NuGet.Config").text = nugetConfigText
     }
 }
 
-task restoreUnityEditorPluginPackages(type: RestorePackagesTask) {
-    group backendGroup
-    description 'Restores packages for Unity Editor plugin'    
-    packagesFile backend.unityPluginSolution
-}
-
-task restoreReSharperHostPluginPackages(type: RestorePackagesTask) {
+task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
     group backendGroup
     description 'Restores packages for backend plugin'
-    dependsOn prepareRiderBuildProps, prepareReSharperBuildProps, prepareNuGetConfig
-    packagesFile backend.resharperHostPluginSolution
+    dependsOn prepareNuGetConfig
+
+    solutionFile backend.resharperHostPluginSolution
+    noCache = true
+    sources = [
+            'https://api.nuget.org/v3/index.json'
+    ]
+    doFirst {
+        project.buildServer.progress("Restoring packages for $solutionFile")
+
+        // Add in doFirst, so we get a chance to download the SDKs
+        sources.add(project.backend.getDotNetSdkPath())
+    }
 }
 
-task buildFullReSharperPlugin(type: MSBuildTask) {
+task restoreUnityEditorPluginPackages(type: nugetRestore.class) {
     group backendGroup
-    description 'Builds the fill ReSharper backend plugin solution'
-    dependsOn restoreReSharperHostPluginPackages
+    description 'Restores packages for Unity Editor plugin'
 
-    onlyIf { !project.shouldBuildRiderOnly }
+    solutionFile backend.unityPluginSolution
+    noCache = true
+    sources = [
+            'https://api.nuget.org/v3/index.json'
+    ]
+    doFirst {
+        project.buildServer.progress("Restoring packages for $solutionFile")
+
+        // Add in doFirst, so we get a chance to download the SDKs
+        sources.add(project.backend.getDotNetSdkPath())
+    }
+}
+
+
+task buildReSharperHostPlugin(type: MSBuildTask) {
+    group restoreReSharperHostPluginPackages
+    description 'Builds the full ReSharper backend plugin solution'
+    dependsOn restoreReSharperHostPluginPackages, generateModel
 
     buildFile = backend.resharperHostPluginSolution
 }
 
-task buildRiderOnlyPlugin(type: MSBuildTask) {
+task buildUnityEditorPlugin(type: MSBuildTask) {
     group backendGroup
-    description 'Builds the Rider plugin project'
-    dependsOn restoreReSharperHostPluginPackages
-
-    onlyIf { project.shouldBuildRiderOnly }
-
-    buildFile = backend.riderTestsProject
-}
-
-task buildUnityEditorPluginFull(type: MSBuildTask) {
-    group backendGroup
-    description 'Builds full Unity editor plugin solution'
-    dependsOn restoreUnityEditorPluginPackages
-
-    onlyIf { !project.shouldBuildRiderOnly }
+    description 'Builds the Unity editor plugin'
+    dependsOn restoreUnityEditorPluginPackages, generateModel
 
     buildFile = backend.unityPluginSolution
 }
 
-task buildUnityEditorPluginLight(type: MSBuildTask) {
-    group backendGroup
-    description 'Builds the Unity editor plugin project'
-    dependsOn restoreUnityEditorPluginPackages
 
-    onlyIf { project.shouldBuildRiderOnly }
-
-    buildFile = backend.unityPluginSingleProject
-}
-
-
-task buildReSharperHostPlugin {
-    group = backendGroup
-    description = 'Build the ReSharper plugin for Rider and/or ReSharper'
-
-    // We need to have two dependencies here. We want to change behaviour based on
-    // which root level task we're executing, and we only know that at execution time.
-    // The `buildPlugin` and `runIde` tasks will set the `shouldBuildRiderOnly` flag,
-    // but only at execution time, not at configuration time. So we don't know what we're
-    // building until we start building.
-    // So, set up two tasks that are really only different in what project or solution
-    // they build, and skip one of them at execution time by checking `shouldBuildRiderOnly`.
-    // I can't think of a nicer way to have `prepareSandbox` depend on different tasks
-    // based on what's executing
-    dependsOn buildRiderOnlyPlugin, buildFullReSharperPlugin
-}
-
-nunit {
-    onlyIf { project.RunTests && !project.shouldBuildRiderOnly }
-    dependsOn buildFullReSharperPlugin
-    nunitVersion "2.6.4"
-    framework "net-4.6.1"
-    shadowCopy false
-    outputs.upToDateWhen { false } // we should always run unit tests when RunTests are true
-
-    def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    def riderTestsDll = new File(buildDir, "tests.rider/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
-    def resharperTestsDll = new File(buildDir, "tests.resharper/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")    
-    testAssemblies = [riderTestsDll, resharperTestsDll]
-}
-
-task buildUnityEditorPlugin {
-    group = backendGroup
-    description = 'Build the Unity editor plugin'
-
-    // See comment above
-    dependsOn buildUnityEditorPluginLight, buildUnityEditorPluginFull
-}
-
-task packReSharperPlugin(type: MonoExecTask) {
+task packReSharperPlugin(type: nugetPack.class) {
     dependsOn buildReSharperHostPlugin
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
-    def nuspecFile = file(new File(backend.backendRoot, 'src/resharper-unity/resharper-unity.resharper.nuspec'))
-    def outputDir = file(new File(backend.backendRoot, "build/resharper-unity.resharper/bin/$BuildConfiguration"))
-    def nupkgFile = file(new File(outputDir, "JetBrains.Unity.${version}.nupkg"))
+    nuspecFile = new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec')
+    destinationDir = new File(backend.backendRoot, "build/distributions/$BuildConfiguration")
+    packageAnalysis = false
+    packageVersion = version
+    properties = [
+            'Configuration': BuildConfiguration
+    ]
 
-    // TODO: Make the output of the compile step the inputs of this step, as well as the nuspec
-    // inputs.files(nuspecFile)
-    outputs.files(nupkgFile)
-
-    def nugetExe = file(new File(backend.repositoryRoot, 'tools/nuget.exe'))
-    def arguments = [ 'pack', nuspecFile, '-NoPackageAnalysis', '-Properties', "Configuration=$BuildConfiguration", '-Version', "$version", '-OutputDirectory', outputDir ]
-
-    executable = nugetExe
-    args = arguments
+    def nuPkgFile = file(new File(destinationDir as String, "JetBrains.Unity.${version}.nupkg"))
+    outputs.files(nuPkgFile)
 
     doFirst {
-        ci.Progress("Packing: $nuspecFile.name")
+        buildServer.progress("Packing: $nuspecFile.name")
     }
 }
 
+task nunitReSharperYaml(type: nunit.class) {
+    nunitVersion "3.9.0"
+    shadowCopy false
+    outputs.upToDateWhen { false }
+
+    def buildDir = new File(backend.repositoryRoot, "resharper/build")
+    def testDll = new File(buildDir, "tests.resharper-yaml/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.Tests.ReSharper.dll")
+    testAssemblies = [ testDll ]
+}
+
+task nunitRiderYaml(type: nunit.class) {
+    nunitVersion "3.9.0"
+    shadowCopy false
+    outputs.upToDateWhen { false }
+
+    def buildDir = new File(backend.repositoryRoot, "resharper/build")
+    def testDll = new File(buildDir, "tests.rider-yaml/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.Tests.Rider.dll")
+    testAssemblies = [ testDll ]
+}
+
+task nunitReSharperUnity(type: nunit.class) {
+    nunitVersion "3.9.0"
+    shadowCopy false
+    outputs.upToDateWhen { false }
+
+    def buildDir = new File(backend.repositoryRoot, "resharper/build")
+    def testDll = new File(buildDir, "tests.resharper-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
+    testAssemblies = [ testDll ]
+}
+
+task nunitRiderUnity(type: nunit.class) {
+    nunitVersion "3.9.0"
+    shadowCopy false
+    outputs.upToDateWhen { false }
+
+    def buildDir = new File(backend.repositoryRoot, "resharper/build")
+    def testDll = new File(buildDir, "tests.rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
+    testAssemblies = [ testDll ]
+}
+
+task runNunit {
+    // nunit3 defaults to running test assemblies in parallel, which causes problems with shared access to databases
+    // The nunit plugin doesn't have the ability to disable this, so we'll do it long hand...
+    dependsOn buildReSharperHostPlugin, nunitReSharperYaml, nunitRiderYaml, nunitReSharperUnity, nunitRiderUnity
+}
+
 task publishCiBackendArtifacts {
-    inputs.file(packReSharperPlugin.outputs)
+    inputs.files(packReSharperPlugin.outputs)
 
     doLast {
-        ci.PublishArtifact(packReSharperPlugin.outputs.files.singleFile)
+        buildServer.publishArtifact(packReSharperPlugin.outputs.files.singleFile)
     }
 }

@@ -1,0 +1,41 @@
+﻿using UnityEditor;
+using UnityEditor.Build;
+
+public class A : |IPreprocessBuild|(0)
+{
+    public int callbackOrder { get; }
+    public int ||RandomProperty|(1)|(2) { get; }
+    
+	public virtual void OnPreprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+	
+	public void |RandomMethod|(3)()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class B : A, |IPostprocessBuild|(4)
+{
+    public void OnPostprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class C : A
+{
+    public override void OnPreprocessBuild(BuildTarget target, string path)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Warning [CS0618]: Interface 'UnityEditor.Build.IPreprocessBuild' is obsolete: Use IPreprocessBuildWithReport instead
+(1): ReSharper Warning: Get-only auto-property 'RandomProperty' is never assigned
+(2): ReSharper Dead Code: Property 'RandomProperty' is never used
+(3): ReSharper Dead Code: Method 'RandomMethod' is never used
+(4): ReSharper Warning [CS0618]: Interface 'UnityEditor.Build.IPostprocessBuild' is obsolete: Use IPostprocessBuildWithReport instead
+

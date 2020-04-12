@@ -1,0 +1,33 @@
+===================
+Opened
+
+-Project
+ -ClassLibrary1 * 1 project
+  -ClassLibrary1
+   -Dependencies
+    -Assemblies
+     System
+     System.Core
+     System.Xml
+     UnityEngine
+   -Properties
+    AssemblyInfo.cs
+   MonoBehaviour1.cs
+
+
+Project [Name:&, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : ClassLibrary1.sln)[]
+
+Project [Name:ClassLibrary1, GUID:GUID]
+  Child items:
+    ProjectFileImpl(Path : ClassLibrary1.csproj)[]
+    ProjectFileImpl(Path : MonoBehaviour1.cs)[COMPILE ]
+    Folder [Name:Properties, IsAppDesigner:true]
+      Child items:
+        ProjectFileImpl(Path : AssemblyInfo.cs)[COMPILE ]
+
+Project [Name:Miscellaneous Files, GUID:GUID]
+
+
+

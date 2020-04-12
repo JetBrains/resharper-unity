@@ -1,0 +1,33 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IFlowMappingNode
+        YamlTokenType+FixedTokenElement(0,1)(type:LBRACE, text:{)
+        NewLine(1,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        IFlowMapEntry
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(2,10)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"adjacent")
+          YamlTokenType+FixedTokenElement(12,1)(type:COLON, text::)
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(13,5)(type:NS_PLAIN, text:value)
+        YamlTokenType+FixedTokenElement(18,1)(type:COMMA, text:,)
+        NewLine(19,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        IFlowMapEntry
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(20,10)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"readable")
+          YamlTokenType+FixedTokenElement(30,1)(type:COLON, text::)
+          Whitespace(31,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(32,5)(type:NS_PLAIN, text:value)
+        YamlTokenType+FixedTokenElement(37,1)(type:COMMA, text:,)
+        NewLine(38,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        IFlowMapEntry
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(39,7)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"empty")
+          YamlTokenType+FixedTokenElement(46,1)(type:COLON, text::)
+          NewLine(47,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          IEmptyScalarNode
+        YamlTokenType+FixedTokenElement(48,1)(type:RBRACE, text:})
+      NewLine(49,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

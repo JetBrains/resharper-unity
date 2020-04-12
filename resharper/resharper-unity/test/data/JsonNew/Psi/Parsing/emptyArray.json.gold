@@ -1,0 +1,6 @@
+﻿Language: PsiLanguageType:JSON_NEW
+IJsonNewFile
+  IJsonNewArray
+    JsonNewFixedLengthTokenNode(type:LBRACKET, text:[)
+    JsonNewFixedLengthTokenNode(type:RBRACKET, text:])
+

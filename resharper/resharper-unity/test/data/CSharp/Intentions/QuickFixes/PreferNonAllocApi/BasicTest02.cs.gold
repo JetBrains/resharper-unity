@@ -1,0 +1,13 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class BasicTest02
+    {
+        public void Test()
+        {
+          var ray = new Ray();
+          var size = Physics.RaycastNonAlloc(ray, {selstart}results{selend});
+        }
+    }
+}

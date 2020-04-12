@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class SplitDeclarationTest02
+    {
+        public void Test()
+        {
+          Collider[] b = null;
+          var size1 = Physics.OverlapBoxNonAlloc(Vector3.zero, new Vector3(1, 1, 1), {selstart}results{selend}, Quaternion.identity, 0, QueryTriggerInteraction.Collide);
+          Collider[] b = DoMagic(size);
+        }
+    }
+}

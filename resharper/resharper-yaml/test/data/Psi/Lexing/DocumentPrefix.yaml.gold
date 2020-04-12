@@ -1,0 +1,6 @@
+﻿0000: COMMENT '# Comment'
+0009: NEW_LINE '\n'
+0010: COMMENT '# lines'
+0017: NEW_LINE '\n'
+0018: NS_PLAIN 'Document'
+0026: NEW_LINE '\n'

@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>JetBrains.Unity</id>
+    <title>Unity Support</title>
+    <version>$version$</version>
+    <authors>JetBrains</authors>
+    <owners>JetBrains</owners>
+    <summary>ReSharper support for the Unity engine</summary>
+    <description>Adds support for the Unity engine.
+
+- Code completion of event function declarations in a class.
+- Use Generate Code to create event functions, with parameters, or start typing for automatic completion.
+- Highlights Unity event functions and serializable fields and marks as implicitly used by Unity.
+- Supports Unity API 5.0 - 2019.3, plus undocumented functions.
+- Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explanations.
+- Performance indicators to avoid known code patterns that affect performance.
+- Parse class and method usage from scene, prefab and assets.
+- Support for ShaderLab and Assembly Definition files.
+- Automatically connect debugger to Unity editor.
+- Lists and debugs external players.
+- Extra Unity data in debugger views.
+- Play/pause/step directly from Rider.
+- View Unity console in Rider, with parsed stack traces and text filter.
+- Run Unity editor tests directly from Rider.
+- Unity Explorer to view project as shown in Unity's Assets view, with Packages.
+- Navigate to external Unity documentation.
+- Correctly updates .meta files.
+- Code completion, rename and find usages for "magic strings" in method calls.
+- Automatically adds FormerlySerializedAs attribute when renaming fields.
+- Automatically sets Unity projects to C# 4 or C# 6. No more suggestions for features that won't compile!
+- Highlights UnityEngine.Color and Color32. Edit via colour palette quick fix.
+- Unity specific file and live templates.
+- And much more!
+</description>
+<releaseNotes>
+New in 2020.1
+
+Added:
+- Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix (RIDER-22812, #1459)
+- Exclude Boo and UnityScript namespaces, as well as the System.Diagnostics.Debug type from import completion (#574, #1473)
+- Add more attributes to external annotations. E.g. ShortcutAttribute will mark the method as in use (#1546, RIDER-40330, #1548)
+- Find Usages for serialised fields now includes asset usages (#1530)
+- Add context action to create Unity Assets menu item for a ScriptableObject (#1567)
+- Show serialised field values for scriptable objects (#1567)
+- Show usages of scriptable objects in assets (#1567)
+
+Changed:
+- Indexing of assets deferred until after project loaded and will not interfere with existing code insight features (#1530)
+- Improved memory usage while parsing assets (#1530)
+- Improved support of nested and variant prefabs (#1530)
+- Serialised field values Code Vision now includes values from FomerlySerialisedAs attribute (#1530)
+- Serialised field values Code Vision now includes derived classes (#1550)
+- Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled (#1459)
+- Stop marking a method as expensive if it only contains a null check (#1459)
+- Move vector multiplication order inspection to performance critical context only (#1459)
+- Sort commonly used event functions higher in Generate dialog (#1566)
+- Generate event functions at location of context action, rather than at end of class (#1542, #1566)
+- Updated API information to 2020.1.0a25 (#1553)
+- Remove messages that use obsolete parameter types (#1545, #1553)
+
+Fixed:
+- Fix incorrect redundant SerializeField attribute warning for property backing field (#1016, #1464)
+- Avoid creating meta files outside of Asset or Packages folders (from 2019.3.2) (#1481, #1491, #1489)
+- Fix overwriting IEnumerator when auto-completing an event function that can be a coroutine (#1258, #1566)
+- Fix duplicate "Generate Unity event functions" context action when gutter icons are visible (#1537, #1566)
+- Fix completion of tag value adding extra closing quote (RIDER-33067)
+- Fix exception with building shortcut cache (RIDER-41206)
+
+See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
+</releaseNotes>
+    <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
+    <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
+    <copyright>Copyright 2019 JetBrains, s.r.o</copyright>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <dependencies>
+      <dependency id="Wave" version="[201.0]" />
+    </dependencies>
+    <tags>resharper unity unity3d</tags>
+  </metadata>
+  <files>
+    <file src="..\..\build\resharper-unity\bin\$Configuration$\net461\JetBrains.ReSharper.Plugins.Unity.dll" target="DotFiles" />
+    <file src="..\..\build\resharper-unity\bin\$Configuration$\net461\JetBrains.ReSharper.Plugins.Unity.pdb" target="DotFiles" />
+    <file src="..\..\build\resharper-unity\bin\$Configuration$\net461\JetBrains.ReSharper.Plugins.Yaml.dll" target="DotFiles" />
+    <file src="..\..\build\resharper-unity\bin\$Configuration$\net461\JetBrains.ReSharper.Plugins.Yaml.pdb" target="DotFiles" />
+    <file src="annotations\UnityEngine*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
+    <file src="annotations\UnityEditor*.xml" target="DotFiles\Extensions\JetBrains.Unity\annotations" />
+  </files>
+</package>

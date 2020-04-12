@@ -1,0 +1,35 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(0,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(1,4)(type:NS_CHARS, text:YAML)
+        Whitespace(5,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(6,3)(type:NS_CHARS, text:1.2)
+        NewLine(9,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(10,3)(type:DIRECTIVES_END, text:---)
+    ChameleonDocumentBody
+      Whitespace(13,1)(type:WHITESPACE, text: ) spaces: " "
+      ILiteralScalarNode
+        YamlTokenType+FixedTokenElement(14,1)(type:PIPE, text:|)
+        NewLine(15,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        YamlTokenType+GenericTokenElement(16,23)(type:SCALAR_TEXT, text:%!PS-Adobe-2.0  # !!str)
+      NewLine(39,1)(type:NEW_LINE, text:\n) spaces: "\n"
+    YamlTokenType+FixedTokenElement(40,3)(type:DOCUMENT_END, text:...)
+    NewLine(43,1)(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(44,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(45,7)(type:NS_CHARS, text:YAML1.2)
+        NewLine(52,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(53,3)(type:DIRECTIVES_END, text:---)
+    ChameleonDocumentBody
+      NewLine(56,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      Comment(57,7)(type:COMMENT, text:# Empty) comment: "# Empty"
+      NewLine(64,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      IEmptyScalarNode
+    YamlTokenType+FixedTokenElement(65,3)(type:DOCUMENT_END, text:...)
+    NewLine(68,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

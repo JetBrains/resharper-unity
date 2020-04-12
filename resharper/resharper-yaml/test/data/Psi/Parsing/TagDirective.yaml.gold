@@ -1,0 +1,27 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(0,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(1,3)(type:NS_CHARS, text:TAG)
+        Whitespace(4,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(5,6)(type:NS_CHARS, text:!yaml!)
+        Whitespace(11,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(12,18)(type:NS_CHARS, text:tag:yaml.org,2002:)
+        NewLine(30,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(31,3)(type:DIRECTIVES_END, text:---)
+    ChameleonDocumentBody
+      NewLine(34,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      IDoubleQuotedScalarNode
+        INodeProperties
+          IShorthandTagProperty
+            INamedTagHandle
+              YamlTokenType+FixedTokenElement(35,1)(type:BANG, text:!)
+              YamlTokenType+GenericTokenElement(36,4)(type:NS_TAG_CHARS, text:yaml)
+              YamlTokenType+FixedTokenElement(40,1)(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(41,3)(type:NS_TAG_CHARS, text:str)
+        Whitespace(44,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(45,5)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"foo")
+      NewLine(50,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

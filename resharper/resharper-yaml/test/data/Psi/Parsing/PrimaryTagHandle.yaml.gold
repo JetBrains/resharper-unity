@@ -1,0 +1,42 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  Comment(0,9)(type:COMMENT, text:# Private) comment: "# Private"
+  NewLine(9,1)(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    ChameleonDocumentBody
+      IDoubleQuotedScalarNode
+        INodeProperties
+          IShorthandTagProperty
+            IPrimaryTagHandle
+              YamlTokenType+FixedTokenElement(10,1)(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(11,3)(type:NS_TAG_CHARS, text:foo)
+        Whitespace(14,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(15,5)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"bar")
+      NewLine(20,1)(type:NEW_LINE, text:\n) spaces: "\n"
+    YamlTokenType+FixedTokenElement(21,3)(type:DOCUMENT_END, text:...)
+    NewLine(24,1)(type:NEW_LINE, text:\n) spaces: "\n"
+    Comment(25,8)(type:COMMENT, text:# Global) comment: "# Global"
+    NewLine(33,1)(type:NEW_LINE, text:\n) spaces: "\n"
+  IYamlDocument
+    IDirectives
+      IDirective
+        YamlTokenType+FixedTokenElement(34,1)(type:PERCENT, text:%)
+        YamlTokenType+GenericTokenElement(35,3)(type:NS_CHARS, text:TAG)
+        Whitespace(38,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(39,1)(type:NS_CHARS, text:!)
+        Whitespace(40,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(41,25)(type:NS_CHARS, text:tag:example.com,2000:app/)
+        NewLine(66,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      YamlTokenType+FixedTokenElement(67,3)(type:DIRECTIVES_END, text:---)
+    ChameleonDocumentBody
+      NewLine(70,1)(type:NEW_LINE, text:\n) spaces: "\n"
+      IDoubleQuotedScalarNode
+        INodeProperties
+          IShorthandTagProperty
+            IPrimaryTagHandle
+              YamlTokenType+FixedTokenElement(71,1)(type:BANG, text:!)
+            YamlTokenType+GenericTokenElement(72,3)(type:NS_TAG_CHARS, text:foo)
+        Whitespace(75,1)(type:WHITESPACE, text: ) spaces: " "
+        YamlTokenType+GenericTokenElement(76,5)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"bar")
+      NewLine(81,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

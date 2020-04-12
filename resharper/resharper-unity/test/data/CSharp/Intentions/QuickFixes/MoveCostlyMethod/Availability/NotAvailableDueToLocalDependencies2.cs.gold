@@ -1,0 +1,25 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class EveryThingAvailable : MonoBehaviour
+    {
+        public GameObject MyGetComponent(int i)
+        {
+            return |GetComponent|(0)<Transform>();
+        }
+        
+        public void Update()
+        {
+            int i = 0;
+            var transform = |MyGetComponent|(1)(i);
+        }
+    }
+}
+------------------------------------------------
+0: Expensive method invocation
+QUICKFIXES:
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+1: Expensive method invocation
+NO QUICKFIXES

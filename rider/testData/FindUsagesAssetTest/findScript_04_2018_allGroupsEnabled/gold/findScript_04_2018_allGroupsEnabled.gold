@@ -1,0 +1,14 @@
+Search target
+    NewBehaviourScript
+Found usages  (2 usages found)
+    <Assembly-CSharp>  (1 usage found)
+        Assets  (1 usage found)
+            NewBehaviourScript.cs  (1 usage found)
+                NewBehaviourScript  (1 usage found)
+                    Start()  (1 usage found)
+                        [244, Assets/NewBehaviourScript.cs] (10: 27)  gameObject.AddComponent<NewBehaviourScript>();
+    Assets  (1 usage found)
+        SampleScene.unity  (1 usage found)
+            Prefab  (1 usage found)
+                NewBehaviourScript  (1 usage found)
+                    Guid: 28ca8d972f8aca24aadf25c8b44de1f2

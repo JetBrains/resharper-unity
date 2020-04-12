@@ -80,14 +80,11 @@ namespace ApiParser
 
         public void ExportTo(XmlTextWriter xmlWriter)
         {
+            xmlWriter.WriteComment("This file is auto-generated");
             xmlWriter.WriteStartElement("api");
             ExportVersionRange(xmlWriter);
             foreach (var type in myTypes.OrderBy(t => t.Name))
-            {
-                if (type.Name == "MasterServer")
-                    Console.WriteLine();
                 type.ExportTo(xmlWriter, this);
-            }
             xmlWriter.WriteEndElement();
         }
 
@@ -314,9 +311,8 @@ namespace ApiParser
         {
             if (myParameters.Count != 1)
                 throw new InvalidOperationException("Cannot handle multiple optional parameters");
-            if (myParameters[0].Name != name)
-                throw new InvalidOperationException($"Cannot find parameter {name}");
-            myParameters[0].SetOptional(justification);
+            if (myParameters[0].Name == name)
+                myParameters[0].SetOptional(justification);
         }
 
         public void UpdateParameter(string name, UnityApiParameter newParameter)
@@ -324,8 +320,6 @@ namespace ApiParser
             var parameter = myParameters.SingleOrDefault(p => p.Name == name);
             if (parameter == null)
                 parameter = myParameters.SingleOrDefault(p => p.Name == newParameter.Name);
-            if (parameter?.IsEquivalent(newParameter) == true)
-                return;
             if (parameter == null)
                 throw new InvalidOperationException($"Cannot update parameter {name}");
             parameter.Update(newParameter, Name);
@@ -481,7 +475,7 @@ namespace ApiParser
             }
 
             if (Type.FullName != newParameter.Type.FullName)
-                throw new InvalidOperationException($"Parameter type differences for parameter {Name}! {Type.FullName} {newParameter.Type.FullName}");
+                throw new InvalidOperationException($"Parameter type differences for parameter {Name} of {functionName}! {Type.FullName} != {newParameter.Type.FullName}");
 
             if (Type.IsArray != newParameter.Type.IsArray || Type.IsByRef != newParameter.Type.IsByRef)
             {

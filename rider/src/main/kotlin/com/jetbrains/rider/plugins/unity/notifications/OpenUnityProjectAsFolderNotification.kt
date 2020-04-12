@@ -4,58 +4,83 @@ import com.intellij.ide.impl.ProjectUtil
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.components.AbstractProjectComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
-import com.jetbrains.rider.UnityReferenceDiscoverer
+import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
+import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
+import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import javax.swing.event.HyperlinkEvent
 
-class OpenUnityProjectAsFolderNotification(private val project: Project, private val unityReferenceDiscoverer: UnityReferenceDiscoverer)
-    : AbstractProjectComponent(project) {
+class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
     companion object {
         private val notificationGroupId = NotificationGroup("Unity project open", NotificationDisplayType.STICKY_BALLOON, true)
     }
 
-    override fun projectOpened() {
-        // Do nothing if we're not in Unity folders, or we are, but we're a proper .sln based solution
-        if (!unityReferenceDiscoverer.isUnityProjectFolder || project.solutionDescription is RdExistingSolution) return
+    init {
+        project.solution.rdUnityModel.unityApplicationData.advise(componentLifetime) {
+            if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
+                return@advise
 
-        val solutionDescription = project.solutionDescription
-        if (solutionDescription is RdVirtualSolution) {
-
-            val content = if (solutionDescription.projectFilePaths.isEmpty()) {
-                "This looks like a Unity project. C# and Unity specific functionality is not available when the project is opened as a folder." +
-                    " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
-            }
-            else {
-                "This looks like a Unity project. C# and Unity specific functionality is not available when only a single project is opened." +
-                    " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
-            }
-            val title = "Unity functionality unavailable"
-            val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
-            notification.setListener { _, hyperlinkEvent ->
-
-                if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener
-
-                if (hyperlinkEvent.description == "close") {
-                    ProjectUtil.closeAndDispose(project)
-                    WelcomeFrame.showIfNoProjectOpened()
+            val solutionDescription = project.solutionDescription
+            val title = "Unity features unavailable"
+            val content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and  Rider is set as the External Editor. Reopen Rider from Unity."
+            if (solutionDescription is RdExistingSolution){ // proper solution
+                if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
+                    val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
+                    Notifications.Bus.notify(notification, project)
                 }
             }
+            else if (solutionDescription is RdVirtualSolution) { // opened as folder
+                var adviceText = " Please <a href=\"reopen\">click here</a> to start Unity, generate a solution file and reopen the project."
+                val editorInstanceJson = EditorInstanceJson.getInstance(project)
+                if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
+                    adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
+                }
+                val contentWoSolution =
+                    if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
+                        content
+                    }
+                    else if (solutionDescription.projectFilePaths.isEmpty()) {
+                    "This looks like a Unity project. C# and Unity specific features are not available when the project is opened as a folder." +
+                            adviceText
+                } else
+                    "This looks like a Unity project. C# and Unity specific features are not available when only a single project is opened." +
+                            adviceText
+                val notification = Notification(notificationGroupId.displayId, title, contentWoSolution, NotificationType.WARNING)
+                notification.setListener { _, hyperlinkEvent ->
 
-            val baseDir: VirtualFile? = project.baseDir
-            baseDir?.let {
+                    if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener
+
+                    if (hyperlinkEvent.description == "close") {
+                        ProjectUtil.closeAndDispose(project)
+                        WelcomeFrame.showIfNoProjectOpened()
+                    }
+                    if (hyperlinkEvent.description == "reopen") {
+                        StartUnityAction.startUnityAndRider(project)
+                        ProjectUtil.closeAndDispose(project)
+                        WelcomeFrame.showIfNoProjectOpened()
+                    }
+                }
+
+                val baseDir: VirtualFile = project.projectDir
                 val solutionFile = baseDir.findChild(baseDir.name + ".sln")
                 if (solutionFile != null && solutionFile.exists()) {
-                    notification.addAction(object: NotificationAction("Reopen as Unity project") {
+                    notification.addAction(object : NotificationAction("Reopen as Unity project") {
                         override fun actionPerformed(e: AnActionEvent, n: Notification) {
                             // SolutionManager doesn't close the current project if focusOpenInNewFrame is set to true,
                             // and if it's set to false, we get prompted if we want to open in new or same frame. We
@@ -75,9 +100,9 @@ class OpenUnityProjectAsFolderNotification(private val project: Project, private
                         }
                     })
                 }
-            }
 
-            Notifications.Bus.notify(notification, project)
+                Notifications.Bus.notify(notification, project)
+            }
         }
     }
 }

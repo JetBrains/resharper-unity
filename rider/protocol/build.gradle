@@ -11,7 +11,8 @@ dependencies {
 
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/maven-central" }
+    maven { url "https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap" }
     flatDir {
-        dirs rdLibDirectory.absolutePath
+        dir({ backend.getRdLibDirectory() })
     }
 }

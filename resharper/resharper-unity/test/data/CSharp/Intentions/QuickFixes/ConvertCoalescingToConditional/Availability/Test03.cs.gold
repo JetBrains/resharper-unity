@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Foo
+{
+    public Component Method(Component c)
+    {
+        return |c ?? new Component()|(0);
+    }
+}
+
+------------------------------------------------
+0: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+QUICKFIXES:
+Convert to conditional expression

@@ -1,0 +1,16 @@
+﻿Provided elements:
+ 0: OnCollisionEnter(UnityEngine.Collision):System.Void
+ 1: OnCollisionExit(UnityEngine.Collision):System.Void
+ 2: OnCollisionStay(UnityEngine.Collision):System.Void
+ 3: OnControllerColliderHit(UnityEngine.ControllerColliderHit):System.Void
+ 4: OnTriggerEnter(UnityEngine.Collider):System.Void
+ 5: OnTriggerExit(UnityEngine.Collider):System.Void
+ 6: OnTriggerStay(UnityEngine.Collider):System.Void
+
+// ${KIND:Unity.EventFunctions}
+using UnityEngine;
+
+class A : CharacterController
+{
+    {caret}
+}

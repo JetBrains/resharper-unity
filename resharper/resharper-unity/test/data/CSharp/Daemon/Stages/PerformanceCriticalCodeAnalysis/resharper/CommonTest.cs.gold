@@ -1,0 +1,55 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class CommonTest : MonoBehaviour
+    {
+        private RigidBody2D myRigidBody2D;
+
+        public void |Test|(0)()
+        {
+            |Update|(1)();
+        }
+            
+        public void |Update|(2)()
+        {
+            if (myRigidBody2D == null)
+            {
+                myRigidBody2D = |GetComponent|(3)<RigidBody2D>();
+            }
+
+            |Test|(4)();
+            |IndirectCostly|(5)();
+
+            |Test2|(6)();
+            |Test2|(7)();
+            |Test2|(8)();
+            |Test2|(9)();
+        }
+        
+        private void |IndirectCostly|(10)()
+        {
+            var temp = gameObject.|GetComponent|(11)<RigidBody2D>();
+        }
+
+        private void |Test2|(12)()
+        {
+            |IndirectCostly|(13)();
+        }
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(2): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(6): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(7): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(8): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(9): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(10): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(11): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(12): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(13): ReSharper Unity Expensive Method Invocation: Expensive method invocation

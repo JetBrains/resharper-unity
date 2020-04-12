@@ -1,0 +1,54 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(0,1)(type:MINUS, text:-)
+          Whitespace(1,1)(type:WHITESPACE, text: ) spaces: " "
+          IDoubleQuotedScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                ISecondaryTagHandle
+                  YamlTokenType+FixedTokenElement(2,1)(type:BANG, text:!)
+                  YamlTokenType+FixedTokenElement(3,1)(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(4,3)(type:NS_TAG_CHARS, text:str)
+            Whitespace(7,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(8,3)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"a")
+          NewLine(11,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(12,1)(type:MINUS, text:-)
+          Whitespace(13,1)(type:WHITESPACE, text: ) spaces: " "
+          ISingleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(14,3)(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'b')
+          NewLine(17,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(18,1)(type:MINUS, text:-)
+          Whitespace(19,1)(type:WHITESPACE, text: ) spaces: " "
+          IDoubleQuotedScalarNode
+            INodeProperties
+              IAnchorProperty
+                YamlTokenType+FixedTokenElement(20,1)(type:AMP, text:&)
+                YamlTokenType+GenericTokenElement(21,6)(type:NS_ANCHOR_NAME, text:anchor)
+            Whitespace(27,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+GenericTokenElement(28,3)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"c")
+          NewLine(31,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(32,1)(type:MINUS, text:-)
+          Whitespace(33,1)(type:WHITESPACE, text: ) spaces: " "
+          IAliasNode
+            YamlTokenType+FixedTokenElement(34,1)(type:ASTERISK, text:*)
+            YamlTokenType+GenericTokenElement(35,6)(type:NS_ANCHOR_NAME, text:anchor)
+          NewLine(41,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(42,1)(type:MINUS, text:-)
+          Whitespace(43,1)(type:WHITESPACE, text: ) spaces: " "
+          IEmptyScalarNode
+            INodeProperties
+              IShorthandTagProperty
+                ISecondaryTagHandle
+                  YamlTokenType+FixedTokenElement(44,1)(type:BANG, text:!)
+                  YamlTokenType+FixedTokenElement(45,1)(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(46,3)(type:NS_TAG_CHARS, text:str)
+            NewLine(49,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

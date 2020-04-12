@@ -1,0 +1,9 @@
+<assembly name="UnityEngine.AnimationModule">
+
+  <member name="T:UnityEngine.SharedBetweenAnimatorsAttribute">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEngine.StateMachineBehaviour</argument>
+    </attribute>
+  </member>
+
+</assembly>

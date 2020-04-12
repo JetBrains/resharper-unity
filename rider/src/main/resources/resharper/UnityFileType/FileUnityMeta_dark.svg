@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>FileUnityMeta(GrayDark)</title>
+  <g>
+    <rect width="16" height="16" fill="#ffd3ff" opacity="0"/>
+    <g>
+      <path d="M9.583,16h.831L16,10.414V9.583L7.586,1.236A4.492,4.492,0,0,0,1.253,7.6Z" fill="#252525"/>
+      <path d="M6.9,1.963A3.492,3.492,0,0,0,1.963,6.9L10,15l5-5Z" fill="#e9a755"/>
+      <path d="M5,4A1,1,0,1,1,4,3,1,1,0,0,1,5,4ZM6,7.5,5.5,8l3,3,.5-.5Zm1-1L6.5,7,11,11.5l.5-.5Zm3,1L9.5,8,11,9.5l.5-.5Zm-2-2L7.5,6,9,7.5,9.5,7Z" fill="#292929"/>
+    </g>
+  </g>
+</svg>

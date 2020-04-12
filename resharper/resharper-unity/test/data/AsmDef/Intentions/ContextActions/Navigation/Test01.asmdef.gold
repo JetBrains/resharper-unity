@@ -1,0 +1,64 @@
+﻿-------------- offset 43 line 3 col 22 --------------------
++++ JetBrains.ReSharper.Features.Navigation.Features.FindReferencedCode.FindReferencedCodeProvider navigation provider results +++
+Tooltip: Referenced code in 'assembly definition Ref1' were not found.
++++ JetBrains.ReSharper.Features.Navigation.Features.FindUsagesAdvanced.FindUsagesAdvancedProvider navigation provider results +++
+Immediate result: Occurrence's dump:
+TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
+Occurrence's navigation result. Opened file: Test01.asmdef
+------------------
+{
+  "name": "Test01",
+  "references": [ "Re|CARET|f1" ]
+}
+
+------------------
+
++++ JetBrains.ReSharper.Features.Navigation.Features.GoToDeclaration.GotoDeclarationProvider navigation provider results +++
+Immediate result: Occurrence's dump:
+TO: [O] "name": |"Ref1|" RANGE: (12,19) @ <TestProject>\Ref1.asmdef
+Occurrence's navigation result. Opened file: Ref1.asmdef
+------------------
+{
+  "name": "|CARET|Ref1"
+}
+
+------------------
+
++++ JetBrains.ReSharper.Features.Navigation.Features.GoToUsages.GotoUsagesProvider navigation provider results +++
+Immediate result: Occurrence's dump:
+TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
+Occurrence's navigation result. Opened file: Test01.asmdef
+------------------
+{
+  "name": "Test01",
+  "references": [ "Re|CARET|f1" ]
+}
+
+------------------
+
++++ JetBrains.ReSharper.Features.Navigation.Features.HighlightUsages.HighlightUsagesProvider navigation provider results +++
+Immediate result: Occurrence's dump:
+TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
+Occurrence's navigation result. Opened file: Test01.asmdef
+------------------
+{
+  "name": "Test01",
+  "references": [ "Re|CARET|f1" ]
+}
+
+------------------
+
++++ JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages.GoToUnityUsagesProvider navigation provider results +++
+Tooltip: Usages of 'Ref1' were not found.
++++ JetBrains.ReSharper.Plugins.Unity.UnityFindUsagesProvider navigation provider results +++
+Immediate result: Occurrence's dump:
+TO: [O] "references": [ "|Ref1|" ] RANGE: (41,45) @ Test01.asmdef
+Occurrence's navigation result. Opened file: Test01.asmdef
+------------------
+{
+  "name": "Test01",
+  "references": [ "Re|CARET|f1" ]
+}
+
+------------------
+

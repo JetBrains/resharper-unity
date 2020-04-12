@@ -1,0 +1,73 @@
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+
+[assembly: |ImageEffectTransformsToLDR|(0)]
+
+[|ImageEffectTransformsToLDR|(1)]
+public class Foo
+{
+    [|ImageEffectTransformsToLDR|(2)]
+    public Foo()
+    {
+    }
+
+    [|ImageEffectTransformsToLDR|(3)]
+    public string Field;
+
+    [|ImageEffectTransformsToLDR|(4)]
+    public const string ConstField = "Hello world";
+
+    [|ImageEffectTransformsToLDR|(5)]
+    public string Property { get; set; }
+
+    [ImageEffectTransformsToLDR]
+    [return: |ImageEffectTransformsToLDR|(6)]
+    public string Method<[|ImageEffectTransformsToLDR|(7)] T>([|ImageEffectTransformsToLDR|(8)] int param1)
+    {
+        return null;
+    }
+
+    [|ImageEffectTransformsToLDR|(9)]
+    public event EventHandler MyEvent;
+
+    [field: |ImageEffectTransformsToLDR|(10)]
+    public event EventHandler MyEvent2;
+}
+
+[|ImageEffectTransformsToLDR|(11)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+[|ImageEffectTransformsToLDR|(12)]
+public struct Bar
+{
+}
+
+[|ImageEffectTransformsToLDR|(13)]
+public enum Baz
+{
+    One,
+    Two
+}
+
+[|ImageEffectTransformsToLDR|(14)]
+public interface Quux
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(1): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(2): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(3): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(4): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(5): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(6): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(7): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(8): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(9): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(10): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(11): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(12): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(13): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations
+(14): ReSharper Dead Code: Attribute 'UnityEngine.ImageEffectTransformsToLDR' is redundant on this declaration type. It is only used when applied to 'Method' declarations

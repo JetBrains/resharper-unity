@@ -1,0 +1,110 @@
+﻿using UnityEngine;
+
+public class Test
+{
+    public void Method()
+    {
+        var s1 = ScriptableObject.CreateInstance("||(0)");
+        s1 = ScriptableObject.CreateInstance("|UnknownType|(1)");
+        s1 = ScriptableObject.CreateInstance("|INotAClass|(2)");
+        s1 = ScriptableObject.CreateInstance("|    ScriptableObjectInGlobalNamespace|(3)");
+        s1 = ScriptableObject.CreateInstance("|ScriptableObjectInGlobalNamespace   |(4)");
+        s1 = ScriptableObject.CreateInstance("|InvalidNamespace|(5).|UnknownType|(6)");
+        s1 = ScriptableObject.CreateInstance("|Other|(7).|InvalidNamespace|(8).|UnknownType|(9)");
+        s1 = ScriptableObject.CreateInstance("|WrongBaseType|(10)");
+        s1 = ScriptableObject.CreateInstance("|ScriptableObjectWithTypeParameter|(11)");
+        s1 = ScriptableObject.CreateInstance("|ScriptableObjectInGlobalNamespace|(12)");
+        s1 = ScriptableObject.CreateInstance("|ScriptableObjectInOtherNamespace|(13)");
+        s1 = ScriptableObject.CreateInstance("|ScriptableObjectInNestedNamespace|(14)");
+        s1 = ScriptableObject.CreateInstance("|Other|(15).|ScriptableObjectInOtherNamespace|(16)");
+        s1 = ScriptableObject.CreateInstance("|Nested1|(17).|Nested2|(18).|Nested3|(19).|Nested4|(20).|ScriptableObjectInNestedNamespace|(21)");
+        s1 = ScriptableObject.CreateInstance("|Other|(22).|ScriptableObjectInOtherNamespace|(23).|InvalidTrailingType|(24)");
+
+        s1 = ScriptableObject.CreateInstance("|MultipleCandidates|(25)");
+
+        // TODO: What about trailing dots?
+        s1 = ScriptableObject.CreateInstance("|Other|(26).|ScriptableObjectInOtherNamespace|(27).||(28)");
+    }
+}
+
+public class WrongBaseType
+{
+}
+
+public interface INotAClass
+{
+}
+
+public class ScriptableObjectInGlobalNamespace : ScriptableObject
+{
+}
+
+public class MultipleCandidates : ScriptableObject
+{
+}
+
+// This isn't a legal construct in Unity
+public class ScriptableObjectWithTypeParameter<T> : ScriptableObject
+{
+}
+
+namespace Other
+{
+    public class ScriptableObjectInOtherNamespace : ScriptableObject
+    {
+    }
+
+    public class MultipleCandidates : ScriptableObject
+    {
+    }
+}
+
+namespace Nested1
+{
+    namespace Nested2
+    {
+        namespace Nested3
+        {
+            namespace Nested4
+            {
+                public class ScriptableObjectInNestedNamespace : ScriptableObject
+                {
+                }
+            }
+        }
+    }
+}
+
+------------------------------------------------
+0: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+1: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+2: result=TYPE_EXPECTED declaredElem=INotAClass
+3: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+4: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+5: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+6: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+7: result=OK declaredElem=Other
+8: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+9: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+10: result=EXPECTED_SCRIPTABLE_OBJECT declaredElem=WrongBaseType
+11: result=INCORRECT_TYPE_PARAMETER_NUMBER declaredElem=ScriptableObjectWithTypeParameter<T>
+12: result=OK declaredElem=ScriptableObjectInGlobalNamespace
+13: result=OK declaredElem=Other.ScriptableObjectInOtherNamespace
+14: result=OK declaredElem=Nested1.Nested2.Nested3.Nested4.ScriptableObjectInNestedNamespace
+15: result=OK declaredElem=Other
+16: result=OK declaredElem=Other.ScriptableObjectInOtherNamespace
+17: result=OK declaredElem=Nested1
+18: result=OK declaredElem=Nested1.Nested2
+19: result=OK declaredElem=Nested1.Nested2.Nested3
+20: result=OK declaredElem=Nested1.Nested2.Nested3.Nested4
+21: result=OK declaredElem=Nested1.Nested2.Nested3.Nested4.ScriptableObjectInNestedNamespace
+22: result=OK declaredElem=Other
+23: result=OK declaredElem=Other.ScriptableObjectInOtherNamespace
+24: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null
+25: result=MULTIPLE_CANDIDATES declaredElem=null
+Candidates:
+  MultipleCandidates
+  Other.MultipleCandidates
+26: result=OK declaredElem=Other
+27: result=OK declaredElem=Other.ScriptableObjectInOtherNamespace
+28: result=UNRESOLVED_COMPONENT_OR_SCRIPTABLE_OBJECT declaredElem=null

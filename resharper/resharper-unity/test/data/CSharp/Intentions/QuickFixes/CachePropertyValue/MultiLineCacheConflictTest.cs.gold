@@ -1,0 +1,21 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class MultiLineCacheConflictTest
+    {
+        public void Test(Transform t)
+        {
+          var position = t.position;
+          position = position + position + posit{caret}ion;
+          t.position = position;
+
+          var x = new Vector3(10, 0, 0);
+            x += new Vector3(0, 10, 10);
+
+            t.localPosition = x;
+            
+            t.position = t.position + t.position;
+        }
+    }
+}

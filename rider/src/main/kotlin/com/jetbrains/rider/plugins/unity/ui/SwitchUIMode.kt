@@ -2,14 +2,13 @@ package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rider.UnityReferenceDiscoverer
-import com.jetbrains.rider.util.idea.tryGetComponent
-import com.jetbrains.rider.util.reactive.Property
+import com.jetbrains.rider.isUnityGeneratedProject
+import com.jetbrains.rd.util.reactive.Property
 
 class SwitchUIMode : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val uiManager = project.tryGetComponent<UnityUIManager>() ?: return
+        val uiManager = UnityUIManager.getInstance(project)
 
         if(uiManager.hasMinimizedUi.hasTrueValue())
             UnityUIMinimizer.recoverFullUI(project)
@@ -24,25 +23,16 @@ class SwitchUIMode : AnAction() {
             return
         }
 
-        val uiManager = project.tryGetComponent<UnityUIManager>()
-        if (uiManager == null) {
+        // Only enable UI switching for generated Unity projects. Sidecar projects
+        // (class library in the main Unity folder) are fairly advanced anyway, so
+        // leave things enabled. It also means these projects can access nuget
+        if(!project.isUnityGeneratedProject()) {
             e.presentation.isEnabled = false
             return
         }
 
-        val unityReferenceDiscoverer = project.tryGetComponent<UnityReferenceDiscoverer>()
-        if (unityReferenceDiscoverer == null) {
-            e.presentation.isEnabled = false
-            return
-        }
-
-        if(!unityReferenceDiscoverer.isUnityGeneratedProject) {
-            e.presentation.isEnabled = false
-            return
-        }
-
-        if(uiManager.hasMinimizedUi.hasTrueValue()){
-            e.presentation.text = "Switch to Full UI"}
+        if(UnityUIManager.getInstance(project).hasMinimizedUi.hasTrueValue())
+            e.presentation.text = "Switch to Full UI"
         else
             e.presentation.text = "Switch to Minimized UI"
 

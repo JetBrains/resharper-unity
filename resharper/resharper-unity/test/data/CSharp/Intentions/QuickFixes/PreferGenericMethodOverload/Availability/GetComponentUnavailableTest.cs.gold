@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+
+public class Whatever
+{
+        
+}
+
+public class Test02
+{
+    public void Method(GameObject o)
+    {
+        o.GetComponent("|Whatever|(0)");
+    }
+}
+
+------------------------------------------------
+0: Expected type derived from 'UnityEngine.MonoBehaviour'
+NO QUICKFIXES

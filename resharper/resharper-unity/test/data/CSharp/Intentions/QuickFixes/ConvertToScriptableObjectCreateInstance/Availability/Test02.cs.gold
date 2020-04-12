@@ -1,0 +1,13 @@
+﻿public class Foo
+{
+    public static MyScriptableObject DoSomething()
+    {
+        var foo = |new MyScriptableObject()|(0);
+        return foo;
+    }
+}
+
+------------------------------------------------
+0: 'ScriptableObject' instances must be instantiated with 'ScriptableObject.CreateInstance<T>()' instead of 'new'
+QUICKFIXES:
+Convert to 'ScriptableObject.CreateInstance<MyScriptableObject>()'

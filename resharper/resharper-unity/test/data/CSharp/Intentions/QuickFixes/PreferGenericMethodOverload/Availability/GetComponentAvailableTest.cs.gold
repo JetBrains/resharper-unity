@@ -1,0 +1,19 @@
+﻿using UnityEngine;
+
+public class Whatever : MonoBehaviour
+{
+        
+}
+
+public class Test01
+{
+    public void Method(GameObject o)
+    {
+        o.GetComponent(|"Whatever"|(0));
+    }
+}
+
+------------------------------------------------
+0: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'GetComponent<Whatever>()'

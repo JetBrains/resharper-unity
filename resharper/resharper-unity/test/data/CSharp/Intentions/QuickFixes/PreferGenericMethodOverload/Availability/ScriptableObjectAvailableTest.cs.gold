@@ -1,0 +1,21 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class Foo : ScriptableObject
+    {
+        
+    }
+
+    public class Test06
+    {
+        public void Test()
+        {
+            ScriptableObject.CreateInstance(|"Foo"|(0));
+        }
+    }
+}
+------------------------------------------------
+0: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'CreateInstance<DefaultNamespace.Foo>()'

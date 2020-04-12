@@ -1,0 +1,48 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(0,1)(type:MINUS, text:-)
+          NewLine(1,1)(type:NEW_LINE, text:\n) spaces: "\n"
+          YamlTokenType+GenericTokenElement(2,2)(type:INDENT, text:  )
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(4,15)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"flow in block")
+          NewLine(19,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(20,1)(type:MINUS, text:-)
+          Whitespace(21,1)(type:WHITESPACE, text: ) spaces: " "
+          IFoldedScalarNode
+            YamlTokenType+FixedTokenElement(22,1)(type:GT, text:>)
+            NewLine(23,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(24,1)(type:INDENT, text: )
+            YamlTokenType+GenericTokenElement(25,12)(type:SCALAR_TEXT, text:Block scalar)
+          NewLine(37,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(38,1)(type:MINUS, text:-)
+          IBlockMappingNode
+            Whitespace(39,1)(type:WHITESPACE, text: ) spaces: " "
+            INodeProperties
+              IShorthandTagProperty
+                ISecondaryTagHandle
+                  YamlTokenType+FixedTokenElement(40,1)(type:BANG, text:!)
+                  YamlTokenType+FixedTokenElement(41,1)(type:BANG, text:!)
+                YamlTokenType+GenericTokenElement(42,3)(type:NS_TAG_CHARS, text:map)
+            Whitespace(45,1)(type:WHITESPACE, text: ) spaces: " "
+            Comment(46,18)(type:COMMENT, text:# Block collection) comment: "# Block collection"
+            NewLine(64,1)(type:NEW_LINE, text:\n) spaces: "\n"
+            YamlTokenType+GenericTokenElement(65,2)(type:INDENT, text:  )
+            IBlockMappingEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(67,3)(type:NS_PLAIN, text:foo)
+              Whitespace(70,1)(type:WHITESPACE, text: ) spaces: " "
+              YamlTokenType+FixedTokenElement(71,1)(type:COLON, text::)
+              ChameleonMapEntryContent
+                Whitespace(72,1)(type:WHITESPACE, text: ) spaces: " "
+                IPlainScalarNode
+                  YamlTokenType+GenericTokenElement(73,3)(type:NS_PLAIN, text:bar)
+                NewLine(76,1)(type:NEW_LINE, text:\n) spaces: "\n"
+                NewLine(77,1)(type:NEW_LINE, text:\n) spaces: "\n"
+                IEmptyScalarNode
+

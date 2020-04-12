@@ -1,0 +1,57 @@
+﻿Language: PsiLanguageType:YAML
+IYamlFile
+  IYamlDocument
+    ChameleonDocumentBody
+      IBlockSequenceNode
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(0,1)(type:MINUS, text:-)
+          Whitespace(1,1)(type:WHITESPACE, text: ) spaces: " "
+          IFlowSequenceNode
+            YamlTokenType+FixedTokenElement(2,1)(type:LBRACK, text:[)
+            Whitespace(3,1)(type:WHITESPACE, text: ) spaces: " "
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(4,1)(type:NS_PLAIN, text:a)
+            YamlTokenType+FixedTokenElement(5,1)(type:COMMA, text:,)
+            Whitespace(6,1)(type:WHITESPACE, text: ) spaces: " "
+            IFlowSequenceEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(7,1)(type:NS_PLAIN, text:b)
+            Whitespace(8,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+FixedTokenElement(9,1)(type:RBRACK, text:])
+          NewLine(10,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(11,1)(type:MINUS, text:-)
+          Whitespace(12,1)(type:WHITESPACE, text: ) spaces: " "
+          IFlowMappingNode
+            YamlTokenType+FixedTokenElement(13,1)(type:LBRACE, text:{)
+            Whitespace(14,1)(type:WHITESPACE, text: ) spaces: " "
+            IFlowMapEntry
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(15,1)(type:NS_PLAIN, text:a)
+              YamlTokenType+FixedTokenElement(16,1)(type:COLON, text::)
+              Whitespace(17,1)(type:WHITESPACE, text: ) spaces: " "
+              IPlainScalarNode
+                YamlTokenType+GenericTokenElement(18,1)(type:NS_PLAIN, text:b)
+            Whitespace(19,1)(type:WHITESPACE, text: ) spaces: " "
+            YamlTokenType+FixedTokenElement(20,1)(type:RBRACE, text:})
+          NewLine(21,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(22,1)(type:MINUS, text:-)
+          Whitespace(23,1)(type:WHITESPACE, text: ) spaces: " "
+          IDoubleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(24,3)(type:C_DOUBLE_QUOTED_SINGLE_LINE, text:"a")
+          NewLine(27,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(28,1)(type:MINUS, text:-)
+          Whitespace(29,1)(type:WHITESPACE, text: ) spaces: " "
+          ISingleQuotedScalarNode
+            YamlTokenType+GenericTokenElement(30,3)(type:C_SINGLE_QUOTED_SINGLE_LINE, text:'b')
+          NewLine(33,1)(type:NEW_LINE, text:\n) spaces: "\n"
+        ISequenceEntry
+          YamlTokenType+FixedTokenElement(34,1)(type:MINUS, text:-)
+          Whitespace(35,1)(type:WHITESPACE, text: ) spaces: " "
+          IPlainScalarNode
+            YamlTokenType+GenericTokenElement(36,1)(type:NS_PLAIN, text:c)
+          NewLine(37,1)(type:NEW_LINE, text:\n) spaces: "\n"
+

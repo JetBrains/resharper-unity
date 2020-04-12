@@ -1,0 +1,28 @@
+﻿<Errors language="C#" configurableSeverityImplementationLanguage="YAML">
+
+  <Usings>
+  </Usings>
+
+  <StaticSeverityGroups>
+    <Group name="YAML Errors" key="YamlErrors"/>
+  </StaticSeverityGroups>
+
+  <Error name="YamlSyntax" staticGroup="YamlErrors">
+    <Parameter type="string" name="text"/>
+    <Parameter type="DocumentRange" name="documentRange"/>
+    <Message value="{0}">
+      <Argument>Text</Argument>
+    </Message>
+    <Range>DocumentRange</Range>
+    <Behavour attributeID="ERROR" overlapResolvePolicy="ERROR"/>
+  </Error>
+
+  <Error name="NotResolved" staticGroup="YamlErrors">
+    <Parameter type="IReference" name="reference"/>
+    <Message value="Cannot resolve symbol '{0}'">
+      <Argument>Reference.GetName()</Argument>
+    </Message>
+    <Range>Reference.GetDocumentRange()</Range>
+    <Behavour attributeID="UNRESOLVED_ERROR" overlapResolvePolicy="UNRESOLVED_ERROR"/>
+  </Error>
+</Errors>

@@ -1,0 +1,73 @@
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+
+[assembly: |CustomEditor|(0)]
+
+[CustomEditor]
+public class Foo
+{
+    [|CustomEditor|(1)]
+    public Foo()
+    {
+    }
+
+    [|CustomEditor|(2)]
+    public string Field;
+
+    [|CustomEditor|(3)]
+    public const string ConstField = "Hello world";
+
+    [|CustomEditor|(4)]
+    public string Property { get; set; }
+
+    [|CustomEditor|(5)]
+    [return: |CustomEditor|(6)]
+    public string Method<[|CustomEditor|(7)] T>([|CustomEditor|(8)] int param1)
+    {
+        return null;
+    }
+
+    [|CustomEditor|(9)]
+    public event EventHandler MyEvent;
+
+    [field: |CustomEditor|(10)]
+    public event EventHandler MyEvent2;
+}
+
+[|CustomEditor|(11)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+[|CustomEditor|(12)]
+public struct Bar
+{
+}
+
+[|CustomEditor|(13)]
+public enum Baz
+{
+    One,
+    Two
+}
+
+[|CustomEditor|(14)]
+public interface Quux
+{
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(1): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(2): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(3): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(4): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(5): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(6): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(7): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(8): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(9): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(10): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(11): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(12): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(13): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+(14): ReSharper Dead Code: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations

@@ -25,7 +25,7 @@ SOFTWARE.
 using System;
 using System.IO;
 using System.Linq;
-using JetBrains.Util.Logging;
+using JetBrains.Diagnostics;
 using UnityEditorInternal;
 using UnityEngine;
 using Debug = System.Diagnostics.Debug;
@@ -54,7 +54,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
   public class ScriptObjectSingleton<T> : ScriptableObject where T : ScriptableObject
   {
     private static readonly ILog ourLogger = Log.GetLog("ScriptObjectSingleton");
-    protected static T instance;
+    private static T instance;
     public static T Instance
     {
       get
@@ -74,14 +74,11 @@ namespace JetBrains.Rider.Unity.Editor.Utils
       else
       {
         instance = this as T;
-        Debug.Assert(instance != null);
       }
     }
 
     private static void CreateAndLoad()
     {
-      Debug.Assert(instance == null);
-
       string filePath = GetFilePath();
       if (!string.IsNullOrEmpty(filePath))
       {
@@ -120,7 +117,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
       var attr = typeof(T).GetCustomAttributes(true)
         .OfType<LocationAttribute>()
         .FirstOrDefault();
-      ourLogger.Verbose("FilePath {0}", attr?.Filepath);
+      //ourLogger.Verbose("FilePath {0}", attr?.Filepath);
       return attr?.Filepath;
     }
   }

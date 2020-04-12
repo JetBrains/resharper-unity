@@ -1,0 +1,21 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class EveryThingAvailable : MonoBehaviour
+    {
+        public void Update()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                var transform = |GetComponent|(0)<Transform>();
+            }
+        }
+    }
+}
+------------------------------------------------
+0: Expensive method invocation
+QUICKFIXES:
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+Move outside of loop

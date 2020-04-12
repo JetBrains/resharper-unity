@@ -1,0 +1,17 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class CorrectNameGeneration : MonoBehaviour
+    {
+        public void Update()
+        {
+            var localTransform = GetComponent<Transform>();
+            var islocalTransformNull = localTransform ==  null;
+            for (int i = 0; i < 100; i++)
+                if (islocalTransformN{caret}ull) {
+
+                }
+        }
+    }
+}

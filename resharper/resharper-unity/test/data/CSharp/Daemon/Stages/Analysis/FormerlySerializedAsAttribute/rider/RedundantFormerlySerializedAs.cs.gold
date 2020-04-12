@@ -1,0 +1,23 @@
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+public class Test01
+{
+    [|FormerlySerializedAs("myValue")|(0)] private int myValue2;
+    [|FormerlySerializedAs("myConstant")|(1)] private const int myValue3 = 42;
+    [|FormerlySerializedAs("myStatic")|(2)] private static int myValue4 = 42;
+}
+
+public class ||Test02|(3)|(4) : MonoBehaviour
+{
+    [|FormerlySerializedAs("myValue")|(5), FormerlySerializedAs("foo")] public int |myValue|(6);
+}
+
+---------------------------------------------------------
+(0): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(1): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(2): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(3): ReSharper Unity Implicitly Used Identifier: 
+(4): UnityCodeInsights: 
+(5): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
+(6): ReSharper Unity Implicitly Used Identifier: 

@@ -1,0 +1,35 @@
+<Project>
+
+  <!-- If we're being built as part of the Unity solution, use the Unity values for Directory.Build.Props.
+       If we're being built standalone, this file won't exist, so we have sensible defaults -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- We have multiple projects in the same folder, so need to rename the bin and obj
+       folders so that they are unique and we don't overwrite anything. We can do this
+       in the project files for the bin folders, but not for the obj folders, because
+       the Sdk attribute indirectly imports Microsoft.Common.props before we have a
+       chance to set any properties. Microsoft.Common.props defines the BaseIntermediateOutputPath
+       value, and then immediately uses it to include props files from the obj folder,
+       before we've had a chance to override it. Fortunately, this Directory.Build.props
+       file gets automatically imported first, so we can override it here.
+       We also have to set it to something outside of the source tree, or the default
+       wildcard includes only exclude bin and obj for the current project, and we'd
+       pick up extra files.
+       See:
+       * https://github.com/Microsoft/msbuild/issues/1603
+       * https://github.com/dotnet/sdk/issues/803
+       * https://github.com/dotnet/sdk/issues/802 -->
+  <PropertyGroup>
+    <BaseIntermediateOutputPath Condition=" '$(OS)' == 'Unix' And '$(BaseIntermediateOutputPath)' == '' ">$(MSBuildThisFileDirectory)/build/$(MSBuildProjectName)/obj/</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath Condition=" '$(OS)' != 'Unix' And '$(BaseIntermediateOutputPath)' == '' ">$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath Condition=" '$(OutputPath)' == '' ">$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RiderSDKVersion Condition=" '$(RiderSDKVersion)' == '' ">2018.2.3</RiderSDKVersion>
+    <ReSharperSDKVersion Condition=" '$(ReSharperSDKVersion)' == '' ">2018.2.3</ReSharperSDKVersion>    
+  </PropertyGroup>  
+</Project>

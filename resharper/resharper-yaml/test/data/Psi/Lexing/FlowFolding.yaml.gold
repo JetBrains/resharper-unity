@@ -1,0 +1,2 @@
+﻿0000: C_DOUBLE_QUOTED_MULTILINE '"\n  foo \n \n  \t bar\n\n  baz\n"'
+0027: NEW_LINE '\n'

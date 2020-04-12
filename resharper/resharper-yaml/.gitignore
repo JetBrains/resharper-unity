@@ -1,0 +1,52 @@
+# Common IntelliJ Platform excludes
+
+# User-specific stuff:
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/**/codeStyleConfig.xml
+**/.idea/shelf/*
+**/.idea/dictionaries
+
+# Sensitive or high-churn files:
+**/.idea/**/dataSources/
+**/.idea/**/dataSources.ids
+**/.idea/**/dataSources.xml
+**/.idea/**/dataSources.local.xml
+**/.idea/**/sqlDataSources.xml
+**/.idea/**/dynamic.xml
+**/.idea/**/uiDesigner.xml
+
+# ReSharper plugin code
+build/
+
+# Rider auto-generates .iml files. We don't need to track them, unlike most IntelliJ projects
+.idea/**/modules.xml
+.idea/**/*.iml
+
+# ContentModel.xml is also auto-generated
+.idea/**/contentModel.xml
+
+# New style .csproj uses packages in the user's cache, but the tests download packages of binaries.
+# Would be nice to download them somewhere outside of the source tree.
+Packages/*
+*.nupkg
+
+*.suo
+*.user
+[Bb]in
+[Oo]bj
+.vs/
+
+src/**/*.generated.cs
+src/**/*_lex.cs
+src/**/*_lex.depends
+test/data/**/*.tmp
+
+# Backup & report files from converting an old project file to a newer Visual Studio version
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+
+Thumbs.db
+Desktop.ini
+.DS_Store

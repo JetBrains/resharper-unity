@@ -7,25 +7,29 @@ import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
-import com.intellij.ui.content.ContentManagerAdapter
 import com.intellij.ui.content.ContentManagerEvent
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.intellij.ui.content.ContentManagerListener
+import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
-import com.jetbrains.rider.plugins.unity.util.UnityIcons
-import com.jetbrains.rider.unitTesting.actions.RiderUnitTestRenameSessionAction
-import com.jetbrains.rider.util.idea.LifetimedProjectComponent
+import com.jetbrains.rider.util.idea.getComponent
+import icons.UnityIcons
 
-class UnityToolWindowFactory(project: Project,
-                             private val toolWindowManager: ToolWindowManager,
-                             private val host: UnityHost)
-    : LifetimedProjectComponent(project) {
+// todo: it lacks init {}, so it's not a component and doesn't need to be initialized automatically
+//there's an API for registering tool windows in the IJ Platform
+class UnityToolWindowFactory(project: Project) : LifetimedProjectComponent(project) {
 
     companion object {
-        val TOOLWINDOW_ID = "Unity"
-        val ACTION_PLACE = "Unity"
+        const val TOOL_WINDOW_ID = "Unity"
+        const val ACTION_PLACE = "Unity"
+
+        fun getInstance(project: Project) = project.getComponent<UnityToolWindowFactory>()
+
+        fun show(project: Project) {
+            ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID)?.show(null)
+        }
     }
 
     private val lock = Object()
@@ -37,8 +41,10 @@ class UnityToolWindowFactory(project: Project,
         }
     }
 
+    // TODO: Use ToolWindowFactory and toolWindow extension points
+    @Suppress("DEPRECATION")
     private fun create(): UnityToolWindowContext {
-        val toolWindow = toolWindowManager.registerToolWindow(TOOLWINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
+        val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
 
         if (toolWindow is ToolWindowEx) {
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
@@ -48,19 +54,28 @@ class UnityToolWindowFactory(project: Project,
         }
 
         val contentManager = toolWindow.contentManager
-        contentManager.addContentManagerListener(object : ContentManagerAdapter() {
-            override fun contentRemoved(event: ContentManagerEvent?) {
+        contentManager.addContentManagerListener(object : ContentManagerListener {
+            override fun selectionChanged(p0: ContentManagerEvent) {
+            }
+
+            override fun contentRemoveQuery(p0: ContentManagerEvent) {
+            }
+
+            override fun contentAdded(p0: ContentManagerEvent) {
+            }
+
+            override fun contentRemoved(event: ContentManagerEvent) {
                 context = null
-                toolWindowManager.unregisterToolWindow(TOOLWINDOW_ID)
+                ToolWindowManager.getInstance(project).unregisterToolWindow(TOOL_WINDOW_ID)
             }
         })
         toolWindow.title = ""
-        toolWindow.icon = UnityIcons.Toolwindows.ToolWindowUnityLog
+        toolWindow.setIcon(UnityIcons.ToolWindows.UnityLog)
         // Required for hiding window without content
         ContentManagerWatcher(toolWindow, contentManager)
 
         val logModel = UnityLogPanelModel(componentLifetime, project)
-        val logView = UnityLogPanelView(project, logModel, host)
+        val logView = UnityLogPanelView(componentLifetime, project, logModel)
         val toolWindowContent = contentManager.factory.createContent(null, "Log", true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel

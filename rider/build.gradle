@@ -1,89 +1,77 @@
 import org.apache.tools.ant.taskdefs.condition.Os
-
-buildscript {
-    ext.rd_version = '0.1.18'
-
-    repositories {
-        maven { url "https://cache-redirector.jetbrains.com/myget.org.rd-snapshots.maven" }
-        maven { url "https://cache-redirector.jetbrains.com/maven-central" }
-    }
-
-    dependencies {
-        classpath "com.jetbrains.rd:rd-gen:${rd_version}"
-    }
-}
+import com.jetbrains.rider.plugins.gradle.buildServer.BuildServerKt
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.41'
-    id 'org.jetbrains.intellij' version '0.3.2'
-    id 'com.ullink.nunit' version '1.12' 
+    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+    id 'org.jetbrains.intellij' // Version comes from buildSrc
+    id 'com.jetbrains.rdgen' version '0.201.57'
+    id 'com.ullink.nuget' version '2.18'
+    id 'com.ullink.nunit' version '1.14'
+    id 'me.filippov.gradle.jvm.wrapper' version '0.9.3'
 }
 
-configurations {
-    reSharper
-}
+
+ext.repoRoot = project.file("..")
+ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
+ext.bundledRiderSdkRoot = new File(projectDir, "dependencies")  // SDK from TC configuration/artifacts
 
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
     maven { url "https://cache-redirector.jetbrains.com/maven-central" }
+    maven { url "https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap" }
+}
+
+configurations {
+    resharper
 }
 
 dependencies {
-    reSharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "2018.2-SNAPSHOT", ext: "zip"
+    resharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "${productVersion}-SNAPSHOT", ext: "zip"
 }
 
-apply plugin: 'com.jetbrains.rdgen'
-
-ext.RdGen = com.jetbrains.rider.generator.gradle.RdgenTask
-
-ext.repoRoot = new File("..").canonicalFile
-ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-ext.dependenciesDir = new File("dependencies")
-
 wrapper {
-    gradleVersion = '4.7'
+    gradleVersion = '5.6.2'
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
-if (System.env['TEAMCITY_VERSION'] != null) {
-    ext.ci = new TeamCityService()
-    ext.isBuildingUnderCi = true
-    gradle.taskGraph.addTaskExecutionListener(new TeamCityEventLogger(ci))
-} else if (System.env['TRAVIS'] != null) {
-    ext.ci = new TravisService()
-    ext.isBuildingUnderCi = true
-    gradle.taskGraph.addTaskExecutionListener(new TravisEventLogger(ci))
-} else {
-    ext.ci = new NullService()
-    ext.isBuildingUnderCi = false
+version "${productVersion}.0.$BuildCounter"
+
+ext.buildServer = BuildServerKt.initBuildServer(gradle)
+if (buildServer.automatedBuild) {
+    BuildConfiguration = "Release"
 }
 
-if (!ext.has("BuildCounter"))
-    ext.BuildCounter = 9999
-
-if (!ext.has("BuildConfiguration")) {
-    ext.BuildConfiguration = ext.isBuildingUnderCi ? "Release" : "Debug"
-}
-
-if (!ext.has('dotNetUpToDate') || ext.dotNetUpToDate ==~ "(?i)False")
-    ext.dotNetUpToDate = false
-
-/* done as an optional step so that we can reuse the build artifacts */
-if (!ext.has("RunTests") || ext.RunTests ==~ "(?i)False")
-    ext.RunTests = false
-logger.lifecycle("RunTests=$RunTests")
-
-ext.shouldBuildRiderOnly = false
-
-version "2018.2.0.$BuildCounter"
+buildSearchableOptions.enabled = BuildConfiguration == "Release"
 
 logger.lifecycle("version=$version")
-logger.lifecycle("Configuration=$BuildConfiguration")
+logger.lifecycle("BuildConfiguration=$BuildConfiguration")
 
+
+apply from: 'model.gradle'
 apply from: 'backend.gradle'
 apply from: 'frontend.gradle'
 
+
+// Tasks:
+//
+// When running in CI, we call `gradle buildPlugin`
+// When running interactively, we call `gradle runIde`
+// We can pass `-PdotNetUpToDate=true` to skip building dotnet things, as the no-op build is REALLY slow
+//
+// `buildPlugin` depends on `prepareSandbox` and then zips up the sandbox dir and puts the file in rider/build/distributions
+// `runIde` depends on `prepareSandbox` and then executes IJ inside the sandbox dir
+// `prepareSandbox` depends on the standard Java `jar` task and then copies everything into the sandbox dir
+//
+// `buildPlugin`, `runIde` and `prepareSandbox` are provided by the intellij gradle plugin
+//
+// When running in CI, the CI tasks will publish build version and the ReSharper artifacts
+// When calling `buildPlugin`, the CI tasks force building the ReSharper artifacts
+// When calling `runIde`, we only need to build Rider, debugger and Unity editor bits
+
+
+// Used by CI to resolve the dependencies before anything else. Allows us to get this out of the way, makes reporting
+// a little easier
 task resolveDependencies {
   description 'Resolves all projects dependencies from the repository'
   group 'Build Server'
@@ -105,111 +93,18 @@ task resolveDependencies {
   }
 }
 
-interface CIService {
-    void Progress(String message)
-    void OpenBlock(String name, String description)
-    void CloseBlock(String name)
-    void PublishArtifact(File path)
-}
-
-class NullService implements CIService {
-
-    void Progress(String message) {
-        println message
-    }
-
-    void OpenBlock(String name, String description) { }
-    void CloseBlock(String name) { }
-
-    void PublishArtifact(File path) {
-        println "Publish: $path.absolutePath"
-    }
-
-    void SetBuildNumber(String version) {
-        println "Build: $version"
+task publishCiBuildNumber {
+    doLast {
+        buildServer.buildNumber = version
     }
 }
 
-class TeamCityService implements CIService {
-
-    // TODO: These values should be escaped
-    void Progress(String message) {
-        println "##teamcity[progressMessage '$message']"
-    }
-
-    void OpenBlock(String name, String description) {
-        println "##teamcity[blockOpened name='$name' description='$description']"
-    }
-
-    void CloseBlock(String name) {
-        println "##teamcity[blockClosed name='$name']"
-    }
-
-    void PublishArtifact(File path) {
-        println "##teamcity[publishArtifacts '$path.absolutePath']"
-    }
-
-    void SetBuildNumber(String version) {
-        println "##teamcity[buildNumber '$version']"
-    }
+task publishCiBuildData {
+    dependsOn publishCiBuildNumber, publishCiBackendArtifacts
 }
 
-class TeamCityEventLogger extends BuildAdapter implements TaskExecutionListener {
-
-    private CIService ci
-
-    TeamCityEventLogger(CIService ci) {
-        this.ci = ci
-    }
-
-    void beforeExecute(Task task) {
-        ci.Progress("gradle:$task.name")
-        ci.OpenBlock("gradle:$task.name", "gradle:$task.name")
-    }
-
-    void afterExecute(Task task, TaskState state) {
-        ci.CloseBlock("gradle:$task.name")
-    }
+// Temporary workaround - we don't have full build data on any other platform than Windows, because the
+// ReSharper solution causes msbuild to crash on non-Windows platforms thanks to obfuscated assemblies
+if (buildServer.automatedBuild && ext.isWindows) {
+    buildPlugin.finalizedBy publishCiBuildData
 }
-
-
-class TravisService implements CIService {
-
-    void Progress(String message) {
-        println message
-    }
-
-    void OpenBlock(String name, String description) {
-        println "travis_fold:start:$name\033[33;1m:$description\033[0m"
-    }
-
-    void CloseBlock(String name) {
-        println "\ntravis_fold:end:$name\r"
-    }
-
-    void PublishArtifact(File path) {
-        println "Artifact: $path.absolutePath"
-    }
-
-    void SetBuildNumber(String version) {
-        println "Build number: $version"
-    }
-}
-
-class TravisEventLogger extends BuildAdapter implements TaskExecutionListener {
-
-    private CIService ci
-
-    TravisEventLogger(CIService ci) {
-        this.ci = ci
-    }
-
-    void beforeExecute(Task task) {
-        ci.OpenBlock(task.name, task.name)
-    }
-
-    void afterExecute(Task task, TaskState state) {
-        ci.CloseBlock(task.name)
-    }
-}
-

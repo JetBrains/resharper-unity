@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public GameObject Method(GameObject o)
+    {
+        return |o ?? gameObject|(0);
+    }
+}
+
+------------------------------------------------
+0: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+QUICKFIXES:
+Convert to conditional expression
