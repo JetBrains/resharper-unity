@@ -27,4 +27,18 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
             }
         }
     }
+
+    @Test
+    @TestEnvironment(solution = "RiderMoveFile") // RIDER-41182
+    fun testMoveFile() {
+        testProjectModel(testGoldFile, project, false) {
+            dump("move file", project, activeSolutionDirectory) {
+                // in Rider move the script file "MyScript" into "SomeFolder"
+                // Focus Unity, note that now the GameObject and the prefab both have missing script warnings
+
+                cutItem2(project, arrayOf("Assets", "MyScript", "MyScript.cs"))
+                pasteItem2(project, arrayOf("Assets", "SomeFolder"))
+            }
+        }
+    }
 }

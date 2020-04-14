@@ -10,6 +10,10 @@ import com.jetbrains.rider.model.RdProjectModelDumpParams
 import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerNode
+import com.jetbrains.rider.projectView.moveProviders.RiderCutProvider
+import com.jetbrains.rider.projectView.moveProviders.RiderPasteProvider
+import com.jetbrains.rider.projectView.moveProviders.impl.ActionOrderType
+import com.jetbrains.rider.projectView.moveProviders.impl.ProjectModelData
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.test.framework.TestProjectModelContext
@@ -116,5 +120,31 @@ private fun doActionAndWait(project: Project, action: () -> Unit, @Suppress("Sam
     if (closeEditors) {
         FileEditorManagerEx.getInstanceEx(project).closeAllFiles()
         flushQueues()
+    }
+}
+
+fun cutItem2(project: Project, path: Array<String>) {
+    cutItem2(project, arrayOf(path))
+}
+
+fun cutItem2(project: Project, paths: Array<Array<String>>) {
+    val dataContext = createDataContextFor2(project, paths)
+    assert(RiderCutProvider.isCutEnabled(dataContext)) { "Can't cut elements" }
+    RiderCutProvider.performCut(dataContext)
+}
+
+fun pasteItem2(project: Project, path: Array<String>, customName: String? = null, orderType : ActionOrderType? = null) {
+    val dataContext = createDataContextFor2(project, path)
+    assert(RiderPasteProvider.isPasteEnabled(dataContext)) { "Can't past elements" }
+    try { //copy to the same folder
+        ProjectModelData.predefinedCopyCustomName = customName
+        if (orderType != null) {
+            RiderPasteProvider.performPaste(dataContext, orderType)
+        }
+        else {
+            RiderPasteProvider.performPaste(dataContext)
+        }
+    } finally {
+        ProjectModelData.predefinedCopyCustomName = null
     }
 }
