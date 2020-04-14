@@ -124,7 +124,6 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.VcsPullTracker</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification</implementation-class></component>
@@ -134,7 +133,6 @@
 
   <applicationListeners>
     <listener class="com.jetbrains.rider.plugins.unity.SaveAllTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
-    <listener class="com.jetbrains.rider.plugins.unity.VcsPullTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
   </applicationListeners>
 
   <actions>
