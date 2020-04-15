@@ -11,6 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "If this option is enabled, Rider will automatically notify the Unity editor to refresh assets.")]
         public bool AllowAutomaticRefreshInUnity;
+        
+        [SettingsEntry(true, "If this option is enabled, UnityYamlMerge would be used to merge scenes and prefabs.")]
+        public bool UseUnityYamlMerge;
 
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of ShaderLab files.")]
         public bool EnableShaderLabParsing;
