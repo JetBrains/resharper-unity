@@ -4,7 +4,9 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
+import org.testng.Assert
 import org.testng.annotations.Test
+import java.nio.file.Paths
 
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun getSolutionDirectoryName() = "com.unity.ide.rider"
@@ -31,14 +33,19 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     @Test
     @TestEnvironment(solution = "RiderMoveFile") // RIDER-41182
     fun testMoveFile() {
-        testProjectModel(testGoldFile, project, false) {
-            dump("move file", project, activeSolutionDirectory) {
-                // in Rider move the script file "MyScript" into "SomeFolder"
-                // Focus Unity, note that now the GameObject and the prefab both have missing script warnings
+        val action = {
+            // in Rider move the script file "MyScript" into "SomeFolder"
+            // meta file should be moved together with script
 
-                cutItem2(project, arrayOf("Assets", "MyScript", "MyScript.cs"))
-                pasteItem2(project, arrayOf("Assets", "SomeFolder"))
-            }
+            cutItem2(project, arrayOf("Assets", "MyScript.cs"))
+            pasteItem2(project, arrayOf("Assets", "SomeFolder"), "MyScript.cs")
         }
+        val metaFileContent = Paths.get(project.basePath!!).resolve("Assets").resolve("MyScript.cs.meta").toFile().readText()
+
+        doActionAndWait(project, action,true)
+
+        val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("SomeFolder").resolve("MyScript.cs.meta").toFile()
+        Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
+        Assert.assertEquals(metaFileContent, metaFile.readText())
     }
 }

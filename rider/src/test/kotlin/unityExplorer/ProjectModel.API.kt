@@ -111,7 +111,7 @@ fun findReq(path: Array<String>, project: Project): AbstractTreeNode<*> {
             ?: throw Exception("Node ${path.reduce { s1, s2 -> s1.split("?")[0] + "/" + s2.split("?")[0] }} not found in tree")
 }
 
-private fun doActionAndWait(project: Project, action: () -> Unit, @Suppress("SameParameterValue") closeEditors: Boolean) {
+fun doActionAndWait(project: Project, action: () -> Unit, @Suppress("SameParameterValue") closeEditors: Boolean) {
     action()
     flushQueues()
     waitAllCommandsFinished()
@@ -134,7 +134,7 @@ fun cutItem2(project: Project, paths: Array<Array<String>>) {
 }
 
 fun pasteItem2(project: Project, path: Array<String>, customName: String? = null, orderType : ActionOrderType? = null) {
-    val dataContext = createDataContextFor2(project, path)
+    val dataContext = createDataContextFor2(project, arrayOf(path))
     assert(RiderPasteProvider.isPasteEnabled(dataContext)) { "Can't past elements" }
     try { //copy to the same folder
         ProjectModelData.predefinedCopyCustomName = customName
