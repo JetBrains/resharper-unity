@@ -280,5 +280,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             return null;
         }
+        
+        public static string GetGuidFor(MetaFileGuidCache metaFileGuidCache, ITypeElement typeElement)
+        {
+            var sourceFile = typeElement.GetDeclarations().FirstOrDefault()?.GetSourceFile();
+            if (sourceFile == null || !sourceFile.IsValid())
+                return null;
+            
+            if (typeElement.TypeParameters.Count != 0)
+                return null;
+
+            if (typeElement.GetContainingType() != null)
+                return null;
+
+            if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
+                return null;
+
+            var guid = metaFileGuidCache.GetAssetGuid(sourceFile);
+            return guid;
+        }
+
     }
 }
