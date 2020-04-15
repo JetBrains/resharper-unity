@@ -75,8 +75,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&
                 refreshType == RefreshType.Normal)
                 return Task.CompletedTask;
-            
-            
 
             if (myRunningRefreshTask != null && !myRunningRefreshTask.IsCompleted)
             {
