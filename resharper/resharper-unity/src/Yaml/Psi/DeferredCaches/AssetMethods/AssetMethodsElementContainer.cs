@@ -14,7 +14,6 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
-using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve.Filters;
 using JetBrains.ReSharper.Psi.Modules;
@@ -22,6 +21,7 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
+
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 {
@@ -49,9 +49,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
         
         private readonly CountingSet<string> myExternalCount = new CountingSet<string>();
         private readonly OneToCompactCountingSet<string, AssetMethodData> myLocalUsages = new OneToCompactCountingSet<string, AssetMethodData>();
-        
-        public IUnityAssetDataElement Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+
+        public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
+            return new AssetMethodsDataElement(sourceFile);
+        }
+
+        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        {
+            var result = new LocalList<AssetMethodData>();
             var buffer = assetDocument.Buffer;
             if (ourMethodNameSearcher.Find(buffer) < 0)
                 return null;
@@ -66,7 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             if (entries == null)
                 return null;
 
-            var result = new List<AssetMethodData>();
             foreach (var entry in entries)
             {
                 if (ourMethodNameSearcher.Find(entry.Content.GetTextAsBuffer()) >= 0)
@@ -129,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             }
 
             if (result.Count > 0)
-                return new AssetMethodsDataElement(result);
+                return result;
             return null;
         }
 

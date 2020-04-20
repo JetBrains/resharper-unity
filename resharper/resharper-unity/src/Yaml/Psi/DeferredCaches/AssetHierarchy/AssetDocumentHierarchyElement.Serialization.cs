@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         
         private static object Read(UnsafeReader reader)
         {
-            var result = new AssetDocumentHierarchyElement();
+            var result = new AssetDocumentHierarchyElement(reader.ReadLong());
 
             
             var otherCount = reader.ReadInt32();
@@ -80,6 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private static void Write(UnsafeWriter writer, AssetDocumentHierarchyElement value)
         {
+            writer.Write(value.OwnerId);
             writer.Write(value.myOtherElements.Count);
             foreach (var v in value.myOtherElements)
             {

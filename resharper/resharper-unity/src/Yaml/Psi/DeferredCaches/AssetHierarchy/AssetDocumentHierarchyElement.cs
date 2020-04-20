@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
@@ -31,8 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public AssetDocumentHierarchyElementContainer AssetDocumentHierarchyElementContainer { get; internal set; }
         
-        public AssetDocumentHierarchyElement()
+        public AssetDocumentHierarchyElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex)
         {
+        }
+
+        private AssetDocumentHierarchyElement(long ownerId)
+        {
+            OwnerId = ownerId;
         }
 
         public void AddHierarchyElement(IHierarchyElement hierarchyElement)
@@ -40,59 +46,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myOtherElements.Add(hierarchyElement);
         }
 
-        // do not use interface here! avoid boxing
-        public void AddTransformElement(TransformHierarchy hierarchyElement)
-        {
-            myTransformElements.Add(hierarchyElement);
-        }
-       
         public void AddGameObjectElement(GameObjectHierarchy hierarchyElement)
         {
             myGameObjectHierarchies.Add(hierarchyElement);
         }
         
-        public void AddScriptComponentElement(ScriptComponentHierarchy hierarchyElement)
-        {
-            myScriptComponentElements.Add(hierarchyElement);
-        }
-        
+
         public void AddComponentElement(ComponentHierarchy hierarchyElement)
         {
             myComponentElements.Add(hierarchyElement);
         }
-        
-        
-        
-        public string ContainerId => nameof(AssetDocumentHierarchyElementContainer);
-        
-        public void AddData(IUnityAssetDataElement unityAssetDataElement)
-        {
-            var hierarchyElement = (AssetDocumentHierarchyElement)unityAssetDataElement;
 
-            foreach (var element in hierarchyElement.myOtherElements)
-            {
-                myOtherElements.Add(element);
-            }
+
+        public long OwnerId { get; }
+        public string ContainerId => nameof(AssetDocumentHierarchyElementContainer);
+        public void AddData(object data)
+        {
+            if (data == null)
+                return;
             
-            foreach (var element in hierarchyElement.myTransformElements)
-            {
-                myTransformElements.Add(element);
-            }
-            
-            foreach (var element in hierarchyElement.myScriptComponentElements)
-            {
-                myScriptComponentElements.Add(element);
-            }
-            
-            foreach (var element in hierarchyElement.myComponentElements)
-            {
-                myComponentElements.Add(element);
-            }
-            
-            foreach (var element in hierarchyElement.myGameObjectHierarchies)
-            {
-                myGameObjectHierarchies.Add(element);
-            }
+            // avoid boxing
+            if (data is GameObjectHierarchy gameObjectHierarchy)
+                myGameObjectHierarchies.Add(gameObjectHierarchy);
+            else if (data is ScriptComponentHierarchy scriptComponentHierarchy)
+                myScriptComponentElements.Add(scriptComponentHierarchy);
+            else if (data is TransformHierarchy transformHierarchy)
+                myTransformElements.Add(transformHierarchy);
+            else if (data is ComponentHierarchy componentHierarchy)
+                myComponentElements.Add(componentHierarchy);
+            else 
+                myOtherElements.Add(data as IHierarchyElement);
         }
 
         public IHierarchyElement GetHierarchyElement(string ownerGuid, ulong anchor, UnityInterningCache unityInterningCache, PrefabImportCache prefabImportCache)

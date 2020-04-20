@@ -1,24 +1,29 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 {
     [PolymorphicMarshaller]
     public class AssetMethodsDataElement : IUnityAssetDataElement
     {
-        public readonly List<AssetMethodData> Methods;
+        public readonly List<AssetMethodData> Methods = new List<AssetMethodData>();
         [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader)
         {
+            var id = reader.ReadLong();
             var count = reader.ReadInt32();
-            var methods = new List<AssetMethodData>();
+            var methods = new LocalList<AssetMethodData>();
             for (int i = 0; i < count; i++)
                 methods.Add(AssetMethodData.ReadFrom(reader));
             
-            return new AssetMethodsDataElement(methods);
+            var result =  new AssetMethodsDataElement(id);
+            result.AddData(methods);
+            return result;
         }
 
         [UsedImplicitly]
@@ -26,6 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         private static void Write(UnsafeWriter writer, AssetMethodsDataElement value)
         {
+            writer.Write(value.OwnerId);
             writer.Write(value.Methods.Count);
             foreach (var v in value.Methods)
             {
@@ -33,15 +39,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             }
         }
 
-        public AssetMethodsDataElement(List<AssetMethodData> methods)
+        public AssetMethodsDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex)
         {
-            Methods = methods;
         }
 
-        public string ContainerId => nameof(AssetMethodsElementContainer);
-        public void AddData(IUnityAssetDataElement unityAssetDataElement)
+        private AssetMethodsDataElement(long index)
         {
-            foreach (var assetMethodData in ((AssetMethodsDataElement) unityAssetDataElement).Methods)
+            OwnerId = index;
+        }
+        
+        public long OwnerId { get; }
+        public string ContainerId => nameof(AssetMethodsElementContainer);
+        
+        public void AddData(object methodsData)
+        {
+            if (methodsData == null)
+                return;
+            
+            var methods = (LocalList<AssetMethodData>) methodsData;
+            foreach (var assetMethodData in methods)
             {
                 Methods.Add(assetMethodData);
             }

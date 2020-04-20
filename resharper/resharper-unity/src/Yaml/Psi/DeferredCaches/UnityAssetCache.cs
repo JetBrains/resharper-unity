@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 return null;
                 
             if (!psiSourceFile.GetLocation().SniffYamlHeader())
-                return new UnityAssetData();
+                return new UnityAssetData(psiSourceFile, EmptyList<IUnityAssetDataElementContainer>.Enumerable);
             
             var (result, alreadyBuildDocId) = GetAlreadyBuildDocId(psiSourceFile);
             EnumerateDocuments(psiSourceFile, buffer =>
@@ -170,10 +170,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private (UnityAssetData, int) GetAlreadyBuildDocId(IPsiSourceFile psiSourceFile)
         {
             if (!myCurrentTimeStamp.TryGetValue(psiSourceFile, out var timeStamp))
-                return (new UnityAssetData(), 0);
+                return (new UnityAssetData(psiSourceFile, myOrderedContainers), 0);
 
             if (psiSourceFile.GetAggregatedTimestamp() != timeStamp)
-                return (new UnityAssetData(), 0);
+                return (new UnityAssetData(psiSourceFile, myOrderedContainers), 0);
             
             return myDocumentNumber[psiSourceFile];
         }
@@ -181,7 +181,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private void BuildDocument(UnityAssetData data, SeldomInterruptChecker checker, IPsiSourceFile sourceFile, int start, IBuffer buffer)
         {
             var assetDocument = new AssetDocument(start, buffer);
-            var results = new LocalList<IUnityAssetDataElement>();
+            var results = new LocalList<(string, object)>();
             foreach (var unityAssetDataElementContainer in myOrderedContainers)
             {
                 checker.CheckForInterrupt();
@@ -190,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 {
                     var result = unityAssetDataElementContainer.Build(checker, sourceFile, assetDocument);
                     if (result != null)
-                        results.Add(result);
+                        results.Add((unityAssetDataElementContainer.Id, result));
                 }
                 catch (OperationCanceledException)
                 {
@@ -204,7 +204,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             foreach (var result in results)
             {
-                data.AddDataElement(result);
+                data.UnityAssetDataElements[result.Item1].AddData(result.Item2);
             }
         }
 
