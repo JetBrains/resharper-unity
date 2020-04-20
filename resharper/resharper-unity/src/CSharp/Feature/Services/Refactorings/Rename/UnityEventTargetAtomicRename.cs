@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             {
                 myElementsToRename = GetAssetOccurrence(de, subProgress)
                     .Select(t => 
-                        new UnityMethodsOccurrence(t.SourceFile, de.CreateElementPointer(), t.AttachedElement, t.AssetMethodData)).ToList();
+                        new UnityMethodsOccurrence(t.SourceFile, de.CreateElementPointer(), t.AttachedElement, t.AttachedElementLocation, t.AssetMethodData)).ToList();
             }
             
             return new UnityEventTargetRefactoringPage(

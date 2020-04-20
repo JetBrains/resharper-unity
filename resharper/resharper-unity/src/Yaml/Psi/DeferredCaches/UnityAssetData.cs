@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
@@ -7,6 +8,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     public class UnityAssetData
     {
         public readonly Dictionary<string, IUnityAssetDataElement> UnityAssetDataElements = new Dictionary<string, IUnityAssetDataElement>();
+
+        private UnityAssetData()
+        {
+            
+        }
+        
+        public UnityAssetData(IPsiSourceFile sourceFile, IEnumerable<IUnityAssetDataElementContainer> containers)
+        {
+            foreach (var container in containers)
+            {
+                UnityAssetDataElements[container.Id] = container.CreateDataElement(sourceFile);
+            }
+        }
+
         public static void WriteDelegate(UnsafeWriter writer, UnityAssetData value)
         {
             writer.Write(value.UnityAssetDataElements.Count);
@@ -24,22 +39,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
              for (int i = 0; i < count; i++)
              {
                  var v = reader.ReadPolymorphic<IUnityAssetDataElement>();
-                 assetData.AddDataElement(v);
+                 assetData.UnityAssetDataElements[v.ContainerId] = v;
+
              }
 
              return assetData;
-        }
-
-        public void AddDataElement(IUnityAssetDataElement dataElement)
-        {
-            if (UnityAssetDataElements.TryGetValue(dataElement.ContainerId, out var element))
-            {
-                element.AddData(dataElement);
-            }
-            else
-            {
-                UnityAssetDataElements[dataElement.ContainerId] = dataElement;
-            }
         }
     }
 }

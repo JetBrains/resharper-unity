@@ -32,8 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         private OneToCompactCountingSet<int, AssetUsagePointer> myAssetUsages = new OneToCompactCountingSet<int, AssetUsagePointer>();
         private Dictionary<IPsiSourceFile, OneToCompactCountingSet<int, AssetUsagePointer>> myAssetUsagesPerFile = new Dictionary<IPsiSourceFile, OneToCompactCountingSet<int, AssetUsagePointer>>();
         private Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
-        
-        public IUnityAssetDataElement Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+
+        public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
+        {
+            return new AssetUsagesDataElement(sourceFile);
+        }
+
+        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
             // TODO: deps for other assets
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
@@ -51,6 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                 var entries = assetDocument.Document.FindRootBlockMapEntries()?.Entries;
                 if (entries == null)
                     return null;
+                
+                var result = new LocalList<AssetUsage>();
                 foreach (var entry in entries)
                 {
                     if (!entry.Key.MatchesPlainScalarText("m_Script"))
@@ -60,10 +67,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                     if (deps == null)
                         continue;
                     
-                    return new AssetUsagesDataElement(
-                        new AssetUsage(
-                            new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), new [] {deps}));
+                    result.Add(new AssetUsage(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), new [] {deps}));
                 }
+
+                return result;
             }
 
             return null;
@@ -160,16 +167,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             return Enumerable.Empty<AssetUsage>();
         }
 
-        public LocalList<IPsiSourceFile>  GetPossibleFilesWithUsage(ITypeElement declaredElement)
+        public LocalList<IPsiSourceFile> GetPossibleFilesWithUsage(ITypeElement declaredElement)
         {
-            var guid =AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
             if (guid == null) 
                 return new LocalList<IPsiSourceFile>();
 
             var result = new LocalList<IPsiSourceFile>();
-            foreach (var assetUsage in myAssetUsages.GetValues(guid))
+            foreach (var assetUsage in myAssetUsages.GetValues(guid.GetPlatformIndependentHashCode()))
             {
-                var location = assetUsage.Location.OwnerId;
+                var location = assetUsage.SourceFileIndex;
                 var sourceFile = myPersistentIndexManager[location];
                 if (sourceFile != null)
                     result.Add(sourceFile);

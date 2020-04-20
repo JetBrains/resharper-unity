@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
@@ -13,8 +15,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         private static object Read(UnsafeReader reader)
         {
+            var id = reader.ReadLong();
             var count = reader.ReadInt32();
-            var result =  new AssetUsagesDataElement();
+            var result =  new AssetUsagesDataElement(id);
 
             for (int i = 0; i < count; i++)
                 result.myAssetUsages.Add(AssetUsage.ReadFrom(reader));
@@ -27,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         private static void Write(UnsafeWriter writer, AssetUsagesDataElement value)
         {
+            writer.Write(value.OwnerId);
             writer.Write(value.myAssetUsages.Count);
             foreach (var v in value.myAssetUsages)
             {
@@ -34,30 +38,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             }
         }
 
-        public AssetUsagesDataElement(AssetUsage assetUsage)
+        public AssetUsagesDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex)
         {
-            myAssetUsages.Add(assetUsage);
         }
 
-        private AssetUsagesDataElement()
+        private AssetUsagesDataElement(long id)
         {
-            
+            OwnerId = id;
         }
 
+        public long OwnerId { get; }
         public string ContainerId => nameof(AssetUsagesElementContainer);
-        public void AddData(IUnityAssetDataElement unityAssetDataElement)
+        public void AddData(object data)
         {
-            var element = unityAssetDataElement as AssetUsagesDataElement;
-            foreach (var usage in element.myAssetUsages)
+            if (data == null)
+                return;
+
+            var usages = (LocalList<AssetUsage>) data;
+            foreach (var usage in usages)
             {
                 myAssetUsages.Add(usage);
             }
         }
-
         public IEnumerable<AssetUsagePointer> EnumerateAssetUsages()
         {
             for (int i = 0; i < myAssetUsages.Count; i++)
-                yield return new AssetUsagePointer(i);
+                yield return new AssetUsagePointer(OwnerId, i);
         }
 
         public AssetUsage GetAssetUsage(AssetUsagePointer assetUsagePointer)
