@@ -54,8 +54,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             myLogger = logger;
             myDeserializers = assetInspectorValueDeserializer.OrderByDescending(t => t.Order).ToList();
         }
-        
-        public IUnityAssetDataElement Build(SeldomInterruptChecker seldomInterruptChecker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+
+        public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
+        {
+            return new AssetInspectorValuesDataElement(sourceFile);
+        }
+
+        public object Build(SeldomInterruptChecker seldomInterruptChecker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
         {
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {
@@ -78,9 +83,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                     {
                         try
                         {
-                            if (deserializer.TryGetInspectorValue(currentSourceFile, entry.Content, out var result))
+                            if (deserializer.TryGetInspectorValue(currentSourceFile, entry.Content, out var resultValue))
                             {
-                                dictionary[key] = result;
+                                dictionary[key] = resultValue;
                                 break;
                             }
                         }
@@ -94,8 +99,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 if (dictionary.TryGetValue(UnityYamlConstants.ScriptProperty, out var scriptValue) && scriptValue is AssetReferenceValue referenceValue)
                 {
                     var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor.Value);
-                    var script = referenceValue.Reference;
-                    var list = new List<InspectorVariableUsage>();
+                    var script = referenceValue.Reference; 
+                    var result = new LocalList<InspectorVariableUsage>();
+
                     foreach (var (key, value) in dictionary)
                     {
                         if  (key.Equals("m_Script") || key.Equals("m_GameObject"))
@@ -103,12 +109,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
                         var locationIndex = myUnityInterningCache.InternReference(location);
                         var scriptIndex = myUnityInterningCache.InternReference(script);
-                        list.Add(new InspectorVariableUsage(locationIndex, scriptIndex, key, value));
+                        result.Add(new InspectorVariableUsage(locationIndex, scriptIndex, key, value));
                     }
 
-                    var result = new AssetInspectorValuesDataElement(list);
                     return result;
-
                 }
             }
 
@@ -365,7 +369,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         
         public int GetAffectedFilesWithSpecificValue(string guid, IEnumerable<string> possibleNames, IAssetValue value)
         {
-            myShellLocks.AssertReadAccessAllowed();
+            myShellLocks.AssertReadAccessAllowed();  
             
             var result = 0;
             foreach (var possibleName in possibleNames)

@@ -2,16 +2,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 {
     public class InspectorVariableUsagePointer
     {
+        public long OwnerId { get; }
         public int Index { get; }
 
-        public InspectorVariableUsagePointer(int index)
+        public InspectorVariableUsagePointer(long ownerId, int index)
         {
+            OwnerId = ownerId;
             Index = index;
         }
 
         protected bool Equals(InspectorVariableUsagePointer other)
         {
-            return Index == other.Index;
+            return OwnerId == other.OwnerId && Index == other.Index;
         }
 
         public override bool Equals(object obj)
@@ -24,7 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         public override int GetHashCode()
         {
-            return Index;
+            unchecked
+            {
+                return (OwnerId.GetHashCode() * 397) ^ Index;
+            }
         }
     }
 }

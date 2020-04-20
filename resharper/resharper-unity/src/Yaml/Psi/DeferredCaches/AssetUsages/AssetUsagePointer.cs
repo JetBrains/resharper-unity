@@ -2,16 +2,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
     public class AssetUsagePointer
     {
+        public long SourceFileIndex { get; }
         public int Index { get; }
 
-        public AssetUsagePointer(int index)
+        public AssetUsagePointer(long sourceFileIndex, int index)
         {
+            SourceFileIndex = sourceFileIndex;
             Index = index;
         }
 
         protected bool Equals(AssetUsagePointer other)
         {
-            return Index == other.Index;
+            return Index == other.Index && SourceFileIndex == other.SourceFileIndex;
         }
 
         public override bool Equals(object obj)
@@ -24,7 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         public override int GetHashCode()
         {
-            return Index;
+            unchecked
+            {
+                return (Index * 397) ^ SourceFileIndex.GetHashCode();
+            }
         }
     }
 }
