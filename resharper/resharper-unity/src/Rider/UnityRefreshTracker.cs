@@ -75,8 +75,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&
                 refreshType == RefreshType.Normal)
                 return Task.CompletedTask;
-            
-            
 
             if (myRunningRefreshTask != null && !myRunningRefreshTask.IsCompleted)
             {
@@ -198,13 +196,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-
-                var protocolSolution = solution.GetProtocolSolution();
-                protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
-                {
-                    logger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
-                    myGroupingEvent.FireIncoming();
-                });
                 
                 fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });
