@@ -91,21 +91,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
                 protocolInstancePath.Directory.CreateDirectory();
 
-                var watcher = new FileSystemWatcher();
-                watcher.Path = protocolInstancePath.Directory.FullPath;
-                watcher.NotifyFilter = NotifyFilters.LastWrite; //Watch for changes in LastWrite times
-                watcher.Filter = protocolInstancePath.Name;
-
-                // Add event handlers.
-                watcher.Changed += OnChanged;
-                watcher.Created += OnChanged;
-
-                lf.Bracket(() => { }, () =>
+                solution.Locks.Tasks.Queue(lf, () =>
                 {
-                    watcher.Dispose();
-                });
+                    var watcher = new FileSystemWatcher();
+                    watcher.Path = protocolInstancePath.Directory.FullPath;
+                    watcher.NotifyFilter = NotifyFilters.LastWrite; //Watch for changes in LastWrite times
+                    watcher.Filter = protocolInstancePath.Name;
 
-                watcher.EnableRaisingEvents = true; // Begin watching.
+                    // Add event handlers.
+                    watcher.Changed += OnChanged;
+                    watcher.Created += OnChanged;
+
+                    lf.Bracket(() => { }, () =>
+                    {
+                        watcher.Dispose();
+                    });
+                    
+                    watcher.EnableRaisingEvents = true; // Begin watching. Can take significant time to start
+                });
+                
                 // connect on start of Rider
                 CreateProtocols(protocolInstancePath);
             });
