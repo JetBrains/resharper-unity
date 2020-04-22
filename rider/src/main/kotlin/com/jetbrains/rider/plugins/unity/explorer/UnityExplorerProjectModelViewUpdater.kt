@@ -4,13 +4,13 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.tree.TreeVisitor
+import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManagerListener
 import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import com.jetbrains.rider.projectView.nodes.ProjectModelNode
 import com.jetbrains.rider.projectView.views.SolutionViewVisitor
-import com.jetbrains.rider.util.idea.application
 
 class UnityExplorerProjectModelViewUpdater(project: Project) : ProjectModelViewUpdater(project) {
 

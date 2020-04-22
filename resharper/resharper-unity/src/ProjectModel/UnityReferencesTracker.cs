@@ -27,7 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     [SolutionComponent]
     public class UnityReferencesTracker : IChangeProvider
     {
-        
         private static readonly AssemblyNameInfo ourUnityEngineReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine", null);
         private static readonly AssemblyNameInfo ourUnityEditorReferenceName = AssemblyNameInfoFactory.Create2("UnityEditor", null);
 

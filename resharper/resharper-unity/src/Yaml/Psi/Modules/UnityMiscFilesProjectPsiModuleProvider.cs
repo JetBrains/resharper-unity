@@ -12,16 +12,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     public class UnityMiscFilesProjectPsiModuleProvider : IMiscFilesProjectPsiModuleProvider
     {
         private readonly UnityExternalFilesModuleFactory myModuleFactory;
-        private readonly UnityYamlPsiSourceFileFactory myPsiSourceFileFactory;
-        private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public UnityMiscFilesProjectPsiModuleProvider(UnityExternalFilesModuleFactory moduleFactory,
-                                                      UnityYamlPsiSourceFileFactory psiSourceFileFactory,
-                                                      AssetSerializationMode assetSerializationMode)
+        public UnityMiscFilesProjectPsiModuleProvider(UnityExternalFilesModuleFactory moduleFactory)
         {
             myModuleFactory = moduleFactory;
-            myPsiSourceFileFactory = psiSourceFileFactory;
-            myAssetSerializationMode = assetSerializationMode;
         }
 
         public void Dispose() { }
@@ -50,29 +44,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         {
             if (projectFile == null)
                 return;
-
+            
             var module = myModuleFactory.PsiModule;
             if (module == null)
                 return;
-
+            
             switch (changeType)
             {
                 case PsiModuleChange.ChangeType.Added:
-                    if (projectFile.Location.IsInterestingAsset() && myAssetSerializationMode.IsForceText &&
-                        !module.ContainsPath(projectFile.Location))
-                    {
-                        // Create the PsiSourceFile, add it to the module, add the change to the builder
-                        var psiSourceFile = myPsiSourceFileFactory.CreatePsiProjectFile(module, projectFile);
-                        module.Add(projectFile.Location, psiSourceFile, null);
-                        changeBuilder.AddFileChange(psiSourceFile, PsiModuleChange.ChangeType.Added);
-                    }
-                    break;
-
                 case PsiModuleChange.ChangeType.Removed:
-                    // Do nothing. We only remove source files if the underlying file itself has been removed, which is
+                    // Do nothing. We only add/remove source files if the underlying file itself has been removed, which is
                     // handled by UnityExternalFilesModuleProcessor and a file system watcher
                     break;
-
+            
                 case PsiModuleChange.ChangeType.Modified:
                     if (module.TryGetFileByPath(projectFile.Location, out var sourceFile))
                         changeBuilder.AddFileChange(sourceFile, changeType);

@@ -32,24 +32,11 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"StopPlayingAndRecompile"
     }
 
-    private val FindUsageResult = structdef {
-        field("target", string)
-        field("elements", array(FindUsageResultElement))
-    }
-
-    private val FindUsageResultElement = structdef {
-        field("isPrefab", bool)
-        field("expandInTreeView", bool)
-        field("filePath", string)
-        field("fileName", string)
-        field("pathElements", array(string))
-        field("rootIndices", array(int))
-    }
-
     val UnityApplicationData = structdef {
         field("applicationPath", string)
         field("applicationContentsPath", string)
         field("applicationVersion", string)
+        field("requiresRiderPackage", bool)
     }
 
     init {
@@ -96,6 +83,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         sink("startUnity", void)
         sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
+        sink("showDeferredCachesProgressNotification", void)
+        property("isDeferredCachesCompletedOnce", bool)
+
         property("ScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
 

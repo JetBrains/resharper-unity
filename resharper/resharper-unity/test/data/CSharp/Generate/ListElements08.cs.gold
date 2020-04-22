@@ -1,11 +1,11 @@
 ﻿Provided elements:
- 0: OnSceneGUI():System.Void
- 1: Awake():System.Void
- 2: OnDestroy():System.Void
+ 0: Awake():System.Void
+ 1: Reset():System.Void
+ 2: OnEnable():System.Void
  3: OnDisable():System.Void
- 4: OnEnable():System.Void
- 5: OnValidate():System.Void
- 6: Reset():System.Void
+ 4: OnDestroy():System.Void
+ 5: OnSceneGUI():System.Void
+ 6: OnValidate():System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;

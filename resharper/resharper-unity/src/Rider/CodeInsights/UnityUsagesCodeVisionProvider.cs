@@ -1,18 +1,27 @@
 using System.Collections.Generic;
 using JetBrains.Application;
+using JetBrains.Application.DataContext;
+using JetBrains.Application.UI.Actions.ActionManager;
+using JetBrains.Application.UI.ActionsRevised.Handlers;
+using JetBrains.Application.UI.DataContext;
+using JetBrains.Application.UI.PopupLayout;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
+using JetBrains.DocumentModel;
+using JetBrains.DocumentModel.DataContext;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ProjectModel.DataContext;
+using JetBrains.ReSharper.Daemon.CodeInsights;
+using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Navigation.Settings;
 using JetBrains.ReSharper.Host.Features.CodeInsights.Providers;
+using JetBrains.ReSharper.Host.Features.Services;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Daemon.UsageChecking;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.DataContext;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
@@ -20,83 +29,77 @@ using JetBrains.UI.Icons;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
     [ShellComponent]
-    public class UnityUsagesCodeVisionProvider : ContextNavigationCodeInsightsProviderBase<GoToUnityUsagesAction, GoToUnityUsagesProvider>
+    public class UnityUsagesCodeVisionProvider : ICodeInsightsProvider
     {
-        private readonly UnityEditorUsageCounter myUnityEditorUsageCounter;
-
-        public UnityUsagesCodeVisionProvider(Shell shell) : base(shell)
+        private readonly IActionManager myActionManager;
+        private readonly DataContexts myContexts;
+        
+        public UnityUsagesCodeVisionProvider(Shell shell)
         {
-            myUnityEditorUsageCounter = shell.GetComponent<UnityEditorUsageCounter>();
+            myActionManager = shell.GetComponent<IActionManager>();
+            myContexts = shell.GetComponent<DataContexts>();
         }
 
-        protected override string Noun(IDeclaredElement element, int count) => "asset usage" + Arity(count);
+        protected string Noun(int count, bool estimatedResult) => "asset usage" + (count == 1 && !estimatedResult ? "" : "s");
 
-        protected override int GetBaseCount(SolutionAnalysisService swa, IGlobalUsageChecker usageChecker, IDeclaredElement element,
-            ElementId? elementId)
-        {
-            Assertion.Assert(elementId.HasValue, "elementId.HasValue");
-            return usageChecker.GetCounterValue(elementId.Value, myUnityEditorUsageCounter);
-        }
-
-        protected override int GetOwnCount(SolutionAnalysisService swa, IGlobalUsageChecker usageChecker, IDeclaredElement element,
-            ElementId? elementId)
-        {
-            Assertion.Assert(elementId.HasValue, "elementId.HasValue");
-            return usageChecker.GetCounterValue(elementId.Value, myUnityEditorUsageCounter);
-        }
-
-        public override bool IsAvailableIn(ISolution solution)
+        public bool IsAvailableIn(ISolution solution)
         {
             return solution.GetComponent<UnitySolutionTracker>().IsUnityProject.HasTrueValue();
         }
 
-        public override bool IsAvailableFor(IDeclaredElement declaredElement, ElementId? elementId)
+        public void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
         {
-            if (!elementId.HasValue || declaredElement == null)
-                return false;
+            var rules = new List<IDataRule>();
+            rules.AddRule("Solution", ProjectModelDataConstants.SOLUTION, solution);      
+      
+            var declaredElement = highlighting.DeclaredElement;
+            rules.AddRule("DeclaredElement", PsiDataConstants.DECLARED_ELEMENTS_FROM_ALL_CONTEXTS, new[] {  declaredElement });
 
-            if (!declaredElement.GetSolution().GetComponent<UnityYamlSupport>().IsUnityYamlParsingEnabled.Value)
-                return false;
+            using (ReadLockCookie.Create())
+            {               
+                if (!declaredElement.IsValid())
+                    return;
+        
+                rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlighting.Range));
+                rules.AddRule("PopupWindowSourceOverride", UIDataConstants.PopupWindowContextSource,
+                    new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlighting.Range.StartOffset.Offset)));
 
-            if (!declaredElement.GetSolution().GetComponent<AssetSerializationMode>().IsForceText)
-                return false;
-
-            if (declaredElement is IMethod method && !(method is IAccessor))
-            {
-                var cache = method.GetSolution().GetComponent<UnitySceneDataLocalCache>();
-                return cache.IsEventHandler(method);
+                rules.AddRule("DontNavigateImmediatelyToSingleUsage", NavigationSettings.DONT_NAVIGATE_IMMEDIATELY_TO_SINGLE_USAGE, new object());
+      
+                var ctx = myContexts.CreateWithDataRules(Lifetime.Eternal, rules);
+        
+                var def = myActionManager.Defs.GetActionDef<GoToUnityUsagesAction>();
+                def.EvaluateAndExecute(myActionManager, ctx);
             }
-
-            if (declaredElement is IProperty property && property.Setter != null)
-            {
-                var cache = property.GetSolution().GetComponent<UnitySceneDataLocalCache>();
-                return cache.IsEventHandler(property.Setter);
-            }
-
-            var unityApi = declaredElement.GetSolution().GetComponent<UnityApi>();
-            if (!unityApi.IsDescendantOfMonoBehaviour(declaredElement as ITypeElement))
-                return false;
-
-            return true;
         }
 
-        public override string ProviderId => "Unity Assets Usage";
-
-        protected override string FormatShort(IDeclaredElement elt, CodeVisionState state, int ownCount, int baseCount)
+        public void OnExtraActionClick(CodeInsightsHighlighting highlighting, string actionId, ISolution solution)
         {
-            if (IsNotReady(state))
-                return Noun(elt, 0);
-
-            if (baseCount == 0)
-                return $"No asset usages";
-
-            return $"{ownCount} {Noun(elt, ownCount)}"; //always plural
         }
 
-        protected override bool ShowZeroResult() => true;
+        public string ProviderId => "Unity Assets Usage";
+        public string DisplayName => "Unity assets usage";
+        public CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
 
-        public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
+        public ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
             new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)};
-        protected override IconId IconId => InsightUnityIcons.InsightUnity.Id;
+        protected IconId IconId => InsightUnityIcons.InsightUnity.Id;
+
+        public void AddHighlighting(IHighlightingConsumer consumer, IDeclaration declaration,
+            IDeclaredElement declaredElement, int count, string tooltipText, string moreText, bool estimatedResult,
+            IconModel iconModel)
+        {
+            consumer.AddHighlighting(new CodeInsightsHighlighting(declaration.GetNameDocumentRange(), 
+                GetText(count, estimatedResult), tooltipText, moreText, this, declaredElement, iconModel));
+        }
+
+        private string GetText(int count, bool estimatedResult)
+        {
+            if (count == 0 && !estimatedResult)
+                return "No asset usages";
+
+            var countText = count + (estimatedResult ? "+" : "");
+            return $"{countText} {Noun(count, estimatedResult)}";
+        }
     }
 }

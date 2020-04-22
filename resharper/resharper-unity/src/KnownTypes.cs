@@ -18,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName Tooltip = new ClrTypeName("UnityEngine.TooltipAttribute");
         public static readonly IClrTypeName RequireComponent = new ClrTypeName("UnityEngine.RequireComponent");
         public static readonly IClrTypeName Range = new ClrTypeName("UnityEngine.RangeAttribute");
+        public static readonly IClrTypeName CreateAssetMenu = new ClrTypeName("UnityEngine.CreateAssetMenuAttribute");
         public static readonly IClrTypeName ImageEffectAfterScale = new ClrTypeName("UnityEngine.ImageEffectAfterScale");
         public static readonly IClrTypeName ImageEffectAllowedInSceneView = new ClrTypeName("UnityEngine.ImageEffectAllowedInSceneView");
         public static readonly IClrTypeName ImageEffectOpaque = new ClrTypeName("UnityEngine.ImageEffectOpaque");
@@ -39,6 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName EditorSceneManager = new ClrTypeName("UnityEditor.SceneManagement.EditorSceneManager");
         public static readonly IClrTypeName LayerMask = new ClrTypeName("UnityEngine.LayerMask");
         public static readonly IClrTypeName Input = new ClrTypeName("UnityEngine.Input");
+        public static readonly IClrTypeName BurstCompile = new ClrTypeName("Unity.Burst.BurstCompileAttribute");
+        public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
 
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");

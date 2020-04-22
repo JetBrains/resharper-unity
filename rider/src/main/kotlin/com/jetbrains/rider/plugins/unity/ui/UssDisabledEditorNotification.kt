@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.ui
 
-import com.intellij.ide.plugins.PluginManagerCore
-import com.intellij.ide.plugins.PluginManagerMain
+import com.intellij.ide.plugins.*
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.fileEditor.FileEditor
@@ -24,7 +23,7 @@ class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotifica
     override fun getKey(): Key<EditorNotificationPanel> = KEY
 
     override fun createNotificationPanel(file: VirtualFile, fileEditor: FileEditor, project: Project): EditorNotificationPanel? {
-        if (project.isUnityProject() && isUssFile(file) && PluginManagerCore.isDisabled(PluginId.getId(CSS_PLUGIN_ID))) {
+        if (project.isUnityProject() && isUssFileSafe(file) && PluginManagerCore.isDisabled(PluginId.getId(CSS_PLUGIN_ID))) {
             if (PropertiesComponent.getInstance(project).getBoolean(DO_NOT_SHOW_AGAIN_KEY, false)) {
                 return null
             }
@@ -32,7 +31,7 @@ class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotifica
             val panel = EditorNotificationPanel()
             panel.text("USS support requires the CSS plugin to be enabled")
             panel.createActionLabel("Enable CSS plugin") {
-                // TODO: Maybe in 2020.1 we can do this dynamically without restart?
+                // TODO: Maybe in 2020.2 we can do this dynamically without restart?
                 // That would require enabling the CSS plugin dynamically, and then enabling our PluginCssPart.xml part
                 // dynamically, too
                 PluginManagerCore.enablePlugin(PluginId.getId(CSS_PLUGIN_ID))
@@ -48,5 +47,11 @@ class UssDisabledEditorNotification: EditorNotifications.Provider<EditorNotifica
         }
 
         return null
+    }
+
+    private fun isUssFileSafe(file: VirtualFile): Boolean {
+        // We can't check for UssFileType because it won't be loaded. The file type is part of the USS language, which
+        // derives from CSSLanguage, which will be unavailable.
+        return file.extension.equals("uss", true)
     }
 }

@@ -25,15 +25,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public const string Id = "UnityInspectorCodeInsights";
 
         public readonly UnityCodeInsightFieldUsageProvider.UnityPresentationType UnityPresentationType;
-        public readonly object ConstantValue;
 
         public UnityInspectorCodeInsightsHighlighting(DocumentRange range, [NotNull] string lenText, string tooltipText, [NotNull] string moreText,
                                              [NotNull] ICodeInsightsProvider provider, IDeclaredElement element,
-                                             [CanBeNull] IconModel icon, UnityCodeInsightFieldUsageProvider.UnityPresentationType unityPresentationType, object constantValue)
+                                             [CanBeNull] IconModel icon, UnityCodeInsightFieldUsageProvider.UnityPresentationType unityPresentationType)
             : base(range, lenText, tooltipText, moreText, provider, element, icon)
         {
             UnityPresentationType = unityPresentationType;
-            ConstantValue = constantValue;
         }
     }
 }

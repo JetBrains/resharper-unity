@@ -141,7 +141,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
-
+                wire.BackwardsCompatibleWireFormat = true;
+                    
                 var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
                     new Identities(IdKind.Client), myDispatcher, wire, lifetime);
 
@@ -217,7 +218,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     // they had - so the front end will retain the log and application paths of the just-closed editor.
                     // Opening a new editor instance will reconnect and push a new value through to the front end
                     editor.UnityApplicationData.Advise(lifetime,
-                        s => myHost.PerformModelAction(a => a.UnityApplicationData.SetValue(new UnityApplicationData(s.ApplicationPath, s.ApplicationContentsPath, s.ApplicationVersion))));
+                        s => myHost.PerformModelAction(a =>
+                        {
+                            var version = UnityVersion.Parse(s.ApplicationVersion); 
+                            a.UnityApplicationData.SetValue(new UnityApplicationData(s.ApplicationPath,
+                                    s.ApplicationContentsPath, s.ApplicationVersion, UnityVersion.RequiresRiderPackage(version)));
+                        }));
                     editor.ScriptCompilationDuringPlay.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ScriptCompilationDuringPlay.Set(ConvertToScriptCompilationEnum(s))));
 

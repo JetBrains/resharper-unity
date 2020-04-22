@@ -12,17 +12,66 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Added
 
+- Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix ([RIDER-22818](https://youtrack.jetbrains.com/issue/RIDER-22812), [#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
 - Exclude `Boo` and `UnityScript` namespaces, as well as the `System.Diagnostics.Debug` type from import completion ([#574](https://github.com/JetBrains/resharper-unity/issues/574), [#1473](https://github.com/JetBrains/resharper-unity/pull/1473))
+- Add more attributes to external annotations. E.g. `ShortcutAttribute` will mark the method as in use ([#1546](https://github.com/JetBrains/resharper-unity/issues/1546), [RIDER-40330](https://youtrack.jetbrains.com/issue/RIDER-40330), [#1548](https://github.com/JetBrains/resharper-unity/pull/1548))
+- Find Usages for serialised fields now includes asset usages ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Add context action to create Unity Assets menu item for a `ScriptableObject` ([#1567](https://github.com/JetBrains/resharper-unity/pull/1567))
+- Show serialised field values for scriptable objects ([#1567](https://github.com/JetBrains/resharper-unity/pull/1567))
+- Show usages of scriptable objects in assets ([#1567](https://github.com/JetBrains/resharper-unity/pull/1567))
+- Rider: Open corresponding `.asmdef` in Unity Inspector from `.csproj` editor notification ([#1574](https://github.com/JetBrains/resharper-unity/pull/1574))
+- Rider: Treat `.inputactions` as a JSON file ([RIDER-38538](https://youtrack.jetbrains.com/issue/RIDER-38538))
 
 ### Changed
 
+- Indexing of assets deferred until after project loaded and will not interfere with existing code insight features ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Improved memory usage while parsing assets ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Improved support of nested and variant prefabs ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Serialised field values Code Vision now includes values from FomerlySerialisedAs attribute ([#1530](https://github.com/JetBrains/resharper-unity/pull/1530))
+- Serialised field values Code Vision now includes derived classes ([#1550](https://github.com/JetBrains/resharper-unity/pull/1550))
+- Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
+- Stop marking a method as expensive if it only contains a null check ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
+- Move vector multiplication order inspection to performance critical context only ([#1459](https://github.com/JetBrains/resharper-unity/pull/1459))
+- Sort commonly used event functions higher in Generate dialog ([#1566](https://github.com/JetBrains/resharper-unity/pull/1566))
+- Generate event functions at location of context action, rather than at end of class ([#1542](https://github.com/JetBrains/resharper-unity/issues/1542), [#1566](https://github.com/JetBrains/resharper-unity/pull/1566))
+- Updated API information to 2020.1.0a25 ([#1553](https://github.com/JetBrains/resharper-unity/pull/1553))
+- Remove messages that use obsolete parameter types ([#1545](https://github.com/JetBrains/resharper-unity/issues/1545), [#1553](https://github.com/JetBrains/resharper-unity/pull/1553))
+- Rider: Adding file to Unity Explorer will add to correct C# project ([RIDER-23169](https://youtrack.jetbrains.com/issue/RIDER-23169), [#1470](https://github.com/JetBrains/resharper-unity/pull/1470), [#1501](https://github.com/JetBrains/resharper-unity/pull/1501))
 - Rider: Show folders ending with `~` by default in Unity Explorer ([#1444](https://github.com/JetBrains/resharper-unity/issues/1444), [1506](https://github.com/JetBrains/resharper-unity/pull/1506))
 - Rider: Move Unity Explorer settings to main "gear" icon ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+- Rider: Interesting content in builtin packages is now visible by default ([#1556](https://github.com/JetBrains/resharper-unity/pull/1556))
+- Rider: Only show "Show in Unity" link for Unity generated files when connected to Unity ([#1574](https://github.com/JetBrains/resharper-unity/pull/1574))
+- Rider: Improve detection of Unity version, especially after upgrading project ([#1507](https://github.com/JetBrains/resharper-unity/issues/1507), [#1572](https://github.com/JetBrains/resharper-unity/pull/1572))
+- Unity Editor: Move caret to correct column when opening file ([RIDER-27450](https://youtrack.jetbrains.com/issue/RIDER-27450), [#1486](https://github.com/JetBrains/resharper-unity/pull/1486))
+- Unity Editor: Delete the old Rider plugin when opening a project in Unity 2019.2+ ([#1591](https://github.com/JetBrains/resharper-unity/pull/1591))
 
 ### Fixed
 
 - Fix incorrect redundant `SerializeField` attribute warning for property backing field ([#1016](https://github.com/JetBrains/resharper-unity/issues/1016), [#1464](https://github.com/JetBrains/resharper-unity/pull/1464))
+- Avoid creating meta files outside of Asset or Packages folders (from 2019.3.2) ([#1481](https://github.com/JetBrains/resharper-unity/issues/1481), [#1491](https://github.com/JetBrains/resharper-unity/pull/1491), [#1489](https://github.com/JetBrains/resharper-unity/pull/1489))
+- Fix overwriting `IEnumerator` when auto-completing an event function that can be a coroutine ([#1258](https://github.com/JetBrains/resharper-unity/issues/1258), [#1566](https://github.com/JetBrains/resharper-unity/pull/1566))
+- Fix duplicate "Generate Unity event functions" context action when gutter icons are visible ([#1537](https://github.com/JetBrains/resharper-unity/issues/1537), [#1566](https://github.com/JetBrains/resharper-unity/pull/1566))
+- Fix completion of tag value adding extra closing quote ([RIDER-33067](https://youtrack.jetbrains.com/issue/RIDER-33067))
+- Fix exception with building shortcut cache ([RIDER-41206](https://youtrack.jetbrains.com/issue/RIDER-41206))
+- Rider: Fix Unity tests working with `.slnf` files ([#1571](https://github.com/JetBrains/resharper-unity/issues/1571), [#1577](https://github.com/JetBrains/resharper-unity/pull/1577))
 - Rider: Fix tooltip display for packages in Unity Explorer ([#1506](https://github.com/JetBrains/resharper-unity/pull/1506))
+- Rider: Fix resolving git based packages in Unity 2019.3+ ([#1616](https://github.com/JetBrains/resharper-unity/pull/1616))
+- Rider: Fix settings search not finding Unity pages (from 2019.3.3) ([#1516](https://github.com/JetBrains/resharper-unity/issues/1516), [#1520](https://github.com/JetBrains/resharper-unity/pull/1520))
+- Rider: Fix discovery and running of all tests in a project ([#1509](https://github.com/JetBrains/resharper-unity/issues/1509), [#1500](https://github.com/JetBrains/resharper-unity/pull/1500))
+- Rider: Fix finding location of Unity based on custom Hub install location ([RIDER-42118](https://youtrack.jetbrains.com/issue/RIDER-42118), [#1604](https://github.com/JetBrains/resharper-unity/pull/1604))
+- Rider: Use correct process ID for profiling and coverage ([DTRC-26621](https://youtrack.jetbrains.com/issue/DTRC-26621), [#1612](https://github.com/JetBrains/resharper-unity/pull/1612))
+- Rider: Mark editor as disconnected if response is not timely ([#1610](https://github.com/JetBrains/resharper-unity/pull/1610))
+- Unity Editor: Fix jumping to default desktop when opening files on Mac ([#1611](https://github.com/JetBrains/resharper-unity/pull/1611))
+
+
+
+## 2019.3.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap8-rtm-2019.3.2...net193-eap-rtm-2019.3.3)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/35?closed=1)
+
+### Fixed
+
+- Rider: Fix settings search not finding Unity pages ([#1516](https://github.com/JetBrains/resharper-unity/issues/1516), [#1522](https://github.com/JetBrains/resharper-unity/pull/1522))
 
 
 
@@ -46,7 +95,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 ### Added
 
-- Rider: Added proper file icons for `*.uxml` and `*.uss` ([RIDER-34788](https://youtrack.jetbrains.com/issue/RIDER-34788), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
+- Rider: Add proper file icons for `*.uxml` and `*.uss` ([RIDER-34788](https://youtrack.jetbrains.com/issue/RIDER-34788), [#1443](https://github.com/JetBrains/resharper-unity/pull/1443))
 
 ### Changed
 

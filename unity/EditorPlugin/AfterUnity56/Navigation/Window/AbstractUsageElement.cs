@@ -6,7 +6,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 {
   [Serializable]
   [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
-  internal abstract class AbstractUsageElement
+  public abstract class AbstractUsageElement
   {
     [SerializeField] 
     public string FilePath;

@@ -21,13 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return sourceFile.Name.Equals("InputManager.asset");
+            return sourceFile.Name.Equals("InputManager.asset")  && sourceFile.GetLocation().SniffYamlHeader();
         }
 
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
         {
             {
-                var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
+                var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
                 var inputs = GetCollection(file, "InputManager", "m_Axes");
 
                 if (inputs == null)

@@ -1,23 +1,26 @@
 ﻿using System;
 using UnityEngine;
 
-public class |Test|(0) : MonoBehaviour
+public class ||Test|(0)|(1) : MonoBehaviour
 {
-    [SerializeField] public int |NotRedundant1|(1);  // OK to be explicit
-    [SerializeField] private int |NotRedundant2|(2);
-    [|SerializeField|(3)] [NonSerialized] public int Redundant1;
-    [|SerializeField|(4)] [NonSerialized] private int Redundant1;
-    [|SerializeField|(5)] private readonly int ReadonlyFieldsAreNotSerialized;
-    [|SerializeField|(6)] private const int ConstFieldsAreNotSerialized;
-    [|SerializeField|(7)] private static int StaticFieldsAreNotSerialized;
+    [SerializeField] public int ||NotRedundant1|(2)|(3);  // OK to be explicit
+    [SerializeField] private int ||NotRedundant2|(4)|(5);
+    [|SerializeField|(6)] [NonSerialized] public int Redundant1;
+    [|SerializeField|(7)] [NonSerialized] private int Redundant1;
+    [|SerializeField|(8)] private readonly int ReadonlyFieldsAreNotSerialized;
+    [|SerializeField|(9)] private const int ConstFieldsAreNotSerialized;
+    [|SerializeField|(10)] private static int StaticFieldsAreNotSerialized;
 }
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
-(1): ReSharper Unity Implicitly Used Identifier: 
+(1): UnityCodeInsights: 
 (2): ReSharper Unity Implicitly Used Identifier: 
-(3): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(4): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(5): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(3): UnityCodeInsights: 
+(4): ReSharper Unity Implicitly Used Identifier: 
+(5): UnityCodeInsights: 
 (6): ReSharper Dead Code: Redundant 'SerializeField' attribute
 (7): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(8): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(9): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(10): ReSharper Dead Code: Redundant 'SerializeField' attribute

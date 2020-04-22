@@ -1,17 +1,15 @@
 package com.jetbrains.rider
 
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
+import com.jetbrains.rdclient.util.idea.LifetimedProjectService
 import com.jetbrains.rider.model.RdExistingSolution
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile
-import com.jetbrains.rider.util.idea.getComponent
 
-class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : LifetimedProjectComponent(project) {
-    val hasUnityReference = unityHost.model.hasUnityReference
-
+class UnityProjectDiscoverer(project: Project) : LifetimedProjectService(project) {
     // It's a Unity project, but not necessarily loaded correctly (e.g. it might be opened as folder)
     val isUnityProjectFolder = hasUnityFileStructure(project)
 
@@ -20,17 +18,18 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
     // anywhere)
     val isUnityProject = isUnityProjectFolder && isCorrectlyLoadedSolution(project)
     val isUnityGeneratedProject = isUnityProject && solutionNameMatchesUnityProjectName(project)
+    @Suppress("unused")
     val isUnitySidecarProject = isUnityProject && !solutionNameMatchesUnityProjectName(project)
 
     // Note that this will only return a sensible value once the solution + backend have finished loading
     val isUnityClassLibraryProject: Boolean?
         get() {
-            val hasReference = hasUnityReference.valueOrNull ?: return null
+            val hasReference = project.solution.rdUnityModel.hasUnityReference.valueOrNull ?: return null
             return hasReference && isCorrectlyLoadedSolution(project)
         }
 
     companion object {
-        fun getInstance(project: Project) = project.getComponent<UnityProjectDiscoverer>()
+        fun getInstance(project: Project): UnityProjectDiscoverer = project.service()
 
         private fun hasUnityFileStructure(project: Project): Boolean {
             // Make sure we have an Assets folder and a ProjectSettings folder. We can't rely on Library, as that won't
@@ -55,8 +54,7 @@ class UnityProjectDiscoverer(project: Project, unityHost: UnityHost) : Lifetimed
 
     // Returns false when opening a Unity project as a plain folder
     private fun isCorrectlyLoadedSolution(project: Project): Boolean {
-        val solutionFile = project.solutionFile
-        return project.solutionDescription is RdExistingSolution && solutionFile.isFile && solutionFile.extension.equals("sln", true)
+        return project.solutionDescription is RdExistingSolution
     }
 
     private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {

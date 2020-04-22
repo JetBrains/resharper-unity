@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -123,7 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             {
                 var editorBuildSettings = GetEditorBuildSettings(myUnityModule);
                 Assertion.Assert(editorBuildSettings != null, "editorBuildSettings != null");
-                var yamlFile = editorBuildSettings.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
+                var yamlFile = editorBuildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
                 Assertion.Assert(yamlFile != null, "yamlFile != null");
                 
                 var scenesNode = GetSceneCollection(yamlFile);
@@ -149,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
                 solution.GetComponent<IDaemon>().Invalidate();
             
-                solution.GetComponent<UnityRefresher>().Refresh(RefreshType.Normal);
+                solution.GetComponent<UnityRefresher>().StartRefresh(RefreshType.Normal);
                 return null;
             }
 
@@ -159,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             {
                 // TODO yaml psi factory?
                 var buffer = new StringBuffer($"EditorBuildSettings:\n  m_Scenes:\n  - enabled: 1\n    path: Assets/{sceneName}.unity\n    guid: {guid}");
-                var languageService = UnityYamlLanguage.Instance.LanguageService().NotNull();
+                var languageService = YamlLanguage.Instance.LanguageService().NotNull();
                 var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(buffer);
                 var file = (languageService.CreateParser(lexer, module, null) as IYamlParser)
                     .NotNull("Not yaml parser").ParseFile() as IYamlFile;

@@ -1,5 +1,7 @@
 using System;
 using JetBrains.Annotations;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml
@@ -61,12 +63,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             return SimplePathEndsWith(path, MetaFileExtensionWithDot);
         }
 
-        public static bool IsInterestingMeta([NotNull] this IPath path)
+        public static bool IsMetaOrProjectSettings(ISolution solution, FileSystemPath location)
         {
-            return SimplePathEndsWith(path, ".cs.meta")
-                   || SimplePathEndsWith(path, ".prefab.meta")
-                   || SimplePathEndsWith(path, ".unity.meta");
-        }
+            var components = location.TryMakeRelativeTo(solution.SolutionDirectory).Components.ToArray();
+            
+            if (location.ExtensionNoDot.Equals("meta", StringComparison.InvariantCultureIgnoreCase) || components.Length == 2 &&
+                components[0].Equals("ProjectSettings", StringComparison.InvariantCultureIgnoreCase))
+                return true;
+
+            return false;
+        } 
 
         // Not to be confused with FileSystemPathEx.EndsWith, which handles path components. This is a simple text
         // comparison, which can handle extensions without allocating another string

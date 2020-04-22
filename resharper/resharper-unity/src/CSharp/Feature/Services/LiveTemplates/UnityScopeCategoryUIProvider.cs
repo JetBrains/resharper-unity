@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
 {
@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         private const int Priority = -200;
 
         public UnityScopeCategoryUIProvider()
-            : base(LogoThemedIcons.UnityLogo.Id)
+            : base(LogoIcons.Unity.Id)
         {
             MainPoint = new InUnityShaderLabFile();
         }

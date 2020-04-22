@@ -20,12 +20,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         }
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return sourceFile.Name.Equals("EditorBuildSettings.asset");
+            return sourceFile.Name.Equals("EditorBuildSettings.asset") && sourceFile.GetLocation().SniffYamlHeader();
         }
 
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)
         {
-            var file = sourceFile.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile;
+            var file = sourceFile.GetDominantPsiFile<YamlLanguage>() as IYamlFile;
             var scenesArray = GetSceneCollection(file);
 
             if (scenesArray == null)

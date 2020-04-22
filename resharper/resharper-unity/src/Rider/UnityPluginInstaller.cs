@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
@@ -113,7 +112,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var versionForSolution = myUnityVersion.GetActualVersionForSolution();
             if (versionForSolution >= new Version("2019.2")) // 2019.2+ would not work fine either without Rider package, and when package is present it loads EditorPlugin directly from Rider installation.
+            {
+                var installationInfoToRemove = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: FileSystemPath.Empty);
+                if (!installationInfoToRemove.PluginDirectory.IsAbsolute)
+                    return;
+                
+                var pluginDll = installationInfoToRemove.PluginDirectory.Combine(PluginPathsProvider.BasicPluginDllFile);
+                if (pluginDll.ExistsFile)
+                {
+                    myQueue.Enqueue(() =>
+                    {
+                        myLogger.Info($"Remove {pluginDll}. Rider package should be used instead.");
+                        pluginDll.DeleteFile();
+                        FileSystemPath.Parse(pluginDll.FullPath + ".meta").DeleteFile();
+                        
+                        // jetbrainsDir is usually "Assets\Plugins\Editor\JetBrains", however custom locations were also possible   
+                        var jetbrainsDir = installationInfoToRemove.PluginDirectory;
+                        if (jetbrainsDir.GetChildren().Any() || jetbrainsDir.Name != "JetBrains") return;
+                        jetbrainsDir.DeleteDirectoryNonRecursive();
+                        FileSystemPath.Parse(jetbrainsDir.FullPath + ".meta").DeleteFile();
+                        var pluginsEditorDir = jetbrainsDir.Directory;
+                        if (pluginsEditorDir.GetChildren().Any() || pluginsEditorDir.Name != "Editor") return;
+                        pluginsEditorDir.DeleteDirectoryNonRecursive();
+                        FileSystemPath.Parse(pluginsEditorDir.FullPath + ".meta").DeleteFile();
+                        var pluginsDir = pluginsEditorDir.Directory;
+                        if (pluginsDir.GetChildren().Any() || pluginsDir.Name != "Plugins") return;
+                        pluginsDir.DeleteDirectoryNonRecursive();
+                        FileSystemPath.Parse(pluginsDir.FullPath+ ".meta").DeleteFile();
+                    });
+                }
                 return;
+            }
 
             // forcing fresh install due to being unable to provide proper setting until InputField is patched in Rider
             // ReSharper disable once ArgumentsStyleNamedExpression
@@ -131,8 +160,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             QueueInstall(installationInfo);
             myQueue.Enqueue(() =>
             {
-                mySolution.Locks.Tasks.StartNew(myLifetime, Scheduling.MainDispatcher,
-                    () => myRefresher.Refresh(RefreshType.Normal));
+                mySolution.Locks.Tasks.StartNew(myLifetime, Scheduling.MainGuard,
+                    () => myRefresher.StartRefresh(RefreshType.Normal));
             });
         }
 

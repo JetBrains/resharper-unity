@@ -190,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return version;
         }
-
+        
         public static string VersionToString([NotNull] Version version)
         {
             var type = string.Empty;
@@ -211,6 +211,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             }
 
             return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
+        }
+        
+        internal static bool RequiresRiderPackage(Version version)
+        {
+            return version >= new Version(2019,2);
         }
 
         public static Version GetVersionByAppPath(FileSystemPath appPath)

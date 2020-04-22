@@ -19,6 +19,10 @@ class UnityInstallationFinder(private val project: Project) {
         return getApplicationContentsPath()?.resolve("Resources/PackageManager/BuiltInPackages")
     }
 
+    fun getPackageManagerDefaultManifest(): Path? {
+        return getApplicationContentsPath()?.resolve("Resources/PackageManager/Editor/manifest.json")
+    }
+
     fun getDocumentationRoot(): Path? {
         return getApplicationContentsPath()?.resolve("Documentation/en")
     }
@@ -63,7 +67,16 @@ class UnityInstallationFinder(private val project: Project) {
         return tryGetApplicationVersionFromProtocol()
     }
 
+    fun getApplicationVersion(count:Int):String? {
+        val fullVersion = getApplicationVersion()
+        return fullVersion?.split('.')?.take(count)?.joinToString(".")
+    }
+
     private fun tryGetApplicationVersionFromProtocol(): String? {
         return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.applicationVersion
+    }
+
+    fun requiresRiderPackage(): Boolean {
+        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.requiresRiderPackage ?: return false
     }
 }

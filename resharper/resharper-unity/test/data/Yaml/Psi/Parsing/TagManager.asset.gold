@@ -1,6 +1,6 @@
-﻿Language: PsiLanguageType:UnityYaml
+﻿Language: PsiLanguageType:YAML
 IYamlFile
-  ChameleonDocument
+  IYamlDocument
     IDirectives
       IDirective
         YamlTokenType+FixedTokenElement(0,1)(type:PERCENT, text:%)
@@ -17,7 +17,7 @@ IYamlFile
         YamlTokenType+GenericTokenElement(19,21)(type:NS_CHARS, text:tag:unity3d.com,2011:)
         NewLine(40,1)(type:NEW_LINE, text:\n) spaces: "\n"
       YamlTokenType+FixedTokenElement(41,3)(type:DIRECTIVES_END, text:---)
-    IDocumentBody
+    ChameleonDocumentBody
       IBlockMappingNode
         Whitespace(44,1)(type:WHITESPACE, text: ) spaces: " "
         INodeProperties

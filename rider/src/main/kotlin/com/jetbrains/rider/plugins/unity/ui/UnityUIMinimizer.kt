@@ -4,9 +4,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.openapi.wm.impl.ToolWindowImpl
+import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rider.build.actions.ActiveConfigurationAndPlatformAction
-import com.jetbrains.rider.util.idea.application
 
 class UnityUIMinimizer : StartupActivity {
     companion object {
@@ -15,13 +14,13 @@ class UnityUIMinimizer : StartupActivity {
             if (project.isDisposed)
                 return
 
-            val unityUiManager = UnityUIManager.tryGetInstance(project) ?: return
+            val unityUiManager = UnityUIManager.getInstance(project)
             unityUiManager.hasMinimizedUi.value = true
 
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
                 val toolWindowManager = ToolWindowManager.getInstance(project)
 
-                val nuget = toolWindowManager.getToolWindow("NuGet") as? ToolWindowImpl
+                val nuget = toolWindowManager.getToolWindow("NuGet")
                     ?: return@doWhenFocusSettlesDown
                 nuget.isShowStripeButton = false
 
@@ -34,12 +33,12 @@ class UnityUIMinimizer : StartupActivity {
             if (project.isDisposed)
                 return
 
-            val unityUiManager = UnityUIManager.tryGetInstance(project) ?: return
+            val unityUiManager = UnityUIManager.getInstance(project)
             unityUiManager.hasMinimizedUi.value = false
 
             IdeFocusManager.getInstance(project).doWhenFocusSettlesDown {
                 val toolWindowManager = ToolWindowManager.getInstance(project)
-                val toolWindow = toolWindowManager.getToolWindow("NuGet") as? ToolWindowImpl
+                val toolWindow = toolWindowManager.getToolWindow("NuGet")
                     ?: return@doWhenFocusSettlesDown
                 toolWindow.isShowStripeButton = true
 
@@ -50,8 +49,8 @@ class UnityUIMinimizer : StartupActivity {
 
     override fun runActivity(project: Project) {
         application.invokeLater {
-            val unityUIManager = UnityUIManager.tryGetInstance(project)
-            if (unityUIManager?.hasMinimizedUi?.hasTrueValue() == true) {
+            val unityUIManager = UnityUIManager.getInstance(project)
+            if (unityUIManager.hasMinimizedUi.hasTrueValue()) {
                 ensureMinimizedUI(project)
             }
         }

@@ -1,20 +1,25 @@
 import com.intellij.openapi.editor.impl.EditorImpl
+import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.CodeLensBaseTest
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.framework.persistAllFilesOnDisk
 import com.jetbrains.rider.test.scriptingApi.*
-import org.testng.annotations.BeforeMethod
 import org.testng.annotations.BeforeSuite
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File
+import java.time.Duration
 
 class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
 
     private val disableYamlDotSettingsContents = """<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	        <s:Boolean x:Key="/Default/CodeEditing/Unity/IsYamlParsingEnabled/@EntryValue">False</s:Boolean>
+	        <s:Boolean x:Key="/Default/CodeEditing/Unity/IsAssetIndexingEnabled/@EntryValue">False</s:Boolean>
             </wpf:ResourceDictionary>"""
 
     lateinit var unityDll: File
@@ -24,28 +29,17 @@ class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
         unityDll = downloadUnityDll()
     }
 
-    @BeforeMethod
-    fun InitializeEnvironement() {
-        copyUnityDll(unityDll, project, activeSolutionDirectory)
-        enableAllLensProviders()
-    }
-
-    companion object {
-        const val assetUsagesProvider = "Unity Assets Usage"
-        const val unityFieldProvider = "Unity serialized field"
-        const val impicitUsagesProvider = "Unity implicit usage"
-    }
-
-    override val waitForCaches = true
-
-    override fun getSolutionDirectoryName() = "CodeLensTestSolution"
-
     override fun preprocessTempDirectory(tempDir: File) {
+        copyUnityDll(unityDll, activeSolutionDirectory)
         if (testMethod.name.contains("YamlOff")) {
             val dotSettingsFile = activeSolutionDirectory.combine("$activeSolution.sln.DotSettings.user")
             dotSettingsFile.writeText(disableYamlDotSettingsContents)
         }
     }
+
+    override val waitForCaches = true
+
+    override fun getSolutionDirectoryName() = "CodeLensTestSolution"
 
     @DataProvider(name = "assetSettings")
     fun assetSettings() = arrayOf(
@@ -90,8 +84,16 @@ class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
         true
     }
 
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "RiderSample")
+    fun propertyCodeVisionScriptableObject(caseName: String, showProperties: String) = doUnityTest(showProperties,
+        "Assets/TestScriptableObject.cs") {
+        true
+    }
+
     fun doUnityTest(showProperties: String, file: String, action: EditorImpl.() -> Boolean) {
         setReSharperSetting("CodeEditing/Unity/EnableInspectorPropertiesEditor/@EntryValue", showProperties)
+        waitAndPump(project.lifetime, { project.solution.rdUnityModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
 
         waitForLensInfos(project)
         waitForAllAnalysisFinished(project)
