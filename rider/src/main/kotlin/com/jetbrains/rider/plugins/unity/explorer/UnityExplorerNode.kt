@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
+import com.intellij.icons.AllIcons
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ViewSettings
 import com.intellij.ide.scratch.ScratchProjectViewPane
@@ -256,7 +257,12 @@ open class UnityExplorerNode(project: Project,
             return UnityIcons.Explorer.UnloadedFolder
         }
 
-        return virtualFile.calculateFileSystemIcon(project!!)
+        return try {
+            // Make sure that errors fetching the icon can't kill the explorer - RIDER-43038
+            virtualFile.calculateFileSystemIcon(project!!)
+        } catch (ex: Throwable) {
+            AllIcons.FileTypes.Any_type
+        }
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
