@@ -101,11 +101,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     // Add event handlers.
                     watcher.Changed += OnChanged;
                     watcher.Created += OnChanged;
-
-                    lf.Bracket(() => { }, () =>
-                    {
-                        watcher.Dispose();
-                    });
+                    
+                    lf.OnTermination(watcher.Dispose);
                     
                     watcher.EnableRaisingEvents = true; // Begin watching. Can take significant time to start
                 });
