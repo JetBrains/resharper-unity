@@ -6,8 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
+## 2020.1.1
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.0...net201)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/37?closed=1)
+
+### Fixed
+
+- Rider: Fix exception finding file icon causing explorer view to be blank ([RIDER-43038](https://youtrack.jetbrains.com/issue/RIDER-43038), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
+- Rider: Fix handling of file system folders in `Packages` with the same name as a package ([#1626](https://github.com/JetBrains/resharper-unity/issues/1626), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
+- Rider: Fix size of tooltip for packages with many projects ([#1628](https://github.com/JetBrains/resharper-unity/issues/1628), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
+
+
+
 ## 2020.1
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net193...net201)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net193...net201-rtm-2020.1.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/32?closed=1)
 
 ### Added
