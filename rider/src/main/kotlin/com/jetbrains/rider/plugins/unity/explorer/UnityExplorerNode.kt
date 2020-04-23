@@ -140,7 +140,7 @@ open class UnityExplorerNode(project: Project,
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = nodes   // One node for each project that this directory is part of
                 .mapNotNull { containingProjectNode(it) }
-                .map { it.name.removePrefix(UnityExplorer.DefaultProjectPrefix + "-").removePrefix(UnityExplorer.DefaultProjectPrefix) }
+                .map(::stripDefaultProjectPrefix)
                 .filter { it.isNotEmpty() }
                 .sortedWith(String.CASE_INSENSITIVE_ORDER)
         if (projectNames.any()) {
@@ -154,6 +154,13 @@ open class UnityExplorerNode(project: Project,
             }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
+    }
+
+    private fun stripDefaultProjectPrefix(it: ProjectModelNode): String {
+        // Assembly-CSharp => ""
+        // Assembly-CSharp-Editor => Editor
+        // Assembly-CSharp.Player => Player
+        return it.name.removePrefix(UnityExplorer.DefaultProjectPrefix).removePrefix("-").removePrefix(".")
     }
 
     private fun containingProjectNode(node: IProjectModelNode): ProjectModelNode? {
