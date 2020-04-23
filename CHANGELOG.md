@@ -14,6 +14,7 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 - Rider: Show serializable Code Vision for more fields ([#1624](https://github.com/JetBrains/resharper-unity/pull/1624))
 - Rider: Improve presentation for asset Find Usages results ([#1624](https://github.com/JetBrains/resharper-unity/pull/1624))
+- Rider: Improve presentation of Player projects in Unity Explorer ([#1634](https://github.com/JetBrains/resharper-unity/pull/1634))
 - Unity Editor: Reduce frequency of refreshing Unity on save to explicit calls to Save All ([RIDER-37420](https://youtrack.jetbrains.com/issue/RIDER-37420), [#1629](https://github.com/JetBrains/resharper-unity/pull/1629))
 
 ### Fixed
