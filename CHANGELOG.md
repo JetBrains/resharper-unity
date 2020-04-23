@@ -10,11 +10,19 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.0...net201)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/37?closed=1)
 
+### Changed
+
+- Rider: Show serializable Code Vision for more fields ([#1624](https://github.com/JetBrains/resharper-unity/pull/1624))
+- Rider: Improve presentation for asset Find Usages results ([#1624](https://github.com/JetBrains/resharper-unity/pull/1624))
+- Unity Editor: Reduce frequency of refreshing Unity on save to explicit calls to Save All ([RIDER-37420](https://youtrack.jetbrains.com/issue/RIDER-37420), [#1629](https://github.com/JetBrains/resharper-unity/pull/1629))
+
 ### Fixed
 
+- Rider: Fix solution hang on "constructing components" due to excessive `FileSystemWatcher` initialisation ([RIDER-41812](https://youtrack.jetbrains.com/issue/RIDER-41812), [#1631](https://github.com/JetBrains/resharper-unity/pull/1631))
 - Rider: Fix exception finding file icon causing explorer view to be blank ([RIDER-43038](https://youtrack.jetbrains.com/issue/RIDER-43038), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
 - Rider: Fix handling of file system folders in `Packages` with the same name as a package ([#1626](https://github.com/JetBrains/resharper-unity/issues/1626), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
 - Rider: Fix size of tooltip for packages with many projects ([#1628](https://github.com/JetBrains/resharper-unity/issues/1628), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
+- Unity Editor: Fix list of folders to search for .NET Framework references ([RIDER-42873](https://youtrack.jetbrains.com/issue/RIDER-42873), [#1630](https://github.com/JetBrains/resharper-unity/pull/1630))
 
 
 
