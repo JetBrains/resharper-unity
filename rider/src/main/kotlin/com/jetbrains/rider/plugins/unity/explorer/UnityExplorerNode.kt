@@ -147,7 +147,10 @@ open class UnityExplorerNode(project: Project,
             var description = projectNames.take(3).joinToString(", ")
             if (projectNames.count() > 3) {
                 description += ", …"
-                presentation.tooltip = "Contains files from multiple projects:<br/>" + projectNames.joinToString("<br/>")
+                presentation.tooltip = "Contains files from multiple projects:<br/>" + projectNames.take(10).joinToString("<br/>")
+                if (projectNames.count() > 10) {
+                    presentation.tooltip += "<br/>and ${projectNames.count() - 10} others"
+                }
             }
             presentation.addText(" ($description)", SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
