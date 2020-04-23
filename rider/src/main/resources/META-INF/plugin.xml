@@ -290,6 +290,7 @@
 <ul>
   <li>Rider: Show serializable Code Vision for more fields (<a href="https://github.com/JetBrains/resharper-unity/pull/1624">#1624</a>)</li>
   <li>Rider: Improve presentation for asset Find Usages results (<a href="https://github.com/JetBrains/resharper-unity/pull/1624">#1624</a>)</li>
+  <li>Rider: Improve presentation of Player projects in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1634"</a>)</li>
   <li>Unity Editor: Reduce frequency of refreshing Unity on save to explicit calls to Save All (<a href="https://youtrack.jetbrains.com/issue/RIDER-37420">RIDER-37420</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1629">#1629</a>)</li>
 </ul>
 </p>
