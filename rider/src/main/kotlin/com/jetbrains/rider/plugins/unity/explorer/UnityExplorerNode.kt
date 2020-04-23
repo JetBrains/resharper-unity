@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FileStatus
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
+import com.jetbrains.rider.plugins.unity.packageManager.PackageData
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.ProjectModelViewHost
@@ -77,11 +78,23 @@ interface IProjectModeNodesOwner {
     val nodes: Sequence<IProjectModelNode>
 }
 
+enum class AncestorNodeType {
+    Assets,
+    UserEditablePackage,
+    ReadOnlyPackage,
+    FileSystem;  // A folder in Packages that isn't a package. Gets no special treatment
+
+    companion object {
+        fun fromPackageData(packageData: PackageData): AncestorNodeType {
+            return if (packageData.source.isEditable()) UserEditablePackage else ReadOnlyPackage
+        }
+    }
+}
+
 open class UnityExplorerNode(project: Project,
                              virtualFile: VirtualFile,
                              nestedFiles: List<VirtualFile>,
-                             private val isUnderAssets: Boolean,
-                             private val isReadOnlyPackageFile: Boolean = false)
+                             protected val descendentOf: AncestorNodeType)
     : FileSystemNodeBase(project, virtualFile, nestedFiles), IProjectModeNodesOwner {
 
     override val nodes: Sequence<IProjectModelNode>
@@ -141,6 +154,10 @@ open class UnityExplorerNode(project: Project,
     }
 
     private fun containingProjectNode(node: IProjectModelNode): ProjectModelNode? {
+        if (descendentOf == AncestorNodeType.FileSystem) {
+            return null
+        }
+
         if (node is ProjectModelNode && node.isProject())
             return null
 
@@ -158,7 +175,7 @@ open class UnityExplorerNode(project: Project,
         }
 
         // These special folders aren't used in Packages
-        if (isUnderAssets) {
+        if (descendentOf == AncestorNodeType.Assets) {
 
             // This won't work if the projects are renamed by some kind of Unity plugin
             // If the project is -Editor, hide if this node is under the Editor folder
@@ -219,42 +236,44 @@ open class UnityExplorerNode(project: Project,
     }
 
     private fun calculateIcon(): Icon? {
-        // Under Packages, the only special folder is "Resources". As per Maxime @ Unity:
-        // "Resources folders work the same in packages as under Assets, but that's mostly it. Editor folders have no
-        // special semantics, Gizmos don't work, there's no StreamingAssets, no Plugins"
-        if (name.equals("Resources", true)) {
-            return UnityIcons.Explorer.ResourcesFolder
-        }
-
-        if (isUnderAssets) {
-            if (name.equals("Editor", true) && !isUnderAssemblyDefinition()) {
-                return UnityIcons.Explorer.EditorFolder
+        if (descendentOf != AncestorNodeType.FileSystem) {
+            // Under Packages, the only special folder is "Resources". As per Maxime @ Unity:
+            // "Resources folders work the same in packages as under Assets, but that's mostly it. Editor folders have no
+            // special semantics, Gizmos don't work, there's no StreamingAssets, no Plugins"
+            if (name.equals("Resources", true)) {
+                return UnityIcons.Explorer.ResourcesFolder
             }
 
-            if (parent is AssetsRoot) {
-                val rootSpecialIcon = when (name.toLowerCase()) {
-                    "editor default resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
-                    "gizmos" -> UnityIcons.Explorer.GizmosFolder
-                    "plugins" -> UnityIcons.Explorer.PluginsFolder
-                    "standard assets" -> UnityIcons.Explorer.AssetsFolder
-                    "pro standard assets" -> UnityIcons.Explorer.AssetsFolder
-                    "streamingassets" -> UnityIcons.Explorer.StreamingAssetsFolder
-                    else -> null
+            if (descendentOf == AncestorNodeType.Assets) {
+                if (name.equals("Editor", true) && !isUnderAssemblyDefinition()) {
+                    return UnityIcons.Explorer.EditorFolder
                 }
-                if (rootSpecialIcon != null) {
-                    return rootSpecialIcon
+
+                if (parent is AssetsRoot) {
+                    val rootSpecialIcon = when (name.toLowerCase()) {
+                        "editor default resources" -> UnityIcons.Explorer.EditorDefaultResourcesFolder
+                        "gizmos" -> UnityIcons.Explorer.GizmosFolder
+                        "plugins" -> UnityIcons.Explorer.PluginsFolder
+                        "standard assets" -> UnityIcons.Explorer.AssetsFolder
+                        "pro standard assets" -> UnityIcons.Explorer.AssetsFolder
+                        "streamingassets" -> UnityIcons.Explorer.StreamingAssetsFolder
+                        else -> null
+                    }
+                    if (rootSpecialIcon != null) {
+                        return rootSpecialIcon
+                    }
                 }
             }
-        }
 
-        if (hasAssemblyDefinitionFile(virtualFile)) {
-            return UnityIcons.Explorer.AsmdefFolder
-        }
+            if (hasAssemblyDefinitionFile(virtualFile)) {
+                return UnityIcons.Explorer.AsmdefFolder
+            }
 
-        // Note that its only the root node that's marked as "unloaded"/not imported. Child files and folder icons are
-        // rendered as normal
-        if (virtualFile.name.endsWith("~") && virtualFile.isDirectory) {
-            return UnityIcons.Explorer.UnloadedFolder
+            // Note that its only the root node that's marked as "unloaded"/not imported. Child files and folder icons
+            // are rendered as normal
+            if (virtualFile.name.endsWith("~") && virtualFile.isDirectory) {
+                return UnityIcons.Explorer.UnloadedFolder
+            }
         }
 
         return try {
@@ -266,7 +285,7 @@ open class UnityExplorerNode(project: Project,
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets, isReadOnlyPackageFile)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, descendentOf)
     }
 
     override fun getVirtualFileChildren(): List<VirtualFile> {
@@ -305,13 +324,15 @@ open class UnityExplorerNode(project: Project,
     override fun getFileStatus(): FileStatus {
         // Read only package files are cached under Library, which is ignored by VCS, but it's pointless us showing them
         // as IGNORED
-        if (isReadOnlyPackageFile) return FileStatus.NOT_CHANGED
-        return super.getFileStatus()
+        return if (descendentOf == AncestorNodeType.ReadOnlyPackage) FileStatus.NOT_CHANGED else super.getFileStatus()
     }
 
     override fun getFileStatusColor(status: FileStatus?): Color? {
         // NOT_CHANGED colour is discovered recursively, so if any files under this are ignored, we'd get the wrong colour
-        if (isReadOnlyPackageFile && status == FileStatus.NOT_CHANGED) return status?.color
-        return super.getFileStatusColor(status)
+        return if (descendentOf == AncestorNodeType.ReadOnlyPackage && status == FileStatus.NOT_CHANGED) {
+            status?.color
+        } else {
+            super.getFileStatusColor(status)
+        }
     }
 }
