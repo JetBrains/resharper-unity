@@ -45,7 +45,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (owner == null)
                 return;
 
-            var hierarchyElement = owner.GetHierarchyElement(guid, location.LocalDocumentAnchor, forcePrefabImportForStartPoint ? myPrefabImportCache : null);
+            if (guid == null)
+                return;
+            
+            var hierarchyElement = owner.GetHierarchyElement(guid.Value, location.LocalDocumentAnchor, forcePrefabImportForStartPoint ? myPrefabImportCache : null);
             if (hierarchyElement is IStrippedHierarchyElement && !forcePrefabImportForStartPoint)
                 return;
             

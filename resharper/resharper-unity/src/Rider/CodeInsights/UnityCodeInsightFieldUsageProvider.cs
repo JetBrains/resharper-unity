@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             myContexts =  Shell.Instance.GetComponent<DataContexts>();
         }
         
-        private static (string guid, string[] propertyNames) GetAssetGuidAndPropertyName(ISolution solution, IField declaredElement)
+        private static (Guid? guid, string[] propertyNames) GetAssetGuidAndPropertyName(ISolution solution, IField declaredElement)
         {
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
             
@@ -127,12 +127,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 return;
             }
             
-            var (guid, propertyNames) = GetAssetGuidAndPropertyName(solution, field);
-            if (guid == null || propertyNames.Length == 0)
+            var (guidN, propertyNames) = GetAssetGuidAndPropertyName(solution, field);
+            if (guidN == null || propertyNames.Length == 0)
             {
                 base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
             }
+
+            var guid = guidN.Value;
 
             var presentationType = GetUnityPresentationType(type);
 

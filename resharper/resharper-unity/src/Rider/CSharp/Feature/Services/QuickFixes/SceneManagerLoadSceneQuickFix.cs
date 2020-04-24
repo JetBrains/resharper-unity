@@ -56,8 +56,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             var correspondingFiles = GetCorrespondingSourceFiles(sceneName, unityModule).ToArray();
             foreach (var (file, unityPath) in correspondingFiles)
             {
-                yield return new LoadSceneFixBulbAction(myWarning.Argument, correspondingFiles.Length > 1, 
-                    unityPath, solution.GetComponent<MetaFileGuidCache>().GetAssetGuid(file), unityModule).ToQuickFixIntention();
+                var guid = solution.GetComponent<MetaFileGuidCache>().GetAssetGuid(file);
+                if (guid != null)
+                    yield return new LoadSceneFixBulbAction(myWarning.Argument, correspondingFiles.Length > 1, 
+                        unityPath, guid.Value, unityModule).ToQuickFixIntention();
             }
         }
 
@@ -107,11 +109,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
             private readonly IArgument myArgument;
             private readonly bool myReplaceArgument;
             private readonly string mySceneName;
-            private readonly string myGuid;
+            private readonly Guid myGuid;
             private readonly UnityExternalFilesPsiModule myUnityModule;
 
             public LoadSceneFixBulbAction(IArgument argument, bool replaceArgument, string sceneName,
-                string guid, UnityExternalFilesPsiModule unityModule)
+                Guid guid, UnityExternalFilesPsiModule unityModule)
             {
                 myArgument = argument;
                 myReplaceArgument = replaceArgument;
@@ -156,19 +158,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
             public override string Text => $"Add '{mySceneName}' to build settings";
             
-            private IBlockSequenceNode CreateBlockSequenceNode(string sceneName, string guid, IPsiModule module)
+            private IBlockSequenceNode CreateBlockSequenceNode(string sceneName, Guid guid, IPsiModule module)
             {
+                throw new NotImplementedException("TODO guid formating");
                 // TODO yaml psi factory?
-                var buffer = new StringBuffer($"EditorBuildSettings:\n  m_Scenes:\n  - enabled: 1\n    path: Assets/{sceneName}.unity\n    guid: {guid}");
-                var languageService = YamlLanguage.Instance.LanguageService().NotNull();
-                var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(buffer);
-                var file = (languageService.CreateParser(lexer, module, null) as IYamlParser)
-                    .NotNull("Not yaml parser").ParseFile() as IYamlFile;
-
-                var sceneRecord = GetSceneCollection((file.Documents.First().Body.BlockNode as IBlockMappingNode)
-                    .NotNull("blockMappingNode != null")) as IBlockSequenceNode;
-                SandBox.CreateSandBoxFor(sceneRecord.NotNull("sceneRecord != null"), module);
-                return sceneRecord;
+                // var buffer = new StringBuffer($"EditorBuildSettings:\n  m_Scenes:\n  - enabled: 1\n    path: Assets/{sceneName}.unity\n    guid: {guid}");
+                // var languageService = YamlLanguage.Instance.LanguageService().NotNull();
+                // var lexer = languageService.GetPrimaryLexerFactory().CreateLexer(buffer);
+                // var file = (languageService.CreateParser(lexer, module, null) as IYamlParser)
+                //     .NotNull("Not yaml parser").ParseFile() as IYamlFile;
+                //
+                // var sceneRecord = GetSceneCollection((file.Documents.First().Body.BlockNode as IBlockMappingNode)
+                //     .NotNull("blockMappingNode != null")) as IBlockSequenceNode;
+                // SandBox.CreateSandBoxFor(sceneRecord.NotNull("sceneRecord != null"), module);
+                // return sceneRecord;
             }
         }
     }

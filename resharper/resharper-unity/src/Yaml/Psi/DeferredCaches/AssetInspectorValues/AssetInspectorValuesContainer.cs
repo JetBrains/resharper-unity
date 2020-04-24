@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         private readonly CountingSet<MonoBehaviourFieldWithValue> myValuesWhichAreUniqueInWholeFile = new CountingSet<MonoBehaviourFieldWithValue>();
         private readonly Dictionary<IPsiSourceFile, OneToListMap<int, InspectorVariableUsagePointer>> myPsiSourceFileToInspectorValues = new Dictionary<IPsiSourceFile, OneToListMap<int, InspectorVariableUsagePointer>>();
 
-        private readonly OneToCompactCountingSet<int, int> myNameToGuids = new OneToCompactCountingSet<int, int>();
+        private readonly OneToCompactCountingSet<int, Guid> myNameToGuids = new OneToCompactCountingSet<int, Guid>();
         
         private readonly OneToCompactCountingSet<int, IPsiSourceFile> myNameToSourceFile = new OneToCompactCountingSet<int, IPsiSourceFile>();
         
@@ -122,9 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 var variableUsage = element.GetVariableUsage(variableUsagePointer);
 
                 var scriptReference = variableUsage.ScriptReference;
-                var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
-                if (guid == null)
-                    continue;
+                var guid = scriptReference.ExternalAssetGuid;
                 
                 myNameToSourceFile.Remove(variableUsage.NameHash, sourceFile);
                 var mbField = new MonoBehaviourField(guid, variableUsage.NameHash);
@@ -134,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 RemoveChangesPerFile(new MonoBehaviourField(guid, variableUsage.NameHash, sourceFile), variableUsage);
                 
                 if (scriptReference is ExternalReference externalReference)
-                    myNameToGuids.Remove(variableUsage.NameHash, externalReference.ExternalAssetGuid.GetPlatformIndependentHashCode());
+                    myNameToGuids.Remove(variableUsage.NameHash, externalReference.ExternalAssetGuid);
             }
 
             myPsiSourceFileToInspectorValues.Remove(sourceFile);
@@ -151,11 +149,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 if (beforeRemoveDifferentValuesCount == 2 && afterRemoveDifferentValuesCount == 1)
                 {
                     var uniqueValue = myValueCountPerPropertyAndFile.GetOrEmpty(monoBehaviourField).First().Key;
-                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuidHash, monoBehaviourField.NameHash), uniqueValue);
+                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuid, monoBehaviourField.NameHash), uniqueValue);
                     myValuesWhichAreUniqueInWholeFile.Add(fieldWithValue);
                 } else if (beforeRemoveDifferentValuesCount == 1 && afterRemoveDifferentValuesCount == 0)
                 {
-                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuidHash, monoBehaviourField.NameHash), variableUsage.Value.GetHashCode());
+                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuid, monoBehaviourField.NameHash), variableUsage.Value.GetHashCode());
                     myValuesWhichAreUniqueInWholeFile.Remove(fieldWithValue);
                 }
         }
@@ -199,9 +197,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 var variableUsage = element.GetVariableUsage(variableUsagePointer);
 
                 var scriptReference = variableUsage.ScriptReference;
-                var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
-                if (guid == null)
-                    continue;
+                var guid = scriptReference.ExternalAssetGuid;
                 
                 myNameToSourceFile.Add(variableUsage.NameHash, sourceFile);
 
@@ -213,7 +209,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 inspectorUsages.Add(variableUsage.NameHash, variableUsagePointer);
 
                 if (scriptReference is ExternalReference externalReference)
-                    myNameToGuids.Add(variableUsage.NameHash, externalReference.ExternalAssetGuid.GetPlatformIndependentHashCode());
+                    myNameToGuids.Add(variableUsage.NameHash, externalReference.ExternalAssetGuid);
             }
             
             myPsiSourceFileToInspectorValues.Add(sourceFile, inspectorUsages);
@@ -226,7 +222,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             {
                 myValueCountPerPropertyAndFile.Add(monoBehaviourField, variableUsage.Value.GetHashCode());
                 
-                var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuidHash, monoBehaviourField.NameHash), variableUsage.Value.GetHashCode());
+                var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuid, monoBehaviourField.NameHash), variableUsage.Value.GetHashCode());
                 myValuesWhichAreUniqueInWholeFile.Add(fieldWithValue);
             } else if (beforeAddDifferentValuesCount == 1)
             {
@@ -236,7 +232,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
                 if (afterAddDifferentValuesCount == 2)
                 {
-                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuidHash, monoBehaviourField.NameHash), previousValue);
+                    var fieldWithValue = new MonoBehaviourFieldWithValue(new MonoBehaviourField(monoBehaviourField.ScriptGuid, monoBehaviourField.NameHash), previousValue);
                     myValuesWhichAreUniqueInWholeFile.Remove(fieldWithValue);
                 }
             }
@@ -269,7 +265,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             oneToCompactCountingSet.Add(variableUsage.Value.GetHashCode(), pointer);
         }
 
-        public int GetValueCount(string guid, IEnumerable<string> possibleNames, IAssetValue assetValue)
+        public int GetValueCount(Guid guid, IEnumerable<string> possibleNames, IAssetValue assetValue)
         {
             myShellLocks.AssertReadAccessAllowed();
 
@@ -283,7 +279,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return count;
         }
         
-        public int GetUniqueValuesCount(string guid, IEnumerable<string> possibleNames)
+        public int GetUniqueValuesCount(Guid guid, IEnumerable<string> possibleNames)
         {
             myShellLocks.AssertReadAccessAllowed();
 
@@ -297,7 +293,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return count;
         }
 
-        public bool IsIndexResultEstimated(string ownerGuid, ITypeElement containingType, IEnumerable<string> possibleNames)
+        public bool IsIndexResultEstimated(Guid ownerGuid, ITypeElement containingType, IEnumerable<string> possibleNames)
         {
             myShellLocks.AssertReadAccessAllowed();
 
@@ -329,7 +325,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         }
         
         
-        public IAssetValue GetUniqueValueDifferTo(string guid, IEnumerable<string> possibleNames, IAssetValue assetValue)
+        public IAssetValue GetUniqueValueDifferTo(Guid guid, IEnumerable<string> possibleNames, IAssetValue assetValue)
         {
             myShellLocks.AssertReadAccessAllowed();
 
@@ -349,7 +345,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return result.First(t => !t.Equals(assetValue));
         }
 
-        public int GetAffectedFiles(string guid, IEnumerable<string> possibleNames)
+        public int GetAffectedFiles(Guid guid, IEnumerable<string> possibleNames)
         {
             myShellLocks.AssertReadAccessAllowed();
             
@@ -362,7 +358,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return result;
         }
         
-        public int GetAffectedFilesWithSpecificValue(string guid, IEnumerable<string> possibleNames, IAssetValue value)
+        public int GetAffectedFilesWithSpecificValue(Guid guid, IEnumerable<string> possibleNames, IAssetValue value)
         {
             myShellLocks.AssertReadAccessAllowed();  
             
@@ -403,27 +399,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         private class MonoBehaviourField
         {
-            public readonly int ScriptGuidHash;
+            public readonly Guid ScriptGuid;
             public readonly int NameHash;
             public readonly IPsiSourceFile SourceFile;
 
-            public MonoBehaviourField(string scriptGuid, int nameHash, IPsiSourceFile sourceFile = null)
+            public MonoBehaviourField(Guid scriptGuid, int nameHash, IPsiSourceFile sourceFile = null)
             {
-                ScriptGuidHash = scriptGuid.GetPlatformIndependentHashCode();
+                ScriptGuid = scriptGuid;
                 NameHash = nameHash;
-                SourceFile = sourceFile;
-            }
-
-            public MonoBehaviourField(int scriptGuid, int name, IPsiSourceFile sourceFile = null)
-            {
-                ScriptGuidHash = scriptGuid;
-                NameHash = name;
                 SourceFile = sourceFile;
             }
             
             public bool Equals(MonoBehaviourField other)
             {
-                return ScriptGuidHash == other.ScriptGuidHash && NameHash == other.NameHash && Equals(SourceFile, other.SourceFile);
+                return ScriptGuid == other.ScriptGuid && NameHash == other.NameHash && Equals(SourceFile, other.SourceFile);
             }
 
             public override bool Equals(object obj)
@@ -435,7 +424,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             {
                 unchecked
                 {
-                    var hashCode = ScriptGuidHash.GetHashCode();
+                    var hashCode = ScriptGuid.GetHashCode();
                     hashCode = (hashCode * 397) ^ NameHash.GetHashCode();
                     hashCode = (hashCode * 397) ^ (SourceFile != null ? SourceFile.GetHashCode() : 0);
                     return hashCode;
@@ -499,9 +488,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 {
                     var usage = dataElement.GetVariableUsage(usagePointer);
                     var scriptReference = usage.ScriptReference;
-                    var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
-                    if (guid == null)
-                        continue;
+                    var guid = scriptReference.ExternalAssetGuid;
 
                     var typeElement = AssetUtils.GetTypeElementFromScriptAssetGuid(element.GetSolution(), guid);
                     if (typeElement == null || !typeElement.IsDescendantOf(containingType))

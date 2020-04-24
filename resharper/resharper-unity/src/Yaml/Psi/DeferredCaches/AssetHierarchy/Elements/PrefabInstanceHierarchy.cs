@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
@@ -6,10 +7,10 @@ using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
-    public struct PrefabInstanceHierarchy : IPrefabInstanceHierarchy
+    public readonly struct PrefabInstanceHierarchy : IPrefabInstanceHierarchy
     {
         private readonly Dictionary<(ulong, string), IAssetValue> myModifications;
-        public PrefabInstanceHierarchy(LocalReference location, LocalReference parentTransform, List<PrefabModification> prefabModifications, string sourcePrefabGuid)
+        public PrefabInstanceHierarchy(LocalReference location, LocalReference parentTransform, List<PrefabModification> prefabModifications, Guid sourcePrefabGuid)
         {
             Location = location;
             ParentTransform = parentTransform;
@@ -27,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public LocalReference Location { get; }
         public LocalReference ParentTransform { get; }
         public IReadOnlyList<PrefabModification> PrefabModifications { get; }
-        public string SourcePrefabGuid { get; }
+        public Guid SourcePrefabGuid { get; }
         public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy) => null;
 
         public static void Write(UnsafeWriter writer, PrefabInstanceHierarchy prefabInstanceHierarchy)
@@ -53,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             for (int i = 0; i < count; i++)
                 modifications.Add(reader.ReadPolymorphic<PrefabModification>());
             
-            var sourcePrefabGuid = reader.ReadString();
+            var sourcePrefabGuid = reader.ReadGuid();
             return new PrefabInstanceHierarchy(location, parentTransform, modifications, sourcePrefabGuid);
         }
     }

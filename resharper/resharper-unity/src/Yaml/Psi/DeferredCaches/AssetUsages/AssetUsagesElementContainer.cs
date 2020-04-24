@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         }
         
         private OneToCompactCountingSet<Guid, AssetUsagePointer> myAssetUsages = new OneToCompactCountingSet<Guid, AssetUsagePointer>();
-        private Dictionary<IPsiSourceFile, OneToCompactCountingSet<int, AssetUsagePointer>> myAssetUsagesPerFile = new Dictionary<IPsiSourceFile, OneToCompactCountingSet<int, AssetUsagePointer>>();
+        private Dictionary<IPsiSourceFile, OneToCompactCountingSet<Guid, AssetUsagePointer>> myAssetUsagesPerFile = new Dictionary<IPsiSourceFile, OneToCompactCountingSet<Guid, AssetUsagePointer>>();
         private Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
@@ -66,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
                     var deps = entry.Content.Value.AsFileID()?.ToReference(currentSourceFile);
                     if (deps is ExternalReference externalReference)
-                        result.Add(new AssetUsage(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), new [] {externalReference}));
+                        result.Add(new AssetUsage(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), externalReference));
                 }
 
                 return result;
@@ -81,18 +81,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
             {
                 var assetUsage = dataElement.GetAssetUsage(assetUsagePointer);                
-                foreach (var dependency in assetUsage.ExternalDependencies)
-                {
-                    if (dependency is ExternalReference externalReference)
-                    {
-                        myAssetUsages.Remove(externalReference.ExternalAssetGuid, assetUsagePointer);
+                myAssetUsages.Remove(assetUsage.ExternalDependency.ExternalAssetGuid, assetUsagePointer);
 
-                        var set = myAssetUsagesPerFile[sourceFile];
-                        set.Remove(externalReference.ExternalAssetGuid, assetUsagePointer);
-                        if (set.Count == 0)
-                            myAssetUsagesPerFile.Remove(sourceFile);
-                    }
-                }
+                var set = myAssetUsagesPerFile[sourceFile];
+                set.Remove(assetUsage.ExternalDependency.ExternalAssetGuid, assetUsagePointer);
+                if (set.Count == 0)
+                    myAssetUsagesPerFile.Remove(sourceFile);
             }
 
             myPointers.Remove(sourceFile);
@@ -104,22 +98,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             var dataElement = unityAssetDataElement as AssetUsagesDataElement;
             foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
             {
-                var assetUsage = dataElement.GetAssetUsage(assetUsagePointer);    
-                foreach (var dependency in assetUsage.ExternalDependencies)
+                var assetUsage = dataElement.GetAssetUsage(assetUsagePointer);   
+                
+                myAssetUsages.Add(assetUsage.ExternalDependency.ExternalAssetGuid, assetUsagePointer);
+
+                if (!myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
                 {
-                    if (dependency is ExternalReference externalReference)
-                    {
-                        myAssetUsages.Add(externalReference.ExternalAssetGuid.GetPlatformIndependentHashCode(), assetUsagePointer);
-
-                        if (!myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
-                        {
-                            set = new OneToCompactCountingSet<int, AssetUsagePointer>();
-                            myAssetUsagesPerFile[sourceFile] = set;
-                        }
-
-                        set.Add(externalReference.ExternalAssetGuid.GetPlatformIndependentHashCode(), assetUsagePointer);
-                    }
+                    set = new OneToCompactCountingSet<Guid, AssetUsagePointer>();
+                    myAssetUsagesPerFile[sourceFile] = set;
                 }
+
+                set.Add(assetUsage.ExternalDependency.ExternalAssetGuid, assetUsagePointer);
             }
         }
 
@@ -139,8 +128,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                 return 0;
 
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
+            if (guid == null)
+                return 0;
 
-            return myAssetUsages.GetOrEmpty(guid.GetPlatformIndependentHashCode()).Count;
+            return myAssetUsages.GetOrEmpty(guid.Value).Count;
         }
         
         public string Id => nameof(AssetUsagesElementContainer);
@@ -160,9 +151,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                 return Enumerable.Empty<AssetUsage>();
             
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
+            if (guid == null)
+                return Enumerable.Empty<AssetUsage>();
                 
             if (myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
-                return set.GetValues(guid.GetPlatformIndependentHashCode()).Select(t => element.GetAssetUsage(t)).ToList();
+                return set.GetValues(guid.Value).Select(t => element.GetAssetUsage(t)).ToList();
             return Enumerable.Empty<AssetUsage>();
         }
 
@@ -173,7 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                 return new LocalList<IPsiSourceFile>();
 
             var result = new LocalList<IPsiSourceFile>();
-            foreach (var assetUsage in myAssetUsages.GetValues(guid.GetPlatformIndependentHashCode()))
+            foreach (var assetUsage in myAssetUsages.GetValues(guid.Value))
             {
                 var location = assetUsage.SourceFileIndex;
                 var sourceFile = myPersistentIndexManager[location];

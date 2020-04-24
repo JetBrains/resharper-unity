@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         public void WriteTo(UnsafeWriter writer)
         {
-            writer.WritePolymorphic(Location);
+            Location.WriteTo(writer);
             ExternalDependency.WriteTo(writer);
         }
 

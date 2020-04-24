@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -26,8 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     {
         private readonly MetaFileGuidCache myMetaFileGuidCache;
         private readonly IShellLocks myShellLocks;
-        private readonly OneToSetMap<string, string> myDependencies = new OneToSetMap<string, string>();
-        private readonly DirectMappedCache<string, IDictionary<ulong, IHierarchyElement>> myCache = new DirectMappedCache<string, IDictionary<ulong, IHierarchyElement>>(100);
+        private readonly OneToSetMap<Guid, Guid> myDependencies = new OneToSetMap<Guid, Guid>();
+        private readonly DirectMappedCache<Guid, IDictionary<ulong, IHierarchyElement>> myCache = new DirectMappedCache<Guid, IDictionary<ulong, IHierarchyElement>>(100);
         private readonly UnityExternalFilesPsiModule myUnityExternalFilesPsiModule;
         private readonly IProperty<bool> myCacheEnabled;
         public PrefabImportCache(Lifetime lifetime, ISolution solution, ISettingsStore store, MetaFileGuidCache metaFileGuidCache, UnityExternalFilesModuleFactory unityExternalFilesModuleFactory, IShellLocks shellLocks)
@@ -37,12 +38,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             metaFileGuidCache.GuidChanged.Advise(lifetime, e =>
             {
                 myShellLocks.AssertWriteAccessAllowed();
-                var set = new HashSet<string>();
+                var set = new HashSet<Guid>();
                 if (e.oldGuid != null)
-                    InvalidateImportCache(e.oldGuid, set);
+                    InvalidateImportCache(e.oldGuid.Value, set);
 
                 if (e.newGuid != null)
-                    InvalidateImportCache(e.newGuid, set);
+                    InvalidateImportCache(e.newGuid.Value, set);
             });
 
             myUnityExternalFilesPsiModule = unityExternalFilesModuleFactory.PsiModule;
@@ -63,16 +64,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             if (guid == null) // we have already clear content due to advice on GuidChanged in consructor
                 return;
             
-            var visited = new HashSet<string>();
-            foreach (var deps in myDependencies.GetValuesSafe(guid))
+            var visited = new HashSet<Guid>();
+            foreach (var deps in myDependencies.GetValuesSafe(guid.Value))
             {
                 InvalidateImportCache(deps, visited);
             }
             
-            InvalidateImportCache(guid, visited);
+            InvalidateImportCache(guid.Value, visited);
         }
 
-        private void InvalidateImportCache(string deps, HashSet<string> visited)
+        private void InvalidateImportCache(Guid deps, HashSet<Guid> visited)
         {
             myShellLocks.IsWriteAccessAllowed();
             visited.Add(deps);
@@ -86,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         private readonly object myLockObject = new object();
         
-        public IDictionary<ulong, IHierarchyElement> GetImportedElementsFor(string ownerGuid,
+        public IDictionary<ulong, IHierarchyElement> GetImportedElementsFor(Guid ownerGuid,
             AssetDocumentHierarchyElement assetDocumentHierarchyElement)
         {
             myShellLocks.AssertReadAccessAllowed();
@@ -97,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     if (myCache.TryGetFromCache(ownerGuid, out result))
                         return result;
 
-                    result = DoImport(ownerGuid, assetDocumentHierarchyElement, new HashSet<string>());
+                    result = DoImport(ownerGuid, assetDocumentHierarchyElement, new HashSet<Guid>());
                     StoreResult(ownerGuid, result);
                 }
             }
@@ -106,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
 
         [NotNull]
-        private IDictionary<ulong, IHierarchyElement> DoImport(string ownerGuid, AssetDocumentHierarchyElement assetDocumentHierarchyElement, HashSet<string> visitedGuid)
+        private IDictionary<ulong, IHierarchyElement> DoImport(Guid ownerGuid, AssetDocumentHierarchyElement assetDocumentHierarchyElement, HashSet<Guid> visitedGuid)
         {
             var result = new Dictionary<ulong, IHierarchyElement>();
             foreach (var prefabInstanceHierarchy in assetDocumentHierarchyElement.GetPrefabInstanceHierarchies())
@@ -171,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 if (reference == null)
                     continue;
 
-                var importedGameObject = result.GetValueSafe(reference.LocalDocumentAnchor) as ImportedGameObjectHierarchy;
+                var importedGameObject = result.GetValueSafe(reference.Value.LocalDocumentAnchor) as ImportedGameObjectHierarchy;
                 if (importedGameObject == null)
                     continue;
 
@@ -183,7 +184,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
 
         
-        private void StoreResult(string ownerGuid, [NotNull]IDictionary<ulong, IHierarchyElement> hierarchyElements)
+        private void StoreResult(Guid ownerGuid, [NotNull]IDictionary<ulong, IHierarchyElement> hierarchyElements)
         {
             if (!myCacheEnabled.Value)
                 return;

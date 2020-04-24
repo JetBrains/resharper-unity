@@ -231,7 +231,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         
         public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
         {
-            if (componentHierarchy is IScriptComponentHierarchy scriptComponent && scriptComponent.ScriptReference != null)
+            if (componentHierarchy is IScriptComponentHierarchy scriptComponent)
             {
                 var result = metaFileGuidCache.GetAssetNames(scriptComponent.ScriptReference.ExternalAssetGuid).FirstOrDefault();
                 if (result != null)
@@ -242,13 +242,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
 
         [CanBeNull]
-        public static ITypeElement GetTypeElementFromScriptAssetGuid(ISolution solution, [CanBeNull] string assetGuid)
+        public static ITypeElement GetTypeElementFromScriptAssetGuid(ISolution solution, [CanBeNull] Guid? assetGuid)
         {
             if (assetGuid == null)
                 return null;
 
             var cache = solution.GetComponent<MetaFileGuidCache>();
-            var assetPaths = cache.GetAssetFilePathsFromGuid(assetGuid);
+            var assetPaths = cache.GetAssetFilePathsFromGuid(assetGuid.Value);
             if (assetPaths == null || assetPaths.IsEmpty())
                 return null;
 
@@ -281,7 +281,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return null;
         }
         
-        public static string GetGuidFor(MetaFileGuidCache metaFileGuidCache, ITypeElement typeElement)
+        public static Guid? GetGuidFor(MetaFileGuidCache metaFileGuidCache, ITypeElement typeElement)
         {
             var sourceFile = typeElement.GetDeclarations().FirstOrDefault()?.GetSourceFile();
             if (sourceFile == null || !sourceFile.IsValid())
