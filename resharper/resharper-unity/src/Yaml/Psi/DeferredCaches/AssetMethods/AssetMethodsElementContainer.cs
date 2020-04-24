@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
@@ -147,7 +148,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     myExternalCount.Remove(method.MethodName);
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
-                    
                     var scriptElement = assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, null);
                     if (scriptElement is IScriptComponentHierarchy script)
                     {
@@ -267,11 +267,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                 var module = clrDeclaredElement.Module;
                     
                 // we have already cache guid in merge method for methodData in myLocalUsages
-                var guid = (assetMethodData.TargetScriptReference as ExternalReference)?.ExternalAssetGuid;
+                var guid = (assetMethodData.TargetScriptReference as ExternalReference?)?.ExternalAssetGuid;
                 if (guid == null)
                     continue;
                 
-                var symbolTable = GetReferenceSymbolTable(solution, module, assetMethodData, guid);
+                var symbolTable = GetReferenceSymbolTable(solution, module, assetMethodData, guid.Value);
                 var resolveResult = symbolTable.GetResolveResult(assetMethodData.MethodName);
                 if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
                 {
@@ -282,11 +282,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             return usageCount;
         }
 
-        private string GetScriptGuid(AssetMethodData assetMethodData)
+        private Guid? GetScriptGuid(AssetMethodData assetMethodData)
         {
             var reference = assetMethodData.TargetScriptReference;
             var scriptComponent = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference, true) as IScriptComponentHierarchy;
-            var guid = scriptComponent?.ScriptReference?.ExternalAssetGuid; 
+            var guid = scriptComponent?.ScriptReference.ExternalAssetGuid; 
             
             return guid;
         }
@@ -313,7 +313,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             return result;
         }
         
-        private ISymbolTable GetReferenceSymbolTable(ISolution solution, IPsiModule psiModule, AssetMethodData assetMethodData, string assetGuid)
+        private ISymbolTable GetReferenceSymbolTable(ISolution solution, IPsiModule psiModule, AssetMethodData assetMethodData, Guid? assetGuid)
         {
             var targetType = AssetUtils.GetTypeElementFromScriptAssetGuid(solution, assetGuid);
             if (targetType == null)

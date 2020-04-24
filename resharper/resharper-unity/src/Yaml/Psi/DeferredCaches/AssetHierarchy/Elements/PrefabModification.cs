@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new PrefabModification(reader.ReadPolymorphic<IHierarchyReference>(),
+        private static object Read(UnsafeReader reader) => new PrefabModification(HierarchyReferenceUtil.ReadReferenceFrom(reader),
             reader.ReadString(), reader.ReadPolymorphic<IAssetValue>());
 
         [UsedImplicitly]
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private static void Write(UnsafeWriter writer, PrefabModification value)
         {
-            writer.WritePolymorphic(value.Target);
+            value.Target.WriteTo(writer);
             writer.Write(value.PropertyPath);
             writer.WritePolymorphic(value.Value);
         }

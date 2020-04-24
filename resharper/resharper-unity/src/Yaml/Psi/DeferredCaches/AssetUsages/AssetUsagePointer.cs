@@ -1,6 +1,6 @@
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
-    public class AssetUsagePointer
+    public readonly struct AssetUsagePointer
     {
         public long SourceFileIndex { get; }
         public int Index { get; }
@@ -11,24 +11,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             Index = index;
         }
 
-        protected bool Equals(AssetUsagePointer other)
+        public bool Equals(AssetUsagePointer other)
         {
-            return Index == other.Index && SourceFileIndex == other.SourceFileIndex;
+            return SourceFileIndex == other.SourceFileIndex && Index == other.Index;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((AssetUsagePointer) obj);
+            return obj is AssetUsagePointer other && Equals(other);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (Index * 397) ^ SourceFileIndex.GetHashCode();
+                return (SourceFileIndex.GetHashCode() * 397) ^ Index;
             }
         }
     }

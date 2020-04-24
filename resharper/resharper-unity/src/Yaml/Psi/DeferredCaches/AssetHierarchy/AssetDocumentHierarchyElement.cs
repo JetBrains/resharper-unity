@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 myOtherElements.Add(data as IHierarchyElement);
         }
 
-        public IHierarchyElement GetHierarchyElement(string ownerGuid, ulong anchor, PrefabImportCache prefabImportCache)
+        public IHierarchyElement GetHierarchyElement(Guid? ownerGuid, ulong anchor, PrefabImportCache prefabImportCache)
         {
             var result = SearchForAnchor(anchor);
             if (result != null)
@@ -80,13 +80,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             {
                 var prefabInstance = strippedHierarchyElement.PrefabInstance;
                 var correspondingObject = strippedHierarchyElement.CorrespondingSourceObject;
-                if (prefabInstance != null && correspondingObject != null)
-                    anchor = PrefabsUtil.Import(prefabInstance.LocalDocumentAnchor, correspondingObject.LocalDocumentAnchor);
+                anchor = PrefabsUtil.Import(prefabInstance.LocalDocumentAnchor, correspondingObject.LocalDocumentAnchor);
             }
 
-            if (prefabImportCache != null)
+            if (prefabImportCache != null && ownerGuid != null)
             {
-                var elements = prefabImportCache.GetImportedElementsFor(ownerGuid, this);
+                var elements = prefabImportCache.GetImportedElementsFor(ownerGuid.Value, this);
                 
                 if (elements.TryGetValue(anchor, out var importedResult))
                     return importedResult;
@@ -177,10 +176,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 if (element is ITransformHierarchy transformHierarchy)
                 {
                     var reference = transformHierarchy.Owner;
-                    if (reference != null)
-                    {
-                        myGameObjectLocationToTransform[reference.LocalDocumentAnchor] = curOffset + i;
-                    }
+                    myGameObjectLocationToTransform[reference.LocalDocumentAnchor] = curOffset + i;
                 }
 
                 if (element is IPrefabInstanceHierarchy prefabInstanceHierarchy)

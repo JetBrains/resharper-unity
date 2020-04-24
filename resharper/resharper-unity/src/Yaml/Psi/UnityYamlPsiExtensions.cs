@@ -91,12 +91,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public IHierarchyReference ToReference(IPsiSourceFile currentSourceFile)
         {
             if (!ulong.TryParse(LocalDocumentAnchor, out var result))
-                return new NullReference();
+                return new LocalReference(0, 0);
 
             if (ExternalAssetGuid == null)
             {
                 if (result == 0)
-                    return new NullReference();
+                    return new LocalReference(0, 0);
                 
                 return new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, result);
             }
@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             if (Guid.TryParse(ExternalAssetGuid, out var guid))
                 return new ExternalReference(guid, result);
             
-            return new NullReference();
+            return new LocalReference(0, 0);
         }
     }
     // ReSharper restore InconsistentNaming

@@ -21,14 +21,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new AssetReferenceValue( reader.ReadPolymorphic<IHierarchyReference>());
+        private static object Read(UnsafeReader reader) => new AssetReferenceValue( HierarchyReferenceUtil.ReadReferenceFrom(reader));
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetReferenceValue);
 
         private static void Write(UnsafeWriter writer, AssetReferenceValue value)
         {
-            writer.WritePolymorphic(value.Reference);
+            value.Reference.WriteTo(writer);
         }
         
         public IHierarchyReference Reference { get; }

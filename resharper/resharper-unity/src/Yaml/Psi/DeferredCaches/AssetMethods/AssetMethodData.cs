@@ -18,7 +18,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         public AssetMethodData(LocalReference location, string methodName, TextRange textRange, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
         {
-            Assertion.Assert(location != null, "location != null");
             Assertion.Assert(targetReference != null, "targetReference != null");
             Assertion.Assert(methodName != null, "methodName != null");
             Location = location;
@@ -31,19 +30,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         public void WriteTo(UnsafeWriter writer)
         {
-            writer.WritePolymorphic(Location);
+            Location.WriteTo(writer);
             writer.Write(MethodName);
             writer.Write(TextRange.StartOffset);
             writer.Write(TextRange.EndOffset);
             writer.Write((int)Mode);
             writer.Write(Type);
-            writer.WritePolymorphic(TargetScriptReference);
+            TargetScriptReference.WriteTo(writer);
         }
 
         public static AssetMethodData ReadFrom(UnsafeReader reader)
         {
-            return new AssetMethodData(reader.ReadPolymorphic<LocalReference>(), reader.ReadString(), new TextRange(reader.ReadInt32(), reader.ReadInt32()),
-                (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), reader.ReadPolymorphic<IHierarchyReference>());
+            return new AssetMethodData(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader), reader.ReadString(), new TextRange(reader.ReadInt32(), reader.ReadInt32()),
+                (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), HierarchyReferenceUtil.ReadReferenceFrom(reader));
         }
 
         protected bool Equals(AssetMethodData other)

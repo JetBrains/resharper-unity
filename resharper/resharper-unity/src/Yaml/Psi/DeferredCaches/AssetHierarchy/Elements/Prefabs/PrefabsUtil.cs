@@ -5,8 +5,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public static class PrefabsUtil
     {
         public static LocalReference GetImportedReference(this LocalReference localReference, IPrefabInstanceHierarchy prefabInstanceHierarchy) =>
-            localReference is NullReference
-                ? null
+            localReference.LocalDocumentAnchor == 0
+                ? localReference
                 : new LocalReference(prefabInstanceHierarchy.Location.OwnerId,
                     Import(prefabInstanceHierarchy.Location.LocalDocumentAnchor, localReference.LocalDocumentAnchor));
 

@@ -22,15 +22,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         // We expect to only get one asset with a given guid, but copy/pasting .meta files could break that.
         // CompactOneToListMap is optimised for the typical use case of only one item per key
-        private readonly CompactOneToListMap<string, FileSystemPath> myAssetGuidToAssetFilePaths =
-            new CompactOneToListMap<string, FileSystemPath>();
+        private readonly CompactOneToListMap<Guid, FileSystemPath> myAssetGuidToAssetFilePaths =
+            new CompactOneToListMap<Guid, FileSystemPath>();
 
         // Note that Map is a map of *meta file* to asset guid, NOT asset file!
-        private readonly Dictionary<FileSystemPath, string> myAssetFilePathToGuid =
-            new Dictionary<FileSystemPath, string>();
+        private readonly Dictionary<FileSystemPath, Guid> myAssetFilePathToGuid =
+            new Dictionary<FileSystemPath, Guid>();
         
-        public Signal<(IPsiSourceFile sourceFile, string oldGuid, string newGuid)> GuidChanged = 
-            new Signal<(IPsiSourceFile sourceFile, string oldGuid, string newGuid)>("GuidChanged");
+        public Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)> GuidChanged = 
+            new Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)>("GuidChanged");
 
         public MetaFileGuidCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, ILogger logger)
             : base(lifetime, persistentIndexManager, MetaFileCacheItem.Marshaller)
@@ -40,20 +40,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         // This will usually return a single value, but there's always a chance for copy/paste
         // Also note that this returns the file path of the asset associated with the GUID, not the asset's .meta file!
-        public IList<FileSystemPath> GetAssetFilePathsFromGuid(string guid)
+        public IList<FileSystemPath> GetAssetFilePathsFromGuid(Guid guid)
         {
             return myAssetGuidToAssetFilePaths[guid];
         }
 
-        public IList<string> GetAssetNames(string guid)
+        public IList<string> GetAssetNames(Guid guid)
         {
             return myAssetGuidToAssetFilePaths[guid].Select(p => p.NameWithoutExtension).ToList();
         }
 
         [CanBeNull]
-        public string GetAssetGuid(IPsiSourceFile sourceFile)
+        public Guid? GetAssetGuid(IPsiSourceFile sourceFile)
         {
-            return myAssetFilePathToGuid.TryGetValue(sourceFile.GetLocation(), out var guid) ? guid : null;
+            return myAssetFilePathToGuid.TryGetValue(sourceFile.GetLocation(), out var guid) ? guid : (Guid?) null;
         }
 
         protected override bool IsApplicable(IPsiSourceFile sf)
@@ -79,8 +79,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                     if (entry.Key?.CompareBufferText("guid") == true && entry.Content.Value is IPlainScalarNode valueScalarNode)
                     {
                         var guid = valueScalarNode.Text?.GetText();
-                        if (guid != null)
-                            return new MetaFileCacheItem(guid);
+                        if (guid != null && Guid.TryParse(guid, out var rGuid))
+                            return new MetaFileCacheItem(rGuid);
                     }
                 }
             }

@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             myHierarchyElementContainer = myOrderedContainers.First(t => t is AssetDocumentHierarchyElementContainer) as AssetDocumentHierarchyElementContainer;
             
-            Map.Cache = new DirectMappedCache<IPsiSourceFile, UnityAssetData>(10);
+            Map.Cache = new UnlimitedCache<IPsiSourceFile, UnityAssetData>();//<IPsiSourceFile, UnityAssetData>(10);
         }
 
         public override bool IsApplicable(IPsiSourceFile sourceFile)
