@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
@@ -61,9 +59,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 myOtherElements.Add(data as IHierarchyElement);
         }
 
-        public IHierarchyElement GetHierarchyElement(string ownerGuid, ulong anchor, UnityInterningCache unityInterningCache, PrefabImportCache prefabImportCache)
+        public IHierarchyElement GetHierarchyElement(string ownerGuid, ulong anchor, PrefabImportCache prefabImportCache)
         {
-            var result = SearchForAnchor(unityInterningCache, anchor);
+            var result = SearchForAnchor(anchor);
             if (result != null)
             {
                 if (!(result is IStrippedHierarchyElement) || prefabImportCache == null) // stipped means, that element is not real and we should import prefab
@@ -80,15 +78,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             // use new anchor which calculated in same way with prefab import  
             if (result != null && IsScene && result is IStrippedHierarchyElement strippedHierarchyElement )
             {
-                var prefabInstance = strippedHierarchyElement.GetPrefabInstance(unityInterningCache);
-                var correspondingObject = strippedHierarchyElement.GetCoresspondingSourceObject(unityInterningCache);
+                var prefabInstance = strippedHierarchyElement.PrefabInstance;
+                var correspondingObject = strippedHierarchyElement.CorrespondingSourceObject;
                 if (prefabInstance != null && correspondingObject != null)
                     anchor = PrefabsUtil.Import(prefabInstance.LocalDocumentAnchor, correspondingObject.LocalDocumentAnchor);
             }
 
             if (prefabImportCache != null)
             {
-                var elements = prefabImportCache.GetImportedElementsFor(unityInterningCache, ownerGuid, this);
+                var elements = prefabImportCache.GetImportedElementsFor(ownerGuid, this);
                 
                 if (elements.TryGetValue(anchor, out var importedResult))
                     return importedResult;
@@ -98,20 +96,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         // boxing is not problem here
-        private IHierarchyElement SearchForAnchor(UnityInterningCache unityInterningCache, ulong anchor)
+        private IHierarchyElement SearchForAnchor(ulong anchor)
         {
             return
-                SearchForAnchor(myGameObjectHierarchies, unityInterningCache, anchor) ??
-                SearchForAnchor(myTransformElements, unityInterningCache, anchor) ??
-                SearchForAnchor(myScriptComponentElements, unityInterningCache, anchor) ??
-                SearchForAnchor(myComponentElements, unityInterningCache, anchor) ??
-                SearchForAnchor(myOtherElements, unityInterningCache, anchor);
+                SearchForAnchor(myGameObjectHierarchies, anchor) ??
+                SearchForAnchor(myTransformElements, anchor) ??
+                SearchForAnchor(myScriptComponentElements, anchor) ??
+                SearchForAnchor(myComponentElements, anchor) ??
+                SearchForAnchor(myOtherElements, anchor);
         }
 
 
-        private IHierarchyElement SearchForAnchor<T>(List<T> elements, UnityInterningCache cache, ulong anchor) where T : IHierarchyElement
+        private IHierarchyElement SearchForAnchor<T>(List<T> elements, ulong anchor) where T : IHierarchyElement
         {
-            var searchResult = elements.BinarySearchEx(a => a.GetLocation(cache).LocalDocumentAnchor.CompareTo(anchor));
+            var searchResult = elements.BinarySearchEx(a => a.Location.LocalDocumentAnchor.CompareTo(anchor));
             if (searchResult.IsHit)
                 return searchResult.HitItem;
 
@@ -133,8 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private readonly object myLockObject = new object();
         private volatile bool myIsRestored = false;
         public void RestoreHierarchy(AssetDocumentHierarchyElementContainer hierarchyElementContainer,
-            IPsiSourceFile sourceFile,
-            UnityInterningCache unityInterningCache)
+            IPsiSourceFile sourceFile)
         {
             if (myIsRestored)
                 return;
@@ -151,36 +148,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
  
                 var offset = 0;
                 // concating arrays to one by index. see GetElementByInternalIndex too
-                FillIndices(myOtherElements, offset, unityInterningCache);
+                FillIndices(myOtherElements, offset);
                 offset += myOtherElements.Count;
                 
-                FillIndices(myTransformElements, offset, unityInterningCache);
+                FillIndices(myTransformElements, offset);
                 offset += myTransformElements.Count;
 
-                FillIndices(myGameObjectHierarchies, offset, unityInterningCache);
+                FillIndices(myGameObjectHierarchies, offset);
                 offset += myGameObjectHierarchies.Count;
 
-                FillIndices(myComponentElements, offset, unityInterningCache);
+                FillIndices(myComponentElements, offset);
                 offset += myComponentElements.Count;
                 
-                FillIndices(myScriptComponentElements, offset, unityInterningCache);
+                FillIndices(myScriptComponentElements, offset);
                 offset += myScriptComponentElements.Count;
 
             }
         }
 
 
-        private void FillIndices<T>(List<T> list, int curOffset, UnityInterningCache unityInterningCache) where  T : IHierarchyElement
+        private void FillIndices<T>(List<T> list, int curOffset) where  T : IHierarchyElement
         {
-            list.Sort((a, b) => a.GetLocation(unityInterningCache).LocalDocumentAnchor.
-                CompareTo(b.GetLocation(unityInterningCache).LocalDocumentAnchor));
+            list.Sort((a, b) => a.Location.LocalDocumentAnchor.CompareTo(b.Location.LocalDocumentAnchor));
             
             for (int i = 0; i < list.Count; i++)
             {
                 var element = list[i];
                 if (element is ITransformHierarchy transformHierarchy)
                 {
-                    var reference = transformHierarchy.GetOwner(unityInterningCache);
+                    var reference = transformHierarchy.Owner;
                     if (reference != null)
                     {
                         myGameObjectLocationToTransform[reference.LocalDocumentAnchor] = curOffset + i;
@@ -192,9 +188,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             }
         }
 
-        internal ITransformHierarchy GetTransformHierarchy(UnityInterningCache cache, GameObjectHierarchy gameObjectHierarchy)
+        internal ITransformHierarchy GetTransformHierarchy(GameObjectHierarchy gameObjectHierarchy)
         {
-            var transformIndex = myGameObjectLocationToTransform.GetValueSafe(gameObjectHierarchy.GetLocation(cache).LocalDocumentAnchor, -1);
+            var transformIndex = myGameObjectLocationToTransform.GetValueSafe(gameObjectHierarchy.Location.LocalDocumentAnchor, -1);
             if (transformIndex == -1)
                 return null;
 

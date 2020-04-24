@@ -1,50 +1,39 @@
-using JetBrains.Annotations;
-using JetBrains.Application.PersistentMap;
-using JetBrains.Diagnostics;
+using System;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
-    public struct ComponentHierarchy : IComponentHierarchy
+    public readonly struct ComponentHierarchy : IComponentHierarchy
     {
-        private readonly ReferenceIndex myLocation;
-        private readonly ReferenceIndex myOwner;
-        private readonly StringIndex myName;
+        public LocalReference Location { get; }
+        public LocalReference Owner { get; }
+        public string Name { get; }
 
-        public ComponentHierarchy(ReferenceIndex location, ReferenceIndex owner, StringIndex name)
+        public ComponentHierarchy(LocalReference location, LocalReference owner, string name)
         {
-            myLocation = location;
-            myOwner = owner;
-            myName = name;
+            Location = location;
+            Owner = owner;
+            Name = String.Intern(name);
         }
 
-        public LocalReference GetLocation(UnityInterningCache cache) => cache.GetReference<LocalReference>(myLocation);
-
-        public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedComponentHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public string GetName(UnityInterningCache cache) => cache.GetString(myName);
-
-        public LocalReference GetOwner(UnityInterningCache cache) => cache.GetReference<LocalReference>(myOwner);
-
         public static void Write(UnsafeWriter writer, ComponentHierarchy componentHierarchy)
         {
-            ReferenceIndex.Write(writer, componentHierarchy.myLocation);
-            ReferenceIndex.Write(writer, componentHierarchy.myOwner);
-            StringIndex.Write(writer, componentHierarchy.myName);
+            componentHierarchy.Location.WriteTo(writer);
+            componentHierarchy.Owner.WriteTo(writer);
+            writer.Write(componentHierarchy.Name);
         }
 
         public static ComponentHierarchy Read(UnsafeReader reader)
         {
-            return new ComponentHierarchy(
-                ReferenceIndex.Read(reader),
-                ReferenceIndex.Read(reader),
-                StringIndex.Read(reader));
+            return new ComponentHierarchy(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader), 
+                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader), reader.ReadString());
         }
     }
 }

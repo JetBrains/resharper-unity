@@ -1,7 +1,5 @@
-using System;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs
 {
@@ -17,27 +15,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
         
         internal ITransformHierarchy TransformHierarchy { get;  set; }
-        public LocalReference GetLocation(UnityInterningCache cache)
-        {
-            return myGameObjectHierarchy.GetLocation(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
-        }
+        public LocalReference Location => myGameObjectHierarchy.Location.GetImportedReference( myPrefabInstanceHierarchy);
 
-        public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedGameObjectHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public string GetName(UnityInterningCache cache)
+        public string Name
         {
-            if (myPrefabInstanceHierarchy.Modifications.TryGetValue((myGameObjectHierarchy.GetLocation(cache).LocalDocumentAnchor, "m_Name"), out var result) && result is AssetSimpleValue simpleValue)
+            get
             {
-                return simpleValue.SimpleValue;
-            }
+                if (myPrefabInstanceHierarchy.Modifications.TryGetValue((myGameObjectHierarchy.Location.LocalDocumentAnchor, "m_Name"), out var result) 
+                    &&  result is AssetSimpleValue simpleValue)
+                {
+                    return simpleValue.SimpleValue;
+                }
 
-            return myGameObjectHierarchy.GetName(cache);
+                return myGameObjectHierarchy.Name;
+            }
         }
 
-        public ITransformHierarchy GetTransformHierarchy(UnityInterningCache cache, AssetDocumentHierarchyElement owner)
+        public ITransformHierarchy GetTransformHierarchy(AssetDocumentHierarchyElement owner)
         {
             return TransformHierarchy;
         }

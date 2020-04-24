@@ -1,48 +1,38 @@
-using JetBrains.Annotations;
-using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
-    public struct GameObjectHierarchy : IGameObjectHierarchy
+    public readonly struct GameObjectHierarchy : IGameObjectHierarchy
     {
-        private readonly ReferenceIndex myLocation;
-        private readonly StringIndex myName;
+        public LocalReference Location { get; }
+        public string Name { get; }
 
-        public GameObjectHierarchy(ReferenceIndex location, StringIndex name)
+        public GameObjectHierarchy(LocalReference location, string name)
         {
-            myLocation = location;
-            myName = name;
+            Location = location;
+            Name = name;
         }
 
-        public LocalReference GetLocation(UnityInterningCache cache) => cache.GetReference<LocalReference>(myLocation);
-
-        public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedGameObjectHierarchy(prefabInstanceHierarchy, this);
         }
-
-        public string GetName(UnityInterningCache cache) => cache.GetString(myName);
-
-        public ITransformHierarchy GetTransformHierarchy(UnityInterningCache cache, AssetDocumentHierarchyElement owner)
+        public ITransformHierarchy GetTransformHierarchy(AssetDocumentHierarchyElement owner)
         {
-            return owner.GetTransformHierarchy(cache, this);
+            return owner.GetTransformHierarchy( this);
         }
 
         public static void Write(UnsafeWriter writer, GameObjectHierarchy gameObjectHierarchy)
         {
-            ReferenceIndex.Write(writer, gameObjectHierarchy.myLocation);
-            StringIndex.Write(writer, gameObjectHierarchy.myName);
+            gameObjectHierarchy.Location.WriteTo(writer);
+            writer.Write(gameObjectHierarchy.Name);
         }
 
         public static GameObjectHierarchy Read(UnsafeReader reader)
         {
-            return new GameObjectHierarchy(
-                ReferenceIndex.Read(reader),
-                StringIndex.Read(reader));
+            return new GameObjectHierarchy(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader), reader.ReadString());
         }
     }
 }

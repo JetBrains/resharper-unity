@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
@@ -86,20 +87,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             return new AssetDocumentReference(newGuid, LocalDocumentAnchor);
         }
 
+        [NotNull]
         public IHierarchyReference ToReference(IPsiSourceFile currentSourceFile)
         {
             if (!ulong.TryParse(LocalDocumentAnchor, out var result))
-                return null;
+                return new NullReference();
 
             if (ExternalAssetGuid == null)
             {
                 if (result == 0)
-                    return null;
+                    return new NullReference();
                 
                 return new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, result);
             }
 
-            return new ExternalReference(ExternalAssetGuid, result);
+            if (Guid.TryParse(ExternalAssetGuid, out var guid))
+                return new ExternalReference(guid, result);
+            
+            return new NullReference();
         }
     }
     // ReSharper restore InconsistentNaming
