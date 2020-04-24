@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                                 myShellLocks.AssertReadAccessAllowed();
                                 var restoredElement =  Map[sourceFile].UnityAssetDataElements[container.Id];
                                 if (restoredElement is AssetDocumentHierarchyElement hierarchy)
-                                    hierarchy.RestoreHierarchy(myInterningCache);
+                                    hierarchy.RestoreHierarchy(myHierarchyElementContainer, sourceFile, myInterningCache);
                                 
                                 return restoredElement;
                             }), element);

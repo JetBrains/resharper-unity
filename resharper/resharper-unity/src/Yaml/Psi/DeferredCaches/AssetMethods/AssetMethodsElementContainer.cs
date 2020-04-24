@@ -150,11 +150,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     myExternalCount.Remove(method.MethodName);
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
-                    if (assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, myUnityInterningCache, null) is IScriptComponentHierarchy script)
+                    
+                    var scriptElement = assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, myUnityInterningCache, null);
+                    if (scriptElement is IScriptComponentHierarchy script)
                     {
                         myLocalUsages.Remove(method.MethodName, new AssetMethodData(LocalReference.Null,
                             method.MethodName, TextRange.InvalidRange,
                             method.Mode, method.Type, script.GetScriptReference(myUnityInterningCache)));
+                    }
+                    else
+                    {
+                        myExternalCount.Remove(method.MethodName);
                     }
                 }
             }
@@ -176,11 +182,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     myExternalCount.Add(method.MethodName);
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
-                    if (assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, myUnityInterningCache, null) is IScriptComponentHierarchy script)
+                    var scriptElement = assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, myUnityInterningCache, null);
+                    if (scriptElement is IScriptComponentHierarchy script)
                     {
                         myLocalUsages.Add(method.MethodName, new AssetMethodData(LocalReference.Null,
                             method.MethodName, TextRange.InvalidRange,
                             method.Mode, method.Type, script.GetScriptReference(myUnityInterningCache)));
+                    }
+                    else
+                    {
+                        myExternalCount.Add(method.MethodName);
                     }
                 }
             }
