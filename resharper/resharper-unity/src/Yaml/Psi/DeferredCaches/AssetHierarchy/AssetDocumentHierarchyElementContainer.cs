@@ -183,10 +183,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement hierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetDocumentHierarchyElement;
-            element.AssetDocumentHierarchyElementContainer = this;
-            element.IsScene = sourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlConstants.Scene);
             myAssetDocumentsHierarchy[sourceFile] = unityAssetDataElementPointer;
-            element.RestoreHierarchy(myUnityInterningCache);
+            element.RestoreHierarchy(this, sourceFile, myUnityInterningCache);
 
             myPrefabImportCache.Add(sourceFile, element);
         }
