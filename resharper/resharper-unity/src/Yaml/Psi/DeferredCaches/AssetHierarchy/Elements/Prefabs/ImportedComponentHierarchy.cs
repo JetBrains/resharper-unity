@@ -1,5 +1,4 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs
 {
@@ -12,22 +11,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             myPrefabInstanceHierarchy = prefabInstanceHierarchy;
             myComponentHierarchy = componentHierarchy;
-        } 
-        public LocalReference GetLocation(UnityInterningCache cache)
-        {
-            return myComponentHierarchy.GetLocation(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
         }
 
-        public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public LocalReference Location => myComponentHierarchy.Location.GetImportedReference(myPrefabInstanceHierarchy);
+
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedComponentHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public string GetName(UnityInterningCache cache) => myComponentHierarchy.GetName(cache);
+        public string Name => myComponentHierarchy.Name;
 
-        public LocalReference GetOwner(UnityInterningCache cache)
-        {
-            return myComponentHierarchy.GetOwner(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
-        }
+        public LocalReference Owner => myComponentHierarchy.Owner.GetImportedReference(myPrefabInstanceHierarchy);
     }
 }

@@ -1,55 +1,45 @@
-using JetBrains.Annotations;
-using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
-    public struct TransformHierarchy : ITransformHierarchy
+    public readonly struct TransformHierarchy : ITransformHierarchy
     {
-        private readonly ReferenceIndex myLocation;
-        private readonly ReferenceIndex myOwner;
-        private readonly ReferenceIndex myParent;
+        public LocalReference Location { get; }
+        public LocalReference Owner { get; }
+        public LocalReference Parent { get; }
         private readonly int myRootIndex;
 
-        public TransformHierarchy(ReferenceIndex location, ReferenceIndex owner, ReferenceIndex parent, int rootIndex)
+        public TransformHierarchy(LocalReference location, LocalReference owner, LocalReference parent, int rootIndex)
         {
-            myLocation = location;
-            myOwner = owner;
-            myParent = parent;
+            Location = location;
+            Owner = owner;
+            Parent = parent;
             myRootIndex = rootIndex;
         }
 
-        public LocalReference GetLocation(UnityInterningCache cache) => cache.GetReference<LocalReference>(myLocation);
-
-        public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedTransformHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public string GetName(UnityInterningCache cache) => "Transform";
-
-        public LocalReference GetOwner(UnityInterningCache cache) => cache.GetReference<LocalReference>(myOwner);
-
-        public LocalReference GetParent(UnityInterningCache cache) => cache.GetReference<LocalReference>(myParent);
-        public int GetRootIndex(UnityInterningCache cache) => myRootIndex;
+        public string Name => "Transform";
+        public int RootIndex => myRootIndex;
 
         public static void Write(UnsafeWriter writer, TransformHierarchy transformHierarchy)
         {
-            ReferenceIndex.Write(writer, transformHierarchy.myLocation);
-            ReferenceIndex.Write(writer, transformHierarchy.myOwner);
-            ReferenceIndex.Write(writer, transformHierarchy.myParent);
+            transformHierarchy.Location.WriteTo(writer);
+            transformHierarchy.Owner.WriteTo(writer);
+            transformHierarchy.Parent.WriteTo(writer);
             writer.Write(transformHierarchy.myRootIndex);
         }
 
         public static TransformHierarchy Read(UnsafeReader reader)
         {
-            return new TransformHierarchy(
-                ReferenceIndex.Read(reader),
-                ReferenceIndex.Read(reader),
-                ReferenceIndex.Read(reader),
+            return new TransformHierarchy(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
                 reader.ReadInt32());
         }
     }

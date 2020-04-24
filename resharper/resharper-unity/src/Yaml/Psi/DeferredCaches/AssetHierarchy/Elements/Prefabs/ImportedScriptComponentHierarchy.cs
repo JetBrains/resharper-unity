@@ -1,5 +1,4 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs
 {
@@ -15,23 +14,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myScriptComponentHierarchy = scriptComponentHierarchy;
         }
 
-        public LocalReference GetLocation(UnityInterningCache cache)
-        {
-            return myScriptComponentHierarchy.GetLocation(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
-        }
+        public LocalReference Location => myScriptComponentHierarchy.Location.GetImportedReference(myPrefabInstanceHierarchy);
 
-        public IHierarchyElement Import(UnityInterningCache cache, IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedScriptComponentHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public string GetName(UnityInterningCache cache) => myScriptComponentHierarchy.GetName(cache);
+        public string Name => myScriptComponentHierarchy.Name;
 
-        public LocalReference GetOwner(UnityInterningCache cache)
-        {
-            return myScriptComponentHierarchy.GetOwner(cache).GetImportedReference(cache, myPrefabInstanceHierarchy);
-        }
+        public LocalReference Owner => myScriptComponentHierarchy.Owner.GetImportedReference(myPrefabInstanceHierarchy);
 
-        public ExternalReference GetScriptReference(UnityInterningCache cache) => myScriptComponentHierarchy.GetScriptReference(cache);
+        public ExternalReference ScriptReference => myScriptComponentHierarchy.ScriptReference;
     }
 }

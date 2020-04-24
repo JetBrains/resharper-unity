@@ -2,7 +2,6 @@ using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.Serialization;
 using JetBrains.Util;
 
@@ -15,8 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader) => new InspectorVariableUsage(
-            ReferenceIndex.Read(reader),
-            ReferenceIndex.Read(reader),
+            HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+            HierarchyReferenceUtil.ReadExternalReferenceFrom(reader),
             reader.ReadInt32(), 
             reader.ReadPolymorphic<IAssetValue>());
 
@@ -25,13 +24,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         private static void Write(UnsafeWriter writer, InspectorVariableUsage value)
         {
-            ReferenceIndex.Write(writer, value.Location);
-            ReferenceIndex.Write(writer, value.ScriptReference);
+            value.Location.WriteTo(writer);
+            value.ScriptReference.WriteTo(writer);
             writer.Write(value.NameHash);
             writer.WritePolymorphic(value.Value);
         }
 
-        public InspectorVariableUsage(ReferenceIndex locationIndex, ReferenceIndex scriptReferenceIndex, string name,
+        public InspectorVariableUsage(LocalReference locationIndex, ExternalReference scriptReferenceIndex, string name,
             IAssetValue assetValue)
         {
             Location = locationIndex;
@@ -40,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             Value = assetValue;
         }
         
-        private InspectorVariableUsage(ReferenceIndex locationIndex, ReferenceIndex scriptReferenceIndex, int name,
+        private InspectorVariableUsage(LocalReference locationIndex, ExternalReference scriptReferenceIndex, int name,
             IAssetValue assetValue)
         {
             Location = locationIndex;
@@ -49,8 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             Value = assetValue;
         }
         
-        public ReferenceIndex Location { get; }
-        public ReferenceIndex ScriptReference { get; }
+        public LocalReference Location { get; }
+        public ExternalReference ScriptReference { get; }
         public int NameHash { get; }
         public IAssetValue Value { get; }
 

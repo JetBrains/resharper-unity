@@ -8,7 +8,6 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Serialization;
@@ -101,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             }
 
             if (element is IComponentHierarchy componentHierarchy)
-                result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), solution.GetComponent<UnityInterningCache>(), componentHierarchy)})";
+                result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
 
             return result;
         }

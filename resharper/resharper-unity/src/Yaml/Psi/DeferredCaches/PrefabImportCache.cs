@@ -7,7 +7,6 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
@@ -17,10 +16,8 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 using JetBrains.Util.Caches;
-using JetBrains.Application.Settings.Extentions;
 using JetBrains.DataFlow;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
@@ -89,7 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         private readonly object myLockObject = new object();
         
-        public IDictionary<ulong, IHierarchyElement> GetImportedElementsFor(UnityInterningCache interningCache, string ownerGuid,
+        public IDictionary<ulong, IHierarchyElement> GetImportedElementsFor(string ownerGuid,
             AssetDocumentHierarchyElement assetDocumentHierarchyElement)
         {
             myShellLocks.AssertReadAccessAllowed();
@@ -100,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     if (myCache.TryGetFromCache(ownerGuid, out result))
                         return result;
 
-                    result = DoImport(interningCache, ownerGuid, assetDocumentHierarchyElement, new HashSet<string>());
+                    result = DoImport(ownerGuid, assetDocumentHierarchyElement, new HashSet<string>());
                     StoreResult(ownerGuid, result);
                 }
             }
@@ -109,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
 
         [NotNull]
-        private IDictionary<ulong, IHierarchyElement> DoImport(UnityInterningCache interningCache, string ownerGuid, AssetDocumentHierarchyElement assetDocumentHierarchyElement, HashSet<string> visitedGuid)
+        private IDictionary<ulong, IHierarchyElement> DoImport(string ownerGuid, AssetDocumentHierarchyElement assetDocumentHierarchyElement, HashSet<string> visitedGuid)
         {
             var result = new Dictionary<ulong, IHierarchyElement>();
             foreach (var prefabInstanceHierarchy in assetDocumentHierarchyElement.GetPrefabInstanceHierarchies())
@@ -131,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     {
                         myDependencies.Add(guid, ownerGuid);
                         visitedGuid.Add(guid);
-                        importedElements = DoImport(interningCache, guid, prefabHierarchy, visitedGuid);
+                        importedElements = DoImport(guid, prefabHierarchy, visitedGuid);
                         StoreResult(guid, importedElements);
                     }
                     else
@@ -148,10 +145,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     if (element is IPrefabInstanceHierarchy)
                         continue;
 
-                    var imported = element.Import(interningCache, prefabInstanceHierarchy);
+                    var imported = element.Import(prefabInstanceHierarchy);
                     if (imported == null)
                         continue;
-                    result[imported.GetLocation(interningCache).LocalDocumentAnchor] = imported;
+                    result[imported.Location.LocalDocumentAnchor] = imported;
                 }
 
                 foreach (var element in importedElements.Values)
@@ -159,18 +156,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     Assertion.Assert(!(element is IStrippedHierarchyElement), "element should be imported");
                     Assertion.Assert(!(element is IPrefabInstanceHierarchy), "prefab should be imported");
 
-                    var imported = element.Import(interningCache, prefabInstanceHierarchy);
+                    var imported = element.Import(prefabInstanceHierarchy);
                     if (imported == null)
                         continue;
                     
-                    result[imported.GetLocation(interningCache).LocalDocumentAnchor] = imported;
+                    result[imported.Location.LocalDocumentAnchor] = imported;
                 }
             }
 
             foreach (var value in result.Values)
             {
                 var transform = value as ImportedTransformHierarchy;
-                var reference = transform?.GetOwner(interningCache);
+                var reference = transform?.Owner;
                 if (reference == null)
                     continue;
 

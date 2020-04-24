@@ -14,7 +14,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             : base(sourceFile, declaredElement, attachedElement, attachedElementLocation)
         {
             AssetMethodData = assetMethodData;
-            
         }
 
         protected bool Equals(UnityMethodsFindResult other)

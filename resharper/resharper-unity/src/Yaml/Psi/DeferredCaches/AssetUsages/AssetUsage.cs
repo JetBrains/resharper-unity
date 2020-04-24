@@ -8,13 +8,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
     public class AssetUsage
     {
+        // TODO, local reference deps
         public LocalReference Location { get; }
-        public List<IHierarchyReference> Dependencies { get; }
+        public ExternalReference ExternalDependency { get; }
 
-        public AssetUsage(LocalReference location, IEnumerable<IHierarchyReference> dependencies)
+        public AssetUsage(LocalReference location, ExternalReference externalDependency)
         {
             Location = location;
-            Dependencies = dependencies.ToList();
+            ExternalDependency = externalDependency;
         }
 
         protected bool Equals(AssetUsage other)
@@ -38,23 +39,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         public void WriteTo(UnsafeWriter writer)
         {
             writer.WritePolymorphic(Location);
-            writer.Write(Dependencies.Count);
-            foreach (var dependency in Dependencies)
-            {
-                writer.WritePolymorphic(dependency);
-            }
+            ExternalDependency.WriteTo(writer);
         }
 
         public static AssetUsage ReadFrom(UnsafeReader reader)
         {
-            var localReference = reader.ReadPolymorphic<LocalReference>();
-            var count = reader.ReadInt32();
-            var deps = new List<IHierarchyReference>();
-            for (int i = 0; i < count; i++)
-                deps.Add(reader.ReadPolymorphic<IHierarchyReference>());
-            return new AssetUsage(localReference, deps);
+            var localReference = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
+            return new AssetUsage(localReference, HierarchyReferenceUtil.ReadExternalReferenceFrom(reader));
         }
-        
         
     }
 }

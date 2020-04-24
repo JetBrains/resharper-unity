@@ -7,7 +7,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -30,15 +29,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
     {
         private readonly IShellLocks myShellLocks;
         private readonly ISolution mySolution;
-        private readonly UnityInterningCache myUnityInterningCache;
         private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
 
-        public AssetMethodsElementContainer(IShellLocks shellLocks, ISolution solution, IPersistentIndexManager persistentIndexManager, UnityInterningCache unityInterningCache, AssetDocumentHierarchyElementContainer elementContainer)
+        public AssetMethodsElementContainer(IShellLocks shellLocks, ISolution solution, IPersistentIndexManager persistentIndexManager, AssetDocumentHierarchyElementContainer elementContainer)
         {
             myShellLocks = shellLocks;
             mySolution = solution;
-            myUnityInterningCache = unityInterningCache;
             myPersistentIndexManager = persistentIndexManager;
             myAssetDocumentHierarchyElementContainer = elementContainer;
         }
@@ -151,12 +148,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
                     
-                    var scriptElement = assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, myUnityInterningCache, null);
+                    var scriptElement = assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, null);
                     if (scriptElement is IScriptComponentHierarchy script)
                     {
                         myLocalUsages.Remove(method.MethodName, new AssetMethodData(LocalReference.Null,
                             method.MethodName, TextRange.InvalidRange,
-                            method.Mode, method.Type, script.GetScriptReference(myUnityInterningCache)));
+                            method.Mode, method.Type, script.ScriptReference));
                     }
                     else
                     {
@@ -182,12 +179,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
                     myExternalCount.Add(method.MethodName);
                 } else if (method.TargetScriptReference is LocalReference localReference)
                 {
-                    var scriptElement = assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, myUnityInterningCache, null);
+                    var scriptElement = assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, null);
                     if (scriptElement is IScriptComponentHierarchy script)
                     {
                         myLocalUsages.Add(method.MethodName, new AssetMethodData(LocalReference.Null,
                             method.MethodName, TextRange.InvalidRange,
-                            method.Mode, method.Type, script.GetScriptReference(myUnityInterningCache)));
+                            method.Mode, method.Type, script.ScriptReference));
                     }
                     else
                     {
@@ -289,7 +286,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
         {
             var reference = assetMethodData.TargetScriptReference;
             var scriptComponent = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference, true) as IScriptComponentHierarchy;
-            var guid = scriptComponent?.GetScriptReference(myUnityInterningCache)?.ExternalAssetGuid; 
+            var guid = scriptComponent?.ScriptReference?.ExternalAssetGuid; 
             
             return guid;
         }

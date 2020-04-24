@@ -12,7 +12,6 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
@@ -32,7 +31,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private readonly DocumentToProjectFileMappingStorage myDocumentToProjectFileMappingStorage;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly PrefabImportCache myPrefabImportCache;
-        private readonly UnityInterningCache myInterningCache;
         private readonly IShellLocks myShellLocks;
         private readonly ILogger myLogger;
         private readonly List<IUnityAssetDataElementContainer> myOrderedContainers;
@@ -41,13 +39,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private readonly ConcurrentDictionary<IPsiSourceFile, long> myCurrentTimeStamp = new ConcurrentDictionary<IPsiSourceFile, long>();
         public UnityAssetCache(Lifetime lifetime, DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage, AssetIndexingSupport assetIndexingSupport,
             PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers,
-            UnityInterningCache interningCache, IShellLocks shellLocks, ILogger logger)
+            IShellLocks shellLocks, ILogger logger)
             : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate))
         {
             myDocumentToProjectFileMappingStorage = documentToProjectFileMappingStorage;
             myAssetIndexingSupport = assetIndexingSupport;
             myPrefabImportCache = prefabImportCache;
-            myInterningCache = interningCache;
             myShellLocks = shellLocks;
             myLogger = logger;
             myOrderedContainers = unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList();
@@ -87,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                                 myShellLocks.AssertReadAccessAllowed();
                                 var restoredElement =  Map[sourceFile].UnityAssetDataElements[container.Id];
                                 if (restoredElement is AssetDocumentHierarchyElement hierarchy)
-                                    hierarchy.RestoreHierarchy(myHierarchyElementContainer, sourceFile, myInterningCache);
+                                    hierarchy.RestoreHierarchy(myHierarchyElementContainer, sourceFile);
                                 
                                 return restoredElement;
                             }), element);

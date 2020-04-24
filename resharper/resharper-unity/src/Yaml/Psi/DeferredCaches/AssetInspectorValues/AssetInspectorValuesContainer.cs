@@ -11,7 +11,6 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Deserializers;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Interning;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
@@ -24,7 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
     public class AssetInspectorValuesContainer : IUnityAssetDataElementContainer
     {
         private readonly IShellLocks myShellLocks;
-        private readonly UnityInterningCache myUnityInterningCache;
         private readonly ILogger myLogger;
         private readonly List<IAssetInspectorValueDeserializer> myDeserializers;
         
@@ -47,10 +45,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         
         private readonly OneToCompactCountingSet<int, IPsiSourceFile> myNameToSourceFile = new OneToCompactCountingSet<int, IPsiSourceFile>();
         
-        public AssetInspectorValuesContainer(IShellLocks shellLocks, UnityInterningCache unityInterningCache, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
+        public AssetInspectorValuesContainer(IShellLocks shellLocks, IEnumerable<IAssetInspectorValueDeserializer> assetInspectorValueDeserializer, ILogger logger)
         {
             myShellLocks = shellLocks;
-            myUnityInterningCache = unityInterningCache;
             myLogger = logger;
             myDeserializers = assetInspectorValueDeserializer.OrderByDescending(t => t.Order).ToList();
         }
@@ -96,10 +93,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                     }
                 }
 
-                if (dictionary.TryGetValue(UnityYamlConstants.ScriptProperty, out var scriptValue) && scriptValue is AssetReferenceValue referenceValue)
+                if (dictionary.TryGetValue(UnityYamlConstants.ScriptProperty, out var scriptValue) && scriptValue is AssetReferenceValue referenceValue
+                                                                                                   && referenceValue.Reference is ExternalReference script)
                 {
                     var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor.Value);
-                    var script = referenceValue.Reference; 
                     var result = new LocalList<InspectorVariableUsage>();
 
                     foreach (var (key, value) in dictionary)
@@ -107,9 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                         if  (key.Equals("m_Script") || key.Equals("m_GameObject"))
                             continue;
 
-                        var locationIndex = myUnityInterningCache.InternReference(location);
-                        var scriptIndex = myUnityInterningCache.InternReference(script);
-                        result.Add(new InspectorVariableUsage(locationIndex, scriptIndex, key, value));
+                        result.Add(new InspectorVariableUsage(location, script, key, value));
                     }
 
                     return result;
@@ -126,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             {
                 var variableUsage = element.GetVariableUsage(variableUsagePointer);
 
-                var scriptReference = myUnityInterningCache.GetReference(variableUsage.ScriptReference);
+                var scriptReference = variableUsage.ScriptReference;
                 var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
                 if (guid == null)
                     continue;
@@ -203,7 +198,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             {
                 var variableUsage = element.GetVariableUsage(variableUsagePointer);
 
-                var scriptReference = myUnityInterningCache.GetReference(variableUsage.ScriptReference);
+                var scriptReference = variableUsage.ScriptReference;
                 var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
                 if (guid == null)
                     continue;
@@ -503,7 +498,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 foreach (var usagePointer in usagesData)
                 {
                     var usage = dataElement.GetVariableUsage(usagePointer);
-                    var scriptReference = myUnityInterningCache.GetReference(usage.ScriptReference);
+                    var scriptReference = usage.ScriptReference;
                     var guid = (scriptReference as ExternalReference)?.ExternalAssetGuid;
                     if (guid == null)
                         continue;

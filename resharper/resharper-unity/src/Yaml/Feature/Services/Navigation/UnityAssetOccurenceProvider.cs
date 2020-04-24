@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         {
             if (findResult is UnityScriptsFindResults unityScriptsFindResults)
             {
-                var guid = (unityScriptsFindResults.AssetUsage.Dependencies.FirstOrDefault() as ExternalReference)?.ExternalAssetGuid ?? "INVALID";
+                var guid = unityScriptsFindResults.AssetUsage.ExternalDependency.ExternalAssetGuid;
                 return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer,
                     unityScriptsFindResults.AttachedElement, unityScriptsFindResults.AttachedElementLocation, guid); 
             }
