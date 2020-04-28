@@ -44,40 +44,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
         ///</remarks>
         ///<example>
-        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:PiwezagThemedIconsThemedIcons+Unity}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:CidivalThemedIconsThemedIcons+Unity}" /&gt;        &lt;!-- XAML --&gt;</code>
         ///</example>
         ///<example>
-        ///	<code>[Item(Name="Sample", Icon=typeof(PiwezagThemedIconsThemedIcons.Unity))]        // C# Type attribute</code>
+        ///	<code>[Item(Name="Sample", Icon=typeof(CidivalThemedIconsThemedIcons.Unity))]        // C# Type attribute</code>
         ///</example>
         ///<example>
-        ///	<code>IconId iconid = PiwezagThemedIconsThemedIcons.Unity.Id;        // IconId identifier object</code>
+        ///	<code>IconId iconid = CidivalThemedIconsThemedIcons.Unity.Id;        // IconId identifier object</code>
         ///</example>
         ///<example>
-        ///	<code>themediconmanager.GetIcon&lt;PiwezagThemedIconsThemedIcons.Unity&gt;()        // Icon image for rendering</code>
+        ///	<code>themediconmanager.GetIcon&lt;CidivalThemedIconsThemedIcons.Unity&gt;()        // Icon image for rendering</code>
         ///</example>
         [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
-        public sealed class Unity: global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
+        public sealed class Unity : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
         {
 
             /// <inheritdoc cref="Unity">identifier class</inheritdoc>
             public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(Unity));
 
             /// <summary>Loads the image for Themed Icon Unity theme aspect Color.</summary>
-            public global::JetBrains.Application.UI.Icons.Images.TiImage Load_Color()
+            public global::JetBrains.Util.Icons.TiImage Load_Color()
             {
-                return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><linearGradient id='F1' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#226E6E'/><stop offset='1' stop-color='#12344D'/></linearGradient><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='url(#F1)'/><linearGradient id='F2' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#DDFFFE'/><stop offset='1' stop-color='#B4D1E3'/></linearGradient><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='url(#F2)'/></g></svg>");
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><linearGradient id='F1' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#226E6E'/><stop offset='1' stop-color='#12344D'/></linearGradient><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='url(#F1)'/><linearGradient id='F2' x1='0.5' y1='0' x2='0.5' y2='1'><stop offset='0' stop-color='#DDFFFE'/><stop offset='1' stop-color='#B4D1E3'/></linearGradient><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='url(#F2)'/></g></svg>");
             }
 
             /// <summary>Loads the image for Themed Icon Unity theme aspect Gray.</summary>
-            public global::JetBrains.Application.UI.Icons.Images.TiImage Load_Gray()
+            public global::JetBrains.Util.Icons.TiImage Load_Gray()
             {
-                return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='#F4F4F4'/><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='#323232'/></g></svg>");
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='#F4F4F4'/><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='#323232'/></g></svg>");
             }
 
             /// <summary>Loads the image for Themed Icon Unity theme aspect GrayDark.</summary>
-            public global::JetBrains.Application.UI.Icons.Images.TiImage Load_GrayDark()
+            public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
             {
-                return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='#252525'/><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='#C4C4C4'/></g></svg>");
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M15,6.338L13.372,0L12.46,0L6.686,1.613L5.919,3L4.408,3L0,7.598L0,8.402L4.408,13L5.919,13L6.686,14.387L12.46,16L13.372,16L15,9.662L15,9.278L14.293,8L15,6.722L15,6.338Z' fill='#252525'/><path d='M14,6.464L12.6,1L7.358,2.464L6.508,4L4.835,4L1,8L4.835,12L6.508,12L7.358,13.536L12.6,15L14,9.536L13.15,8ZM14,6.464M6.667,4.21L10.597999999999999,3.11L8.307,7.25L3.752,7.25ZM6.667,4.21M6.667,11.79L3.752,8.75L8.307,8.75L10.6,12.889ZM6.667,11.79M11.843,12.139L9.552,8L11.843,3.8609999999999998L12.906,8ZM11.843,12.139' fill='#C4C4C4'/></g></svg>");
             }
 
             /// <summary>Returns the set of theme images for Themed Icon Unity.</summary>
