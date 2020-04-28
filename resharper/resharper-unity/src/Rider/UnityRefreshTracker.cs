@@ -111,41 +111,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     .AsIndeterminate().AsNonCancelable());
             try
             {
-                try
+                var version = UnityVersion.Parse(myEditorProtocol.UnityModel.Value.UnityApplicationData.Value.ApplicationVersion);
+                if (version != null && version.Major < 2018)
                 {
-                    var version = UnityVersion.Parse(myEditorProtocol.UnityModel.Value.UnityApplicationData.Value.ApplicationVersion);
-                    if (version != null && version.Major < 2018)
-                    {
-                        using (mySolution.GetComponent<VfsListener>().PauseChanges())
-                        {
-                            await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
-                        }
-                    }
-                    else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
-                        await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                    var cookie = mySolution.GetComponent<VfsListener>().PauseChanges();
+                    var task = RefreshAsTask(refreshType, lifetimeDef);
+                    await task.ContinueWith(_ => { cookie.Dispose(); }, TaskContinuationOptions.ExecuteSynchronously); // RIDER-43222
                 }
-                catch (Exception e)
-                {
-                    myLogger.Warn("connection usually brakes during refresh.", e);
-                }
-                finally
-                {
-                    try
-                    {
-                        myLogger.Verbose(
-                            $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished");
-                        var solution = mySolution.GetProtocolSolution();
-                        var solFolder = mySolution.SolutionDirectory;
-                        var list = new List<string> {solFolder.FullPath};
-                        myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-                        await solution.GetFileSystemModel().RefreshPaths.Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask();
-                    }
-                    finally
-                    {
-                        myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-                        lifetimeDef.Terminate();
-                    }
-                }
+                else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
+                    await RefreshAsTask(refreshType, lifetimeDef);
             }
             catch (Exception e)
             {
@@ -153,7 +127,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             finally
             {
+                myLogger.Verbose($"RefreshInternal Finished.");
                 lifetimeDef.Terminate();
+            }
+        }
+
+        private async Task RefreshAsTask(RefreshType refreshType, LifetimeDefinition lifetimeDef)
+        {
+            try
+            {
+                await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+            }
+            catch (Exception e)
+            {
+                myLogger.Warn("Connection usually brakes during refresh.", e);
             }
         }
     }
