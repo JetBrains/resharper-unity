@@ -14,12 +14,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICgFile file)
         {
-            return new CgPreprocessorHighligthingProcess(process, file);
+            return new CgPreprocessorHighlightingProcess(process, file);
         }
 
-        private class CgPreprocessorHighligthingProcess : CgDaemonStageProcessBase
+        private class CgPreprocessorHighlightingProcess : CgDaemonStageProcessBase
         {
-            public CgPreprocessorHighligthingProcess(IDaemonProcess daemonProcess, ICgFile file)
+            public CgPreprocessorHighlightingProcess(IDaemonProcess daemonProcess, ICgFile file)
                 : base(daemonProcess, file)
             {
             }
@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             public override void VisitDirectiveNode(IDirective directiveParam, IHighlightingConsumer context)
             {
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.KEYWORD, directiveParam.HeaderNode.GetDocumentRange()));
-                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.PREPPROCESSOR_LINE_CONTENT, directiveParam.ContentNode.GetDocumentRange()));
+                context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.PREPROCESSOR_LINE_CONTENT, directiveParam.ContentNode.GetDocumentRange()));
 
                 base.VisitDirectiveNode(directiveParam, context);
             }
