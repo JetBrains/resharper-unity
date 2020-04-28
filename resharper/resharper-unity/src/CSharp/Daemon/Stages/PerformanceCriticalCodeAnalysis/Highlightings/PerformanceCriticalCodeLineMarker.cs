@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         AttributeId = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
-    public class UnityPerformanceCriticalCodeLineMarker: UnityPerformanceHighlightingBase, IHighlighting, IActiveLineMarkerInfo
+    public class UnityPerformanceCriticalCodeLineMarker : UnityPerformanceHighlightingBase, IHighlighting, IActiveLineMarkerInfo
     {
         public const string MESSAGE = "Performance critical context";
 
@@ -28,7 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public DocumentRange CalculateRange() => myRange;
         public string ToolTip => "Performance critical context";
         public string ErrorStripeToolTip => Tooltip;
-        public string RendererId => null;
+        // TODO: Fix SDK to properly treat null as "default"
+        public string RendererId => "DefaultLineMarkerRendererProvider";
         public int Thickness => 1;
         public LineMarkerPosition Position =>  LineMarkerPosition.RIGHT;
         public ExecutableItem LeftClick() => null;
@@ -45,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override IHighlighter CreateHighlighter(IDocumentMarkup markup)
         {
             var highlighter = base.CreateHighlighter(markup);
-            highlighter.UserData = new UnityPerformanceCriticalCodeLineMarker(DocumentRange.InvalidRange);
+            highlighter.UserData = new UnityPerformanceCriticalCodeLineMarker(DocumentRange);
             return highlighter;
         }
     }
