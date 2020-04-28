@@ -6,16 +6,15 @@ import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.rdUnityModel
@@ -28,9 +27,6 @@ import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorR
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.getComponent
-import com.sun.jna.Native
-import com.sun.jna.win32.StdCallLibrary
 import java.awt.Frame
 
 class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
@@ -77,7 +73,7 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
 
                 }
                 if (!isAttached) {
-                    val processTracker: RiderDebugActiveDotNetSessionsTracker = project.getComponent()
+                    val processTracker: RiderDebugActiveDotNetSessionsTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
                     processTracker.dotNetDebugProcesses.change.advise(componentLifetime) { (event, debugProcess) ->
                         if (event == AddRemove.Add) {
                             debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
@@ -111,7 +107,7 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
     }
 
     companion object {
-        fun getInstance(project: Project) = project.getComponent<UnityHost>()
+        fun getInstance(project: Project): UnityHost = project.getComponent(UnityHost::class.java)
     }
 
 }

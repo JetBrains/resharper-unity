@@ -5,8 +5,8 @@ import com.intellij.openapi.ui.MessageType
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.ex.StatusBarEx
 import com.intellij.util.ui.UIUtil
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
 
