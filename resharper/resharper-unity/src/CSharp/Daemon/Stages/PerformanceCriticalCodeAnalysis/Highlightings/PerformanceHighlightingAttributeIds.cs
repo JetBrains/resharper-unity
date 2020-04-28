@@ -10,31 +10,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         EffectType = EffectType.SOLID_UNDERLINE,
         EffectColor = "#ff7526",
         NotRecyclable = true,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(NULL_COMPARISON,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
         EffectType = EffectType.SOLID_UNDERLINE,
         EffectColor = "#ff7526",
         NotRecyclable = true,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(CAMERA_MAIN,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
         EffectColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(INEFFICIENT_MULTIDIMENSIONAL_ARRAYS_USAGE,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
         EffectColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
     [RegisterHighlighter(INEFFICIENT_MULTIPLICATION_ORDER,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
         EffectColor = "#ff7526",
         NotRecyclable = true,
         EffectType = EffectType.SOLID_UNDERLINE,
-        Layer = HighlighterLayer.SYNTAX)]
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX)]
         // ReSharper doesn't currently support EffectType.LINE_MARKER, so we'll use SOLID_UNDERLINE on the method name
         // instead. Make sure the range is updated in any usages when this is removed!
 #if RIDER
@@ -43,7 +43,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         BackgroundColor = "#ff7526",
         DarkBackgroundColor = "#ff7526",
         EffectType = EffectType.LINE_MARKER,
-        Layer = HighlighterLayer.CARET_ROW - 1,
+        EffectColor = "#ff7526",
+        Layer = HighlighterLayer.ADDITIONAL_SYNTAX,
         TransmitUpdates = true)]
 #else
     [RegisterHighlighter(PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
@@ -54,6 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 #endif
     public static class PerformanceHighlightingAttributeIds
     {
+        // All attribute IDs should begin "ReSharper Unity ". See UnityHighlighterNamesProvider
         public const string CAMERA_MAIN = "ReSharper Unity Expensive Camera Main Usage";
         public const string COSTLY_METHOD_INVOCATION = "ReSharper Unity Expensive Method Invocation";
         public const string NULL_COMPARISON = "ReSharper Unity Expensive Null Comparison";
