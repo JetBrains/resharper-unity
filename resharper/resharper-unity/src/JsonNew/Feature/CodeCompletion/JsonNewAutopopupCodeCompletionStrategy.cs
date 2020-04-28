@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
 
         public bool AcceptTyping(char c, ITextControl textControl, IContextBoundSettingsStore boundSettingsStore)
         {
-            if (!myJsonIntellisenseManager.GetAutoppopupEnabled(boundSettingsStore))
+            if (!myJsonIntellisenseManager.GetAutopopupEnabled(boundSettingsStore))
                 return false;
 
             return true;
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
         {
             return AutopopupType.HardAutopopup;
         }
-    
+
         public bool ProcessSubsequentTyping(char c, ITextControl textControl)
         {
             return true;
