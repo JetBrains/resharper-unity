@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public interface IPrefabInstanceHierarchy : IHierarchyElement
     {
-        IReadOnlyDictionary<(ulong, string), IAssetValue> Modifications { get; }
+        IReadOnlyDictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> Modifications { get; }
         IReadOnlyList<PrefabModification> PrefabModifications { get; }
         LocalReference ParentTransform { get; }
         Guid SourcePrefabGuid { get; }

@@ -9,22 +9,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public readonly struct PrefabInstanceHierarchy : IPrefabInstanceHierarchy
     {
-        private readonly Dictionary<(ulong, string), IAssetValue> myModifications;
+        private readonly Dictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> myModifications;
         public PrefabInstanceHierarchy(LocalReference location, LocalReference parentTransform, List<PrefabModification> prefabModifications, Guid sourcePrefabGuid)
         {
             Location = location;
             ParentTransform = parentTransform;
             PrefabModifications = prefabModifications;
             SourcePrefabGuid = sourcePrefabGuid;
-            myModifications  = new Dictionary<(ulong, string), IAssetValue>();
+            myModifications  = new Dictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> ();
 
             foreach (var modification in prefabModifications)
             {
-                myModifications[(modification.Target.LocalDocumentAnchor, modification.PropertyPath)] = modification.Value;
+                Dictionary<ulong, PrefabModification> dictionary;
+                if (myModifications.TryGetValue(modification.PropertyPath, out var rDictionary))
+                {
+                    dictionary = (Dictionary<ulong, PrefabModification>) rDictionary;
+                }
+                else
+                {
+                    dictionary = new Dictionary<ulong, PrefabModification>();
+                    myModifications[modification.PropertyPath] = dictionary;
+                }
+                
+                dictionary[modification.Target.LocalDocumentAnchor] = modification;
             }
         }
 
-        public IReadOnlyDictionary<(ulong, string), IAssetValue> Modifications => myModifications;
+        public IReadOnlyDictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> Modifications => myModifications;
         public LocalReference Location { get; }
         public LocalReference ParentTransform { get; }
         public IReadOnlyList<PrefabModification> PrefabModifications { get; }

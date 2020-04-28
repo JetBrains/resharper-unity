@@ -7,6 +7,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public readonly struct GameObjectHierarchy : IGameObjectHierarchy
     {
         public LocalReference Location { get; }
+        
+        // TODO : think about storing pointer to data, this will save a lot of memory when graph for file is loaded
         public string Name { get; }
 
         public GameObjectHierarchy(LocalReference location, string name)

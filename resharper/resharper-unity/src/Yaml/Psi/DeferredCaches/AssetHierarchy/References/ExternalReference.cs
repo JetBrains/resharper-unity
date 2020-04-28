@@ -10,6 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             LocalDocumentAnchor = localDocumentAnchor;
         }
 
+        // TODO : think about storing pointer to Guid here (this will safe 12 bytes), all guids will be interned in some cache
         public Guid ExternalAssetGuid { get; }
         public ulong LocalDocumentAnchor { get; }
 

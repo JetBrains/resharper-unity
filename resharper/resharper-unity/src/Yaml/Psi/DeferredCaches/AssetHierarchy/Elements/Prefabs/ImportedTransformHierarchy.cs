@@ -37,8 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             get
             {
-                if (myPrefabInstanceHierarchy.Modifications.TryGetValue((myTransformHierarchy.Location.LocalDocumentAnchor, "m_RootOrder"), out var result)
-                    && result is AssetSimpleValue simpleValue)
+                if (myPrefabInstanceHierarchy.Modifications.TryGetValue(("m_RootOrder"), out var anchorToResult)
+                    && anchorToResult.TryGetValue(myTransformHierarchy.Location.LocalDocumentAnchor, out var result)
+                    && result.Value is AssetSimpleValue simpleValue)
                 {
                     if (int.TryParse(simpleValue.SimpleValue, out var index))
                         return index;

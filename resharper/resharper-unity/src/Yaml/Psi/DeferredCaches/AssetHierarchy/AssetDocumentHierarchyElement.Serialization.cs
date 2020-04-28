@@ -19,36 +19,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         
         private static object Read(UnsafeReader reader)
         {
-            var result = new AssetDocumentHierarchyElement(reader.ReadLong());
+            var ownerId = reader.ReadLong();
+            var otherCount = reader.ReadInt32();
+            var gameObjectsCount = reader.ReadInt32();
+            var transformCount = reader.ReadInt32();
+            var scriptCount = reader.ReadInt32();
+            var componentsCount = reader.ReadInt32();
 
             
-            var otherCount = reader.ReadInt32();
+            var result = new AssetDocumentHierarchyElement(ownerId, otherCount, gameObjectsCount, transformCount, scriptCount, componentsCount);
+
             for (int i = 0; i < otherCount; i++)
             {
                 var hierarchyElement = ReadHieraerchyElement(reader);
                 result.myOtherElements.Add(hierarchyElement);
             }
             
-            var gameObjectCount = reader.ReadInt32();
-            for (int i = 0; i < gameObjectCount; i++)
+            for (int i = 0; i < gameObjectsCount; i++)
             {
                 result.myGameObjectHierarchies.Add(GameObjectHierarchy.Read(reader));
             }
             
-            var transformCount = reader.ReadInt32();
             for (int i = 0; i < transformCount; i++)
             {
                 result.myTransformElements.Add(TransformHierarchy.Read(reader));
             }
             
-            var scriptCount = reader.ReadInt32();
             for (int i = 0; i < scriptCount; i++)
             {
                 result.myScriptComponentElements.Add(ScriptComponentHierarchy.Read(reader));
             }
             
-            var componentCount = reader.ReadInt32();
-            for (int i = 0; i < componentCount; i++)
+            for (int i = 0; i < componentsCount; i++)
             {
                 result.myComponentElements.Add(ComponentHierarchy.Read(reader));
             }
@@ -81,30 +83,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             writer.Write(value.OwnerId);
             writer.Write(value.myOtherElements.Count);
+            writer.Write(value.myGameObjectHierarchies.Count);
+            writer.Write(value.myTransformElements.Count);
+            writer.Write(value.myScriptComponentElements.Count);
+            writer.Write(value.myComponentElements.Count);
+
             foreach (var v in value.myOtherElements)
             {
                 WriteHierarchyElement(writer, v);
             }
             
-            writer.Write(value.myGameObjectHierarchies.Count);
             foreach (var v in value.myGameObjectHierarchies)
             {
                 GameObjectHierarchy.Write(writer, v);
             }
             
-            writer.Write(value.myTransformElements.Count);
             foreach (var v in value.myTransformElements)
             {
                 TransformHierarchy.Write(writer, v);
             }
             
-            writer.Write(value.myScriptComponentElements.Count);
             foreach (var v in value.myScriptComponentElements)
             {
                 ScriptComponentHierarchy.Write(writer, v);
             }
             
-            writer.Write(value.myComponentElements.Count);
             foreach (var v in value.myComponentElements)
             {
                 ComponentHierarchy.Write(writer, v);
