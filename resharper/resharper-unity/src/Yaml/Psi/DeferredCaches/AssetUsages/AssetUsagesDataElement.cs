@@ -10,14 +10,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
     [PolymorphicMarshaller]
     public class AssetUsagesDataElement : IUnityAssetDataElement
     {
-        private readonly List<AssetUsage> myAssetUsages = new List<AssetUsage>();
+        private readonly List<AssetUsage> myAssetUsages;
+        
         [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader)
         {
             var id = reader.ReadLong();
             var count = reader.ReadInt32();
-            var result =  new AssetUsagesDataElement(id);
+            var result = new AssetUsagesDataElement(id, count);
 
             for (int i = 0; i < count; i++)
                 result.myAssetUsages.Add(AssetUsage.ReadFrom(reader));
@@ -38,13 +39,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             }
         }
 
-        public AssetUsagesDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex)
+        public AssetUsagesDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex, 10)
         {
         }
 
-        private AssetUsagesDataElement(long id)
+        private AssetUsagesDataElement(long id, int elementsCount)
         {
             OwnerId = id;
+            myAssetUsages = new List<AssetUsage>(elementsCount);
         }
 
         public long OwnerId { get; }
@@ -60,15 +62,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                 myAssetUsages.Add(usage);
             }
         }
-        public IEnumerable<AssetUsagePointer> EnumerateAssetUsages()
+        public IEnumerable<AssetUsage> EnumerateAssetUsages()
         {
-            for (int i = 0; i < myAssetUsages.Count; i++)
-                yield return new AssetUsagePointer(OwnerId, i);
-        }
-
-        public AssetUsage GetAssetUsage(AssetUsagePointer assetUsagePointer)
-        {
-            return myAssetUsages[assetUsagePointer.Index];
+            foreach (var assetUsage in myAssetUsages)
+            {
+                yield return assetUsage;
+            }
         }
     }
 }

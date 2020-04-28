@@ -6,7 +6,7 @@ using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
-    public class AssetUsage
+    public readonly struct AssetUsage
     {
         // TODO, local reference deps
         public LocalReference Location { get; }
@@ -18,22 +18,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             ExternalDependency = externalDependency;
         }
 
-        protected bool Equals(AssetUsage other)
+        public bool Equals(AssetUsage other)
         {
-            return Location.Equals(other.Location);
+            return Location.Equals(other.Location) && ExternalDependency.Equals(other.ExternalDependency);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((AssetUsage) obj);
+            return obj is AssetUsage other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return Location.GetHashCode();
+            unchecked
+            {
+                return (Location.GetHashCode() * 397) ^ ExternalDependency.GetHashCode();
+            }
         }
 
         public void WriteTo(UnsafeWriter writer)
