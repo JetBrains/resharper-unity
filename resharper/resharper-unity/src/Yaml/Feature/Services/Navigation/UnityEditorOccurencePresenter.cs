@@ -25,8 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             
             
             AppendRelatedFile(descriptor, unityOccurrence.GetRelatedFilePresentation(), unityOccurrence.GetRelatedFolderPresentation());
-            
-            descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
+
+            descriptor.Icon = unityOccurrence.GetIcon();
             return true;
         }
         

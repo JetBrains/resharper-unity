@@ -6,11 +6,13 @@ using JetBrains.Diagnostics;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -89,6 +91,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             if (parts.Count == 0)
                 return "...";
             return string.Join("/", consumer.NameParts);
+        }
+
+        public virtual IconId GetIcon()
+        {
+            return UnityFileTypeThemedIcons.FileUnity.Id;
         }
     }
 }

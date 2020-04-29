@@ -1,8 +1,10 @@
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -21,6 +23,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public override string ToString()
         {
             return $"m_MethodName: {MethodData.MethodName}";
+        }
+
+        public override IconId GetIcon()
+        {
+            if (MethodData.IsPrefabModification)
+                return UnityFileTypeThemedIcons.FileUnityPrefab.Id;
+
+            return base.GetIcon();
         }
     }
 }

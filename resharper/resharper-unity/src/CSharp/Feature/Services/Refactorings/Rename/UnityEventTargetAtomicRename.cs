@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Refactorings.Rename;
@@ -84,10 +85,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                 return;
                     
             var workflow = (executer.Workflow as RenameWorkflowBase).NotNull("workflow != null");
-                        
+
+            var persistentIndexManager = mySolution.GetComponent<IPersistentIndexManager>();
             foreach (var textOccurrence in myElementsToRename)
             {
-                workflow.DataModel.AddExtraTextOccurrence(new AssetTextOccurrence(textOccurrence, OldName, NewName, myIsProperty));
+                var sourceFile = persistentIndexManager[textOccurrence.MethodData.TextRangeOwner];
+                if (sourceFile == null)
+                    continue;
+                workflow.DataModel.AddExtraTextOccurrence(new AssetTextOccurrence(textOccurrence, sourceFile, OldName, NewName, myIsProperty));
             }
         }
 
@@ -102,11 +107,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             private readonly UnityMethodsOccurrence myAssetOccurrence;
             private readonly RangeMarker myRangeMarker;
 
-            public AssetTextOccurrence(UnityMethodsOccurrence assetOccurrence, string oldName, string newName, bool isProperty)
+            public AssetTextOccurrence(UnityMethodsOccurrence assetOccurrence, IPsiSourceFile sourceFile,
+                string oldName, string newName, bool isProperty)
             {
                 var curRange = assetOccurrence.MethodData.TextRange;
-
-                var pointer = assetOccurrence.SourceFile.Document.ToPointer();
+                
+                var pointer = sourceFile.Document.ToPointer();
                 myRangeMarker =  new RangeMarker(pointer, isProperty ? new TextRange(curRange.StartOffset + 4, curRange.EndOffset) : curRange);
                 myAssetOccurrence = assetOccurrence;
                 NewName = newName;

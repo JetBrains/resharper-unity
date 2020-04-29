@@ -15,6 +15,8 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
 {
@@ -139,10 +141,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                             if (assetInspectorValueDeserializer.TryGetInspectorValue(currentSourceFile, valueNode, out value))
                                 break;
                         }
-                        if (value == null)
-                            continue;
                         
-                        result.Add(new PrefabModification(target, name, value));
+                        var objectReference = map.FindMapEntryBySimpleKey("objectReference")?.Content.Value.AsFileID()?.ToReference(currentSourceFile);
+                        
+                        var valueRange = valueNode.GetTreeTextRange();
+                        
+                        result.Add(new PrefabModification(target, name, value,
+                            new TextRange(assetDocument.StartOffset + valueRange.StartOffset.Offset,
+                                assetDocument.StartOffset + valueRange.EndOffset.Offset),  objectReference));
                     }
                 }
 
