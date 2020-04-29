@@ -4,6 +4,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
@@ -13,6 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     {
 
         private readonly List<IHierarchyElement> myOtherElements;
+        
+        
+        private readonly List<IHierarchyElement> myOtherFakeStrippedElements;
         
         // avoid boxing
         private readonly List<TransformHierarchy> myTransformElements;
@@ -41,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myGameObjectHierarchies = new List<GameObjectHierarchy>(gameObjectsCount);
             myScriptComponentElements = new List<ScriptComponentHierarchy>(scriptCount);
             myGameObjectLocationToTransform = new Dictionary<ulong, int>(transformCount);
+            myOtherFakeStrippedElements = new List<IHierarchyElement>();
         }
 
         public long OwnerId { get; }
@@ -106,7 +111,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 SearchForAnchor(myTransformElements, anchor) ??
                 SearchForAnchor(myScriptComponentElements, anchor) ??
                 SearchForAnchor(myComponentElements, anchor) ??
-                SearchForAnchor(myOtherElements, anchor);
+                SearchForAnchor(myOtherElements, anchor) ??
+                SearchForAnchor(myOtherFakeStrippedElements, anchor);
         }
 
 
@@ -133,21 +139,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private readonly object myLockObject = new object();
         private volatile bool myIsRestored = false;
-        public void RestoreHierarchy(AssetDocumentHierarchyElementContainer hierarchyElementContainer,
-            IPsiSourceFile sourceFile)
+        public void RestoreHierarchy(AssetDocumentHierarchyElementContainer hierarchyElementContainer, IPsiSourceFile sourceFile)
         {
             if (myIsRestored)
                 return;
-
-            AssetDocumentHierarchyElementContainer = hierarchyElementContainer;
-            IsScene = sourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlConstants.Scene);
-
+            
             lock (myLockObject)
             {
                 if (myIsRestored)
                     return;
                 
                 myIsRestored = true;
+                
+                AssetDocumentHierarchyElementContainer = hierarchyElementContainer;
+                IsScene = sourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlConstants.Scene);
+
  
                 var offset = 0;
                 // concating arrays to one by index. see GetElementByInternalIndex too
@@ -166,6 +172,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 FillIndices(myScriptComponentElements, offset);
                 offset += myScriptComponentElements.Count;
 
+                foreach (var prefabInstanceHierarchy in GetPrefabInstanceHierarchies())
+                {
+                    var correspondingSourceObjects = new HashSet<ExternalReference>();
+                    foreach (var modification in prefabInstanceHierarchy.PrefabModifications)
+                    {
+                        var target = modification.Target;
+                        if (!(target is ExternalReference externalReference))
+                            continue;
+                        correspondingSourceObjects.Add(externalReference);
+                    }
+
+                    foreach (var correspondingSourceObject in correspondingSourceObjects)
+                    {
+                        var fakeAnchor = PrefabsUtil.Import(prefabInstanceHierarchy.Location.LocalDocumentAnchor, correspondingSourceObject.LocalDocumentAnchor);
+                        myOtherFakeStrippedElements.Add(new StrippedHierarchyElement(
+                            new LocalReference(sourceFile.PsiStorage.PersistentIndex, fakeAnchor),
+                            prefabInstanceHierarchy.Location, correspondingSourceObject));
+                    }
+                }
             }
         }
 
@@ -228,6 +253,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
             index -= myScriptComponentElements.Count;
             
+            if (index < myOtherFakeStrippedElements.Count)
+                return myOtherFakeStrippedElements[index];
+
+            index -= myOtherFakeStrippedElements.Count;
+            
             
             throw new IndexOutOfRangeException("Index was out of range in concated array");
         }
@@ -248,6 +278,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             
             foreach (var otherElement in myScriptComponentElements)
                 yield return otherElement;
+            
+            foreach (var fakeStrippedElement in myOtherFakeStrippedElements)
+                yield return fakeStrippedElement;
         }
     }
 }

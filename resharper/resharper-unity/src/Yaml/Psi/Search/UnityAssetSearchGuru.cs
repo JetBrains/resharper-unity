@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Finder;
 using JetBrains.ReSharper.Psi.Search;
@@ -12,14 +12,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     public class UnityYamlSearchGuru : ISearchGuru
     {
         private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
-        private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
+        private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
 
         public UnityYamlSearchGuru(UnityApi unityApi, AssetUsagesElementContainer assetUsagesElementContainer,
-            AssetMethodsElementContainer assetMethodsElementContainer, AssetInspectorValuesContainer container)
+            UnityEventsElementContainer unityEventsElementContainer, AssetInspectorValuesContainer container)
         {
             myAssetUsagesElementContainer = assetUsagesElementContainer;
-            myAssetMethodsElementContainer = assetMethodsElementContainer;
+            myUnityEventsElementContainer = unityEventsElementContainer;
             myInspectorValuesContainer = container;
         }
 
@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     break;
                 case IProperty _:
                 case IMethod _:
-                    foreach (var sourceFile in myAssetMethodsElementContainer.GetPossibleFilesWithUsage(element))
+                    foreach (var sourceFile in myUnityEventsElementContainer.GetPossibleFilesWithUsage(element))
                         set.Add(sourceFile);
                     break;
                 case IField field:

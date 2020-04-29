@@ -12,6 +12,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
@@ -177,7 +178,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         private void BuildDocument(UnityAssetData data, SeldomInterruptChecker checker, IPsiSourceFile sourceFile, int start, IBuffer buffer)
         {
-            var assetDocument = new AssetDocument(start, buffer);
+            var assetDocument = new AssetDocument(start, buffer, null);
             var results = new LocalList<(string, object)>();
             foreach (var unityAssetDataElementContainer in myOrderedContainers)
             {
@@ -186,6 +187,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 try
                 {
                     var result = unityAssetDataElementContainer.Build(checker, sourceFile, assetDocument);
+                    if (result is IHierarchyElement hierarchyElement)
+                        assetDocument = assetDocument.WithHiererchyElement(hierarchyElement);
+
                     if (result != null)
                         results.Add((unityAssetDataElementContainer.Id, result));
                 }

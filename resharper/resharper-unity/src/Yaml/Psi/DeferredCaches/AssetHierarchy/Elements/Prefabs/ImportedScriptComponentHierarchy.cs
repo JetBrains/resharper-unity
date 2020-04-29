@@ -26,5 +26,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public LocalReference Owner => myScriptComponentHierarchy.Owner.GetImportedReference(myPrefabInstanceHierarchy);
 
         public ExternalReference ScriptReference => myScriptComponentHierarchy.ScriptReference;
+
+        public LocalReference OriginLocation
+        {
+            get
+            {
+                if (myScriptComponentHierarchy is ImportedScriptComponentHierarchy importedScriptComponentHierarchy)
+                    return importedScriptComponentHierarchy.OriginLocation;
+                return myScriptComponentHierarchy.Location;
+            }
+        }
     }
 }
