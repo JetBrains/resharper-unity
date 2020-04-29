@@ -153,11 +153,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public FindExecution Merge(UnityAssetFindResult data)
             {
-                var sourceFile = myPersistentIndexManager[data.AttachedElement.Location.OwnerId];
+                var sourceFile = myPersistentIndexManager[data.AttachedElementLocation.OwnerId];
                 if (sourceFile == null)
                     return myFindExecution;
                 
-                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.AttachedElement.Location, sourceFile);
+                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.AttachedElementLocation, sourceFile);
                 if (request != null)
                     Result.Add(request);
                 

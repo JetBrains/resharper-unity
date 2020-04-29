@@ -297,31 +297,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         {
             myShellLocks.AssertReadAccessAllowed();
 
-            // TODO: prefab modifications
-            // TODO: drop daemon dependency and inject compoentns in consructor
-            var configuration = containingType.GetSolution().GetComponent<SolutionAnalysisConfiguration>();
-            if (configuration.Enabled.Value && configuration.CompletedOnceAfterStart.Value && configuration.Loaded.Value)
-            {
-                var service = containingType.GetSolution().GetComponent<SolutionAnalysisService>();
-                var id = service.GetElementId(containingType);
-                if (id.HasValue && service.UsageChecker is IGlobalUsageChecker checker)
-                {
-                    // no inheritors
-                    if (checker.GetDerivedTypeElementsCount(id.Value) == 0)
-                        return false;
-                }
-            }
-            
-            var count = 0;
-            foreach (var possibleName in possibleNames)
-            {
-                var values = myNameToGuids.GetValues(possibleName.GetPlatformIndependentHashCode());
-                count += values.Length;
-                if (values.Length == 1 && !values[0].Equals(ownerGuid))
-                    count++;
-            }
-            
-            return count > 1;
+            return AssetUtils.HasPossibleDerivedTypesWithMember(ownerGuid, containingType, possibleNames, myNameToGuids);
         }
         
         

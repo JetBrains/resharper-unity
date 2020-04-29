@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using JetBrains.Application.DataContext;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Actions.ActionManager;
@@ -30,6 +31,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.DataContext;
@@ -46,6 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly UnityApi myUnityApi;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
+        private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly DataContexts myContexts;
         private readonly IActionManager myActionManager;
         public override string ProviderId => "Unity serialized field";
@@ -57,12 +60,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker,
             UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, DeferredCacheController deferredCacheController,
-            AssetInspectorValuesContainer inspectorValuesContainer)
+            AssetInspectorValuesContainer inspectorValuesContainer, UnityEventsElementContainer unityEventsElementContainer)
             : base(unitySolutionTracker, host, bulbMenu)
         {
             myUnityApi = unityApi;
             myDeferredCacheController = deferredCacheController;
             myInspectorValuesContainer = inspectorValuesContainer;
+            myUnityEventsElementContainer = unityEventsElementContainer;
             myActionManager = Shell.Instance.GetComponent<IActionManager>();
             myContexts =  Shell.Instance.GetComponent<DataContexts>();
         }
@@ -144,6 +148,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 return;
             }
 
+            if (presentationType == UnityPresentationType.UnityEvent)
+            {
+                var count = myUnityEventsElementContainer.GetUsageCountForEvent(field, out var estimated);
+                var sb = new StringBuilder();
+                if (count == 0 && !estimated)
+                {
+                    sb.Append("No methods");
+                }
+                else
+                {
+                    sb.Append(count);
+                    if (estimated)
+                        sb.Append('+');
+                    sb.Append(" ");
+                    sb.Append("method");
+                    if (estimated || count > 1)
+                        sb.Append("s");
+                }
+
+                consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(),
+                    sb.ToString(), tooltip, "Methods", this,
+                    declaredElement, iconModel, presentationType));
+                return;
+            }
+            
+
             var initializer = (element as IFieldDeclaration).NotNull("element as IFieldDeclaration != null").Initial;
             var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue.Value;
 
@@ -216,6 +246,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         
         private UnityPresentationType GetUnityPresentationType(IType type)
         {
+            if (UnityApi.IsDescendantOfUnityEvent(type.GetTypeElement()))
+                return UnityPresentationType.UnityEvent;
+
             if (UnityApi.IsDescendantOfScriptableObject(type.GetTypeElement()))
                 return UnityPresentationType.ScriptableObject;
             if (type.IsBool())
@@ -262,7 +295,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             FileId,
             ValueType,
             Other,
-            ScriptableObject
+            ScriptableObject,
+            UnityEvent
         }
     }
 }

@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
@@ -41,11 +42,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                 if (element is IMethod || element is IProperty)
                 {
                     var usages = myUnityEventsElementContainer.GetAssetUsagesFor(sourceFile, element);
-                    foreach (var assetMethodData in usages)
+                    foreach (var findResult in usages)
                     {
-                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetMethodData.OwnerLocation, true);
-                        if (hierarchyElement != null)
-                            consumer.Accept(new UnityMethodsFindResult(sourceFile, element, assetMethodData, hierarchyElement, hierarchyElement.Location));
+                        consumer.Accept(findResult);
                     }
                 }
 
@@ -55,24 +54,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
                     foreach (var assetUsage in usages)
                     {
-                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetUsage.Location, true);
-                        if (hierarchyElement == null)
-                            continue;
-
-                        consumer.Accept(new UnityScriptsFindResults(sourceFile, element, assetUsage, hierarchyElement, hierarchyElement.Location));
+                        consumer.Accept(new UnityScriptsFindResults(sourceFile, element, assetUsage, assetUsage.Location));
                     }
                 }
 
                 if (element is IField field)
                 {
-                    var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
-                    foreach (var variableUsage in usages)
+                    if (UnityApi.IsDescendantOfUnityEvent(field.Type.GetTypeElement()))
                     {
-                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(variableUsage.Location, true);
-                        if (hierarchyElement == null)
-                            continue;
-
-                        consumer.Accept(new UnityInspectorFindResults(sourceFile, element, variableUsage, hierarchyElement, hierarchyElement.Location));
+                        foreach (var findResult in myUnityEventsElementContainer.GetMethodsForUnityEvent(sourceFile, field))
+                        {
+                            consumer.Accept(findResult);
+                        }
+                    }
+                    else
+                    {
+                        var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
+                        foreach (var variableUsage in usages)
+                        {
+                            consumer.Accept(new UnityInspectorFindResults(sourceFile, element, variableUsage, variableUsage.Location));
+                        }
                     }
                 }
             }

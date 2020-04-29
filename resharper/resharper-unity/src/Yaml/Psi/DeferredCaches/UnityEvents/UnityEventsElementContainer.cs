@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -23,44 +22,56 @@ using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
-using JetBrains.Util.Extension;
-
+       
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
+    // UnityEventsElementContainer stores whole index in memory, it is not expected to have millions of methods. In case of high memory usage
+    // with millions of methods, only pointers to AssetMethodData should be stored. AssetMethodData will be deserialized only in find usages,
+    // strings should be replaced by int hashes.
+    // Information about imported/prefab modifications could be stored in memory, it should not allocate a lot of memory ever.
     [SolutionComponent]
-    public class UnityEventsElementContainer : IUnityAssetDataElementContainer
+    public partial class UnityEventsElementContainer : IUnityAssetDataElementContainer
     {
+        private readonly ISolution mySolution;
         private readonly IShellLocks myShellLocks;
+        private readonly MetaFileGuidCache myGuidCache;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
 
-        public UnityEventsElementContainer(IShellLocks shellLocks, AssetDocumentHierarchyElementContainer elementContainer)
+        public UnityEventsElementContainer(ISolution solution, IShellLocks shellLocks, MetaFileGuidCache guidCache, AssetDocumentHierarchyElementContainer elementContainer)
         {
+            mySolution = solution;
             myShellLocks = shellLocks;
+            myGuidCache = guidCache;
             myAssetDocumentHierarchyElementContainer = elementContainer;
         }
         
         private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName", false);
-        private readonly Dictionary<IPsiSourceFile, OneToListMap<string, AssetMethodData>> myPsiSourceFileToMethods = new Dictionary<IPsiSourceFile, OneToListMap<string, AssetMethodData>>();
+
+        #region FIND_USAGES_METHODS
         
+        private readonly OneToSetMap<IPsiSourceFile, UnityEventData> myPsiSourceFileToEventData = new OneToSetMap<IPsiSourceFile, UnityEventData>();
+        private readonly OneToCompactCountingSet<string, IPsiSourceFile> myMethodNameToFilesWithUsages = new OneToCompactCountingSet<string, IPsiSourceFile>();
+        
+        // for counter, could be remove in case of memory optimization and replaced by low-priority background task, do not forget to
+        // add files to `myFilesWithUsages` instead of `myFilesWithPossibleUsages`.
+        private readonly OneToCompactCountingSet<string, IPsiSourceFile> myMethodNameToFilesWithPossibleUsages = new OneToCompactCountingSet<string, IPsiSourceFile>();
         private readonly OneToCompactCountingSet<string, AssetMethodData> myLocalUsages = new OneToCompactCountingSet<string, AssetMethodData>();
-        private readonly OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithUsages = new OneToCompactCountingSet<string, IPsiSourceFile>();
-        private readonly OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithPossibleUsages = new OneToCompactCountingSet<string, IPsiSourceFile>();
+
+        #endregion
         
-        /// <summary>
-        /// Prefab modification could add usage to method without using its name, e.g changing m_Target field in m_Calls array element or m_Mode.
-        /// If file has m_Target modification and does not have any m_MethodName modification, we will add it to that counting set and
-        /// for each find usages request for method we will scan all files from that set for usages
-        ///
-        /// Possible improvment:
-        /// 1. Store for each IPsiSourceFile collection of m_Target references
-        /// 2. GetPossibleFilesWithUsage will resolve m_Target to real ScriptComponentHierarchy with m_Script guid
-        /// 3. GetPossibleFilesWithUsage will check that assosiated with guid type element is derived from method's type element and process only in that case
-        /// NB : resolve to real ScriptComponentHierarchy will be cached in PrefabImportCache for stripped elements or will be simply availble in current scene hierarchy
-        /// </summary>
-        private readonly CountingSet<IPsiSourceFile> myFilesToCheckForUsages = new CountingSet<IPsiSourceFile>();
+        // Inspector values for unity event support
+        #region UNITY_EVENTS_FIND_USAGES 
+        
+        // for estimated counter check
+        private readonly OneToCompactCountingSet<int, Guid> myUnityEventNameHashToScriptGuids = new OneToCompactCountingSet<int, Guid>();
         private readonly CountingSet<string> myUnityEventsWithModifications = new CountingSet<string>();
-        private readonly Dictionary<IPsiSourceFile, ImportedUnityEventData> myImportedUnityEventDatas = new Dictionary<IPsiSourceFile, ImportedUnityEventData>();
         private readonly Dictionary<(LocalReference, string), UnityEventData> myUnityEventDatas = new Dictionary<(LocalReference, string), UnityEventData>();
+
+        // for count check & find usages
+        private readonly CountingSet<(string eventName, Guid scriptOwner)> myUnityEventUsageCount = new CountingSet<(string eventName, Guid scriptOwner)>();
+        private readonly OneToSetMap<string, IPsiSourceFile> myUnityEventNameToSourceFiles = new OneToSetMap<string, IPsiSourceFile>();
+
+        #endregion
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
@@ -106,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         continue;
                     
                     var eventTypeName = rootMap.GetValue("m_TypeName").GetPlainScalarText();
-                    var calls = GetCalls(currentSourceFile, assetDocument, mCalls, location, eventTypeName);
+                    var calls = GetCalls(currentSourceFile, assetDocument, mCalls, location, name, eventTypeName);
                     
                     result.Add(new UnityEventData(name, location, scriptReference.Value, calls.ToArray()));
                 }
@@ -120,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return entries.FirstOrDefault(t => "m_Script".Equals(t.Key.GetPlainScalarText()))?.Content.Value.AsFileID()?.ToReference(sourceFile) as ExternalReference?;
         }
 
-        private LocalList<AssetMethodData> GetCalls(IPsiSourceFile currentSourceFile, AssetDocument assetDocument, IBlockSequenceNode mCalls, LocalReference location, string eventTypeName)
+        private LocalList<AssetMethodData> GetCalls(IPsiSourceFile currentSourceFile, AssetDocument assetDocument, IBlockSequenceNode mCalls, LocalReference location, string name, string eventTypeName)
         {
             var result = new LocalList<AssetMethodData>();
             foreach (var call in mCalls.Entries)
@@ -161,127 +172,73 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     assetDocument.StartOffset + methodNameRange.EndOffset.Offset);
 
                 var target = fileID.ToReference(currentSourceFile);
-                result.Add(new AssetMethodData(location, methodName, range, currentSourceFile.PsiStorage.PersistentIndex, argMode, type, target));
+                result.Add(new AssetMethodData(location, name, methodName, range, currentSourceFile.PsiStorage.PersistentIndex, argMode, type, target));
             }
 
             return result;
         }
-
-        private ImportedUnityEventData ProcessPrefabModifications(IPsiSourceFile currentFile, AssetDocument document)
-        {
-            var result = new ImportedUnityEventData();
-            if (document.HierarchyElement is IPrefabInstanceHierarchy prefabInstanceHierarchy)
-            {
-                foreach (var modification in prefabInstanceHierarchy.PrefabModifications)
-                {
-
-                    if (!(modification.Target is ExternalReference externalReference))
-                        continue;
-                    
-                    if (!modification.PropertyPath.Contains("m_PersistentCalls"))
-                        continue;
-                    
-                    var location = new LocalReference(currentFile.PsiStorage.PersistentIndex, PrefabsUtil.Import(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
-                    var parts = modification.PropertyPath.Split('.');
-                    var unityEventName = parts[0];
-
-                    var dataPart = parts.FirstOrDefault(t => t.StartsWith("data"));
-                    if (dataPart == null)
-                        continue;
-                    
-                    if (!int.TryParse(dataPart.RemoveStart("data[").RemoveEnd("]"), out var index))
-                        continue;
-
-                    var last = parts.Last();
-
-
-                    var reference = new ImportedAssetMethodReference(location, unityEventName, index);
-                    if (!result.ReferenceToImportedData.TryGetValue(reference, out var modifications))
-                    {
-                        modifications = new Dictionary<string, IAssetValue>();
-                        result.ReferenceToImportedData[reference] = modifications;
-                    }
-
-                    switch (last)
-                    {
-                        case "m_Mode" when modification.Value is AssetSimpleValue simpleValue:
-                            modifications[last] = simpleValue;
-                            break;
-                        case "m_MethodName" when modification.Value is AssetSimpleValue simpleValue:
-                            modifications[last] = simpleValue;
-                            modifications["m_MethodNameRange"] = new Int2Value(modification.ValueRange.StartOffset, modification.ValueRange.EndOffset);
-                            break;
-                        case "m_Target" when modification.ObjectReference is IHierarchyReference objectReference:
-                            modifications[last] = new AssetReferenceValue(objectReference);
-                            break;
-                    }
-                }
-            }
         
-            return result;
-        }
-        
-
         public void Drop(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as UnityEventsDataElement;
             foreach (var unityEventData in element.UnityEvents)
             {
+                var eventName = unityEventData.Name;
+                var guid = unityEventData.ScriptReference.ExternalAssetGuid;
+                myUnityEventNameHashToScriptGuids.Remove(eventName.GetPlatformIndependentHashCode(), guid);
+                myUnityEventNameToSourceFiles.Remove(eventName, sourceFile);
+                myUnityEventUsageCount.Add((eventName, guid), -unityEventData.Calls.Count);
+                    
                 myUnityEventDatas.Remove((unityEventData.Location, unityEventData.Name));
                 foreach (var call in unityEventData.Calls)
                 {
-                    myFilesWithUsages.Remove(call.MethodName, sourceFile); 
+                    myMethodNameToFilesWithUsages.Remove(call.MethodName, sourceFile); 
                 
                     if (call.TargetScriptReference is ExternalReference)
                     {
-                        myFilesWithPossibleUsages.Remove(call.MethodName, sourceFile);
+                        myMethodNameToFilesWithPossibleUsages.Remove(call.MethodName, sourceFile);
                     } else if (call.TargetScriptReference is LocalReference localReference)
                     {
                         var scriptElement = assetDocumentHierarchyElement.GetHierarchyElement(null, localReference.LocalDocumentAnchor, null);
                         if (scriptElement is IScriptComponentHierarchy script)
                         {
-                            myLocalUsages.Remove(call.MethodName, new AssetMethodData(LocalReference.Null, call.MethodName, TextRange.InvalidRange, 0,
+                            myLocalUsages.Remove(call.MethodName, new AssetMethodData(LocalReference.Null, unityEventData.Name, call.MethodName, TextRange.InvalidRange, 0,
                                 call.Mode, call.Type, script.ScriptReference));
                         }
                         else
                         {
-                            myFilesWithPossibleUsages.Remove(call.MethodName, sourceFile);
+                            myMethodNameToFilesWithPossibleUsages.Remove(call.MethodName, sourceFile);
                         }
                     }
                 }
             }
-            
-            foreach (var (reference, modification) in element.ImportedUnityEventData.ReferenceToImportedData)
-            {
-                if (modification.ContainsKey("m_Target") && !modification.ContainsKey("m_MethodName"))
-                    myFilesToCheckForUsages.Remove(sourceFile);
 
-                if (modification.TryGetValue("m_MethodName", out var name))
-                    myFilesWithPossibleUsages.Remove((name as AssetSimpleValue).NotNull("name as AssetSimpleValue != null").SimpleValue, sourceFile);
+            DropPrefabModifications(sourceFile, assetDocumentHierarchyElement, element);
 
-                myUnityEventsWithModifications.Remove(reference.UnityEventName);
-            }
-            
-            myPsiSourceFileToMethods.Remove(sourceFile);
-            myImportedUnityEventDatas.Remove(sourceFile);
+            myPsiSourceFileToEventData.RemoveKey(sourceFile);
         }
 
         public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = (unityAssetDataElement as UnityEventsDataElement).NotNull("element != null");
-            var groupMethods = new OneToListMap<string, AssetMethodData>();
 
             foreach (var unityEventData in element.UnityEvents)
             {
-                myUnityEventDatas[(unityEventData.Location, unityEventData.Name)] = unityEventData;
+                var eventName = unityEventData.Name;
+                var guid = unityEventData.ScriptReference.ExternalAssetGuid;
+                myUnityEventNameHashToScriptGuids.Add(eventName.GetPlatformIndependentHashCode(), guid);
+                myUnityEventNameToSourceFiles.Add(eventName, sourceFile);
+                myUnityEventUsageCount.Add((eventName, guid), unityEventData.Calls.Count);
+                myUnityEventDatas[(unityEventData.Location, eventName)] = unityEventData;
+                myPsiSourceFileToEventData.Add(sourceFile, unityEventData);
+
                 foreach (var method in unityEventData.Calls)
                 {
-                    myFilesWithUsages.Add(method.MethodName, sourceFile);
-                    groupMethods.Add(method.MethodName, method);
+                    myMethodNameToFilesWithUsages.Add(method.MethodName, sourceFile);
 
                     if (method.TargetScriptReference is ExternalReference)
                     {
-                        myFilesWithPossibleUsages.Add(method.MethodName, sourceFile);
+                        myMethodNameToFilesWithPossibleUsages.Add(method.MethodName, sourceFile);
                     }
                     else if (method.TargetScriptReference is LocalReference localReference)
                     {
@@ -289,30 +246,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         if (scriptElement is IScriptComponentHierarchy script)
                         {
                             // only for fast resolve & counter
-                            myLocalUsages.Add(method.MethodName, new AssetMethodData(LocalReference.Null, method.MethodName, TextRange.InvalidRange, 
+                            myLocalUsages.Add(method.MethodName, new AssetMethodData(LocalReference.Null, unityEventData.Name, method.MethodName, TextRange.InvalidRange, 
                                 0, method.Mode, method.Type, script.ScriptReference));
                         }
                         else
                         {
-                            myFilesWithPossibleUsages.Add(method.MethodName, sourceFile);
+                            myMethodNameToFilesWithPossibleUsages.Add(method.MethodName, sourceFile);
                         }
                     }
                 }
             }
 
-            foreach (var (reference, modification) in element.ImportedUnityEventData.ReferenceToImportedData)
-            {
-                if (!modification.ContainsKey("m_MethodName"))
-                    myFilesToCheckForUsages.Add(sourceFile);
-                
-                if (modification.TryGetValue("m_MethodName", out var name))
-                    myFilesWithPossibleUsages.Add((name as AssetSimpleValue).NotNull("name as AssetSimpleValue != null").SimpleValue, sourceFile);
+            MergePrefabModifications(sourceFile, assetDocumentHierarchyElement, unityAssetDataElementPointer, element);
 
-                myUnityEventsWithModifications.Add(reference.UnityEventName);
-            }
-            
-            myPsiSourceFileToMethods.Add(sourceFile, groupMethods);
-            myImportedUnityEventDatas[sourceFile] = element.ImportedUnityEventData;
         }
 
         private bool IsPossibleEventHandler(IDeclaredElement declaredElement)
@@ -337,8 +283,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
         private bool IsPossibleEventHandler(string name)
         {
-            return myFilesWithUsages.GetValues(name).Length > 0 ||
-                   myFilesWithPossibleUsages.GetValues(name).Length > 0;
+            return myMethodNameToFilesWithUsages.GetValues(name).Length > 0 ||
+                   myMethodNameToFilesWithPossibleUsages.GetValues(name).Length > 0;
         }
 
         public int GetAssetUsagesCount(IDeclaredElement declaredElement, out bool estimatedResult)
@@ -378,7 +324,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             if (!IsPossibleEventHandler(declaredElement))
                 return 0;
             
-            if (myFilesWithPossibleUsages.GetOrEmpty(declaredElement.ShortName).Count > 0)
+            if (myMethodNameToFilesWithPossibleUsages.GetOrEmpty(declaredElement.ShortName).Count > 0)
                 estimatedResult = true;
 
             const int maxProcessCount = 5;
@@ -416,58 +362,93 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return guid;
         }
 
-        public IEnumerable<AssetMethodData> GetAssetUsagesFor(IPsiSourceFile psiSourceFile, IDeclaredElement declaredElement)
+        public IEnumerable<UnityMethodsFindResult> GetAssetUsagesFor(IPsiSourceFile psiSourceFile, IDeclaredElement declaredElement)
         {
             myShellLocks.AssertReadAccessAllowed();
             
-            var result = new List<AssetMethodData>();
-            foreach (var methodData in GetAssetMethodDataFor(psiSourceFile, declaredElement))
+            var result = new List<UnityMethodsFindResult>();
+            foreach (var (methodData, isPrefab) in GetAssetMethodDataFor(psiSourceFile))
             {
                 var symbolTable = GetReferenceSymbolTable(psiSourceFile.GetSolution(), psiSourceFile.GetPsiModule(), methodData, GetScriptGuid(methodData));
                 var resolveResult = symbolTable.GetResolveResult(methodData.MethodName);
                 if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
                 {
-                    result.Add(methodData);
+                    result.Add(new UnityMethodsFindResult(psiSourceFile, declaredElement, methodData, methodData.OwnerLocation, isPrefab));
                 }
             }
             
             return result;
         }
 
-
-        private IEnumerable<AssetMethodData> GetAssetMethodDataFor(IPsiSourceFile psiSourceFile, IDeclaredElement declaredElement)
+        public int GetUsageCountForEvent(IField field, out bool isEstimated)
         {
-            if (myPsiSourceFileToMethods.TryGetValue(psiSourceFile, out var methods))
+            myShellLocks.AssertReadAccessAllowed();
+            
+            isEstimated = false;
+            var containingType = field?.GetContainingType();
+            if (containingType == null)
+                return 0;
+            
+            var guid = AssetUtils.GetGuidFor(myGuidCache, containingType);
+            if (guid == null)
+                return 0;
+
+            var result = 0;
+            foreach (var name in AssetUtils.GetAllNamesFor(field))
             {
-                foreach (var data in methods.GetValuesSafe(declaredElement.ShortName))
-                    yield return data;
+                result += myUnityEventUsageCount.GetCount((name, guid.Value));
             }
 
-            if (myImportedUnityEventDatas.TryGetValue(psiSourceFile, out var importedUnityEventData))
-            {
-                foreach (var (reference, modifications) in importedUnityEventData.ReferenceToImportedData)
-                {
-                    var element = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference.Location, true);
-                    Assertion.Assert(element is ImportedScriptComponentHierarchy, "element is ImportedScriptComponentHierarchy");
-                    var script = element as ImportedScriptComponentHierarchy;
-                    var originLocation = script.OriginLocation;
-                    if (!myUnityEventDatas.TryGetValue((originLocation, reference.UnityEventName), out var unityEventData))
-                        continue;
+            if (myUnityEventsWithModifications.Contains(field.ShortName))
+                isEstimated = true;
 
-                    if (reference.MethodIndex < unityEventData.Calls.Count)
-                    {
-                        var import = unityEventData.Calls[reference.MethodIndex].Import(reference, modifications);
-                        if (import != null)
-                            yield return import;
-                    }
-                    else
-                    {
-                        var result = AssetMethodData.TryCreateAssetMethodFromModifications(reference, modifications);
-                        if (result != null)
-                            yield return result;
-                    }
-                }
+            if (!isEstimated)
+                isEstimated = AssetUtils.HasPossibleDerivedTypesWithMember(guid.Value, containingType,
+                    AssetUtils.GetAllNamesFor(field), myUnityEventNameHashToScriptGuids);
+            
+            return result;
+        }
+        
+        public IEnumerable<UnityEventFindResult> GetMethodsForUnityEvent(IPsiSourceFile psiSourceFile, IField field)
+        {
+            myShellLocks.AssertReadAccessAllowed();
+
+            var containingType = field?.GetContainingType();
+            if (containingType == null)
+                yield break;
+
+            var guid = AssetUtils.GetGuidFor(myGuidCache, containingType);
+            if (guid == null)
+                yield break;
+
+            var names = AssetUtils.GetAllNamesFor(field).ToJetHashSet();
+            foreach (var (method, isPrefab) in GetAssetMethodDataFor(psiSourceFile))
+            {
+                var location = method.OwnerLocation;
+                var ownerName = method.OwnerName;
+                if (!names.Contains(ownerName))
+                    continue;
+                
+                var scriptElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(location, true) as IScriptComponentHierarchy;
+                Assertion.Assert(scriptElement != null, "scriptElement != null");
+                if (scriptElement.ScriptReference.ExternalAssetGuid != guid)
+                    continue;
+                
+                var symbolTable = GetReferenceSymbolTable(psiSourceFile.GetSolution(), psiSourceFile.GetPsiModule(), method, GetScriptGuid(method));
+                var resolveResult = symbolTable.GetResolveResult(method.MethodName);
+                if (resolveResult.ResolveErrorType == ResolveErrorType.OK)
+                    yield return new UnityEventFindResult(resolveResult.DeclaredElement, psiSourceFile, method.OwnerLocation, isPrefab);
             }
+        }
+
+        private IEnumerable<(AssetMethodData method, bool isPrefabModification)> GetAssetMethodDataFor(IPsiSourceFile psiSourceFile)
+        {
+            foreach (var data in myPsiSourceFileToEventData.GetValuesSafe(psiSourceFile))
+                foreach (var call in data.Calls)
+                    yield return (call, false);
+
+            foreach (var result in GetImportedAssetMethodDataFor(psiSourceFile))
+                yield return (result, true);
         }
 
         private ISymbolTable GetReferenceSymbolTable(ISolution solution, IPsiModule psiModule, AssetMethodData assetMethodData, Guid? assetGuid)
@@ -484,13 +465,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
         public string Id => nameof(UnityEventsElementContainer);
         public int Order => 0;
+        
         public void Invalidate()
         {
+            myUnityEventUsageCount.Clear();
+            myUnityEventDatas.Clear();
+            myUnityEventsWithModifications.Clear();
+            myUnityEventNameToSourceFiles.Clear();
+            myUnityEventNameHashToScriptGuids.Clear();
+            myImportedUnityEventDatas.Clear();
             myFilesToCheckForUsages.Clear();
-            myFilesWithUsages.Clear();
-            myFilesWithPossibleUsages.Clear();
-            myPsiSourceFileToMethods.Clear();
-            myLocalUsages.Clear();
+            myMethodNameToFilesWithUsages.Clear();
+            myMethodNameToFilesWithPossibleUsages.Clear();
+            myPsiSourceFileToEventData.Clear();
         }
 
         public LocalList<IPsiSourceFile> GetPossibleFilesWithUsage(IDeclaredElement element)
@@ -498,13 +485,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             if (element == null)
                 return new LocalList<IPsiSourceFile>();
 
+            var result = new LocalList<IPsiSourceFile>();
             var shortName = element.ShortName;
 
-            var result = new LocalList<IPsiSourceFile>();
-            foreach (var sourceFile in myFilesWithUsages.GetValues(shortName))
+            // unity events
+            if (element is IField)
+            {
+                foreach (var psiSourceFile in myUnityEventNameToSourceFiles.GetValuesSafe(element.ShortName))
+                    result.Add(psiSourceFile);
+                
+                return result;
+            }
+
+            foreach (var sourceFile in myMethodNameToFilesWithUsages.GetValues(shortName))
                 result.Add(sourceFile);
             
-            foreach (var sourceFile in myFilesWithPossibleUsages.GetValues(shortName))
+            foreach (var sourceFile in myMethodNameToFilesWithPossibleUsages.GetValues(shortName))
                 result.Add(sourceFile);
 
             // Name was mentioned as event handler in assets. We should

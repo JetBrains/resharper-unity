@@ -8,12 +8,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     public class UnityMethodsFindResult : UnityAssetFindResult
     {
         public AssetMethodData AssetMethodData { get; }
+        public bool IsPrefabModification { get; }
 
-        public UnityMethodsFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodData assetMethodData, 
-            IHierarchyElement attachedElement, LocalReference attachedElementLocation)
-            : base(sourceFile, declaredElement, attachedElement, attachedElementLocation)
+        public UnityMethodsFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodData assetMethodData,
+            LocalReference attachedElementLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement, attachedElementLocation)
         {
             AssetMethodData = assetMethodData;
+            IsPrefabModification = isPrefabModification;
         }
 
         protected bool Equals(UnityMethodsFindResult other)
