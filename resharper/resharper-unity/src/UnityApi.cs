@@ -110,6 +110,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (field.HasAttributeInstance(KnownTypes.SerializeField, false))
                 return true;
 
+            if (field.Type.IsAction())
+                return false;
+            
             return field.GetAccessRights() == AccessRights.PUBLIC;
         }
 
