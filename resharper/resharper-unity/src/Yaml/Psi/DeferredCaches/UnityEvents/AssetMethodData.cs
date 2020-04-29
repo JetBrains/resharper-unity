@@ -12,6 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
     public class AssetMethodData
     {
         public LocalReference OwnerLocation { get; }
+        public string OwnerName { get; }
         public string MethodName { get; }
         public EventHandlerArgumentMode Mode { get; }
         public string Type { get; }
@@ -20,25 +21,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         
         public long TextRangeOwner { get; }
         
-        public bool IsPrefabModification { get; }
-        
-        public AssetMethodData(LocalReference ownerLocation, string methodName, TextRange textRange, long textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference, bool isPrefabModification = false)
+        public AssetMethodData(LocalReference ownerLocation, string ownerName, string methodName, TextRange textRange, long textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
         {
             Assertion.Assert(targetReference != null, "targetReference != null");
             Assertion.Assert(methodName != null, "methodName != null");
             OwnerLocation = ownerLocation;
+            OwnerName = ownerName;
             MethodName = methodName;
             TextRange = textRange;
             TextRangeOwner = textRangeOwner;
             Mode = mode;
             Type = type;
             TargetScriptReference = targetReference;
-            IsPrefabModification = isPrefabModification;
         }
         
         public void WriteTo(UnsafeWriter writer)
         {
             OwnerLocation.WriteTo(writer);
+            writer.Write(OwnerName);
             writer.Write(MethodName);
             writer.Write(TextRange.StartOffset);
             writer.Write(TextRange.EndOffset);
@@ -46,21 +46,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             writer.Write((int)Mode);
             writer.Write(Type);
             TargetScriptReference.WriteTo(writer);
-            writer.Write(IsPrefabModification);
         }
         
         public static AssetMethodData ReadFrom(UnsafeReader reader)
         {
-            return new AssetMethodData(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader), reader.ReadString(),
+            return new AssetMethodData(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader), reader.ReadString(),reader.ReadString(),
                 new TextRange(reader.ReadInt32(), reader.ReadInt32()), reader.ReadLong(),
-                (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), HierarchyReferenceUtil.ReadReferenceFrom(reader), reader.ReadBool());
+                (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), HierarchyReferenceUtil.ReadReferenceFrom(reader));
         }
 
         protected bool Equals(AssetMethodData other)
         {
-            return OwnerLocation.Equals(other.OwnerLocation) && MethodName == other.MethodName && Mode == other.Mode &&
-                   Type == other.Type && Equals(TargetScriptReference, other.TargetScriptReference) &&
-                   TextRange.Equals(other.TextRange) && TextRangeOwner == other.TextRangeOwner;
+            return OwnerLocation.Equals(other.OwnerLocation) && OwnerName == other.OwnerName &&
+                   MethodName == other.MethodName && Mode == other.Mode && Type == other.Type &&
+                   Equals(TargetScriptReference, other.TargetScriptReference) && TextRange.Equals(other.TextRange) &&
+                   TextRangeOwner == other.TextRangeOwner;
         }
 
         public override bool Equals(object obj)
@@ -76,10 +76,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             unchecked
             {
                 var hashCode = OwnerLocation.GetHashCode();
-                hashCode = (hashCode * 397) ^ (MethodName != null ? MethodName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ OwnerName.GetHashCode();
+                hashCode = (hashCode * 397) ^ MethodName.GetHashCode();
                 hashCode = (hashCode * 397) ^ (int) Mode;
                 hashCode = (hashCode * 397) ^ (Type != null ? Type.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (TargetScriptReference != null ? TargetScriptReference.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ TargetScriptReference.GetHashCode();
                 hashCode = (hashCode * 397) ^ TextRange.GetHashCode();
                 hashCode = (hashCode * 397) ^ TextRangeOwner.GetHashCode();
                 return hashCode;
@@ -141,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 target = (referenceValue as AssetReferenceValue).NotNull("referenceValue as AssetReferenceValue != null").Reference;            
             }
 
-            return new AssetMethodData(reference.Location, name, textRange, textRangeOwner, mode, null, target, true);
+            return new AssetMethodData(reference.Location,  reference.UnityEventName, name, textRange, textRangeOwner, mode, null, target);
         }
     }
 }

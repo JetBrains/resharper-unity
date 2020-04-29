@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Finder;
 using JetBrains.ReSharper.Psi.Search;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
@@ -51,8 +52,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         set.Add(sourceFile);
                     break;
                 case IField field:
-                    foreach (var sourceFile in myInspectorValuesContainer.GetPossibleFilesWithUsage(field))
-                        set.Add(sourceFile);
+                    if (UnityApi.IsDescendantOfUnityEvent(field.Type.GetTypeElement()))
+                    {
+                        foreach (var sourceFile in myUnityEventsElementContainer.GetPossibleFilesWithUsage(element))
+                            set.Add(sourceFile);
+                    }
+                    else
+                    {
+                        foreach (var sourceFile in myInspectorValuesContainer.GetPossibleFilesWithUsage(field))
+                            set.Add(sourceFile);
+                    }
+
                     break;
             }
             

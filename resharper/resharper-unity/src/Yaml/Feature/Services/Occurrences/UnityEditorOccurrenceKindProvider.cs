@@ -18,6 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
                 return new[] {UnityAssetSpecificOccurrenceKinds.ComponentUsage};
             if (occurrence is UnityInspectorValuesOccurrence)
                 return new[] {UnityAssetSpecificOccurrenceKinds.InspectorUsage};
+            if (occurrence is UnityEventOccurrence)
+                return new[] {UnityAssetSpecificOccurrenceKinds.EventHandler};
             return EmptyList<OccurrenceKind>.Instance;
         }
 

@@ -6,6 +6,8 @@ using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -17,6 +19,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
+using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
@@ -300,5 +303,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return guid;
         }
 
+        public static bool HasPossibleDerivedTypesWithMember(Guid ownerGuid, ITypeElement containingType, IEnumerable<string> memberNames, OneToCompactCountingSet<int, Guid> nameHashToGuids)
+        {
+            
+            var count = 0;
+            foreach (var possibleName in memberNames)
+            {
+                var values = nameHashToGuids.GetValues(possibleName.GetPlatformIndependentHashCode());
+                count += values.Length;
+                if (values.Length == 1 && !values[0].Equals(ownerGuid))
+                    count++;
+            }
+
+            if (count > 1)
+            {
+                // TODO: drop daemon dependency and inject compoentns in consructor
+                var configuration = containingType.GetSolution().GetComponent<SolutionAnalysisConfiguration>();
+                if (configuration.Enabled.Value && configuration.CompletedOnceAfterStart.Value &&
+                    configuration.Loaded.Value)
+                {
+                    var service = containingType.GetSolution().GetComponent<SolutionAnalysisService>();
+                    var id = service.GetElementId(containingType);
+                    if (id.HasValue && service.UsageChecker is IGlobalUsageChecker checker)
+                    {
+                        // no inheritors
+                        if (checker.GetDerivedTypeElementsCount(id.Value) == 0)
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

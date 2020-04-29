@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                if (occurrence is UnityAssetOccurrence assetOccurrence && !assetOccurrence.SourceFile.GetLocation().IsAsset())
+                if (occurrence is UnityAssetOccurrence assetOccurrence && !assetOccurrence.SourceFile.GetLocation().IsAsset() && !(occurrence is UnityEventOccurrence))
                 {
                     using (ReadLockCookie.Create())
                     {
@@ -135,7 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                if (occurrence is UnityAssetOccurrence assetOccurrence)
+                if (occurrence is UnityAssetOccurrence assetOccurrence && !(occurrence is UnityEventOccurrence))
                 {
                     var hierarchyContainer = assetOccurrence.GetSolution()?.GetComponent<AssetDocumentHierarchyElementContainer>();
                     var element = hierarchyContainer?.GetHierarchyElement(assetOccurrence.AttachedElementLocation, true);

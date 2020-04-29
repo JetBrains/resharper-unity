@@ -8,7 +8,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
@@ -23,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public LocalReference AttachedElementLocation { get; }
         public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
 
-        protected UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, IHierarchyElement attachedElement, LocalReference attachedElementLocation)
+        protected UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference attachedElementLocation)
         {
             SourceFile = sourceFile;
             AttachedElementLocation = attachedElementLocation;
@@ -31,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             DeclaredElementPointer = declaredElement;
         }
 
-        public bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
+        public virtual bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
             TabOptions tabOptions = TabOptions.Default)
         {
             return solution.GetComponent<UnityAssetOccurrenceNavigator>().Navigate(solution, DeclaredElementPointer, AttachedElementLocation);

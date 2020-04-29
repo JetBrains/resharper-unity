@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public InspectorVariableUsage InspectorVariableUsage { get; }
 
         public UnityInspectorValuesOccurrence(IPsiSourceFile sourceFile, InspectorVariableUsage inspectorVariableUsage,
-            IDeclaredElementPointer<IDeclaredElement> declaredElement, IHierarchyElement attachedElement, LocalReference attachedElementLocation)
-            : base(sourceFile, declaredElement, attachedElement, attachedElementLocation)
+            IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference attachedElementLocation)
+            : base(sourceFile, declaredElement, attachedElementLocation)
         {
             InspectorVariableUsage = inspectorVariableUsage;
         }

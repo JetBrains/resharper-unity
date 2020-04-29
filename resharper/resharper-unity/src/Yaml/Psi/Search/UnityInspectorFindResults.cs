@@ -11,8 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public InspectorVariableUsage InspectorVariableUsage { get; }
 
         public UnityInspectorFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, InspectorVariableUsage inspectorVariableUsage, 
-            IHierarchyElement attachedElement, LocalReference attachedElementLocation)
-            : base(sourceFile, declaredElement, attachedElement, attachedElementLocation)
+            LocalReference attachedElementLocation)
+            : base(sourceFile, declaredElement, attachedElementLocation)
         {
             InspectorVariableUsage = inspectorVariableUsage;
         }

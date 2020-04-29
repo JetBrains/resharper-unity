@@ -10,12 +10,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
     public class UnityMethodsOccurrence : UnityAssetOccurrence
     {
+        public bool IsPrefabModification { get; }
         public readonly AssetMethodData MethodData;
 
         public UnityMethodsOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement,
-            IHierarchyElement attachedElement, LocalReference attachedElementLocation, AssetMethodData methodData)
-            : base(sourceFile, declaredElement, attachedElement, attachedElementLocation)
+            LocalReference attachedElementLocation, AssetMethodData methodData, bool isPrefabModification)
+            : base(sourceFile, declaredElement, attachedElementLocation)
         {
+            IsPrefabModification = isPrefabModification;
             MethodData = methodData;
         }
 
@@ -27,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public override IconId GetIcon()
         {
-            if (MethodData.IsPrefabModification)
+            if (IsPrefabModification)
                 return UnityFileTypeThemedIcons.FileUnityPrefab.Id;
 
             return base.GetIcon();

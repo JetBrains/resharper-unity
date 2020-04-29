@@ -11,13 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         public IPsiSourceFile SourceFile { get; }
         public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
-        public IHierarchyElement AttachedElement { get; }
         public LocalReference AttachedElementLocation { get; }
 
-        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, IHierarchyElement attachedElement, LocalReference attachedElementLocation)
+        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, LocalReference attachedElementLocation)
         {
             SourceFile = sourceFile;
-            AttachedElement = attachedElement;
             AttachedElementLocation = attachedElementLocation;
             DeclaredElementPointer = new SourceElementPointer<IDeclaredElement>(declaredElement);
         }
@@ -25,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
         protected bool Equals(UnityAssetFindResult other)
         {
-            return SourceFile.Equals(other.SourceFile) && AttachedElement.Equals(other.AttachedElement);
+            return SourceFile.Equals(other.SourceFile) && AttachedElementLocation.Equals(other.AttachedElementLocation);
         }
 
         public override bool Equals(object obj)
@@ -41,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             unchecked
             {
                 var hashCode = SourceFile.GetHashCode();
-                hashCode = (hashCode * 397) ^ AttachedElement.GetHashCode();
+                hashCode = (hashCode * 397) ^ AttachedElementLocation.GetHashCode();
                 return hashCode;
             }
         }
