@@ -284,11 +284,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 Assertion.Assert(path.FullPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase),
                     "path.FullPath.EndsWith('.app', StringComparison.OrdinalIgnoreCase)");
             }
-            else
+            else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
             {
                 Assertion.Assert(path.ExistsFile, "path.ExistsFile");
                 Assertion.Assert(path.FullPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase),
                     "path.FullPath.EndsWith('.exe', StringComparison.OrdinalIgnoreCase)");
+            }
+            else
+            {
+                Assertion.Assert(path.ExistsFile, "path.ExistsFile");
             }
         }
     }
