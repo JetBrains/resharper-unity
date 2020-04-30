@@ -253,6 +253,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     if (exePath.ExistsFile)
                         return exePath;
                 }
+                if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Linux)
+                {
+                    var exePath = filePath.Combine("../../../Unity"); // Editor\Data\Managed\UnityEngine.dll
+                    if (!exePath.ExistsFile)
+                        exePath = filePath.Combine("../../../../Unity"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
+                    if (exePath.ExistsFile)
+                        return exePath;
+                }
                 else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 {
                     var appPath = filePath;
