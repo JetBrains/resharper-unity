@@ -4,6 +4,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -94,8 +95,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         private readonly Dictionary<UnityProblemAnalyzerContext, List<IUnityProblemAnalyzer>>
             myProblemAnalyzersByContext;
 
-        private readonly Stack<List<UnityProblemAnalyzerContext>> myProblemAnalyzerContexts =
-            new Stack<List<UnityProblemAnalyzerContext>>();
+        private readonly Stack<UnityProblemAnalyzerContext> myProblemAnalyzerContexts =
+            new Stack<UnityProblemAnalyzerContext>();
 
         private readonly Stack<UnityProblemAnalyzerContext> myProhibitedContexts =
             new Stack<UnityProblemAnalyzerContext>();
@@ -170,19 +171,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
-        private List<UnityProblemAnalyzerContext> GetProblemAnalyzerContext(ITreeNode element)
+        private UnityProblemAnalyzerContext GetProblemAnalyzerContext(ITreeNode element)
         {
-            var res = new List<UnityProblemAnalyzerContext>();
+            var res = new UnityProblemAnalyzerContext();
             if (myIsPerformanceAnalysisEnabled && IsPerformanceCriticalDeclaration(element))
-                res.Add(UnityProblemAnalyzerContext.PERFOMANCE_CONTEXT);
+                res |= UnityProblemAnalyzerContext.PERFOMANCE_CONTEXT;
             if (myIsBurstAnalysisEnabled && IsBurstDeclaration(element))
-                res.Add(UnityProblemAnalyzerContext.BURST_CONTEXT);
+                res |= UnityProblemAnalyzerContext.BURST_CONTEXT;
             return res;
-        }
-
-        private bool IsContextProhibited(UnityProblemAnalyzerContext context)
-        {
-            return myProhibitedContexts.Count > 0 && myProhibitedContexts.Peek().HasFlag(context);
         }
 
         private bool IsProhibitedNode(ITreeNode node)
@@ -191,7 +187,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             {
                 case IThrowStatement _:
                 case IThrowExpression _:
-                case IInvocationExpression _:
+                case IInvocationExpression invocationExpression when IsBurstDiscarded(invocationExpression):
                     return true;
                 default:
                     return false;
@@ -205,7 +201,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             var invokedMethod = expression.InvocationExpressionReference.Resolve().DeclaredElement as IMethod;
             if (invokedMethod == null)
                 return false;
-            return invokedMethod.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self).Count != 0;
+            return invokedMethod.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self).Count !=
+                   0;
         }
 
         private UnityProblemAnalyzerContext GetProhibitedContexts(ITreeNode node)
@@ -240,15 +237,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             {
                 if (myProblemAnalyzerContexts.Count > 0)
                 {
-                    foreach (var context in myProblemAnalyzerContexts.Peek())
-                        if (!IsContextProhibited(context))
+                    const byte end = UnityProblemAnalyzerContextUtil.UnityProblemAnalyzerContextSize;
+                    var possibleContexts = myProblemAnalyzerContexts.Peek();
+                    var prohibitedContexts = UnityProblemAnalyzerContext.NONE;
+                    if (myProhibitedContexts.Count > 0)
+                        prohibitedContexts = myProhibitedContexts.Peek();
+                    for (byte context = 1, index = 0; index < end; index++, context <<= 1)
+                    {
+                        var enumContext = (UnityProblemAnalyzerContext) context;
+                        if (possibleContexts.HasFlag(enumContext) && !prohibitedContexts.HasFlag(enumContext))
                         {
-                            foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[context])
+                            //be aware of https://johnthiriet.com/back-to-basics-csharp-casting-an-integer-into-an-enumeration/
+                            foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[enumContext])
                             {
                                 performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind,
                                     consumer);
                             }
                         }
+                    }
                 }
             }
             catch (OperationCanceledException)
@@ -278,7 +284,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         }
 
 
-        private bool IsFunctionNode(ITreeNode node)
+        private static bool IsFunctionNode(ITreeNode node)
         {
             switch (node)
             {
@@ -293,45 +299,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
         private bool IsPerformanceCriticalDeclaration(ITreeNode element)
         {
-            if (!(element is ICSharpDeclaration declaration))
-                return false;
-
-            var declaredElement = declaration.DeclaredElement;
-            if (declaredElement == null)
-                return false;
-
-            if (myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS)
-            {
-                var id = myProvider.GetElementId(declaredElement);
-                if (!id.HasValue)
-                    return false;
-
-                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(
-                    myPerformanceCriticalCodeCallGraphMarksProvider.Id,
-                    true, id.Value);
-            }
-
-            return PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myAPI, declaration);
+            return IsRootDeclaration(element,
+                declaration => PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myAPI, declaration),
+                myPerformanceCriticalCodeCallGraphMarksProvider.Id);
         }
 
         private bool IsBurstDeclaration(ITreeNode element)
         {
-            if (!(element is ICSharpDeclaration declaration))
+            return IsRootDeclaration(element,
+                // ReSharper disable once AssignNullToNotNullAttribute
+                declaration =>
+                    myCallGraphBurstMarksProvider.GetMarkedFunctionsFrom(declaration, null).FirstOrDefault() != null,
+                myCallGraphBurstMarksProvider.Id);
+        }
+
+        private bool IsRootDeclaration(ITreeNode node, 
+            Func<ICSharpDeclaration, bool> isRootedPredicate, 
+            CallGraphRootMarksProviderId rootMarksProviderId)
+        {
+            if (!(node is ICSharpDeclaration declaration))
                 return false;
             var declaredElement = declaration.DeclaredElement;
             if (declaredElement == null)
                 return false;
-            if (myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS)
+            var isRooted = isRootedPredicate(declaration);
+            var isGlobalStage = myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS;
+            if (!isRooted && isGlobalStage)
             {
                 var id = myProvider.GetElementId(declaredElement);
                 if (!id.HasValue)
                     return false;
-                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(myCallGraphBurstMarksProvider.Id,
-                    true,
-                    id.Value);
+                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
+                    rootMarksProviderId, isGlobalStage, id.Value);
             }
 
-            return myCallGraphBurstMarksProvider.GetMarkedFunctionsFrom(element, null).FirstOrDefault() != null;
+            return isRooted;
         }
     }
 }

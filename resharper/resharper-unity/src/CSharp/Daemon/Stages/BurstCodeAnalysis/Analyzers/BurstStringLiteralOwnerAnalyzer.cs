@@ -13,8 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         protected override void Analyze(ICSharpLiteralExpression cSharpLiteralExpression, IDaemonProcess daemonProcess, DaemonProcessKind kind,
             IHighlightingConsumer consumer)
         {
-            if (cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral &&
-                !(cSharpLiteralExpression.Parent is ICSharpArgument))
+            if (cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
             {
                 consumer.AddHighlighting(new BC1033Error(cSharpLiteralExpression.GetDocumentRange()));
             }

@@ -32,40 +32,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                          UnityApi.IsDescendantOf(KnownTypes.Job, structDeclaration.DeclaredElement):
                 {
                     var declaredElement = methodDeclaration.DeclaredElement;
-                    if (declaredElement != null &&
-                        declaredElement.ShortName == "Execute" &&
-                        declaredElement.Parameters.Count == 0 &&
-                        declaredElement.TypeParameters.Count == 0)
-                    {
+                    if (declaredElement != null && declaredElement.ShortName == "Execute" &&
+                        declaredElement.Parameters.Count == 0 && declaredElement.TypeParameters.Count == 0)
                         res.Add(declaredElement);
-                    }
 
                     break;
                 }
                 case IInvocationExpression invocationExpression:
                 {
-                    if (!(CallGraphUtil.GetCallee(invocationExpression) is IMethod function))
+                    if (!(CallGraphUtil.GetCallee(invocationExpression) is IMethod method))
                         break;
-                    var containingType = function.GetContainingType();
+                    var containingType = method.GetContainingType();
                     if (containingType == null)
                         break;
                     if (containingType.GetClrName().Equals(KnownTypes.BurstCompiler) &&
-                        function.Parameters.Count == 1 && 
-                        function.TypeParameters.Count == 1 &&
-                        function.ShortName == "CompileFunctionPointer")
+                        method.Parameters.Count == 1 &&
+                        method.TypeParameters.Count == 1 &&
+                        method.ShortName == "CompileFunctionPointer")
                     {
                         var argumentList = invocationExpression.ArgumentList.Arguments;
+                        //incorrect code
                         if (argumentList.Count != 1)
                             break;
                         var argument = argumentList[0].Value;
                         if (argument == null)
                             break;
-                        var possibleDeclaredElements = CallGraphUtil.ExtractDeclaredElement(argument);
+                        var possibleDeclaredElements = CallGraphUtil.ExtractCallGraphDeclaredElements(argument);
                         foreach (var declaredElement in possibleDeclaredElements)
+                        {
                             if (declaredElement != null)
-                            {
                                 res.Add(declaredElement);
-                            }
+                        }
                     }
 
                     break;
