@@ -298,6 +298,7 @@
 <em>Fixed:</em>
 <ul>
   <li>Fix incorrect base type required warning for <tt>ExecuteAlways</tt> attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1642">#1642</a>)</li>
+  <li>Fix generation of static constructor for redundant <tt>[InitializeOnLoad]</tt> when member generator set to "default return value" (<a href="https://github.com/JetBrains/resharper-unity/pull/1644">#1644</a>)</li>
   <li>Rider: Fix solution hang on "constructing components" due to excessive <tt>FileSystemWatcher</tt> initialisation (<a href="https://youtrack.jetbrains.com/issue/RIDER-41812">RIDER-41812</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1631">#1631</a>)</li>
   <li>Rider: Fix exception finding file icon causing explorer view to be blank (<a href="https://youtrack.jetbrains.com/issue/RIDER-43038">RIDER-43038</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1632">#1632</a>)</li>
   <li>Rider: Fix handling of file system folders in <tt>Packages</tt> with the same name as a package (<a href="https://github.com/JetBrains/resharper-unity/issues/1626">#1626</a>, [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))</li>
