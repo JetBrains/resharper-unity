@@ -291,7 +291,7 @@ class PackageManager(private val project: Project) {
             val path = version.substring(5)
             val packagesPath = Paths.get(packagesFolder.path)
             val filePath = packagesPath.resolve(path)
-            val packageFolder = VfsUtil.findFile(filePath, true)
+            val packageFolder = VfsUtil.findFile(filePath, false)
             if (packageFolder != null && packageFolder.isDirectory) {
                 getPackageDataFromFolder(name, packageFolder, PackageSource.Local)
             } else {
@@ -348,7 +348,7 @@ class PackageManager(private val project: Project) {
 
         // If we can identify the module root of the current project, use it to look up the module
         if (builtInPackagesFolder?.isDirectory() == true) {
-            val packageFolder = VfsUtil.findFile(builtInPackagesFolder.resolve(name), true)
+            val packageFolder = VfsUtil.findFile(builtInPackagesFolder.resolve(name), false)
             return getPackageDataFromFolder(name, packageFolder, PackageSource.BuiltIn)
         }
 
