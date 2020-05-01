@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.R
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 using JetBrains.Util.Collections;
 using JetBrains.Util.Extension;
 
@@ -43,9 +43,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             var result = new ImportedUnityEventData();
             if (document.HierarchyElement is IPrefabInstanceHierarchy prefabInstanceHierarchy)
             {
+                var assetMethodDataToModifiedFields = new OneToSetMap<(LocalReference, string, int), string>();
                 foreach (var modification in prefabInstanceHierarchy.PrefabModifications)
                 {
-
                     if (!(modification.Target is ExternalReference externalReference))
                         continue;
                     
@@ -55,6 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     var location = new LocalReference(currentFile.PsiStorage.PersistentIndex, PrefabsUtil.Import(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                     var parts = modification.PropertyPath.Split('.');
                     var unityEventName = parts[0];
+                    
 
                     var dataPart = parts.FirstOrDefault(t => t.StartsWith("data"));
                     if (dataPart == null)
@@ -63,30 +64,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     if (!int.TryParse(dataPart.RemoveStart("data[").RemoveEnd("]"), out var index))
                         continue;
 
+                    result.UnityEventToModifiedIndex.Add((location, unityEventName), index);
                     var last = parts.Last();
+                    if (last.Equals("m_MethodName") && modification.Value is AssetSimpleValue assetSimpleValue)
+                        result.AssetMethodNameInModifications.Add(assetSimpleValue.SimpleValue);
 
+                    assetMethodDataToModifiedFields.Add((location, unityEventName, index), last);
 
-                    var reference = new ImportedAssetMethodReference(location, unityEventName, index);
-                    if (!result.ReferenceToImportedData.TryGetValue(reference, out var modifications))
-                    {
-                        modifications = new Dictionary<string, IAssetValue>();
-                        result.ReferenceToImportedData[reference] = modifications;
-                    }
-
-                    switch (last)
-                    {
-                        case "m_Mode" when modification.Value is AssetSimpleValue simpleValue:
-                            modifications[last] = simpleValue;
-                            break;
-                        case "m_MethodName" when modification.Value is AssetSimpleValue simpleValue:
-                            modifications[last] = simpleValue;
-                            modifications["m_MethodNameRange"] = new Int2Value(modification.ValueRange.StartOffset, modification.ValueRange.EndOffset);
-                            break;
-                        case "m_Target" when modification.ObjectReference is IHierarchyReference objectReference:
-                            modifications[last] = new AssetReferenceValue(objectReference);
-                            break;
-                    }
                 }
+                
+                foreach (var (_, set) in assetMethodDataToModifiedFields)
+                    if (!set.Contains("m_MethodName"))
+                        result.HasEventModificationWithoutMethodName = true;
             }
         
             return result;
@@ -94,85 +83,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
         private void DropPrefabModifications(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, UnityEventsDataElement element)
         {
-            foreach (var (reference, modification) in element.ImportedUnityEventData.ReferenceToImportedData)
+            foreach (var ((_, name), _) in element.ImportedUnityEventData.UnityEventToModifiedIndex)
             {
-                if (modification.ContainsKey("m_Target") && !modification.ContainsKey("m_MethodName"))
-                    myFilesToCheckForUsages.Remove(sourceFile);
-
-                if (modification.TryGetValue("m_MethodName", out var name))
-                    myMethodNameToFilesWithPossibleUsages.Remove((name as AssetSimpleValue).NotNull("name as AssetSimpleValue != null").SimpleValue, sourceFile);
-
-                myUnityEventsWithModifications.Remove(reference.UnityEventName);
-                myUnityEventNameToSourceFiles.Remove(reference.UnityEventName, sourceFile);
-
+                myUnityEventsWithModifications.Remove(name);
+                myUnityEventNameToSourceFiles.Remove(name, sourceFile);
             }
+
+            foreach (var assetMethodNameInModification in element.ImportedUnityEventData.AssetMethodNameInModifications)
+            {
+                myMethodNameToFilesWithPossibleUsages.Remove(assetMethodNameInModification, sourceFile);
+            }
+
+            if (element.ImportedUnityEventData.HasEventModificationWithoutMethodName)
+                myFilesToCheckForUsages.Remove(sourceFile);
+            
             myImportedUnityEventDatas.Remove(sourceFile);
         }
 
         private void MergePrefabModifications(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, UnityEventsDataElement element)
         {
-            foreach (var (reference, modification) in element.ImportedUnityEventData.ReferenceToImportedData)
+            foreach (var ((_, name), _) in element.ImportedUnityEventData.UnityEventToModifiedIndex)
             {
-                if (!modification.ContainsKey("m_MethodName"))
-                    myFilesToCheckForUsages.Add(sourceFile);
-                
-                if (modification.TryGetValue("m_MethodName", out var name))
-                    myMethodNameToFilesWithPossibleUsages.Add((name as AssetSimpleValue).NotNull("name as AssetSimpleValue != null").SimpleValue, sourceFile);
-
-                myUnityEventsWithModifications.Add(reference.UnityEventName);
-                myUnityEventNameToSourceFiles.Add(reference.UnityEventName, sourceFile);
+                myUnityEventsWithModifications.Add(name);
+                myUnityEventNameToSourceFiles.Add(name, sourceFile);
             }
-            myImportedUnityEventDatas[sourceFile] = element.ImportedUnityEventData;
+
+            foreach (var assetMethodNameInModification in element.ImportedUnityEventData.AssetMethodNameInModifications)
+            {
+                myMethodNameToFilesWithPossibleUsages.Add(assetMethodNameInModification, sourceFile);
+            }
+
+            if (element.ImportedUnityEventData.HasEventModificationWithoutMethodName)
+                myFilesToCheckForUsages.Add(sourceFile);
+            
+            myImportedUnityEventDatas.Add(sourceFile, element.ImportedUnityEventData);
         }
 
         private IEnumerable<AssetMethodData> GetImportedAssetMethodDataFor(IPsiSourceFile psiSourceFile)
         {
             if (myImportedUnityEventDatas.TryGetValue(psiSourceFile, out var importedUnityEventData))
             {
-                foreach (var (reference, modifications) in importedUnityEventData.ReferenceToImportedData)
+                foreach (var ((location, unityEventName), modifiedEvents) in importedUnityEventData.UnityEventToModifiedIndex)
                 {
-                    var element = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(reference.Location, true);
-                    Assertion.Assert(element is ImportedScriptComponentHierarchy, "element is ImportedScriptComponentHierarchy");
-                    var script = element as ImportedScriptComponentHierarchy;
-                    var originLocation = script.OriginLocation;
+                    var script = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(location, true) as IScriptComponentHierarchy;
+                    Assertion.Assert(script != null, "script != null");
+                    var scriptType = AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, script.ScriptReference.ExternalAssetGuid);
+                    var field = scriptType?.GetMembers().FirstOrDefault(t => t is IField f && AssetUtils.GetAllNamesFor(f).Contains(unityEventName)) as IField;
+                    if (field == null)
+                        continue;
 
+                    var names = AssetUtils.GetAllNamesFor(field).ToJetHashSet();
+                    var modifications = script.ImportUnityEventData(this, names);
 
-
-                    if (!myUnityEventDatas.TryGetValue((originLocation, reference.UnityEventName), out var unityEventData))
+                    foreach (var index in modifiedEvents)
                     {
-                        // TODO : check FormerlySerializedAs
-                        // 1. get script type from script.ScriptReference.ExternalAssetGuid
-                        // 2. find field which could be related to reference.UnityEventName (same short name, or same formerlyName)
-                        // 3. extr
-                        var scriptType = AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, script.ScriptReference.ExternalAssetGuid);
-
-                        var field = scriptType?.GetMembers().FirstOrDefault(t => t is IField f && AssetUtils.GetAllNamesFor(f).Contains(reference.UnityEventName)) as IField;
-                        if (field == null)
-                            continue;
-
-                        var names = AssetUtils.GetAllNamesFor(field);
-                        
-                        // TODO how we should merge entries if several names stored in script component?, let's take first one for now
-
-                        foreach (var name in names)
-                        {
-                            if (myUnityEventDatas.TryGetValue((originLocation, name), out unityEventData))
-                                break;
-                        }
-                            
-                        if (unityEventData == null)
-                            continue;
-                    }
-
-                    if (reference.MethodIndex < unityEventData.Calls.Count)
-                    {
-                        var import = unityEventData.Calls[reference.MethodIndex].Import(reference, modifications);
-                        if (import != null)
-                            yield return import;
-                    }
-                    else
-                    {
-                        var result = AssetMethodData.TryCreateAssetMethodFromModifications(reference, modifications);
+                        Assertion.Assert(index < modifications.Count, "index < modifications.Count");
+                        var result = AssetMethodData.TryCreateAssetMethodFromModifications(location, unityEventName, modifications[index]);
                         if (result != null)
                             yield return result;
                     }

@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
@@ -37,6 +41,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
                 HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
                 HierarchyReferenceUtil.ReadExternalReferenceFrom(reader));
+        }
+        
+        public List<Dictionary<string, IAssetValue>> ImportUnityEventData(UnityEventsElementContainer elementContainer, JetHashSet<string> allUnityEventNames)
+        {
+            var unityEvents = elementContainer.GetUnityEventDataFor(Location, allUnityEventNames);
+
+            var result = new List<Dictionary<string, IAssetValue>>();
+            foreach (var unityEventData in unityEvents)
+            {
+                for (int i = 0; i < unityEventData.Calls.Count; i++)
+                {
+                    var dictionary = unityEventData.Calls[i].ToDictionary();
+                    if (i < result.Count)
+                    {
+                        AssetUtils.Import(result[i], dictionary);
+                    }
+                    else
+                    {
+                        Assertion.Assert(result.Count == i, "result.Count == i");
+                        result.Add(dictionary);
+                    }
+                }    
+            }
+            return result;
         }
     }
 }

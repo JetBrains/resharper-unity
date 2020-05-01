@@ -9,12 +9,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     public class UnityInspectorFindResults : UnityAssetFindResult
     {
         public InspectorVariableUsage InspectorVariableUsage { get; }
+        public bool IsPrefabModification { get; }
 
         public UnityInspectorFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, InspectorVariableUsage inspectorVariableUsage, 
-            LocalReference attachedElementLocation)
+            LocalReference attachedElementLocation, bool isPrefabModification)
             : base(sourceFile, declaredElement, attachedElementLocation)
         {
             InspectorVariableUsage = inspectorVariableUsage;
+            IsPrefabModification = isPrefabModification;
         }
 
         protected bool Equals(UnityInspectorFindResults other)

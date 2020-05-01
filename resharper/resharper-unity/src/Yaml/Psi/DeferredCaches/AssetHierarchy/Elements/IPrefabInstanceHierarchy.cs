@@ -11,6 +11,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         IReadOnlyList<PrefabModification> PrefabModifications { get; }
         LocalReference ParentTransform { get; }
         Guid SourcePrefabGuid { get; }
-
     }
 }

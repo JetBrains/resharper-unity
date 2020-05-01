@@ -3,21 +3,19 @@ using JetBrains.Application.UI.PopupLayout;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Navigation;
-using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Presentation;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
-    public class UnityEventOccurrence : UnityAssetOccurrence, IDeclaredElementOccurrence
+    public class UnityEventOccurrence : UnityAssetOccurrence
     {
         public bool IsPrefabModification { get; }
 
@@ -25,7 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             : base(sourceFile, declaredElement.CreateElementPointer(), attachedElementLocation)
         {
             IsPrefabModification = isPrefabModification;
-            OccurrenceElement = new DeclaredElementEnvoy<IDeclaredElement>(declaredElement);
         }
 
         public override bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
@@ -69,8 +66,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             return base.GetIcon();
         }
 
-        public IDeclaredElementEnvoy OccurrenceElement { get; }
-        public IDeclaredElementEnvoy DisplayElement => OccurrenceElement;
-        public SearchTargetRole SearchTargetRole { get; set; }
+        public override string ToString()
+        {
+            using (ReadLockCookie.Create())
+            {
+                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                {
+                    var declaredElement = DeclaredElementPointer.FindDeclaredElement();
+                    if (declaredElement == null)
+                        return "Invalid";
+                    return DeclaredElementMenuItemFormatter.FormatText(declaredElement, declaredElement.PresentationLanguage, out _).Text;
+                }
+            }
+        }
     }
 }

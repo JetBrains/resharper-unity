@@ -117,7 +117,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             IEnumerable<BulbMenuItem> items, List<CodeLensEntryExtraActionModel> extraActions)
         {
             string displayName = null;
-            string tooltip = "Values from Unity Editor Inspector";
 
             var solution = element.GetSolution();
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
@@ -168,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 }
 
                 consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                    sb.ToString(), tooltip, "Methods", this,
+                    sb.ToString(), GetTooltip(count, estimated, false), "Methods", this,
                     declaredElement, iconModel, presentationType));
                 return;
             }
@@ -179,24 +178,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
             
+            int changesCount;
+            bool isEstimated = false;
+            bool isUniqueChange = false;
             if (myInspectorValuesContainer.IsIndexResultEstimated(guid, containingType, propertyNames))
             {
-                var count = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -  myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
-                displayName = $"{count}+ changes";
+                changesCount = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -  myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames, initValueUnityPresentation);
+                displayName = $"Changed in {changesCount}+ assets";
+                isEstimated = true;
             }
             else
             {
-                var initValueCount =
-                    myInspectorValuesContainer.GetValueCount(guid, propertyNames, initValueUnityPresentation);
+                changesCount = 0;
+                var initValueCount = myInspectorValuesContainer.GetValueCount(guid, propertyNames, initValueUnityPresentation);
 
                 if (initValueCount == 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 1) // only modified value
                 {
+                    isUniqueChange = true;
                     var value  = myInspectorValuesContainer.GetUniqueValueDifferTo(guid, propertyNames, null);
                     displayName = value.GetPresentation(solution, field, false);
                 }
                 else if (initValueCount > 0 && myInspectorValuesContainer.GetUniqueValuesCount(guid, propertyNames) == 2)
                 {
-
+                    isUniqueChange = true;
                     // original value & only one modified value
                     var anotherValueWithLocation = myInspectorValuesContainer.GetUniqueValueDifferTo(guid, propertyNames, initValueUnityPresentation);
                     displayName = anotherValueWithLocation.GetPresentation(solution, field, false);
@@ -204,26 +208,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
                 if (displayName == null || displayName.Equals("..."))
                 {
-                    var count = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -
-                                myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames,
-                                    initValueUnityPresentation);
-                    if (count == 0)
+                    changesCount = myInspectorValuesContainer.GetAffectedFiles(guid, propertyNames) -
+                                   myInspectorValuesContainer.GetAffectedFilesWithSpecificValue(guid, propertyNames,
+                                       initValueUnityPresentation);
+                    if (changesCount == 0)
                     {
                         displayName = "Unchanged";
                     }
                     else
                     {
-                        var word = count == 1 ? "asset" : "assets";
-                        displayName = $"Changed in {count} {word}";
+                        var word = changesCount == 1 ? "asset" : "assets";
+                        displayName = $"Changed in {changesCount} {word}";
                     }
                 }
             }
 
             consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(),
-                displayName, tooltip, "Property Inspector values", this,
+                displayName, GetTooltip(changesCount, isEstimated, isUniqueChange), "Property Inspector values", this,
                 declaredElement, iconModel, presentationType));
         }
-        
+
+        private string GetTooltip(int changesCount, bool isEstimated, bool isUniqueChange)
+        {
+            if (isUniqueChange)
+                return "Unique change";
+            
+            if (changesCount == 0 && !isEstimated)
+                return "No changes in assets";
+
+            if (changesCount == 0 && isEstimated)
+                return "Possible indirect changes";
+    
+            if (changesCount == 1 && isEstimated)
+                return "Changed in 1 asset + possible indirect changes";
+
+            return $"Changed in {changesCount} assets" + (isEstimated ? " + possible indirect changes" : "");
+        }
+
         private IAssetValue GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
         {
             if (presentationType == UnityPresentationType.Bool && value is bool b)

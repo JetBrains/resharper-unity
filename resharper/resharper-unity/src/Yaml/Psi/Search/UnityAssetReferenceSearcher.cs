@@ -70,9 +70,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     else
                     {
                         var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
-                        foreach (var variableUsage in usages)
+                        foreach (var findResult in usages)
                         {
-                            consumer.Accept(new UnityInspectorFindResults(sourceFile, element, variableUsage, variableUsage.Location));
+                            consumer.Accept(findResult);
                         }
                     }
                 }

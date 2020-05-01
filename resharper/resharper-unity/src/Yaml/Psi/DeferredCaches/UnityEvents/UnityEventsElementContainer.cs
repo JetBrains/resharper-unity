@@ -489,10 +489,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             var shortName = element.ShortName;
 
             // unity events
-            if (element is IField)
+            if (element is IField field)
             {
-                foreach (var psiSourceFile in myUnityEventNameToSourceFiles.GetValuesSafe(element.ShortName))
-                    result.Add(psiSourceFile);
+                foreach (var name in AssetUtils.GetAllNamesFor(field))
+                    foreach (var psiSourceFile in myUnityEventNameToSourceFiles.GetValuesSafe(name))
+                        result.Add(psiSourceFile);
                 
                 return result;
             }
@@ -511,6 +512,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     result.Add(sourceFile);
 
             return result;
+        }
+
+        public IEnumerable<UnityEventData> GetUnityEventDataFor(LocalReference location, JetHashSet<string> allUnityEventNames)
+        {
+            foreach (var name in allUnityEventNames)
+                if (myUnityEventDatas.TryGetValue((location, name), out var data))
+                    yield return data;
         }
     }
 }

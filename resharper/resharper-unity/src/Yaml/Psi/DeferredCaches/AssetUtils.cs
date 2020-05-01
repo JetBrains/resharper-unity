@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Collections;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
@@ -10,6 +11,7 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -336,6 +338,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Source dictionary will be changed!
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="import"></param>
+        /// <returns></returns>
+        public static Dictionary<string, IAssetValue> Import(Dictionary<string, IAssetValue> source, Dictionary<string, IAssetValue> import)
+        {
+            foreach (var (name, value) in import)
+            {
+                source[name] = value;
+            }
+
+            return source;
         }
     }
 }
