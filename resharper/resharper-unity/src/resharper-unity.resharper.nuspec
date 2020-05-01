@@ -38,6 +38,7 @@ New in 2020.1.2
 
 Fixed:
 - Fix incorrect base type required warning for ExecuteAlways attribute (#1642)
+- Fix generation of static constructor for redundant [InitializeOnLoad] when member generator set to "default return value" (#1644)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
