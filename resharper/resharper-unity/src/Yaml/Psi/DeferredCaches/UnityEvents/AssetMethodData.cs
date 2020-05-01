@@ -86,14 +86,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 return hashCode;
             }
         }
-
-        public AssetMethodData Import(ImportedAssetMethodReference reference, Dictionary<string, IAssetValue> modifications)
-        {
-            return TryCreateAssetMethodFromModifications(reference, modifications, this);
-        }
         
         [CanBeNull]
-        public static AssetMethodData TryCreateAssetMethodFromModifications(ImportedAssetMethodReference reference, Dictionary<string, IAssetValue> modifications, AssetMethodData source = null)
+        public static AssetMethodData TryCreateAssetMethodFromModifications(LocalReference location, string unityEventName, Dictionary<string, IAssetValue> modifications, AssetMethodData source = null)
         {
             string name;
             TextRange textRange;
@@ -112,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
                 var range = (modifications["m_MethodNameRange"] as Int2Value).NotNull("range != null");
                 textRange = new TextRange(range.X, range.Y);
-                textRangeOwner = reference.Location.OwnerId;
+                textRangeOwner = location.OwnerId;
             }
 
             EventHandlerArgumentMode mode;
@@ -142,7 +137,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 target = (referenceValue as AssetReferenceValue).NotNull("referenceValue as AssetReferenceValue != null").Reference;            
             }
 
-            return new AssetMethodData(reference.Location,  reference.UnityEventName, name, textRange, textRangeOwner, mode, null, target);
+            return new AssetMethodData(location, unityEventName, name, textRange, textRangeOwner, mode, null, target);
+        }
+
+        public Dictionary<string, IAssetValue> ToDictionary()
+        {
+            var dictionary = new Dictionary<string, IAssetValue>();
+            
+            dictionary["m_Mode"] = new AssetSimpleValue(((int)Mode).ToString());
+            dictionary["m_MethodName"] = new AssetSimpleValue(MethodName);
+            dictionary["m_MethodNameRange"] = new Int2Value(TextRange.StartOffset, TextRange.EndOffset);
+            dictionary["m_Target"] = new AssetReferenceValue(TargetScriptReference);
+            return dictionary;
         }
     }
 }

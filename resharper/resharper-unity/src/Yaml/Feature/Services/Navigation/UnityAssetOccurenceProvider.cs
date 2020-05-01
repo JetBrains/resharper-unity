@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             if (findResult is UnityInspectorFindResults unityInspectorFindResults)
             {
                 return new UnityInspectorValuesOccurrence(unityInspectorFindResults.SourceFile, unityInspectorFindResults.InspectorVariableUsage,
-                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.AttachedElementLocation); 
+                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.AttachedElementLocation, unityInspectorFindResults.IsPrefabModification); 
             }
             
             if (findResult is UnityMethodsFindResult unityMethodsFindResult)

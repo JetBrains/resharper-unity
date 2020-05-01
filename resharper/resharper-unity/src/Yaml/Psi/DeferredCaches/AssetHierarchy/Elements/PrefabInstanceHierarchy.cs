@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
@@ -40,6 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public LocalReference ParentTransform { get; }
         public IReadOnlyList<PrefabModification> PrefabModifications { get; }
         public Guid SourcePrefabGuid { get; }
+
         public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy) => null;
 
         public static void Write(UnsafeWriter writer, PrefabInstanceHierarchy prefabInstanceHierarchy)

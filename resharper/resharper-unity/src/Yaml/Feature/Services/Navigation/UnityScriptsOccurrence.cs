@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         
         public override string ToString()
         {
-            return $"Guid: {myGuid}";
+            return $"Guid: {myGuid:N}";
         }
     }
 }

@@ -1,11 +1,12 @@
 using System.Drawing;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -13,12 +14,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
     public class UnityInspectorValuesOccurrence: UnityAssetOccurrence
     {
         public InspectorVariableUsage InspectorVariableUsage { get; }
+        public bool IsPrefabModification { get; }
 
         public UnityInspectorValuesOccurrence(IPsiSourceFile sourceFile, InspectorVariableUsage inspectorVariableUsage,
-            IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference attachedElementLocation)
+            IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference attachedElementLocation, bool isPrefabModification)
             : base(sourceFile, declaredElement, attachedElementLocation)
         {
             InspectorVariableUsage = inspectorVariableUsage;
+            IsPrefabModification = isPrefabModification;
         }
 
         public override RichText GetDisplayText()
@@ -63,6 +66,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                     }
                 }
             }
+        }
+
+        public override IconId GetIcon()
+        {
+            if (IsPrefabModification)
+                return UnityFileTypeThemedIcons.FileUnityPrefab.Id;
+
+            return base.GetIcon();
         }
     }
 }

@@ -21,15 +21,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         {
             var ownerId = reader.ReadLong();
             var count = reader.ReadInt32();
-            var list = new LocalList<InspectorVariableUsage>();
+            var list = new List<InspectorVariableUsage>(count);
 
             for (int i = 0; i < count; i++)
             {
                 list.Add(reader.ReadPolymorphic<InspectorVariableUsage>());
             }
-            
-            var result = new AssetInspectorValuesDataElement(ownerId);
-            result.AddData(list);
+
+            var importedInspectorValues = ImportedInspectorValues.ReadFrom(reader);
+            var result = new AssetInspectorValuesDataElement(ownerId, list, importedInspectorValues);
             return result;
         }
 
@@ -41,18 +41,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             {
                 writer.WritePolymorphic(v);
             }
+
+            value.ImportedInspectorValues.WriteTo(writer);
         }
-        
-        private readonly List<InspectorVariableUsage> myVariableUsages = new List<InspectorVariableUsage>();
+
+        public IReadOnlyList<InspectorVariableUsage> VariableUsages => myVariableUsages;
+
+        public readonly ImportedInspectorValues ImportedInspectorValues;
+        private readonly List<InspectorVariableUsage> myVariableUsages;
+
         public string ContainerId => nameof(AssetInspectorValuesContainer);
 
-        public AssetInspectorValuesDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex)
+        public AssetInspectorValuesDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex, new List<InspectorVariableUsage>(),  new ImportedInspectorValues())
         {
         }
 
-        private AssetInspectorValuesDataElement(long ownerId)
+        private AssetInspectorValuesDataElement(long ownerId, List<InspectorVariableUsage> inspectorValues,
+            ImportedInspectorValues importedInspectorValues)
         {
             OwnerId = ownerId;
+            ImportedInspectorValues = importedInspectorValues;
+            myVariableUsages = inspectorValues;
         }
         
         public void AddData(object unityAssetDataElement)
@@ -60,22 +69,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             if (unityAssetDataElement == null)
                 return;
             
-            var usages = (LocalList<InspectorVariableUsage>) unityAssetDataElement;
-            foreach (var variableUsage in usages)
+            var buildResult = (InspectorValuesBuildResult) unityAssetDataElement;
+            foreach (var variableUsage in buildResult.InspectorValues)
             {
                 myVariableUsages.Add(variableUsage);
             }
-        }
 
-        public IEnumerable<InspectorVariableUsagePointer> EnumeratePointers()
-        {
-            for (int i = 0; i < myVariableUsages.Count; i++)
-                yield return new InspectorVariableUsagePointer(OwnerId, i);
-        }
-
-        public InspectorVariableUsage GetVariableUsage(InspectorVariableUsagePointer pointer)
-        {
-            return myVariableUsages[pointer.Index];
+            foreach (var modification in buildResult.ImportedInspectorValues.Modifications)
+            {
+                ImportedInspectorValues.Modifications[modification.Key] = modification.Value;
+            }
         }
     }
 }

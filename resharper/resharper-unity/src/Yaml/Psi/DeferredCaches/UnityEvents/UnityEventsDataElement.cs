@@ -4,6 +4,7 @@ using JetBrains.Application.PersistentMap;
 using JetBrains.Collections;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
@@ -70,9 +71,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 UnityEvents.Add(assetMethodData);
             }
 
-            foreach (var (reference, values) in buildResult.ModificationDescription.ReferenceToImportedData)
+            ImportedUnityEventData.HasEventModificationWithoutMethodName |= buildResult.ModificationDescription.HasEventModificationWithoutMethodName;
+            ImportedUnityEventData.AssetMethodNameInModifications.AddRange(buildResult.ModificationDescription.AssetMethodNameInModifications);
+            foreach (var (key, values) in buildResult.ModificationDescription.UnityEventToModifiedIndex)
             {
-                ImportedUnityEventData.ReferenceToImportedData[reference] = values;
+                ImportedUnityEventData.UnityEventToModifiedIndex.AddRange(key, values);
             }
         }
     }
