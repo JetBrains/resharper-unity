@@ -1,4 +1,5 @@
-﻿using JetBrains.ReSharper.Feature.Services.CSharp.Intentions.DataProviders;
+﻿using JetBrains.DocumentModel;
+using JetBrains.ReSharper.Feature.Services.CSharp.Intentions.DataProviders;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
 using JetBrains.ReSharper.Feature.Services.Intentions.DataProviders;
@@ -66,7 +67,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var intention = ConstructorDeclarationBuilder.Create(context);
             var constructor = (IConstructorDeclaration) intention.ResultDeclaration;
             constructor.SetStatic(true);
-            return new IntentionResult(EmptyList<ITemplateFieldHolder>.Instance, constructor, constructor.Body.Statements[0].GetDocumentRange());
+            var statements = constructor.Body.Statements;
+            var selection = statements.Count > 0 ? statements[0].GetDocumentRange() : DocumentRange.InvalidRange;
+            return new IntentionResult(EmptyList<ITemplateFieldHolder>.Instance, constructor, selection);
         }
     }
 }
