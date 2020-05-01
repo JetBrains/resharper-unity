@@ -27,6 +27,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix exception finding file icon causing explorer view to be blank ([RIDER-43038](https://youtrack.jetbrains.com/issue/RIDER-43038), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
 - Rider: Fix handling of file system folders in `Packages` with the same name as a package ([#1626](https://github.com/JetBrains/resharper-unity/issues/1626), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
 - Rider: Fix size of tooltip for packages with many projects ([#1628](https://github.com/JetBrains/resharper-unity/issues/1628), [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))
+- Rider: Avoid potential deadlocks when updating Packages tree in Unity Explorer ([RIDER-43317](https://youtrack.jetbrains.com/issue/RIDER-43317), [#1643](https://github.com/JetBrains/resharper-unity/pull/1643))
 - Rider: Fix C# language level detection on Linux ([#1640](https://github.com/JetBrains/resharper-unity/pull/1640))
 - Unity Editor: Fix list of folders to search for .NET Framework references ([RIDER-42873](https://youtrack.jetbrains.com/issue/RIDER-42873), [#1630](https://github.com/JetBrains/resharper-unity/pull/1630))
 

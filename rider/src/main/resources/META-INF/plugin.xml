@@ -303,6 +303,7 @@
   <li>Rider: Fix handling of file system folders in <tt>Packages</tt> with the same name as a package (<a href="https://github.com/JetBrains/resharper-unity/issues/1626">#1626</a>, [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))</li>
   <li>Rider: Fix size of tooltip for packages with many projects (<a href="https://github.com/JetBrains/resharper-unity/issues/1628">#1628</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1632">#1632</a>)</li>
   <li>Rider: Fix C# language level detection on Linux (<a href="https://github.com/JetBrains/resharper-unity/pull/1640">#1640</a>)</li>
+  <li>Rider: Avoid potential deadlocks when updating Packages tree in Unity Explorer (<a href="https://youtrack.jetbrains.com/issue/RIDER-43317">RIDER-43317</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1643">#1643</a>)</li>
   <li>Unity Editor: Fix list of folders to search for .NET Framework references (<a href="https://youtrack.jetbrains.com/issue/RIDER-42873">RIDER-42873</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1630">#1630</a>)</li>
 </ul>
 </p>
