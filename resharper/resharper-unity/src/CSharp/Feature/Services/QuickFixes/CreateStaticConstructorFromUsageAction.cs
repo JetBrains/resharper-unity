@@ -1,5 +1,5 @@
-﻿using JetBrains.DocumentModel;
-using JetBrains.ReSharper.Feature.Services.CSharp.Intentions.DataProviders;
+﻿using JetBrains.ReSharper.Feature.Services.CSharp.Intentions.DataProviders;
+using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
 using JetBrains.ReSharper.Feature.Services.Intentions.DataProviders;
@@ -9,7 +9,6 @@ using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
@@ -67,8 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var intention = ConstructorDeclarationBuilder.Create(context);
             var constructor = (IConstructorDeclaration) intention.ResultDeclaration;
             constructor.SetStatic(true);
-            var statements = constructor.Body.Statements;
-            var selection = statements.Count > 0 ? statements[0].GetDocumentRange() : DocumentRange.InvalidRange;
+            var selection = MemberBodyUtil.GetBodyTextRange(constructor);
             return new IntentionResult(EmptyList<ITemplateFieldHolder>.Instance, constructor, selection);
         }
     }

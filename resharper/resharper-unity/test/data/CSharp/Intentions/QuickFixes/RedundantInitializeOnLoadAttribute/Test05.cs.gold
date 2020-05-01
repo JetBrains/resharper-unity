@@ -1,10 +1,10 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[InitializeOn{caret}Load]
+[InitializeOnLoad]
 public class MissingConstructor()
 {
   static MissingConstructor()
-  {
+  {{caret}
   }
 }

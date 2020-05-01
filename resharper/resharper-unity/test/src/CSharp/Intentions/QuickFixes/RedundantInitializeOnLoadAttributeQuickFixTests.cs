@@ -1,6 +1,5 @@
 ﻿using JetBrains.ReSharper.FeaturesTestFramework.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Psi.CSharp.CodeStyle.Settings;
 using JetBrains.ReSharper.Psi.GenerateMemberBody;
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
