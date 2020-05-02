@@ -278,8 +278,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         appPath = appPath.Directory;
                         return appPath;
                     }
+                    default:
+                        ourLogger.Error("Unknown runtime platform");
+                        break;
                 }
-                ourLogger.Error("Unknown runtime platform");
             }
 
             return null;
