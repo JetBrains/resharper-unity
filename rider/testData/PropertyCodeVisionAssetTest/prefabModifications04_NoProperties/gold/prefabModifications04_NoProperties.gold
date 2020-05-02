@@ -1,0 +1,22 @@
+before change
+Inline 183 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=167, endOffset=182) 0+ methods
+    Hidden
+Block 106 BlockLensListRenderer
+Top
+    Visible
+        Text RdTextRange(startOffset=119, endOffset=126) 5 asset usages
+    Hidden
+after change
+Inline 183 InlineLensListRenderer
+Right
+    Visible
+        Text RdTextRange(startOffset=167, endOffset=182) 0+ methods
+    Hidden
+Block 106 BlockLensListRenderer
+Top
+    Visible
+        Text RdTextRange(startOffset=119, endOffset=126) 5 asset usages
+    Hidden

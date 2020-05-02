@@ -1,0 +1,12 @@
+Search target
+    Script2.voidEvent:UnityEvent
+Found usages  (2 usages found)
+    Assets  (2 usages found)
+        Ex2\Ex2.unity  (1 usage found)
+            GameObject  (1 usage found)
+                Script2  (1 usage found)
+                    VoidHandler():void
+        Ex2\GameObject.prefab  (1 usage found)
+            GameObject  (1 usage found)
+                Script2  (1 usage found)
+                    VoidHandler():void
