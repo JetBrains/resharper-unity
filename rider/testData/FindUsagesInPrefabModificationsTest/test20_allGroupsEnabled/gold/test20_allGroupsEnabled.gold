@@ -1,0 +1,34 @@
+Search target
+    DefaultNamespace.Script5.GameObject:GameObject
+Found usages  (9 usages found)
+    Assets  (9 usages found)
+        Ex5\Ex5.unity  (4 usages found)
+            GameObject  (2 usages found)
+                Script5  (2 usages found)
+                    GameObject = Directional Light
+                    GameObject = Root Variant
+            Root  (2 usages found)
+                Left  (1 usage found)
+                    Script5  (1 usage found)
+                        GameObject = Right
+                Right  (1 usage found)
+                    Script5  (1 usage found)
+                        GameObject = Left
+        Ex5\GameObject.prefab  (2 usages found)
+            GameObject  (2 usages found)
+                Script5  (2 usages found)
+                    GameObject = None
+                    GameObject = None
+        Ex5\Left.prefab  (1 usage found)
+            Left  (1 usage found)
+                Script5  (1 usage found)
+                    GameObject = None
+        Ex5\Right.prefab  (1 usage found)
+            Right  (1 usage found)
+                Script5  (1 usage found)
+                    GameObject = None
+        Ex5\Root Variant.prefab  (1 usage found)
+            Root Variant  (1 usage found)
+                Left  (1 usage found)
+                    Script5  (1 usage found)
+                        GameObject = Right
