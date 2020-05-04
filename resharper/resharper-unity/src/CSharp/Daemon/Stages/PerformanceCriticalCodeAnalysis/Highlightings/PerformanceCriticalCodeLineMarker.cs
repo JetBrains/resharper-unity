@@ -28,8 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public DocumentRange CalculateRange() => myRange;
         public string ToolTip => "Performance critical context";
         public string ErrorStripeToolTip => Tooltip;
-        // TODO: Fix SDK to properly treat null as "default"
-        public string RendererId => "DefaultLineMarkerRendererProvider";
+        public string RendererId => null;
         public int Thickness => 1;
         public LineMarkerPosition Position =>  LineMarkerPosition.RIGHT;
         public ExecutableItem LeftClick() => null;
