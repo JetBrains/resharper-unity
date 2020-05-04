@@ -27,7 +27,8 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     {
       get
       {
-        ourApiCompatibilityLevel ??= GetApiCompatibilityLevel();
+        if (ourApiCompatibilityLevel == null) 
+          ourApiCompatibilityLevel = GetApiCompatibilityLevel();
         return (int) ourApiCompatibilityLevel;
       }
     }

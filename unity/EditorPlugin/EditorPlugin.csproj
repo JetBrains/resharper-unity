@@ -8,7 +8,6 @@
     <DefineConstants>UNITY_4_7;RIDER_EDITOR_PLUGIN</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
-    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />

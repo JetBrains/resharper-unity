@@ -9,7 +9,6 @@
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
     <Company>JetBrains.Rider.Unity.Editor.Plugin.Unity56</Company>
     <Product>JetBrains.Rider.Unity.Editor.Plugin.Unity56</Product>
-    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.5.6.7" Version="2019.12.12" />
