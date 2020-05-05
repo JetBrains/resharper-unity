@@ -127,25 +127,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             finally
             {
-                await RefreshVfs(lifetimeDef.Lifetime);
                 myLogger.Verbose($"RefreshInternal Finished.");
                 lifetimeDef.Terminate();
-            }
-        }
-
-        private async Task RefreshVfs(Lifetime lifetime)
-        {
-            try
-            {
-                var solution = mySolution.GetProtocolSolution();
-                var solFolder = mySolution.SolutionDirectory;
-                var list = new List<string> {solFolder.FullPath};
-                myLogger.Verbose($"RefreshPaths.StartAsTask Started.");
-                await solution.GetFileSystemModel().RefreshPaths.Start(lifetime, new RdRefreshRequest(list, true)).AsTask();
-            }
-            catch (Exception e)
-            {
-                myLogger.LogException(e);
             }
         }
 
