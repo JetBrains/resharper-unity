@@ -53,6 +53,7 @@ fun TestProjectModelContext.dump(caption: String, project: Project, tempTestDire
 private fun dumpUnityExplorerTree(project: Project, tempTestDirectory: File) : String {
     val tree = UnityExplorer.getInstance(project).tree
     return dumpExplorerTree(tree)
+        .replace(tempTestDirectory.toPath().toUri().toString(), "")
         .replace(tempTestDirectory.toPath().toUri().toString().replace("file:///", "file://"), "")
 }
 
