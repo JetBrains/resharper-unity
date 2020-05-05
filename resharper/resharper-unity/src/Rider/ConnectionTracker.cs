@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 logger.Trace($"There were no response from Unity in one second. Set connection state to Disconnected.");
                                 State.SetValue(UnityEditorState.Disconnected);
                             }
-                        });
+                        }, locks.Tasks.UnguardedMainThreadScheduler);
                     }
 
                     logger.Trace($"Sending connection state. State: {State.Value}");
