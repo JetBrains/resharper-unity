@@ -12,13 +12,13 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
-    [ElementProblemAnalyzer(typeof(IEqualityExpression), 
+    [ElementProblemAnalyzer(typeof(IEqualityExpression),
         HighlightingTypes = new[] { typeof(ExplicitTagStringComparisonWarning), typeof(UnknownTagWarning) })]
-    public class CompareTagProblemAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
+    public class ExplicitTagStringComparisonAnalyzer : UnityElementProblemAnalyzer<IEqualityExpression>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public CompareTagProblemAnalyzer(UnityApi unityApi, AssetSerializationMode assetSerializationMode)
+        public ExplicitTagStringComparisonAnalyzer(UnityApi unityApi, AssetSerializationMode assetSerializationMode)
             : base(unityApi)
         {
             myAssetSerializationMode = assetSerializationMode;
@@ -53,19 +53,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 {
                     CheckTag(rValue, element.RightOperand, consumer);
                 }
-                
+
                 consumer.AddHighlighting(new ExplicitTagStringComparisonWarning(element, isLeftOperandTagReference));
             }
-
         }
 
         private void CheckTag(string value, ICSharpExpression expression, IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText) 
+            if (!myAssetSerializationMode.IsForceText)
                 return;
-            
-            var cache = expression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
 
+            var cache = expression.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
             if (cache == null)
                 return;
 
