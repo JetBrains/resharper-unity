@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using JetBrains.ProjectModel;
+﻿using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
@@ -7,7 +6,6 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
@@ -42,8 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (leftOperand == null && rightOperand == null)
                 return;
 
-            var isLeftOperandTagReference = IsTagReference(leftOperand);
-            var isRightOperandTagReference = IsTagReference(rightOperand);
+            var isLeftOperandTagReference = leftOperand.IsTagProperty();
+            var isRightOperandTagReference = rightOperand.IsTagProperty();
             if (isLeftOperandTagReference || isRightOperandTagReference)
             {
                 if (element.LeftOperand?.ConstantValue.Value is string value)
@@ -71,27 +69,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             {
                 consumer.AddHighlighting(new UnknownTagWarning(expression));
             }
-        }
-
-        public static bool IsTagReference([CanBeNull] IReferenceExpression expression)
-        {
-            if (expression?.NameIdentifier?.Name == "tag")
-            {
-                var info = expression.Reference.Resolve();
-                if (info.ResolveErrorType == ResolveErrorType.OK)
-                {
-                    var property = info.DeclaredElement as IProperty;
-                    var containingType = property?.GetContainingType();
-                    if (containingType != null)
-                    {
-                        var qualifierTypeName = containingType.GetClrName();
-                        return KnownTypes.Component.Equals(qualifierTypeName) ||
-                               KnownTypes.GameObject.Equals(qualifierTypeName);
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }
