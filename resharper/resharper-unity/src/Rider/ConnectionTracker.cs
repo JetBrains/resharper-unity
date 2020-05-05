@@ -43,6 +43,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     }
                     else
                     {
+                        if (!model.IsBound)
+                            State.SetValue(UnityEditorState.Disconnected);
+                        
                         var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
                         rdTask?.Result.Advise(lifetime, result =>
                         {
@@ -59,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                 logger.Trace($"There were no response from Unity in one second. Set connection state to Disconnected.");
                                 State.SetValue(UnityEditorState.Disconnected);
                             }
-                        }, locks.Tasks.UnguardedMainThreadScheduler);
+                        }, locks.Tasks.GuardedMainThreadScheduler);
                     }
 
                     logger.Trace($"Sending connection state. State: {State.Value}");
