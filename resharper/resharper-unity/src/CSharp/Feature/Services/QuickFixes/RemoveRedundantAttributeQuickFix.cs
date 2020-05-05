@@ -13,31 +13,31 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class RedundantAttributeDeadCodeQuickFix : IQuickFix
+    public class RemoveRedundantAttributeQuickFix : IQuickFix
     {
         private readonly IAttribute myAttribute;
 
-        public RedundantAttributeDeadCodeQuickFix(RedundantInitializeOnLoadAttributeWarning highlighting)
+        public RemoveRedundantAttributeQuickFix(RedundantInitializeOnLoadAttributeWarning highlighting)
         {
             myAttribute = highlighting.Attribute;
         }
 
-        public RedundantAttributeDeadCodeQuickFix(RedundantSerializeFieldAttributeWarning highlighting)
+        public RemoveRedundantAttributeQuickFix(RedundantSerializeFieldAttributeWarning highlighting)
         {
             myAttribute = highlighting.Attribute;
         }
 
-        public RedundantAttributeDeadCodeQuickFix(RedundantHideInInspectorAttributeWarning highlighting)
+        public RemoveRedundantAttributeQuickFix(RedundantHideInInspectorAttributeWarning highlighting)
         {
             myAttribute = highlighting.Attribute;
         }
 
-        public RedundantAttributeDeadCodeQuickFix(RedundantAttributeOnTargetWarning highlighting)
+        public RemoveRedundantAttributeQuickFix(RedundantAttributeOnTargetWarning highlighting)
         {
             myAttribute = highlighting.Attribute;
         }
 
-        public RedundantAttributeDeadCodeQuickFix(RedundantFormerlySerializedAsAttributeWarning highlighting)
+        public RemoveRedundantAttributeQuickFix(RedundantFormerlySerializedAsAttributeWarning highlighting)
         {
             myAttribute = highlighting.Attribute;
         }

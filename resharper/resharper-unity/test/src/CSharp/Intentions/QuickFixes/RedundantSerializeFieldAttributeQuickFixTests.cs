@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
     }
 
     [TestUnity]
-    public class RedundantSerializeFieldAttributeQuickFixTests : CSharpQuickFixTestBase<RedundantAttributeDeadCodeQuickFix>
+    public class RedundantSerializeFieldAttributeQuickFixTests : CSharpQuickFixTestBase<RemoveRedundantAttributeQuickFix>
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantSerializeFieldAttribute";
 
