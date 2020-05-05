@@ -27,7 +27,6 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
-import com.jetbrains.rider.util.idea.getComponent
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 
@@ -39,7 +38,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
         if (remoteConfiguration.play) {
             val lt = lifetime.createNested().lifetime
-            val processTracker: RiderDebugActiveDotNetSessionsTracker = project.getComponent()
+            val processTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
             processTracker.dotNetDebugProcesses.change.advise(lifetime) { (event, debugProcess) ->
                 if (event == AddRemove.Add) {
                     debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
