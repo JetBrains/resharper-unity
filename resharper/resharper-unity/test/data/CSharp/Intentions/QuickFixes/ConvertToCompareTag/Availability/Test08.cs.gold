@@ -1,0 +1,63 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public void Method()
+    {
+        if (|tag == |"Whatever"|(0)|(1) || |tag == |"Something"|(2)|(3)) { }
+    }
+
+    public bool Method2()
+    {
+        return |tag == |"Test"|(4)|(5);
+    }
+}
+
+public class Foo2 : MonoBehaviour
+{
+    public bool Method()
+    {
+        return |tag == |"Other"|(6)|(7);
+    }
+}
+
+------------------------------------------------
+0: Explicit string comparison is inefficient, use 'CompareTag' instead
+QUICKFIXES:
+Convert to 'CompareTag'
+--Convert to 'CompareTag' in method 'Method'
+--Convert to 'CompareTag' in class 'Foo'
+--Convert to 'CompareTag' in file
+--Convert to 'CompareTag' in project
+--Convert to 'CompareTag' in solution
+1: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
+NO QUICKFIXES
+2: Explicit string comparison is inefficient, use 'CompareTag' instead
+QUICKFIXES:
+Convert to 'CompareTag'
+--Convert to 'CompareTag' in method 'Method'
+--Convert to 'CompareTag' in class 'Foo'
+--Convert to 'CompareTag' in file
+--Convert to 'CompareTag' in project
+--Convert to 'CompareTag' in solution
+3: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
+NO QUICKFIXES
+4: Explicit string comparison is inefficient, use 'CompareTag' instead
+QUICKFIXES:
+Convert to 'CompareTag'
+--Convert to 'CompareTag' in method 'Method2'
+--Convert to 'CompareTag' in class 'Foo'
+--Convert to 'CompareTag' in file
+--Convert to 'CompareTag' in project
+--Convert to 'CompareTag' in solution
+5: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
+NO QUICKFIXES
+6: Explicit string comparison is inefficient, use 'CompareTag' instead
+QUICKFIXES:
+Convert to 'CompareTag'
+--Convert to 'CompareTag' in class 'Foo2'
+--Convert to 'CompareTag' in file
+--Convert to 'CompareTag' in project
+--Convert to 'CompareTag' in solution
+7: The tag is not defined in the 'Tags & Layers'. Expression will return 'false'.
+NO QUICKFIXES

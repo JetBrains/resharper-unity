@@ -47,7 +47,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 if (element.LeftOperand?.ConstantValue.Value is string value)
                 {
                     CheckTag(value, element.LeftOperand, consumer);
-                } else if (element.RightOperand?.ConstantValue.Value is string rValue)
+                }
+                else if (element.RightOperand?.ConstantValue.Value is string rValue)
                 {
                     CheckTag(rValue, element.RightOperand, consumer);
                 }

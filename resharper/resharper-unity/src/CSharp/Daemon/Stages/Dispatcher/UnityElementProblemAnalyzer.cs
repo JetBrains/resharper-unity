@@ -3,7 +3,6 @@ using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher
 {
@@ -19,9 +18,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher
 
         protected sealed override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
+            // TODO: Check other process kinds. Should we run for everything?
+            // OTHER is used by scoped quick fixes
             var processKind = data.GetDaemonProcessKind();
-            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT && processKind != DaemonProcessKind.SOLUTION_ANALYSIS)
+            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT
+                && processKind != DaemonProcessKind.SOLUTION_ANALYSIS
+                && processKind != DaemonProcessKind.OTHER)
+            {
                 return;
+            }
 
             if (!element.GetProject().IsUnityProject())
                 return;

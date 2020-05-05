@@ -16,6 +16,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
 
         protected abstract void Analyze(T t, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer);
-
     }
 }
