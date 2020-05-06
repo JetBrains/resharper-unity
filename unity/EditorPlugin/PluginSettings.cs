@@ -53,13 +53,17 @@ namespace JetBrains.Rider.Unity.Editor
                            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
       if (string.IsNullOrEmpty(programFiles86))
         programFiles86 = @"C:\Program Files (x86)";
-      var referenceAssembliesPath = Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework\.NETFramework");
-      var dir = new DirectoryInfo(referenceAssembliesPath);
-      if (!dir.Exists)
+      var referenceAssembliesPaths = new[]
+      {
+        Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework\.NETFramework"),
+        Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework") //RIDER-42873
+      }.Select(s => new DirectoryInfo(s)).Where(a=>a.Exists).ToArray();
+      
+      if (!referenceAssembliesPaths.Any())
         return new string[0];
 
-      var availableVersions = dir
-        .GetDirectories("v*")
+      var availableVersions = referenceAssembliesPaths
+        .SelectMany(a=>a.GetDirectories("v*"))
         .Select(a => a.Name.Substring(1))
         .Where(v => InvokeIfValidVersion(v, s => { }))
         .Where(v=>new Version(v) >= new Version("3.5"))

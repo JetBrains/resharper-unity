@@ -59,9 +59,9 @@ class PackageManager(private val project: Project) {
     private var editorManifestJson: EditorManifestJson? = null
 
     private var packagesByCanonicalName: Map<String, PackageData> = mutableMapOf()
-    private var packagesByFolderName: Map<String, PackageData> = mutableMapOf()
+    private var packagesByFolderPath: Map<String, PackageData> = mutableMapOf()
 
-    private data class Packages(val packagesByCanonicalName: Map<String, PackageData>, val packagesByFolderName: Map<String, PackageData>)
+    private data class Packages(val packagesByCanonicalName: Map<String, PackageData>, val packagesByFolderPath: Map<String, PackageData>)
 
     init {
         val listener = PackagesAsyncFileListener()
@@ -102,7 +102,7 @@ class PackageManager(private val project: Project) {
     }
 
     fun getPackageData(packageFolder: VirtualFile): PackageData? {
-        return packagesByFolderName[packageFolder.name]
+        return packagesByFolderPath[packageFolder.path]
     }
 
     fun getPackageData(canonicalName: String): PackageData? {
@@ -126,7 +126,7 @@ class PackageManager(private val project: Project) {
                 // Updated without locks. Each reference is updated atomically, and they are not used together, so there
                 // are no tearing issues
                 packagesByCanonicalName = it.packagesByCanonicalName
-                packagesByFolderName = it.packagesByFolderName
+                packagesByFolderPath = it.packagesByFolderPath
                 listeners.multicaster.onPackagesUpdated()
             }
             .submit(NonUrgentExecutor.getInstance())
@@ -139,9 +139,9 @@ class PackageManager(private val project: Project) {
         logger.debug("Refreshing packages manager")
 
         val byCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
-        val byFolderName: MutableMap<String, PackageData> = mutableMapOf()
+        val byFolderPath: MutableMap<String, PackageData> = mutableMapOf()
 
-        val manifestJson = getManifestJsonFile() ?: return Packages(byCanonicalName, byFolderName)
+        val manifestJson = getManifestJsonFile() ?: return Packages(byCanonicalName, byFolderPath)
         val builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
 
         val editorManifestPath = UnityInstallationFinder.getInstance(project).getPackageManagerDefaultManifest()
@@ -178,7 +178,7 @@ class PackageManager(private val project: Project) {
             val packageData = getPackageData(packagesFolder, name, version, registry, builtInPackagesFolder, lockDetails)
             byCanonicalName[name] = packageData
             if (packageData.packageFolder != null) {
-                byFolderName[packageData.packageFolder.name] = packageData
+                byFolderPath[packageData.packageFolder.path] = packageData
             }
         }
 
@@ -188,7 +188,7 @@ class PackageManager(private val project: Project) {
             val packageData = getPackageDataFromFolder(child.name, child, PackageSource.Embedded)
             if (packageData != null) {
                 byCanonicalName[packageData.details.canonicalName] = packageData
-                byFolderName[child.name] = packageData
+                byFolderPath[child.path] = packageData
             }
         }
 
@@ -203,11 +203,11 @@ class PackageManager(private val project: Project) {
             packagesToProcess = getPackagesFromDependencies(packagesFolder, registry, builtInPackagesFolder, resolvedPackages, packagesToProcess)
             for (newPackage in packagesToProcess) {
                 byCanonicalName[newPackage.details.canonicalName] = newPackage
-                newPackage.packageFolder?.let { byFolderName[it.name] = newPackage }
+                newPackage.packageFolder?.let { byFolderPath[it.path] = newPackage }
             }
         }
 
-        return Packages(byCanonicalName, byFolderName)
+        return Packages(byCanonicalName, byFolderPath)
     }
 
     private fun getManifestJsonFile(): VirtualFile? {
@@ -291,7 +291,7 @@ class PackageManager(private val project: Project) {
             val path = version.substring(5)
             val packagesPath = Paths.get(packagesFolder.path)
             val filePath = packagesPath.resolve(path)
-            val packageFolder = VfsUtil.findFile(filePath, true)
+            val packageFolder = VfsUtil.findFile(filePath, false)
             if (packageFolder != null && packageFolder.isDirectory) {
                 getPackageDataFromFolder(name, packageFolder, PackageSource.Local)
             } else {
@@ -348,7 +348,7 @@ class PackageManager(private val project: Project) {
 
         // If we can identify the module root of the current project, use it to look up the module
         if (builtInPackagesFolder?.isDirectory() == true) {
-            val packageFolder = VfsUtil.findFile(builtInPackagesFolder.resolve(name), true)
+            val packageFolder = VfsUtil.findFile(builtInPackagesFolder.resolve(name), false)
             return getPackageDataFromFolder(name, packageFolder, PackageSource.BuiltIn)
         }
 
