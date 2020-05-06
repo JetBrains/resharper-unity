@@ -200,10 +200,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (!args) return;
 
                 var protocolSolution = solution.GetProtocolSolution();
-                protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
+                protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, savedFilePath =>
                 {
                     logger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
-                    myGroupingEvent.FireIncoming();
+                    // checking if refresh can interrupt completion session
+                    var textControlTuple = protocolSolution.Editors.LastFocusedTextControlSession.Value;
+                    var filePath = textControlTuple?.Id.DocumentId.FilePath;
+                    var textControlCompletionSession = textControlTuple?.TextControl.CompletionSession;
+                    if (savedFilePath == filePath && textControlCompletionSession?.Value != null)
+                    {
+                        logger.Verbose("Unfinished completion session. Refresh postponed.");
+                        // subscribe to call refresh after completion lookup close
+                        textControlCompletionSession.AdviseUntil(lifetime, completion =>
+                        {
+                            if (completion != null) return false;
+                            logger.Verbose("Completion session ended. Unity refresh throttling call");
+                            myGroupingEvent.FireIncoming();
+                            return true;
+                        });
+                    }
+                    else
+                    {
+                        logger.Verbose("Unity refresh throttling call");
+                        myGroupingEvent.FireIncoming();
+                    }
                 });
                 
                 fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
