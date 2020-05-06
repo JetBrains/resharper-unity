@@ -5,6 +5,7 @@ using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
@@ -98,46 +99,59 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return Task.CompletedTask;
             }, myLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
         }
-
-        private Task RefreshInternal(Lifetime lifetime, RefreshType refreshType)
+        
+        private async Task RefreshInternal(Lifetime lifetime, RefreshType refreshType)
         {
+            myLocks.ReentrancyGuard.AssertGuarded();
             var lifetimeDef = Lifetime.Define(lifetime);
 
-            myLogger.Verbose(
-                $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
+            myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
             mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime,
                 RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...")
                     .AsIndeterminate().AsNonCancelable());
             try
             {
-                IDisposable cookie = null;
-                var version = UnityVersion.Parse(myEditorProtocol.UnityModel.Value.UnityApplicationData.Value.ApplicationVersion);
-                if (version != null && version.Major < 2018) // needed for pre-2018 - a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
-                    cookie = mySolution.GetComponent<VfsListener>().PauseChanges();
-                var task = myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
-                return task.ContinueWith(_ =>
+                try
+                {
+                    var version = UnityVersion.Parse(myEditorProtocol.UnityModel.Value.UnityApplicationData.Value.ApplicationVersion);
+                    if (version != null && version.Major < 2018)
                     {
-                        cookie?.Dispose();
-                        myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished");
-                    }, lifetime, TaskContinuationOptions.AttachedToParent, myLocks.Tasks.GuardedMainThreadScheduler)
-                    .ContinueWith(__ =>
-                    {
-                        var solution = mySolution.GetProtocolSolution();
-                        var solFolder = mySolution.SolutionDirectory;
-                        var list = new List<string> {solFolder.FullPath};
-                        myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-                        return solution.GetFileSystemModel().RefreshPaths
-                            .Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask()
-                            .ContinueWith(___ => { lifetimeDef.Terminate(); }, lifetime,
-                                TaskContinuationOptions.AttachedToParent, myLocks.Tasks.GuardedMainThreadScheduler);
-                    }, myLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
+                        using (mySolution.GetComponent<VfsListener>().PauseChanges())
+                        {
+                            await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                            await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                        }
+                    }
+                    else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
+                        await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                }
+                catch (Exception e)
+                {
+                    myLogger.Warn("connection usually brakes during refresh.", e);
+                }
+                finally
+                {
+                    await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                    
+                    myLogger.Verbose(
+                            $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished"); 
+                    var solution = mySolution.GetProtocolSolution(); 
+                    var solFolder = mySolution.SolutionDirectory; 
+                    var list = new List<string> {solFolder.FullPath}; 
+                    myLogger.Verbose($"RefreshPaths.StartAsTask Finished."); 
+                    await solution.GetFileSystemModel().RefreshPaths
+                            .Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask();
+                    await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                }
             }
             catch (Exception e)
             {
                 myLogger.LogException(e);
+            }
+            finally
+            {
                 lifetimeDef.Terminate();
             }
-            return Task.CompletedTask;
         }
     }
 
