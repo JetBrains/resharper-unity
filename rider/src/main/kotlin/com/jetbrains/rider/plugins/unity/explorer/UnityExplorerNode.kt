@@ -14,6 +14,7 @@ import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
+import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
 import icons.UnityIcons
 import java.awt.Color
 import javax.swing.Icon
@@ -96,6 +97,10 @@ open class UnityExplorerNode(project: Project,
         if (!virtualFile.isValid) return
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(calculateIcon())
+
+        FileSystemExplorerCustomization.getExtensions(myProject).forEach {
+            it.updateNode(presentation, file, this)
+        }
 
         // Add additional info for directories
         val unityExplorer = UnityExplorer.getInstance(myProject)
