@@ -10,7 +10,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net201...net202)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/36?closed=1)
 
-# Fixed
+### Changed
+
+- All applicable quick fixes are now bulk actions, and can be applied over project scope ([#1648](https://github.com/JetBrains/resharper-unity/issues/1648), [#1649](https://github.com/JetBrains/resharper-unity/pull/1649))
+
+### Fixed
 
 - Fix meta file handling when references to Unity assemblies are invalid ([#1623](https://github.com/JetBrains/resharper-unity/pull/1623))
 
