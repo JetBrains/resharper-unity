@@ -1,9 +1,11 @@
+using System.Drawing;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.UI.RichText;
 using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -19,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             InspectorVariableUsage = inspectorVariableUsage;
         }
 
-        public override string GetDisplayText()
+        public override RichText GetDisplayText()
         {
             var declaredElement = DeclaredElementPointer.FindDeclaredElement();
             if (declaredElement == null)
@@ -29,7 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             var valuePresentation = InspectorVariableUsage.Value.GetPresentation(solution, declaredElement , true);
             if (SourceFile.GetLocation().IsAsset())
                 return valuePresentation;
-            return $"{valuePresentation} in {base.GetDisplayText()}";
+            
+            var richText = new RichText(valuePresentation);
+            var inText = new RichText(" in ", TextStyle.FromForeColor(Color.DarkGray));
+            var objectText = base.GetDisplayText();
+
+            return richText.Append(inText).Append(objectText);
         }
 
         private bool IsRelatedToScriptableObject() => UnityApi.IsDescendantOfScriptableObject((DeclaredElementPointer.FindDeclaredElement() as IField)?.Type.GetTypeElement());

@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 using JetBrains.Application.UI.PopupLayout;
 using JetBrains.Diagnostics;
 using JetBrains.IDE;
@@ -9,6 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.E
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -48,11 +51,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public bool IsValid => SourceFile.IsValid();
         public OccurrencePresentationOptions PresentationOptions { get; set; }
 
+        [CanBeNull]
         public virtual string GetRelatedFilePresentation()
         {
-            return SourceFile.DisplayName.Replace('\\', '/');
+            return SourceFile.DisplayName.Split('\\').Last();
         }
 
+        [CanBeNull]
+        public virtual string GetRelatedFolderPresentation()
+        {
+            var parts = SourceFile.DisplayName.Split('\\').ToArray();
+            if (parts.Length == 1)
+                return null;
+            
+            var path = string.Join("/", parts.Take(parts.Length - 1));
+            return path;
+        }
+        
         public override string ToString()
         {
             return $"Component (id = {AttachedElementLocation.LocalDocumentAnchor})";
@@ -79,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             }
         }
 
-        public virtual string GetDisplayText()
+        public virtual RichText GetDisplayText()
         {
             var processor = GetSolution().NotNull("occurrence.GetSolution() != null").GetComponent<AssetHierarchyProcessor>();
             var name = GetAttachedGameObjectName(processor);

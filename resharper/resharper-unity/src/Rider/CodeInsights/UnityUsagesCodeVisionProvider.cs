@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         }
 
         public string ProviderId => "Unity Assets Usage";
-        public string DisplayName => "Unity Assets Usage";
+        public string DisplayName => "Unity assets usage";
         public CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Top;
 
         public ICollection<CodeLensRelativeOrdering> RelativeOrderings =>

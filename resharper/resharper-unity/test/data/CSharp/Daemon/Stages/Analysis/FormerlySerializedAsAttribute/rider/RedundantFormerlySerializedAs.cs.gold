@@ -10,7 +10,7 @@ public class Test01
 
 public class ||Test02|(3)|(4) : MonoBehaviour
 {
-    [|FormerlySerializedAs("myValue")|(5), FormerlySerializedAs("foo")] public int |myValue|(6);
+    [|FormerlySerializedAs("myValue")|(5), FormerlySerializedAs("foo")] public int ||myValue|(6)|(7);
 }
 
 ---------------------------------------------------------
@@ -21,3 +21,4 @@ public class ||Test02|(3)|(4) : MonoBehaviour
 (4): UnityCodeInsights: 
 (5): ReSharper Dead Code: Redundant 'FormerlySerializedAs' attribute
 (6): ReSharper Unity Implicitly Used Identifier: 
+(7): UnityCodeInsights: 
