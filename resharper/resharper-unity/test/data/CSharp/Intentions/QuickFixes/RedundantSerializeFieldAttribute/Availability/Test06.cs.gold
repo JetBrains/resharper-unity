@@ -1,0 +1,117 @@
+﻿// ${RUN:2}
+using System;
+using UnityEngine;
+
+public class Test
+{
+    [|SerializeField|(0)] [NonSerialized] public int Value1;
+    [|SerializeField|(1)] [NonSerialized] public int Value2;
+    [|SerializeField|(2)] [NonSerialized] public int Value3;
+    [|SerializeField|(3)] [NonSerialized] public int Value4;
+}
+
+public class Test2
+{
+    [|SerializeField|(4)] [NonSerialized] public int Value1;
+    [|SerializeField|(5)] [NonSerialized] public int Value2;
+    [|SerializeField|(6)] [NonSerialized] public int Value3;
+    [|SerializeField|(7)] [NonSerialized] public int Value4;
+}
+
+------------------------------------------------
+0: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Test' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+1: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Test' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+2: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Test' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+3: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Test' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+4: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Test2' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+5: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Test2' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+6: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Test2' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+7: Redundant 'SerializeField' attribute
+QUICKFIXES:
+Make type 'Test2' serializable
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

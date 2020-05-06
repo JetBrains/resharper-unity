@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using JetBrains.Application.Progress;
-using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
-using JetBrains.ReSharper.Feature.Services.Intentions;
+﻿using JetBrains.ReSharper.Feature.Services.CodeCleanup.HighlightingModule;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Intentions.CSharp.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.TextControl;
-using JetBrains.Util;
+using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
-    [QuickFix]
-    public class RemoveRedundantAttributeQuickFix : IQuickFix
+    [QuickFix, HighlightingCleanupItem]
+    public class RemoveRedundantAttributeQuickFix : CSharpScopedRemoveRedundantCodeQuickFixBase
     {
         private readonly IAttribute myAttribute;
 
@@ -42,30 +37,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             myAttribute = highlighting.Attribute;
         }
 
-        public IEnumerable<IntentionAction> CreateBulbItems()
+        protected override ITreeNode TryGetContextTreeNode() => myAttribute;
+        public override string Text => "Remove redundant attribute";
+        // We don't remove all redundant attributes, just Unity ones
+        public override string ScopedText => "Remove redundant Unity attributes";
+        public override bool IsReanalysisRequired => false;
+        public override ITreeNode ReanalysisDependencyRoot => null;
+
+        public override void Execute()
         {
-            return new RemoveAttribute(myAttribute).ToQuickFixIntentions();
+            var attributeList = AttributeListNavigator.GetByAttribute(myAttribute);
+            attributeList?.RemoveAttribute(myAttribute);
         }
 
-        private class RemoveAttribute : BulbActionBase
-        {
-            private readonly IAttribute myAttribute;
-
-            public RemoveAttribute(IAttribute attribute)
-            {
-                myAttribute = attribute;
-            }
-
-            protected override Action<ITextControl> ExecutePsiTransaction(ISolution solution, IProgressIndicator progress)
-            {
-                var attributeList = AttributeListNavigator.GetByAttribute(myAttribute);
-                attributeList?.RemoveAttribute(myAttribute);
-                return null;
-            }
-
-            public override string Text => "Remove redundant attribute";
-        }
-
-        public bool IsAvailable(IUserDataHolder cache) => myAttribute.IsValid();
     }
 }

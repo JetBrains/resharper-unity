@@ -11,6 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
+
+        // Test05 so we can share files between availability and action tests
+        [Test] public void Test05() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -20,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
 
         [Test] public void Test01() { DoNamedTest(); }
         [Test] public void Test02() { DoNamedTest(); }
+        [Test] public void Test05() { DoNamedTest(); }
     }
 
     [TestUnity]

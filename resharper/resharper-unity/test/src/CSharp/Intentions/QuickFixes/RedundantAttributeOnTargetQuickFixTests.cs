@@ -13,6 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void TestRedundantClassAttribute() { DoNamedTest2(); }
         [Test] public void TestRedundantFieldAttribute() { DoNamedTest2(); }
         [Test] public void TestRedundantDelegateAttribute() { DoNamedTest2(); }
+        [Test] public void TestRedundantAttributesInScope() { DoNamedTest2(); }
     }
 
     [TestUnity]
@@ -24,5 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void TestRedundantClassAttribute() { DoNamedTest2(); }
         [Test] public void TestRedundantFieldAttribute() { DoNamedTest2(); }
         [Test] public void TestRedundantDelegateAttribute() { DoNamedTest2(); }
+        [Test] public void TestRedundantAttributesInScope() { DoNamedTest2(); }
     }
 }
