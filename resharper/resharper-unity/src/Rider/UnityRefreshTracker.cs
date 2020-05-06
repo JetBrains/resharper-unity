@@ -110,10 +110,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     .AsIndeterminate().AsNonCancelable());
             try
             {
-                // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
                 IDisposable cookie = null;
                 var version = UnityVersion.Parse(myEditorProtocol.UnityModel.Value.UnityApplicationData.Value.ApplicationVersion);
-                if (version != null && version.Major < 2018)
+                if (version != null && version.Major < 2018) // needed for pre-2018 - a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
                     cookie = mySolution.GetComponent<VfsListener>().PauseChanges();
                 var task = myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                 return task.ContinueWith(_ =>
