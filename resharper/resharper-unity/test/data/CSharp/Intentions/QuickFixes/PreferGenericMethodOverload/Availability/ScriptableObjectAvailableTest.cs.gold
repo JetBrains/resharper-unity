@@ -19,3 +19,7 @@ namespace DefaultNamespace
 0: String based type lookup is inefficient, use generic overload
 QUICKFIXES:
 Convert to 'CreateInstance<DefaultNamespace.Foo>()'
+--Use strongly typed overloads in class 'Test06'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution

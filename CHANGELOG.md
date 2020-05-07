@@ -12,7 +12,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net201...net202)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/36?closed=1)
 
-# Fixed
+### Changed
+
+- All applicable quick fixes are now bulk actions, and can be applied over project scope ([#1648](https://github.com/JetBrains/resharper-unity/issues/1648), [#1649](https://github.com/JetBrains/resharper-unity/pull/1649))
+
+### Fixed
 
 - Fix meta file handling when references to Unity assemblies are invalid ([#1623](https://github.com/JetBrains/resharper-unity/pull/1623))
 

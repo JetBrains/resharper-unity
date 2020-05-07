@@ -1,0 +1,55 @@
+﻿// ${RUN:2}
+using UnityEditor;
+
+[|InitializeOnLoad|(0)]
+public class MissingConstructor
+{
+}
+
+[|InitializeOnLoad|(1)]
+public class MissingConstructor2
+{
+}
+
+[|InitializeOnLoad|(2)]
+public class MissingConstructor3
+{
+}
+
+------------------------------------------------
+0: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+QUICKFIXES:
+Create static constructor 'MissingConstructor'
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'MissingConstructor'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'MissingConstructor'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+1: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+QUICKFIXES:
+Create static constructor 'MissingConstructor2'
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'MissingConstructor2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'MissingConstructor2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+2: 'InitializeOnLoad' attribute is redundant when static constructor is missing
+QUICKFIXES:
+Create static constructor 'MissingConstructor3'
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'MissingConstructor3'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'MissingConstructor3'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

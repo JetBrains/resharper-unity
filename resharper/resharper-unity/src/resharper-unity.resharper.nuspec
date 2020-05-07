@@ -36,6 +36,10 @@
 <releaseNotes>
 New in 2020.2
 
+### Changed
+
+- All applicable quick fixes are now bulk actions, and can be applied over project scope (#1648, #1649)
+
 Fixed:
 
 - Fix meta file handling when references to Unity assemblies are invalid (#1623)

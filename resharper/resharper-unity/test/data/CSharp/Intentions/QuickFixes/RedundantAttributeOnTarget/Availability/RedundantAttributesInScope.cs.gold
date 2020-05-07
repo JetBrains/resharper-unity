@@ -1,0 +1,66 @@
+﻿// ${RUN:2}
+using System;
+using UnityEngine;
+using UnityEditor;
+
+[assembly: |SerializeField|(0)]
+
+[|SerializeField|(1)]
+public class Foo
+{
+    [|CustomEditor(typeof(Material))|(2)]
+    private int |myField|(3);
+}
+
+[|HideInInspector|(4)]
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+------------------------------------------------
+0: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+1: Attribute 'UnityEngine.SerializeField' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+2: Attribute 'UnityEditor.CustomEditor' is redundant on this declaration type. It is only used when applied to 'Class' declarations
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Foo'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Foo'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+3: Field 'myField' is never used
+QUICKFIXES:
+Initialize field from constructor
+Encapsulate field
+Remove unused field
+--Comment unused field
+4: Attribute 'UnityEngine.HideInInspector' is redundant on this declaration type. It is only used when applied to 'Field' declarations
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in delegate 'MyEventHandler'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in delegate 'MyEventHandler'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

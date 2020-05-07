@@ -32,6 +32,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var literalExpressionArgument = expression.Arguments.SingleItem?.Value as ILiteralExpression;
             if (literalExpressionArgument == null || !literalExpressionArgument.Literal.IsAnyStringLiteral()) return;
 
+            // GameObject.GetComponent, Component.GetComponent, GameObject.AddComponent and ScriptableObject.CreateInstance.
+            // Decided by who gets references in a string literal argument by the UnityObjectTypeOrNamespaceReference provider.
             var methodName = GetMethodName(expression.Reference);
             if (methodName != "GetComponent" && methodName != "AddComponent" && methodName != "CreateInstance") return;
 

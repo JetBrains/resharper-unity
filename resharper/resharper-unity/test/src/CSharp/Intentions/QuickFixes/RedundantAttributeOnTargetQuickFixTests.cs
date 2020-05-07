@@ -13,10 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void TestRedundantClassAttribute() { DoNamedTest2(); }
         [Test] public void TestRedundantFieldAttribute() { DoNamedTest2(); }
         [Test] public void TestRedundantDelegateAttribute() { DoNamedTest2(); }
+        [Test] public void TestRedundantAttributesInScope() { DoNamedTest2(); }
     }
 
     [TestUnity]
-    public class RedundantAttributeOnTargetQuickFixRemoveTests : CSharpQuickFixTestBase<RedundantAttributeDeadCodeQuickFix>
+    public class RedundantAttributeOnTargetQuickFixRemoveTests : CSharpQuickFixTestBase<RemoveRedundantAttributeQuickFix>
     {
         protected override string RelativeTestDataPath=> @"CSharp\Intentions\QuickFixes\RedundantAttributeOnTarget";
 
@@ -24,5 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void TestRedundantClassAttribute() { DoNamedTest2(); }
         [Test] public void TestRedundantFieldAttribute() { DoNamedTest2(); }
         [Test] public void TestRedundantDelegateAttribute() { DoNamedTest2(); }
+        [Test] public void TestRedundantAttributesInScope() { DoNamedTest2(); }
     }
 }
