@@ -18,15 +18,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher
 
         protected sealed override void Run(T element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            // TODO: Check other process kinds. Should we run for everything?
-            // OTHER is used by scoped quick fixes
+            // Run for all daemon kinds except global analysis. Visible document and solution wide analysis are obvious
+            // and required. "Other" is used by scoped quick fixes, and incremental solution analysis is only for stages
+            // that respond to settings changes. We don't strictly need this, but it won't cause problems.
             var processKind = data.GetDaemonProcessKind();
-            if (processKind != DaemonProcessKind.VISIBLE_DOCUMENT
-                && processKind != DaemonProcessKind.SOLUTION_ANALYSIS
-                && processKind != DaemonProcessKind.OTHER)
-            {
+            if (processKind == DaemonProcessKind.GLOBAL_WARNINGS)
                 return;
-            }
 
             if (!element.GetProject().IsUnityProject())
                 return;
