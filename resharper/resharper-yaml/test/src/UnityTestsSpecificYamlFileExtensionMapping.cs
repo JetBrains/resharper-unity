@@ -17,6 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
       // Rider doesn't register .yaml, as the frontend already provides support for it. But we need it for tests...
       ".yaml",
 #endif
+
+      // This are registered by the Unity plugin, not the YAML plugin. But we need them for tests...
       ".meta",
       ".asset",
       ".unity"
@@ -31,13 +33,13 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
     {
       if (ourFileExtensions.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
         return new[] {YamlProjectFileType.Instance};
-      return EmptyList<ProjectFileType>.Enumerable;
+      return base.GetFileTypes(extension);
     }
 
     public override IEnumerable<string> GetExtensions(ProjectFileType projectFileType)
     {
       if (Equals(projectFileType, YamlProjectFileType.Instance))
-        return ourFileExtensions;
+        return base.GetExtensions(projectFileType).Concat(ourFileExtensions);
       return base.GetExtensions(projectFileType);
     }
   }
