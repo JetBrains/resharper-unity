@@ -1,4 +1,6 @@
+using System;
 using System.Drawing;
+using System.Text;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
@@ -22,15 +24,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             descriptor.Text = displayText;
             
             
-            AppendRelatedFile(descriptor, unityOccurrence.GetRelatedFilePresentation());
+            AppendRelatedFile(descriptor, unityOccurrence.GetRelatedFilePresentation(), unityOccurrence.GetRelatedFolderPresentation());
             
             descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
             return true;
         }
         
-        public static void AppendRelatedFile(IMenuItemDescriptor descriptor, string relatedFilePresentation)
+        public static void AppendRelatedFile(IMenuItemDescriptor descriptor, string relatedFilePresentation, string relatedFolderPresentation)
         {
-            descriptor.ShortcutText =  new RichText($"in {relatedFilePresentation}", TextStyle.FromForeColor(Color.DarkGray));
+            var sb = new StringBuilder();
+            if (relatedFilePresentation != null)
+                sb.Append($"{relatedFilePresentation}");
+            
+            if (relatedFolderPresentation != null)
+            {
+                if (relatedFilePresentation != null)
+                    sb.Append(" ");
+                
+                sb.Append($"in {relatedFolderPresentation}");
+            }
+            
+            descriptor.ShortcutText = new RichText(sb.ToString(), TextStyle.FromForeColor(Color.DarkGray));
         }
 
         

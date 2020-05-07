@@ -1,6 +1,7 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.UI.RichText;
 using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -16,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             myGuid = guid;
         }
 
-        public override string GetDisplayText()
+        public override RichText GetDisplayText()
         {
             var declaredElement = DeclaredElementPointer.FindDeclaredElement();
             if (declaredElement == null)
@@ -30,10 +31,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public override string GetRelatedFilePresentation()
         {
-            if (IsRelatedToScriptableObject()) 
-                return base.GetRelatedFilePresentation().RemoveEnd("/" + SourceFile.GetLocation().Name).RemoveStart("Assets/");
+            if (IsRelatedToScriptableObject())
+                return null;
             return base.GetRelatedFilePresentation();
         }
+        
 
         private bool IsRelatedToScriptableObject() => UnityApi.IsDescendantOfScriptableObject(DeclaredElementPointer.FindDeclaredElement() as IClass);
         
