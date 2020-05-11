@@ -1,4 +1,5 @@
 using JetBrains.Collections.Viewable;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -22,20 +23,65 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             Enabled.Value = unitySolutionTracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
-        
-        public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
+
+        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
-            var result = new LocalList<IDeclaredElement>();
-            switch (currentNode)
+            return new LocalList<IDeclaredElement>();
+        }
+
+        public override bool IsRootMark(IDeclaredElement declaredElement, IDeclaration declaration)
+        {
+            if(declaration == null)
+                return false;
+            
+            Assertion.Assert(ReferenceEquals(declaration.DeclaredElement, declaredElement), "declaration.DeclaredElement == declaredElement");
+            
+            var processor = new ExpensiveCodeProcessor();
+            declaration.ProcessThisAndDescendants(processor);
+            return processor.IsExpensiveCodeFound;
+        }
+
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        {
+            return new LocalList<IDeclaredElement>();
+        }
+
+        public override bool IsBannedMark(IDeclaredElement declaredElement, IDeclaration declaration)
+        {
+            return false;
+        }
+
+        private class ExpensiveCodeProcessor : IRecursiveElementProcessor
+        {
+            public bool IsExpensiveCodeFound;
+            public bool InteriorShouldBeProcessed(ITreeNode element)
             {
-                case IInvocationExpression invocationExpression when PerformanceCriticalCodeStageUtil.IsInvocationExpensive(invocationExpression):
-                case IReferenceExpression referenceExpression when PerformanceCriticalCodeStageUtil.IsCameraMainUsage(referenceExpression):
-                case IAttributesOwner attributesOwner when PerformanceCriticalCodeStageUtil.HasPerformanceSensitiveAttribute(attributesOwner):
-                    result.Add(containingFunction);
-                    break;
+                return true;
             }
 
-            return result;
+            public void ProcessBeforeInterior(ITreeNode element)
+            {
+                switch (element)
+                {
+                    case IInvocationExpression invocationExpression when
+                        PerformanceCriticalCodeStageUtil.IsInvocationExpensive(invocationExpression):
+                    case IReferenceExpression referenceExpression when
+                        PerformanceCriticalCodeStageUtil.IsCameraMainUsage(referenceExpression):
+                    case IAttributesOwnerDeclaration attributesOwnerDeclaration when
+                        attributesOwnerDeclaration.DeclaredElement is IAttributesOwner attributesOwner &&
+                        PerformanceCriticalCodeStageUtil.HasPerformanceSensitiveAttribute(attributesOwner):
+                    {
+                        IsExpensiveCodeFound = true;
+                        break;
+                    }
+                }
+            }
+
+            public void ProcessAfterInterior(ITreeNode element)
+            {
+            }
+
+            public bool ProcessingIsFinished => IsExpensiveCodeFound;
         }
     }
 }

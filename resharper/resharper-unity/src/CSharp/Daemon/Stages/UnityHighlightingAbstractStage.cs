@@ -201,8 +201,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             var invokedMethod = expression.InvocationExpressionReference.Resolve().DeclaredElement as IMethod;
             if (invokedMethod == null)
                 return false;
-            return invokedMethod.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self).Count !=
-                   0;
+            return invokedMethod.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self).Count != 0;
         }
 
         private UnityProblemAnalyzerContext GetProhibitedContexts(ITreeNode node)
@@ -215,6 +214,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
+            // it's ok that creating context does not force new prohibiting context
+            // reason: prohibiting context has higher priority than creating. example: burst
             if (IsFunctionNode(element))
                 myProblemAnalyzerContexts.Push(GetProblemAnalyzerContext(element));
             if (IsProhibitedNode(element))
@@ -300,7 +301,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         private bool IsPerformanceCriticalDeclaration(ITreeNode element)
         {
             return IsRootDeclaration(element,
-                declaration => PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myAPI, declaration),
+                PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod,
                 myPerformanceCriticalCodeCallGraphMarksProvider.Id);
         }
 
@@ -309,7 +310,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             return IsRootDeclaration(element,
                 // ReSharper disable once AssignNullToNotNullAttribute
                 declaration =>
-                    myCallGraphBurstMarksProvider.GetMarkedFunctionsFrom(declaration, null).FirstOrDefault() != null,
+                    myCallGraphBurstMarksProvider.GetRootMarksFromNode(declaration, null).FirstOrDefault() != null,
                 myCallGraphBurstMarksProvider.Id);
         }
 

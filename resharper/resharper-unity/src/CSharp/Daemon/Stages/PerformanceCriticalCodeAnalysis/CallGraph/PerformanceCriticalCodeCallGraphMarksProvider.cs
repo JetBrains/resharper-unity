@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
+using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -26,21 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             myUnityApi = unityApi;
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
-        }
-        
-        public override LocalList<IDeclaredElement> GetMarkedFunctionsFrom(ITreeNode currentNode, IDeclaredElement containingFunction)
-        {
-            var result = new LocalList<IDeclaredElement>();
-            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myUnityApi, currentNode))
-            {
-                result.Add(containingFunction);
-            }
-
-            var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
-            if (coroutineOrInvoke != null)
-                result.Add(coroutineOrInvoke);
-
-            return result;
         }
 
         private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
@@ -104,6 +90,59 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             }
 
             return null;
+        }
+
+        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        {
+            var result = new LocalList<IDeclaredElement>();
+            var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
+            if (coroutineOrInvoke != null)
+                result.Add(coroutineOrInvoke);
+
+            return result;
+        }
+
+        public override bool IsRootMark(IDeclaredElement declaredElement, IDeclaration declaration)
+        {
+            if (declaration == null)
+                return false;
+            
+            Assertion.Assert(ReferenceEquals(declaration.DeclaredElement, declaredElement), "declaration.DeclaredElement == declaredElement");
+
+            var processor = new PerformanceCriticalCodeProcessor();
+            declaration.ProcessThisAndDescendants(processor);
+            return processor.IsPerformanceCriticalCodeFound;
+        }
+
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        {
+            return new LocalList<IDeclaredElement>();
+        }
+
+        public override bool IsBannedMark(IDeclaredElement declaredElement, IDeclaration declaration)
+        {
+            return false;
+        }
+
+        private class PerformanceCriticalCodeProcessor : IRecursiveElementProcessor
+        {
+            public bool IsPerformanceCriticalCodeFound;
+
+            public bool InteriorShouldBeProcessed(ITreeNode element)
+            {
+                return true;
+            }
+
+            public void ProcessBeforeInterior(ITreeNode element)
+            {
+                IsPerformanceCriticalCodeFound = PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(element);
+            }
+
+            public void ProcessAfterInterior(ITreeNode element)
+            {
+            }
+
+            public bool ProcessingIsFinished => IsPerformanceCriticalCodeFound;
         }
     }
 }
