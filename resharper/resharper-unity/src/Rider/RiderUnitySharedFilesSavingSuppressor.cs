@@ -14,13 +14,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class RiderUnitySharedFilesSavingSuppressor : IRiderDocumentSavingSuppressor
     {
+        [NotNull] private readonly UnitySolutionTracker myUnitySolutionTracker;
         [NotNull] private readonly DocumentToProjectFileMappingStorage myDocumentToProjectFileMappingStorage;
         [NotNull] private readonly ILogger myLogger;
 
         public RiderUnitySharedFilesSavingSuppressor(
+            [NotNull] UnitySolutionTracker unitySolutionTracker,
             [NotNull] DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage,
             [NotNull] ILogger logger)
         {
+            myUnitySolutionTracker = unitySolutionTracker;
             myDocumentToProjectFileMappingStorage = documentToProjectFileMappingStorage;
             myLogger = logger;
         }
@@ -31,9 +34,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!forceSaveOpenDocuments) return false;
             
             var projectFile = myDocumentToProjectFileMappingStorage.TryGetProjectFile(document);
-            var isUnitySharedProjectFile = projectFile != null 
-                                           && projectFile.IsShared() 
-                                           && projectFile.GetProject().IsUnityGeneratedProject();
+            var isUnitySharedProjectFile = projectFile != null
+                                           && myUnitySolutionTracker.IsUnityGeneratedProject.Value
+                                           && projectFile.IsShared();
+            
             if (isUnitySharedProjectFile)
             {
                 myLogger.Verbose("File is shared and contained in Unity project. Skip saving.");
