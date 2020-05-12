@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var projectFile = myDocumentToProjectFileMappingStorage.TryGetProjectFile(document);
             var isUnitySharedProjectFile = projectFile != null 
                                            && projectFile.IsShared() 
-                                           && projectFile.GetProject().IsUnityProject();
+                                           && projectFile.GetProject().IsUnityGeneratedProject();
             if (isUnitySharedProjectFile)
             {
                 myLogger.Verbose("File is shared and contained in Unity project. Skip saving.");
