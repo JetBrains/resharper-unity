@@ -37,14 +37,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var typeElement = element.DeclaredElement;
             if (typeElement != null)
             {
-                if (myUnityApi.IsDescendantOfMonoBehaviour(typeElement))
+                if (UnityApi.IsDescendantOfMonoBehaviour(typeElement))
                 {
                     AddMonoBehaviourHiglighting(consumer, element, "Script", "Unity script", kind);
                 }
-                else if (myUnityApi.IsDescendantOf(KnownTypes.Editor, typeElement) ||
-                         myUnityApi.IsDescendantOf(KnownTypes.EditorWindow, typeElement))
+                else if (UnityApi.IsDescendantOf(KnownTypes.Editor, typeElement) ||
+                         UnityApi.IsDescendantOf(KnownTypes.EditorWindow, typeElement))
                 {
                     AddEditorHiglighting(consumer, element, "Editor", "Custom Unity Editor", kind);
+                }
+                else if (UnityApi.IsDescendantOfScriptableObject(typeElement))
+                {
+                    AddMonoBehaviourHiglighting(consumer, element, "Scriptable object", "Scriptable Object", kind);
                 }
                 else if (myUnityApi.IsUnityType(typeElement))
                 {

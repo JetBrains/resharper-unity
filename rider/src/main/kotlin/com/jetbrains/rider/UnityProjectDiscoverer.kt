@@ -2,7 +2,7 @@ package com.jetbrains.rider
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.jetbrains.rdclient.util.idea.LifetimedProjectService
+import com.jetbrains.rd.platform.util.idea.LifetimedProjectService
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
@@ -54,8 +54,7 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectService(project
 
     // Returns false when opening a Unity project as a plain folder
     private fun isCorrectlyLoadedSolution(project: Project): Boolean {
-        val solutionFile = project.solutionFile
-        return project.solutionDescription is RdExistingSolution && solutionFile.isFile && solutionFile.extension.equals("sln", true)
+        return project.solutionDescription is RdExistingSolution
     }
 
     private fun solutionNameMatchesUnityProjectName(project: Project): Boolean {

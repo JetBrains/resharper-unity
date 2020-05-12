@@ -1,4 +1,5 @@
 using JetBrains.Application.PersistentMap;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.Serialization;
@@ -17,6 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         public AssetMethodData(LocalReference location, string methodName, TextRange textRange, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
         {
+            Assertion.Assert(location != null, "location != null");
+            Assertion.Assert(targetReference != null, "targetReference != null");
+            Assertion.Assert(methodName != null, "methodName != null");
             Location = location;
             MethodName = methodName;
             TextRange = textRange;
@@ -44,7 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
 
         protected bool Equals(AssetMethodData other)
         {
-            return Equals(Location, other.Location) && MethodName == other.MethodName
+            return Equals(Location, other.Location) && MethodName == other.MethodName 
+                                                  && TextRange.Equals(other.TextRange)
                                                   && Mode == other.Mode
                                                   && Type == other.Type
                                                   && Equals(TargetScriptReference, other.TargetScriptReference);
@@ -63,7 +68,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods
             unchecked
             {
                 var hashCode = Location.GetHashCode();
-                hashCode = (hashCode * 397) ^ MethodName.GetHashCode() ;
+                hashCode = (hashCode * 397) ^ MethodName.GetHashCode();
+                hashCode = (hashCode * 397) ^ TextRange.GetHashCode();
                 hashCode = (hashCode * 397) ^ (int) Mode;
                 hashCode = (hashCode * 397) ^ (Type != null ? Type.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ TargetScriptReference.GetHashCode();

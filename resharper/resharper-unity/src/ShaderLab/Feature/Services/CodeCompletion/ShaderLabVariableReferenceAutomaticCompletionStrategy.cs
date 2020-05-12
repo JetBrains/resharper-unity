@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.CodeCompl
 
         public bool AcceptTyping(char c, ITextControl textControl, IContextBoundSettingsStore boundSettingsStore)
         {
-            if (!myShaderLabIntellisenseManager.GetAutoppopupEnabled(boundSettingsStore))
+            if (!myShaderLabIntellisenseManager.GetAutopopupEnabled(boundSettingsStore))
                 return false;
             return c == '[';
         }

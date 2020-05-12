@@ -4,14 +4,16 @@ import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
+import org.testng.Assert
 import org.testng.annotations.Test
+import java.nio.file.Paths
 
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override fun getSolutionDirectoryName() = "com.unity.ide.rider"
     override val persistCaches: Boolean
         get() = true
 
-    // @Test
+    @Test
     @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {
@@ -26,5 +28,24 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
                 addNewItem(project, arrayOf("Assets", "Scripts", "Editor", "NewDirectory1"), TemplateType.CLASS, "EditorClass.cs")
             }
         }
+    }
+
+    @Test
+    @TestEnvironment(solution = "RiderMoveFile") // RIDER-41182
+    fun testMoveFile() {
+        val action = {
+            // in Rider move the script file "MyScript" into "SomeFolder"
+            // meta file should be moved together with script
+
+            cutItem2(project, arrayOf("Assets", "MyScript.cs"))
+            pasteItem2(project, arrayOf("Assets", "SomeFolder"), "MyScript.cs")
+        }
+        val metaFileContent = Paths.get(project.basePath!!).resolve("Assets").resolve("MyScript.cs.meta").toFile().readText()
+
+        doActionAndWait(project, action,true)
+
+        val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("SomeFolder").resolve("MyScript.cs.meta").toFile()
+        Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
+        Assert.assertEquals(metaFileContent, metaFile.readText())
     }
 }

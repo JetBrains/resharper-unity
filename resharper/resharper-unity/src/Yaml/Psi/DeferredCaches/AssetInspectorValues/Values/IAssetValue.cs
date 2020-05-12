@@ -6,5 +6,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
     public interface IAssetValue
     {
         string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport);
+        string GetFullPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport);
     }
 }

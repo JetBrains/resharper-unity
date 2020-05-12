@@ -1,10 +1,10 @@
 <idea-plugin url="https://github.com/JetBrains/resharper-unity">
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2020.1.0.9999</version>
+  <version>2020.2.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="2020.1" />
+  <idea-version since-build="2020.2" />
 
   <depends>com.intellij.modules.rider</depends>
   <depends>com.intellij.modules.xdebugger</depends>
@@ -81,13 +81,11 @@
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
 
-    <!-- USS support -->
-    <!-- Add basic file type support only (icons, etc.) all functionality is optional, based on the CSS plugin being available -->
-    <fileType name="USS" language="USS" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uss.UssFileType" extensions="uss" />
-
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UssDisabledEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
+
+    <fileType name="JSON" extensions="inputactions"/>
 
     <!-- Unity Explorer -->
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
@@ -126,7 +124,6 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.VcsPullTracker</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification</implementation-class></component>
@@ -136,7 +133,6 @@
 
   <applicationListeners>
     <listener class="com.jetbrains.rider.plugins.unity.SaveAllTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
-    <listener class="com.jetbrains.rider.plugins.unity.VcsPullTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
   </applicationListeners>
 
   <actions>
@@ -155,7 +151,7 @@
             icon="AllIcons.General.Settings" />
 
     <group id="UnityToolbarActions">
-      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildSolutionAction" anchor="after" />
+      <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildButton" anchor="after" />
 
       <separator/>
 
@@ -285,43 +281,21 @@
   <change-notes>
 <![CDATA[
 <p>
-<strong>New in 2020.1</strong>
+<strong>New in 2020.2</strong>
 </p>
 <p>
-<em>Added:</em>
-<ul>
-  <li>Add performance inspection - prefer jagged array to multidimensional array access, with Quick Fix (<a href="https://youtrack.jetbrains.com/issue/RIDER-22812">RIDER-22812</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
-  <li>Exclude <tt>Boo</tt> and <tt>UnityScript</tt> namespaces, as well as the <tt>System.Diagnostics.Debug</tt> type from import completion (<a href="https://github.com/JetBrains/resharper-unity/issues/574">#574</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1473">#1473</a>)</li>
-  <li>Add more attributes to external annotations. E.g. <tt>ShortcutAttribute</tt> will mark the method as in use (<a href="https://github.com/JetBrains/resharper-unity/issues/1546">#1546</a>, <a href="https://youtrack.jetbrains.com/issue/RIDER-40330">RIDER-40330</a> <a href="https://github.com/JetBrains/resharper-unity/pull/1548">#1548</a>)</li>
-  <li>Find Usages for serialised fields now includes asset usages (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
-</ul>
 <em>Changed:</em>
 <ul>
-  <li>Indexing of assets deferred until after project loaded and will not interfere with existing code insight features (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
-  <li>Improved memory usage while parsing assets (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
-  <li>Improved support of nested and variant prefabs (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
-  <li>Serialised field values Code Vision now includes values from FomerlySerialisedAs attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1530">#1530</a>)</li>
-  <li>Serialised field values Code Vision now includes derived classes (<a href="https://github.com/JetBrains/resharper-unity/pull/1550">#1550</a>)</li>
-  <li>Show performance critical highlights for known methods without requiring Solution Wide Analysis enabled (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
-  <li>Stop marking a method as expensive if it only contains a null check (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
-  <li>Move vector multiplication order inspection to performance critical context only (<a href="https://github.com/JetBrains/resharper-unity/pull/1459">#1459</a>)</li>
-  <li>Updated API information to 2020.1.0a25 (<a href="https://github.com/JetBrains/resharper-unity/pull/1553">#1553</a>)</li>
-  <li>Remove messages that use obsolete parameter types (<a href="https://github.com/JetBrains/resharper-unity/issues/1545">#1545</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1553">#1553</a>)</li>
-  <li>Rider: Adding file to Unity Explorer will add to correct C# project (<a href="https://youtrack.jetbrains.com/issue/RIDER-23169">RIDER-23169</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1470">#1470</a>)</li>
-  <li>Rider: Show folders ending with <tt>~</tt> by default in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/issues/1444">#1444</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
-  <li>Rider: Move Unity Explorer settings to main "gear" icon (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
-  <li>Rider: Interesting content in builtin packages is now visible by default (<a href="https://github.com/JetBrains/resharper-unity/pull/1556">#1556</a>)</li>
-  <li>Unity Editor: Move caret to correct column when opening file (<a href="https://youtrack.jetbrains.com/issue/RIDER-27450">RIDER-27450</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1486">#1486</a>)</li>
-</ul>
-<em>Fixed:</em>
-<ul>
-  <li>Fix incorrect redundant <tt>SerializeField</tt> attribute warning for property backing field (<a href="https://github.com/JetBrains/resharper-unity/issues/1016">#1016</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1464">#1464</a>)</li>
-  <li>Rider: Fix tooltip display for packages in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1506">#1506</a>)</li>
-  <li>Rider: Fix settings search not finding Unity pages (<a href="https://github.com/JetBrains/resharper-unity/issues/1516">#1516</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1520">#1520</a>)</li>
-  <li>Rider: Fix discovery and running of all tests in a project (<a href="https://github.com/JetBrains/resharper-unity/issues/1509">#1509</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1500">#1500</a>)</li>
+  <li>All applicable quick fixes are now bulk actions, and can be applied over project scope (<a href="https://github.com/JetBrains/resharper-unity/issues/1648">#1648</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1649">#1649</a>)</li>
 </ul>
 </p>
-<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net201/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
+<p>
+<em>Fixed:</em>
+<ul>
+  <li>Fix meta file handling when references to Unity assemblies are invalid (<a href="https://github.com/JetBrains/resharper-unity/pull/1623">#1623</a>)</li>
+</ul>
+</p>
+<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net202/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
 ]]>
   </change-notes>
 </idea-plugin>

@@ -11,9 +11,14 @@ import com.intellij.openapi.extensions.ExtensionPointName
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.Transient
-import com.jetbrains.rider.*
+import com.jetbrains.rider.isUnityClassLibraryProject
+import com.jetbrains.rider.isUnityProject
+import com.jetbrains.rider.isUnityProjectFolder
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.*
+import com.jetbrains.rider.projectDir
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
@@ -59,7 +64,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                     addPlayModeArguments(args)
                 }
 
-                return ext.executor(UnityAttachConfigurationParametersImpl(pid, finder.getApplicationPath(), args, finder.getApplicationVersion()), environment)
+                return ext.executor(UnityAttachConfigurationParametersImpl(project.solution.rdUnityModel.unityProcessId.valueOrNull ?: pid,
+                    finder.getApplicationPath(), args, finder.getApplicationVersion()), environment)
             }
         }
 

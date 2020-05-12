@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using JetBrains.Application;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes;
@@ -9,7 +8,6 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
 {
@@ -67,10 +65,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
             var tokenType = myLexer.TokenType;
 
             if (tokenType == CgTokenNodeTypes.WHITESPACE)
-                return new CgWhitespaceTokenNode(myWhitespaceIntern.Intern(myLexer));
+                return new CgWhitespaceTokenNode(WhitespaceIntern.Intern(myLexer));
 
             if (tokenType == CgTokenNodeTypes.NEW_LINE)
-                return new CgNewLineTokenNode(myWhitespaceIntern.Intern(myLexer));
+                return new CgNewLineTokenNode(WhitespaceIntern.Intern(myLexer));
 
             return TreeElementFactory.CreateLeafElement(myLexer);
         }

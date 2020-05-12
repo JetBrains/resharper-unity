@@ -2,9 +2,9 @@ package com.jetbrains.rider.plugins.unity.ui
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.platform.util.idea.LifetimedProjectService
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rdclient.util.idea.LifetimedProjectService
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import org.jdom.Element

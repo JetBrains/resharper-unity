@@ -14,11 +14,17 @@ Remove unused directives in file
 --Remove unused directives in solution
 1: Redundant 'SerializeField' attribute
 QUICKFIXES:
-Remove redundant attribute
 Make all fields non-readonly
 --Make 'Value1' non-readonly
 --Make 'Value2' non-readonly
 --Make 'Value3' non-readonly
+Remove redundant attribute
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
 2: Readonly field 'Value1' is never assigned
 QUICKFIXES:
 Initialize field from constructor

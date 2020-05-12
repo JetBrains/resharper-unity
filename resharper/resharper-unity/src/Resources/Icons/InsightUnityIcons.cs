@@ -8,15 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::System.Windows.Markup.XmlnsDefinitionAttribute("urn:shemas-jetbrains-com:ui-application-icons-insight-unity-icons", "JetBrains.ReSharper.Plugins.Unity.Resources.Icons")]
-
 namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
 {
     public sealed class InsightUnityIcons
     {
-
         #region InsightHot
-
         /// <summary>
         ///	<para>
         ///		<para>InsightHot Themed Icon generated identifiers:</para>
@@ -48,53 +44,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
         ///</remarks>
         ///<example>
-        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:XedymylThemedIconsThemedIcons+InsightHot}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:BumigydThemedIconsThemedIcons+InsightHot}" /&gt;        &lt;!-- XAML --&gt;</code>
         ///</example>
         ///<example>
-        ///	<code>[Item(Name="Sample", Icon=typeof(XedymylThemedIconsThemedIcons.InsightHot))]        // C# Type attribute</code>
+        ///	<code>[Item(Name="Sample", Icon=typeof(BumigydThemedIconsThemedIcons.InsightHot))]        // C# Type attribute</code>
         ///</example>
         ///<example>
-        ///	<code>IconId iconid = XedymylThemedIconsThemedIcons.InsightHot.Id;        // IconId identifier object</code>
+        ///	<code>IconId iconid = BumigydThemedIconsThemedIcons.InsightHot.Id;        // IconId identifier object</code>
         ///</example>
         ///<example>
-        ///	<code>themediconmanager.GetIcon&lt;XedymylThemedIconsThemedIcons.InsightHot&gt;()        // Icon image for rendering</code>
+        ///	<code>themediconmanager.GetIcon&lt;BumigydThemedIconsThemedIcons.InsightHot&gt;()        // Icon image for rendering</code>
         ///</example>
         [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
         public sealed class InsightHot : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
         {
 
             /// <inheritdoc cref="InsightHot">identifier class</inheritdoc>
-            public static global::JetBrains.UI.Icons.IconId Id =
-                new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(InsightHot));
+            public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(InsightHot));
 
             /// <summary>Loads the image for Themed Icon InsightHot theme aspect Default.</summary>
-            public global::JetBrains.Application.UI.Icons.Images.TiImage Load_Default()
+            public global::JetBrains.Util.Icons.TiImage Load_Default()
             {
-                return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(
-                    @"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M11.044,3.626C10.887,4.7,10.966,6.042,8.8,7.079C9.483,4.39,8.686,1.765,7.2,1C7.745,4.716,4,6.459,4,10.044C4,12.982,5.586,14,7.109,14C11.79,14,12,8.88,12,7.364C12.078814212615221,6.0489985204878778,11.744469886498315,4.741698216068424,11.044,3.6259999999999994ZM11.044,3.626M9.6390000000000011,11.266C9.4470106290940681,11.75218012429189,9.1258854429763012,12.176844431590656,8.7103927132138228,12.494014454310106C8.2948999834513444,12.811184477029556,7.8005963013697919,13.008984954615764,7.2810000000000006,13.066C6.586,13.066,5.421,12.766,5.421,10.757000000000001C5.421,8.9720000000000013,6.814,7.088000000000001,7.509,6.019000000000001C7.8378401335391761,7.3977063724002683,7.7824930058539081,8.8405368072455968,7.3489999999999993,10.190000000000001C8.5131815084529574,9.7766849409366952,9.4846989935026826,8.9476709373757437,10.075999999999999,7.8630000000000013C10.168543117696277,9.01534579678098,10.019698547511446,10.174426053849576,9.6389999999999958,11.266ZM9.6390000000000011,11.266' fill='#9AA7B0'/></g></svg>");
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path fill-rule='evenodd' d='M9.6387,11.2656C9.2747,12.1556,8.2987,13.0716,7.2817,13.0716C6.5867,13.0716,5.4207,12.7716,5.4207,10.7626C5.4207,8.9766,6.8137,7.0926,7.5097,6.0236C7.7767,6.9326,7.8567,8.7776,7.3487,10.1946C8.2107,9.8836,9.5767,9.0286,10.0757,7.8686C10.1527,8.6016,10.0827,10.1796,9.6387,11.2656ZM11.0437,3.6256C10.8877,4.6966,10.9667,6.0416,8.8007,7.0786C9.4837,4.3896,8.6857,1.7646,7.2027,0.9996C7.7447,4.7166,3.9997,6.4586,3.9997,10.0436C3.9997,12.9826,5.5857,13.9996,7.1087,13.9996C11.7897,13.9996,11.9997,8.8806,11.9997,7.3636C11.9997,5.8576,11.6917,4.4496,11.0437,3.6256Z' fill='#9AA7B0'/></g></svg>");
             }
 
             /// <summary>Returns the set of theme images for Themed Icon InsightHot.</summary>
-            public override
-                global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[]
-                GetThemeImages()
+            public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
             {
-                return new
-                    global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[]
-                    {
-                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.
-                            ThemedIconThemeImage("Default",
-                                new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.
-                                    LoadImageDelegate(this.Load_Default))
-                    };
+                return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Default", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Default))};
             }
         }
-
         #endregion
 
 
         #region InsightUnity
-
         /// <summary>
         ///	<para>
         ///		<para>InsightUnity Themed Icon generated identifiers:</para>
@@ -126,49 +110,37 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
         ///</remarks>
         ///<example>
-        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:XedymylThemedIconsThemedIcons+InsightUnity}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:BumigydThemedIconsThemedIcons+InsightUnity}" /&gt;        &lt;!-- XAML --&gt;</code>
         ///</example>
         ///<example>
-        ///	<code>[Item(Name="Sample", Icon=typeof(XedymylThemedIconsThemedIcons.InsightUnity))]        // C# Type attribute</code>
+        ///	<code>[Item(Name="Sample", Icon=typeof(BumigydThemedIconsThemedIcons.InsightUnity))]        // C# Type attribute</code>
         ///</example>
         ///<example>
-        ///	<code>IconId iconid = XedymylThemedIconsThemedIcons.InsightUnity.Id;        // IconId identifier object</code>
+        ///	<code>IconId iconid = BumigydThemedIconsThemedIcons.InsightUnity.Id;        // IconId identifier object</code>
         ///</example>
         ///<example>
-        ///	<code>themediconmanager.GetIcon&lt;XedymylThemedIconsThemedIcons.InsightUnity&gt;()        // Icon image for rendering</code>
+        ///	<code>themediconmanager.GetIcon&lt;BumigydThemedIconsThemedIcons.InsightUnity&gt;()        // Icon image for rendering</code>
         ///</example>
         [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
         public sealed class InsightUnity : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
         {
 
             /// <inheritdoc cref="InsightUnity">identifier class</inheritdoc>
-            public static global::JetBrains.UI.Icons.IconId Id =
-                new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(InsightUnity));
+            public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(InsightUnity));
 
             /// <summary>Loads the image for Themed Icon InsightUnity theme aspect Default.</summary>
-            public global::JetBrains.Application.UI.Icons.Images.TiImage Load_Default()
+            public global::JetBrains.Util.Icons.TiImage Load_Default()
             {
-                return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(
-                    @"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M13,6.684L11.812,2L7.38,3.255L6.661,4.571L5.245,4.571L2,8L5.245,11.429L6.661,11.429L7.38,12.745000000000001L11.812,14L13,9.316L12.281,8ZM13,6.684M6.8,4.752L10.126,3.8099999999999996L8.183,7.357L4.329,7.357ZM6.8,4.752M6.8,11.251999999999999L4.334,8.652L8.183,8.652L10.121,12.199ZM6.8,11.251999999999999M11.18,11.552L9.237,8L11.175,4.4529999999999994L12.074,8ZM11.18,11.552' fill='#9AA7B0'/></g></svg>");
+                return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(@"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path fill-rule='evenodd' d='M11.1748,11.5469L9.2368,7.9999L11.1748,4.4529L12.0738,7.9999L11.1748,11.5469ZM11.1748,11.5469M6.7948,11.2479L4.3288,8.6429L8.1828,8.6429L10.1208,12.1909L6.7948,11.2479ZM6.7948,11.2479M6.7948,4.7519L10.1208,3.8099L8.1828,7.3579L4.3288,7.3579L6.7948,4.7519ZM6.7948,4.7519M12.9998,6.6839L11.8128,1.9999L7.3798,3.2549L6.6608,4.5709L5.2448,4.5709L1.9998,7.9999L5.2448,11.4289L6.6608,11.4289L7.3798,12.7449L11.8128,13.9999L12.9998,9.3169L12.2808,7.9999L12.9998,6.6839ZM12.9998,6.6839' fill='#9AA7B0'/></g></svg>");
             }
 
             /// <summary>Returns the set of theme images for Themed Icon InsightUnity.</summary>
-            public override
-                global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[]
-                GetThemeImages()
+            public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
             {
-                return new
-                    global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[]
-                    {
-                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.
-                            ThemedIconThemeImage("Default",
-                                new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.
-                                    LoadImageDelegate(this.Load_Default))
-                    };
+                return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
+                        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Default", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Default))};
             }
         }
-
         #endregion
-
     }
 }

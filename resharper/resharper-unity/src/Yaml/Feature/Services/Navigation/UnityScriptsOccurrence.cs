@@ -1,6 +1,8 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.UI.RichText;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -15,6 +17,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             myGuid = guid;
         }
 
+        public override RichText GetDisplayText()
+        {
+            var declaredElement = DeclaredElementPointer.FindDeclaredElement();
+            if (declaredElement == null)
+                return base.GetDisplayText();
+            
+            if (UnityApi.IsDescendantOfScriptableObject(declaredElement as IClass))
+                return SourceFile.GetLocation().Name;  
+            
+            return base.GetDisplayText();
+        }
+
+        public override string GetRelatedFilePresentation()
+        {
+            if (IsRelatedToScriptableObject())
+                return null;
+            return base.GetRelatedFilePresentation();
+        }
+        
+
+        private bool IsRelatedToScriptableObject() => UnityApi.IsDescendantOfScriptableObject(DeclaredElementPointer.FindDeclaredElement() as IClass);
+        
         protected bool Equals(UnityScriptsOccurrence other)
         {
             return base.Equals(other) && myGuid == other.myGuid;

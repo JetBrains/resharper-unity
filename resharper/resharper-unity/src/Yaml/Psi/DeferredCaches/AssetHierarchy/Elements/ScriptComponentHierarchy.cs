@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
@@ -33,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             , bool isStripped) 
             : base("MonoBehaviour", reference, gameObject, prefabInstance, correspondingSourceObject, isStripped)
         {
+            Assertion.Assert(isStripped || scriptReference != null, "isStripped || scriptReference != null");
             ScriptReference = scriptReference;
         }
 

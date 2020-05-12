@@ -1,11 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.DocumentModel;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
+using JetBrains.TextControl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions
@@ -16,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         public static IAttribute AddAttributeToSingleDeclaration([CanBeNull] IAttributesOwnerDeclaration fieldDeclaration,
                                                                  IClrTypeName attributeTypeName,
                                                                  [NotNull] AttributeValue[] attributeValues,
+                                                                 [CanBeNull] Pair<string, AttributeValue>[] namedValues,
                                                                  IPsiModule module,
                                                                  CSharpElementFactory elementFactory, bool allowMultiply = false)
         {
@@ -25,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var existingAttribute = GetAttribute(fieldDeclaration, attributeTypeName);
             if (existingAttribute != null && !allowMultiply) return null;
 
-            var attribute = CreateAttribute(attributeTypeName, attributeValues, module, elementFactory);
+            var attribute = CreateAttribute(attributeTypeName, attributeValues, namedValues, module, elementFactory);
             if (attribute != null)
             {
                 // This will split a multiple declaration, if necessary
@@ -40,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             IClrTypeName attributeTypeName, IPsiModule module, CSharpElementFactory elementFactory)
         {
             return AddAttributeToSingleDeclaration(fieldDeclaration, attributeTypeName,
-                EmptyArray<AttributeValue>.Instance, module, elementFactory);
+                EmptyArray<AttributeValue>.Instance, null, module, elementFactory);
         }
 
         // Given a multiple field declaration (a declaration with multiple fields declared at once), adds an attribute
@@ -50,6 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             [NotNull] IMultipleFieldDeclaration multipleFieldDeclaration,
             IClrTypeName attributeTypeName,
             [NotNull] AttributeValue[] attributeValues,
+            [CanBeNull] Pair<string, AttributeValue>[] namedValues,
             IPsiModule module,
             CSharpElementFactory elementFactory)
         {
@@ -57,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var existingAttribute = GetAttribute(multipleFieldDeclaration.Attributes, attributeTypeName);
             if (existingAttribute != null) return null;
 
-            var attribute = CreateAttribute(attributeTypeName, attributeValues, module, elementFactory);
+            var attribute = CreateAttribute(attributeTypeName, attributeValues, namedValues, module, elementFactory);
             if (attribute != null)
             {
                 // It doesn't matter which declaration we use, it will be applied to the multiple field declaration
@@ -70,13 +79,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
         private static IAttribute CreateAttribute(IClrTypeName attributeTypeName,
                                                   [NotNull] AttributeValue[] attributeValues,
+                                                  [CanBeNull] Pair<string, AttributeValue>[] namedValues,
                                                   IPsiModule module,
                                                   CSharpElementFactory elementFactory)
         {
             var typeElement = TypeFactory.CreateTypeByCLRName(attributeTypeName, module).GetTypeElement();
             return typeElement != null
                 ? elementFactory.CreateAttribute(typeElement, attributeValues,
-                    EmptyArray<Pair<string, AttributeValue>>.Instance)
+                    namedValues ?? EmptyArray<Pair<string, AttributeValue>>.Instance)
                 : null;
         }
 
@@ -139,6 +149,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                         yield return attribute;
                 }
             }
+        }
+        
+        public static Action<ITextControl> CreateHotspotSession(this IAttribute attribute)
+        {
+            var hotspotsRegistry = new HotspotsRegistry(attribute.GetSolution().GetPsiServices());
+
+            var arguments = attribute.Arguments;
+            for (var i = 0; i < arguments.Count; i++)
+            {
+                if (arguments[i].Value is ICSharpLiteralExpression literalExpression)
+                {
+                    var range = literalExpression.Literal.GetUnquotedDocumentRange().CreateRangeMarker();
+                    hotspotsRegistry.Register(range, new NameSuggestionsExpression(new[] { literalExpression.ConstantValue.GetPresentation(attribute.Language)}));
+                }
+            }
+            
+            var propertyAssignments = attribute.PropertyAssignments;
+            for (var i = 0; i < propertyAssignments.Count; i++)
+            {
+                if (propertyAssignments[i].Source is ICSharpLiteralExpression literalExpression)
+                {
+                    var range = literalExpression.Literal.GetUnquotedDocumentRange().CreateRangeMarker();
+                    hotspotsRegistry.Register(range, new NameSuggestionsExpression(new[] { literalExpression.ConstantValue.GetPresentation(attribute.Language)}));
+                }
+            }
+            
+            return BulbActionUtils.ExecuteHotspotSession(hotspotsRegistry, DocumentOffset.InvalidOffset);
         }
     }
 }

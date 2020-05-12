@@ -1,0 +1,31 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class SomethingBetweenTest
+    {
+        public void Call()
+        {
+            
+        }
+        
+        public void Test(Transform t, GameObject root)
+        {
+            GameObject go = (GameObject) GameObject.Instantiate(t.gameObject);
+            Call();
+            Call();
+            Call();
+            Call();
+            Call();
+            |go.transform.SetParent|(0)(root.transform);
+        }
+    }
+}
+------------------------------------------------
+0: Setting 'parent' property immediately after object instantiation is inefficient
+QUICKFIXES:
+Combine with object creation
+--Combine with object creation in method 'Test'
+--Combine with object creation in file
+--Combine with object creation in project
+--Combine with object creation in solution

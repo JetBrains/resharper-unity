@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Yaml.Psi.Parsing
 
     [TestCase("Scene")]
     public void TestParser(string name) => DoOneTest(name);
-    
+
     [TestCase("TagManager")]
     [TestFileExtension(".asset")]
     public void TestUnityTagManager(string name) => DoOneTest(name);

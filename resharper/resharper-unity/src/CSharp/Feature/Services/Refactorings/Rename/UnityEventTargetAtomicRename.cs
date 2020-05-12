@@ -1,17 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Progress;
+using JetBrains.Application.UI.PopupLayout;
+using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
+using JetBrains.IDE;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Occurrences;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
+using JetBrains.ReSharper.Refactorings.Rename;
 using JetBrains.Util;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
 {
@@ -19,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
     {
         private readonly ISolution mySolution;
         private readonly IDeclaredElementPointer<IDeclaredElement> myPointer;
-        private List<TextOccurrenceRenameMarker> myElementsToRename;
+        private List<UnityMethodsOccurrence> myElementsToRename;
+        private bool myIsProperty;
         public UnityEventTargetAtomicRename(ISolution solution, IDeclaredElement declaredElement, string newName)
         {
             mySolution = solution;
@@ -33,19 +41,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             var de = myPointer.FindDeclaredElement();
             if (de == null)
                 return null;
+            myIsProperty = de is IProperty;
             
             pi.Start(1);
             using (var subProgress = pi.CreateSubProgress())
             {
                 myElementsToRename = GetAssetOccurrence(de, subProgress)
-                    .Select(t =>
-                    {
-                        var curRange = t.AssetMethodData.TextRange;
-
-                        var range = de is IProperty ? new TextRange(curRange.StartOffset + 4, curRange.EndOffset) : curRange;  
-                        return new TextOccurrenceRenameMarker(
-                            new FindResultText(t.SourceFile, new DocumentRange(t.SourceFile.Document, range)), NewName);
-                    }).ToList();
+                    .Select(t => 
+                        new UnityMethodsOccurrence(t.SourceFile, de.CreateElementPointer(), t.AttachedElement, t.AssetMethodData)).ToList();
             }
             
             return new UnityEventTargetRefactoringPage(
@@ -61,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
             var elements = de is IProperty property ? new[] {de, property.Getter, property.Setter} : new[] {de};
             
-            finder.Find(elements, searchDomain, new FindResultConsumer(result =>
+            finder.Find(elements.Where(t => t != null).ToArray(), searchDomain, new FindResultConsumer(result =>
             {
                 if (result is UnityMethodsFindResult fr)
                 {
@@ -79,15 +82,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         {
             if (myElementsToRename == null)
                 return;
-            
+                    
+            var workflow = (executer.Workflow as RenameWorkflowBase).NotNull("workflow != null");
+                        
             foreach (var textOccurrence in myElementsToRename)
             {
-                if (!textOccurrence.Included || !textOccurrence.Marker.IsValid) continue;
-                var document = textOccurrence.GetDocument();
-
-                var range = textOccurrence.Marker.DocumentRange.TextRange;
-                if (range.IsValid)
-                    document.ReplaceText(range, textOccurrence.NewName);
+                workflow.DataModel.AddExtraTextOccurrence(new AssetTextOccurrence(textOccurrence, OldName, NewName, myIsProperty));
             }
         }
 
@@ -96,5 +96,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public override string OldName { get; }
         public override IDeclaredElement PrimaryDeclaredElement => myPointer.FindDeclaredElement();
         public override IList<IDeclaredElement> SecondaryDeclaredElements => null;
+        
+        private class AssetTextOccurrence : ITextOccurrenceRenameMarker
+        {
+            private readonly UnityMethodsOccurrence myAssetOccurrence;
+            private readonly RangeMarker myRangeMarker;
+
+            public AssetTextOccurrence(UnityMethodsOccurrence assetOccurrence, string oldName, string newName, bool isProperty)
+            {
+                var curRange = assetOccurrence.MethodData.TextRange;
+
+                var pointer = assetOccurrence.SourceFile.Document.ToPointer();
+                myRangeMarker =  new RangeMarker(pointer, isProperty ? new TextRange(curRange.StartOffset + 4, curRange.EndOffset) : curRange);
+                myAssetOccurrence = assetOccurrence;
+                NewName = newName;
+                OldName = isProperty ? oldName.RemoveStart("get_").RemoveStart("set_") : oldName;
+            }
+            
+            public bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
+                TabOptions tabOptions = TabOptions.Default)
+            {
+                return myAssetOccurrence.Navigate(solution, windowContext, transferFocus, tabOptions);
+            }
+
+            public ISolution GetSolution() => myAssetOccurrence.GetSolution();
+
+            public string DumpToString() => myAssetOccurrence.DumpToString();
+
+            public OccurrenceType OccurrenceType => myAssetOccurrence.OccurrenceType;
+            public bool IsValid => myAssetOccurrence.IsValid;
+            
+            public OccurrencePresentationOptions PresentationOptions { get; set; }
+            public IDocument GetDocument() => myAssetOccurrence.SourceFile.Document;
+
+            public string NewName { get; set; }
+
+            public bool Included
+            {
+                get => true;
+                set { }
+            }
+
+            public string OldName { get; }
+            public TextRange OldNameRange => myRangeMarker.Range;
+        }
     }
+    
 }

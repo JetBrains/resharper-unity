@@ -15,7 +15,7 @@ import com.jetbrains.rider.projectView.views.ISolutionModelNodeOwner
 import com.jetbrains.rider.projectView.views.addAdditionalText
 
 class AssetsRoot(project: Project, virtualFile: VirtualFile)
-    : UnityExplorerNode(project, virtualFile, listOf(), true) {
+    : UnityExplorerNode(project, virtualFile, listOf(), AncestorNodeType.Assets) {
 
     private val referenceRoot = ReferenceRoot(project)
     private val solutionNode = ProjectModelViewHost.getInstance(project).solutionNode
@@ -125,7 +125,7 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
     }
 }
 
-class ReferenceItem(project: Project, private val referenceName: String, val keys: ArrayList<ProjectModelNodeKey>)
+class ReferenceItem(project: Project, private val referenceName: String, private val keys: ArrayList<ProjectModelNodeKey>)
     : AbstractTreeNode<String>(project, referenceName), ISolutionModelNodeOwner, IProjectModeNodesOwner {
 
     override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()

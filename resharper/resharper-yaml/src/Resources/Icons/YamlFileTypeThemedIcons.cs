@@ -7,14 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::System.Windows.Markup.XmlnsDefinitionAttribute("urn:shemas-jetbrains-com:ui-application-yaml-file-type", "JetBrains.ReSharper.Plugins.Yaml.Resources.Icons")]
-
 namespace JetBrains.ReSharper.Plugins.Yaml.Resources.Icons
 {
   public sealed class YamlFileTypeThemedIcons
   {
     #region Yaml
-
     /// <summary>
     ///	<para>
     ///		<para>Yaml Themed Icon generated identifiers:</para>
@@ -66,9 +63,9 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Resources.Icons
         new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(FileYaml));
 
       /// <summary>Loads the image for Themed Icon Yaml theme aspect Color.</summary>
-      public global::JetBrains.Application.UI.Icons.Images.TiImage Load_Color()
+      public global::JetBrains.Util.Icons.TiImage Load_Color()
       {
-        return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(
+        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(
           "<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
           "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M0,0L16,0L16,1" +
           "6L0,16Z\' fill=\'#FFFFFF\' opacity=\'0\'/><linearGradient id=\'F1\' x1=\'0.4999999999999" +
@@ -97,16 +94,16 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Resources.Icons
       }
 
       /// <summary>Loads the image for Themed Icon Yaml theme aspect Gray.</summary>
-      public global::JetBrains.Application.UI.Icons.Images.TiImage Load_Gray()
+      public global::JetBrains.Util.Icons.TiImage Load_Gray()
       {
-        return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(
+        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(
           @"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M14,7L14,4L11,4L11,1L2,1L2,5L5,5L5,8L8,8L8,14L16,14L16,7L14,7Z' fill='#F4F4F4'/><path d='M3,2L10,2L10,4L3,4Z' fill='#388A34'/><path d='M6,5L13,5L13,7L6,7Z' fill='#388A34'/><path d='M9,8L15,8L15,10L9,10Z' fill='#323232'/><path d='M9,11L15,11L15,13L9,13Z' fill='#323232'/><path d='M4.201,7L3.487,8.496L2.773,7L0,7L0,8.26L2,12.297L2,15L4.975,15L4.975,12.297L6.975,8.26L6.975,7L4.201,7Z' fill='#F4F4F4'/><path d='M4.832,8L3.487,10.818L2.143,8L0.987,8L2.854,11.769L2.854,14L4.121,14L4.121,11.769L5.987,8L4.832,8Z' fill='#323232'/></g></svg>");
       }
 
       /// <summary>Loads the image for Themed Icon Yaml theme aspect GrayDark.</summary>
-      public global::JetBrains.Application.UI.Icons.Images.TiImage Load_GrayDark()
+      public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
       {
-        return global::JetBrains.Application.UI.Icons.Images.TiImageConverter.FromTiSvg(
+        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg(
           @"<svg ti:v='1' width='16' height='16' viewBox='0,0,16,16' xmlns='http://www.w3.org/2000/svg' xmlns:ti='urn:schemas-jetbrains-com:tisvg'><g><path d='M0,0L16,0L16,16L0,16Z' fill='#FFFFFF' opacity='0'/><path d='M14,7L14,4L11,4L11,1L2,1L2,5L5,5L5,8L8,8L8,14L16,14L16,7L14,7Z' fill='#252525'/><path d='M3,2L10,2L10,4L3,4Z' fill='#86D086'/><path d='M6,5L13,5L13,7L6,7Z' fill='#86D086'/><path d='M9,8L15,8L15,10L9,10Z' fill='#C4C4C4'/><path d='M9,11L15,11L15,13L9,13Z' fill='#C4C4C4'/><path d='M4.201,7L3.487,8.496L2.773,7L0,7L0,8.26L2,12.297L2,15L4.975,15L4.975,12.297L6.975,8.26L6.975,7L4.201,7Z' fill='#252525'/><path d='M4.832,8L3.487,10.818L2.143,8L0.987,8L2.854,11.769L2.854,14L4.121,14L4.121,11.769L5.987,8L4.832,8Z' fill='#C4C4C4'/></g></svg>");
       }
 
@@ -129,7 +126,6 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Resources.Icons
         };
       }
     }
-
     #endregion
   }
 }

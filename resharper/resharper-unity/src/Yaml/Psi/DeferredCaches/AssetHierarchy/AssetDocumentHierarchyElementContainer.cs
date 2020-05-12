@@ -23,10 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public class AssetDocumentHierarchyElementContainer : IUnityAssetDataElementContainer
     {
         private readonly IPersistentIndexManager myManager;
-        private readonly PrefabImportCache myPrefabImportCache;
-        private readonly IShellLocks myShellLocks;
         private readonly UnityExternalFilesPsiModule myPsiModule;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
+        
+        private readonly PrefabImportCache myPrefabImportCache;
+        private readonly IShellLocks myShellLocks;
         private readonly IEnumerable<IAssetInspectorValueDeserializer> myAssetInspectorValueDeserializers;
 
         private readonly ConcurrentDictionary<IPsiSourceFile, AssetDocumentHierarchyElement> myAssetDocumentsHierarchy =
@@ -74,13 +75,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     }
                 }
 
-                if (isStripped || documentReference != null)
+                var scriptAnchor = documentReference?.AnchorLong;
+                var scriptGuid = documentReference?.ExternalAssetGuid;
+                if (isStripped || scriptAnchor != null && scriptGuid != null)
                 {
-                    var scriptAnchorRaw = documentReference?.AnchorLong;
-                    
                     return new AssetDocumentHierarchyElement(
                             new ScriptComponentHierarchy(location,
-                            !scriptAnchorRaw.HasValue ? null : new ExternalReference(documentReference.ExternalAssetGuid, scriptAnchorRaw.Value),
+                                isStripped ? null : new ExternalReference(scriptGuid, scriptAnchor.Value),
                             gameObject,
                             prefabInstance,
                             correspondingSourceObject,
@@ -205,8 +206,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return myAssetDocumentsHierarchy.GetValueSafe(sourceFile);
         }
         
-        private IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference, out string guid)
+        public IPsiSourceFile GetSourceFile(IHierarchyReference hierarchyReference, out string guid)
         {
+            guid = null;
+            if (hierarchyReference == null)
+                return null;
+            
+            myShellLocks.AssertReadAccessAllowed();
             switch (hierarchyReference)
             {
                 case LocalReference localReference:

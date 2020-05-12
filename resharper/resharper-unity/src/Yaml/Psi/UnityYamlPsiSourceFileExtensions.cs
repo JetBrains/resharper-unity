@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         // ReSharper doesn't want us to use project files. See UnityExternalFilesModuleProcessor
         public static bool IsMeta(this IPsiSourceFile sourceFile)
         {
-            return sourceFile is UnityYamlExternalPsiSourceFile || sourceFile.GetLocation().IsMeta();
+            return sourceFile.GetLocation().IsMeta();
         }
     }
 }

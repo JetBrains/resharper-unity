@@ -184,7 +184,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     [UserVisible(true)]
     internal class CgPreprocessorLineContentClassificationDefinition : ClassificationFormatDefinition
     {
-        private const string Name = CgHighlightingAttributeIds.PREPPROCESSOR_LINE_CONTENT;
+        private const string Name = CgHighlightingAttributeIds.PREPROCESSOR_LINE_CONTENT;
 
         public CgPreprocessorLineContentClassificationDefinition()
         {

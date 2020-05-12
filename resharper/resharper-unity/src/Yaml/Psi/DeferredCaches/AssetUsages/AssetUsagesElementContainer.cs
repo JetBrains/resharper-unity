@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
@@ -19,11 +19,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
     public class AssetUsagesElementContainer : IUnityAssetDataElementContainer
     {
         private readonly IShellLocks myShellLocks;
+        private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
 
-        public AssetUsagesElementContainer(IShellLocks shellLocks, MetaFileGuidCache metaFileGuidCache)
+        public AssetUsagesElementContainer(IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, MetaFileGuidCache metaFileGuidCache)
         {
             myShellLocks = shellLocks;
+            myPersistentIndexManager = persistentIndexManager;
             myMetaFileGuidCache = metaFileGuidCache;
         }
         
@@ -125,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             if (declaredElement == null)
                 return 0;
 
-            var guid = GetGuidFor(declaredElement);
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
 
             return myAssetUsages.GetOrEmpty(guid).Count;
         }
@@ -142,30 +144,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         {
             myShellLocks.AssertReadAccessAllowed();
             
-            var guid = GetGuidFor(declaredElement);
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
                 
             if (myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
                 return set.GetValues(guid).ToList();
             return Enumerable.Empty<AssetUsage>();
         }
 
-        private string GetGuidFor(ITypeElement typeElement)
+        public LocalList<IPsiSourceFile>  GetPossibleFilesWithUsage(ITypeElement declaredElement)
         {
-            var sourceFile = typeElement.GetDeclarations().FirstOrDefault()?.GetSourceFile();
-            if (sourceFile == null)
-                return null;
-            
-            if (typeElement.TypeParameters.Count != 0)
-                return null;
+            var guid =AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
+            if (guid == null) 
+                return new LocalList<IPsiSourceFile>();
 
-            if (typeElement.GetContainingType() != null)
-                return null;
+            var result = new LocalList<IPsiSourceFile>();
+            foreach (var assetUsage in myAssetUsages.GetValues(guid))
+            {
+                var location = assetUsage.Location.OwnerId;
+                var sourceFile = myPersistentIndexManager[location];
+                if (sourceFile != null)
+                    result.Add(sourceFile);
+            }
 
-            if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
-                return null;
-
-            var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
-            return guid;
+            return result;
         }
     }
 }

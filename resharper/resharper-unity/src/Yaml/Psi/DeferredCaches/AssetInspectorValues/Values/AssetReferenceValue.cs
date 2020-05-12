@@ -1,14 +1,18 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Serialization;
+using JetBrains.Util.Extension;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values
 {
@@ -32,6 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         
         public AssetReferenceValue(IHierarchyReference reference)
         {
+            Assertion.Assert(reference != null, "reference != null");
             Reference = reference;
         }
 
@@ -53,28 +58,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return Reference.GetHashCode();
         }
 
-        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport, bool isFull)
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
+            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
 
+            if (UnityApi.IsDescendantOfScriptableObject((declaredElement as IField)?.Type.GetTypeElement()))
+            {
+                if (Reference is LocalReference localReference && localReference.LocalDocumentAnchor == 0)
+                    return "None";
+                
+                var sourceFile = hierarchyContainer.GetSourceFile(Reference, out _);
+                if (sourceFile == null)
+                    return "...";
+
+                if (!isFull)
+                    return sourceFile.GetLocation().Name;
+
+                return sourceFile.GetLocation().Name + $" (in {sourceFile.DisplayName.Replace('\\', '/').RemoveStart("Assets/").RemoveEnd("/" + sourceFile.GetLocation().Name)})";
+            }
+            
             if (Reference.LocalDocumentAnchor == 0)
                 return "None";
                 
             var processor = solution.GetComponent<AssetHierarchyProcessor>();
             var consumer = new UnityScenePathGameObjectConsumer(true);
-            var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
             var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);
             if (element == null)
                 return "...";
-            processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
-            if (consumer.NameParts.Count == 0)
+            string result = "";
+
+            if (!element.IsStripped)
+            {
+                processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
+                if (consumer.NameParts.Count == 0)
+                    return "...";
+                result += string.Join("/", consumer.NameParts);
+            }
+            else
+            {
                 return "...";
-            var result = string.Join("/", consumer.NameParts);
+            }
 
             if (element is IComponentHierarchy componentHierarchy)
                 result += $" ({AssetUtils.GetComponentName(solution.GetComponent<MetaFileGuidCache>(), componentHierarchy)})";
 
             return result;
         }
+
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport) => GetPresentation(solution, declaredElement, prefabImport, false);
+        public string GetFullPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport) => GetPresentation(solution, declaredElement, prefabImport, true);
     }
 }

@@ -221,14 +221,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             var yamlParsingEnabled = solution.GetComponent<AssetIndexingSupport>().IsEnabled;
 
             // TODO: These two are usually used together. Consider combining in some way
-            if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText)
+            if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText || !solution.GetComponent<DeferredCacheController>().CompletedOnce.Value)
                 return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
-            var deferredCaches = solution.GetComponent<DeferredCacheController>();
-            if (deferredCaches.IsProcessingFiles())
-            {
-                return solution.GetComponent<AssetMethodsElementContainer>().IsPossibleEventHandler(method);
-            }
 
             return solution.GetComponent<AssetMethodsElementContainer>().GetAssetUsagesCount(method, out bool estimatedResult) > 0 || estimatedResult;
         }

@@ -73,24 +73,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             
             var containingType = declaredElement.GetContainingType();
             if (containingType == null)
-                return (null, null);
-            
-            var sourceFile = declaredElement.GetSourceFiles().FirstOrDefault();
-            if (sourceFile == null || !sourceFile.GetLocation().NameWithoutExtension.Equals(containingType.ShortName))
-                return (null, null);
+                return (null, Array.Empty<string>());
 
-            if (!sourceFile.IsValid())
-                return (null, null);
-
-            var guid = solution.GetComponent<MetaFileGuidCache>().GetAssetGuid(sourceFile);
-            if (guid == null)
-                return (null, null);
-
+            var guid = AssetUtils.GetGuidFor(solution.GetComponent<MetaFileGuidCache>(), containingType);
             return (guid, AssetUtils.GetAllNamesFor(declaredElement).ToArray());
         }
         
         public override void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
         {
+            if (!(highlighting is UnityInspectorCodeInsightsHighlighting))
+                return;
+            
             var rules = new List<IDataRule>();
             rules.AddRule("Solution", ProjectModelDataConstants.SOLUTION, solution);      
       
@@ -129,15 +122,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var type = field.Type;
             var containingType = field.GetContainingType();
             if (containingType == null)
+            {
+                base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
+            }
             
             var (guid, propertyNames) = GetAssetGuidAndPropertyName(solution, field);
-            if (guid == null || propertyNames == null || propertyNames.Length == 0)
+            if (guid == null || propertyNames.Length == 0)
+            {
+                base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
-            
+            }
+
             var presentationType = GetUnityPresentationType(type);
 
-            if (myDeferredCacheController.IsProcessingFiles() || ShouldShowUnknownPresentation(presentationType))
+            if (!myDeferredCacheController.CompletedOnce.Value || ShouldShowUnknownPresentation(presentationType))
             {
                 base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
@@ -174,8 +173,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                     var values = myInspectorValuesContainer.GetUniqueValues(guid, propertyNames).ToArray();
                     Assertion.Assert(values.Length == 2, "values.Length == 2"); //performance assertion
 
-                    var anotherValueWithLocation = values.First(t => !t.Equals(initValueUnityPresentation));
-                    displayName = anotherValueWithLocation.GetPresentation(solution, field, false);
+                    var anotherValueWithLocation = values.FirstOrDefault(t => !t.Equals(initValueUnityPresentation));
+                    displayName = anotherValueWithLocation?.GetPresentation(solution, field, false);
                 }
 
                 if (displayName == null || displayName.Equals("..."))
@@ -195,9 +194,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 }
             }
 
-            consumer.AddHighlighting(new CodeInsightsHighlighting(element.GetNameDocumentRange(),
+            consumer.AddHighlighting(new UnityInspectorCodeInsightsHighlighting(element.GetNameDocumentRange(),
                 displayName, tooltip, "Property Inspector values", this,
-                declaredElement, iconModel));
+                declaredElement, iconModel, presentationType));
         }
         
         private IAssetValue GetUnitySerializedPresentation(UnityPresentationType presentationType, object value)
@@ -205,6 +204,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (presentationType == UnityPresentationType.Bool && value is bool b)
                 return b ? new AssetSimpleValue("1") : new AssetSimpleValue("0");
 
+            if (presentationType == UnityPresentationType.ScriptableObject && value == null)
+                return new AssetReferenceValue(new LocalReference(0, 0));
+            
             if (presentationType == UnityPresentationType.FileId && value == null)
                 return new AssetReferenceValue(new LocalReference(0, 0));
 
@@ -219,6 +221,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         
         private UnityPresentationType GetUnityPresentationType(IType type)
         {
+            if (UnityApi.IsDescendantOfScriptableObject(type.GetTypeElement()))
+                return UnityPresentationType.ScriptableObject;
             if (type.IsBool())
                 return UnityPresentationType.Bool;
             if (type.IsEnumType())
@@ -244,8 +248,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (typeElement == null)
                 return false;
 
-            return myUnityApi.IsDescendantOf(KnownTypes.GameObject, typeElement) ||
-                   myUnityApi.IsDescendantOf(KnownTypes.Component, typeElement);
+            return UnityApi.IsDescendantOf(KnownTypes.GameObject, typeElement) ||
+                   UnityApi.IsDescendantOf(KnownTypes.Component, typeElement);
         }
         
         private bool ShouldShowUnknownPresentation(UnityPresentationType presentationType)
@@ -263,6 +267,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             FileId,
             ValueType,
             Other,
+            ScriptableObject
         }
     }
 }

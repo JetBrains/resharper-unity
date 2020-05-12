@@ -2,5 +2,5 @@
 
 public class Foo : MonoBehaviour
 {
-    [Header("myValue"{caret})] public int myValue;
+    [Header("myValue{caret}")] public int myValue;
 }

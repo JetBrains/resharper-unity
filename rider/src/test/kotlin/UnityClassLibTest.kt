@@ -1,4 +1,9 @@
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.rd.createNestedDisposable
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
+import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.framework.closeProjectsWaitForBackendWillBeClosed
 import com.jetbrains.rider.test.framework.combine
@@ -21,32 +26,40 @@ class UnityClassLibTest : BaseTestWithSolutionBase() {
         params.restoreNuGetPackages = true //it's always true in getAndOpenSolution
         params.waitForCaches = true
 
-        val newProject = getAndOpenSolution(templateId, true, params)
-
+        val lifetimeDef = Lifetime.Eternal.createNested()
         try {
-            executeWithGold(editorGoldFile) {
-                dumpOpenedDocument(it, newProject)
+            val newProject = getAndOpenSolution(lifetimeDef.lifetime, templateId, true, params)
+
+            try {
+                executeWithGold(editorGoldFile) {
+                    dumpOpenedDocument(it, newProject)
+                }
+
+                testProjectModel(testGoldFile, newProject) {
+                    dump("Opened", newProject, activeSolutionDirectory, false, false) {} //contains close editors
+                }
+
+                // todo: fix UnityEngine.dll reference - either install Unity or from nuget
+                checkSwea(newProject)
+
+            } finally {
+                closeSolutionAndResetSettings(newProject)
             }
-
-            testProjectModel(testGoldFile, newProject) {
-                dump("Opened", newProject, activeSolutionDirectory, false, false) {} //contains close editors
-            }
-
-            // todo: fix UnityEngine.dll reference - either install Unity or from nuget
-            checkSwea(newProject)
-
         } finally {
-            closeSolutionAndResetSettings(newProject)
+            lifetimeDef.terminate()
         }
     }
 
     private fun getAndOpenSolution(
+            lifetime: Lifetime,
             templateId: String,
             sameDirectory: Boolean,
             params: OpenSolutionParams
     ): Project {
         closeProjectsWaitForBackendWillBeClosed(Duration.ofSeconds(60), false, false)
         val parameters: HashMap<String, String> = hashMapOf()
+
+        VfsRootAccess.allowRootAccess(lifetime.createNestedDisposable(), testDirectory.combine("lib", "UnityEngine.dll").absolutePath)
         parameters["PathToUnityEngine"] = testDirectory.combine("lib", "UnityEngine.dll").absolutePath
         val newProject = createSolutionFromTemplate(templateId, null, activeSolutionDirectory, sameDirectory, null, parameters) { }!!
 

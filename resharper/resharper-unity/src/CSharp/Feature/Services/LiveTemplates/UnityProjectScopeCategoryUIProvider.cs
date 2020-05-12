@@ -2,7 +2,6 @@
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Templates;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Psi.CSharp.Resources;
 using JetBrains.ReSharper.Psi.Resources;
@@ -22,13 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
             TemplateImage.Register("UnityAsmDef", PsiJavaScriptThemedIcons.Json.Id);
         }
-        
+
         // Needs to be less than other priorities in R#'s built in ScopeCategoryUIProvider
         // to push it to the end of the list
         private const int Priority = -200;
 
         public UnityProjectScopeCategoryUIProvider()
-            : base(LogoThemedIcons.UnityLogo.Id)
+            : base(LogoIcons.Unity.Id)
         {
             // The main scope point is used to the UID of the QuickList for this category.
             // It does nothing unless there is also a QuickList stored in settings.
