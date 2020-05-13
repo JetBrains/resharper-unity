@@ -90,11 +90,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var unityPath = unityPathData?.Value?.ApplicationPath;
 
             if (unityPath == null)
-            {
                 unityPath = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "app_path");
-                if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
-                    unityPath = FileSystemPath.Parse(unityPath).Combine("Contents/MacOS/Unity").FullPath;
-            }
+            
+            if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+                unityPath = FileSystemPath.Parse(unityPath).Combine("Contents/MacOS/Unity").FullPath;
             
             return unityPath != null ? new[] {unityPath, "-projectPath", mySolution.SolutionDirectory.FullPath} : null;
         }

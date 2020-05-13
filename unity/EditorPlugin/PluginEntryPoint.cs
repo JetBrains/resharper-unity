@@ -307,8 +307,7 @@ namespace JetBrains.Rider.Unity.Editor
 
           model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
           model.UnityApplicationData.SetValue(new UnityApplicationData(
-            PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX ?
-              Path.Combine(EditorApplication.applicationPath, "Contents/MacOS/Unity") : EditorApplication.applicationPath,
+            EditorApplication.applicationPath,
             EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
