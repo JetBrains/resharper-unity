@@ -283,29 +283,12 @@
   <change-notes>
 <![CDATA[
 <p>
-<strong>New in 2020.1.2</strong>
-</p>
-<p>
-<em>Changed:</em>
-<ul>
-  <li>Rider: Show serializable Code Vision for more fields (<a href="https://github.com/JetBrains/resharper-unity/pull/1624">#1624</a>)</li>
-  <li>Rider: Improve presentation for asset Find Usages results (<a href="https://github.com/JetBrains/resharper-unity/pull/1624">#1624</a>)</li>
-  <li>Rider: Improve presentation of Player projects in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1634"</a>)</li>
-  <li>Unity Editor: Reduce frequency of refreshing Unity on save to explicit calls to Save All (<a href="https://youtrack.jetbrains.com/issue/RIDER-37420">RIDER-37420</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1629">#1629</a>)</li>
-</ul>
+<strong>New in 2020.1.3</strong>
 </p>
 <p>
 <em>Fixed:</em>
 <ul>
-  <li>Fix incorrect base type required warning for <tt>ExecuteAlways</tt> attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1642">#1642</a>)</li>
-  <li>Fix generation of static constructor for redundant <tt>[InitializeOnLoad]</tt> when member generator set to "default return value" (<a href="https://github.com/JetBrains/resharper-unity/pull/1644">#1644</a>)</li>
-  <li>Rider: Fix solution hang on "constructing components" due to excessive <tt>FileSystemWatcher</tt> initialisation (<a href="https://youtrack.jetbrains.com/issue/RIDER-41812">RIDER-41812</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1631">#1631</a>)</li>
-  <li>Rider: Fix exception finding file icon causing explorer view to be blank (<a href="https://youtrack.jetbrains.com/issue/RIDER-43038">RIDER-43038</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1632">#1632</a>)</li>
-  <li>Rider: Fix handling of file system folders in <tt>Packages</tt> with the same name as a package (<a href="https://github.com/JetBrains/resharper-unity/issues/1626">#1626</a>, [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))</li>
-  <li>Rider: Fix size of tooltip for packages with many projects (<a href="https://github.com/JetBrains/resharper-unity/issues/1628">#1628</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1632">#1632</a>)</li>
-  <li>Rider: Fix C# language level detection on Linux (<a href="https://github.com/JetBrains/resharper-unity/pull/1640">#1640</a>)</li>
-  <li>Rider: Avoid potential deadlocks when updating Packages tree in Unity Explorer (<a href="https://youtrack.jetbrains.com/issue/RIDER-43317">RIDER-43317</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1643">#1643</a>)</li>
-  <li>Unity Editor: Fix list of folders to search for .NET Framework references (<a href="https://youtrack.jetbrains.com/issue/RIDER-42873">RIDER-42873</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1630">#1630</a>)</li>
+  <li>Rider: Fix unit test discovery in non-Unity solutions inside a Unity folder (<a href="https://youtrack.jetbrains.com/issue/RIDER-44139">RIDER-44139</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1657">#1657</a>)</li>
 </ul>
 </p>
 <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net201/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>

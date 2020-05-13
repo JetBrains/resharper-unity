@@ -8,6 +8,15 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2020.1.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.2...net201)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/39?closed=1)
+
+### Fixed
+- Rider: Fix unit test discovery in non-Unity solutions inside a Unity folder ([RIDER-44139](https://youtrack.jetbrains.com/issue/RIDER-44139), [#1657](https://github.com/JetBrains/resharper-unity/pull/1657))
+
+
+
 ## 2020.1.2
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.0-rtm-2020.1.1...net201-rtm-2020.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/37?closed=1)
