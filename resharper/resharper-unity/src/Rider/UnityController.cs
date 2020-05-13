@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (protocolTask.Status != TaskStatus.RanToCompletion && force)
                     return KillProcess();
                 return new ExitUnityResult(false, "Attempt to close Unity Editor failed.", null);
-            }, myLifetime);
+            }, TaskContinuationOptions.AttachedToParent);
         }
 
         public int? TryGetUnityProcessId()
