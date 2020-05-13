@@ -17,3 +17,7 @@ public class Test01
 0: String based type lookup is inefficient, use generic overload
 QUICKFIXES:
 Convert to 'GetComponent<Whatever>()'
+--Use strongly typed overloads in class 'Test01'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution

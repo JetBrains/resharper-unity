@@ -1,0 +1,19 @@
+﻿// ${RUN:2}
+using System;
+using UnityEngine;
+
+public class Test
+{
+ {caret} [NonSerialized] public int Value1;
+  [NonSerialized] public int Value2;
+  [NonSerialized] public int Value3;
+  [NonSerialized] public int Value4;
+}
+
+public class Test2
+{
+  [NonSerialized] public int Value1;
+  [NonSerialized] public int Value2;
+  [NonSerialized] public int Value3;
+  [NonSerialized] public int Value4;
+}

@@ -47,7 +47,7 @@ import icons.UnityIcons
 // b) Right click on a referenced package to convert to embedded - simply copy into the project's Packages folder
 
 class PackagesRoot(project: Project, private val packageManager: PackageManager)
-    : UnityExplorerNode(project, packageManager.packagesFolder, listOf(), false) {
+    : UnityExplorerNode(project, packageManager.packagesFolder, listOf(), AncestorNodeType.FileSystem) {
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -96,7 +96,7 @@ class PackagesRoot(project: Project, private val packageManager: PackageManager)
 }
 
 class PackageNode(project: Project, private val packageManager: PackageManager, packageFolder: VirtualFile, private val packageData: PackageData)
-    : UnityExplorerNode(project, packageFolder, listOf(), false, !packageData.source.isEditable()), Comparable<AbstractTreeNode<*>> {
+    : UnityExplorerNode(project, packageFolder, listOf(), AncestorNodeType.fromPackageData(packageData)), Comparable<AbstractTreeNode<*>> {
 
     init {
         icon = when (packageData.source) {
@@ -290,7 +290,7 @@ class BuiltinPackagesRoot(project: Project, private val packageManager: PackageM
 // Note that a module can have dependencies. Perhaps we want to always show this as a folder, including the Dependencies
 // node?
 class BuiltinPackageNode(project: Project, private val packageData: PackageData)
-    : UnityExplorerNode(project, packageData.packageFolder!!, listOf(), false, true) {
+    : UnityExplorerNode(project, packageData.packageFolder!!, listOf(), AncestorNodeType.ReadOnlyPackage) {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
@@ -310,7 +310,7 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return UnityExplorerNode(project!!, virtualFile, nestedFiles, isUnderAssets = false, isReadOnlyPackageFile = true)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, descendentOf)
     }
 
     override fun canNavigateToSource(): Boolean {

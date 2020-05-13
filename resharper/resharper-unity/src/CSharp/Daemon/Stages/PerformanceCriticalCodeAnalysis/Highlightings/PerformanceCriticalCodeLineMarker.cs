@@ -7,19 +7,19 @@ using JetBrains.TextControl.DocumentMarkup.LineMarkers;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings
 {
-    [StaticSeverityHighlighting(Severity.INFO, CSharpLanguage.Name, Languages = "CSHARP",
+    [StaticSeverityHighlighting(Severity.INFO,
+        typeof(UnityPerformanceHighlighting),
+        Languages = CSharpLanguage.Name,
         AttributeId = PerformanceHighlightingAttributeIds.PERFORMANCE_CRITICAL_METHOD_HIGHLIGHTER,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
-    public class UnityPerformanceCriticalCodeLineMarker: UnityPerformanceHighlightingBase, IHighlighting , IActiveLineMarkerInfo
+    public class UnityPerformanceCriticalCodeLineMarker : UnityPerformanceHighlightingBase, IHighlighting, IActiveLineMarkerInfo
     {
-        public const string SEVERITY_ID = "Unity.PerformanceCriticalCodeHighlighting";
-        public const string TITLE = "Performance critical context";
         public const string MESSAGE = "Performance critical context";
 
         private readonly DocumentRange myRange;
 
-        public UnityPerformanceCriticalCodeLineMarker(DocumentRange range) 
+        public UnityPerformanceCriticalCodeLineMarker(DocumentRange range)
         {
             myRange = range;
         }
@@ -45,9 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override IHighlighter CreateHighlighter(IDocumentMarkup markup)
         {
             var highlighter = base.CreateHighlighter(markup);
-            highlighter.UserData = new UnityPerformanceCriticalCodeLineMarker(DocumentRange.InvalidRange);
+            highlighter.UserData = new UnityPerformanceCriticalCodeLineMarker(DocumentRange);
             return highlighter;
         }
-
     }
 }

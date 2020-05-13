@@ -11,3 +11,9 @@ public class MissingConstructor
 QUICKFIXES:
 Make type 'MissingConstructor' serializable
 Remove redundant attribute
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

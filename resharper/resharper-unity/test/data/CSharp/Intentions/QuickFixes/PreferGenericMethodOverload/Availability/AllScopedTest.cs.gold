@@ -1,0 +1,87 @@
+﻿using UnityEngine;
+
+public class Whatever : MonoBehaviour
+{
+}
+
+public class SomethingElse : MonoBehaviour
+{
+}
+
+public class ScriptableThing : ScriptableObject
+{
+}
+
+public class Test01
+{
+    public void Method(GameObject o)
+    {
+        o.GetComponent(|"Whatever"|(0));
+        o.GetComponent(|"SomethingElse"|(1));
+    }
+
+    public void Method2(GameObject o)
+    {
+        o.|AddComponent|(2)(|"SomethingElse"|(3));
+        ScriptableObject.CreateInstance(|"ScriptableThing"|(4));
+    }
+}
+
+public class Test02
+{
+    public void Method(GameObject o)
+    {
+        o.GetComponent(|"Whatever"|(5));
+        o.GetComponent(|"PlayableDirector"|(6));
+    }
+}
+
+------------------------------------------------
+0: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'GetComponent<Whatever>()'
+--Use strongly typed overloads in method 'Method'
+--Use strongly typed overloads in class 'Test01'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution
+1: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'GetComponent<SomethingElse>()'
+--Use strongly typed overloads in method 'Method'
+--Use strongly typed overloads in class 'Test01'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution
+2: Method 'UnityEngine.GameObject.AddComponent' is obsolete: GameObject.AddComponent with string argument has been deprecated. Use GameObject.AddComponent<T>() instead. (UnityUpgradable).
+NO QUICKFIXES
+3: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'AddComponent<SomethingElse>()'
+--Use strongly typed overloads in method 'Method2'
+--Use strongly typed overloads in class 'Test01'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution
+4: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'CreateInstance<ScriptableThing>()'
+--Use strongly typed overloads in method 'Method2'
+--Use strongly typed overloads in class 'Test01'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution
+5: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'GetComponent<Whatever>()'
+--Use strongly typed overloads in class 'Test02'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution
+6: String based type lookup is inefficient, use generic overload
+QUICKFIXES:
+Convert to 'GetComponent<UnityEngine.Playables.PlayableDirector>()'
+--Use strongly typed overloads in class 'Test02'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution

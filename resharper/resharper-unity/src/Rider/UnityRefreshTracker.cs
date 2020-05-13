@@ -5,6 +5,7 @@ using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
@@ -67,7 +68,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public Task Refresh(Lifetime lifetime, RefreshType refreshType)
         {
             myLocks.AssertMainThread();
-            myLocks.ReentrancyGuard.AssertGuarded();
 
             if (myEditorProtocol.UnityModel.Value == null)
                 return Task.CompletedTask;
@@ -92,15 +92,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     myLogger.Verbose($"Secondary execution with {mySecondaryRefreshType}");
                     return Refresh(lifetime, (RefreshType) mySecondaryRefreshType)
-                        .ContinueWith(___ => { mySecondaryRefreshType = null; }, lifetime);
+                        .ContinueWith(___ => { mySecondaryRefreshType = null; }, 
+                            myLocks.Tasks.GuardedMainThreadScheduler);
                 }
 
                 return Task.CompletedTask;
-            }, lifetime).Unwrap();
+            }, myLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
         }
-
+        
         private async Task RefreshInternal(Lifetime lifetime, RefreshType refreshType)
         {
+            myLocks.ReentrancyGuard.AssertGuarded();
             var lifetimeDef = Lifetime.Define(lifetime);
 
             myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
@@ -117,6 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         using (mySolution.GetComponent<VfsListener>().PauseChanges())
                         {
                             await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                            await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
                         }
                     }
                     else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
@@ -128,21 +131,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
                 finally
                 {
-                    try
-                    {
-                        myLogger.Verbose(
-                            $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished");
-                        var solution = mySolution.GetProtocolSolution();
-                        var solFolder = mySolution.SolutionDirectory;
-                        var list = new List<string> {solFolder.FullPath};
-                        myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-                        await solution.GetFileSystemModel().RefreshPaths.Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask();
-                    }
-                    finally
-                    {
-                        myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-                        lifetimeDef.Terminate();
-                    }
+                    await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                    
+                    myLogger.Verbose(
+                            $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished"); 
+                    var solution = mySolution.GetProtocolSolution(); 
+                    var solFolder = mySolution.SolutionDirectory; 
+                    var list = new List<string> {solFolder.FullPath}; 
+                    myLogger.Verbose($"RefreshPaths.StartAsTask Finished."); 
+                    await solution.GetFileSystemModel().RefreshPaths
+                            .Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask();
+                    await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
                 }
             }
             catch (Exception e)
@@ -196,13 +195,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-
-                var protocolSolution = solution.GetProtocolSolution();
-                protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
-                {
-                    logger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
-                    myGroupingEvent.FireIncoming();
-                });
                 
                 fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });

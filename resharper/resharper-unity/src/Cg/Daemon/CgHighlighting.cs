@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
 {
     [DaemonTooltipProvider(typeof(CgIdentifierTooltipProvider))]
-    [StaticSeverityHighlighting(Severity.INFO, HighlightingGroupIds.IdentifierHighlightingsGroup, OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false)]
+    [StaticSeverityHighlighting(Severity.INFO, typeof(HighlightingGroupIds.IdentifierHighlightings), OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false)]
     public class CgHighlighting : ICustomAttributeIdHighlighting, IUnityHighlighting
     {
         private readonly DocumentRange myRange;

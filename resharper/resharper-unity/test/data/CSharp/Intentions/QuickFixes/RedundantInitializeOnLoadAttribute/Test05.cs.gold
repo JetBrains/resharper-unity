@@ -1,0 +1,10 @@
+﻿using UnityEditor;
+using UnityEngine;
+
+[InitializeOnLoad]
+public class MissingConstructor()
+{
+  static MissingConstructor()
+  {{caret}
+  }
+}

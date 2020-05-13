@@ -16,6 +16,7 @@
 **/.idea/**/dynamic.xml
 **/.idea/**/uiDesigner.xml
 
+
 # Rider code (IntelliJ excludes)
 
 # Gradle:
@@ -54,7 +55,6 @@ apiParser/.idea/**/contentModel.xml
 
 
 # Gradle output
-
 rider/build/
 rider/buildSrc/build/
 resharper/build/
@@ -87,6 +87,8 @@ resharper/**/test/data/**/*.tmp
 resharper/**/test/JetTestPackages
 
 resharper/NuGet.Config
+
+rider/**/testData/**/*.tmp
 
 # Backup & report files from converting an old project file to a newer Visual Studio version
 _UpgradeReport_Files/
