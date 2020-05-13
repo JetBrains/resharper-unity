@@ -4,7 +4,6 @@ import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
@@ -31,7 +30,6 @@ import java.awt.Frame
 
 class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
     private val model = project.solution.rdUnityModel
-    private val logger = Logger.getInstance(UnityHost::class.java)
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
 
