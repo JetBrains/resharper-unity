@@ -18,13 +18,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public UnityEventFunction([NotNull] string name, [NotNull] IClrTypeName typeName,
                                   [NotNull] IClrTypeName returnType, bool returnTypeIsArray, bool isStatic,
-                                  bool isCoroutine, string description, bool undocumented, Version minimumVersion,
+                                  bool canBeCoroutine, string description, bool undocumented, Version minimumVersion,
                                   Version maximumVersion, [NotNull] params UnityEventFunctionParameter[] parameters)
         {
             Description = description;
             Undocumented = undocumented;
             IsStatic = isStatic;
-            Coroutine = isCoroutine;
+            CanBeCoroutine = canBeCoroutine;
             myMinimumVersion = minimumVersion;
             myMaximumVersion = maximumVersion;
             Name = name;
@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull] public UnityEventFunctionParameter[] Parameters { get; }
         [NotNull] public IClrTypeName ReturnType { get; }
         public bool ReturnTypeIsArray { get; }
-        public bool Coroutine { get; }
+        public bool CanBeCoroutine { get; }
         public bool IsStatic { get; }
         [CanBeNull] public string Description { get; }
         public bool Undocumented { get; }
@@ -48,7 +48,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory,
                                                     [NotNull] IClassLikeDeclaration classDeclaration,
                                                     AccessRights accessRights,
-                                                    bool makeVirtual = false)
+                                                    bool makeVirtual = false,
+                                                    bool makeCoroutine = false)
         {
             var builder = new StringBuilder(128);
 
@@ -63,8 +64,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
             // Consider this declaration a template, and the final generated code implements (or overrides) this API
             if (makeVirtual) builder.Append("virtual ");
             builder.Append("global::");
-            builder.Append(ReturnType.FullName);
-            if (ReturnTypeIsArray) builder.Append("[]");
+            if (makeCoroutine && CanBeCoroutine)
+                builder.Append(PredefinedType.IENUMERATOR_FQN.FullName);
+            else
+            {
+                builder.Append(ReturnType.FullName);
+                if (ReturnTypeIsArray) builder.Append("[]");
+            }
+
             builder.Append(" ");
             builder.Append(Name);
             builder.Append("(");

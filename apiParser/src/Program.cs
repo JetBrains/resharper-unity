@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -14,24 +12,6 @@ namespace ApiParser
 {
     public static class Program
     {
-        private static readonly List<(string, Version)> DocVersions = new List<(string, Version)>
-        {
-            // These folders need to live in the runtime folder
-            // Can't redistribute, sorry. See README.md
-            ("Documentation-5.0.4f1", new Version(5, 0)),
-            ("Documentation-5.1.5f1", new Version(5, 1)),
-            ("Documentation-5.2.5f1", new Version(5, 2)),
-            ("Documentation-5.3.8f2", new Version(5, 3)),
-            ("Documentation-5.4.6f3", new Version(5, 4)),
-            ("Documentation-5.5.5f1", new Version(5, 5)),
-            ("Documentation-5.6.3f1", new Version(5, 6)),
-            ("Documentation-2017.1.2f1", new Version(2017, 1)),
-            ("Documentation-2017.2.0f2", new Version(2017, 2)),
-            ("Documentation-2017.3.1f1", new Version(2017, 3)),
-            ("Documentation-2017.4.6f1", new Version(2017, 4)),
-            ("Documentation-2018.1.6f1", new Version(2018, 1))
-        };
-
         public static void Main(string[] args)
         {
             if (args.Length != 1 && args.Length != 2)
@@ -39,7 +19,15 @@ namespace ApiParser
                 Console.WriteLine("Usage: ApiParser.exe docsFolder");
                 Console.WriteLine("       ApiParser.exe apiXmlPath version");
                 Console.WriteLine();
-                Console.WriteLine("  docsFolder - folder that contains all versions of Unity docs");
+                Console.WriteLine("ApiParser.exe docsFolder");
+                Console.WriteLine("  Parse all documentation installed by Unity Hub, as well as everything in the docsFolder and create a new api.xml");
+                Console.WriteLine();
+                Console.WriteLine("  docsFolder - folder that contains multiple versions of Unity docs");
+                Console.WriteLine("               Contents should be in the format Documentation-X.Y.ZfA/Documentation/en/ScriptReference");
+                Console.WriteLine();
+                Console.WriteLine("ApiParser.exe apiXmlPath version");
+                Console.WriteLine("  Parse the installed documentation corresponding to version and merge into an existing api.xml file");
+                Console.WriteLine();
                 Console.WriteLine("  apiXmlPath - location of api.xml to read and merge into");
                 Console.WriteLine("  version - version of Unity to read docs from. Must be installed in standard Unity Hub location");
                 Console.WriteLine();
@@ -48,58 +36,52 @@ namespace ApiParser
             }
 
             var stopwatch = Stopwatch.StartNew();
-
-            var docVersions = DocVersions;
-            var latestVersion = Regex.Match(docVersions.Last().Item1, @"Documentation-(.*)$").Groups[1].Value;
             var apiXml = FileSystemPath.Parse("api.xml");
 
+            var docVersions = new List<(string, Version)>();
             if (args.Length == 1)
+            {
                 Directory.SetCurrentDirectory(args[0]);
+                foreach (var directory in Directory.EnumerateDirectories(Directory.GetCurrentDirectory()))
+                {
+                    var docFolder = Path.Combine(Directory.GetCurrentDirectory(), directory);
+                    var version = Regex.Match(directory, @"Documentation-(\d+.\d+)").Groups[1].Value;
+                    docVersions.Add((docFolder, Version.Parse(version)));
+                }
+
+                foreach (var directory in Directory.EnumerateDirectories(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Unity", "Hub", "Editor")))
+                {
+                    var docFolder = GetDocumentationRoot(directory).FullPath;
+                    var version = Regex.Match(directory, @"(\d+.\d+)").Groups[1].Value;
+                    docVersions.Add((docFolder, Version.Parse(version)));
+                }
+
+                docVersions = docVersions.OrderBy(v => v.Item2).ToList();
+            }
             else
             {
                 apiXml = FileSystemPath.ParseRelativelyTo(args[0], FileSystemPath.Parse(Directory.GetCurrentDirectory()));
                 if (!apiXml.ExistsFile)
                     throw new InvalidOperationException("api.xml path does not exist");
-                latestVersion = args[1];
-                var docRoot = GetDocumentationRoot(latestVersion);
+
+                var requiredVersion = args[1];
+                var docRoot = GetDocumentationRoot(requiredVersion);
                 if (!docRoot.ExistsDirectory)
                     throw new InvalidOperationException($"Cannot find locally installed docs: {docRoot}");
-                var parseableVersion = Regex.Match(latestVersion, @"^(\d+\.\d+)").Groups[1].Value;
-                docVersions = new List<(string, Version)> {(docRoot.FullPath, Version.Parse(parseableVersion))};
+                var parseableVersion = Regex.Match(requiredVersion, @"^(\d+\.\d+)").Groups[1].Value;
+                docVersions.Add((docRoot.FullPath, Version.Parse(parseableVersion)));
             }
-
-            var progPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            var managedPath = Path.Combine(progPath, "Unity", "Editor", "Data", "Managed");
-            if (!Directory.Exists(managedPath))
-            {
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                    managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Editor", "Data", "Managed");
-                else
-                    managedPath = Path.Combine(progPath, "Unity", "Hub", "Editor", latestVersion, "Unity.app", "Contents", "Managed");
-            }
-
-            // Add assemblies to the type resolver so we can get the fully qualified names of types
-            // The Unity docs only give us the short names
-            TypeResolver.AddAssembly(typeof(IEnumerator).Assembly);
-            TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(managedPath, @"UnityEngine.dll")));
-            TypeResolver.AddAssembly(Assembly.LoadFrom(Path.Combine(managedPath, @"UnityEditor.dll")));
-            Console.WriteLine();
 
             var unityApi = new UnityApi();
             if (apiXml.ExistsFile)
                 unityApi = UnityApi.ImportFrom(apiXml);
-            var parser = new ApiParser(unityApi);
-
-            parser.Progress += (s, e) =>
-            {
-                var cursorTop = Console.CursorTop;
-                Console.WriteLine("{0,5} / {1,5} ({2,3}%)", e.Current, e.Total, e.Percent);
-                Console.SetCursorPosition(0, cursorTop);
-            };
+            var typeResolver = new TypeResolver();
+            var parser = new ApiParser(unityApi, typeResolver);
 
             foreach (var (name, version) in docVersions)
             {
-                Console.WriteLine(name);
+                Console.WriteLine($"{name} ({version})");
                 parser.ParseFolder(name, version);
 
                 AddUndocumentedApis(unityApi, version);
@@ -108,7 +90,7 @@ namespace ApiParser
             // These modify existing functions
             AddUndocumentedOptionalParameters(unityApi);
             AddUndocumentedCoroutines(unityApi);
-            FixDataFromIncorrectDocs(unityApi);
+            FixDataFromIncorrectDocs(unityApi, typeResolver);
 
             using (var writer = new XmlTextWriter(apiXml.FullPath, Encoding.UTF8) {Formatting = Formatting.Indented})
             {
@@ -183,7 +165,7 @@ namespace ApiParser
                 function.MakeParameterOptional(parameterName, justification);
         }
 
-        private static void FixDataFromIncorrectDocs(UnityApi unityApi)
+        private static void FixDataFromIncorrectDocs(UnityApi unityApi, TypeResolver typeResolver)
         {
             // Documentation doesn't state that it's static, or has wrong types
             Console.WriteLine("Fixing incorrect documentation");
@@ -205,7 +187,7 @@ namespace ApiParser
                 foreach (var function in type.FindEventFunctions("OnWillDeleteAsset"))
                 {
                     function.SetIsStatic();
-                    function.SetReturnType(new ApiType("UnityEditor.AssetDeleteResult"));
+                    function.SetReturnType(typeResolver.CreateApiType("UnityEditor.AssetDeleteResult"));
                     var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
                     function.UpdateParameter("arg1", newParameter);
                     newParameter = new UnityApiParameter("options", new ApiType("UnityEditor.RemoveAssetOptions"), string.Empty);
@@ -215,7 +197,7 @@ namespace ApiParser
                 foreach (var function in type.FindEventFunctions("OnWillMoveAsset"))
                 {
                     function.SetIsStatic();
-                    function.SetReturnType(new ApiType("UnityEditor.AssetMoveResult"));
+                    function.SetReturnType(typeResolver.CreateApiType("UnityEditor.AssetMoveResult"));
                     var newParameter = new UnityApiParameter("sourcePath", ApiType.String, string.Empty);
                     function.UpdateParameter("arg1", newParameter);
                     newParameter = new UnityApiParameter("destinationPath", ApiType.String, string.Empty);
@@ -228,7 +210,7 @@ namespace ApiParser
             {
                 // 2018.2 removes a UnityScript example which gave us the return type
                 foreach (var function in type.FindEventFunctions("OnAssignMaterialModel"))
-                    function.SetReturnType(new ApiType("UnityEngine.Material"));
+                    function.SetReturnType(typeResolver.CreateApiType("UnityEngine.Material"));
             }
         }
 

@@ -5,20 +5,21 @@ import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rd.util.reactive.fire
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectView.solution
 import javax.swing.event.HyperlinkEvent
 
-class YamlHugeFileNotification(project: Project, private val unityHost: UnityHost): LifetimedProjectComponent(project) {
+class YamlHugeFileNotification(project: Project): ProtocolSubscribedProjectComponent(project) {
 
     companion object {
         private val notificationGroupId = NotificationGroup.balloonGroup("Unity Enable Yaml")
     }
 
     init {
-        unityHost.model.notifyYamlHugeFiles.adviseNotNullOnce(componentLifetime){
+        project.solution.rdUnityModel.notifyYamlHugeFiles.adviseNotNullOnce(componentLifetime){
             showNotificationIfNeeded()
         }
     }
@@ -37,7 +38,7 @@ class YamlHugeFileNotification(project: Project, private val unityHost: UnityHos
                 return@setListener
 
             if (hyperlinkEvent.description == "turnOnYamlParsing"){
-                unityHost.model.enableYamlParsing.fire()
+                project.solution.rdUnityModel.enableYamlParsing.fire()
                 notification.hideBalloon()
             }
         }

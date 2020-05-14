@@ -16,13 +16,15 @@ import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import icons.UnityIcons
 
-class UnityToolWindowFactory(project: Project,
-                             private val toolWindowManager: ToolWindowManager)
-    : LifetimedProjectComponent(project) {
+// todo: it lacks init {}, so it's not a component and doesn't need to be initialized automatically
+//there's an API for registering tool windows in the IJ Platform
+class UnityToolWindowFactory(project: Project) : LifetimedProjectComponent(project) {
 
     companion object {
         const val TOOL_WINDOW_ID = "Unity"
         const val ACTION_PLACE = "Unity"
+
+        fun getInstance(project: Project): UnityToolWindowFactory = project.getComponent(UnityToolWindowFactory::class.java)
 
         fun show(project: Project) {
             ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID)?.show(null)
@@ -41,7 +43,7 @@ class UnityToolWindowFactory(project: Project,
     // TODO: Use ToolWindowFactory and toolWindow extension points
     @Suppress("DEPRECATION")
     private fun create(): UnityToolWindowContext {
-        val toolWindow = toolWindowManager.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
+        val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
 
         if (toolWindow is ToolWindowEx) {
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
@@ -63,7 +65,7 @@ class UnityToolWindowFactory(project: Project,
 
             override fun contentRemoved(event: ContentManagerEvent) {
                 context = null
-                toolWindowManager.unregisterToolWindow(TOOL_WINDOW_ID)
+                ToolWindowManager.getInstance(project).unregisterToolWindow(TOOL_WINDOW_ID)
             }
         })
         toolWindow.title = ""

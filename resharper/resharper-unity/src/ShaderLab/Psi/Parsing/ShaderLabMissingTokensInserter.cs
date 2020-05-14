@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Text;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
 {
@@ -62,10 +61,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
 
             var tokenType = myLexer.TokenType;
             if (tokenType == ShaderLabTokenType.WHITESPACE)
-                return new Whitespace(myWhitespaceIntern.Intern(myLexer));
+                return new Whitespace(WhitespaceIntern.Intern(myLexer));
 
             if (tokenType == ShaderLabTokenType.NEW_LINE)
-                return new NewLine(myWhitespaceIntern.Intern(myLexer));
+                return new NewLine(WhitespaceIntern.Intern(myLexer));
 
             return TreeElementFactory.CreateLeafElement(myLexer);
         }

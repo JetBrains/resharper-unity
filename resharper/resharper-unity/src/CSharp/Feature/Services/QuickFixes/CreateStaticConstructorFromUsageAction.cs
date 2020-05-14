@@ -1,4 +1,5 @@
 ﻿using JetBrains.ReSharper.Feature.Services.CSharp.Intentions.DataProviders;
+using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Intentions.CreateDeclaration;
 using JetBrains.ReSharper.Feature.Services.Intentions.DataProviders;
@@ -8,7 +9,6 @@ using JetBrains.ReSharper.Intentions.CreateFromUsage;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
@@ -66,7 +66,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var intention = ConstructorDeclarationBuilder.Create(context);
             var constructor = (IConstructorDeclaration) intention.ResultDeclaration;
             constructor.SetStatic(true);
-            return new IntentionResult(EmptyList<ITemplateFieldHolder>.Instance, constructor, constructor.Body.Statements[0].GetDocumentRange());
+            var selection = MemberBodyUtil.GetBodyTextRange(constructor);
+            return new IntentionResult(EmptyList<ITemplateFieldHolder>.Instance, constructor, selection);
         }
     }
 }

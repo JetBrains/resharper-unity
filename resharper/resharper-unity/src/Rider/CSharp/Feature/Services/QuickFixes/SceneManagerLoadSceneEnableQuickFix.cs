@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
 
             var buildSettings = GetEditorBuildSettings(unityModule);
 
-            var scenes = GetSceneCollection(buildSettings.GetDominantPsiFile<UnityYamlLanguage>() as IYamlFile) as IBlockSequenceNode;
+            var scenes = GetSceneCollection(buildSettings.GetDominantPsiFile<YamlLanguage>() as IYamlFile) as IBlockSequenceNode;
             Assertion.Assert(scenes != null, "scene != null");
             foreach (var entry in scenes.Entries)
             {
@@ -67,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CSharp.Feature.Services.QuickF
                 }
                 
                 solution.GetComponent<IDaemon>().Invalidate();
-                solution.GetComponent<UnityRefresher>().Refresh(RefreshType.Normal);
+                solution.GetComponent<UnityRefresher>().StartRefresh(RefreshType.Normal);
             }
 
             return null;

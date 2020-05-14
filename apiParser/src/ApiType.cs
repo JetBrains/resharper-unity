@@ -4,30 +4,30 @@ namespace ApiParser
 {
     public class ApiType
     {
-        public static readonly ApiType Void = new ApiType("void");
-        public static readonly ApiType String = new ApiType("string");
-        public static readonly ApiType StringArray = new ApiType("string[]");
-        public static readonly ApiType Bool = new ApiType("bool");
-        public static readonly ApiType StringByRef = new ApiType("string&");
+        public static readonly ApiType Void = new ApiType("System.Void");
+        public static readonly ApiType String = new ApiType("System.String");
+        public static readonly ApiType StringArray = new ApiType("System.String[]");
+        public static readonly ApiType Bool = new ApiType("System.Boolean");
+        public static readonly ApiType StringByRef = new ApiType("System.String&");
         public static readonly ApiType IEnumerator = new ApiType("System.Collections.IEnumerator");
 
-        public ApiType([NotNull] string name, string namespaceHint = "")
+        public ApiType([NotNull] string fullName)
         {
-            if (string.IsNullOrWhiteSpace(name)) name = "void";
+            if (string.IsNullOrWhiteSpace(fullName)) fullName = "void";
 
-            if (name.EndsWith("&"))
+            if (fullName.EndsWith("&"))
             {
-                name = name.Substring(0, name.Length - 1);
+                fullName = fullName.Substring(0, fullName.Length - 1);
                 IsByRef = true;
             }
 
-            if (name.EndsWith("[]"))
+            if (fullName.EndsWith("[]"))
             {
-                name = name.Substring(0, name.Length - 2);
+                fullName = fullName.Substring(0, fullName.Length - 2);
                 IsArray = true;
             }
 
-            FullName = name.Contains(".") ? name : TypeResolver.ResolveFullName(name, namespaceHint);
+            FullName = fullName;
         }
 
         public string FullName { get; }

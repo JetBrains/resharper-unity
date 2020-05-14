@@ -19,6 +19,7 @@ using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
@@ -107,8 +108,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             // Only for UnityObject types, not [Serialized] types
             var classDeclaration = fieldDeclaration.GetContainingTypeDeclaration();
             var classElement = classDeclaration?.DeclaredElement;
-            return unityApi.IsDescendantOfMonoBehaviour(classElement) ||
-                   unityApi.IsDescendantOfScriptableObject(classElement);
+            return UnityApi.IsDescendantOfMonoBehaviour(classElement) ||
+                   UnityApi.IsDescendantOfScriptableObject(classElement);
         }
 
         private BulbActionBase GetActionToApplyToEntireFieldDeclaration(
@@ -182,44 +183,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                 if (mySelectedFieldDeclaration == null)
                 {
                     attribute = AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
-                        myAttributeTypeName, myAttributeValues, myModule, myElementFactory);
+                        myAttributeTypeName, myAttributeValues, null, myModule, myElementFactory);
                 }
                 else
                 {
                     attribute = AttributeUtil.AddAttributeToSingleDeclaration(mySelectedFieldDeclaration,
-                        myAttributeTypeName, myAttributeValues, myModule, myElementFactory);
+                        myAttributeTypeName, myAttributeValues, null, myModule, myElementFactory);
                 }
 
                 if (myAttributeValues.Length == 0)
                     return null;
 
-                return CreateHotspotSession(attribute);
-            }
-
-            private Action<ITextControl> CreateHotspotSession(IAttribute attribute)
-            {
-                var hotspotsRegistry = new HotspotsRegistry(myMultipleFieldDeclaration.GetSolution().GetPsiServices());
-
-                for (var i = 0; i < myAttributeValues.Length; i++)
-                {
-                    var attributeValue = myAttributeValues[i];
-                    if (attributeValue.ConstantValue.IsString())
-                    {
-                        var value = $"\"{attributeValue.ConstantValue.Value}\"";
-                        hotspotsRegistry.Register(new ITreeNode[] {attribute.Arguments[i]},
-                            new NameSuggestionsExpression(new[] {value}));
-                    }
-                    else
-                    {
-                        hotspotsRegistry.Register(new ITreeNode[] {attribute.Arguments[i]},
-                            new NameSuggestionsExpression(new[]
-                            {
-                                attributeValue.ConstantValue.GetPresentation(attribute.Language)
-                            }));
-                    }
-                }
-
-                return BulbActionUtils.ExecuteHotspotSession(hotspotsRegistry, DocumentOffset.InvalidOffset);
+                return attribute.CreateHotspotSession();
             }
 
             public override string Text

@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     if (myFieldDeclaration.GetAccessRights() == AccessRights.PUBLIC)
                     {
                         AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
-                            PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, EmptyArray<AttributeValue>.Instance, myModule,
+                            PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, EmptyArray<AttributeValue>.Instance, null, myModule,
                             myElementFactory);
                     }
                 }
@@ -114,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     if (myFieldDeclaration.GetAccessRights() != AccessRights.PUBLIC)
                     {
                         AttributeUtil.AddAttributeToEntireDeclaration(myMultipleFieldDeclaration,
-                            KnownTypes.SerializeField, EmptyArray<AttributeValue>.Instance, myModule, myElementFactory);
+                            KnownTypes.SerializeField, EmptyArray<AttributeValue>.Instance, null, myModule, myElementFactory);
                     }
                 }
 

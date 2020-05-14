@@ -1,0 +1,33 @@
+using System.Linq;
+using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
+using JetBrains.ReSharper.Psi.Search;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
+{
+    [OccurrenceProvider(Priority = 10)]
+    public class UnityAssetOccurenceProvider : IOccurrenceProvider
+    {
+        public IOccurrence MakeOccurrence(FindResult findResult)
+        {
+            if (findResult is UnityScriptsFindResults unityScriptsFindResults)
+            {
+                var guid = (unityScriptsFindResults.AssetUsage.Dependencies.FirstOrDefault() as ExternalReference)?.ExternalAssetGuid ?? "INVALID";
+                return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer, unityScriptsFindResults.AttachedElement, guid); 
+            }
+            
+            if (findResult is UnityInspectorFindResults unityInspectorFindResults)
+            {
+                return new UnityInspectorValuesOccurrence(unityInspectorFindResults.SourceFile, unityInspectorFindResults.InspectorVariableUsage, unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.AttachedElement); 
+            }
+            
+            if (findResult is UnityMethodsFindResult unityMethodsFindResult)
+            {
+                return new UnityMethodsOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer, unityMethodsFindResult.AttachedElement,unityMethodsFindResult.AssetMethodData); 
+            }
+            
+            return null;
+        }
+    }
+}

@@ -18,7 +18,6 @@ import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
@@ -28,7 +27,6 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
-import com.jetbrains.rider.util.idea.getComponent
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 
@@ -40,7 +38,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
         if (remoteConfiguration.play) {
             val lt = lifetime.createNested().lifetime
-            val processTracker: RiderDebugActiveDotNetSessionsTracker = project.getComponent()
+            val processTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
             processTracker.dotNetDebugProcesses.change.advise(lifetime) { (event, debugProcess) ->
                 if (event == AddRemove.Add) {
                     debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
@@ -69,7 +67,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                 if (!remoteConfiguration.updatePidAndPort()) {
                     logger.trace("Do not found Unity, starting new Unity Editor")
 
-                    val model = UnityHost.getInstance(project).model
+                    val model = project.solution.rdUnityModel
                     if (UnityInstallationFinder.getInstance(project).getApplicationPath() == null ||
                         model.hasUnityReference.hasTrueValue && !project.isUnityProject()) {
                         throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")

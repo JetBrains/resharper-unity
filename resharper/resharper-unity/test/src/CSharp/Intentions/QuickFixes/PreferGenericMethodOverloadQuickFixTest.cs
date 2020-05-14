@@ -17,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void GetComponentUnavailableDueToGenericClass() { DoNamedTest(); }
         [Test] public void GetComponentWithNamespaceUnavailableTest() { DoNamedTest(); }
         [Test] public void GetComponentWithPreprocessorDirectives() { DoNamedTest(); }
+        [Test] public void AllScopedTest() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -26,11 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         protected override bool AllowHighlightingOverlap => true;
 
         [Test] public void AddComponentOnObjectTransformationTest() { DoNamedTest(); }
-        [Test] public void GetComponentBuiltInTransform() { DoNamedTest(); } 
+        [Test] public void GetComponentBuiltInTransform() { DoNamedTest(); }
         [Test] public void GetComponentInScriptTransformationTest() { DoNamedTest(); }
         [Test] public void GetComponentTransformationTest() { DoNamedTest(); }
         [Test] public void ScriptableObjectTest() { DoNamedTest(); }
         [Test] public void GetComponentWithNamespaceTest01() { DoNamedTest(); }
         [Test] public void GetComponentWithNamespaceTest02() { DoNamedTest(); }
+        [Test, ExecuteScopedQuickFixInFile] public void AllScopedTest() { DoNamedTest(); }
     }
 }

@@ -150,19 +150,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public static bool IsPerformanceCriticalRootMethod(UnityApi api, ITreeNode node)
         {
+
+            if (!(node is ICSharpDeclaration declaration))
+                return false;
+            
             // TODO: 20.1, support lambda
-            if (node is IAttributesOwner attributesOwner && HasPerformanceSensitiveAttribute(attributesOwner))
+            if (declaration.DeclaredElement is IAttributesOwner attributesOwner && HasFrequentlyCalledMethodAttribute(attributesOwner))
                 return true;
 
             var typeElement = node.GetContainingNode<IClassLikeDeclaration>()?.DeclaredElement;
             if (typeElement == null)
                 return false;
 
-            if (!api.IsDescendantOfMonoBehaviour(typeElement))
+            if (!UnityApi.IsDescendantOfMonoBehaviour(typeElement))
                 return false;
             
-            if (node is ICSharpDeclaration declaration &&
-                declaration.DeclaredElement is IClrDeclaredElement clrDeclaredElement)
+            if (declaration.DeclaredElement is IClrDeclaredElement clrDeclaredElement)
                 return ourKnownHotMonoBehaviourMethods.Contains(clrDeclaredElement.ShortName);
 
             return false;

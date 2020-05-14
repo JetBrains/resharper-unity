@@ -120,7 +120,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (myPluginSettings.OperatingSystemFamilyRider == OperatingSystemFamilyRider.MacOSX)
       {
         proc.StartInfo.FileName = "open";
-        proc.StartInfo.Arguments = string.Format("-n {0}{1}{0} --args {2}", "\"", defaultApp, args);
+        proc.StartInfo.Arguments = string.Format("-n -j {0}{1}{0} --args {2}", "\"", defaultApp, args);
         myLogger.Verbose("{0} {1}", proc.StartInfo.FileName, proc.StartInfo.Arguments);
       }
       else

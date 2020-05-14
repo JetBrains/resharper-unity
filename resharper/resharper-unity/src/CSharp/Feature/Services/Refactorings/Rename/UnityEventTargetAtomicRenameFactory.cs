@@ -2,8 +2,8 @@
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityEditorPropertyValues;
+using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             if (!declaredElement.IsFromUnityProject())
                 return false;
 
-            return IsEventHandler(declaredElement);
+            return IsPossibleEventHandler(declaredElement);
         }
 
         public RenameAvailabilityCheckResult CheckRenameAvailability(IDeclaredElement element)
@@ -27,21 +27,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public IEnumerable<AtomicRenameBase> CreateAtomicRenames(IDeclaredElement declaredElement, string newName,
                                                                  bool doNotAddBindingConflicts)
         {
-            return new[] {new UnityEventTargetAtomicRename(declaredElement, newName)};
+            return new[] {new UnityEventTargetAtomicRename(declaredElement.GetSolution(), declaredElement, newName)};
         }
 
-        private static bool IsEventHandler(IDeclaredElement declaredElement)
+        private static bool IsPossibleEventHandler(IDeclaredElement declaredElement)
         {
-            var eventHandlerCache = declaredElement.GetSolution().GetComponent<UnitySceneDataLocalCache>();
-            switch (declaredElement)
+
+            var clrDeclaredElement = declaredElement as IClrDeclaredElement;
+
+            switch (clrDeclaredElement)
             {
-                case IMethod method:
-                    return eventHandlerCache.IsEventHandler(method);
+                case IProperty _:
+                case IMethod _:
+                    var containingType = clrDeclaredElement.GetContainingType();
+                    if (containingType == null)
+                        return false;
 
-                case IProperty property:
-                    var setter = property.Setter;
-                    return setter != null && eventHandlerCache.IsEventHandler(setter);
+                    var unityObjectType = TypeFactory.CreateTypeByCLRName(KnownTypes.Object, clrDeclaredElement.Module).GetTypeElement();
+                    var result = containingType.IsDescendantOf(unityObjectType);
+                    if (!result)
+                        return false;
+                    var solution = clrDeclaredElement.GetSolution();
+                    var cacheController = solution.GetComponent<DeferredCacheController>();
 
+                    if (cacheController.IsProcessingFiles())
+                        return true;
+                    
+                    var methods = solution.GetComponent<AssetMethodsElementContainer>();
+                    return methods.GetAssetUsagesCount(clrDeclaredElement, out bool estimatedResult) > 0 || estimatedResult;
                 default:
                     return false;
             }

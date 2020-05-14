@@ -19,20 +19,25 @@ object EditorPluginModel: Root() {
         field("stackTrace", string)
     }
 
-    val RdFindUsageResult = structdef {
+    val FindUsagesSessionResult = structdef {
         field("target", string)
-        field("elements", array(RdFindUsageResultElement))
+        field("elements", array(AssetFindUsagesResultBase))
     }
 
-    val RdFindUsageResultElement = structdef {
-        field("isPrefab", bool)
+    val AssetFindUsagesResultBase = basestruct {
         field("expandInTreeView", bool)
         field("filePath", string)
         field("fileName", string)
+        field("extension", string)
+    }
+
+    val AssetFindUsagesResult = structdef extends  AssetFindUsagesResultBase {
+    }
+
+    val HierarchyFindUsagesResult = structdef extends  AssetFindUsagesResultBase {
         field("pathElements", array(string))
         field("rootIndices", array(int))
     }
-
 
     val RdLogEventType = enum {
         +"Error"
@@ -125,8 +130,8 @@ object EditorPluginModel: Root() {
         property("pause", bool)
         source("step", void)
         signal("showFileInUnity", string)
-        signal("showGameObjectOnScene", RdFindUsageResultElement)
-        signal("findUsageResults", RdFindUsageResult)
+        signal("showUsagesInUnity", AssetFindUsagesResultBase)
+        signal("sendFindUsagesSessionResult", FindUsagesSessionResult)
         signal("showPreferences", void)
 
         property("riderProcessId", int)
@@ -155,5 +160,6 @@ object EditorPluginModel: Root() {
         sink("clearOnPlay", long)
 
         call("generateUIElementsSchema", void, bool)
+        call("exitUnity", void, bool)
     }
 }

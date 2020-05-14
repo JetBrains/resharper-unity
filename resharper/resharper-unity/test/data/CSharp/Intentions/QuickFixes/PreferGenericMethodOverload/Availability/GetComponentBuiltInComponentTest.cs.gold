@@ -12,3 +12,6 @@ public class Test05
 0: String based type lookup is inefficient, use generic overload
 QUICKFIXES:
 Convert to 'GetComponent<UnityEngine.Transform>()'
+--Use strongly typed overloads in file
+--Use strongly typed overloads in project
+--Use strongly typed overloads in solution

@@ -1,0 +1,10 @@
+﻿// ${RUN:2}
+using UnityEngine;
+using UnityEditor;
+
+{caret}public class Foo
+{
+  private int myField;
+}
+
+public delegate void MyEventHandler(object sender, EventArgs e);

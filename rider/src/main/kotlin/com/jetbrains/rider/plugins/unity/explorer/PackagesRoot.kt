@@ -14,7 +14,6 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
-import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerNode
 import com.jetbrains.rider.projectView.views.navigateToSolutionView
 import icons.UnityIcons
 
@@ -48,7 +47,7 @@ import icons.UnityIcons
 // b) Right click on a referenced package to convert to embedded - simply copy into the project's Packages folder
 
 class PackagesRoot(project: Project, private val packageManager: PackageManager)
-    : UnityExplorerNode(project, packageManager.packagesFolder, listOf(), false) {
+    : UnityExplorerNode(project, packageManager.packagesFolder, listOf(), AncestorNodeType.FileSystem) {
 
     override fun update(presentation: PresentationData) {
         if (!virtualFile.isValid) return
@@ -97,7 +96,7 @@ class PackagesRoot(project: Project, private val packageManager: PackageManager)
 }
 
 class PackageNode(project: Project, private val packageManager: PackageManager, packageFolder: VirtualFile, private val packageData: PackageData)
-    : UnityExplorerNode(project, packageFolder, listOf(), false, !packageData.source.isEditable()), Comparable<AbstractTreeNode<*>> {
+    : UnityExplorerNode(project, packageFolder, listOf(), AncestorNodeType.fromPackageData(packageData)), Comparable<AbstractTreeNode<*>> {
 
     init {
         icon = when (packageData.source) {
@@ -291,18 +290,27 @@ class BuiltinPackagesRoot(project: Project, private val packageManager: PackageM
 // Note that a module can have dependencies. Perhaps we want to always show this as a folder, including the Dependencies
 // node?
 class BuiltinPackageNode(project: Project, private val packageData: PackageData)
-    : FileSystemNodeBase(project, packageData.packageFolder!!, listOf()) {
+    : UnityExplorerNode(project, packageData.packageFolder!!, listOf(), AncestorNodeType.ReadOnlyPackage) {
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
-        if (!UnityExplorer.getInstance(project!!).showHiddenItems) {
-            return arrayListOf()
+        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
+            return super.calculateChildren()
+        }
+
+        // Show children if there's anything interesting to show. If it's just package.json or .icon.png, or their
+        // meta files, pretend there's no children. We'll show them when show hidden items is enabled
+        val children = super.calculateChildren()
+        if (children.all { it.name?.startsWith("package.json") == true
+                || it.name?.startsWith(".icon.png") == true
+                || it.name?.startsWith("package.ModuleCompilationTrigger") == true }) {
+            return mutableListOf()
         }
         return super.calculateChildren()
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
-        return FileSystemExplorerNode(project!!, virtualFile, nestedFiles, false)
+        return UnityExplorerNode(project!!, virtualFile, nestedFiles, descendentOf)
     }
 
     override fun canNavigateToSource(): Boolean {
@@ -328,6 +336,8 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.BuiltInPackage)
+        if (UnityExplorer.getInstance(myProject).showHiddenItems)
+            presentation.addNonIndexedMark(myProject, virtualFile)
 
         val tooltip = getPackageTooltip(name, packageData)
         if (tooltip != name) {

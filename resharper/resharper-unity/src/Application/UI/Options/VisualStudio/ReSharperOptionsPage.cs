@@ -8,13 +8,13 @@ using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions.ViewModel;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
-using JetBrains.ReSharper.Plugins.Unity.Resources;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
 {
     // This is getting very similar to Rider's page
-    [OptionsPage(PID, Name, typeof(LogoThemedIcons.UnityLogo), ParentId = CodeEditingPage.PID)]
+    [OptionsPage(PID, Name, typeof(LogoIcons.Unity), ParentId = CodeEditingPage.PID)]
     public class ReSharperOptionsPage : OptionsPageBase
     {
         // Note that this is the same as Rider's options page
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
                 "Show gutter icons for implicit script usages");
 
             Header("Text based assets");
-            CheckBox((UnitySettings s) => s.IsYamlParsingEnabled,
+            CheckBox((UnitySettings s) => s.IsAssetIndexingEnabled,
                 "Parse text based asset files for implicit script usages (requires re-opening solution)");
 
             if (productConfigurations.IsInternalMode())

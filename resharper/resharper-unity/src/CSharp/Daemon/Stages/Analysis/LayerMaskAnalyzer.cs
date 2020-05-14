@@ -5,9 +5,9 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -18,10 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class LayerMaskAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly UnityYamlSupport myUnityYamlSupport;
+        private readonly YamlSupport myUnityYamlSupport;
 
         public LayerMaskAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
-            UnityYamlSupport unityYamlSupport)
+            YamlSupport unityYamlSupport)
             : base(unityApi)
         {
             myAssetSerializationMode = assetSerializationMode;
@@ -30,25 +30,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText) 
+            if (!myAssetSerializationMode.IsForceText)
                 return;
-            
-            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
+
+            if (!myUnityYamlSupport.IsParsingEnabled.Value)
                 return;
-            
-            if (IsLayerMaskGetMask(element) || IsLayerMaskNameToLayer(element))
+
+            if (element.IsLayerMaskGetMaskMethod() || element.IsLayerMaskNameToLayerMethod())
             {
                 foreach (var argument in element.ArgumentList.Arguments)
                 {
-                    if (argument == null)
-                        return;
-
-                    var literal = (argument.Value as ICSharpLiteralExpression)?.ConstantValue.Value as string;
+                    var literal = (argument?.Value as ICSharpLiteralExpression)?.ConstantValue.Value as string;
                     if (literal == null)
                         return;
-                
+
                     var cache = element.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
-                    if (cache != null && !cache.HasLayer(literal)) 
+                    if (cache != null && !cache.HasLayer(literal))
                         consumer.AddHighlighting(new UnknownLayerWarning(argument));
                 }
             }

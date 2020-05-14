@@ -4,18 +4,16 @@ import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.rdUnityModel
@@ -26,15 +24,12 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.getComponent
-import com.sun.jna.Native
-import com.sun.jna.win32.StdCallLibrary
 import java.awt.Frame
 
-class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComponent(project) {
-    val model = project.solution.rdUnityModel
-    private val logger = Logger.getInstance(UnityHost::class.java)
+class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
+    private val model = project.solution.rdUnityModel
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
 
@@ -45,7 +40,8 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             ProjectUtil.focusProjectWindow(project, true)
             val frame = WindowManager.getInstance().getFrame(project)
             if (frame != null) {
-                frame.setExtendedState(BitUtil.set(frame.extendedState, Frame.ICONIFIED, false))
+                if (BitUtil.isSet(frame.extendedState, Frame.ICONIFIED))
+                    frame.extendedState = BitUtil.set(frame.extendedState, Frame.ICONIFIED, false)
             }
         }
 
@@ -64,7 +60,7 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
             val task = RdTask<Boolean>()
 
             val configuration =
-                runManager.findConfigurationByTypeAndName(UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
+                RunManager.getInstance(project).findConfigurationByTypeAndName(UnityDebugConfigurationType.id, DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
             if (configuration == null)
                 task.set(false)
             else {
@@ -75,7 +71,7 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
 
                 }
                 if (!isAttached) {
-                    val processTracker: RiderDebugActiveDotNetSessionsTracker = project.getComponent()
+                    val processTracker: RiderDebugActiveDotNetSessionsTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
                     processTracker.dotNetDebugProcesses.change.advise(componentLifetime) { (event, debugProcess) ->
                         if (event == AddRemove.Add) {
                             debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
@@ -96,15 +92,12 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
 
         model.allowSetForegroundWindow.set { _, _ ->
             val task = RdTask<Boolean>()
-            if (SystemInfo.isWindows) {
-                val id = model.unityProcessId.valueOrNull
-                if (id != null && id > 0)
-                    task.set(user32!!.AllowSetForegroundWindow(id))
-                else
-                    logger.warn("unityProcessId is null or 0")
-            }
+
+            val id = model.unityProcessId.valueOrNull
+            if (id == null)
+                task.set(false)
             else
-                task.set(true)
+                task.set(AllowUnitySetForegroundWindow(id))
 
             task
         }
@@ -112,15 +105,9 @@ class UnityHost(project: Project, runManager: RunManager) : LifetimedProjectComp
     }
 
     companion object {
-        fun getInstance(project: Project) = project.getComponent<UnityHost>()
+        fun getInstance(project: Project): UnityHost = project.getComponent(UnityHost::class.java)
     }
 
-    @Suppress("FunctionName")
-    private interface User32 : StdCallLibrary {
-        fun AllowSetForegroundWindow(id:Int) : Boolean
-    }
-
-    private val user32 = if (SystemInfo.isWindows) Native.load("user32", User32::class.java) else null
 }
 
-fun Project.isConnectedToEditor() = UnityHost.getInstance(this).sessionInitialized.valueOrDefault(false)
+fun Project.isConnectedToEditor() = this.solution.rdUnityModel.sessionInitialized.valueOrDefault(false)

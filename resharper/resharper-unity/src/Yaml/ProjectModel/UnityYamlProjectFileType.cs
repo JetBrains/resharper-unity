@@ -1,11 +1,11 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ProjectModel.FileTypes;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel
 {
     [ProjectFileTypeDefinition(Name)]
-    public class UnityYamlProjectFileType : KnownProjectFileType
+    public class UnityYamlProjectFileType : BinaryProjectFileType
     {
         public new const string Name = "UnityYaml";
 

@@ -9,8 +9,8 @@ using JetBrains.Application.UI.Help;
 using JetBrains.Application.UI.Icons.CommonThemedIcons;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
@@ -29,21 +29,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class UnityCommonIconProvider
     {
         protected readonly ISolution Solution;
-        protected readonly SolutionAnalysisService Swa;
         protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtensionProvider;
-        protected readonly PerformanceCriticalCodeCallGraphAnalyzer Analyzer;
+        protected readonly PerformanceCriticalCodeCallGraphMarksProvider MarksProvider;
         protected readonly UnityApi UnityApi;
         protected readonly IContextBoundSettingsStore Settings;
+        private readonly IElementIdProvider myProvider;
 
-        public UnityCommonIconProvider(ISolution solution, SolutionAnalysisService swa, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphAnalyzer analyzer, UnityApi unityApi)
+        public UnityCommonIconProvider(ISolution solution,
+            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi unityApi,
+            IElementIdProvider provider)
         {
             Solution = solution;
-            Swa = swa;
             CallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
-            Analyzer = analyzer;
+            MarksProvider = marksProvider;
             UnityApi = unityApi;
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
+            myProvider = provider;
         }
 
         public virtual void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method,
@@ -54,17 +56,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
                 {
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
-                    consumer.AddHotHighlighting(Swa, CallGraphSwaExtensionProvider, cSharpDeclaration, Analyzer, Settings, text,
-                        GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration));
-
+                    consumer.AddHotHighlighting(CallGraphSwaExtensionProvider, cSharpDeclaration, MarksProvider,
+                        Settings, text,
+                        GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration),
+                        myProvider);
                 }
             }
         }
 
-        public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration,
+        public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer,
+            ICSharpDeclaration declaration,
             string text, string tooltip, DaemonProcessKind kind)
         {
-            consumer.AddHotHighlighting(Swa, CallGraphSwaExtensionProvider, declaration, Analyzer, Settings, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
+            consumer.AddHotHighlighting(CallGraphSwaExtensionProvider, declaration, MarksProvider, Settings, text,
+                tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, myProvider, true);
         }
 
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)
@@ -112,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var tooltip = "Unity event function";
             if (!string.IsNullOrEmpty(eventFunction.Description))
                 tooltip += Environment.NewLine + Environment.NewLine + eventFunction.Description;
-            if (eventFunction.Coroutine)
+            if (eventFunction.CanBeCoroutine)
                 tooltip += Environment.NewLine + "This function can be a coroutine.";
 
             return tooltip;
@@ -150,7 +155,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (method == null) return null;
 
             var function = unityApi.GetUnityEventFunction(method);
-            if (function == null || !function.Coroutine) return null;
+            if (function == null || !function.CanBeCoroutine) return null;
 
             var type = method.ReturnType.GetScalarType();
             if (type == null) return false;

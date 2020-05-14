@@ -5,9 +5,9 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 {
@@ -18,10 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class InputManagerAnalyzer : UnityElementProblemAnalyzer<IInvocationExpression>
     {
         private readonly AssetSerializationMode myAssetSerializationMode;
-        private readonly UnityYamlSupport myUnityYamlSupport;
+        private readonly YamlSupport myUnityYamlSupport;
 
         public InputManagerAnalyzer([NotNull] UnityApi unityApi, AssetSerializationMode assetSerializationMode,
-            UnityYamlSupport unityYamlSupport)
+                                    YamlSupport unityYamlSupport)
             : base(unityApi)
         {
             myAssetSerializationMode = assetSerializationMode;
@@ -30,24 +30,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         protected override void Analyze(IInvocationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText) 
+            if (!myAssetSerializationMode.IsForceText)
                 return;
-            
-            if (!myUnityYamlSupport.IsUnityYamlParsingEnabled.Value)
+
+            if (!myUnityYamlSupport.IsParsingEnabled.Value)
                 return;
-            
-            if (IsInputAxisMethod(element) || IsInputButtonMethod(element))
+
+            if (element.IsInputAxisMethod() || element.IsInputButtonMethod())
             {
                 var argument = element.ArgumentList.Arguments.FirstOrDefault();
-                if (argument == null)
-                    return;
-
-                var literal = (argument.Value as ICSharpLiteralExpression)?.ConstantValue.Value as string;
+                var literal = (argument?.Value as ICSharpLiteralExpression)?.ConstantValue.Value as string;
                 if (literal == null)
                     return;
-                
+
                 var cache = element.GetSolution().TryGetComponent<UnityProjectSettingsCache>();
-                if (cache != null && !cache.HasInput(literal)) 
+                if (cache != null && !cache.HasInput(literal))
                     consumer.AddHighlighting(new UnknownInputAxesWarning(argument));
             }
         }

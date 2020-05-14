@@ -1,13 +1,9 @@
 using JetBrains.Annotations;
-using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
-using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Behaviors;
-using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.AspectLookupItems.Info;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.LookupItems;
-using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate.Workflows;
 using JetBrains.ReSharper.Feature.Services.Lookup;
@@ -52,6 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             if (UpdateExistingMethod(updateMethodDeclaration, psiServices))
                 return;
 
+            var isCoroutine = updateMethodDeclaration?.TypeUsage is IUserTypeUsage userTypeUsage &&
+                              userTypeUsage.ScalarTypeName?.ShortName == "IEnumerator";
+
             var fixedNameRange = nameRange.SetStartTo(Info.MemberReplaceRanges.InsertRange.StartOffset);
             var memberRange = Info.MemberReplaceRanges.GetAcceptRange(fixedNameRange, insertType);
 
@@ -90,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     // Note that the generated code will use the access rights, if specified. However, if they haven't
                     // been specified (NONE) or they are the default for methods (PRIVATE), the generated code will be
                     // whatever the current code style setting is - implicit or explicit
-                    var declaredElement = myEventFunction.CreateDeclaration(factory, classDeclaration, myAccessRights)
+                    var declaredElement = myEventFunction.CreateDeclaration(factory, classDeclaration, myAccessRights, makeCoroutine: isCoroutine)
                         .DeclaredElement.NotNull("declaredElement != null");
                     context.InputElements.Clear();
                     context.InputElements.Add(new GeneratorDeclaredElement(declaredElement));

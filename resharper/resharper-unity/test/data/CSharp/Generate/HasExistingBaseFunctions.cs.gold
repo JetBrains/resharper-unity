@@ -1,16 +1,16 @@
 ﻿Provided elements:
  0: Awake():System.Void
- 1: OnFocus():System.Void
- 2: OnHierarchyChange():System.Void
- 3: OnInspectorUpdate():System.Void
- 4: OnLostFocus():System.Void
- 5: OnProjectChange():System.Void
- 6: OnSelectionChange():System.Void
- 7: Update():System.Void
- 8: OnDisable():System.Void
- 9: OnEnable():System.Void
- 10: OnValidate():System.Void
- 11: Reset():System.Void
+ 1: Reset():System.Void
+ 2: Update():System.Void
+ 3: OnEnable():System.Void
+ 4: OnDisable():System.Void
+ 5: OnFocus():System.Void
+ 6: OnHierarchyChange():System.Void
+ 7: OnInspectorUpdate():System.Void
+ 8: OnLostFocus():System.Void
+ 9: OnProjectChange():System.Void
+ 10: OnSelectionChange():System.Void
+ 11: OnValidate():System.Void
  12: OnWizardCreate():System.Void
  13: OnWizardOtherButton():System.Void
  14: OnWizardUpdate():System.Void

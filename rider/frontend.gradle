@@ -23,6 +23,7 @@ compileTestKotlin {
 runIde {
     // Match Rider's default heap size of 1.5Gb (default for runIde is 512Mb)
     maxHeapSize = "1500m"
+    systemProperty "rider.backend.netcore", riderBackendNetcore.toBoolean()
 }
 
 intellij {
@@ -62,7 +63,7 @@ intellij {
     downloadSources = false
     instrumentCode = false
 
-    plugins = [ 'rider-plugins-appender', 'CSS' ]
+    plugins = [ 'rider-plugins-appender', 'CSS', 'yaml' ]
 }
 
 

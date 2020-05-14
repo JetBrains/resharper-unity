@@ -17,10 +17,12 @@ Communication between all three is defined in 2 models:
 ## How do I change, compile and run the plugin locally?
 
 1. Check out main branch
-2. Run build.sh
-SDK will be downloaded, packages restored, etc. and everything should compile without errors.
+2. Run `build.sh` or `build.ps1` (depending on your OS).
+
+   SDK will be downloaded, packages restored, etc. and everything should compile without errors.
 3. In Intellij IDEA open "rider" folder
-Give it some time to run gradle scripts
+
+   Give it some time to run gradle scripts
 4. (Optional) Edit both backend and UnityEditor plugin via resharper/src/resharper-unity.sln  
 5. In the Gradle toolwindow find and run "runIDE" task. 
 It starts an experimental instance of Rider with locally compiled plugin.

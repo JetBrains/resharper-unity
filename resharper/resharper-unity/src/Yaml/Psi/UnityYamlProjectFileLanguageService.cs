@@ -1,5 +1,8 @@
+using System;
+using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.ProjectModel;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Yaml.Settings;
 using JetBrains.ReSharper.Psi;
@@ -14,8 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
     {
         private readonly YamlSupport myYamlSupport;
 
-        public UnityYamlProjectFileLanguageService(YamlSupport yamlSupport)
-            : base(UnityYamlProjectFileType.Instance)
+        public UnityYamlProjectFileLanguageService(YamlSupport yamlSupport) : base(UnityYamlProjectFileType.Instance)
         {
             myYamlSupport = yamlSupport;
         }
@@ -26,12 +28,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             return languageService?.GetPrimaryLexerFactory();
         }
 
+        public override PsiLanguageType GetPsiLanguageType(IPsiSourceFile sourceFile)
+        {
+            if (UnityYamlFileExtensions.IsMetaOrProjectSettings(sourceFile.GetSolution(), sourceFile.GetLocation()))
+                return base.GetPsiLanguageType(sourceFile);
+            
+            return UnityYamlLanguage.Instance ?? throw new InvalidOperationException("Unexpected state");
+        }
+
         protected override PsiLanguageType PsiLanguageType
         {
             get
             {
-                var yamlLanguage = (PsiLanguageType) UnityYamlLanguage.Instance ?? UnknownLanguage.Instance;
-                // TODO 
+                var yamlLanguage = (PsiLanguageType) YamlLanguage.Instance ?? UnknownLanguage.Instance;
                 return myYamlSupport.IsParsingEnabled.Value ? yamlLanguage : UnknownLanguage.Instance;
             }
         }

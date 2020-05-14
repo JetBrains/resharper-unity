@@ -20,9 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.ProjectModel
 
         [TestCase(CgProjectFileType.CG_EXTENSION)]
         [TestCase(CgProjectFileType.COMPUTE_EXTENSION)]
-        [TestCase(CgProjectFileType.HLSL_EXTENSION)]
+        // [TestCase(CgProjectFileType.HLSL_EXTENSION)]     // Clashes with C++ plugin when run in TeamCity
         [TestCase(CgProjectFileType.GLSL_EXTENSION)]
-        [TestCase(CgProjectFileType.HLSLINC_EXTENSION)]
+        // [TestCase(CgProjectFileType.HLSLINC_EXTENSION)]  // Clashes with C++ plugin when run in TeamCity
         [TestCase(CgProjectFileType.GLSLINC_EXTENSION)]
         public void ProjectFileTypeFromExtensionCginc(string extension)
         {

@@ -12,7 +12,7 @@
 - Code completion of event function declarations in a class.
 - Use Generate Code to create event functions, with parameters, or start typing for automatic completion.
 - Highlights Unity event functions and serializable fields and marks as implicitly used by Unity.
-- Supports Unity API 5.0 - 2019.3, plus undocumented functions.
+- Supports Unity API 5.0 - 2020.1, plus undocumented functions.
 - Inspections, Quick Fixes and Context Actions for Unity specific issues, with documented explanations.
 - Performance indicators to avoid known code patterns that affect performance.
 - Parse class and method usage from scene, prefab and assets.
@@ -34,23 +34,26 @@
 - And much more!
 </description>
 <releaseNotes>
-New in 2020.1
+New in 2020.2
 
-Added:
-- Exclude Boo and UnityScript namespaces, as well as the System.Diagnostics.Debug type from import completion (#574, #1473)
+### Changed
+
+- All applicable quick fixes are now bulk actions, and can be applied over project scope (#1648, #1649)
 
 Fixed:
-- Fix incorrect redundant SerializeField attribute warning for property backing field (#1016, #1464)
+
+- Fix meta file handling when references to Unity assemblies are invalid (#1623)
+- Public fields of type Action are no longer treated as serialised fields (#1605, #1638)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
-    <copyright>Copyright 2019 JetBrains, s.r.o</copyright>
+    <copyright>Copyright 2020 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[201.0]" />
+      <dependency id="Wave" version="[202.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>

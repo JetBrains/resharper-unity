@@ -11,7 +11,6 @@
     <Product>JetBrains.Rider.Unity.Editor.Plugin.Unity56</Product>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.RdFramework" Version="201.20200212.339" />
     <PackageReference Include="JetBrains.Unity.Libs.5.6.7" Version="2019.12.12" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
   </ItemGroup>

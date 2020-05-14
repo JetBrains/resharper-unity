@@ -110,6 +110,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (field.HasAttributeInstance(KnownTypes.SerializeField, false))
                 return true;
 
+            if (field.Type.IsAction())
+                return false;
+            
             return field.GetAccessRights() == AccessRights.PUBLIC;
         }
 
@@ -198,7 +201,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return null;
         }
 
-        public bool IsDescendantOf([NotNull] IClrTypeName unityTypeClrName, [CanBeNull] ITypeElement type)
+        public static bool IsDescendantOf([NotNull] IClrTypeName unityTypeClrName, [CanBeNull] ITypeElement type)
         {
             if (type == null)
                 return false;
@@ -206,13 +209,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return type.IsDescendantOf(mb.GetTypeElement());
         }
         
-        public bool IsDescendantOfMonoBehaviour([CanBeNull] ITypeElement type)
+        public static bool IsDescendantOfMonoBehaviour([CanBeNull] ITypeElement type)
         {
             return IsDescendantOf(KnownTypes.MonoBehaviour, type);
         }
         
         
-        public bool IsDescendantOfScriptableObject([CanBeNull] ITypeElement type)
+        public static bool IsDescendantOfScriptableObject([CanBeNull] ITypeElement type)
         {
             return IsDescendantOf(KnownTypes.ScriptableObject, type);
         }

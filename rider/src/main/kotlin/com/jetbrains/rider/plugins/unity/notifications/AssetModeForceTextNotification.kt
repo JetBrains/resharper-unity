@@ -7,12 +7,13 @@ import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectView.solution
 import javax.swing.event.HyperlinkEvent
 
-class AssetModeForceTextNotification(private val propertiesComponent: PropertiesComponent, project: Project, unityHost: UnityHost): LifetimedProjectComponent(project) {
+class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjectComponent(project) {
 
     companion object {
         private const val settingName = "do_not_show_unity_asset_mode_notification"
@@ -20,14 +21,14 @@ class AssetModeForceTextNotification(private val propertiesComponent: Properties
     }
 
     init {
-        unityHost.model.notifyAssetModeForceText.adviseNotNullOnce(componentLifetime){
+        project.solution.rdUnityModel.notifyAssetModeForceText.adviseNotNullOnce(componentLifetime){
             showNotificationIfNeeded()
         }
     }
 
     private fun showNotificationIfNeeded() {
 
-        if (propertiesComponent.getBoolean(AssetModeForceTextNotification.settingName)) return
+        if (PropertiesComponent.getInstance(project).getBoolean(settingName)) return
 
         val message = """Some advanced integration features are unavailable when the Unity asset serialisation mode is not set to “Force Text”. Enable text serialisation to allow Rider to learn more about the structure of your scenes and assets.
             <ul style="margin-left:10px">
@@ -46,7 +47,7 @@ class AssetModeForceTextNotification(private val propertiesComponent: Properties
             }
 
             if (hyperlinkEvent.description == "doNotShow"){
-                propertiesComponent.setValue(AssetModeForceTextNotification.settingName, true)
+                PropertiesComponent.getInstance(project).setValue(settingName, true)
                 notification.hideBalloon()
             }
         }

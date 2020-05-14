@@ -18,7 +18,7 @@ import javax.swing.Icon
 class UnityIcons {
     class Icons {
         companion object {
-            val UnityLogo = IconLoader.getIcon("/resharper/Logo/UnityLogo.svg")
+            val UnityLogo = IconLoader.getIcon("/resharper/Logo/Unity.svg")
         }
     }
 
@@ -123,6 +123,7 @@ class UnityIcons {
             val PluginsFolder = IconLoader.getIcon("/Icons/Explorer/FolderPlugins.svg")
             val ResourcesFolder = IconLoader.getIcon("/Icons/Explorer/FolderResources.svg")
             val StreamingAssetsFolder = IconLoader.getIcon("/Icons/Explorer/FolderStreamingAssets.svg")
+            val UnloadedFolder = IconLoader.getIcon("/Icons/Explorer/FolderUnloaded.svg")
         }
     }
 

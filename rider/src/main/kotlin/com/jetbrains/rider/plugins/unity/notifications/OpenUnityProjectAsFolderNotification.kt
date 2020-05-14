@@ -8,10 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
-import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.RdVirtualSolution
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
@@ -20,24 +21,24 @@ import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import javax.swing.event.HyperlinkEvent
 
-class OpenUnityProjectAsFolderNotification(project: Project, unityHost: UnityHost)
-    : LifetimedProjectComponent(project) {
+class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
     companion object {
         private val notificationGroupId = NotificationGroup("Unity project open", NotificationDisplayType.STICKY_BALLOON, true)
     }
 
     init {
-        unityHost.model.unityApplicationData.advise(componentLifetime) {
+        project.solution.rdUnityModel.unityApplicationData.advise(componentLifetime) {
+            if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
+                return@advise
+
             val solutionDescription = project.solutionDescription
             val title = "Unity features unavailable"
-            val content = "Configuration required:<br/>" +
-                "<ul><li>Install the <b>Rider package</b> in Unity’s Package Manager</li>" +
-                "<li>Select Rider as the External Editor</li>" +
-                "<li>Reopen Rider from Unity</li></ul>"
+            val content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and  Rider is set as the External Editor. Reopen Rider from Unity."
             if (solutionDescription is RdExistingSolution){ // proper solution
                 if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
                     val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
