@@ -15,25 +15,18 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
 
     override fun getTitle(): String = Title
 
-    override fun getDisabledIcon(): Icon = UnityIcons.Icons.UnityLogo
-
-    override fun getEnabledIcon(): Icon = UnityIcons.Icons.UnityLogo
-
-    override fun getInactiveDependentIcon(): Icon = UnityIcons.Icons.UnityLogo
-
-    override fun getMutedDisabledIcon(): Icon = UnityIcons.Icons.UnityLogo
-
-    override fun getMutedEnabledIcon(): Icon = UnityIcons.Icons.UnityLogo
-
-    override fun getPendingIcon(): Icon? = UnityIcons.Icons.UnityLogo
-
-    override fun getSuspendNoneIcon(): Icon = UnityIcons.Icons.UnityLogo
-
-    override fun getTemporaryIcon(): Icon = UnityIcons.Icons.UnityLogo
-
-    override fun getInvalidIcon(): Icon = UnityIcons.Icons.UnityLogo
-
-    override fun getVerifiedIcon(): Icon = UnityIcons.Icons.UnityLogo
+    override fun getDisabledIcon(): Icon = UnityIcons.Debugger.Db_disabled_pausepoint
+    override fun getEnabledIcon(): Icon = UnityIcons.Debugger.Db_set_pausepoint
+    override fun getInactiveDependentIcon(): Icon = UnityIcons.Debugger.Db_dep_line_pausepoint
+    override fun getInvalidIcon(): Icon = UnityIcons.Debugger.Db_invalid_pausepoint
+    override fun getMutedDisabledIcon(): Icon = UnityIcons.Debugger.Db_muted_disabled_pausepoint
+    override fun getMutedEnabledIcon(): Icon = UnityIcons.Debugger.Db_muted_pausepoint
+    override fun getSuspendNoneIcon(): Icon = UnityIcons.Debugger.Db_no_suspend_pausepoint
+    // Temporary is remove-once-hit
+    override fun getTemporaryIcon(): Icon = UnityIcons.Debugger.Db_set_pausepoint
+    override fun getVerifiedIcon() = UnityIcons.Debugger.Db_verified_pausepoint
+    override fun getVerifiedIconWithNoSuspend() = UnityIcons.Debugger.Db_verified_no_suspend_pausepoint
+    // getPendingIcon is not overridden. Base will return null, which then uses set icon
 
     override fun canPutAt(file: VirtualFile, line: Int, project: Project): Boolean = false
 
