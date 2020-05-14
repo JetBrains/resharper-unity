@@ -1,52 +1,67 @@
-﻿using JetBrains.ReSharper.Feature.Services.Daemon.Attributes.Idea;
-using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon.Attributes;
+using JetBrains.ReSharper.Plugins.Unity.Cg.Psi;
 using JetBrains.TextControl.DocumentMarkup;
-
-[assembly:
-    RegisterHighlighter(CgHighlightingAttributeIds.KEYWORD,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.KEYWORD, DarkForegroundColor = "#569CD6", EffectType = EffectType.TEXT, ForegroundColor = "#0000E0", Layer = HighlighterLayer.SYNTAX),
-
-    RegisterHighlighter(CgHighlightingAttributeIds.NUMBER,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.NUMBER,
-        DarkForegroundColor = "#B5CEA8", EffectType = EffectType.TEXT, ForegroundColor = "#000000", Layer = HighlighterLayer.SYNTAX),
-
-    RegisterHighlighter(CgHighlightingAttributeIds.FIELD_IDENTIFIER,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.INSTANCE_FIELD, DarkForegroundColor = "Violet", EffectType = EffectType.TEXT, ForegroundColor = "Purple", Layer = HighlighterLayer.SYNTAX),
-
-    RegisterHighlighter(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.INSTANCE_METHOD, DarkForegroundColor = "Cyan", EffectType = EffectType.TEXT, ForegroundColor = "DarkCyan:Maroon", Layer = HighlighterLayer.SYNTAX),
-
-    RegisterHighlighter(CgHighlightingAttributeIds.TYPE_IDENTIFIER,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.CLASS_NAME, DarkForegroundColor = "LightBlue", EffectType = EffectType.TEXT, ForegroundColor = "DarkBlue", Layer = HighlighterLayer.SYNTAX),
-
-    RegisterHighlighter(CgHighlightingAttributeIds.VARIABLE_IDENTIFIER,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.LOCAL_VARIABLE, EffectType = EffectType.TEXT, Layer = HighlighterLayer.SYNTAX),
-
-    RegisterHighlighter(CgHighlightingAttributeIds.LINE_COMMENT,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.LINE_COMMENT, DarkForegroundColor = "#007F00", EffectType = EffectType.TEXT, ForegroundColor = "#57A64A", Layer = HighlighterLayer.SYNTAX),
-
-    RegisterHighlighter(CgHighlightingAttributeIds.DELIMITED_COMMENT,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.BLOCK_COMMENT, DarkForegroundColor = "#007F00", EffectType = EffectType.TEXT, ForegroundColor = "#57A64A", Layer = HighlighterLayer.SYNTAX),
-
-    RegisterHighlighter(CgHighlightingAttributeIds.PREPPROCESSOR_LINE_CONTENT,
-        GroupId = CgHighlighterGroup.ID,
-        FallbackAttributeId = IdeaHighlightingAttributeIds.CONSTANT, DarkForegroundColor = "Violet", EffectType = EffectType.TEXT, ForegroundColor = "Purple", Layer = HighlighterLayer.SYNTAX)
-    
-]
-
 
 namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
 {
+    // Highlighters define the look of a highlighting. They belong to a group, which is used to create a settings page
+    [RegisterHighlighterGroup(GROUP_ID, "Cg/HLSL",
+        HighlighterGroupPriority.LANGUAGE_SETTINGS,
+        Language = typeof(CgLanguage),
+        // DemoText = DEMO_TEXT,
+        RiderNamesProviderType = typeof(CgHighlighterNamesProvider))]
+
+    // Define the highlighters, which describe how a highlighting is displayed
+    [RegisterHighlighter(KEYWORD,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.KEYWORD,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(NUMBER,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.NUMBER,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(FIELD_IDENTIFIER,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.FIELD,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(FUNCTION_IDENTIFIER,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.FUNCTION,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(TYPE_IDENTIFIER,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.CLASS,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(VARIABLE_IDENTIFIER,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.LOCAL_VARIABLE,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(LINE_COMMENT,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.LINE_COMMENT,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(DELIMITED_COMMENT,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.BLOCK_COMMENT,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
+    [RegisterHighlighter(PREPROCESSOR_LINE_CONTENT,
+        GroupId = GROUP_ID,
+        FallbackAttributeId = DefaultLanguageAttributeIds.CONSTANT,
+        EffectType = EffectType.TEXT,
+        Layer = HighlighterLayer.SYNTAX)]
     public static class CgHighlightingAttributeIds
     {
+        public const string GROUP_ID = "ReSharper Cg Highlighters";
+
+        // All attributes should begin with "ReSharper Cg ". See CgHighlighterNamesProvider below
         public const string KEYWORD = "ReSharper Cg Keyword";
         public const string NUMBER = "ReSharper Cg Number";
 
@@ -58,6 +73,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon
         public const string TYPE_IDENTIFIER = "ReSharper Cg Type Identifier";
         public const string VARIABLE_IDENTIFIER = "ReSharper Cg Variable Identifier";
 
-        public const string PREPPROCESSOR_LINE_CONTENT = "ReSharper Cg Preprocessor Line Content";
+        public const string PREPROCESSOR_LINE_CONTENT = "ReSharper Cg Preprocessor Line Content";
+    }
+
+    // Convert the ReSharper/Visual Studio friendly IDs into IDEA friendly names. For R# compatibility, all attribute
+    // IDs should start with "ReSharper" + some context specific prefix.
+    // GetPresentableName will return the attribute ID with attributeIdPrefix or "ReSharper" stripped
+    // GetHighlighterTag (for document markup) will return tagPrefix + the uppercase presentable name, with '.' replaced with '_'
+    // GetExternalName (for saving) will return "ReSharper." + highlighter tag. For compatibility, don't change this
+    public class CgHighlighterNamesProvider : PrefixBasedSettingsNamesProvider
+    {
+        // Strips "ReSharper Cg" from presentable name, returns "ReSharper.Cg_{UPPERCASE_ATTRIBUTE_ID}"
+        // for highlighter tag in markup and uses "ReSharper.ReSharper.Cg_{UPPERCASE_ATTRIBUTE_ID}" to save to
+        // IDEA settings.
+        public CgHighlighterNamesProvider() : base("ReSharper Cg", "ReSharper.Cg")
+        {
+        }
     }
 }

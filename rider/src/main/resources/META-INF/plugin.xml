@@ -1,10 +1,10 @@
 <idea-plugin url="https://github.com/JetBrains/resharper-unity">
   <id>com.intellij.resharper.unity</id>
   <name>Unity Support</name>
-  <version>2020.1.0.9999</version>
+  <version>2020.2.0.9999</version>
   <vendor url="https://www.jetbrains.com">JetBrains</vendor>
 
-  <idea-version since-build="2020.1" />
+  <idea-version since-build="2020.2" />
 
   <depends>com.intellij.modules.rider</depends>
   <depends>com.intellij.modules.xdebugger</depends>
@@ -124,7 +124,6 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.UnityHost</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UnityAutoSaveConfigureNotification</implementation-class></component>
-    <component><implementation-class>com.jetbrains.rider.plugins.unity.VcsPullTracker</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowManager</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification</implementation-class></component>
@@ -134,7 +133,6 @@
 
   <applicationListeners>
     <listener class="com.jetbrains.rider.plugins.unity.SaveAllTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
-    <listener class="com.jetbrains.rider.plugins.unity.VcsPullTracker" topic="com.intellij.openapi.actionSystem.ex.AnActionListener" />
   </applicationListeners>
 
   <actions>
@@ -283,28 +281,21 @@
   <change-notes>
 <![CDATA[
 <p>
-<strong>New in 2020.1.1</strong>
+<strong>New in 2020.2</strong>
 </p>
 <p>
 <em>Changed:</em>
 <ul>
-  <li>Rider: Show serializable Code Vision for more fields (<a href="https://github.com/JetBrains/resharper-unity/pull/1624">#1624</a>)</li>
-  <li>Rider: Improve presentation for asset Find Usages results (<a href="https://github.com/JetBrains/resharper-unity/pull/1624">#1624</a>)</li>
-  <li>Rider: Improve presentation of Player projects in Unity Explorer (<a href="https://github.com/JetBrains/resharper-unity/pull/1634"</a>)</li>
-  <li>Unity Editor: Reduce frequency of refreshing Unity on save to explicit calls to Save All (<a href="https://youtrack.jetbrains.com/issue/RIDER-37420">RIDER-37420</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1629">#1629</a>)</li>
+  <li>All applicable quick fixes are now bulk actions, and can be applied over project scope (<a href="https://github.com/JetBrains/resharper-unity/issues/1648">#1648</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1649">#1649</a>)</li>
 </ul>
 </p>
 <p>
 <em>Fixed:</em>
 <ul>
-  <li>Rider: Fix solution hang on "constructing components" due to excessive <tt>FileSystemWatcher</tt> initialisation (<a href="https://youtrack.jetbrains.com/issue/RIDER-41812">RIDER-41812</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1631">#1631</a>)</li>
-  <li>Rider: Fix exception finding file icon causing explorer view to be blank (<a href="https://youtrack.jetbrains.com/issue/RIDER-43038">RIDER-43038</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1632">#1632</a>)</li>
-  <li>Rider: Fix handling of file system folders in <tt>Packages</tt> with the same name as a package (<a href="https://github.com/JetBrains/resharper-unity/issues/1626">#1626</a>, [#1632](https://github.com/JetBrains/resharper-unity/pull/1632))</li>
-  <li>Rider: Fix size of tooltip for packages with many projects (<a href="https://github.com/JetBrains/resharper-unity/issues/1628">#1628</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1632">#1632</a>)</li>
-  <li>Unity Editor: Fix list of folders to search for .NET Framework references (<a href="https://youtrack.jetbrains.com/issue/RIDER-42873">RIDER-42873</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1630">#1630</a>)</li>
+  <li>Fix meta file handling when references to Unity assemblies are invalid (<a href="https://github.com/JetBrains/resharper-unity/pull/1623">#1623</a>)</li>
 </ul>
 </p>
-<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net201/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
+<p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net202/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
 ]]>
   </change-notes>
 </idea-plugin>

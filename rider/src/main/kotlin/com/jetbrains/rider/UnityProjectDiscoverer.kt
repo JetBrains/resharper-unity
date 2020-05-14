@@ -2,7 +2,7 @@ package com.jetbrains.rider
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.jetbrains.rdclient.util.idea.LifetimedProjectService
+import com.jetbrains.rd.platform.util.idea.LifetimedProjectService
 import com.jetbrains.rider.model.RdExistingSolution
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution

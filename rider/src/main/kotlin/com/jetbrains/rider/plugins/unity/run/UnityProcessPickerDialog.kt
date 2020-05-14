@@ -47,7 +47,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }
 
         object: DoubleClickListener() {
-            override fun onDoubleClick(p0: MouseEvent?): Boolean {
+            override fun onDoubleClick(event: MouseEvent): Boolean {
                 if (list.selectedIndex != -1) {
                     doOKAction()
                 }

@@ -8,16 +8,14 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class UseInstantiateWithParentQuickFix : QuickFixBase
+    public class UseInstantiateWithParentQuickFix : UnityScopedQuickFixBase
     {
         private readonly IInvocationExpression myInvocation;
         private readonly ICSharpExpression myNewArgument;
@@ -48,9 +46,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
         public override string Text => "Combine with object creation";
 
-        public override bool IsAvailable(IUserDataHolder cache)
-        {
-            return myNewArgument != null && ValidUtils.Valid(myInvocation) && ValidUtils.Valid(myNewArgument);
-        }
+        public override bool IsAvailable(IUserDataHolder cache) =>
+            myNewArgument != null && base.IsAvailable(cache) && ValidUtils.Valid(myNewArgument);
+
+        protected override ITreeNode TryGetContextTreeNode() => myInvocation;
     }
 }

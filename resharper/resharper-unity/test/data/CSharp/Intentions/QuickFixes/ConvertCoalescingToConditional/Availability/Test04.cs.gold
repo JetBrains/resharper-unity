@@ -12,6 +12,9 @@ public class Foo : MonoBehaviour
 0: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
 QUICKFIXES:
 Convert to conditional expression
+--Convert to conditional expression in file
+--Convert to conditional expression in project
+--Convert to conditional expression in solution
 1: Qualifier 'this.' is redundant
 QUICKFIXES:
 Remove redundant 'this' qualifier

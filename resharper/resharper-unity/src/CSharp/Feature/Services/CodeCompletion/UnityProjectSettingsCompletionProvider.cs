@@ -10,7 +10,6 @@ using JetBrains.ReSharper.Feature.Services.CodeCompletion.Infrastructure.Match;
 using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.Rules;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -20,7 +19,6 @@ using JetBrains.ReSharper.Psi.Resources;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 using JetBrains.UI.Icons;
-using static JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches.UnityProjectSettingsUtils;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompletion
 {
@@ -36,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         {
             var ranges = context.CompletionRanges;
             IEnumerable<string> completionItems = null;
-            
+
             // scene completion
             if (IsSpecificArgumentInSpecificMethod(context, out var argumentLiteral, IsLoadSceneMethod, IsCorrespondingArgument("sceneName")))
             {
@@ -49,20 +47,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllTags();
             } // tag completion, CompareTag("...")
-            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsCompareTagMethod , IsCorrespondingArgument("tag")))
+            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsCompareTagMethod, IsCorrespondingArgument("tag")))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllTags();
             } // layer completion
-            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsLayerMaskNameToLayer,
-                IsCorrespondingArgument("layerName")) || IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsLayerMaskGetMask,
+            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskNameToLayerMethod,
+                IsCorrespondingArgument("layerName")) || IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsLayerMaskGetMaskMethod,
                            (_, __) => true))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllLayers();
             }  // input completion
-            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsInputButtonMethod, IsCorrespondingArgument("buttonName")) ||
-                     IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsInputAxisMethod, IsCorrespondingArgument("axisName")))
+            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsInputButtonMethod, IsCorrespondingArgument("buttonName")) ||
+                     IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, ExpressionReferenceUtils.IsInputAxisMethod, IsCorrespondingArgument("axisName")))
             {
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllInput();
@@ -86,8 +84,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     collector.Add(item);
                 }
             }
-            return any;
 
+            return any;
         }
 
         private bool IsSpecificArgumentInSpecificMethod(CSharpCodeCompletionContext context, out ICSharpLiteralExpression stringLiteral,
@@ -116,7 +114,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 }
             }
 
-
             if (possibleInvocationExpression is IInvocationExpression invocationExpression)
             {
                 if (methodChecker(invocationExpression))
@@ -137,8 +134,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         private bool IsLoadSceneMethod(IInvocationExpression invocationExpression)
         {
-            return IsSceneManagerSceneRelatedMethod(invocationExpression.InvocationExpressionReference) ||
-                   IsEditorSceneManagerSceneRelatedMethod(invocationExpression.InvocationExpressionReference);
+            return invocationExpression.InvocationExpressionReference.IsSceneManagerSceneRelatedMethod() ||
+                   invocationExpression.InvocationExpressionReference.IsEditorSceneManagerSceneRelatedMethod();
         }
 
         private bool IsTagEquality(CSharpCodeCompletionContext context, out ICSharpLiteralExpression stringLiteral)
@@ -157,8 +154,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             if (eqExpression != null)
             {
-                return CompareTagProblemAnalyzer.IsTagReference(eqExpression.LeftOperand as IReferenceExpression) ||
-                       CompareTagProblemAnalyzer.IsTagReference(eqExpression.RightOperand as IReferenceExpression);
+                return (eqExpression.LeftOperand as IReferenceExpression).IsTagProperty() ||
+                       (eqExpression.RightOperand as IReferenceExpression).IsTagProperty();
             }
 
             stringLiteral = null;
@@ -181,7 +178,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     return null;
                 return new MatchingResult(matchingResult.MatchedIndices, matchingResult.AdjustedScore - 100, matchingResult.OriginalScore);
             }
-            
+
             public override void Accept(
                 ITextControl textControl, DocumentRange nameRange, LookupItemInsertType insertType,
                 Suffix suffix, ISolution solution, bool keepCaretStill)

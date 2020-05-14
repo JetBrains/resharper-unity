@@ -1,0 +1,22 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public void Method()
+    {
+        if (Comp{caret}areTag("Whatever") || CompareTag("Something")) { }
+    }
+
+    public bool Method2()
+    {
+        return CompareTag("Test");
+    }
+}
+
+public class Foo2 : MonoBehaviour
+{
+    public bool Method()
+    {
+        return CompareTag("Other");
+    }
+}

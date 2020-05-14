@@ -1,0 +1,78 @@
+﻿using UnityEngine;
+
+public class Foo : MonoBehaviour
+{
+    public GameObject Method(GameObject o)
+    {
+        return |o ?? gameObject|(0);
+    }
+
+    public Transform Method2(Transform t)
+    {
+        return |t ?? transform|(1);
+    }
+
+    public Component Method3(Component c1, Component c2)
+    {
+        var safeC1 = |c1 ?? new Component()|(2);
+        return |c2 ?? safeC1|(3);
+    }
+}
+
+public class Foo2 : MonoBehaviour
+{
+    public GameObject Method(GameObject o)
+    {
+        return |o ?? |this.|(5)gameObject|(4);
+    }
+}
+
+------------------------------------------------
+0: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+QUICKFIXES:
+Convert to conditional expression
+--Convert to conditional expression in method 'Method'
+--Convert to conditional expression in class 'Foo'
+--Convert to conditional expression in file
+--Convert to conditional expression in project
+--Convert to conditional expression in solution
+1: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+QUICKFIXES:
+Convert to conditional expression
+--Convert to conditional expression in method 'Method2'
+--Convert to conditional expression in class 'Foo'
+--Convert to conditional expression in file
+--Convert to conditional expression in project
+--Convert to conditional expression in solution
+2: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+QUICKFIXES:
+Convert to conditional expression
+--Convert to conditional expression in method 'Method3'
+--Convert to conditional expression in class 'Foo'
+--Convert to conditional expression in file
+--Convert to conditional expression in project
+--Convert to conditional expression in solution
+3: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+QUICKFIXES:
+Convert to conditional expression
+--Convert to conditional expression in method 'Method3'
+--Convert to conditional expression in class 'Foo'
+--Convert to conditional expression in file
+--Convert to conditional expression in project
+--Convert to conditional expression in solution
+4: '??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object
+QUICKFIXES:
+Convert to conditional expression
+--Convert to conditional expression in class 'Foo2'
+--Convert to conditional expression in file
+--Convert to conditional expression in project
+--Convert to conditional expression in solution
+5: Qualifier 'this.' is redundant
+QUICKFIXES:
+Remove redundant 'this' qualifier
+--Arrange qualifiers everywhere in file
+--Arrange qualifiers everywhere in project
+--Arrange qualifiers everywhere in solution
+Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
