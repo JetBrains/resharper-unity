@@ -43,6 +43,7 @@ New in 2020.2
 Fixed:
 
 - Fix meta file handling when references to Unity assemblies are invalid (#1623)
+- Public fields of type Action are no longer treated as serialised fields (#1605, #1638)
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
 </releaseNotes>

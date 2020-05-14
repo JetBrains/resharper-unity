@@ -12,6 +12,7 @@ public class A : MonoBehaviour
     public string implicitlyAssignedAndUsedField;
 
     // Not serialized by Unity
+    public Action UnusedAction;
     public const string UnusedConst = "hello";
     private const string UnusedPrivateConst = "hello";
     [SerializeField] private const string UnusedPrivateConst2 = "hello";
