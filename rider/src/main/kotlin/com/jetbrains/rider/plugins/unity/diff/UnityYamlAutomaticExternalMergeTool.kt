@@ -16,7 +16,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         Logger.getInstance(UnityYamlAutomaticExternalMergeTool::class.java)
 
     @Throws(ExecutionException::class, IOException::class)
-    override fun showRequest(project: Project?, request: MergeRequest) {
+    override fun show(project: Project, request: MergeRequest) {
         val settings = ExternalDiffSettings()
         settings.isMergeTrustExitCode = false
         settings.mergeExePath = "/Applications/Unity/Hub/Editor/2020.1.0b8/Unity.app/Contents/Tools/UnityYAMLMerge"
