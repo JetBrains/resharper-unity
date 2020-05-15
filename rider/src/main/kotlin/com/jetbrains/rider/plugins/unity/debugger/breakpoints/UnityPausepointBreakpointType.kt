@@ -1,9 +1,14 @@
 package com.jetbrains.rider.plugins.unity.debugger.breakpoints
 
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.xdebugger.XDebugSession
 import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.intellij.xdebugger.impl.breakpoints.XBreakpointUtil
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import icons.UnityIcons
@@ -40,4 +45,28 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
     override fun getDefaultSuspendPolicy() = SuspendPolicy.NONE
 
     override fun getVisibleStandardPanels(): EnumSet<StandardPanels> = EnumSet.of(StandardPanels.DEPENDENCY)
+
+    override fun getAdditionalPopupMenuActions(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>, currentSession: XDebugSession?): MutableList<out AnAction> {
+        return mutableListOf(ConvertToLineBreakpointAction())
+    }
+
+    private class ConvertToLineBreakpointAction : AnAction() {
+        override fun update(e: AnActionEvent) {
+            e.presentation.text = UnityPausepointConstants.convertToLineBreakpointText
+            e.presentation.description = UnityPausepointConstants.convertToLineBreakpointText
+        }
+
+        override fun actionPerformed(e: AnActionEvent) {
+            val dataContext = e.dataContext
+            val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return
+
+            val pair = XBreakpointUtil.findSelectedBreakpoint(e.project!!, editor)
+            var breakpoint = pair.second as? XLineBreakpoint<*> ?: return
+            if (breakpoint.properties is DotNetLineBreakpointProperties) {
+                @Suppress("UNCHECKED_CAST")
+                breakpoint = breakpoint as XLineBreakpoint<DotNetLineBreakpointProperties>
+                convertToLineBreakpoint(e.project!!, breakpoint, editor, pair.first)
+            }
+        }
+    }
 }

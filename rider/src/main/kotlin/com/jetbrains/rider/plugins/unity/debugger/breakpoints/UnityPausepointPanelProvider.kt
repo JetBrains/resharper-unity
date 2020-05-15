@@ -2,16 +2,10 @@ package com.jetbrains.rider.plugins.unity.debugger.breakpoints
 
 import com.intellij.openapi.project.Project
 import com.intellij.ui.HyperlinkLabel
-import com.intellij.util.ui.UIUtil
-import com.intellij.xdebugger.XDebuggerManager
-import com.intellij.xdebugger.XDebuggerUtil
-import com.intellij.xdebugger.breakpoints.SuspendPolicy
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.intellij.xdebugger.breakpoints.ui.XBreakpointCustomPropertiesPanel
-import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
-import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 import com.jetbrains.rider.debugger.breakpoint.IDotNetLineBreakpointCustomPanelsProvider
 import javax.swing.JComponent
 import javax.swing.event.HyperlinkListener
@@ -40,9 +34,9 @@ class UnityPausepointPanel(private val project: Project) : XBreakpointCustomProp
 
         val listener = HyperlinkListener {
             if (!isPausepoint) {
-                convertToPausepoint(breakpoint)
+                convertToPausepoint(project, breakpoint)
             } else {
-                convertToLineBreakpoint(breakpoint)
+                convertToLineBreakpoint(project, breakpoint)
             }
         }
 
@@ -58,31 +52,4 @@ class UnityPausepointPanel(private val project: Project) : XBreakpointCustomProp
     }
 
     override fun getComponent(): JComponent = activatePausepointHyperlink
-
-    private fun convertToPausepoint(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>) {
-        UIUtil.invokeLaterIfNeeded {
-            application.runWriteAction {
-                val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
-                val unityPausepointType = XDebuggerUtil.getInstance().findBreakpointType(UnityPausepointBreakpointType::class.java)
-                breakpointManager.removeBreakpoint(breakpoint)
-
-                breakpointManager.addLineBreakpoint(unityPausepointType, breakpoint.fileUrl, breakpoint.line, breakpoint.properties).apply {
-                    this.suspendPolicy = SuspendPolicy.NONE
-                    this.logExpression = UnityPausepointConstants.pauseEditorCommand
-                }
-            }
-        }
-    }
-
-    private fun convertToLineBreakpoint(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>) {
-        UIUtil.invokeLaterIfNeeded {
-            application.runWriteAction {
-                val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
-                val dotnetLineBreakpointType = XDebuggerUtil.getInstance().findBreakpointType(DotNetLineBreakpointType::class.java)
-                breakpointManager.removeBreakpoint(breakpoint)
-
-                breakpointManager.addLineBreakpoint(dotnetLineBreakpointType, breakpoint.fileUrl, breakpoint.line, breakpoint.properties)
-            }
-        }
-    }
 }
