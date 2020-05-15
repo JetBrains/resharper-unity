@@ -287,6 +287,12 @@
 <strong>New in 2020.2</strong>
 </p>
 <p>
+<em>Added:</em>
+<ul>
+  <li>Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor (<a href="https://github.com/JetBrains/resharper-unity/pull/1661">#1661</a>)</li>
+</ul>
+</p>
+<p>
 <em>Changed:</em>
 <ul>
   <li>All applicable quick fixes are now bulk actions, and can be applied over project scope (<a href="https://github.com/JetBrains/resharper-unity/issues/1648">#1648</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1649">#1649</a>)</li>
