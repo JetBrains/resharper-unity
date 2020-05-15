@@ -107,12 +107,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [CanBeNull]
         private Version TryGetApplicationPathFromEditorInstanceJson(FileSystemPath editorInstanceJsonPath)
         {
-            if (!editorInstanceJsonPath.ExistsFile)
-                return null;
-            var text = editorInstanceJsonPath.ReadAllText2().Text;
-            var match = Regex.Match(text, "\"version\" : \"(?<version>.*)\"");
-            var groups = match.Groups;
-            return match.Success ? Parse(groups["version"].Value) : null;
+            var val = EditorInstanceJson.TryGetValue(editorInstanceJsonPath, "version");
+            return val != null ? Parse(val) : null;
         }
 
         [CanBeNull]
