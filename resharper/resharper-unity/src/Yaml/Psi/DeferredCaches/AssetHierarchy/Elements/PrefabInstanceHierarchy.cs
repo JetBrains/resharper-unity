@@ -34,9 +34,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             }
         }
 
-        public IReadOnlyDictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> Modifications => myModifications;
         public LocalReference Location { get; }
         public LocalReference ParentTransform { get; }
+        public PrefabModification GetModificationFor(ulong owningObject, string fieldName)
+        {
+            if (myModifications.TryGetValue(fieldName, out var result) &&
+                result.TryGetValue(owningObject, out var modification))
+                return modification;
+            return null;
+        }
+
         public IReadOnlyList<PrefabModification> PrefabModifications { get; }
         public Guid SourcePrefabGuid { get; }
 

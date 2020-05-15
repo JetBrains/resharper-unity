@@ -11,20 +11,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
     public class UnityMethodsOccurrence : UnityAssetOccurrence
     {
         public bool IsPrefabModification { get; }
-        public readonly AssetMethodData MethodData;
+        public readonly AssetMethodUsages MethodUsages;
 
         public UnityMethodsOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement,
-            LocalReference attachedElementLocation, AssetMethodData methodData, bool isPrefabModification)
-            : base(sourceFile, declaredElement, attachedElementLocation)
+            LocalReference owningElementLocation, AssetMethodUsages methodUsages, bool isPrefabModification)
+            : base(sourceFile, declaredElement, owningElementLocation)
         {
             IsPrefabModification = isPrefabModification;
-            MethodData = methodData;
+            MethodUsages = methodUsages;
         }
 
 
         public override string ToString()
         {
-            return $"m_MethodName: {MethodData.MethodName}";
+            return $"m_MethodName: {MethodUsages.MethodName}";
         }
 
         public override IconId GetIcon()

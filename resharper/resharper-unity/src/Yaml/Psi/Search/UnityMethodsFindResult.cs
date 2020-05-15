@@ -7,20 +7,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
     public class UnityMethodsFindResult : UnityAssetFindResult
     {
-        public AssetMethodData AssetMethodData { get; }
+        public AssetMethodUsages AssetMethodUsages { get; }
         public bool IsPrefabModification { get; }
 
-        public UnityMethodsFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodData assetMethodData,
+        public UnityMethodsFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodUsages assetMethodUsages,
             LocalReference attachedElementLocation, bool isPrefabModification)
             : base(sourceFile, declaredElement, attachedElementLocation)
         {
-            AssetMethodData = assetMethodData;
+            AssetMethodUsages = assetMethodUsages;
             IsPrefabModification = isPrefabModification;
         }
 
         protected bool Equals(UnityMethodsFindResult other)
         {
-            return base.Equals(other) && AssetMethodData.Equals(other.AssetMethodData);
+            return base.Equals(other) && AssetMethodUsages.Equals(other.AssetMethodUsages);
         }
 
         public override bool Equals(object obj)
@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ AssetMethodData.GetHashCode();
+                return (base.GetHashCode() * 397) ^ AssetMethodUsages.GetHashCode();
             }
         }
     }

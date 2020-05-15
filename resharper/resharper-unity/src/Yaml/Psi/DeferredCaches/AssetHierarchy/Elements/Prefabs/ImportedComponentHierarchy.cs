@@ -22,6 +22,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public string Name => myComponentHierarchy.Name;
 
-        public LocalReference Owner => myComponentHierarchy.Owner.GetImportedReference(myPrefabInstanceHierarchy);
+        public LocalReference OwningGameObject => myComponentHierarchy.OwningGameObject.GetImportedReference(myPrefabInstanceHierarchy);
     }
 }

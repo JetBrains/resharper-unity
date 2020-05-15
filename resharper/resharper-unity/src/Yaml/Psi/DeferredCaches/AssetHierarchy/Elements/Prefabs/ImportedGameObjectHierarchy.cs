@@ -26,9 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             get
             {
-                if (myPrefabInstanceHierarchy.Modifications.TryGetValue(("m_Name"), out var achorsToResult) 
-                    && achorsToResult.TryGetValue(myGameObjectHierarchy.Location.LocalDocumentAnchor, out var result)
-                    &&  result.Value is AssetSimpleValue simpleValue)
+                var modification = myPrefabInstanceHierarchy.GetModificationFor(myGameObjectHierarchy.Location.LocalDocumentAnchor, "m_Name");
+                if (modification?.Value is AssetSimpleValue simpleValue)
                 {
                     return simpleValue.SimpleValue;
                 }

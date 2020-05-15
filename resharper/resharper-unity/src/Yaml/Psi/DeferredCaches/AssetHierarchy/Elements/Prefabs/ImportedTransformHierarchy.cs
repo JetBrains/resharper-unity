@@ -20,16 +20,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public string Name => myTransformHierarchy.Name;
 
-        public LocalReference Owner => myTransformHierarchy.Owner.GetImportedReference(myPrefabInstanceHierarchy);
+        public LocalReference OwningGameObject => myTransformHierarchy.OwningGameObject.GetImportedReference(myPrefabInstanceHierarchy);
 
-        public LocalReference Parent
+        public LocalReference ParentTransform
         {
             get
             {
-                if (myTransformHierarchy.Parent.LocalDocumentAnchor == 0)
+                if (myTransformHierarchy.ParentTransform.LocalDocumentAnchor == 0)
                     return myPrefabInstanceHierarchy.ParentTransform;
 
-                return myTransformHierarchy.Parent.GetImportedReference(myPrefabInstanceHierarchy);
+                return myTransformHierarchy.ParentTransform.GetImportedReference(myPrefabInstanceHierarchy);
             }
         }
 
@@ -37,9 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             get
             {
-                if (myPrefabInstanceHierarchy.Modifications.TryGetValue(("m_RootOrder"), out var anchorToResult)
-                    && anchorToResult.TryGetValue(myTransformHierarchy.Location.LocalDocumentAnchor, out var result)
-                    && result.Value is AssetSimpleValue simpleValue)
+                var modification = myPrefabInstanceHierarchy.GetModificationFor(myTransformHierarchy.Location.LocalDocumentAnchor, "m_RootOrder");
+                if (modification?.Value is AssetSimpleValue simpleValue)
                 {
                     if (int.TryParse(simpleValue.SimpleValue, out var index))
                         return index;

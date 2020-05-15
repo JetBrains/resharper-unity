@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return SimpleValue.GetPlatformIndependentHashCode();
         }
 
-        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport)
+        private string GetPresentationInner(ISolution solution, IDeclaredElement declaredElement, bool prefabImport, bool makeTextShorter)
         {
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
             var type = declaredElement.Type();
@@ -77,10 +77,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 return string.Join(" | ", enumMembers.Select(t => t.ShortName));
             }
 
-            return $"\"{SimpleValue ?? "..." }\"";
+            var textPresentation = SimpleValue;
+            if (makeTextShorter && textPresentation != null)
+                textPresentation = StringUtil.DropMiddleIfLong(textPresentation, 30);
+            return $"\"{textPresentation ?? "..." }\"";
         }
 
-        public string GetFullPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport) => GetPresentation(solution, declaredElement, prefabImport);
+        public string GetPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport) => GetPresentationInner(solution, declaredElement, prefabImport, true);
+        public string GetFullPresentation(ISolution solution, IDeclaredElement declaredElement, bool prefabImport) => GetPresentationInner(solution, declaredElement, prefabImport, false);
 
         public string SimpleValue { get; }
     }

@@ -19,7 +19,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         
         private static object Read(UnsafeReader reader)
         {
-            var ownerId = reader.ReadLong();
             var otherCount = reader.ReadInt32();
             var gameObjectsCount = reader.ReadInt32();
             var transformCount = reader.ReadInt32();
@@ -27,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             var componentsCount = reader.ReadInt32();
 
             
-            var result = new AssetDocumentHierarchyElement(ownerId, otherCount, gameObjectsCount, transformCount, scriptCount, componentsCount);
+            var result = new AssetDocumentHierarchyElement(otherCount, gameObjectsCount, transformCount, scriptCount, componentsCount);
 
             for (int i = 0; i < otherCount; i++)
             {
@@ -81,7 +80,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private static void Write(UnsafeWriter writer, AssetDocumentHierarchyElement value)
         {
-            writer.Write(value.OwnerId);
             writer.Write(value.myOtherElements.Count);
             writer.Write(value.myGameObjectHierarchies.Count);
             writer.Write(value.myTransformElements.Count);

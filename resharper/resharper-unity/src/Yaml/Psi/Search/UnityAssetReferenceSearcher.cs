@@ -16,17 +16,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
-        private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
+        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
         private readonly IDeclaredElementsSet myElements;
 
-        public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,  AssetUsagesElementContainer assetUsagesElementContainer,
+        public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,  AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
             UnityEventsElementContainer unityEventsElementContainer, AssetInspectorValuesContainer assetInspectorValuesContainer, MetaFileGuidCache metaFileGuidCache, IDeclaredElementsSet elements, bool findCandidates)
         {
             myDeferredCacheController = deferredCacheController;
             myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
-            myAssetUsagesElementContainer = assetUsagesElementContainer;
+            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
             myUnityEventsElementContainer = unityEventsElementContainer;
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myElements = elements;
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
                 if (element is ITypeElement typeElement)
                 {
-                    var usages = myAssetUsagesElementContainer.GetAssetUsagesFor(sourceFile, typeElement);
+                    var usages = myAssetScriptUsagesElementContainer.GetAssetUsagesFor(sourceFile, typeElement);
 
                     foreach (var assetUsage in usages)
                     {

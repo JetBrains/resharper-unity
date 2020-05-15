@@ -10,18 +10,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
     [PolymorphicMarshaller]
     public class AssetUsagesDataElement : IUnityAssetDataElement
     {
-        private readonly List<AssetUsage> myAssetUsages;
+        private readonly List<AssetScriptUsages> myAssetUsages;
         
         [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader)
         {
-            var id = reader.ReadLong();
             var count = reader.ReadInt32();
-            var result = new AssetUsagesDataElement(id, count);
+            var result = new AssetUsagesDataElement(count);
 
             for (int i = 0; i < count; i++)
-                result.myAssetUsages.Add(AssetUsage.ReadFrom(reader));
+                result.myAssetUsages.Add(AssetScriptUsages.ReadFrom(reader));
 
             return result;
         }
@@ -31,7 +30,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
         private static void Write(UnsafeWriter writer, AssetUsagesDataElement value)
         {
-            writer.Write(value.OwnerId);
             writer.Write(value.myAssetUsages.Count);
             foreach (var v in value.myAssetUsages)
             {
@@ -39,30 +37,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             }
         }
 
-        public AssetUsagesDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex, 10)
+        public AssetUsagesDataElement() : this(10)
         {
         }
 
-        private AssetUsagesDataElement(long id, int elementsCount)
+        private AssetUsagesDataElement(int elementsCount)
         {
-            OwnerId = id;
-            myAssetUsages = new List<AssetUsage>(elementsCount);
+            myAssetUsages = new List<AssetScriptUsages>(elementsCount);
         }
 
-        public long OwnerId { get; }
-        public string ContainerId => nameof(AssetUsagesElementContainer);
+        public string ContainerId => nameof(AssetScriptUsagesElementContainer);
         public void AddData(object data)
         {
             if (data == null)
                 return;
 
-            var usages = (LocalList<AssetUsage>) data;
+            var usages = (LocalList<AssetScriptUsages>) data;
             foreach (var usage in usages)
             {
                 myAssetUsages.Add(usage);
             }
         }
-        public IEnumerable<AssetUsage> EnumerateAssetUsages()
+        public IEnumerable<AssetScriptUsages> EnumerateAssetUsages()
         {
             foreach (var assetUsage in myAssetUsages)
             {

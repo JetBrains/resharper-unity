@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             
             if (findResult is UnityScriptsFindResults unityScriptsFindResults)
             {
-                var guid = unityScriptsFindResults.AssetUsage.ExternalDependency.ExternalAssetGuid;
+                var guid = unityScriptsFindResults.AssetScriptUsages.UsageTarget.ExternalAssetGuid;
                 return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer,
                     unityScriptsFindResults.AttachedElementLocation, guid); 
             }
@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             if (findResult is UnityMethodsFindResult unityMethodsFindResult)
             {
                 return new UnityMethodsOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer,
-                    unityMethodsFindResult.AttachedElementLocation, unityMethodsFindResult.AssetMethodData, unityMethodsFindResult.IsPrefabModification); 
+                    unityMethodsFindResult.AttachedElementLocation, unityMethodsFindResult.AssetMethodUsages, unityMethodsFindResult.IsPrefabModification); 
             }
             
             return null;

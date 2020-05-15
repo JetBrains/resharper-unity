@@ -7,15 +7,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public readonly struct TransformHierarchy : ITransformHierarchy
     {
         public LocalReference Location { get; }
-        public LocalReference Owner { get; }
-        public LocalReference Parent { get; }
+        public LocalReference OwningGameObject { get; }
+        public LocalReference ParentTransform { get; }
         private readonly int myRootIndex;
 
         public TransformHierarchy(LocalReference location, LocalReference owner, LocalReference parent, int rootIndex)
         {
             Location = location;
-            Owner = owner;
-            Parent = parent;
+            OwningGameObject = owner;
+            ParentTransform = parent;
             myRootIndex = rootIndex;
         }
 
@@ -30,8 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public static void Write(UnsafeWriter writer, TransformHierarchy transformHierarchy)
         {
             transformHierarchy.Location.WriteTo(writer);
-            transformHierarchy.Owner.WriteTo(writer);
-            transformHierarchy.Parent.WriteTo(writer);
+            transformHierarchy.OwningGameObject.WriteTo(writer);
+            transformHierarchy.ParentTransform.WriteTo(writer);
             writer.Write(transformHierarchy.myRootIndex);
         }
 

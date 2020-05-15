@@ -11,13 +11,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public readonly struct ScriptComponentHierarchy : IScriptComponentHierarchy
     {
         public LocalReference Location { get; }
-        public LocalReference Owner { get; }
+        public LocalReference OwningGameObject { get; }
         public ExternalReference ScriptReference { get; }
 
         public ScriptComponentHierarchy(LocalReference location, LocalReference owner, ExternalReference scriptReference)
         {
             Location = location;
-            Owner = owner;
+            OwningGameObject = owner;
             ScriptReference = scriptReference;
         }
 
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public static void Write(UnsafeWriter writer, ScriptComponentHierarchy scriptComponentHierarchy)
         {
             scriptComponentHierarchy.Location.WriteTo(writer);
-            scriptComponentHierarchy.Owner.WriteTo(writer);
+            scriptComponentHierarchy.OwningGameObject.WriteTo(writer);
             scriptComponentHierarchy.ScriptReference.WriteTo(writer);
         }
 

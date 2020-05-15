@@ -6,46 +6,47 @@ using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
-    public readonly struct AssetUsage
+    // TODO : Right now, we use it only for scripts, but we could calculate deps not only for scripts
+    public readonly struct AssetScriptUsages
     {
         // TODO, local reference deps
         public LocalReference Location { get; }
-        public ExternalReference ExternalDependency { get; }
+        public ExternalReference UsageTarget { get; }
 
-        public AssetUsage(LocalReference location, ExternalReference externalDependency)
+        public AssetScriptUsages(LocalReference location, ExternalReference usageTarget)
         {
             Location = location;
-            ExternalDependency = externalDependency;
+            UsageTarget = usageTarget;
         }
 
-        public bool Equals(AssetUsage other)
+        public bool Equals(AssetScriptUsages other)
         {
-            return Location.Equals(other.Location) && ExternalDependency.Equals(other.ExternalDependency);
+            return Location.Equals(other.Location) && UsageTarget.Equals(other.UsageTarget);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is AssetUsage other && Equals(other);
+            return obj is AssetScriptUsages other && Equals(other);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (Location.GetHashCode() * 397) ^ ExternalDependency.GetHashCode();
+                return (Location.GetHashCode() * 397) ^ UsageTarget.GetHashCode();
             }
         }
 
         public void WriteTo(UnsafeWriter writer)
         {
             Location.WriteTo(writer);
-            ExternalDependency.WriteTo(writer);
+            UsageTarget.WriteTo(writer);
         }
 
-        public static AssetUsage ReadFrom(UnsafeReader reader)
+        public static AssetScriptUsages ReadFrom(UnsafeReader reader)
         {
             var localReference = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
-            return new AssetUsage(localReference, HierarchyReferenceUtil.ReadExternalReferenceFrom(reader));
+            return new AssetScriptUsages(localReference, HierarchyReferenceUtil.ReadExternalReferenceFrom(reader));
         }
         
     }

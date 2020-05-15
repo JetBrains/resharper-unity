@@ -52,12 +52,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             myCacheEnabled = boundSettingsStoreLive.GetValueProperty(lifetime, (UnitySettings key) => key.IsPrefabCacheEnabled);
         }
 
-        public void Add(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
+        public void OnHierarchyCreated(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
         {
-            Remove(sourceFile, assetDocumentHierarchyElement);
+            // Invalidate cache for all assets which depends on that hierarchy
+            InvalidateCacheFor(sourceFile);
         }
 
-        public void Remove(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
+        public void OnHierarchyRemoved(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement)
+        {
+            InvalidateCacheFor(sourceFile);
+        }
+
+        public void InvalidateCacheFor(IPsiSourceFile sourceFile)
         {
             myShellLocks.AssertWriteAccessAllowed();
             var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
@@ -168,7 +174,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             foreach (var value in result.Values)
             {
                 var transform = value as ImportedTransformHierarchy;
-                var reference = transform?.Owner;
+                var reference = transform?.OwningGameObject;
                 if (reference == null)
                     continue;
 

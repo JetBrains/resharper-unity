@@ -17,8 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public bool IsPrefabModification { get; }
 
         public UnityInspectorValuesOccurrence(IPsiSourceFile sourceFile, InspectorVariableUsage inspectorVariableUsage,
-            IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference attachedElementLocation, bool isPrefabModification)
-            : base(sourceFile, declaredElement, attachedElementLocation)
+            IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference owningElementLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement, owningElementLocation)
         {
             InspectorVariableUsage = inspectorVariableUsage;
             IsPrefabModification = isPrefabModification;

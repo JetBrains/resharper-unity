@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
                         {
                             locks.ExecuteWithWriteLock(() =>
                             {
-                                deferredCacheController.Invalidate<UnityAssetCache>();
+                                deferredCacheController.Invalidate<UnityAssetsCache>();
                                 changeManager.ExecuteAfterChange(() =>
                                 {
                                     var changeBuilder = new PsiModuleChangeBuilder();

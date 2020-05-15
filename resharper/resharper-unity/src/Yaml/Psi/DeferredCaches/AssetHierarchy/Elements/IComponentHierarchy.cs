@@ -7,6 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         string Name { get; }
         
         // TODO : think about store only owner anchor, because file id is stored in Location
-        LocalReference Owner { get; }
+        LocalReference OwningGameObject { get; }
     }
 }
