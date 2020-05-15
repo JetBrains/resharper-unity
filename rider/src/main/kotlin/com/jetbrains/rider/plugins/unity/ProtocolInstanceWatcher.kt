@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.application
+import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.isUnityProject
@@ -10,30 +11,26 @@ import com.jetbrains.rider.model.RdDeltaBatch
 import com.jetbrains.rider.model.RdDeltaType
 import com.jetbrains.rider.model.fileSystemModel
 import com.jetbrains.rider.projectView.solution
-import java.nio.file.FileSystems
-import java.nio.file.Path
-import java.nio.file.Paths
+import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
-import java.nio.file.WatchService
+import kotlin.concurrent.thread
 
 
 class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(project) {
     init {
         if (project.isUnityProject()) {
             project.solution.isLoaded.whenTrue(componentLifetime) {
-                application.executeOnPooledThread {
+                thread(name = "ProtocolInstanceWatcher") {
                     val watchService: WatchService = FileSystems.getDefault().newWatchService()
                     val libraryPath: Path = Paths.get(project.basePath!!, "Library")
 
                     libraryPath.register(watchService, ENTRY_MODIFY)
-                    var poll: Boolean
-                    it.bracket(opening = {
-                        poll = true
 
+                    it.executeIfAlive {
                         val watchedFileName = "ProtocolInstance.json"
                         val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
-                        while (poll) {
-                            val key = watchService.take()
+                        var key: WatchKey
+                        while (watchService.take().also { key = it } != null && it.isAlive) {
                             for (event in key.pollEvents()) {
                                 if (event.context().toString() == watchedFileName) {
                                     application.invokeLater {
@@ -41,11 +38,9 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
                                     }
                                 }
                             }
-                            poll = key.reset()
+                            key.reset()
                         }
-                    }, terminationAction = {
-                        poll = false
-                    })
+                    }
                 }
             }
         }
