@@ -43,8 +43,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         // cached value for fast presentation
         private readonly OneToSetMap<MonoBehaviourField, IAssetValue> myUniqueValuesInstances = new OneToSetMap<MonoBehaviourField, IAssetValue>();
         
-        // estimated counter
-        private readonly OneToCompactCountingSet<int, Guid> myNameToGuids = new OneToCompactCountingSet<int, Guid>();
+        // For estimated counter (it's hard to track real counter due to chain resolve, prefab modifications points to another file, another file could point to another file and so on)
+        // Also, it is possible that field name are used in script components with different guids. If there is only `1 guid, we could resolve type element and check that field  belongs to that type element.
+        // but if there are a lot of guids, we could not resolve each type element due to performance reason, several guids could be accepted, because field could belong to abstract class
+        private readonly OneToCompactCountingSet<int, Guid> myNameHashToGuids = new OneToCompactCountingSet<int, Guid>();
         private readonly CountingSet<string> myNamesInPrefabModifications = new CountingSet<string>();
 
         // find usage scope
@@ -163,7 +165,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 myChangesInFiles.Remove(mbField, currentAssetSourceFile);
                 RemoveChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name.GetPlatformIndependentHashCode(), currentAssetSourceFile), variableUsage);
                 
-                myNameToGuids.Remove(variableUsage.Name.GetPlatformIndependentHashCode(), scriptReference.ExternalAssetGuid);
+                myNameHashToGuids.Remove(variableUsage.Name.GetPlatformIndependentHashCode(), scriptReference.ExternalAssetGuid);
             }
 
             foreach (var (reference, _) in element.ImportedInspectorValues.Modifications)
@@ -225,7 +227,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 myChangesInFiles.Add(mbField, currentAssetSourceFile);
                 AddChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name.GetPlatformIndependentHashCode(), currentAssetSourceFile), variableUsage);
 
-                myNameToGuids.Add(variableUsage.Name.GetPlatformIndependentHashCode(), scriptReference.ExternalAssetGuid);
+                myNameHashToGuids.Add(variableUsage.Name.GetPlatformIndependentHashCode(), scriptReference.ExternalAssetGuid);
             }
 
             foreach (var (reference, _) in element.ImportedInspectorValues.Modifications)
@@ -314,7 +316,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                     return true;
             }
             
-            return AssetUtils.HasPossibleDerivedTypesWithMember(ownerGuid, containingType, names, myNameToGuids);
+            return AssetUtils.HasPossibleDerivedTypesWithMember(ownerGuid, containingType, names, myNameHashToGuids);
         }
         
         
@@ -456,7 +458,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             }
         }
 
-        public IEnumerable<UnityInspectorFindResults> GetAssetUsagesFor(IPsiSourceFile sourceFile, IField element)
+        public IEnumerable<UnityInspectorFindResult> GetAssetUsagesFor(IPsiSourceFile sourceFile, IField element)
         {
             myShellLocks.AssertReadAccessAllowed();
 
@@ -478,7 +480,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 if (typeElement == null || !typeElement.IsDescendantOf(containingType))
                     continue;
                 
-                yield return new UnityInspectorFindResults(sourceFile, element, usage, usage.Location, isPrefabModification);
+                yield return new UnityInspectorFindResult(sourceFile, element, usage, usage.Location, isPrefabModification);
             }
         }
 

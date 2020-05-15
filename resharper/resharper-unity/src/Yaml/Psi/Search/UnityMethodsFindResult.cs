@@ -5,20 +5,20 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
-    public class UnityMethodsFindResult : UnityAssetFindResult
+    public class UnityEventHandlerFindResult : UnityAssetFindResult
     {
         public AssetMethodUsages AssetMethodUsages { get; }
         public bool IsPrefabModification { get; }
 
-        public UnityMethodsFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodUsages assetMethodUsages,
-            LocalReference attachedElementLocation, bool isPrefabModification)
-            : base(sourceFile, declaredElement, attachedElementLocation)
+        public UnityEventHandlerFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodUsages assetMethodUsages,
+            LocalReference owningElemetLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement, owningElemetLocation)
         {
             AssetMethodUsages = assetMethodUsages;
             IsPrefabModification = isPrefabModification;
         }
 
-        protected bool Equals(UnityMethodsFindResult other)
+        protected bool Equals(UnityEventHandlerFindResult other)
         {
             return base.Equals(other) && AssetMethodUsages.Equals(other.AssetMethodUsages);
         }
@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((UnityMethodsFindResult) obj);
+            return Equals((UnityEventHandlerFindResult) obj);
         }
 
         public override int GetHashCode()

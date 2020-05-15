@@ -6,9 +6,9 @@ using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
-    public class UnityEventFindResult : FindResultDeclaredElement
+    public class UnityEventSubscriptionFindResult : FindResultDeclaredElement
     {
-        public UnityEventFindResult([NotNull] IDeclaredElement declaredElement, IPsiSourceFile sourceFile, LocalReference attachedElementLocation, bool isPrefabModification) : base(declaredElement)
+        public UnityEventSubscriptionFindResult([NotNull] IDeclaredElement declaredElement, IPsiSourceFile sourceFile, LocalReference attachedElementLocation, bool isPrefabModification) : base(declaredElement)
         {
             SourceFile = sourceFile;
             AttachedElementLocation = attachedElementLocation;

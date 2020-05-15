@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
@@ -81,12 +80,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return result;
         }
 
-        private void DropPrefabModifications(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, UnityEventsDataElement element)
+        private void DropPrefabModifications(IPsiSourceFile sourceFile, UnityEventsDataElement element)
         {
-            foreach (var ((_, name), _) in element.ImportedUnityEventData.UnityEventToModifiedIndex)
+            foreach (var (unityEvent, _) in element.ImportedUnityEventData.UnityEventToModifiedIndex)
             {
-                myUnityEventsWithModifications.Remove(name);
-                myUnityEventNameToSourceFiles.Remove(name, sourceFile);
+                myUnityEventsWithModifications.Remove(unityEvent.EventName);
+                myUnityEventNameToSourceFiles.Remove(unityEvent.EventName, sourceFile);
             }
 
             foreach (var assetMethodNameInModification in element.ImportedUnityEventData.AssetMethodNameInModifications)
@@ -100,12 +99,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             myImportedUnityEventDatas.Remove(sourceFile);
         }
 
-        private void MergePrefabModifications(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, UnityEventsDataElement element)
+        private void MergePrefabModifications(IPsiSourceFile sourceFile, UnityEventsDataElement element)
         {
-            foreach (var ((_, name), _) in element.ImportedUnityEventData.UnityEventToModifiedIndex)
+            foreach (var (unityEvent, _) in element.ImportedUnityEventData.UnityEventToModifiedIndex)
             {
-                myUnityEventsWithModifications.Add(name);
-                myUnityEventNameToSourceFiles.Add(name, sourceFile);
+                myUnityEventsWithModifications.Add(unityEvent.EventName);
+                myUnityEventNameToSourceFiles.Add(unityEvent.EventName, sourceFile);
             }
 
             foreach (var assetMethodNameInModification in element.ImportedUnityEventData.AssetMethodNameInModifications)

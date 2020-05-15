@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             for (int i = 0; i < otherCount; i++)
             {
                 var hierarchyElement = ReadHieraerchyElement(reader);
-                result.myOtherElements.Add(hierarchyElement);
+                result.myOtherBoxedElements.Add(hierarchyElement);
             }
             
             for (int i = 0; i < gameObjectsCount; i++)
@@ -80,13 +80,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private static void Write(UnsafeWriter writer, AssetDocumentHierarchyElement value)
         {
-            writer.Write(value.myOtherElements.Count);
+            writer.Write(value.myOtherBoxedElements.Count);
             writer.Write(value.myGameObjectHierarchies.Count);
             writer.Write(value.myTransformElements.Count);
             writer.Write(value.myScriptComponentElements.Count);
             writer.Write(value.myComponentElements.Count);
 
-            foreach (var v in value.myOtherElements)
+            foreach (var v in value.myOtherBoxedElements)
             {
                 WriteHierarchyElement(writer, v);
             }

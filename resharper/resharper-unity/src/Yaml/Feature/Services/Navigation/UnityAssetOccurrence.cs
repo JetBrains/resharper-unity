@@ -18,16 +18,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
     public abstract class UnityAssetOccurrence : IOccurrence
     {
-        public IPsiSourceFile SourceFile { get; }
-        public LocalReference OwningElementLocation { get; }
-        public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
+        public readonly IPsiSourceFile SourceFile;
+        protected readonly LocalReference OwningElementLocation;
+        protected readonly IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer;
 
-        protected UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference owningElementLocation)
+        protected readonly bool IsPrefabModification;
+        
+
+        protected UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference owningElementLocation, bool isPrefabModification)
         {
             SourceFile = sourceFile;
             OwningElementLocation = owningElementLocation;
             PresentationOptions = OccurrencePresentationOptions.DefaultOptions;
             DeclaredElementPointer = declaredElement;
+            IsPrefabModification = isPrefabModification;
         }
 
         public virtual bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,

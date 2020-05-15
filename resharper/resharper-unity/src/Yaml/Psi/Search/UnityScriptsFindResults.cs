@@ -10,8 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         public AssetScriptUsages AssetScriptUsages { get; }
 
         public UnityScriptsFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetScriptUsages assetScriptUsages, 
-            LocalReference attachedElementLocation)
-            : base(sourceFile, declaredElement, attachedElementLocation)
+            LocalReference owningElemetLocation)
+            : base(sourceFile, declaredElement, owningElemetLocation)
         {
             AssetScriptUsages = assetScriptUsages;
         }
