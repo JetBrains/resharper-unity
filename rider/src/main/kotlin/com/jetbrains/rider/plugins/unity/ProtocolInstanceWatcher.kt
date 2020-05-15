@@ -23,10 +23,9 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
                 thread(name = "ProtocolInstanceWatcher") {
                     val watchService: WatchService = FileSystems.getDefault().newWatchService()
                     val libraryPath: Path = Paths.get(project.basePath!!, "Library")
-
                     libraryPath.register(watchService, ENTRY_MODIFY)
 
-                    componentLifetime.bracket(opening = {
+                    it.bracket(opening = {
                         val watchedFileName = "ProtocolInstance.json"
                         val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
                         var key: WatchKey
