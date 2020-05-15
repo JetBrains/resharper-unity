@@ -26,7 +26,7 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
 
                     libraryPath.register(watchService, ENTRY_MODIFY)
 
-                    it.executeIfAlive {
+                    componentLifetime.bracket(opening = {
                         val watchedFileName = "ProtocolInstance.json"
                         val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
                         var key: WatchKey
@@ -40,7 +40,9 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
                             }
                             key.reset()
                         }
-                    }
+                    }, terminationAction = {
+                        watchService.close()
+                    })
                 }
             }
         }
