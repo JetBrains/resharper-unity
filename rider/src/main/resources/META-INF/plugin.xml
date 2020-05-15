@@ -92,6 +92,9 @@
     <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerProjectModelViewUpdater"/>
 
     <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityLocalAttachProcessDebuggerProvider" />
+    <xdebugger.breakpointType implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType" />
+    <rider.breakpoint.customPanelProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointPanelProvider" />
+    <rider.debug.breakpoint.handler.factory implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointHandlerFactory" />
 
     <rider.android.project.validator implementation="com.jetbrains.rider.plugins.unity.android.UnityCustomAndroidProjectValidator"/>
     <rdclient.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
