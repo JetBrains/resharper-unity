@@ -13,7 +13,6 @@ import com.jetbrains.rider.projectView.solution
 import java.nio.file.FileSystems
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
 import java.nio.file.WatchService
 
