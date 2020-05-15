@@ -16,17 +16,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         public EventHandlerArgumentMode Mode { get; }
         public string Type { get; }
         public IHierarchyReference TargetScriptReference { get; }
-        public TextRange TextRange { get; }
+        public TextRange TextRangeOwnerPsiPersistentIndex { get; }
         
         public long TextRangeOwner { get; }
         
-        public AssetMethodUsages(string ownerName, string methodName, TextRange textRange, long textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
+        public AssetMethodUsages(string ownerName, string methodName, TextRange textRangeOwnerPsiPersistentIndex, long textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
         {
             Assertion.Assert(targetReference != null, "targetReference != null");
             Assertion.Assert(methodName != null, "methodName != null");
             OwnerName = ownerName;
             MethodName = methodName;
-            TextRange = textRange;
+            TextRangeOwnerPsiPersistentIndex = textRangeOwnerPsiPersistentIndex;
             TextRangeOwner = textRangeOwner;
             Mode = mode;
             Type = type;
@@ -37,8 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             writer.Write(OwnerName);
             writer.Write(MethodName);
-            writer.Write(TextRange.StartOffset);
-            writer.Write(TextRange.EndOffset);
+            writer.Write(TextRangeOwnerPsiPersistentIndex.StartOffset);
+            writer.Write(TextRangeOwnerPsiPersistentIndex.EndOffset);
             writer.Write(TextRangeOwner);
             writer.Write((int)Mode);
             writer.Write(Type);
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             return OwnerName == other.OwnerName &&
                    MethodName == other.MethodName && Mode == other.Mode && Type == other.Type &&
-                   Equals(TargetScriptReference, other.TargetScriptReference) && TextRange.Equals(other.TextRange) &&
+                   Equals(TargetScriptReference, other.TargetScriptReference) && TextRangeOwnerPsiPersistentIndex.Equals(other.TextRangeOwnerPsiPersistentIndex) &&
                    TextRangeOwner == other.TextRangeOwner;
         }
 
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 hashCode = (hashCode * 397) ^ (int) Mode;
                 hashCode = (hashCode * 397) ^ (Type != null ? Type.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ TargetScriptReference.GetHashCode();
-                hashCode = (hashCode * 397) ^ TextRange.GetHashCode();
+                hashCode = (hashCode * 397) ^ TextRangeOwnerPsiPersistentIndex.GetHashCode();
                 hashCode = (hashCode * 397) ^ TextRangeOwner.GetHashCode();
                 return hashCode;
             }
@@ -94,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 if (source == null)
                     return null;
                 name = source.MethodName;
-                textRange = source.TextRange;
+                textRange = source.TextRangeOwnerPsiPersistentIndex;
                 textRangeOwner = source.TextRangeOwner;
             }
             else
@@ -142,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             
             dictionary["m_Mode"] = new AssetSimpleValue(((int)Mode).ToString());
             dictionary["m_MethodName"] = new AssetSimpleValue(MethodName);
-            dictionary["m_MethodNameRange"] = new Int2Value(TextRange.StartOffset, TextRange.EndOffset);
+            dictionary["m_MethodNameRange"] = new Int2Value(TextRangeOwnerPsiPersistentIndex.StartOffset, TextRangeOwnerPsiPersistentIndex.EndOffset);
             dictionary["m_Target"] = new AssetReferenceValue(TargetScriptReference);
             return dictionary;
         }

@@ -15,14 +15,11 @@ using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
-    public class UnityEventOccurrence : UnityAssetOccurrence
+    public class UnityEventSubscriptionOccurrence : UnityAssetOccurrence
     {
-        public bool IsPrefabModification { get; }
-
-        public UnityEventOccurrence(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, LocalReference owningElementLocation, bool isPrefabModification)
-            : base(sourceFile, declaredElement.CreateElementPointer(), owningElementLocation)
+        public UnityEventSubscriptionOccurrence(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, LocalReference owningElementLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement.CreateElementPointer(), owningElementLocation, isPrefabModification)
         {
-            IsPrefabModification = isPrefabModification;
         }
 
         public override bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,

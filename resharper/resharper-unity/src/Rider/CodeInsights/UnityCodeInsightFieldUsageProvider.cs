@@ -39,13 +39,13 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
     [SolutionComponent]
     public class UnityCodeInsightFieldUsageProvider : AbstractUnityCodeInsightProvider
     {
-        private readonly UnityApi myUnityApi;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
@@ -58,12 +58,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
             new[] {new CodeLensRelativeOrderingLast()};
 
-        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker,
-            UnityApi unityApi, UnityHost host, BulbMenuComponent bulbMenu, DeferredCacheController deferredCacheController,
+        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, UnityHost host, BulbMenuComponent bulbMenu, DeferredCacheController deferredCacheController,
             AssetInspectorValuesContainer inspectorValuesContainer, UnityEventsElementContainer unityEventsElementContainer)
             : base(unitySolutionTracker, host, bulbMenu)
         {
-            myUnityApi = unityApi;
             myDeferredCacheController = deferredCacheController;
             myInspectorValuesContainer = inspectorValuesContainer;
             myUnityEventsElementContainer = unityEventsElementContainer;
@@ -217,7 +215,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                     }
                     else
                     {
-                        var word = changesCount == 1 ? "asset" : "assets";
+                        var word = NounUtil.ToPluralOrSingularQuick(changesCount, "asset", "assets");
                         displayName = $"Changed in {changesCount} {word}";
                     }
                 }

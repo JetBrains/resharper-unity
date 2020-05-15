@@ -8,16 +8,14 @@ using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
-    public class UnityMethodsOccurrence : UnityAssetOccurrence
+    public class UnityEventHandlerOccurrence : UnityAssetOccurrence
     {
-        public bool IsPrefabModification { get; }
         public readonly AssetMethodUsages MethodUsages;
 
-        public UnityMethodsOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement,
+        public UnityEventHandlerOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement,
             LocalReference owningElementLocation, AssetMethodUsages methodUsages, bool isPrefabModification)
-            : base(sourceFile, declaredElement, owningElementLocation)
+            : base(sourceFile, declaredElement, owningElementLocation, isPrefabModification)
         {
-            IsPrefabModification = isPrefabModification;
             MethodUsages = methodUsages;
         }
 

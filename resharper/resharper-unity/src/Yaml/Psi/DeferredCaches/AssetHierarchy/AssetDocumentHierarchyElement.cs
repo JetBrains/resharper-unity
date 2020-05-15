@@ -13,9 +13,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public partial class AssetDocumentHierarchyElement : IUnityAssetDataElement
     {
 
-        private readonly List<IHierarchyElement> myOtherElements;
+        // for avoiding boxing (use less memory) we are stroing popular elements in lists with specified type
+        private readonly List<IHierarchyElement> myOtherBoxedElements;
         
-        
+        // Prefab instances' modifications points to locations which are not existing. 
+        // To simplify our inner logic, we will create stripped hierarchy element for each component/gameobject reference (m_Target)
+        // in prefab modifications
         private readonly List<IHierarchyElement> myOtherFakeStrippedElements;
         
         // avoid boxing
@@ -38,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private AssetDocumentHierarchyElement(int otherCount, int gameObjectsCount, int transformCount, int scriptCount, int componentsCount)
         {
-            myOtherElements = new List<IHierarchyElement>(otherCount);
+            myOtherBoxedElements = new List<IHierarchyElement>(otherCount);
             myTransformElements = new List<TransformHierarchy>(transformCount);
             myComponentElements = new List<ComponentHierarchy>(componentsCount);
             myGameObjectHierarchies = new List<GameObjectHierarchy>(gameObjectsCount);
@@ -63,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             else if (data is ComponentHierarchy componentHierarchy)
                 myComponentElements.Add(componentHierarchy);
             else 
-                myOtherElements.Add(data as IHierarchyElement);
+                myOtherBoxedElements.Add(data as IHierarchyElement);
         }
 
         public IHierarchyElement GetHierarchyElement(Guid? ownerGuid, ulong anchor, PrefabImportCache prefabImportCache)
@@ -109,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 SearchForAnchor(myTransformElements, anchor) ??
                 SearchForAnchor(myScriptComponentElements, anchor) ??
                 SearchForAnchor(myComponentElements, anchor) ??
-                SearchForAnchor(myOtherElements, anchor) ??
+                SearchForAnchor(myOtherBoxedElements, anchor) ??
                 SearchForAnchor(myOtherFakeStrippedElements, anchor);
         }
 
@@ -155,8 +158,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
  
                 var offset = 0;
                 // concating arrays to one by index. see GetElementByInternalIndex too
-                PrepareElements(myOtherElements, offset);
-                offset += myOtherElements.Count;
+                PrepareElements(myOtherBoxedElements, offset);
+                offset += myOtherBoxedElements.Count;
                 
                 PrepareElements(myTransformElements, offset);
                 offset += myTransformElements.Count;
@@ -226,10 +229,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         private IHierarchyElement GetElementByInternalIndex(int index)
         {
-            if (index < myOtherElements.Count)
-                return myOtherElements[index];
+            if (index < myOtherBoxedElements.Count)
+                return myOtherBoxedElements[index];
 
-            index -= myOtherElements.Count;
+            index -= myOtherBoxedElements.Count;
             
             if (index < myTransformElements.Count)
                 return myTransformElements[index];
@@ -262,7 +265,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public IEnumerable<IHierarchyElement> Elements()
         {
-            foreach (var otherElement in myOtherElements)
+            foreach (var otherElement in myOtherBoxedElements)
                 yield return otherElement;
             
             foreach (var otherElement in myTransformElements)

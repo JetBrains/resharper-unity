@@ -213,7 +213,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 }
             }
 
-            DropPrefabModifications(currentAssetSourceFile, assetDocumentHierarchyElement, element);
+            DropPrefabModifications(currentAssetSourceFile, element);
 
             myPsiSourceFileToEventData.RemoveKey(currentAssetSourceFile);
         }
@@ -260,7 +260,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 }
             }
 
-            MergePrefabModifications(currentAssetSourceFile, assetDocumentHierarchyElement, unityAssetDataElementPointer, element);
+            MergePrefabModifications(currentAssetSourceFile, element);
 
         }
 
@@ -361,18 +361,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return guid;
         }
 
-        public IEnumerable<UnityMethodsFindResult> GetAssetUsagesFor(IPsiSourceFile psiSourceFile, IDeclaredElement declaredElement)
+        public IEnumerable<UnityEventHandlerFindResult> GetAssetUsagesFor(IPsiSourceFile psiSourceFile, IDeclaredElement declaredElement)
         {
             myShellLocks.AssertReadAccessAllowed();
             
-            var result = new List<UnityMethodsFindResult>();
+            var result = new List<UnityEventHandlerFindResult>();
             foreach (var (owningScriptLocation, methodData, isPrefab) in GetAssetMethodDataFor(psiSourceFile))
             {
                 var symbolTable = GetReferenceSymbolTable(psiSourceFile.GetSolution(), psiSourceFile.GetPsiModule(), methodData, GetScriptGuid(methodData));
                 var resolveResult = symbolTable.GetResolveResult(methodData.MethodName);
                 if (resolveResult.ResolveErrorType == ResolveErrorType.OK && Equals(resolveResult.DeclaredElement, declaredElement))
                 {
-                    result.Add(new UnityMethodsFindResult(psiSourceFile, declaredElement, methodData, owningScriptLocation, isPrefab));
+                    result.Add(new UnityEventHandlerFindResult(psiSourceFile, declaredElement, methodData, owningScriptLocation, isPrefab));
                 }
             }
             
@@ -408,7 +408,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return result;
         }
         
-        public IEnumerable<UnityEventFindResult> GetMethodsForUnityEvent(IPsiSourceFile psiSourceFile, IField field)
+        public IEnumerable<UnityEventSubscriptionFindResult> GetMethodsForUnityEvent(IPsiSourceFile psiSourceFile, IField field)
         {
             myShellLocks.AssertReadAccessAllowed();
 
@@ -435,7 +435,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 var symbolTable = GetReferenceSymbolTable(psiSourceFile.GetSolution(), psiSourceFile.GetPsiModule(), method, GetScriptGuid(method));
                 var resolveResult = symbolTable.GetResolveResult(method.MethodName);
                 if (resolveResult.ResolveErrorType == ResolveErrorType.OK)
-                    yield return new UnityEventFindResult(resolveResult.DeclaredElement, psiSourceFile, owningScriptLocation, isPrefab);
+                    yield return new UnityEventSubscriptionFindResult(resolveResult.DeclaredElement, psiSourceFile, owningScriptLocation, isPrefab);
             }
         }
 

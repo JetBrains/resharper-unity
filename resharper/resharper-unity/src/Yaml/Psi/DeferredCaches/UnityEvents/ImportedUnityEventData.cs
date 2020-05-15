@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
     public class ImportedUnityEventData
     {
-        public readonly OneToSetMap<(LocalReference location, string eventName), int> UnityEventToModifiedIndex = new OneToSetMap<(LocalReference, string), int>();
+        public readonly OneToSetMap<(LocalReference Location, string EventName), int> UnityEventToModifiedIndex = new OneToSetMap<(LocalReference, string), int>();
         public readonly HashSet<string> AssetMethodNameInModifications = new HashSet<string>();
         public bool HasEventModificationWithoutMethodName { get; set; }
 
@@ -20,8 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             writer.Write(UnityEventToModifiedIndex.Count);
             foreach (var (key, values) in UnityEventToModifiedIndex)
             {
-                key.location.WriteTo(writer);
-                writer.Write(key.eventName);
+                key.Location.WriteTo(writer);
+                writer.Write(key.EventName);
                 writer.Write(values.Count);
                 foreach (var v in values)
                 {

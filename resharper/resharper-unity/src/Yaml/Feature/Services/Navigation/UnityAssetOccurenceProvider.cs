@@ -11,9 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public IOccurrence MakeOccurrence(FindResult findResult)
         {
 
-            if (findResult is UnityEventFindResult unityEventFindResult)
+            if (findResult is UnityEventSubscriptionFindResult unityEventFindResult)
             {
-                return new UnityEventOccurrence(unityEventFindResult.SourceFile, unityEventFindResult.DeclaredElement,
+                return new UnityEventSubscriptionOccurrence(unityEventFindResult.SourceFile, unityEventFindResult.DeclaredElement,
                     unityEventFindResult.AttachedElementLocation, unityEventFindResult.IsPrefabModification);
             }
             
@@ -21,19 +21,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             {
                 var guid = unityScriptsFindResults.AssetScriptUsages.UsageTarget.ExternalAssetGuid;
                 return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer,
-                    unityScriptsFindResults.AttachedElementLocation, guid); 
+                    unityScriptsFindResults.OwningElemetLocation, guid); 
             }
             
-            if (findResult is UnityInspectorFindResults unityInspectorFindResults)
+            if (findResult is UnityInspectorFindResult unityInspectorFindResults)
             {
                 return new UnityInspectorValuesOccurrence(unityInspectorFindResults.SourceFile, unityInspectorFindResults.InspectorVariableUsage,
-                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.AttachedElementLocation, unityInspectorFindResults.IsPrefabModification); 
+                    unityInspectorFindResults.DeclaredElementPointer, unityInspectorFindResults.OwningElemetLocation, unityInspectorFindResults.IsPrefabModification); 
             }
             
-            if (findResult is UnityMethodsFindResult unityMethodsFindResult)
+            if (findResult is UnityEventHandlerFindResult unityMethodsFindResult)
             {
-                return new UnityMethodsOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer,
-                    unityMethodsFindResult.AttachedElementLocation, unityMethodsFindResult.AssetMethodUsages, unityMethodsFindResult.IsPrefabModification); 
+                return new UnityEventHandlerOccurrence(unityMethodsFindResult.SourceFile, unityMethodsFindResult.DeclaredElementPointer,
+                    unityMethodsFindResult.OwningElemetLocation, unityMethodsFindResult.AssetMethodUsages, unityMethodsFindResult.IsPrefabModification); 
             }
             
             return null;

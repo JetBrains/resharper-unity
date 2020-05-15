@@ -14,14 +14,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
     public class UnityInspectorValuesOccurrence: UnityAssetOccurrence
     {
         public InspectorVariableUsage InspectorVariableUsage { get; }
-        public bool IsPrefabModification { get; }
 
         public UnityInspectorValuesOccurrence(IPsiSourceFile sourceFile, InspectorVariableUsage inspectorVariableUsage,
             IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference owningElementLocation, bool isPrefabModification)
-            : base(sourceFile, declaredElement, owningElementLocation)
+            : base(sourceFile, declaredElement, owningElementLocation, isPrefabModification)
         {
             InspectorVariableUsage = inspectorVariableUsage;
-            IsPrefabModification = isPrefabModification;
         }
 
         public override RichText GetDisplayText()
