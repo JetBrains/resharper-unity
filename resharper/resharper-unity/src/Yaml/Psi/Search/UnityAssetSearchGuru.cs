@@ -12,14 +12,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     [SearchGuru(SearchGuruPerformanceEnum.FastFilterOutByIndex)]
     public class UnityYamlSearchGuru : ISearchGuru
     {
-        private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
+        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
 
-        public UnityYamlSearchGuru(UnityApi unityApi, AssetUsagesElementContainer assetUsagesElementContainer,
+        public UnityYamlSearchGuru(UnityApi unityApi, AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
             UnityEventsElementContainer unityEventsElementContainer, AssetInspectorValuesContainer container)
         {
-            myAssetUsagesElementContainer = assetUsagesElementContainer;
+            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
             myUnityEventsElementContainer = unityEventsElementContainer;
             myInspectorValuesContainer = container;
         }
@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             switch (element)
             {
                 case IClass _class:
-                    foreach (var sourceFile in myAssetUsagesElementContainer.GetPossibleFilesWithUsage(_class))
+                    foreach (var sourceFile in myAssetScriptUsagesElementContainer.GetPossibleFilesWithUsage(_class))
                         set.Add(sourceFile);
                     break;
                 case IProperty _:

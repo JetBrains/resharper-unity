@@ -19,8 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
     {
         public bool IsPrefabModification { get; }
 
-        public UnityEventOccurrence(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, LocalReference attachedElementLocation, bool isPrefabModification)
-            : base(sourceFile, declaredElement.CreateElementPointer(), attachedElementLocation)
+        public UnityEventOccurrence(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, LocalReference owningElementLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement.CreateElementPointer(), owningElementLocation)
         {
             IsPrefabModification = isPrefabModification;
         }

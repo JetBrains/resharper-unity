@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var finder = mySolution.GetPsiServices().AsyncFinder;
             var consumer = new UnityUsagesFinderConsumer(myAssetHierarchyProcessor, myPersistentIndexManager, mySolutionDirectoryPath);
 
-            var sourceFile = myPersistentIndexManager[location.OwnerId];
+            var sourceFile = myPersistentIndexManager[location.OwningPsiPersistentIndex];
             if (sourceFile == null)
                 return;
             
@@ -153,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public FindExecution Merge(UnityAssetFindResult data)
             {
-                var sourceFile = myPersistentIndexManager[data.AttachedElementLocation.OwnerId];
+                var sourceFile = myPersistentIndexManager[data.AttachedElementLocation.OwningPsiPersistentIndex];
                 if (sourceFile == null)
                     return myFindExecution;
                 

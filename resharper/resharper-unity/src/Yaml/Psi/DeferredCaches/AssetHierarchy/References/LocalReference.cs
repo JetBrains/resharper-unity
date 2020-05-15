@@ -7,20 +7,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public readonly struct LocalReference : IHierarchyReference
     {
-        public LocalReference(long ownerId, ulong localDocumentAnchor)
+        public LocalReference(long owningPsiPersistentIndex, ulong localDocumentAnchor)
         {
-            OwnerId = ownerId;
+            OwningPsiPersistentIndex = owningPsiPersistentIndex;
             LocalDocumentAnchor = localDocumentAnchor;
         }
 
         public ulong LocalDocumentAnchor { get; }
         
-        public long OwnerId { get;}
+        public long OwningPsiPersistentIndex { get;}
         public static LocalReference Null { get; set; } = new LocalReference(0, 0);
 
         public bool Equals(LocalReference other)
         {
-            return LocalDocumentAnchor == other.LocalDocumentAnchor && OwnerId == other.OwnerId;
+            return LocalDocumentAnchor == other.LocalDocumentAnchor && OwningPsiPersistentIndex == other.OwningPsiPersistentIndex;
         }
 
         public override bool Equals(object obj)
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             unchecked
             {
-                return (LocalDocumentAnchor.GetHashCode() * 397) ^ OwnerId.GetHashCode();
+                return (LocalDocumentAnchor.GetHashCode() * 397) ^ OwningPsiPersistentIndex.GetHashCode();
             }
         }
     }

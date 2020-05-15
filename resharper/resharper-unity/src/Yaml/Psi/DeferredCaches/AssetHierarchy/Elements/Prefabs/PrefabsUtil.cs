@@ -4,12 +4,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public static class PrefabsUtil
     {
-        public static LocalReference GetImportedReference(this LocalReference localReference, IPrefabInstanceHierarchy prefabInstanceHierarchy) =>
-            localReference.LocalDocumentAnchor == 0
-                ? localReference
-                : new LocalReference(prefabInstanceHierarchy.Location.OwnerId,
-                    Import(prefabInstanceHierarchy.Location.LocalDocumentAnchor, localReference.LocalDocumentAnchor));
+        public static LocalReference GetImportedReference(this LocalReference localReference, IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        {
+            if (localReference.LocalDocumentAnchor == 0)
+                return localReference;
+            return  new LocalReference(prefabInstanceHierarchy.Location.OwningPsiPersistentIndex,
+                    GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, localReference.LocalDocumentAnchor));
+        }
 
-        public static ulong Import(ulong prefabInstance, ulong id) => (prefabInstance ^ id) & 0x7fffffffffffffff;
+        // formula for calculating id for component/gameobject after importing to prefab/scene
+        public static ulong GetImportedDocumentAnchor(ulong prefabInstance, ulong id) => (prefabInstance ^ id) & 0x7fffffffffffffff;
     }
 }

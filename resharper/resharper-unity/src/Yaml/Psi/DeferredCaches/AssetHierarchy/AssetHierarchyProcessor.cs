@@ -33,6 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             Assertion.Assert(!(hierarchyElement is IPrefabInstanceHierarchy), "Process should not be started from prefab instance, use corresponding GO");
 
             var owner = myAssetDocumentHierarchyElementContainer.GetAssetHierarchyFor(hierarchyElement.Location, out _);
+            if (owner == null)
+                return;
             
             ProcessHierarchy(owner, hierarchyElement, consumer, forcePrefabImport, new HashSet<ulong>());
         }
@@ -70,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             }
             else if (element is IComponentHierarchy componentHierarchy)
             {
-                var gameObjectReference = componentHierarchy.Owner;
+                var gameObjectReference = componentHierarchy.OwningGameObject;
                 var gameObject = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(gameObjectReference, prefabImport) as IGameObjectHierarchy;
 
                 ProcessGameObject(owner, gameObject, consumer, prefabImport, visited);
@@ -90,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (!consumer.AddGameObject(owner, gameObject))
                 return;
                 
-            var parentTransform = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(transform.Parent, prefabImport) as ITransformHierarchy;
+            var parentTransform = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(transform.ParentTransform, prefabImport) as ITransformHierarchy;
             if (parentTransform == null)
                 return;
 

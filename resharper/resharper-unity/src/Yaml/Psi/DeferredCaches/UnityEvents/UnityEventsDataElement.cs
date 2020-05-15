@@ -18,13 +18,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
         private static object Read(UnsafeReader reader)
         {
-            var id = reader.ReadLong();
             var count = reader.ReadInt32();
             var methods = new List<UnityEventData>(count);
             for (int i = 0; i < count; i++)
                 methods.Add(UnityEventData.ReadFrom(reader));
             
-            var result =  new UnityEventsDataElement(id, methods, ImportedUnityEventData.ReadFrom(reader));
+            var result =  new UnityEventsDataElement(methods, ImportedUnityEventData.ReadFrom(reader));
             return result;
         }
 
@@ -33,7 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
         private static void Write(UnsafeWriter writer, UnityEventsDataElement value)
         {
-            writer.Write(value.OwnerId);
             writer.Write(value.UnityEvents.Count);
             foreach (var v in value.UnityEvents)
             {
@@ -44,19 +42,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
         }
 
-        public UnityEventsDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex, new List<UnityEventData>(), new ImportedUnityEventData())
+        public UnityEventsDataElement() : this(new List<UnityEventData>(), new ImportedUnityEventData())
         {
         }
 
-        private UnityEventsDataElement(long index, List<UnityEventData> unityEventData,
+        private UnityEventsDataElement(List<UnityEventData> unityEventData,
             ImportedUnityEventData importedUnityEventData)
         {
-            OwnerId = index;
             UnityEvents = unityEventData;
             ImportedUnityEventData = importedUnityEventData;
         }
         
-        public long OwnerId { get; }
         public string ContainerId => nameof(UnityEventsElementContainer);
         
         public void AddData(object result)

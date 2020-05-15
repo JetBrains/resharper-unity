@@ -15,11 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetInspectorValuesDataElement);
 
-        public long OwnerId { get; }
-
         private static object Read(UnsafeReader reader)
         {
-            var ownerId = reader.ReadLong();
             var count = reader.ReadInt32();
             var list = new List<InspectorVariableUsage>(count);
 
@@ -29,13 +26,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             }
 
             var importedInspectorValues = ImportedInspectorValues.ReadFrom(reader);
-            var result = new AssetInspectorValuesDataElement(ownerId, list, importedInspectorValues);
+            var result = new AssetInspectorValuesDataElement(list, importedInspectorValues);
             return result;
         }
 
         private static void Write(UnsafeWriter writer, AssetInspectorValuesDataElement value)
         {
-            writer.Write(value.OwnerId);
             writer.Write(value.myVariableUsages.Count);
             foreach (var v in value.myVariableUsages)
             {
@@ -52,14 +48,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         public string ContainerId => nameof(AssetInspectorValuesContainer);
 
-        public AssetInspectorValuesDataElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex, new List<InspectorVariableUsage>(),  new ImportedInspectorValues())
+        public AssetInspectorValuesDataElement() : this(new List<InspectorVariableUsage>(),  new ImportedInspectorValues())
         {
         }
 
-        private AssetInspectorValuesDataElement(long ownerId, List<InspectorVariableUsage> inspectorValues,
+        private AssetInspectorValuesDataElement(List<InspectorVariableUsage> inspectorValues,
             ImportedInspectorValues importedInspectorValues)
         {
-            OwnerId = ownerId;
             ImportedInspectorValues = importedInspectorValues;
             myVariableUsages = inspectorValues;
         }

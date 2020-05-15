@@ -32,13 +32,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public AssetDocumentHierarchyElementContainer AssetDocumentHierarchyElementContainer { get; internal set; }
         
-        public AssetDocumentHierarchyElement(IPsiSourceFile sourceFile) : this(sourceFile.PsiStorage.PersistentIndex, 0, 0, 0, 0, 0)
+        public AssetDocumentHierarchyElement() : this(0, 0, 0, 0, 0)
         {
         }
 
-        private AssetDocumentHierarchyElement(long ownerId, int otherCount, int gameObjectsCount, int transformCount, int scriptCount, int componentsCount)
+        private AssetDocumentHierarchyElement(int otherCount, int gameObjectsCount, int transformCount, int scriptCount, int componentsCount)
         {
-            OwnerId = ownerId;
             myOtherElements = new List<IHierarchyElement>(otherCount);
             myTransformElements = new List<TransformHierarchy>(transformCount);
             myComponentElements = new List<ComponentHierarchy>(componentsCount);
@@ -48,7 +47,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myOtherFakeStrippedElements = new List<IHierarchyElement>();
         }
 
-        public long OwnerId { get; }
         public string ContainerId => nameof(AssetDocumentHierarchyElementContainer);
         public void AddData(object data)
         {
@@ -89,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             {
                 var prefabInstance = strippedHierarchyElement.PrefabInstance;
                 var correspondingObject = strippedHierarchyElement.CorrespondingSourceObject;
-                anchor = PrefabsUtil.Import(prefabInstance.LocalDocumentAnchor, correspondingObject.LocalDocumentAnchor);
+                anchor = PrefabsUtil.GetImportedDocumentAnchor(prefabInstance.LocalDocumentAnchor, correspondingObject.LocalDocumentAnchor);
             }
 
             if (prefabImportCache != null && ownerGuid != null)
@@ -157,19 +155,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
  
                 var offset = 0;
                 // concating arrays to one by index. see GetElementByInternalIndex too
-                FillIndices(myOtherElements, offset);
+                PrepareElements(myOtherElements, offset);
                 offset += myOtherElements.Count;
                 
-                FillIndices(myTransformElements, offset);
+                PrepareElements(myTransformElements, offset);
                 offset += myTransformElements.Count;
 
-                FillIndices(myGameObjectHierarchies, offset);
+                PrepareElements(myGameObjectHierarchies, offset);
                 offset += myGameObjectHierarchies.Count;
 
-                FillIndices(myComponentElements, offset);
+                PrepareElements(myComponentElements, offset);
                 offset += myComponentElements.Count;
                 
-                FillIndices(myScriptComponentElements, offset);
+                PrepareElements(myScriptComponentElements, offset);
                 offset += myScriptComponentElements.Count;
 
                 foreach (var prefabInstanceHierarchy in GetPrefabInstanceHierarchies())
@@ -185,7 +183,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
                     foreach (var correspondingSourceObject in correspondingSourceObjects)
                     {
-                        var fakeAnchor = PrefabsUtil.Import(prefabInstanceHierarchy.Location.LocalDocumentAnchor, correspondingSourceObject.LocalDocumentAnchor);
+                        var fakeAnchor = PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, correspondingSourceObject.LocalDocumentAnchor);
                         myOtherFakeStrippedElements.Add(new StrippedHierarchyElement(
                             new LocalReference(sourceFile.PsiStorage.PersistentIndex, fakeAnchor),
                             prefabInstanceHierarchy.Location, correspondingSourceObject));
@@ -195,7 +193,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
 
-        private void FillIndices<T>(List<T> list, int curOffset) where  T : IHierarchyElement
+        private void PrepareElements<T>(List<T> list, int curOffset) where  T : IHierarchyElement
         {
             list.Sort((a, b) => a.Location.LocalDocumentAnchor.CompareTo(b.Location.LocalDocumentAnchor));
             
@@ -204,7 +202,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 var element = list[i];
                 if (element is ITransformHierarchy transformHierarchy)
                 {
-                    var reference = transformHierarchy.Owner;
+                    var reference = transformHierarchy.OwningGameObject;
                     myGameObjectLocationToTransform[reference.LocalDocumentAnchor] = curOffset + i;
                 }
 

@@ -8,15 +8,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
     public class UnityEventData
     {
         public string Name { get; }
-        public LocalReference Location { get; }
+        public LocalReference OwningScriptLocation { get; }
         public ExternalReference ScriptReference { get; }
-        public IReadOnlyList<AssetMethodData> Calls { get; }
+        public IReadOnlyList<AssetMethodUsages> Calls { get; }
 
-        public UnityEventData(string name, LocalReference location, ExternalReference scriptReference,
-            IEnumerable<AssetMethodData> calls)
+        public UnityEventData(string name, LocalReference owningScriptLocation, ExternalReference scriptReference,
+            IEnumerable<AssetMethodUsages> calls)
         {
             Name = name;
-            Location = location;
+            OwningScriptLocation = owningScriptLocation;
             ScriptReference = scriptReference;
             Calls = calls.ToList();
         }
@@ -27,10 +27,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             var location = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
             var scriptReference = HierarchyReferenceUtil.ReadExternalReferenceFrom(reader);
             var count = reader.ReadInt();
-            var calls = new List<AssetMethodData>();
+            var calls = new List<AssetMethodUsages>();
             for (int i = 0; i < count; i++)
             {
-                calls.Add(AssetMethodData.ReadFrom(reader));
+                calls.Add(AssetMethodUsages.ReadFrom(reader));
             }
             
             return new UnityEventData(name, location, scriptReference, calls);
@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         public void WriteTo(UnsafeWriter writer)
         {
             writer.Write(Name);
-            Location.WriteTo(writer);
+            OwningScriptLocation.WriteTo(writer);
             ScriptReference.WriteTo(writer);
             writer.Write(Calls.Count);
             foreach (var call in Calls)

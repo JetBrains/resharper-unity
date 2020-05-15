@@ -5,7 +5,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public interface ITransformHierarchy : IComponentHierarchy
     {
         // TODO : think about store only parent anchor, because file id is stored in Location
-        LocalReference Parent { get; }
+        LocalReference ParentTransform { get; }
         int RootIndex { get; }
     }
 }

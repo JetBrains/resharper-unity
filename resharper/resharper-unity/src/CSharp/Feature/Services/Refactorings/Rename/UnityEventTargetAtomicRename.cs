@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             {
                 myElementsToRename = GetAssetOccurrence(de, subProgress)
                     .Select(t => 
-                        new UnityMethodsOccurrence(t.SourceFile, de.CreateElementPointer(), t.AttachedElementLocation, t.AssetMethodData, t.IsPrefabModification)).ToList();
+                        new UnityMethodsOccurrence(t.SourceFile, de.CreateElementPointer(), t.AttachedElementLocation, t.AssetMethodUsages, t.IsPrefabModification)).ToList();
             }
             
             return new UnityEventTargetRefactoringPage(
@@ -89,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             var persistentIndexManager = mySolution.GetComponent<IPersistentIndexManager>();
             foreach (var textOccurrence in myElementsToRename)
             {
-                var sourceFile = persistentIndexManager[textOccurrence.MethodData.TextRangeOwner];
+                var sourceFile = persistentIndexManager[textOccurrence.MethodUsages.TextRangeOwner];
                 if (sourceFile == null)
                     continue;
                 workflow.DataModel.AddExtraTextOccurrence(new AssetTextOccurrence(textOccurrence, sourceFile, OldName, NewName, myIsProperty));
@@ -110,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             public AssetTextOccurrence(UnityMethodsOccurrence assetOccurrence, IPsiSourceFile sourceFile,
                 string oldName, string newName, bool isProperty)
             {
-                var curRange = assetOccurrence.MethodData.TextRange;
+                var curRange = assetOccurrence.MethodUsages.TextRange;
                 
                 var pointer = sourceFile.Document.ToPointer();
                 myRangeMarker =  new RangeMarker(pointer, isProperty ? new TextRange(curRange.StartOffset + 4, curRange.EndOffset) : curRange);

@@ -7,18 +7,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
     public class UnityScriptsFindResults : UnityAssetFindResult
     {
-        public AssetUsage AssetUsage { get; }
+        public AssetScriptUsages AssetScriptUsages { get; }
 
-        public UnityScriptsFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetUsage assetUsage, 
+        public UnityScriptsFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetScriptUsages assetScriptUsages, 
             LocalReference attachedElementLocation)
             : base(sourceFile, declaredElement, attachedElementLocation)
         {
-            AssetUsage = assetUsage;
+            AssetScriptUsages = assetScriptUsages;
         }
 
         protected bool Equals(UnityScriptsFindResults other)
         {
-            return base.Equals(other) && AssetUsage.Equals(other.AssetUsage);
+            return base.Equals(other) && AssetScriptUsages.Equals(other.AssetScriptUsages);
         }
 
         public override bool Equals(object obj)
@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ AssetUsage.GetHashCode();
+                return (base.GetHashCode() * 397) ^ AssetScriptUsages.GetHashCode();
             }
         }
     }

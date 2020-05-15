@@ -9,9 +9,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
-    public class AssetMethodData
+    public class AssetMethodUsages
     {
-        public LocalReference OwnerLocation { get; }
         public string OwnerName { get; }
         public string MethodName { get; }
         public EventHandlerArgumentMode Mode { get; }
@@ -21,11 +20,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         
         public long TextRangeOwner { get; }
         
-        public AssetMethodData(LocalReference ownerLocation, string ownerName, string methodName, TextRange textRange, long textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
+        public AssetMethodUsages(string ownerName, string methodName, TextRange textRange, long textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
         {
             Assertion.Assert(targetReference != null, "targetReference != null");
             Assertion.Assert(methodName != null, "methodName != null");
-            OwnerLocation = ownerLocation;
             OwnerName = ownerName;
             MethodName = methodName;
             TextRange = textRange;
@@ -37,7 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         
         public void WriteTo(UnsafeWriter writer)
         {
-            OwnerLocation.WriteTo(writer);
             writer.Write(OwnerName);
             writer.Write(MethodName);
             writer.Write(TextRange.StartOffset);
@@ -48,16 +45,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             TargetScriptReference.WriteTo(writer);
         }
         
-        public static AssetMethodData ReadFrom(UnsafeReader reader)
+        public static AssetMethodUsages ReadFrom(UnsafeReader reader)
         {
-            return new AssetMethodData(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader), reader.ReadString(),reader.ReadString(),
+            return new AssetMethodUsages(reader.ReadString(),reader.ReadString(),
                 new TextRange(reader.ReadInt32(), reader.ReadInt32()), reader.ReadLong(),
                 (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), HierarchyReferenceUtil.ReadReferenceFrom(reader));
         }
 
-        protected bool Equals(AssetMethodData other)
+        protected bool Equals(AssetMethodUsages other)
         {
-            return OwnerLocation.Equals(other.OwnerLocation) && OwnerName == other.OwnerName &&
+            return OwnerName == other.OwnerName &&
                    MethodName == other.MethodName && Mode == other.Mode && Type == other.Type &&
                    Equals(TargetScriptReference, other.TargetScriptReference) && TextRange.Equals(other.TextRange) &&
                    TextRangeOwner == other.TextRangeOwner;
@@ -68,15 +65,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((AssetMethodData) obj);
+            return Equals((AssetMethodUsages) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = OwnerLocation.GetHashCode();
-                hashCode = (hashCode * 397) ^ OwnerName.GetHashCode();
+                var hashCode = OwnerName.GetHashCode();
                 hashCode = (hashCode * 397) ^ MethodName.GetHashCode();
                 hashCode = (hashCode * 397) ^ (int) Mode;
                 hashCode = (hashCode * 397) ^ (Type != null ? Type.GetHashCode() : 0);
@@ -88,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         }
         
         [CanBeNull]
-        public static AssetMethodData TryCreateAssetMethodFromModifications(LocalReference location, string unityEventName, Dictionary<string, IAssetValue> modifications, AssetMethodData source = null)
+        public static AssetMethodUsages TryCreateAssetMethodFromModifications(LocalReference location, string unityEventName, Dictionary<string, IAssetValue> modifications, AssetMethodUsages source = null)
         {
             string name;
             TextRange textRange;
@@ -107,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 
                 var range = (modifications["m_MethodNameRange"] as Int2Value).NotNull("range != null");
                 textRange = new TextRange(range.X, range.Y);
-                textRangeOwner = location.OwnerId;
+                textRangeOwner = location.OwningPsiPersistentIndex;
             }
 
             EventHandlerArgumentMode mode;
@@ -137,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 target = (referenceValue as AssetReferenceValue).NotNull("referenceValue as AssetReferenceValue != null").Reference;            
             }
 
-            return new AssetMethodData(location, unityEventName, name, textRange, textRangeOwner, mode, null, target);
+            return new AssetMethodUsages(unityEventName, name, textRange, textRangeOwner, mode, null, target);
         }
 
         public Dictionary<string, IAssetValue> ToDictionary()

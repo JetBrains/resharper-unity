@@ -31,12 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             writer.WritePolymorphic(value.Value);
         }
 
-        public InspectorVariableUsage(LocalReference locationIndex, ExternalReference scriptReferenceIndex, string name,
+        public InspectorVariableUsage(LocalReference location, ExternalReference scriptReference, string name,
             IAssetValue assetValue)
         {
             Assertion.Assert(name != null, "name != null");
-            Location = locationIndex;
-            ScriptReference = scriptReferenceIndex;
+            Location = location;
+            ScriptReference = scriptReference;
             Name = string.Intern(name);
             Value = assetValue;
         }

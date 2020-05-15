@@ -9,6 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     {
         public readonly Dictionary<string, IUnityAssetDataElement> UnityAssetDataElements = new Dictionary<string, IUnityAssetDataElement>();
 
+        // for deserialization    
         private UnityAssetData()
         {
             

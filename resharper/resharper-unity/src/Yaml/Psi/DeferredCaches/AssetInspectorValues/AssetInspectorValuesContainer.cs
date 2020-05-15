@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
-            return new AssetInspectorValuesDataElement(sourceFile);
+            return new AssetInspectorValuesDataElement();
         }
 
         public object Build(SeldomInterruptChecker seldomInterruptChecker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
@@ -109,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
                     foreach (var (key, value) in dictionary)
                     {
-                        if  (key.Equals("m_Script") || key.Equals("m_GameObject"))
+                        if  (key.Equals(UnityYamlConstants.ScriptProperty) || key.Equals(UnityYamlConstants.GameObjectProperty))
                             continue;
 
                         result.Add(new InspectorVariableUsage(location, script, key, value));
@@ -136,7 +136,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                     if (modification.PropertyPath.Contains("."))
                         continue;
                     
-                    var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, PrefabsUtil.Import(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
+                    var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                     result.Modifications[new ImportedValueReference(location, modification.PropertyPath)] = (modification.Value, new AssetReferenceValue(modification.ObjectReference));
                 }
             }
@@ -144,7 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return result;
         }
 
-        public void Drop(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
+        public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var element = unityAssetDataElement as AssetInspectorValuesDataElement;
             var usages = element.VariableUsages;
@@ -156,12 +156,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 var scriptReference = variableUsage.ScriptReference;
                 var guid = scriptReference.ExternalAssetGuid;
                 
-                myNameToSourceFile.Remove(variableUsage.Name, sourceFile);
+                myNameToSourceFile.Remove(variableUsage.Name, currentAssetSourceFile);
                 var mbField = new MonoBehaviourField(guid, variableUsage.Name.GetPlatformIndependentHashCode());
                 
                 RemoveUniqueValue(mbField, variableUsage);
-                myChangesInFiles.Remove(mbField, sourceFile);
-                RemoveChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name.GetPlatformIndependentHashCode(), sourceFile), variableUsage);
+                myChangesInFiles.Remove(mbField, currentAssetSourceFile);
+                RemoveChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name.GetPlatformIndependentHashCode(), currentAssetSourceFile), variableUsage);
                 
                 myNameToGuids.Remove(variableUsage.Name.GetPlatformIndependentHashCode(), scriptReference.ExternalAssetGuid);
             }
@@ -171,7 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 myNamesInPrefabModifications.Remove(reference.Name);
             }
             
-            myPointers.Remove(sourceFile);
+            myPointers.Remove(currentAssetSourceFile);
         }
 
         private void RemoveChangesPerFile(MonoBehaviourField monoBehaviourField, InspectorVariableUsage variableUsage)
@@ -206,9 +206,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             }
         }
 
-        public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
+        public void Merge(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
         {
-            myPointers[sourceFile] = unityAssetDataElementPointer;
+            myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
             
             var element = unityAssetDataElement as AssetInspectorValuesDataElement;
 
@@ -218,12 +218,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 var scriptReference = variableUsage.ScriptReference;
                 var guid = scriptReference.ExternalAssetGuid;
                 
-                myNameToSourceFile.Add(variableUsage.Name, sourceFile);
+                myNameToSourceFile.Add(variableUsage.Name, currentAssetSourceFile);
                 
                 var mbField = new MonoBehaviourField(guid, variableUsage.Name.GetPlatformIndependentHashCode());
                 AddUniqueValue(mbField, variableUsage);
-                myChangesInFiles.Add(mbField, sourceFile);
-                AddChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name.GetPlatformIndependentHashCode(), sourceFile), variableUsage);
+                myChangesInFiles.Add(mbField, currentAssetSourceFile);
+                AddChangesPerFile(new MonoBehaviourField(guid, variableUsage.Name.GetPlatformIndependentHashCode(), currentAssetSourceFile), variableUsage);
 
                 myNameToGuids.Add(variableUsage.Name.GetPlatformIndependentHashCode(), scriptReference.ExternalAssetGuid);
             }
@@ -231,7 +231,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             foreach (var (reference, _) in element.ImportedInspectorValues.Modifications)
             {
                 myNamesInPrefabModifications.Add(reference.Name);
-                myNameToSourceFile.Add(reference.Name, sourceFile);
+                myNameToSourceFile.Add(reference.Name, currentAssetSourceFile);
             }
         }
 
@@ -392,18 +392,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         {
             public readonly Guid ScriptGuid;
             public readonly int NameHash;
-            public readonly IPsiSourceFile SourceFile;
+            public readonly IPsiSourceFile AssetSourceFile;
 
-            public MonoBehaviourField(Guid scriptGuid, int nameHash, IPsiSourceFile sourceFile = null)
+            public MonoBehaviourField(Guid scriptGuid, int nameHash, IPsiSourceFile assetSourceFile = null)
             {
                 ScriptGuid = scriptGuid;
                 NameHash = nameHash;
-                SourceFile = sourceFile;
+                AssetSourceFile = assetSourceFile;
             }
             
             public bool Equals(MonoBehaviourField other)
             {
-                return ScriptGuid == other.ScriptGuid && NameHash == other.NameHash && Equals(SourceFile, other.SourceFile);
+                return ScriptGuid == other.ScriptGuid && NameHash == other.NameHash && Equals(AssetSourceFile, other.AssetSourceFile);
             }
 
             public override bool Equals(object obj)
@@ -417,7 +417,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 {
                     var hashCode = ScriptGuid.GetHashCode();
                     hashCode = (hashCode * 397) ^ NameHash.GetHashCode();
-                    hashCode = (hashCode * 397) ^ (SourceFile != null ? SourceFile.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ (AssetSourceFile != null ? AssetSourceFile.GetHashCode() : 0);
                     return hashCode;
                 }
             }
@@ -484,7 +484,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
         private IEnumerable<(InspectorVariableUsage usage, bool isPrefabModification)> GetUsages(IPsiSourceFile sourceFile)
         {
-            var dataElement = myPointers.GetValueSafe(sourceFile)?.Element as AssetInspectorValuesDataElement;
+            var dataElement = myPointers.GetValueSafe(sourceFile)?.GetElement(sourceFile, Id) as AssetInspectorValuesDataElement;
             if (dataElement == null)
                 yield break;
 

@@ -13,8 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         private readonly Guid myGuid;
 
         public UnityScriptsOccurrence(IPsiSourceFile sourceFile,
-            IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference attachedElementLocation, Guid guid)
-            : base(sourceFile, declaredElement, attachedElementLocation)
+            IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference owningElementLocation, Guid guid)
+            : base(sourceFile, declaredElement, owningElementLocation)
         {
             myGuid = guid;
         }

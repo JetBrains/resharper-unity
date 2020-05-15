@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public string Name => myScriptComponentHierarchy.Name;
 
-        public LocalReference Owner => myScriptComponentHierarchy.Owner.GetImportedReference(myPrefabInstanceHierarchy);
+        public LocalReference OwningGameObject => myScriptComponentHierarchy.OwningGameObject.GetImportedReference(myPrefabInstanceHierarchy);
 
         public ExternalReference ScriptReference => myScriptComponentHierarchy.ScriptReference;
         public List<Dictionary<string, IAssetValue>> ImportUnityEventData(UnityEventsElementContainer elementContainer, JetHashSet<string> allUnityEventNames)
@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 if (!modification.PropertyPath.Contains("m_PersistentCalls"))
                     continue;
                 
-                var location = new LocalReference(Location.OwnerId, PrefabsUtil.Import(myPrefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
+                var location = new LocalReference(Location.OwningPsiPersistentIndex, PrefabsUtil.GetImportedDocumentAnchor(myPrefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                 if (!location.Equals(scriptLocation))
                     continue;
                 

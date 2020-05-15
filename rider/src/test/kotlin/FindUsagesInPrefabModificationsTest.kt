@@ -5,7 +5,7 @@ import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.ALL])
-class FindUsagesInPrefabModificationsTest : FindUsagesAsseTestBase() {
+class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
     @BeforeSuite(alwaysRun = true)
     fun getUnityDll() {

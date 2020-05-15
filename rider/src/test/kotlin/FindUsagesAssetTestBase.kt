@@ -14,7 +14,7 @@ import org.testng.annotations.Test
 import java.io.File
 import java.time.Duration
 
-open abstract class FindUsagesAsseTestBase : BaseTestWithSolution() {
+open abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
     lateinit var unityDll : File
 
     @DataProvider(name = "findUsagesGrouping")

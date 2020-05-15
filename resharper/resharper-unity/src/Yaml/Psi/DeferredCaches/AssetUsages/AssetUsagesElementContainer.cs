@@ -9,7 +9,6 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.R
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
@@ -17,26 +16,24 @@ using JetBrains.Util.Collections;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
     [SolutionComponent]
-    public class AssetUsagesElementContainer : IUnityAssetDataElementContainer
+    public class AssetScriptUsagesElementContainer : IUnityAssetDataElementContainer
     {
         private readonly IShellLocks myShellLocks;
-        private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
 
-        public AssetUsagesElementContainer(IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, MetaFileGuidCache metaFileGuidCache)
+        public AssetScriptUsagesElementContainer(IShellLocks shellLocks, MetaFileGuidCache metaFileGuidCache)
         {
             myShellLocks = shellLocks;
-            myPersistentIndexManager = persistentIndexManager;
             myMetaFileGuidCache = metaFileGuidCache;
         }
         
-        private CountingSet<Guid> myUsagesCount = new CountingSet<Guid>();
-        private OneToCompactCountingSet<Guid, IPsiSourceFile> myUsageToSourceFiles = new OneToCompactCountingSet<Guid, IPsiSourceFile>();
-        private Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
+        private readonly CountingSet<Guid> myUsagesCount = new CountingSet<Guid>();
+        private readonly OneToCompactCountingSet<Guid, IPsiSourceFile> myUsageToSourceFiles = new OneToCompactCountingSet<Guid, IPsiSourceFile>();
+        private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers = new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
-            return new AssetUsagesDataElement(sourceFile);
+            return new AssetUsagesDataElement();
         }
 
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
@@ -58,15 +55,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                 if (entries == null)
                     return null;
                 
-                var result = new LocalList<AssetUsage>();
+                var result = new LocalList<AssetScriptUsages>();
                 foreach (var entry in entries)
                 {
                     if (!entry.Key.MatchesPlainScalarText("m_Script"))
                         continue;
 
-                    var deps = entry.Content.Value.AsFileID()?.ToReference(currentSourceFile);
+                    var deps = entry.Content.Value.ToHierarchyReference();
                     if (deps is ExternalReference externalReference)
-                        result.Add(new AssetUsage(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), externalReference));
+                        result.Add(new AssetScriptUsages(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), externalReference));
                 }
 
                 return result;
@@ -75,28 +72,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             return null;
         }
 
-        public void Drop(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
+        public void Drop(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElement unityAssetDataElement)
         {
             var dataElement = unityAssetDataElement as AssetUsagesDataElement;
             foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
             {
-                var guid = assetUsagePointer.ExternalDependency.ExternalAssetGuid;
+                var guid = assetUsagePointer.UsageTarget.ExternalAssetGuid;
                 myUsagesCount.Remove(guid);
-                myUsageToSourceFiles.Remove(guid, sourceFile);
+                myUsageToSourceFiles.Remove(guid, currentAssetSourceFile);
             }
 
-            myPointers.Remove(sourceFile);
+            myPointers.Remove(currentAssetSourceFile);
         }
 
-        public void Merge(IPsiSourceFile sourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
+        public void Merge(IPsiSourceFile currentAssetSourceFile, AssetDocumentHierarchyElement assetDocumentHierarchyElement, IUnityAssetDataElementPointer unityAssetDataElementPointer, IUnityAssetDataElement unityAssetDataElement)
         {
-            myPointers[sourceFile] = unityAssetDataElementPointer;
+            myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
             var dataElement = unityAssetDataElement as AssetUsagesDataElement;
             foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
             {
-                var guid = assetUsagePointer.ExternalDependency.ExternalAssetGuid;
+                var guid = assetUsagePointer.UsageTarget.ExternalAssetGuid;
                 myUsagesCount.Add(guid);
-                myUsageToSourceFiles.Add(guid, sourceFile);
+                myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
             }
         }
 
@@ -122,27 +119,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             return myUsagesCount.GetCount(guid.Value);
         }
         
-        public string Id => nameof(AssetUsagesElementContainer);
+        public string Id => nameof(AssetScriptUsagesElementContainer);
         public int Order => 0;
         public void Invalidate()
         {
             myUsageToSourceFiles.Clear();
+            myUsagesCount.Clear();
+            myPointers.Clear();
         }
 
-        public IEnumerable<AssetUsage> GetAssetUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
+        public IEnumerable<AssetScriptUsages> GetAssetUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
         {
             myShellLocks.AssertReadAccessAllowed();
 
-            var element = myPointers[sourceFile].Element as AssetUsagesDataElement;
+            var element = myPointers[sourceFile].GetElement(sourceFile, Id) as AssetUsagesDataElement;
             if (element == null)
-                return Enumerable.Empty<AssetUsage>();
+                return Enumerable.Empty<AssetScriptUsages>();
             
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
             if (guid == null)
-                return Enumerable.Empty<AssetUsage>();
+                return Enumerable.Empty<AssetScriptUsages>();
 
             // TODO : should we cache result per guid in AssetUsagesDataElement?
-            return element.EnumerateAssetUsages().Where(t => t.ExternalDependency.ExternalAssetGuid == guid);
+            return element.EnumerateAssetUsages().Where(t => t.UsageTarget.ExternalAssetGuid == guid);
         }
 
         public LocalList<IPsiSourceFile> GetPossibleFilesWithUsage(ITypeElement declaredElement)

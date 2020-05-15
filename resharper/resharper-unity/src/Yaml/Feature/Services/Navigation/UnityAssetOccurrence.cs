@@ -19,13 +19,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
     public abstract class UnityAssetOccurrence : IOccurrence
     {
         public IPsiSourceFile SourceFile { get; }
-        public LocalReference AttachedElementLocation { get; }
+        public LocalReference OwningElementLocation { get; }
         public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
 
-        protected UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference attachedElementLocation)
+        protected UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference owningElementLocation)
         {
             SourceFile = sourceFile;
-            AttachedElementLocation = attachedElementLocation;
+            OwningElementLocation = owningElementLocation;
             PresentationOptions = OccurrencePresentationOptions.DefaultOptions;
             DeclaredElementPointer = declaredElement;
         }
@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public virtual bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
             TabOptions tabOptions = TabOptions.Default)
         {
-            return solution.GetComponent<UnityAssetOccurrenceNavigator>().Navigate(solution, DeclaredElementPointer, AttachedElementLocation);
+            return solution.GetComponent<UnityAssetOccurrenceNavigator>().Navigate(solution, DeclaredElementPointer, OwningElementLocation);
         }
 
         public ISolution GetSolution()
@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         
         public override string ToString()
         {
-            return $"Component (id = {AttachedElementLocation.LocalDocumentAnchor})";
+            return $"Component (id = {OwningElementLocation.LocalDocumentAnchor})";
         }
 
         public virtual RichText GetDisplayText()
@@ -84,7 +84,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         private string GetAttachedGameObjectName(AssetHierarchyProcessor processor)
         {
             var consumer = new UnityScenePathGameObjectConsumer();
-            processor.ProcessSceneHierarchyFromComponentToRoot(AttachedElementLocation, consumer, true, true);
+            processor.ProcessSceneHierarchyFromComponentToRoot(OwningElementLocation, consumer, true, true);
 
             var parts = consumer.NameParts;
             if (parts.Count == 0)

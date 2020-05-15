@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     if (!modification.PropertyPath.Contains("m_PersistentCalls"))
                         continue;
                     
-                    var location = new LocalReference(currentFile.PsiStorage.PersistentIndex, PrefabsUtil.Import(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
+                    var location = new LocalReference(currentFile.PsiStorage.PersistentIndex, PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                     var parts = modification.PropertyPath.Split('.');
                     var unityEventName = parts[0];
                     
@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             myImportedUnityEventDatas.Add(sourceFile, element.ImportedUnityEventData);
         }
 
-        private IEnumerable<AssetMethodData> GetImportedAssetMethodDataFor(IPsiSourceFile psiSourceFile)
+        private IEnumerable<(LocalReference owningScriptLocation, AssetMethodUsages methodData)> GetImportedAssetMethodDataFor(IPsiSourceFile psiSourceFile)
         {
             if (myImportedUnityEventDatas.TryGetValue(psiSourceFile, out var importedUnityEventData))
             {
@@ -138,9 +138,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     foreach (var index in modifiedEvents)
                     {
                         Assertion.Assert(index < modifications.Count, "index < modifications.Count");
-                        var result = AssetMethodData.TryCreateAssetMethodFromModifications(location, unityEventName, modifications[index]);
+                        var result = AssetMethodUsages.TryCreateAssetMethodFromModifications(location, unityEventName, modifications[index]);
                         if (result != null)
-                            yield return result;
+                            yield return (location, result);
                     }
                 }
             }

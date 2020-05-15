@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
@@ -98,15 +99,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
 
         [CanBeNull]
-        public static AssetDocumentReference GetGameObject(IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference GetGameObjectReference(IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetDocumentBuffer, ourGameObjectFieldSearcher);
         
         [CanBeNull]
-        public static AssetDocumentReference GetTransformFather(IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference GetTransformFather(IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetDocumentBuffer, ourFatherSearcher);
         
         [CanBeNull]
-        public static AssetDocumentReference GetSourcePrefab(IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference GetSourcePrefab(IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetDocumentBuffer, ourSourcePrefabSearcher) ?? GetReferenceBySearcher(assetDocumentBuffer, ourSourcePrefab2017Searcher);
 
         public static int GetRootIndex(IBuffer assetDocumentBuffer)
@@ -164,17 +165,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
         
         [CanBeNull]
-        public static AssetDocumentReference GetPrefabInstance(IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference GetPrefabInstance(IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetDocumentBuffer, ourPrefabInstanceSearcher) ??
             GetReferenceBySearcher(assetDocumentBuffer, ourPrefabInstanceSearcher2017);
 
         [CanBeNull]
-        public static AssetDocumentReference GetCorrespondingSourceObject(IBuffer assetDocumentBuffer) =>
+        public static IHierarchyReference GetCorrespondingSourceObject(IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetDocumentBuffer, ourCorrespondingObjectSearcher) ??
             GetReferenceBySearcher(assetDocumentBuffer, ourCorrespondingObjectSearcher2017);
         
         [CanBeNull]
-        public static AssetDocumentReference GetReferenceBySearcher(IBuffer assetDocumentBuffer, StringSearcher searcher)
+        public static IHierarchyReference GetReferenceBySearcher(IBuffer assetDocumentBuffer, StringSearcher searcher)
         {
             var start = searcher.Find(assetDocumentBuffer, 0, assetDocumentBuffer.Length);
             if (start < 0)
@@ -188,7 +189,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             var parser = new YamlParser(lexer.ToCachingLexer());
             var document = parser.ParseDocument();
 
-            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.AsFileID();
+            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.ToHierarchyReference();
         }
         
         [CanBeNull]

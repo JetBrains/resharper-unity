@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public static void WriteTo(this LocalReference localReference, UnsafeWriter writer)
         {
             writer.Write(0);
-            writer.Write(localReference.OwnerId);      
+            writer.Write(localReference.OwningPsiPersistentIndex);      
             writer.Write(localReference.LocalDocumentAnchor);
         }
         

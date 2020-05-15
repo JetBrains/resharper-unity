@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
             var methodsContainer = solution.GetComponent<UnityEventsElementContainer>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
-            var assetUsagesContainer = solution.GetComponent<AssetUsagesElementContainer>();
+            var assetUsagesContainer = solution.GetComponent<AssetScriptUsagesElementContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
             

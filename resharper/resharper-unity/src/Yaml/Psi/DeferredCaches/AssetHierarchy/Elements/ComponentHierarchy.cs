@@ -8,13 +8,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     public readonly struct ComponentHierarchy : IComponentHierarchy
     {
         public LocalReference Location { get; }
-        public LocalReference Owner { get; }
+        public LocalReference OwningGameObject { get; }
         public string Name { get; }
 
-        public ComponentHierarchy(LocalReference location, LocalReference owner, string name)
+        public ComponentHierarchy(LocalReference location, LocalReference owningGameObject, string name)
         {
             Location = location;
-            Owner = owner;
+            OwningGameObject = owningGameObject;
             Name = String.Intern(name);
         }
 
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public static void Write(UnsafeWriter writer, ComponentHierarchy componentHierarchy)
         {
             componentHierarchy.Location.WriteTo(writer);
-            componentHierarchy.Owner.WriteTo(writer);
+            componentHierarchy.OwningGameObject.WriteTo(writer);
             writer.Write(componentHierarchy.Name);
         }
 
