@@ -1,6 +1,8 @@
 package com.jetbrains.rider.plugins.unity
 
 import com.intellij.openapi.project.Project
+import com.intellij.util.io.exists
+import com.intellij.util.io.isDirectory
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.reactive.whenTrue
@@ -23,6 +25,10 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
                 thread(name = "ProtocolInstanceWatcher") {
                     val watchService: WatchService = FileSystems.getDefault().newWatchService()
                     val libraryPath: Path = Paths.get(project.basePath!!, "Library")
+
+                    if (!(libraryPath.exists() && libraryPath.isDirectory())) // todo: rethink, see com.jetbrains.rider.UnityProjectDiscoverer.Companion.hasUnityFileStructure
+                        return@thread
+
                     libraryPath.register(watchService, ENTRY_MODIFY)
 
                     it.bracket(opening = {
