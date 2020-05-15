@@ -19,9 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
     public abstract class UnityAssetOccurrence : IOccurrence
     {
         public readonly IPsiSourceFile SourceFile;
-        protected readonly LocalReference OwningElementLocation;
-        protected readonly IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer;
+        public readonly IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer;
 
+        public readonly LocalReference OwningElementLocation;
         protected readonly bool IsPrefabModification;
         
 
