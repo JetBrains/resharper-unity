@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return new AssetDocumentHierarchyElement();
         }
 
-        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
             if (!anchorRaw.HasValue)
@@ -58,12 +58,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
             var anchor = anchorRaw.Value;
             var isStripped = AssetUtils.IsStripped(assetDocument.Buffer);
-            var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor);
+            var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex, anchor);
 
             if (isStripped)
             {
-                var prefabInstance = AssetUtils.GetPrefabInstance(assetDocument.Buffer) as LocalReference?;
-                var correspondingSourceObject = AssetUtils.GetCorrespondingSourceObject(assetDocument.Buffer) as ExternalReference?;
+                var prefabInstance = AssetUtils.GetPrefabInstance(currentAssetSourceFile, assetDocument.Buffer) as LocalReference?;
+                var correspondingSourceObject = AssetUtils.GetCorrespondingSourceObject(currentAssetSourceFile, assetDocument.Buffer) as ExternalReference?;
                 
                 if (prefabInstance != null && correspondingSourceObject != null)
                     return new StrippedHierarchyElement(location, prefabInstance.Value, correspondingSourceObject.Value);
@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 return null;
             }
             
-            var gameObject = AssetUtils.GetGameObjectReference(assetDocument.Buffer) as LocalReference?;
+            var gameObject = AssetUtils.GetGameObjectReference(currentAssetSourceFile, assetDocument.Buffer) as LocalReference?;
 
             if (gameObject != null && AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {
@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 {
                     if (entry.Key.MatchesPlainScalarText(UnityYamlConstants.ScriptProperty))
                     {
-                        documentReference = entry.Content.Value.ToHierarchyReference();
+                        documentReference = entry.Content.Value.ToHierarchyReference(currentAssetSourceFile);
                         break;
                     }
                 }
@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 }
             } else if (gameObject != null && AssetUtils.IsTransform(assetDocument.Buffer))
             {
-                var father = AssetUtils.GetTransformFather(assetDocument.Buffer) as LocalReference?;
+                var father = AssetUtils.GetTransformFather(currentAssetSourceFile, assetDocument.Buffer) as LocalReference?;
                 if (father == null)
                     return null;
                 
@@ -112,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             } else if (AssetUtils.IsPrefabModification(assetDocument.Buffer))
             {
                 var modification = AssetUtils.GetPrefabModification(assetDocument.Document);
-                var parentTransform = modification?.GetValue("m_TransformParent")?.ToHierarchyReference() as LocalReference? ?? LocalReference.Null;
+                var parentTransform = modification?.GetValue("m_TransformParent")?.ToHierarchyReference(currentAssetSourceFile) as LocalReference? ?? LocalReference.Null;
                 var modifications = modification?.GetValue("m_Modifications") as IBlockSequenceNode;
                 var result = new List<PrefabModification>();
                 if (modifications != null)
@@ -121,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     {
                         var map = entry.Value as IBlockMappingNode;
 
-                        var target = map?.GetValue("target").ToHierarchyReference();
+                        var target = map?.GetValue("target").ToHierarchyReference(currentAssetSourceFile);
                         if (target == null)
                             continue;
                         
@@ -136,11 +136,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                         IAssetValue value = null;
                         foreach (var assetInspectorValueDeserializer in myAssetInspectorValueDeserializers)
                         {
-                            if (assetInspectorValueDeserializer.TryGetInspectorValue(currentSourceFile, valueNode, out value))
+                            if (assetInspectorValueDeserializer.TryGetInspectorValue(currentAssetSourceFile, valueNode, out value))
                                 break;
                         }
                         
-                        var objectReference = map.FindMapEntryBySimpleKey("objectReference")?.Content.Value.ToHierarchyReference();
+                        var objectReference = map.FindMapEntryBySimpleKey("objectReference")?.Content.Value.ToHierarchyReference(currentAssetSourceFile);
                         
                         var valueRange = valueNode.GetTreeTextRange();
                         
@@ -150,7 +150,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     }
                 }
 
-                var sourcePrefabGuid = AssetUtils.GetSourcePrefab(assetDocument.Buffer) as ExternalReference?;
+                var sourcePrefabGuid = AssetUtils.GetSourcePrefab(currentAssetSourceFile, assetDocument.Buffer) as ExternalReference?;
                 if (sourcePrefabGuid == null)
                     return null;
 

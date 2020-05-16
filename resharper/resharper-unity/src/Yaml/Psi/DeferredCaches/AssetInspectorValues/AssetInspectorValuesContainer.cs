@@ -65,9 +65,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return new AssetInspectorValuesDataElement();
         }
 
-        public object Build(SeldomInterruptChecker seldomInterruptChecker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        public object Build(SeldomInterruptChecker seldomInterruptChecker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
-            var modifications = ProcessPrefabModifications(currentSourceFile, assetDocument);
+            var modifications = ProcessPrefabModifications(currentAssetSourceFile, assetDocument);
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {
 
@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                     {
                         try
                         {
-                            if (deserializer.TryGetInspectorValue(currentSourceFile, entry.Content, out var resultValue))
+                            if (deserializer.TryGetInspectorValue(currentAssetSourceFile, entry.Content, out var resultValue))
                             {
                                 dictionary[key] = resultValue;
                                 break;
@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 if (dictionary.TryGetValue(UnityYamlConstants.ScriptProperty, out var scriptValue) && scriptValue is AssetReferenceValue referenceValue
                                                                                                    && referenceValue.Reference is ExternalReference script)
                 {
-                    var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor.Value);
+                    var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex, anchor.Value);
                     var result = new LocalList<InspectorVariableUsage>();
 
                     foreach (var (key, value) in dictionary)

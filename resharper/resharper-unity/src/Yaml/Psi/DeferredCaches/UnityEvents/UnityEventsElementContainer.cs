@@ -78,9 +78,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return new UnityEventsDataElement();
         }
 
-        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
-            var modifications = ProcessPrefabModifications(currentSourceFile, assetDocument);
+            var modifications = ProcessPrefabModifications(currentAssetSourceFile, assetDocument);
             var buffer = assetDocument.Buffer;
             if (ourMethodNameSearcher.Find(buffer) < 0)
                 return new UnityEventsBuildResult(modifications, new LocalList<UnityEventData>());
@@ -96,8 +96,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 return new UnityEventsBuildResult(modifications, new LocalList<UnityEventData>());
 
 
-            var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor);
-            var scriptReference = GetScriptReference(entries.Value);
+            var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex, anchor);
+            var scriptReference = GetScriptReference(currentAssetSourceFile, entries.Value);
             if (scriptReference == null)
                 return new UnityEventsBuildResult(modifications, new LocalList<UnityEventData>());
             
@@ -117,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                         continue;
                     
                     var eventTypeName = rootMap.GetValue("m_TypeName").GetPlainScalarText();
-                    var calls = GetCalls(currentSourceFile, assetDocument, mCalls, name, eventTypeName);
+                    var calls = GetCalls(currentAssetSourceFile, assetDocument, mCalls, name, eventTypeName);
                     
                     result.Add(new UnityEventData(name, location, scriptReference.Value, calls.ToArray()));
                 }
@@ -126,12 +126,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return new UnityEventsBuildResult(modifications, result);
         }
 
-        private ExternalReference? GetScriptReference(TreeNodeCollection<IBlockMappingEntry> entries)
+        private ExternalReference? GetScriptReference(IPsiSourceFile assetSourceFile, TreeNodeCollection<IBlockMappingEntry> entries)
         {
-            return entries.FirstOrDefault(t => UnityYamlConstants.ScriptProperty.Equals(t.Key.GetPlainScalarText()))?.Content.Value.ToHierarchyReference() as ExternalReference?;
+            return entries.FirstOrDefault(t => UnityYamlConstants.ScriptProperty.Equals(t.Key.GetPlainScalarText()))?.Content.Value.ToHierarchyReference(assetSourceFile) as ExternalReference?;
         }
 
-        private LocalList<AssetMethodUsages> GetCalls(IPsiSourceFile currentSourceFile, AssetDocument assetDocument, IBlockSequenceNode mCalls, string name, string eventTypeName)
+        private LocalList<AssetMethodUsages> GetCalls(IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument, IBlockSequenceNode mCalls, string name, string eventTypeName)
         {
             var result = new LocalList<AssetMethodUsages>();
             foreach (var call in mCalls.Entries)
@@ -140,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 if (methodDescription == null)
                     continue;
                 
-                var target = methodDescription.FindMapEntryBySimpleKey("m_Target")?.Content.Value.ToHierarchyReference();
+                var target = methodDescription.FindMapEntryBySimpleKey("m_Target")?.Content.Value.ToHierarchyReference(currentAssetSourceFile);
                 if (target == null)
                     continue;
 
@@ -171,7 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 var range = new TextRange(assetDocument.StartOffset + methodNameRange.StartOffset.Offset,
                     assetDocument.StartOffset + methodNameRange.EndOffset.Offset);
 
-                result.Add(new AssetMethodUsages( name, methodName, range, currentSourceFile.PsiStorage.PersistentIndex, argMode, type, target));
+                result.Add(new AssetMethodUsages( name, methodName, range, currentAssetSourceFile.PsiStorage.PersistentIndex, argMode, type, target));
             }
 
             return result;
