@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         {
             if (AssetUtils.IsReferenceValue(node.GetTextAsBuffer()))
             {
-                var reference = node.Value.ToHierarchyReference();
+                var reference = node.Value.ToHierarchyReference(owner);
                 if (reference == null)
                     return null;
 

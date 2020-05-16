@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             return new AssetUsagesDataElement();
         }
 
-        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentSourceFile, AssetDocument assetDocument)
+        public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             // TODO: deps for other assets
             if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
@@ -61,9 +61,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                     if (!entry.Key.MatchesPlainScalarText("m_Script"))
                         continue;
 
-                    var deps = entry.Content.Value.ToHierarchyReference();
+                    var deps = entry.Content.Value.ToHierarchyReference(currentAssetSourceFile);
                     if (deps is ExternalReference externalReference)
-                        result.Add(new AssetScriptUsages(new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, anchor), externalReference));
+                        result.Add(new AssetScriptUsages(new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex, anchor), externalReference));
                 }
 
                 return result;

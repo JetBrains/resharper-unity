@@ -167,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return myDocumentNumber[psiSourceFile];
         }
 
-        private void BuildDocument(UnityAssetData data, SeldomInterruptChecker checker, IPsiSourceFile sourceFile, int start, IBuffer buffer)
+        private void BuildDocument(UnityAssetData data, SeldomInterruptChecker checker, IPsiSourceFile assetSourceFile, int start, IBuffer buffer)
         {
             var assetDocument = new AssetDocument(start, buffer, null);
             var results = new LocalList<(string, object)>();
@@ -177,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 
                 try
                 {
-                    var result = unityAssetDataElementContainer.Build(checker, sourceFile, assetDocument);
+                    var result = unityAssetDataElementContainer.Build(checker, assetSourceFile, assetDocument);
                     if (result is IHierarchyElement hierarchyElement)
                         assetDocument = assetDocument.WithHiererchyElement(hierarchyElement);
 

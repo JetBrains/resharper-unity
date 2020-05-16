@@ -20,12 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         [CanBeNull]
-        public static IHierarchyReference ToHierarchyReference([CanBeNull] this INode node)
+        public static IHierarchyReference ToHierarchyReference([CanBeNull] this INode node, IPsiSourceFile assetSourceFile)
         {
-            var currentSourceFile = node?.GetSourceFile();
-            if (currentSourceFile == null)
-                return null;
-            
             if (node is IFlowMappingNode flowMappingNode)
             {
                 var localDocumentAnchor = flowMappingNode.FindMapEntryBySimpleKey("fileID")?.Value.AsString();
@@ -42,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     if (result == 0)
                         return new LocalReference(0, 0);
                 
-                    return new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, result);
+                    return new LocalReference(assetSourceFile.PsiStorage.PersistentIndex, result);
                 }
 
                 if (Guid.TryParse(externalAssetGuid, out var guid))
