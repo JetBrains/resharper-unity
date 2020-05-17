@@ -18,16 +18,20 @@ import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointType
 
-fun convertToPausepoint(project: Project, breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>) {
+fun convertToPausepoint(project: Project, breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>, editor: Editor? = null, gutterIconRenderer: GutterIconRenderer? = null) {
     UIUtil.invokeLaterIfNeeded {
         application.runWriteAction {
             val breakpointManager = XDebuggerManager.getInstance(project).breakpointManager
             val unityPausepointType = XDebuggerUtil.getInstance().findBreakpointType(UnityPausepointBreakpointType::class.java)
             breakpointManager.removeBreakpoint(breakpoint)
 
-            breakpointManager.addLineBreakpoint(unityPausepointType, breakpoint.fileUrl, breakpoint.line, breakpoint.properties).apply {
+            val newBreakpoint = breakpointManager.addLineBreakpoint(unityPausepointType, breakpoint.fileUrl, breakpoint.line, breakpoint.properties).apply {
                 this.suspendPolicy = SuspendPolicy.NONE
                 this.logExpression = UnityPausepointConstants.pauseEditorCommand
+            }
+
+            if (editor != null && gutterIconRenderer != null) {
+                editBreakpoint(project, editor, newBreakpoint, gutterIconRenderer)
             }
         }
     }
