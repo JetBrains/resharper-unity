@@ -60,6 +60,7 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
             val dataContext = e.dataContext
             val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return
 
+            // This finds the breakpoint at the current line. We're an alt+enter action, so that's fine
             val pair = XBreakpointUtil.findSelectedBreakpoint(e.project!!, editor)
             var breakpoint = pair.second as? XLineBreakpoint<*> ?: return
             if (breakpoint.properties is DotNetLineBreakpointProperties) {

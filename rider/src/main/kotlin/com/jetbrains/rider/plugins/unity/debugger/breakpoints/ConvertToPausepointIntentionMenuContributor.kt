@@ -29,12 +29,12 @@ class ConvertToPausepointIntentionMenuContributor : IntentionMenuContributor {
         val breakpoint = pair.second as? XLineBreakpoint<*> ?: return
 
         if (breakpoint.type is DotNetLineBreakpointType && breakpoint.type !is UnityPausepointBreakpointType) {
-            val descriptor = HighlightInfo.IntentionActionDescriptor(ConvertToPausepointIntentionAction(), EmptyIcon.ICON_16)
+            val descriptor = HighlightInfo.IntentionActionDescriptor(ConvertToPausepointIntentionAction(breakpoint), EmptyIcon.ICON_16)
             intentionsInfo.guttersToShow.add(descriptor)
         }
     }
 
-    class ConvertToPausepointIntentionAction : IntentionAction, DumbAware {
+    class ConvertToPausepointIntentionAction(private val breakpoint: XLineBreakpoint<*>) : IntentionAction, DumbAware {
         // Oof. What's that smell?
         // Actions are added to a set, and then sorted by GutterIntentionAction.order, if the IntentionAction is an
         // instance of GutterIntentionAction, which is unlikely, as it's package private. Other items are declared as
@@ -51,17 +51,8 @@ class ConvertToPausepointIntentionMenuContributor : IntentionMenuContributor {
         override fun invoke(project: Project, editor: Editor?, psiFile: PsiFile?) {
             if (editor == null) return
 
-            val pair = XBreakpointUtil.findSelectedBreakpoint(project, editor)
-            val breakpointGutterRenderer = pair.first
-            val breakpoint = pair.second as? XLineBreakpoint<*>
-            if (breakpointGutterRenderer == null || breakpoint == null) {
-                return
-            }
-
-            if (breakpoint.type is DotNetLineBreakpointType && breakpoint.type !is UnityPausepointBreakpointType) {
-                @Suppress("UNCHECKED_CAST")
-                convertToPausepoint(project, breakpoint as XLineBreakpoint<DotNetLineBreakpointProperties>, editor, breakpointGutterRenderer)
-            }
+            @Suppress("UNCHECKED_CAST")
+            convertToPausepoint(project, breakpoint as XLineBreakpoint<DotNetLineBreakpointProperties>, editor)
         }
     }
 }
