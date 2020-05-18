@@ -2,8 +2,6 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.projectView.PresentationData
-import com.intellij.ide.projectView.ViewSettings
-import com.intellij.ide.scratch.ScratchProjectViewPane
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FileStatus
@@ -13,9 +11,11 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageData
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.ProjectModelViewHost
+import com.jetbrains.rider.projectView.ideaInterop.RiderScratchProjectViewPane
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
+import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
 import icons.UnityIcons
 import java.awt.Color
@@ -34,8 +34,8 @@ class UnityExplorerRootNode(project: Project, private val packageManager: Packag
             nodes.add(PackagesRoot(myProject, packageManager))
         }
 
-        if (ScratchProjectViewPane.isScratchesMergedIntoProjectTab()) {
-            nodes.add(ScratchProjectViewPane.createRootNode(myProject, ViewSettings.DEFAULT))
+        if (ConfigureScratchesAction.showScratchesInExplorer(myProject)) {
+            nodes.add(RiderScratchProjectViewPane.createNode(myProject))
         }
 
         return nodes
