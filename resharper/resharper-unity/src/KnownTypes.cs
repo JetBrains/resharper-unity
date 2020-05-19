@@ -44,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName BurstDiscardAttribute = new ClrTypeName("Unity.Burst.BurstDiscardAttribute");
         public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");
+        public static readonly IClrTypeName JobProducer = new ClrTypeName("Unity.Jobs.LowLevel.Unsafe.JobProducerTypeAttribute");
 
         // UnityEngine.Networking
         public static readonly IClrTypeName NetworkBehaviour = new ClrTypeName("UnityEngine.Networking.NetworkBehaviour");

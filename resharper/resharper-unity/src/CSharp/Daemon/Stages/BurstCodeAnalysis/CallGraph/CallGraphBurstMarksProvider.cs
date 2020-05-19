@@ -1,5 +1,7 @@
 using System.Collections.Generic;
-using JetBrains.Diagnostics;
+using System.Linq;
+using JetBrains.Metadata.Reader.API;
+using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Psi;
@@ -12,6 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class CallGraphBurstMarksProvider : CallGraphRootMarksProviderBase
     {
+        private static readonly IClrTypeName TestAttribute = new ClrTypeName("TestAttribute");
         public CallGraphBurstMarksProvider(ISolution solution)
             : base(nameof(CallGraphBurstMarksProvider),
                 new CallGraphOutcomingPropagator(solution, nameof(CallGraphBurstMarksProvider)))
@@ -21,18 +24,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            var res = new HashSet<IDeclaredElement>();
+            var result = new HashSet<IDeclaredElement>();
             switch (currentNode)
             {
-                case IMethodDeclaration methodDeclaration
-                    when methodDeclaration.DeclaredElement is IMethod method &&
-                         method.ShortName == "Execute" &&
-                         method.Parameters.Count == 0 && method.TypeParameters.Count == 0 &&
-                         method.GetContainingType() is IStruct @struct &&
-                         @struct.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self) &&
-                         UnityApi.IsDescendantOf(KnownTypes.Job, @struct):
+                case IMethodDeclaration methodDeclaration when methodDeclaration.DeclaredElement is IMethod method && 
+                    method.HasAttributeInstance(TestAttribute, AttributesSource.Self):
                 {
-                    res.Add(method);
+                    result.Add(method);
+                    break;
+                }
+                case IStructDeclaration structDeclaration
+                    when structDeclaration.DeclaredElement is IStruct @struct &&
+                         @struct.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self):
+                {
+                    var visited = new HashSet<ITypeElement>();
+                    var interfaces = new LocalList<ITypeElement>();
+                    var todo = new Stack<ITypeElement>();
+                    visited.Add(@struct);
+                    todo.Push(@struct);
+
+                    while (!todo.IsEmpty())
+                    {
+                        var current = todo.Pop();
+                        foreach (var typeElement in current.GetSuperTypeElements())
+                        {
+                            var @interface = typeElement as IInterface;
+                            if (@interface == null)
+                                continue;
+                            if (visited.Add(@interface))
+                            {
+                                todo.Push(@interface);
+                                if (@interface.HasAttributeInstance(KnownTypes.JobProducer, AttributesSource.Self))
+                                    interfaces.Add(@interface);
+                            }
+                        }
+                    }
+
+                    foreach (var @interface in interfaces)
+                    {
+                        var interfaceMethods = @interface.Methods;
+                        var structMethods = @struct.Methods;
+                        var overridenMethods = structMethods
+                            .Where(m => interfaceMethods.Any(m.OverridesOrImplements)).ToList();
+                        foreach (var overridenMethod in overridenMethods)
+                            result.Add(overridenMethod);
+                    }
+
                     break;
                 }
                 case IInvocationExpression invocationExpression:
@@ -57,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         foreach (var declaredElement in possibleDeclaredElements)
                         {
                             if (declaredElement != null)
-                                res.Add(declaredElement);
+                                result.Add(declaredElement);
                         }
                     }
 
@@ -65,28 +102,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 }
             }
 
-            return new LocalList<IDeclaredElement>(res);
-        }
-
-        public override bool IsRootMark(IDeclaredElement declaredElement, IDeclaration elementNode)
-        {
-            return false;
+            return new LocalList<IDeclaredElement>(result);
         }
 
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            return new LocalList<IDeclaredElement>();
-        }
-
-        public override bool IsBannedMark(IDeclaredElement declaredElement, IDeclaration elementNode)
-        {
-            var methodDeclaration = elementNode as IMethodDeclaration;
+            var result = new LocalList<IDeclaredElement>();
+            if (containingFunction == null)
+                return result;
+            var methodDeclaration = currentNode as IMethodDeclaration;
             var method = methodDeclaration?.DeclaredElement;
             if (method == null)
-                return false;
-            Assertion.Assert(ReferenceEquals(declaredElement, method), "ReferenceEquals(declaredElement, method)");
-            return method.HasAttributeInstance(KnownTypes.BurstDiscardAttribute, AttributesSource.Self);
+                return result;
+            if (method.HasAttributeInstance(KnownTypes.BurstDiscardAttribute, AttributesSource.Self))
+                result.Add(containingFunction);
+            return result;
         }
     }
 }

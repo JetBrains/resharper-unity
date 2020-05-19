@@ -26,29 +26,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
-            return new LocalList<IDeclaredElement>();
-        }
+            var result = new LocalList<IDeclaredElement>();
+            if (containingFunction == null)
+                return result;
 
-        public override bool IsRootMark(IDeclaredElement declaredElement, IDeclaration declaration)
-        {
-            if(declaration == null)
-                return false;
-            
-            Assertion.Assert(ReferenceEquals(declaration.DeclaredElement, declaredElement), "declaration.DeclaredElement == declaredElement");
+            var declaration = currentNode as IDeclaration;
+            var declaredElement = declaration?.DeclaredElement;
+            if (!ReferenceEquals(containingFunction, declaredElement))
+                return result;
             
             var processor = new ExpensiveCodeProcessor();
             declaration.ProcessThisAndDescendants(processor);
-            return processor.IsExpensiveCodeFound;
+            if (processor.IsExpensiveCodeFound)
+                result.Add(declaredElement);
+            
+            return result;
         }
 
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
         {
             return new LocalList<IDeclaredElement>();
-        }
-
-        public override bool IsBannedMark(IDeclaredElement declaredElement, IDeclaration declaration)
-        {
-            return false;
         }
 
         private class ExpensiveCodeProcessor : IRecursiveElementProcessor

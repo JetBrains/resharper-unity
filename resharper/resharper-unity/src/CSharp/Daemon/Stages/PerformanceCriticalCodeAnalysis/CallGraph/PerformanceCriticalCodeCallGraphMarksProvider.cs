@@ -50,7 +50,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
                 if (containingType == null || containingType.GetClrName().Equals(KnownTypes.MonoBehaviour))
                 {
-                    
                     if (!declaredElement.ShortName.Equals("StartCoroutine") &&
                         !declaredElement.ShortName.Equals("InvokeRepeating"))
                     {
@@ -67,14 +66,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             return null;
         }
-        
-        private IDeclaredElement ExtractMethodDeclarationFromStartCoroutine([NotNull]ICSharpExpression firstArgument)
+
+        private IDeclaredElement ExtractMethodDeclarationFromStartCoroutine([NotNull] ICSharpExpression firstArgument)
         {
             // 'StartCoroutine' has overload with string. We have already attached reference, so get declaration from
             // reference
             if (firstArgument is ILiteralExpression literalExpression)
             {
-                var coroutineMethodReference = literalExpression.GetReferences<UnityEventFunctionReference>().FirstOrDefault();
+                var coroutineMethodReference =
+                    literalExpression.GetReferences<UnityEventFunctionReference>().FirstOrDefault();
                 if (coroutineMethodReference != null)
                 {
                     return coroutineMethodReference.Resolve().DeclaredElement;
@@ -92,36 +92,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return null;
         }
 
-        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
             var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
             if (coroutineOrInvoke != null)
                 result.Add(coroutineOrInvoke);
 
+            if (containingFunction == null)
+                return result;
+            var declaration = currentNode as IDeclaration;
+            var declaredElement = declaration?.DeclaredElement;
+            if (!ReferenceEquals(containingFunction, declaredElement))
+                return result;
+            var processor = new PerformanceCriticalCodeProcessor();
+            declaration.ProcessThisAndDescendants(processor);
+            if (processor.IsPerformanceCriticalCodeFound)
+                result.Add(declaredElement);
+
             return result;
         }
 
-        public override bool IsRootMark(IDeclaredElement declaredElement, IDeclaration declaration)
-        {
-            if (declaration == null)
-                return false;
-            
-            Assertion.Assert(ReferenceEquals(declaration.DeclaredElement, declaredElement), "declaration.DeclaredElement == declaredElement");
-
-            var processor = new PerformanceCriticalCodeProcessor();
-            declaration.ProcessThisAndDescendants(processor);
-            return processor.IsPerformanceCriticalCodeFound;
-        }
-
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             return new LocalList<IDeclaredElement>();
-        }
-
-        public override bool IsBannedMark(IDeclaredElement declaredElement, IDeclaration declaration)
-        {
-            return false;
         }
 
         private class PerformanceCriticalCodeProcessor : IRecursiveElementProcessor
@@ -135,7 +131,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             public void ProcessBeforeInterior(ITreeNode element)
             {
-                IsPerformanceCriticalCodeFound = PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(element);
+                IsPerformanceCriticalCodeFound =
+                    PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(element);
             }
 
             public void ProcessAfterInterior(ITreeNode element)
