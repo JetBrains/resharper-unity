@@ -31,8 +31,8 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
 
                     libraryPath.register(watchService, ENTRY_MODIFY)
 
-                    it.createNested().onTerminationIfAlive {
-                        watchService.close()
+                    it.onTerminationIfAlive {
+                        watchService.close() // releases watchService.take()
                     }
 
                     val watchedFileName = "ProtocolInstance.json"
