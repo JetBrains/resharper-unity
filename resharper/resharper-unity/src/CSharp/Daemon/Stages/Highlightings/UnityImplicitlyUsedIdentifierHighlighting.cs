@@ -1,17 +1,15 @@
-using System.Drawing;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
-using JetBrains.TextControl.DocumentMarkup;
-
-[assembly: RegisterHighlighter(UnityHighlightingAttributeIds.UNITY_IMPLICITLY_USED_IDENTIFIER_ATTRIBUTE,
-    GroupId = UnityHighlightingGroupIds.Unity, EffectType = EffectType.TEXT, FontStyle = FontStyle.Bold,
-    Layer = HighlighterLayer.SYNTAX + 1)]
+using JetBrains.ReSharper.Psi.CSharp;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 {
-    [StaticSeverityHighlighting(Severity.INFO, "UnityGutterMarks", Languages = "CSHARP", OverlapResolve = OverlapResolveKind.NONE)]
-    public class UnityImplicitlyUsedIdentifierHighlighting : ICustomAttributeIdHighlighting, IUnityHighlighting
+    [StaticSeverityHighlighting(Severity.INFO,
+        typeof(HighlightingGroupIds.IdentifierHighlightings),
+        AttributeId = UnityHighlightingAttributeIds.UNITY_IMPLICITLY_USED_IDENTIFIER_ATTRIBUTE,
+        Languages = CSharpLanguage.Name,
+        OverlapResolve = OverlapResolveKind.NONE)]
+    public class UnityImplicitlyUsedIdentifierHighlighting : IHighlighting, IUnityHighlighting
     {
         private readonly DocumentRange myDocumentRange;
 
@@ -26,6 +24,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
 
         public string ToolTip => null;
         public string ErrorStripeToolTip => null;
-        public string AttributeId => UnityHighlightingAttributeIds.UNITY_IMPLICITLY_USED_IDENTIFIER_ATTRIBUTE;
     }
 }

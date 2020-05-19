@@ -95,7 +95,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
 
         object : DoubleClickListener() {
-            override fun onDoubleClick(event: MouseEvent?): Boolean {
+            override fun onDoubleClick(event: MouseEvent): Boolean {
                 getNavigatableForSelected(eventList1, project)?.navigate(true)
                 return true
             }

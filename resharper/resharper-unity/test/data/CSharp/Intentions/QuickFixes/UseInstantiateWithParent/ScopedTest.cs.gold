@@ -1,0 +1,26 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class SimpleTest
+    {
+        public void Test(Transform t, GameObject root)
+        {
+            GameObject go = (GameObject) GameObject.Instantiate(t.gameObject, root.transform, true);{caret}
+
+            GameObject go2 = (GameObject) GameObject.Instantiate(t.gameObject, root.transform, true);
+        }
+
+        public void Test2(Transform t, GameObject root)
+        {
+            GameObject go = (GameObject) GameObject.Instantiate(t.gameObject, root.transform, false);
+        }
+    }
+
+    public class SimpleTest2
+    {
+        public void Test2(Transform t, GameObject root)
+        {
+            GameObject go = (GameObject) GameObject.Instantiate(t.gameObject, root.transform, true);
+        }
+}

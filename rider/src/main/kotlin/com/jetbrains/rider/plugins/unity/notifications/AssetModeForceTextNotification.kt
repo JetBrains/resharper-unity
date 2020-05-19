@@ -7,8 +7,8 @@ import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
-import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
 import javax.swing.event.HyperlinkEvent

@@ -306,7 +306,9 @@ namespace JetBrains.Rider.Unity.Editor
           InitEditorLogPath(model);
 
           model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
-          model.UnityApplicationData.SetValue(new UnityApplicationData(EditorApplication.applicationPath, EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
+          model.UnityApplicationData.SetValue(new UnityApplicationData(
+            EditorApplication.applicationPath,
+            EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           if (UnityUtils.UnityVersion >= new Version(2018, 2))
@@ -316,6 +318,7 @@ namespace JetBrains.Rider.Unity.Editor
 
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
           AdviseGenerateUISchema(model);
+          AdviseExitUnity(model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -333,6 +336,30 @@ namespace JetBrains.Rider.Unity.Editor
     private static void AdviseGenerateUISchema(EditorPluginModel model)
     {
       model.GenerateUIElementsSchema.Set(_ => UIElementsSupport.GenerateSchema());
+    }
+
+    private static void AdviseExitUnity(EditorPluginModel model)
+    {
+      model.ExitUnity.Set((_, rdVoid) =>
+      {
+        var task = new RdTask<bool>();
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          try
+          {
+            ourLogger.Verbose("ExitUnity: Started");
+            EditorApplication.Exit(0);
+            ourLogger.Verbose("ExitUnity: Completed");
+            task.Set(true);
+          }
+          catch (Exception e)
+          {
+            ourLogger.Log(LoggingLevel.WARN, "EditorApplication.Exit failed.", e);
+            task.Set(false);
+          }
+        });
+        return task;
+      });
     }
 
     private static void AdviseShowPreferences(EditorPluginModel model, Lifetime connectionLifetime, ILog log)

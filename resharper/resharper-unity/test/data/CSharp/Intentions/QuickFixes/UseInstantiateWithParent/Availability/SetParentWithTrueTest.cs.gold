@@ -1,0 +1,20 @@
+﻿using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class SetParentWithTrueTest
+    {
+        public void Test(Transform t, GameObject root)
+        {
+            GameObject go = (GameObject) GameObject.Instantiate(t.gameObject);
+            |go.transform.SetParent|(0)(root.transform, true);
+        }
+    }
+}
+------------------------------------------------
+0: Setting 'parent' property immediately after object instantiation is inefficient
+QUICKFIXES:
+Combine with object creation
+--Combine with object creation in file
+--Combine with object creation in project
+--Combine with object creation in solution

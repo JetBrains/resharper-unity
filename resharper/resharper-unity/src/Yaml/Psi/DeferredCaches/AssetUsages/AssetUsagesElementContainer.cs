@@ -127,7 +127,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             if (declaredElement == null)
                 return 0;
 
-            var guid = GetGuidFor(declaredElement);
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
 
             return myAssetUsages.GetOrEmpty(guid).Count;
         }
@@ -144,36 +144,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         {
             myShellLocks.AssertReadAccessAllowed();
             
-            var guid = GetGuidFor(declaredElement);
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
                 
             if (myAssetUsagesPerFile.TryGetValue(sourceFile, out var set))
                 return set.GetValues(guid).ToList();
             return Enumerable.Empty<AssetUsage>();
         }
 
-        private string GetGuidFor(ITypeElement typeElement)
-        {
-            var sourceFile = typeElement.GetDeclarations().FirstOrDefault()?.GetSourceFile();
-            if (sourceFile == null)
-                return null;
-            
-            if (typeElement.TypeParameters.Count != 0)
-                return null;
-
-            if (typeElement.GetContainingType() != null)
-                return null;
-
-            if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
-                return null;
-
-            var guid = myMetaFileGuidCache.GetAssetGuid(sourceFile);
-            return guid;
-        }
-
-
         public LocalList<IPsiSourceFile>  GetPossibleFilesWithUsage(ITypeElement declaredElement)
         {
-            var guid = GetGuidFor(declaredElement);
+            var guid =AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
             if (guid == null) 
                 return new LocalList<IPsiSourceFile>();
 

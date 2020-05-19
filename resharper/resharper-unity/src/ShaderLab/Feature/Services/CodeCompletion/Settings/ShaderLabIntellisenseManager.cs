@@ -10,8 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.CodeCompl
     [ShellComponent]
     public class ShaderLabIntellisenseManager : LanguageSpecificIntellisenseManager
     {
-        public ShaderLabIntellisenseManager([NotNull] ISettingsStore settingsStore)
-            : base(settingsStore)
+        public ShaderLabIntellisenseManager([NotNull] ISettingsStore settingsStore, IntellisenseSettingsService intellisenseSettingsService)
+            : base(settingsStore, intellisenseSettingsService)
         {
         }
 

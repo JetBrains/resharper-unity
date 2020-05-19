@@ -2,7 +2,6 @@ package icons
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.AnimatedIcon
-import com.jetbrains.rider.icons.*
 import javax.swing.Icon
 
 // FYI: Icons are defined in C# files in the backend. When being shown in the frontend, only the icon ID is passed to
@@ -93,6 +92,23 @@ class UnityIcons {
                 UnityStatusPauseProgress3,
                 UnityStatusPauseProgress2,
                 UnityStatusPauseProgress1)
+        }
+    }
+
+    class Debugger {
+        // Field and file names deliberately match the AllIcons.Debugger icons.
+        // Pausepoints are by definition "no suspend". Where the default breakpoint icon set includes a "no_suspend"
+        // variant, the same file name is used. Otherwise, the default name is drawn as "no_suspend".
+        companion object {
+            val Db_dep_line_pausepoint = IconLoader.getIcon("/Icons/debugger/db_dep_line_pausepoint.svg")
+            val Db_disabled_pausepoint = IconLoader.getIcon("/Icons/debugger/db_disabled_pausepoint.svg")
+            val Db_invalid_pausepoint = IconLoader.getIcon("/Icons/debugger/db_invalid_pausepoint.svg")
+            val Db_muted_pausepoint = IconLoader.getIcon("/Icons/debugger/db_muted_pausepoint.svg")
+            val Db_muted_disabled_pausepoint = IconLoader.getIcon("/Icons/debugger/db_muted_disabled_pausepoint.svg")
+            val Db_no_suspend_pausepoint = IconLoader.getIcon("/Icons/debugger/db_no_suspend_pausepoint.svg")
+            val Db_set_pausepoint = Db_no_suspend_pausepoint
+            val Db_verified_no_suspend_pausepoint = IconLoader.getIcon("/Icons/debugger/db_verified_no_suspend_pausepoint.svg")
+            val Db_verified_pausepoint = Db_verified_no_suspend_pausepoint
         }
     }
 

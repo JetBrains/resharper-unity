@@ -2,19 +2,18 @@
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class ConvertCoalescingToConditionalQuickFix : QuickFixBase
+    public class ConvertCoalescingToConditionalQuickFix : UnityScopedQuickFixBase
     {
         private readonly INullCoalescingExpression myExpression;
 
@@ -36,11 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             return null;
         }
 
+        protected override ITreeNode TryGetContextTreeNode() => myExpression;
         public override string Text => "Convert to conditional expression";
-
-        public override bool IsAvailable(IUserDataHolder cache)
-        {
-            return ValidUtils.Valid(myExpression);
-        }
     }
 }

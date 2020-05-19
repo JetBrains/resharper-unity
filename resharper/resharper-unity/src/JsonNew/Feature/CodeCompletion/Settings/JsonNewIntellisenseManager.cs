@@ -10,8 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion.Setti
     [ShellComponent]
     public class JsonNewIntellisenseManager : LanguageSpecificIntellisenseManager
     {
-        public JsonNewIntellisenseManager([NotNull] ISettingsStore settingsStore)
-            : base(settingsStore)
+        public JsonNewIntellisenseManager([NotNull] ISettingsStore settingsStore, IntellisenseSettingsService intellisenseSettingsService)
+            : base(settingsStore, intellisenseSettingsService)
         {
         }
 
