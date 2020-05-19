@@ -31,23 +31,23 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
 
                     libraryPath.register(watchService, ENTRY_MODIFY)
 
-                    it.bracket(opening = {
-                        val watchedFileName = "ProtocolInstance.json"
-                        val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
-                        var key: WatchKey
-                        while (watchService.take().also { key = it } != null && it.isAlive) {
-                            for (event in key.pollEvents()) {
-                                if (event.context().toString() == watchedFileName) {
-                                    application.invokeLater {
-                                        project.solution.fileSystemModel.change.fire(RdDeltaBatch(listOf(delta)))
-                                    }
+                    it.createNested().onTerminationIfAlive {
+                        watchService.close()
+                    }
+
+                    val watchedFileName = "ProtocolInstance.json"
+                    val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
+                    var key: WatchKey
+                    while (watchService.take().also { key = it } != null && it.isAlive) {
+                        for (event in key.pollEvents()) {
+                            if (event.context().toString() == watchedFileName) {
+                                application.invokeLater {
+                                    project.solution.fileSystemModel.change.fire(RdDeltaBatch(listOf(delta)))
                                 }
                             }
-                            key.reset()
                         }
-                    }, terminationAction = {
-                        watchService.close()
-                    })
+                        key.reset()
+                    }
                 }
             }
         }
