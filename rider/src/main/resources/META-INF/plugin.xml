@@ -95,6 +95,7 @@
     <xdebugger.breakpointType implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType" />
     <rider.breakpoint.customPanelProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointPanelProvider" />
     <rider.debug.breakpoint.handler.factory implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointHandlerFactory" />
+    <rider.breakpoint.customPopupActionsProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.ConvertToPausepointPopupActionProvider" />
 
     <rider.android.project.validator implementation="com.jetbrains.rider.plugins.unity.android.UnityCustomAndroidProjectValidator"/>
     <rdclient.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
@@ -285,6 +286,12 @@
 <![CDATA[
 <p>
 <strong>New in 2020.2</strong>
+</p>
+<p>
+<em>Added:</em>
+<ul>
+  <li>Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor (<a href="https://github.com/JetBrains/resharper-unity/pull/1661">#1661</a>)</li>
+</ul>
 </p>
 <p>
 <em>Changed:</em>
