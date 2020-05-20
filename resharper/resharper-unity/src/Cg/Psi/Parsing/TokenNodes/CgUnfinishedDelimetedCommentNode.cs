@@ -19,14 +19,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes
         public override int GetTextLength() => myText.Length;
         public override string GetText() => myText;
         public override bool IsFiltered() => true;
-        
+
         public TreeTextRange GetCommentRange()
         {
             // remove slash and asterisk from the start
             var start = GetTreeStartOffset();
             return new TreeTextRange(start + 2, start + GetTextLength());
         }
-        
+
         public string CommentText => myText.Substring(2);
     }
 }

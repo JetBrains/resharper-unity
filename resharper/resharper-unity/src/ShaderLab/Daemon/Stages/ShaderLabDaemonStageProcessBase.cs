@@ -1,6 +1,4 @@
 ﻿using System;
-using JetBrains.Application.Settings;
-using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -11,18 +9,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
     public abstract class ShaderLabDaemonStageProcessBase : TreeNodeVisitor<IHighlightingConsumer>,
         IRecursiveElementProcessor<IHighlightingConsumer>, IDaemonStageProcess
     {
-        private readonly IContextBoundSettingsStore mySettingsStore;
         private readonly IShaderLabFile myFile;
-        private IDocument myDocument;
-        
+
         public IDaemonProcess DaemonProcess { get; }
 
-        protected ShaderLabDaemonStageProcessBase(IDaemonProcess process, IContextBoundSettingsStore settingsStore, IShaderLabFile file)
+        protected ShaderLabDaemonStageProcessBase(IDaemonProcess process, IShaderLabFile file)
         {
             DaemonProcess = process;
-            mySettingsStore = settingsStore;
             myFile = file;
-            myDocument = process.Document;
         }
 
         public bool IsProcessingFinished(IHighlightingConsumer context)
@@ -52,12 +46,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         public virtual void Execute(Action<DaemonStageResult> committer)
         {
             HighlightInFile((file, consumer) => file.ProcessDescendants(this, consumer), committer);
-        }        
+        }
 
         private void HighlightInFile(Action<IShaderLabFile, IHighlightingConsumer> fileHighlighter,
             Action<DaemonStageResult> commiter)
         {
-
             var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile, DaemonProcess.ContextBoundSettingsStore);
             fileHighlighter(myFile, consumer);
             commiter(new DaemonStageResult(consumer.Highlightings));

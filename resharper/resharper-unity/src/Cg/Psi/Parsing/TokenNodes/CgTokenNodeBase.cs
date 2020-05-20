@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes
     public abstract class CgTokenNodeBase : LeafElementBase, ITokenNode, ICgTreeNode
     {
         public override PsiLanguageType Language => LanguageFromParent;
-        
+
         public TokenNodeType GetTokenType()
         {
             return (TokenNodeType) NodeType;

@@ -1,4 +1,4 @@
-﻿using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
+﻿﻿using JetBrains.ReSharper.Daemon.SyntaxHighlighting;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Daemon;

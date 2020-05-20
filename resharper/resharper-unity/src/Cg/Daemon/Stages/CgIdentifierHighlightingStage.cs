@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         {
             myLogger = logger;
         }
-        
+
         protected override IDaemonStageProcess CreateProcess(
             IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICgFile file)
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         private class IdentifierHighlightingProcess : CgDaemonStageProcessBase
         {
             private readonly ILogger myLogger;
-            
+
             public IdentifierHighlightingProcess(ILogger logger, IDaemonProcess daemonProcess, ICgFile file)
                 : base(daemonProcess, file)
             {
@@ -52,8 +52,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 {
                     context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.FUNCTION_IDENTIFIER, functionName.GetDocumentRange()));
                 }
-                
+                else if (postfixExpressionParam.OperandNode is IIdentifier identifier)
+                {
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.VARIABLE_IDENTIFIER, identifier.GetDocumentRange()));
+                }
+
                 base.VisitPostfixExpressionNode(postfixExpressionParam, context);
+            }
+
+            public override void VisitExpressionStatementNode(IExpressionStatement expressionStatementParam, IHighlightingConsumer context)
+            {
+                if (expressionStatementParam.FirstChild is IIdentifier identifier)
+                {
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.VARIABLE_IDENTIFIER, identifier.GetDocumentRange()));
+                }
+
+                base.VisitExpressionStatementNode(expressionStatementParam, context);
             }
 
             public override void VisitSingleVariableDeclarationNode(ISingleVariableDeclaration singleVariableDeclarationParam,
@@ -64,7 +78,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 {
                     context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, userDeclaredType.GetDocumentRange()));
                 }
-                
+
+                if (singleVariableDeclarationParam.NameNodes != null)
+                {
+                    context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.VARIABLE_IDENTIFIER,
+                        singleVariableDeclarationParam.NameNodes.GetDocumentRange()));
+                }
+
                 base.VisitSingleVariableDeclarationNode(singleVariableDeclarationParam, context);
             }
 
@@ -81,10 +101,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 {
                     HighlightNameNodes(variableDeclaration, context, CgHighlightingAttributeIds.FIELD_IDENTIFIER);
                 }
-                
+
                 base.VisitFieldDeclarationNode(fieldDeclarationParam, context);
             }
-            
+
             public override void VisitStructDeclarationNode(IStructDeclaration structDeclarationParam, IHighlightingConsumer context)
             {
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.TYPE_IDENTIFIER, structDeclarationParam.NameNode.GetDocumentRange()));
