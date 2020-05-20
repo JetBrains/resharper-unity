@@ -27,9 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
             KEYWORDS = new NodeTypeSet(
                 values
             );
-            
+
             BuiltInTypes = new Dictionary<string, TokenNodeType>();
-            
+
             // double gives error on d3d11: vs_4_0 does not support doubles as a storage type at line 34 (on d3d11)
             var builtInTypesRepresentation = new[]
             {
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
                 "float",
                 "double"
             };
-            
+
             foreach (var builtInType in builtInTypesRepresentation)
             {
                 BuiltInTypes.Add(builtInType, CgTokenNodeTypes.SCALAR_TYPE);

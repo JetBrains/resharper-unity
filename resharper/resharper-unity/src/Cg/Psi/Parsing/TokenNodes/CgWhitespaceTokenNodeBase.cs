@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodes
         }
 
         public abstract bool IsNewLine { get; }
-        
+
         public override bool IsFiltered() => true;
 
         public override string ToString()
