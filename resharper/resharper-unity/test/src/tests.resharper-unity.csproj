@@ -16,32 +16,27 @@
     <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="**\Rider\**" />
+    <EmbeddedResource Remove="**\Rider\**" />
+    <None Remove="**\Rider\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="JsonNew\**" />
+    <EmbeddedResource Remove="JsonNew\**" />
+    <None Remove="JsonNew\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="AsmDefNew\**" />
+    <EmbeddedResource Remove="AsmDefNew\**" />
+    <None Remove="AsmDefNew\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="NUnit.Console" Version="3.10.0" />
     <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="ShaderLab\Host\**" />
-    <EmbeddedResource Remove="ShaderLab\Host\**" />
-    <None Remove="ShaderLab\Host\**" />
-  </ItemGroup>
-    <ItemGroup>
-        <Compile Remove="**\Rider\**" />
-        <EmbeddedResource Remove="**\Rider\**" />
-        <None Remove="**\Rider\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Remove="JsonNew\**" />
-        <EmbeddedResource Remove="JsonNew\**" />
-        <None Remove="JsonNew\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Remove="AsmDefNew\**" />
-        <EmbeddedResource Remove="AsmDefNew\**" />
-        <None Remove="AsmDefNew\**" />
-    </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity.csproj" />
   </ItemGroup>
-    <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props')" />
-    <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props')" />
 </Project>

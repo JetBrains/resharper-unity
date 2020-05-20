@@ -19,10 +19,6 @@
       <Visible>False</Visible>
     </PsiLanguageNames>
     <CsLex Include="Psi\Parsing\Yaml.lex" />
-    <None Remove="Psi\Parsing\Yaml_lex.depends" />
-    <Compile Update="Psi\Parsing\Yaml_lex.cs">
-      <DependentUpon>Yaml.lex</DependentUpon>
-    </Compile>
     <TokenGenerator Include="Psi\Parsing\YamlTokenType.Tokens.xml">
       <OutputFile>Psi\Parsing\YamlTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
@@ -39,7 +35,7 @@
       <DependentUpon>YamlErrors.xml</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup>    
+  <ItemGroup>
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />

@@ -16,20 +16,16 @@
     <DefineConstants>TRACE;RIDER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit.Console" Version="3.10.0" />
-    <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\rider-unity.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Remove="AsmDef\**" />
     <EmbeddedResource Remove="AsmDef\**" />
     <None Remove="AsmDef\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AsmDefCommon\Feature" />
-    <Folder Include="AsmDefCommon\Feature\Services\Intentions" />
+    <PackageReference Include="NUnit.Console" Version="3.10.0" />
+    <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\rider-unity.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props')" />
