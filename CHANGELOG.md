@@ -15,6 +15,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Added
 
 - Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor ([#1661](https://github.com/JetBrains/resharper-unity/pull/1661))
+- Rider: Add sample text for "Unity", "ShaderLab" and "Cg/HLSL" Colour Scheme options pages ([#1667](https://github.com/JetBrains/resharper-unity/pull/1667))
 
 ### Changed
 
