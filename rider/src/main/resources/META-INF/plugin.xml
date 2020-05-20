@@ -95,7 +95,7 @@
     <xdebugger.breakpointType implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType" />
     <rider.breakpoint.customPanelProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointPanelProvider" />
     <rider.debug.breakpoint.handler.factory implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointHandlerFactory" />
-    <intentionMenuContributor implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.ConvertToPausepointIntentionMenuContributor" />
+    <rider.breakpoint.customPopupActionsProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.ConvertToPausepointPopupActionProvider" />
 
     <rider.android.project.validator implementation="com.jetbrains.rider.plugins.unity.android.UnityCustomAndroidProjectValidator"/>
     <rdclient.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>

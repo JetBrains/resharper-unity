@@ -1,8 +1,8 @@
 package com.jetbrains.rider.plugins.unity.debugger.breakpoints
 
 import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.xdebugger.XDebugSession
@@ -47,27 +47,18 @@ class UnityPausepointBreakpointType : DotNetLineBreakpointType(Id, Title) {
     override fun getVisibleStandardPanels(): EnumSet<StandardPanels> = EnumSet.of(StandardPanels.DEPENDENCY)
 
     override fun getAdditionalPopupMenuActions(breakpoint: XLineBreakpoint<DotNetLineBreakpointProperties>, currentSession: XDebugSession?): MutableList<out AnAction> {
-        return mutableListOf(ConvertToLineBreakpointAction())
-    }
-
-    private class ConvertToLineBreakpointAction : AnAction() {
-        override fun update(e: AnActionEvent) {
-            e.presentation.text = UnityPausepointConstants.convertToLineBreakpointText
-            e.presentation.description = UnityPausepointConstants.convertToLineBreakpointText
-        }
-
-        override fun actionPerformed(e: AnActionEvent) {
-            val dataContext = e.dataContext
-            val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return
+        val action = DumbAwareAction.create(UnityPausepointConstants.convertToLineBreakpointText) {
+            val dataContext = it.dataContext
+            val editor = CommonDataKeys.EDITOR.getData(dataContext) ?: return@create
+            val project = editor.project ?: return@create
 
             // This finds the breakpoint at the current line. We're an alt+enter action, so that's fine
-            val pair = XBreakpointUtil.findSelectedBreakpoint(e.project!!, editor)
-            var breakpoint = pair.second as? XLineBreakpoint<*> ?: return
-            if (breakpoint.properties is DotNetLineBreakpointProperties) {
+            val pair = XBreakpointUtil.findSelectedBreakpoint(project, editor)
+            if (breakpoint.properties is DotNetLineBreakpointProperties && pair.second == breakpoint) {
                 @Suppress("UNCHECKED_CAST")
-                breakpoint = breakpoint as XLineBreakpoint<DotNetLineBreakpointProperties>
-                convertToLineBreakpoint(e.project!!, breakpoint, editor, pair.first)
+                convertToLineBreakpoint(project, breakpoint, editor, pair.first)
             }
         }
+        return mutableListOf(action)
     }
 }
