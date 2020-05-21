@@ -104,6 +104,8 @@
   <ItemGroup Label="Resources">
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
+    <None Remove="CSharp\Psi\CodeStyle\UnityCodeCleanupPatterns.xaml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\UnityCodeCleanupPatterns.xaml" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Live templates">

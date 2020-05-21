@@ -1,0 +1,130 @@
+<Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns">
+  <!-- Based on the Default Pattern -->
+  <TypePattern DisplayName="Unity classes" Priority="100">
+    <TypePattern.Match>
+      <UnitySerializableClass />
+    </TypePattern.Match>
+
+    <Entry DisplayName="Public Delegates" Priority="100">
+      <Entry.Match>
+        <And>
+          <Access Is="Public" />
+          <Kind Is="Delegate" />
+        </And>
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <Name />
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="Public Enums" Priority="100">
+      <Entry.Match>
+        <And>
+          <Access Is="Public" />
+          <Kind Is="Enum" />
+        </And>
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <Name />
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="Static Fields and Constants">
+      <Entry.Match>
+        <Or>
+          <Kind Is="Constant" />
+          <And>
+            <Kind Is="Field" />
+            <Static />
+          </And>
+        </Or>
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <Kind>
+          <Kind.Order>
+            <DeclarationKind>Constant</DeclarationKind>
+            <DeclarationKind>Field</DeclarationKind>
+          </Kind.Order>
+        </Kind>
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="Serialized Fields">
+      <Entry.Match>
+        <UnitySerializedField />
+      </Entry.Match>
+
+      <!-- No sorting -->
+    </Entry>
+
+    <Entry DisplayName="Non-serialised Fields">
+      <Entry.Match>
+        <And>
+          <Kind Is="Field" />
+          <Not>
+            <UnitySerializedField />
+          </Not>
+        </And>
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <Readonly />
+        <Name />
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="Constructors">
+      <Entry.Match>
+        <Kind Is="Constructor" />
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <Static/>
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="Properties, Indexers">
+      <Entry.Match>
+        <Or>
+          <Kind Is="Property" />
+          <Kind Is="Indexer" />
+        </Or>
+      </Entry.Match>
+    </Entry>
+
+    <Entry DisplayName="Event Functions">
+      <Entry.Match>
+        <UnityEventFunction />
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <!-- Prioritises common event functions. For alphabetical, replace with <Name /> -->
+        <UnityEventFunction />
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="Interface Implementations" Priority="100">
+      <Entry.Match>
+        <And>
+          <Kind Is="Member" />
+          <ImplementsInterface />
+        </And>
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <ImplementsInterface Immediate="true" />
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="All other members" />
+
+    <Entry DisplayName="Nested Types">
+      <Entry.Match>
+        <Kind Is="Type" />
+      </Entry.Match>
+    </Entry>
+  </TypePattern>
+</Patterns>
