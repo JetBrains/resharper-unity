@@ -87,8 +87,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     // The priorities here put us after directory, file, namespace, type and member
     public class GameObjectUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {
+        // Note that the name is in CamelCase and spaces are added in the frontend
         public GameObjectUsageGroupingRule([NotNull] IconHost iconHost)
-            : base("Unity Game Object", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
+            : base("UnityGameObject", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 7.0)
         {
         }
 
@@ -108,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                         if (consumer.NameParts.Count > 0)
                             name = string.Join("\\", consumer.NameParts);
 
-                        return CreateModel(name); 
+                        return CreateModel(name);
                     }
                 }
             }
@@ -128,8 +129,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     {
         private readonly MetaFileGuidCache myMetaFileGuidCache;
 
+        // Note that the name is in CamelCase and spaces are added in the frontend
         public ComponentUsageGroupingRule(MetaFileGuidCache metaFileGuidCache, [NotNull] IconHost iconHost)
-            : base("Unity Component", UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
+            : base("UnityComponent", UnityObjectTypeThemedIcons.UnityComponent.Id, iconHost, 8.0)
         {
             myMetaFileGuidCache = metaFileGuidCache;
         }
