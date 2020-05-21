@@ -25,6 +25,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Fix meta file handling when references to Unity assemblies are invalid ([#1623](https://github.com/JetBrains/resharper-unity/pull/1623))
 - Public fields of type `Action` are no longer treated as serialised fields ([#1605](https://github.com/JetBrains/resharper-unity/issues/1605), [#1638](https://github.com/JetBrains/resharper-unity/pull/1638))
+- Rider: Fix grouping assets by directory ([#1668](https://github.com/JetBrains/resharper-unity/pull/1668))
 
 
 
