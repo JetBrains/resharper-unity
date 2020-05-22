@@ -29,7 +29,7 @@
 
   <!-- Running tests on a Mac requires PresentationCore/PresentationFramework, which isn't part of the standard Mono
        distro. We need to copy them from the SDK. Note that the IsOsPlatform function requires msbuild 15.3+ -->
-  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$([MSBuild]::IsOsPlatform())' == 'OSX' ">
+  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$([MSBuild]::IsOsPlatform(OSX))' == 'True' ">
     <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\macos-x64\mono\lib\mono\4.5\PresentationFramework.dll">
       <TargetPath>PresentationFramework.dll</TargetPath>
     </JetContent>
@@ -38,7 +38,7 @@
     </JetContent>
   </ItemGroup>
   <!-- This is untested -->
-  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$([MSBuild]::IsOsPlatform())' == 'Linux' ">
+  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$([MSBuild]::IsOsPlatform(Linux))' == 'True' ">
     <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\linux-x64\mono\lib\mono\4.5\PresentationFramework.dll">
       <TargetPath>PresentationFramework.dll</TargetPath>
     </JetContent>
