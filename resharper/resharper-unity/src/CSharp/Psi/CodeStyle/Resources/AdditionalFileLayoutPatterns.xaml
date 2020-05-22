@@ -1,5 +1,6 @@
 <Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns">
-  <!-- Based on the Default Pattern -->
+
+  <!-- Based on the "Default Pattern" pattern -->
   <TypePattern DisplayName="Unity classes" Priority="100">
     <TypePattern.Match>
       <UnitySerializableClass />

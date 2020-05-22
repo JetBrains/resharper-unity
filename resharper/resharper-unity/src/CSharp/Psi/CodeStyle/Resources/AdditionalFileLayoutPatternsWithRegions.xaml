@@ -1,0 +1,154 @@
+<Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns">
+
+  <!-- Based on the "Default Pattern" pattern -->
+  <TypePattern DisplayName="Unity classes" Priority="100">
+    <TypePattern.Match>
+      <UnitySerializableClass />
+    </TypePattern.Match>
+
+    <Region Name="Delegates">
+      <Entry DisplayName="Public Delegates" Priority="100">
+        <Entry.Match>
+          <And>
+            <Access Is="Public" />
+            <Kind Is="Delegate" />
+          </And>
+        </Entry.Match>
+
+        <Entry.SortBy>
+          <Name />
+        </Entry.SortBy>
+      </Entry>
+    </Region>
+
+    <Region Name="${0} enum" Priority="100">
+      <Region.GroupBy>
+        <Name />
+      </Region.GroupBy>
+
+      <Entry DisplayName="Public Enums" Priority="100">
+        <Entry.Match>
+          <And>
+            <Access Is="Public" />
+            <Kind Is="Enum" />
+          </And>
+        </Entry.Match>
+
+        <Entry.SortBy>
+          <Name />
+        </Entry.SortBy>
+      </Entry>
+    </Region>
+
+    <Entry DisplayName="Static Fields and Constants">
+      <Entry.Match>
+        <Or>
+          <Kind Is="Constant" />
+          <And>
+            <Kind Is="Field" />
+            <Static />
+          </And>
+        </Or>
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <Kind>
+          <Kind.Order>
+            <DeclarationKind>Constant</DeclarationKind>
+            <DeclarationKind>Field</DeclarationKind>
+          </Kind.Order>
+        </Kind>
+      </Entry.SortBy>
+    </Entry>
+
+    <!-- The Default Pattern doesn't put fields or methods in a region, but let's call out serialized fields and event functions -->
+    <Region Name="Serialized Fields">
+      <Entry DisplayName="Serialized Fields">
+        <Entry.Match>
+          <UnitySerializedField />
+        </Entry.Match>
+
+        <!-- No sorting -->
+      </Entry>
+    </Region>
+
+    <Entry DisplayName="Non-serialised Fields">
+      <Entry.Match>
+        <And>
+          <Kind Is="Field" />
+          <Not>
+            <UnitySerializedField />
+          </Not>
+        </And>
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <Readonly />
+        <Name />
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="Constructors">
+      <Entry.Match>
+        <Kind Is="Constructor" />
+      </Entry.Match>
+
+      <Entry.SortBy>
+        <Static/>
+      </Entry.SortBy>
+    </Entry>
+
+    <Entry DisplayName="Properties, Indexers">
+      <Entry.Match>
+        <Or>
+          <Kind Is="Property" />
+          <Kind Is="Indexer" />
+        </Or>
+      </Entry.Match>
+    </Entry>
+
+    <!-- The Default Pattern doesn't put fields or methods in a region, but let's call out serialized fields and event functions -->
+    <Region Name="Event Functions">
+      <Entry DisplayName="Event Functions">
+        <Entry.Match>
+          <UnityEventFunction />
+        </Entry.Match>
+
+        <Entry.SortBy>
+          <!-- Prioritises common event functions. For alphabetical, replace with <Name /> -->
+          <UnityEventFunction />
+        </Entry.SortBy>
+      </Entry>
+    </Region>
+
+    <Region Name="${0} Members" Priority="100">
+      <Region.GroupBy>
+        <ImplementsInterface Immediate="True" />
+      </Region.GroupBy>
+
+      <Entry DisplayName="Interface Members" Priority="100">
+        <Entry.Match>
+          <And>
+            <Kind Is="Member" />
+            <ImplementsInterface />
+          </And>
+        </Entry.Match>
+
+        <Entry.SortBy>
+          <ImplementsInterface Immediate="true" />
+        </Entry.SortBy>
+      </Entry>
+    </Region>
+
+    <Entry DisplayName="All other members" />
+
+    <Region Name="Nested type: ${0}">
+      <Entry DisplayName="Nested Types">
+        <Entry.Match>
+          <Kind Is="Type">
+          </Kind>
+        </Entry.Match>
+      </Entry>
+    </Region>
+  </TypePattern>
+</Patterns>

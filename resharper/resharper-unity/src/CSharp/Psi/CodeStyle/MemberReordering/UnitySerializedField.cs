@@ -4,9 +4,6 @@ using JetBrains.ReSharper.Psi.CSharp.Impl.CodeStyle.MemberReordering;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
-[assembly: XmlnsDefinition("urn:schemas-jetbrains-com:member-reordering-patterns",
-    "JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReordering")]
-
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReordering
 {
     public class UnitySerializedField : INodeConstraint
