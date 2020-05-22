@@ -1,8 +1,10 @@
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.Serialization;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues
 {
@@ -12,31 +14,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new InspectorVariableUsage(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<IHierarchyReference>(),
-            reader.ReadString(), reader.ReadPolymorphic<IAssetValue>());
+        private static object Read(UnsafeReader reader) => new InspectorVariableUsage(
+            HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+            HierarchyReferenceUtil.ReadExternalReferenceFrom(reader),
+            reader.ReadString(), 
+            reader.ReadPolymorphic<IAssetValue>());
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as InspectorVariableUsage);
 
         private static void Write(UnsafeWriter writer, InspectorVariableUsage value)
         {
-            writer.WritePolymorphic(value.Location);
-            writer.WritePolymorphic(value.ScriptReference);
+            value.Location.WriteTo(writer);
+            value.ScriptReference.WriteTo(writer);
             writer.Write(value.Name);
             writer.WritePolymorphic(value.Value);
         }
 
-        public InspectorVariableUsage(LocalReference location, IHierarchyReference scriptReference, string name,
+        public InspectorVariableUsage(LocalReference location, ExternalReference scriptReference, string name,
             IAssetValue assetValue)
         {
+            Assertion.Assert(name != null, "name != null");
             Location = location;
             ScriptReference = scriptReference;
-            Name = name;
+            Name = string.Intern(name);
             Value = assetValue;
         }
         
         public LocalReference Location { get; }
-        public IHierarchyReference ScriptReference { get; }
+        public ExternalReference ScriptReference { get; }
         public string Name { get; }
         public IAssetValue Value { get; }
 

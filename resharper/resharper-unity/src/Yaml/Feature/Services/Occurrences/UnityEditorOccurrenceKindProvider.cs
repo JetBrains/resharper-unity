@@ -12,12 +12,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Occurrences
     {
         public ICollection<OccurrenceKind> GetOccurrenceKinds(IOccurrence occurrence)
         {
-            if (occurrence is UnityMethodsOccurrence)
+            if (occurrence is UnityEventHandlerOccurrence)
                 return new[] {UnityAssetSpecificOccurrenceKinds.EventHandler};
             if (occurrence is UnityScriptsOccurrence)
                 return new[] {UnityAssetSpecificOccurrenceKinds.ComponentUsage};
             if (occurrence is UnityInspectorValuesOccurrence)
                 return new[] {UnityAssetSpecificOccurrenceKinds.InspectorUsage};
+            if (occurrence is UnityEventSubscriptionOccurrence)
+                return new[] {UnityAssetSpecificOccurrenceKinds.EventHandler};
             return EmptyList<OccurrenceKind>.Instance;
         }
 

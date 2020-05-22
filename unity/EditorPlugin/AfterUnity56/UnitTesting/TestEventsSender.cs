@@ -88,7 +88,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           {
             var status = GetStatus(new ResultState((TestStatus)resultState));
 
-            var testResult = new TestResult(id, assemblyName, output, (int) TimeSpan.FromMilliseconds(duration).TotalMilliseconds, 
+            var testResult = new TestResult(id, assemblyName, output, (int) duration, 
               status, parentId);
             TestFinished(unitTestLaunch, testResult);
             break;
@@ -139,7 +139,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       var output = ExtractOutput(testResult);
       var status = GetStatus(testResult.ResultState);
       return new TestResult( id, assemblyName, output,
-        (int) TimeSpan.FromMilliseconds(testResult.Duration).TotalMilliseconds,
+        (int)(testResult.EndTime - testResult.StartTime).TotalMilliseconds,
         status, GetIdFromNUnitTest(testResult.Test.Parent));
     }
 

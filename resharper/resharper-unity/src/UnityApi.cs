@@ -220,6 +220,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return IsDescendantOf(KnownTypes.ScriptableObject, type);
         }
 
+        public static bool IsDescendantOfUnityEvent([CanBeNull] ITypeElement type)
+        {
+            return IsDescendantOf(KnownTypes.UnityEvent, type);
+        }
+        
         public Version GetNormalisedActualVersion(IProject project)
         {
             return myTypes.Value.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));

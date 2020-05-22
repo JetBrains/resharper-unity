@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
@@ -29,10 +29,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (hierarchyElement == null)
                 return;
             
-            Assertion.Assert(!hierarchyElement.IsStripped, "!hierarchyElement.IsStripped"); // stripped elements should be never returned, 
+            Assertion.Assert(!(hierarchyElement is IStrippedHierarchyElement), "!hierarchyElement.IsStripped"); // stripped elements should be never returned, 
             Assertion.Assert(!(hierarchyElement is IPrefabInstanceHierarchy), "Process should not be started from prefab instance, use corresponding GO");
 
             var owner = myAssetDocumentHierarchyElementContainer.GetAssetHierarchyFor(hierarchyElement.Location, out _);
+            if (owner == null)
+                return;
             
             ProcessHierarchy(owner, hierarchyElement, consumer, forcePrefabImport, new HashSet<ulong>());
         }
@@ -45,8 +47,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (owner == null)
                 return;
 
-            var hierarchyElement = owner.GetHierarchyElement(guid, location.LocalDocumentAnchor, forcePrefabImportForStartPoint ? myPrefabImportCache : null);
-            if (hierarchyElement.IsStripped && !forcePrefabImportForStartPoint)
+            if (guid == null)
+                return;
+            
+            var hierarchyElement = owner.GetHierarchyElement(guid.Value, location.LocalDocumentAnchor, forcePrefabImportForStartPoint ? myPrefabImportCache : null);
+            if (hierarchyElement is IStrippedHierarchyElement && !forcePrefabImportForStartPoint)
                 return;
             
             ProcessSceneHierarchyFromComponentToRoot(hierarchyElement, consumer, forcePrefabImport);            
@@ -67,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             }
             else if (element is IComponentHierarchy componentHierarchy)
             {
-                var gameObjectReference = componentHierarchy.GameObjectReference;
+                var gameObjectReference = componentHierarchy.OwningGameObject;
                 var gameObject = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(gameObjectReference, prefabImport) as IGameObjectHierarchy;
 
                 ProcessGameObject(owner, gameObject, consumer, prefabImport, visited);
@@ -87,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (!consumer.AddGameObject(owner, gameObject))
                 return;
                 
-            var parentTransform = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(gameObject.GetTransformHierarchy(owner).Parent, prefabImport) as ITransformHierarchy;
+            var parentTransform = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(transform.ParentTransform, prefabImport) as ITransformHierarchy;
             if (parentTransform == null)
                 return;
 

@@ -12,6 +12,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing;
@@ -19,33 +20,40 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.Text;
 using JetBrains.Util;
+using JetBrains.Util.Caches;
 using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
     [SolutionComponent]
-    public class UnityAssetCache : DeferredCacheBase<UnityAssetData>
+    public class UnityAssetsCache : DeferredCacheBase<UnityAssetData> , IUnityAssetDataElementPointer
     {
         private readonly AssetDocumentHierarchyElementContainer myHierarchyElementContainer;
         private readonly DocumentToProjectFileMappingStorage myDocumentToProjectFileMappingStorage;
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly PrefabImportCache myPrefabImportCache;
+        private readonly IShellLocks myShellLocks;
         private readonly ILogger myLogger;
         private readonly List<IUnityAssetDataElementContainer> myOrderedContainers;
         private readonly List<IUnityAssetDataElementContainer> myOrderedIncreasingContainers;
         private readonly ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)> myDocumentNumber = new ConcurrentDictionary<IPsiSourceFile, (UnityAssetData, int)>();
         private readonly ConcurrentDictionary<IPsiSourceFile, long> myCurrentTimeStamp = new ConcurrentDictionary<IPsiSourceFile, long>();
-        public UnityAssetCache(Lifetime lifetime, DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage, AssetIndexingSupport assetIndexingSupport, PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers, ILogger logger)
+        public UnityAssetsCache(Lifetime lifetime, DocumentToProjectFileMappingStorage documentToProjectFileMappingStorage, AssetIndexingSupport assetIndexingSupport,
+            PrefabImportCache prefabImportCache, IPersistentIndexManager persistentIndexManager, IEnumerable<IUnityAssetDataElementContainer> unityAssetDataElementContainers,
+            IShellLocks shellLocks, ILogger logger)
             : base(lifetime, persistentIndexManager, new UniversalMarshaller<UnityAssetData>(UnityAssetData.ReadDelegate, UnityAssetData.WriteDelegate))
         {
             myDocumentToProjectFileMappingStorage = documentToProjectFileMappingStorage;
             myAssetIndexingSupport = assetIndexingSupport;
             myPrefabImportCache = prefabImportCache;
+            myShellLocks = shellLocks;
             myLogger = logger;
             myOrderedContainers = unityAssetDataElementContainers.OrderByDescending(t => t.Order).ToList();
             myOrderedIncreasingContainers = myOrderedContainers.OrderBy(t => t.Order).ToList();
 
             myHierarchyElementContainer = myOrderedContainers.First(t => t is AssetDocumentHierarchyElementContainer) as AssetDocumentHierarchyElementContainer;
+            
+            Map.Cache = new DirectMappedCache<IPsiSourceFile, UnityAssetData>(10);
         }
 
         public override bool IsApplicable(IPsiSourceFile sourceFile)
@@ -58,6 +66,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         protected override void MergeData(IPsiSourceFile sourceFile, UnityAssetData data)
         {
+            myDocumentNumber.TryRemove(sourceFile, out _);
+            myCurrentTimeStamp.TryRemove(sourceFile, out _);
+
             if (!data.UnityAssetDataElements.TryGetValue(myHierarchyElementContainer.Id, out var hierarchyElement))
                 return;
             
@@ -68,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                     Assertion.Assert(container != null, "container != null");
                     try
                     {
-                        container.Merge(sourceFile,hierarchyElement as AssetDocumentHierarchyElement, element);
+                        container.Merge(sourceFile, hierarchyElement as AssetDocumentHierarchyElement,this, element);
                     }
                     catch (Exception e)
                     {
@@ -86,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 return null;
                 
             if (!psiSourceFile.GetLocation().SniffYamlHeader())
-                return new UnityAssetData();
+                return new UnityAssetData(psiSourceFile, EmptyList<IUnityAssetDataElementContainer>.Enumerable);
             
             var (result, alreadyBuildDocId) = GetAlreadyBuildDocId(psiSourceFile);
             EnumerateDocuments(psiSourceFile, buffer =>
@@ -148,27 +159,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private (UnityAssetData, int) GetAlreadyBuildDocId(IPsiSourceFile psiSourceFile)
         {
             if (!myCurrentTimeStamp.TryGetValue(psiSourceFile, out var timeStamp))
-                return (new UnityAssetData(), 0);
+                return (new UnityAssetData(psiSourceFile, myOrderedContainers), 0);
 
             if (psiSourceFile.GetAggregatedTimestamp() != timeStamp)
-                return (new UnityAssetData(), 0);
+                return (new UnityAssetData(psiSourceFile, myOrderedContainers), 0);
             
             return myDocumentNumber[psiSourceFile];
         }
 
-        private void BuildDocument(UnityAssetData data, SeldomInterruptChecker checker, IPsiSourceFile sourceFile, int start, IBuffer buffer)
+        private void BuildDocument(UnityAssetData data, SeldomInterruptChecker checker, IPsiSourceFile assetSourceFile, int start, IBuffer buffer)
         {
-            var assetDocument = new AssetDocument(start, buffer);
-            var results = new LocalList<IUnityAssetDataElement>();
+            var assetDocument = new AssetDocument(start, buffer, null);
+            var results = new LocalList<(string, object)>();
             foreach (var unityAssetDataElementContainer in myOrderedContainers)
             {
                 checker.CheckForInterrupt();
                 
                 try
                 {
-                    var result = unityAssetDataElementContainer.Build(checker, sourceFile, assetDocument);
+                    var result = unityAssetDataElementContainer.Build(checker, assetSourceFile, assetDocument);
+                    if (result is IHierarchyElement hierarchyElement)
+                        assetDocument = assetDocument.WithHiererchyElement(hierarchyElement);
+
                     if (result != null)
-                        results.Add(result);
+                        results.Add((unityAssetDataElementContainer.Id, result));
                 }
                 catch (OperationCanceledException)
                 {
@@ -182,7 +196,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             foreach (var result in results)
             {
-                data.AddDataElement(result);
+                data.UnityAssetDataElements[result.Item1].AddData(result.Item2);
             }
         }
 
@@ -228,6 +242,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             }
 
             myPrefabImportCache.Invalidate();
+        }
+
+        public IUnityAssetDataElement GetElement(IPsiSourceFile assetSourceFile, string containerId)
+        {
+            myShellLocks.AssertReadAccessAllowed();
+            var restoredElement = Map[assetSourceFile].UnityAssetDataElements[containerId];
+            if (restoredElement is AssetDocumentHierarchyElement hierarchy)
+                hierarchy.RestoreHierarchy(myHierarchyElementContainer, assetSourceFile);
+            
+            return restoredElement;
+
         }
     }
 }

@@ -1,0 +1,34 @@
+Search target
+    DefaultNamespace.Script5.Transform:Transform
+Found usages  (9 usages found)
+    Assets  (9 usages found)
+        Ex5\Ex5.unity  (4 usages found)
+            GameObject  (2 usages found)
+                Script5  (2 usages found)
+                    Transform = Right (Transform)
+                    Transform = Root Variant (Transform)
+            Root  (2 usages found)
+                Left  (1 usage found)
+                    Script5  (1 usage found)
+                        Transform = Right (Transform)
+                Right  (1 usage found)
+                    Script5  (1 usage found)
+                        Transform = Left (Transform)
+        Ex5\GameObject.prefab  (2 usages found)
+            GameObject  (2 usages found)
+                Script5  (2 usages found)
+                    Transform = None
+                    Transform = None
+        Ex5\Left.prefab  (1 usage found)
+            Left  (1 usage found)
+                Script5  (1 usage found)
+                    Transform = None
+        Ex5\Right.prefab  (1 usage found)
+            Right  (1 usage found)
+                Script5  (1 usage found)
+                    Transform = None
+        Ex5\Root Variant.prefab  (1 usage found)
+            Root Variant  (1 usage found)
+                Left  (1 usage found)
+                    Script5  (1 usage found)
+                        Transform = Right (Transform)

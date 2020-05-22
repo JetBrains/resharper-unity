@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using JetBrains.Collections;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
@@ -17,6 +22,7 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
+using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
@@ -93,16 +99,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
 
         [CanBeNull]
-        public static AssetDocumentReference GetGameObject(IBuffer assetDocumentBuffer) =>
-            GetReferenceBySearcher(assetDocumentBuffer, ourGameObjectFieldSearcher);
+        public static IHierarchyReference GetGameObjectReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourGameObjectFieldSearcher);
         
         [CanBeNull]
-        public static AssetDocumentReference GetTransformFather(IBuffer assetDocumentBuffer) =>
-            GetReferenceBySearcher(assetDocumentBuffer, ourFatherSearcher);
+        public static IHierarchyReference GetTransformFather(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourFatherSearcher);
         
         [CanBeNull]
-        public static AssetDocumentReference GetSourcePrefab(IBuffer assetDocumentBuffer) =>
-            GetReferenceBySearcher(assetDocumentBuffer, ourSourcePrefabSearcher) ?? GetReferenceBySearcher(assetDocumentBuffer, ourSourcePrefab2017Searcher);
+        public static IHierarchyReference GetSourcePrefab(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourSourcePrefabSearcher) ??
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourSourcePrefab2017Searcher);
 
         public static int GetRootIndex(IBuffer assetDocumentBuffer)
         {
@@ -159,17 +166,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
         
         [CanBeNull]
-        public static AssetDocumentReference GetPrefabInstance(IBuffer assetDocumentBuffer) =>
-            GetReferenceBySearcher(assetDocumentBuffer, ourPrefabInstanceSearcher) ??
-            GetReferenceBySearcher(assetDocumentBuffer, ourPrefabInstanceSearcher2017);
+        public static IHierarchyReference GetPrefabInstance(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourPrefabInstanceSearcher) ??
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourPrefabInstanceSearcher2017);
 
         [CanBeNull]
-        public static AssetDocumentReference GetCorrespondingSourceObject(IBuffer assetDocumentBuffer) =>
-            GetReferenceBySearcher(assetDocumentBuffer, ourCorrespondingObjectSearcher) ??
-            GetReferenceBySearcher(assetDocumentBuffer, ourCorrespondingObjectSearcher2017);
+        public static IHierarchyReference GetCorrespondingSourceObject(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourCorrespondingObjectSearcher) ??
+            GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourCorrespondingObjectSearcher2017);
         
         [CanBeNull]
-        public static AssetDocumentReference GetReferenceBySearcher(IBuffer assetDocumentBuffer, StringSearcher searcher)
+        public static IHierarchyReference GetReferenceBySearcher(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer, StringSearcher searcher)
         {
             var start = searcher.Find(assetDocumentBuffer, 0, assetDocumentBuffer.Length);
             if (start < 0)
@@ -183,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             var parser = new YamlParser(lexer.ToCachingLexer());
             var document = parser.ParseDocument();
 
-            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.AsFileID();
+            return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.ToHierarchyReference(assetSourceFile);
         }
         
         [CanBeNull]
@@ -231,7 +238,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         
         public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
         {
-            if (componentHierarchy is IScriptComponentHierarchy scriptComponent && scriptComponent.ScriptReference != null)
+            if (componentHierarchy is IScriptComponentHierarchy scriptComponent)
             {
                 var result = metaFileGuidCache.GetAssetNames(scriptComponent.ScriptReference.ExternalAssetGuid).FirstOrDefault();
                 if (result != null)
@@ -242,13 +249,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         }
 
         [CanBeNull]
-        public static ITypeElement GetTypeElementFromScriptAssetGuid(ISolution solution, [CanBeNull] string assetGuid)
+        public static ITypeElement GetTypeElementFromScriptAssetGuid(ISolution solution, [CanBeNull] Guid? assetGuid)
         {
             if (assetGuid == null)
                 return null;
 
             var cache = solution.GetComponent<MetaFileGuidCache>();
-            var assetPaths = cache.GetAssetFilePathsFromGuid(assetGuid);
+            var assetPaths = cache.GetAssetFilePathsFromGuid(assetGuid.Value);
             if (assetPaths == null || assetPaths.IsEmpty())
                 return null;
 
@@ -281,7 +288,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return null;
         }
         
-        public static string GetGuidFor(MetaFileGuidCache metaFileGuidCache, ITypeElement typeElement)
+        public static Guid? GetGuidFor(MetaFileGuidCache metaFileGuidCache, ITypeElement typeElement)
         {
             var sourceFile = typeElement.GetDeclarations().FirstOrDefault()?.GetSourceFile();
             if (sourceFile == null || !sourceFile.IsValid())
@@ -300,5 +307,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return guid;
         }
 
+        public static bool HasPossibleDerivedTypesWithMember(Guid ownerGuid, ITypeElement containingType, IEnumerable<string> memberNames, OneToCompactCountingSet<int, Guid> nameHashToGuids)
+        {
+            
+            var count = 0;
+            foreach (var possibleName in memberNames)
+            {
+                var values = nameHashToGuids.GetValues(possibleName.GetPlatformIndependentHashCode());
+                count += values.Length;
+                if (values.Length == 1 && !values[0].Equals(ownerGuid))
+                    count++;
+            }
+
+            if (count > 1)
+            {
+                // TODO: drop daemon dependency and inject compoentns in consructor
+                var configuration = containingType.GetSolution().GetComponent<SolutionAnalysisConfiguration>();
+                if (configuration.Enabled.Value && configuration.CompletedOnceAfterStart.Value &&
+                    configuration.Loaded.Value)
+                {
+                    var service = containingType.GetSolution().GetComponent<SolutionAnalysisService>();
+                    var id = service.GetElementId(containingType);
+                    if (id.HasValue && service.UsageChecker is IGlobalUsageChecker checker)
+                    {
+                        // no inheritors
+                        if (checker.GetDerivedTypeElementsCount(id.Value) == 0)
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Source dictionary will be changed!
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="import"></param>
+        /// <returns></returns>
+        public static Dictionary<string, IAssetValue> Import(Dictionary<string, IAssetValue> source, Dictionary<string, IAssetValue> import)
+        {
+            foreach (var (name, value) in import)
+            {
+                source[name] = value;
+            }
+
+            return source;
+        }
     }
 }
