@@ -1,5 +1,3 @@
-using JetBrains.Application.Environment;
-using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Daemon.VisualElements;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -17,20 +15,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
     {
         private readonly DaemonProcessKind myProcessKind;
         private readonly bool myInternalMode;
-        private readonly bool myIdentifierHighlightingEnabled;
         private readonly VisualElementHighlighter myVisualElementHighlighter;
         private readonly ResolveProblemHighlighter myResolveProblemHighlighter;
         private readonly IReferenceProvider myReferenceProvider;
 
         public IdentifierHighlighterProcess(IDaemonProcess process, ResolveHighlighterRegistrar registrar,
-            IContextBoundSettingsStore settingsStore, DaemonProcessKind processKind, IShaderLabFile file,
-            ConfigurableIdentifierHighlightingStageService identifierHighlightingStageService, 
-            bool internalMode)
-            : base(process, settingsStore, file)
+                                            IContextBoundSettingsStore settingsStore, DaemonProcessKind processKind,
+                                            IShaderLabFile file, bool internalMode)
+            : base(process, file)
         {
             myProcessKind = processKind;
             myInternalMode = internalMode;
-            myIdentifierHighlightingEnabled = identifierHighlightingStageService.ShouldHighlightIdentifiers(settingsStore);
             myVisualElementHighlighter = new VisualElementHighlighter(ShaderLabLanguage.Instance, settingsStore);
             myResolveProblemHighlighter = new ResolveProblemHighlighter(registrar);
             myReferenceProvider = ((IFileImpl)file).ReferenceProvider;
@@ -40,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
         {
             if (!myInternalMode && myProcessKind != DaemonProcessKind.VISIBLE_DOCUMENT)
                 return;
-            
+
             if (myProcessKind == DaemonProcessKind.VISIBLE_DOCUMENT)
             {
                 // TODO: Highlight identifiers
@@ -50,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
                 if (info != null)
                     consumer.AddHighlighting(info.Highlighting, info.Range);
             }
-            
+
 
             var references = node.GetReferences(myReferenceProvider);
             myResolveProblemHighlighter.CheckForResolveProblems(node, consumer, references);

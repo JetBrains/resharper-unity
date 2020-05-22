@@ -12,6 +12,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net201...net202)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/36?closed=1)
 
+### Added
+
+- Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor ([#1661](https://github.com/JetBrains/resharper-unity/pull/1661))
+- Rider: Add sample text for "Unity", "ShaderLab" and "Cg/HLSL" Colour Scheme options pages ([#1667](https://github.com/JetBrains/resharper-unity/pull/1667))
+
 ### Changed
 
 - All applicable quick fixes are now bulk actions, and can be applied over project scope ([#1648](https://github.com/JetBrains/resharper-unity/issues/1648), [#1649](https://github.com/JetBrains/resharper-unity/pull/1649))
@@ -19,6 +24,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Fixed
 
 - Fix meta file handling when references to Unity assemblies are invalid ([#1623](https://github.com/JetBrains/resharper-unity/pull/1623))
+- Public fields of type `Action` are no longer treated as serialised fields ([#1605](https://github.com/JetBrains/resharper-unity/issues/1605), [#1638](https://github.com/JetBrains/resharper-unity/pull/1638))
 
 
 

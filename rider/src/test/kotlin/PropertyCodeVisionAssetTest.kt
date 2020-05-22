@@ -91,6 +91,44 @@ class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
         true
     }
 
+    // I am not sure, how implement counter without estimated `+` sign
+    // Tests for fixing current behaviour only
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    fun prefabModifications01(caseName: String, showProperties: String) = doUnityTest("True",
+        "Assets/Script1.cs") {
+        true
+    }
+
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    fun prefabModifications02(caseName: String, showProperties: String) = doUnityTest("True",
+        "Assets/Script2.cs") {
+        true
+    }
+
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    fun prefabModifications03(caseName: String, showProperties: String) = doUnityTest("True",
+        "Assets/Script3.cs") {
+        true
+    }
+
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    fun prefabModifications04(caseName: String, showProperties: String) = doUnityTest("True",
+        "Assets/Script4.cs") {
+        true
+    }
+
+    @Test(dataProvider = "assetSettings")
+    @TestEnvironment(solution = "PrefabModificationTestSolution")
+    fun prefabModifications05(caseName: String, showProperties: String) = doUnityTest("True",
+        "Assets/Script5.cs") {
+        true
+    }
+
+
     fun doUnityTest(showProperties: String, file: String, action: EditorImpl.() -> Boolean) {
         setReSharperSetting("CodeEditing/Unity/EnableInspectorPropertiesEditor/@EntryValue", showProperties)
         waitAndPump(project.lifetime, { project.solution.rdUnityModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })

@@ -1,70 +1,70 @@
-using JetBrains.Annotations;
-using JetBrains.Application.PersistentMap;
+using System.Collections.Generic;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
-    [PolymorphicMarshaller]
-    public class ScriptComponentHierarchy : ComponentHierarchy, IScriptComponentHierarchy
+    public readonly struct ScriptComponentHierarchy : IScriptComponentHierarchy
     {
-        [UsedImplicitly] 
-        public new static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
+        public LocalReference Location { get; }
+        public LocalReference OwningGameObject { get; }
+        public ExternalReference ScriptReference { get; }
 
-        private static object Read(UnsafeReader reader) => new ScriptComponentHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(),
-            reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
-
-        [UsedImplicitly]
-        public new static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as ScriptComponentHierarchy);
-
-        private static void Write(UnsafeWriter writer, ScriptComponentHierarchy value)
+        public ScriptComponentHierarchy(LocalReference location, LocalReference owner, ExternalReference scriptReference)
         {
-            writer.WritePolymorphic(value.Location);
-            writer.WritePolymorphic(value.ScriptReference);
-            writer.WritePolymorphic(value.GameObjectReference);
-            writer.WritePolymorphic(value.PrefabInstance);
-            writer.WritePolymorphic(value.CorrespondingSourceObject);
-            writer.Write(value.IsStripped);
-        }
-        
-        public ScriptComponentHierarchy(LocalReference reference, ExternalReference scriptReference,
-            LocalReference gameObject, LocalReference prefabInstance, ExternalReference correspondingSourceObject
-            , bool isStripped) 
-            : base("MonoBehaviour", reference, gameObject, prefabInstance, correspondingSourceObject, isStripped)
-        {
-            Assertion.Assert(isStripped || scriptReference != null, "isStripped || scriptReference != null");
+            Location = location;
+            OwningGameObject = owner;
             ScriptReference = scriptReference;
         }
 
-        [CanBeNull]
-        public virtual ExternalReference ScriptReference { get; }
-
-        protected bool Equals(ScriptComponentHierarchy other)
-        {
-            return base.Equals(other) && Equals(ScriptReference, other.ScriptReference);
-        }
-
-        public override IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedScriptComponentHierarchy(prefabInstanceHierarchy, this);
         }
 
-        public override bool Equals(object obj)
+        public string Name => "MonoBehaviour";
+
+        public static void Write(UnsafeWriter writer, ScriptComponentHierarchy scriptComponentHierarchy)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ScriptComponentHierarchy) obj);
+            scriptComponentHierarchy.Location.WriteTo(writer);
+            scriptComponentHierarchy.OwningGameObject.WriteTo(writer);
+            scriptComponentHierarchy.ScriptReference.WriteTo(writer);
         }
 
-        public override int GetHashCode()
+        public static ScriptComponentHierarchy Read(UnsafeReader reader)
         {
-            unchecked
+            return new ScriptComponentHierarchy(
+                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+                HierarchyReferenceUtil.ReadExternalReferenceFrom(reader));
+        }
+        
+        public List<Dictionary<string, IAssetValue>> ImportUnityEventData(UnityEventsElementContainer elementContainer, JetHashSet<string> allUnityEventNames)
+        {
+            var unityEvents = elementContainer.GetUnityEventDataFor(Location, allUnityEventNames);
+
+            var result = new List<Dictionary<string, IAssetValue>>();
+            foreach (var unityEventData in unityEvents)
             {
-                return (base.GetHashCode() * 397) ^ (ScriptReference != null ? ScriptReference.GetHashCode() : 0);
+                for (int i = 0; i < unityEventData.Calls.Count; i++)
+                {
+                    var dictionary = unityEventData.Calls[i].ToDictionary();
+                    if (i < result.Count)
+                    {
+                        AssetUtils.Import(result[i], dictionary);
+                    }
+                    else
+                    {
+                        Assertion.Assert(result.Count == i, "result.Count == i");
+                        result.Add(dictionary);
+                    }
+                }    
             }
+            return result;
         }
     }
 }

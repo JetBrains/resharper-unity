@@ -1,0 +1,2 @@
+﻿Prefab is serialized with old name "voidHandler2"
+Modification uses new name "voidHandler"

@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
     public class CgLanguage : KnownLanguage
     {
         public new const string Name = "CG";
-        
+
         [CanBeNull, UsedImplicitly]
         public static CgLanguage Instance { get; private set; }
 

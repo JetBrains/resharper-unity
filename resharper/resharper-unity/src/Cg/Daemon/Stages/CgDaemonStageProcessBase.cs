@@ -9,8 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
     public abstract class CgDaemonStageProcessBase : TreeNodeVisitor<IHighlightingConsumer>, IRecursiveElementProcessor<IHighlightingConsumer>, IDaemonStageProcessWithPsiFile
     {
         private readonly ICgFile myFile;
-        
-        
+
         public IDaemonProcess DaemonProcess { get; }
         public IFile File => myFile;
 
@@ -19,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             DaemonProcess = daemonProcess;
             myFile = file;
         }
-        
+
         public virtual bool InteriorShouldBeProcessed(ITreeNode element, IHighlightingConsumer context)
         {
             return true;
@@ -29,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         {
             if (DaemonProcess.InterruptFlag)
                 throw new OperationCanceledException();
-            
+
             return false;
         }
 
@@ -55,13 +54,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
         {
             HighlightInFile((file, consumer) => file.ProcessDescendants(this, consumer), committer);
         }
-        
+
         private void HighlightInFile(Action<ICgFile, IHighlightingConsumer> fileHighlighter, Action<DaemonStageResult> committer)
         {
             var consumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, myFile, DaemonProcess.ContextBoundSettingsStore);
             fileHighlighter(myFile, consumer);
             committer(new DaemonStageResult(consumer.Highlightings));
         }
-
     }
 }

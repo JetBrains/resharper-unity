@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
@@ -22,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public bool AddGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject)
         {
             myParts.Push(gameObject.Name ?? "...");
-            myIndex.Push(gameObject.GetTransformHierarchy(owner).RootIndex);
+            myIndex.Push(gameObject.GetTransformHierarchy(owner).NotNull("gameObject.GetTransformHierarchy(cache, owner) != null").RootIndex);
             return !myOnlyName;
         }
     }

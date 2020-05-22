@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
@@ -6,10 +7,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public interface IPrefabInstanceHierarchy : IHierarchyElement
     {
-        IReadOnlyDictionary<(ulong, string), IAssetValue> Modifications { get; }
+        PrefabModification GetModificationFor(ulong owningObject, string fieldName);
         IReadOnlyList<PrefabModification> PrefabModifications { get; }
         LocalReference ParentTransform { get; }
-        string SourcePrefabGuid { get; }
-
+        Guid SourcePrefabGuid { get; }
     }
 }

@@ -30,13 +30,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             "PSIZE", // listed as fixed for vo and parametrized for vi
             "TANGENT",
             "TEXCOORD", // v io, pi
-                
+
             // output
             "TESSFACTOR",
-                
+
             // pixel, output
             "DEPTH",
-                
+
             // d3d10 System-Value semantics
             "SV_ClipDistance",
             "SV_CullDistance",
@@ -48,16 +48,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             "POSITIONT",
             // output
             "FOG",
-                
+
             // pixel, input
             "VFACE",
             "VPOS",
             // pixel, output
-                
+
             // d3d10 System-Value semantics
             "SV_Coverage",
             "SV_Depth",
-            "SV_DepthGreaterEqual", // ? 
+            "SV_DepthGreaterEqual", // ?
             "SV_DepthLessEqual",    // not sure how these two are used properly
             "SV_DispatchThreadID",
             "SV_DomainLocation",
@@ -79,10 +79,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
             "SV_VertexID",
             "SV_ViewportArrayIndex"
         };
-        
+
         private readonly CgSupportSettings myCgSupportSettings;
         private readonly JetHashSet<string> mySemantics;
-        
+
         public CgSyntaxHighlightingStage(CgSupportSettings cgSupportSettings)
         {
             myCgSupportSettings = cgSupportSettings;
@@ -129,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                 myIsErrorHighlightingEnabled = isErrorHighlightingEnabled;
                 mySemantics = semantics;
             }
-            
+
             public override void VisitConstantValueNode(IConstantValue constantValueParam, IHighlightingConsumer context)
             {
                 context.AddHighlighting(new CgHighlighting(CgHighlightingAttributeIds.NUMBER, constantValueParam.GetDocumentRange()));
@@ -158,12 +158,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Daemon.Stages
                         context.AddHighlighting(new CgSyntaxError("Semantic, packoffset or register expected", range));
                     }
                 }
-                
+
                 base.VisitSemanticNode(semanticParam, context);
             }
 
             public override void VisitNode(ITreeNode node, IHighlightingConsumer context)
-            {   
+            {
                 if (myIsErrorHighlightingEnabled && node is IErrorElement errorElement)
                 {
                     var range = GetErrorRange(errorElement);

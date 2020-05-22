@@ -3,7 +3,7 @@ using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings.Rename
@@ -53,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                     if (cacheController.IsProcessingFiles())
                         return true;
                     
-                    var methods = solution.GetComponent<AssetMethodsElementContainer>();
+                    var methods = solution.GetComponent<UnityEventsElementContainer>();
                     return methods.GetAssetUsagesCount(clrDeclaredElement, out bool estimatedResult) > 0 || estimatedResult;
                 default:
                     return false;

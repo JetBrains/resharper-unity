@@ -1,25 +1,26 @@
 using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Finder;
 using JetBrains.ReSharper.Psi.Search;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
     [SearchGuru(SearchGuruPerformanceEnum.FastFilterOutByIndex)]
     public class UnityYamlSearchGuru : ISearchGuru
     {
-        private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
-        private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
+        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
+        private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
 
-        public UnityYamlSearchGuru(UnityApi unityApi, AssetUsagesElementContainer assetUsagesElementContainer,
-            AssetMethodsElementContainer assetMethodsElementContainer, AssetInspectorValuesContainer container)
+        public UnityYamlSearchGuru(UnityApi unityApi, AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
+            UnityEventsElementContainer unityEventsElementContainer, AssetInspectorValuesContainer container)
         {
-            myAssetUsagesElementContainer = assetUsagesElementContainer;
-            myAssetMethodsElementContainer = assetMethodsElementContainer;
+            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
+            myUnityEventsElementContainer = unityEventsElementContainer;
             myInspectorValuesContainer = container;
         }
 
@@ -42,17 +43,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             switch (element)
             {
                 case IClass _class:
-                    foreach (var sourceFile in myAssetUsagesElementContainer.GetPossibleFilesWithUsage(_class))
+                    foreach (var sourceFile in myAssetScriptUsagesElementContainer.GetPossibleFilesWithUsage(_class))
                         set.Add(sourceFile);
                     break;
                 case IProperty _:
                 case IMethod _:
-                    foreach (var sourceFile in myAssetMethodsElementContainer.GetPossibleFilesWithUsage(element))
+                    foreach (var sourceFile in myUnityEventsElementContainer.GetPossibleFilesWithUsage(element))
                         set.Add(sourceFile);
                     break;
                 case IField field:
-                    foreach (var sourceFile in myInspectorValuesContainer.GetPossibleFilesWithUsage(field))
-                        set.Add(sourceFile);
+                    if (UnityApi.IsDescendantOfUnityEvent(field.Type.GetTypeElement()))
+                    {
+                        foreach (var sourceFile in myUnityEventsElementContainer.GetPossibleFilesWithUsage(element))
+                            set.Add(sourceFile);
+                    }
+                    else
+                    {
+                        foreach (var sourceFile in myInspectorValuesContainer.GetPossibleFilesWithUsage(field))
+                            set.Add(sourceFile);
+                    }
+
                     break;
             }
             

@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi
         public override bool ProvidedLanguageCanHaveNestedInjects => false;
 
         public override PsiLanguageType GeneratedLanguage => (PsiLanguageType) CgLanguage.Instance ?? UnknownLanguage.Instance;
-        
+
         public override bool IsApplicable(PsiLanguageType originalLanguage)
         {
             return originalLanguage.Is<ShaderLabLanguage>();

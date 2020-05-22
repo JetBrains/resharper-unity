@@ -3,7 +3,7 @@
     <TargetFramework>net461</TargetFramework>
     <AssemblyName>JetBrains.ReSharper.Plugins.Yaml</AssemblyName>
     <RootNamespace>JetBrains.ReSharper.Plugins.Yaml</RootNamespace>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
@@ -19,10 +19,6 @@
       <Visible>False</Visible>
     </PsiLanguageNames>
     <CsLex Include="Psi\Parsing\Yaml.lex" />
-    <None Remove="Psi\Parsing\Yaml_lex.depends" />
-    <Compile Update="Psi\Parsing\Yaml_lex.cs">
-      <DependentUpon>Yaml.lex</DependentUpon>
-    </Compile>
     <TokenGenerator Include="Psi\Parsing\YamlTokenType.Tokens.xml">
       <OutputFile>Psi\Parsing\YamlTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
@@ -39,7 +35,7 @@
       <DependentUpon>YamlErrors.xml</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup>    
+  <ItemGroup>
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />

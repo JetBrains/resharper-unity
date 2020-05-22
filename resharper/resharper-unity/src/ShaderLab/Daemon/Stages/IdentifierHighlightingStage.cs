@@ -16,21 +16,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
     public class IdentifierHighlightingStage : ShaderLabStageBase
     {
         private readonly ResolveHighlighterRegistrar myRegistrar;
-        private readonly ConfigurableIdentifierHighlightingStageService myIdentifierHighlightingStageService;
         private readonly bool myInternalMode;
 
-        public IdentifierHighlightingStage(ResolveHighlighterRegistrar registrar, ConfigurableIdentifierHighlightingStageService identifierHighlightingStageService,
+        public IdentifierHighlightingStage(ResolveHighlighterRegistrar registrar,
             RunsProducts.ProductConfigurations productConfigurations)
         {
             myRegistrar = registrar;
-            myIdentifierHighlightingStageService = identifierHighlightingStageService;
             myInternalMode = productConfigurations.IsInternalMode();
         }
 
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process, IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, IShaderLabFile file)
         {
-            return new IdentifierHighlighterProcess(process, myRegistrar, settings, processKind, file, myIdentifierHighlightingStageService, myInternalMode);
+            return new IdentifierHighlighterProcess(process, myRegistrar, settings, processKind, file, myInternalMode);
         }
 
         protected override bool IsSupported(IPsiSourceFile sourceFile)

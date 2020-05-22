@@ -1,3 +1,4 @@
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -32,10 +33,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils
             }
         }
 
-        public AssetDocument(int startOffset, IBuffer buffer)
+        public IHierarchyElement HierarchyElement { get; }
+
+        public AssetDocument(int startOffset, IBuffer buffer, IHierarchyElement hierarchyElement)
         {
             StartOffset = startOffset;
             Buffer = buffer;
+            HierarchyElement = hierarchyElement;
+        }
+
+        public AssetDocument WithHiererchyElement(IHierarchyElement hierarchyElement)
+        {
+            return new AssetDocument(StartOffset, Buffer, hierarchyElement);
         }
     }
 }

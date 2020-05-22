@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
-        private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
+        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
         public RiderTypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
             SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi unityApi,
-            AssetIndexingSupport assetIndexingSupport, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, UnityCodeInsightProvider codeInsightProvider, AssetUsagesElementContainer assetUsagesElementContainer,
+            AssetIndexingSupport assetIndexingSupport, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, UnityCodeInsightProvider codeInsightProvider, AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
             DeferredCacheController deferredCacheController, UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost, AssetSerializationMode assetSerializationMode, IElementIdProvider provider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, unityApi, marksProvider, provider)
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myAssetIndexingSupport = assetIndexingSupport;
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
             myCodeInsightProvider = codeInsightProvider;
-            myAssetUsagesElementContainer = assetUsagesElementContainer;
+            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
             myDeferredCacheController = deferredCacheController;
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
@@ -79,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
                 else
                 {
-                    var count = myAssetUsagesElementContainer.GetUsagesCount(declaration, out var estimatedResult);
+                    var count = myAssetScriptUsagesElementContainer.GetUsagesCount(declaration, out var estimatedResult);
                     myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
                         "Click to view usages in assets", "Assets usages", estimatedResult, iconModel);
                 }

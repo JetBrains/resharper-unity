@@ -3,8 +3,10 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.model.EditorState
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
+import com.jetbrains.rider.projectView.solution
 
 
 open class StartUnityAction : DumbAwareAction() {
@@ -15,16 +17,14 @@ open class StartUnityAction : DumbAwareAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        val project = e.project
-        if (project != null) {
-            val appVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion()
-            if (appVersion != null)
-                e.presentation.text = "Start Unity ($appVersion)"
-            else
-                e.presentation.isEnabled = false
-        }
-        else
-          e.presentation.isEnabled = false
+        val model = e.project?.solution?.rdUnityModel
+        val version = model?.unityApplicationData?.valueOrNull?.applicationVersion
+        val state = model?.editorState?.valueOrNull
+
+        if (version != null)
+            e.presentation.text = "Start Unity ($version)"
+
+        e.presentation.isEnabled = state == EditorState.Disconnected
         super.update(e)
     }
 
