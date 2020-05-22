@@ -28,12 +28,21 @@
           Condition="Exists('$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props')" />
 
   <!-- Running tests on a Mac requires PresentationCore/PresentationFramework, which isn't part of the standard Mono
-       distro. We need to copy them from the SDK -->
-  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$(OS)' == 'Unix' ">
-    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\WindowsDesktop.Mock\PresentationFramework.dll">
+       distro. We need to copy them from the SDK. Note that the IsOsPlatform function requires msbuild 15.3+ -->
+  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$([MSBuild]::IsOsPlatform())' == 'OSX' ">
+    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\macos-x64\mono\lib\mono\4.5\PresentationFramework.dll">
       <TargetPath>PresentationFramework.dll</TargetPath>
     </JetContent>
-    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\WindowsDesktop.Mock\PresentationCore.dll">
+    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\macos-x64\mono\lib\mono\4.5\PresentationCore.dll">
+      <TargetPath>PresentationCore.dll</TargetPath>
+    </JetContent>
+  </ItemGroup>
+  <!-- This is untested -->
+  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$([MSBuild]::IsOsPlatform())' == 'Linux' ">
+    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\linux-x64\mono\lib\mono\4.5\PresentationFramework.dll">
+      <TargetPath>PresentationFramework.dll</TargetPath>
+    </JetContent>
+    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\linux-x64\mono\lib\mono\4.5\PresentationCore.dll">
       <TargetPath>PresentationCore.dll</TargetPath>
     </JetContent>
   </ItemGroup>
