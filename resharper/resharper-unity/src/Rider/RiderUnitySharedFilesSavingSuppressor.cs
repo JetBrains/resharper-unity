@@ -63,8 +63,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             if (sharedProjectFile == projectFile) continue;
                             sharedProjectFile.GetDocument().SetText(text);
                         }
-
-                        mySolution.GetPsiServices().Files.CommitAllDocuments();
                     }
                 });
 
