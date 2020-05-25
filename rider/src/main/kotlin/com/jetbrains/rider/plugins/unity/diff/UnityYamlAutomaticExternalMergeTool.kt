@@ -4,23 +4,26 @@ import com.intellij.diff.contents.DiffContent
 import com.intellij.diff.contents.FileContent
 import com.intellij.diff.merge.MergeRequest
 import com.intellij.diff.merge.ThreesideMergeRequest
+import com.intellij.diff.merge.external.AutomaticExternalMergeTool
 import com.intellij.diff.tools.external.ExternalDiffSettings
 import com.intellij.diff.tools.external.ExternalDiffToolUtil
-import com.intellij.execution.ExecutionException
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import java.io.IOException
+import com.intellij.openapi.util.SystemInfo
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 
 class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
-    private val LOG =
-        Logger.getInstance(UnityYamlAutomaticExternalMergeTool::class.java)
+    override fun show(project: Project?, request: MergeRequest) {
+        project ?: return
 
-    @Throws(ExecutionException::class, IOException::class)
-    override fun show(project: Project, request: MergeRequest) {
         val settings = ExternalDiffSettings()
         settings.isMergeTrustExitCode = false
-        settings.mergeExePath = "/Applications/Unity/Hub/Editor/2020.1.0b8/Unity.app/Contents/Tools/UnityYAMLMerge"
-        settings.mergeParameters = "merge -p %3 %2 %1 %4"
+        val appDataPath = UnityInstallationFinder.getInstance(project).getApplicationContentsPath() ?: return
+        val extension = when {
+            SystemInfo.isWindows -> ".exe"
+            else -> ""
+        }
+        settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
+        settings.mergeParameters = "merge %3 %2 %1 %4"
         ExternalDiffToolUtil.executeMerge(
             project,
             settings,
@@ -28,7 +31,9 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         )
     }
 
-    override fun canShow(request: MergeRequest): Boolean {
+    override fun canShow(project: Project?, request: MergeRequest): Boolean {
+        project?: return false
+
         if (request is ThreesideMergeRequest) {
             val outputContent = request.outputContent
             if (!canProcessOutputContent(outputContent)) return false

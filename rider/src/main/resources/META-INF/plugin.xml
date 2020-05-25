@@ -114,7 +114,7 @@
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
     <projectService serviceImplementation="com.jetbrains.rider.UnityProjectDiscoverer"/>
 
-    <diff.tools.external.AutomaticExternalMergeTool implementation="com.jetbrains.rider.plugins.unity.diff.UnityYamlAutomaticExternalMergeTool"/>
+    <diff.merge.external.AutomaticExternalMergeTool implementation="com.jetbrains.rider.plugins.unity.diff.UnityYamlAutomaticExternalMergeTool"/>
   </extensions>
 
   <projectListeners>
