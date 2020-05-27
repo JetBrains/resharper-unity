@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
@@ -152,9 +153,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
                     continue;
                 }
 
+                // The check above means this is not null. We take the floor, because that's how Unity works.
+                // E.g. Unity's Inspector treats [Range(1.7f, 10.9f)] as between 1 and 10 inclusive
+                var f = Math.Floor((float) unityFrom.ConstantValue.Value.NotNull());
+                var t = Math.Floor((float) unityTo.ConstantValue.Value.NotNull());
+
                 // The ctorArguments lambda result is not cached, so let's allocate everything up front
-                var from = new AttributeValue(new ConstantValue(Convert.ToInt64(unityFrom.ConstantValue.Value), predefinedType.Long));
-                var to = new AttributeValue(new ConstantValue(Convert.ToInt64(unityTo.ConstantValue.Value), predefinedType.Long));
+                var from = new AttributeValue(new ConstantValue(Convert.ToInt64(Math.Floor(f)), predefinedType.Long));
+                var to = new AttributeValue(new ConstantValue(Convert.ToInt64(Math.Floor(t)), predefinedType.Long));
                 var args = new[] {from, to};
 
                 collection = new[]

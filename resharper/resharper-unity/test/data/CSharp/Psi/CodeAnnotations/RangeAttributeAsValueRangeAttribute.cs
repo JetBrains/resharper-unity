@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using UnityEngine;
 
 public class MyMonoBehaviour : MonoBehaviour
@@ -10,6 +12,8 @@ public class MyMonoBehaviour : MonoBehaviour
     [Range(1, 10)] public sbyte sbyteValue;
     [Range(1, 10)] public short shortValue;
     [Range(1, 10)] public ushort ushortValue;
+
+    [Range(1.3f, 10.7f)] public int intWithFloatRange;
 
     [Range(1, 10)] private int nonSerialisedField;
 
@@ -27,6 +31,14 @@ public class MyMonoBehaviour : MonoBehaviour
         if (ushortValue > 20) { }
 
         if (nonSerialisedField > 20) { }
+
+        if (intWithFloatRange < 1) { }
+        if (intWithFloatRange == 0) { }
+        if (intWithFloatRange == 1) { }
+        if (intWithFloatRange == 2) { }
+        if (intWithFloatRange > 10) { }
+        if (intWithFloatRange == 10) { }
+        if (intWithFloatRange == 11) { }
     }
 
     public void LateUpdate()
