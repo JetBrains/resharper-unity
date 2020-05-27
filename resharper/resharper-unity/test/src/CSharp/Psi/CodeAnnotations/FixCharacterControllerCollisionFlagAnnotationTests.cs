@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Psi.CodeAnnotations
 {
+    // See RIDER-28661
     [TestUnity]
     public class FixCharacterControllerCollisionFlagAnnotationTests : CSharpHighlightingTestBase
     {

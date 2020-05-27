@@ -43,6 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             {
                 // SetupLogging();
                 SetJetTestPackagesDir();
+                HackTaskRunnerFramework.Install();
                 HackTestDataInNugets.ApplyPatches();
             }
             catch (Exception e)
