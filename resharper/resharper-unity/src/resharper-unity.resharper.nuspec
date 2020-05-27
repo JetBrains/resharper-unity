@@ -36,7 +36,11 @@
 <releaseNotes>
 New in 2020.2
 
-### Changed
+Added:
+
+- Use Range attribute to provide hints to integer dataflow analysis (#1673)
+
+Changed:
 
 - All applicable quick fixes are now bulk actions, and can be applied over project scope (#1648, #1649)
 
