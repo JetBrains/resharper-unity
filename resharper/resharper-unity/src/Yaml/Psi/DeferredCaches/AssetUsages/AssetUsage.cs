@@ -6,55 +6,48 @@ using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
-    public class AssetUsage
+    // TODO : Right now, we use it only for scripts, but we could calculate deps not only for scripts
+    public readonly struct AssetScriptUsages
     {
+        // TODO, local reference deps
         public LocalReference Location { get; }
-        public List<IHierarchyReference> Dependencies { get; }
+        public ExternalReference UsageTarget { get; }
 
-        public AssetUsage(LocalReference location, IEnumerable<IHierarchyReference> dependencies)
+        public AssetScriptUsages(LocalReference location, ExternalReference usageTarget)
         {
             Location = location;
-            Dependencies = dependencies.ToList();
+            UsageTarget = usageTarget;
         }
 
-        protected bool Equals(AssetUsage other)
+        public bool Equals(AssetScriptUsages other)
         {
-            return Location.Equals(other.Location);
+            return Location.Equals(other.Location) && UsageTarget.Equals(other.UsageTarget);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((AssetUsage) obj);
+            return obj is AssetScriptUsages other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return Location.GetHashCode();
+            unchecked
+            {
+                return (Location.GetHashCode() * 397) ^ UsageTarget.GetHashCode();
+            }
         }
 
         public void WriteTo(UnsafeWriter writer)
         {
-            writer.WritePolymorphic(Location);
-            writer.Write(Dependencies.Count);
-            foreach (var dependency in Dependencies)
-            {
-                writer.WritePolymorphic(dependency);
-            }
+            Location.WriteTo(writer);
+            UsageTarget.WriteTo(writer);
         }
 
-        public static AssetUsage ReadFrom(UnsafeReader reader)
+        public static AssetScriptUsages ReadFrom(UnsafeReader reader)
         {
-            var localReference = reader.ReadPolymorphic<LocalReference>();
-            var count = reader.ReadInt32();
-            var deps = new List<IHierarchyReference>();
-            for (int i = 0; i < count; i++)
-                deps.Add(reader.ReadPolymorphic<IHierarchyReference>());
-            return new AssetUsage(localReference, deps);
+            var localReference = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
+            return new AssetScriptUsages(localReference, HierarchyReferenceUtil.ReadExternalReferenceFrom(reader));
         }
-        
         
     }
 }

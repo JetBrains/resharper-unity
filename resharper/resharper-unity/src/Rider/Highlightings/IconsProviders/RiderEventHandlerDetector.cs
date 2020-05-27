@@ -12,7 +12,7 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Rider.Model;
 
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
     public class RiderEventHandlerDetector : EventHandlerDetector
     {
         private readonly AssetIndexingSupport myAssetIndexingSupport;
-        private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
+        private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
         private readonly DeferredCacheController myDeferredCacheController;
@@ -33,14 +33,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly AssetSerializationMode myAssetSerializationMode;
 
         public RiderEventHandlerDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, AssetIndexingSupport assetIndexingSupport, PerformanceCriticalCodeCallGraphMarksProvider marksProvider,AssetMethodsElementContainer assetMethodsElementContainer,
+            SettingsStore settingsStore, AssetIndexingSupport assetIndexingSupport, PerformanceCriticalCodeCallGraphMarksProvider marksProvider,UnityEventsElementContainer unityEventsElementContainer,
             UnityCodeInsightProvider codeInsightProvider, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, DeferredCacheController deferredCacheController,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
             IconHost iconHost, AssetSerializationMode assetSerializationMode, IElementIdProvider provider)
-            : base(solution, settingsStore, callGraphSwaExtensionProvider, assetMethodsElementContainer, marksProvider, provider)
+            : base(solution, settingsStore, callGraphSwaExtensionProvider, unityEventsElementContainer, marksProvider, provider)
         {
             myAssetIndexingSupport = assetIndexingSupport;
-            myAssetMethodsElementContainer = assetMethodsElementContainer;
+            myUnityEventsElementContainer = unityEventsElementContainer;
             myCodeInsightProvider = codeInsightProvider;
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
             myDeferredCacheController = deferredCacheController;
@@ -85,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
                 else
                 {
-                    var count = myAssetMethodsElementContainer.GetAssetUsagesCount(element.DeclaredElement, out var estimate);
+                    var count = myUnityEventsElementContainer.GetAssetUsagesCount(element.DeclaredElement, out var estimate);
                     myUsagesCodeVisionProvider.AddHighlighting(consumer, element, element.DeclaredElement, count,
                         "Click to view usages in assets", "Assets usages",estimate, iconModel);
                 }

@@ -6,33 +6,38 @@ using JetBrains.Diagnostics;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
     public abstract class UnityAssetOccurrence : IOccurrence
     {
-        public IPsiSourceFile SourceFile { get; }
-        public LocalReference AttachedElementLocation { get; }
-        public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
+        public readonly IPsiSourceFile SourceFile;
+        public readonly IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer;
 
-        protected UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, IHierarchyElement attachedElement)
+        public readonly LocalReference OwningElementLocation;
+        protected readonly bool IsPrefabModification;
+        
+
+        protected UnityAssetOccurrence(IPsiSourceFile sourceFile, IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference owningElementLocation, bool isPrefabModification)
         {
             SourceFile = sourceFile;
-            AttachedElementLocation = attachedElement.Location;
+            OwningElementLocation = owningElementLocation;
             PresentationOptions = OccurrencePresentationOptions.DefaultOptions;
             DeclaredElementPointer = declaredElement;
+            IsPrefabModification = isPrefabModification;
         }
 
-        public bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
+        public virtual bool Navigate(ISolution solution, PopupWindowContextSource windowContext, bool transferFocus,
             TabOptions tabOptions = TabOptions.Default)
         {
-            return solution.GetComponent<UnityAssetOccurrenceNavigator>().Navigate(solution, DeclaredElementPointer, AttachedElementLocation);
+            return solution.GetComponent<UnityAssetOccurrenceNavigator>().Navigate(solution, DeclaredElementPointer, OwningElementLocation);
         }
 
         public ISolution GetSolution()
@@ -70,28 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         
         public override string ToString()
         {
-            return $"Component (id = {AttachedElementLocation.LocalDocumentAnchor})";
-        }
-
-        protected bool Equals(UnityAssetOccurrence other)
-        {
-            return SourceFile.Equals(other.SourceFile) && AttachedElementLocation.Equals(other.AttachedElementLocation);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((UnityAssetOccurrence) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (SourceFile.GetHashCode() * 397) ^ AttachedElementLocation.GetHashCode();
-            }
+            return $"Component (id = {OwningElementLocation.LocalDocumentAnchor})";
         }
 
         public virtual RichText GetDisplayText()
@@ -104,12 +88,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         private string GetAttachedGameObjectName(AssetHierarchyProcessor processor)
         {
             var consumer = new UnityScenePathGameObjectConsumer();
-            processor.ProcessSceneHierarchyFromComponentToRoot(AttachedElementLocation, consumer, true, true);
+            processor.ProcessSceneHierarchyFromComponentToRoot(OwningElementLocation, consumer, true, true);
 
             var parts = consumer.NameParts;
             if (parts.Count == 0)
                 return "...";
             return string.Join("/", consumer.NameParts);
+        }
+
+        public virtual IconId GetIcon()
+        {
+            return UnityFileTypeThemedIcons.FileUnity.Id;
         }
     }
 }

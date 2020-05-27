@@ -1,0 +1,15 @@
+Search target
+    Script1.voidEvent:UnityEvent
+Found usages  (2 usages found)
+    Assets  (2 usages found)
+        Ex1\Ex1.unity  (2 usages found)
+            A  (1 usage found)
+                B  (1 usage found)
+                    C  (1 usage found)
+                        Script1  (1 usage found)
+                            VoidHandler():void
+            Root  (1 usage found)
+                CubeA  (1 usage found)
+                    CubeB  (1 usage found)
+                        Script1  (1 usage found)
+                            VoidHandler():void

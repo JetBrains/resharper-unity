@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Serialization;
 using JetBrains.Util.PersistentMap;
 
@@ -8,18 +9,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public static readonly IUnsafeMarshaller<MetaFileCacheItem> Marshaller =
             new UniversalMarshaller<MetaFileCacheItem>(Read, Write);
 
-        private readonly string myGuid;
+        private readonly Guid myGuid;
 
-        public MetaFileCacheItem(string guid)
+        public MetaFileCacheItem(Guid guid)
         {
             myGuid = guid;
         }
 
-        public string Guid => myGuid;
+        public Guid Guid => myGuid;
 
         private static MetaFileCacheItem Read(UnsafeReader reader)
         {
-            var guid = reader.ReadString();
+            var guid = reader.ReadGuid();
             return new MetaFileCacheItem(guid);
         }
 

@@ -3,12 +3,11 @@ using JetBrains.Application.PersistentMap;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Serialization;
@@ -22,14 +21,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         [UsedImplicitly] 
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
-        private static object Read(UnsafeReader reader) => new AssetReferenceValue( reader.ReadPolymorphic<IHierarchyReference>());
+        private static object Read(UnsafeReader reader) => new AssetReferenceValue( HierarchyReferenceUtil.ReadReferenceFrom(reader));
 
         [UsedImplicitly]
         public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetReferenceValue);
 
         private static void Write(UnsafeWriter writer, AssetReferenceValue value)
         {
-            writer.WritePolymorphic(value.Reference);
+            value.Reference.WriteTo(writer);
         }
         
         public IHierarchyReference Reference { get; }
@@ -88,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 return "...";
             string result = "";
 
-            if (!element.IsStripped)
+            if (!(element is IStrippedHierarchyElement))
             {
                 processor.ProcessSceneHierarchyFromComponentToRoot(element, consumer, prefabImport);
                 if (consumer.NameParts.Count == 0)

@@ -133,6 +133,9 @@
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.DeferredCachesInProgressNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.OpenUnityProjectAsFolderNotification</implementation-class></component>
     <component><implementation-class>com.jetbrains.rider.plugins.unity.notifications.UpdateMonoNotification</implementation-class></component>
+    <component>
+      <implementation-class>com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher</implementation-class>
+    </component>
   </project-components>
 
   <applicationListeners>

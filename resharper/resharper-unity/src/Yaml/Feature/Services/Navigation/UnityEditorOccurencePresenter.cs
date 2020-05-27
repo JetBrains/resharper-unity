@@ -4,7 +4,9 @@ using System.Text;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Feature.Services.Presentation;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -15,18 +17,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public bool Present(IMenuItemDescriptor descriptor, IOccurrence occurrence,
             OccurrencePresentationOptions occurrencePresentationOptions)
         {
+            
             var unityOccurrence = (occurrence as UnityAssetOccurrence).NotNull("occurrence as UnityAssetOccurrence != null");
             var declaredElement = unityOccurrence.DeclaredElementPointer.FindDeclaredElement();
             if (declaredElement == null)
                 return false;
-                
+
             var displayText = unityOccurrence.GetDisplayText() + OccurrencePresentationUtil.TextContainerDelimiter;
             descriptor.Text = displayText;
             
             
             AppendRelatedFile(descriptor, unityOccurrence.GetRelatedFilePresentation(), unityOccurrence.GetRelatedFolderPresentation());
-            
-            descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
+
+            descriptor.Icon = unityOccurrence.GetIcon();
             return true;
         }
         
