@@ -26,14 +26,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         public void InitialiseProjectSettings(Lifetime projectLifetime, IProject project,
                                               ISettingsStorageMountPoint mountPoint)
         {
-            var assetsPathIndex = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse("Assets"));
-            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, assetsPathIndex,
-                true);
+            // Don't require Assets or Assets.Scripts in namespaces
+            ExcludeFolderFromNamespace(mountPoint, "Assets");
+            ExcludeFolderFromNamespace(mountPoint, @"Assets\Scripts");
 
-            var scriptsPathIndex =
-                NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse(@"Assets\Scripts"));
-            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, scriptsPathIndex,
-                true);
+            // Don't require Packages in namespaces
+            ExcludeFolderFromNamespace(mountPoint, "Packages");
+
+            // The subfolder of Packages is the root of the package, don't require this in the namespace
+            // E.g. Given Packages/com.foo.package/package.json don't require Packages.com.foo.packages in the namespace
+            foreach (var projectFolder in project.GetSubFolders("Packages"))
+            {
+                foreach (var subFolder in projectFolder.GetSubFolders())
+                {
+                    ExcludeFolderFromNamespace(mountPoint, projectFolder.Name + @"\" + subFolder.Name);
+                }
+            }
+        }
+
+        private void ExcludeFolderFromNamespace(ISettingsStorageMountPoint mountPoint, string path)
+        {
+            var index = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse(path, FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN));
+            SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, index, true);
         }
 
         private void SetIndexedValue<TKeyClass, TEntryIndex, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
