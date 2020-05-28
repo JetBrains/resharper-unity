@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
         }
 
-        protected override IClrTypeName AttributeTypeName => KnownTypes.HideInInspector;
+        protected override IClrTypeName AttributeTypeName => KnownTypes.HideInInspectorAttribute;
         protected override bool IsRemoveActionAvailable => true;
         protected override bool IsLayoutAttribute => false;
     }
