@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReordering
 {
-    public class UnitySerializedField : INodeConstraint
+    public class SerializedField : INodeConstraint
     {
         public bool Matches(ITreeNode node)
         {

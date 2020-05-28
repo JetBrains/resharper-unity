@@ -1,9 +1,10 @@
-<Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns">
+<Patterns xmlns="urn:schemas-jetbrains-com:member-reordering-patterns"
+          xmlns:unity="urn:schemas-jetbrains-com:member-reordering-patterns-unity">
 
   <!-- Based on the "Default Pattern" pattern -->
   <TypePattern DisplayName="Unity classes" Priority="100">
     <TypePattern.Match>
-      <UnitySerializableClass />
+      <unity:SerializableClass />
     </TypePattern.Match>
 
     <Region Name="Delegates">
@@ -65,7 +66,7 @@
     <Region Name="Serialized Fields">
       <Entry DisplayName="Serialized Fields">
         <Entry.Match>
-          <UnitySerializedField />
+          <unity:SerializedField />
         </Entry.Match>
 
         <!-- No sorting -->
@@ -77,7 +78,7 @@
         <And>
           <Kind Is="Field" />
           <Not>
-            <UnitySerializedField />
+            <unity:SerializedField />
           </Not>
         </And>
       </Entry.Match>
@@ -111,12 +112,12 @@
     <Region Name="Event Functions">
       <Entry DisplayName="Event Functions">
         <Entry.Match>
-          <UnityEventFunction />
+          <unity:EventFunction />
         </Entry.Match>
 
         <Entry.SortBy>
           <!-- Prioritises common event functions. For alphabetical, replace with <Name /> -->
-          <UnityEventFunction />
+          <unity:EventFunctionName />
         </Entry.SortBy>
       </Entry>
     </Region>
@@ -145,8 +146,7 @@
     <Region Name="Nested type: ${0}">
       <Entry DisplayName="Nested Types">
         <Entry.Match>
-          <Kind Is="Type">
-          </Kind>
+          <Kind Is="Type" />
         </Entry.Match>
       </Entry>
     </Region>

@@ -8,5 +8,8 @@ end_of_line = lf
 [*.xml]
 indent_size = 2
 
+[*.xsd]
+indent_size = 2
+
 [*.xaml]
 indent_size = 2
