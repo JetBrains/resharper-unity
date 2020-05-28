@@ -214,23 +214,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             var cancellationTs = run.GetData(ourCancellationTokenSourceKey);
             var cancellationToken = cancellationTs.NotNull().Token;
-            var waitingLifetimeDef = Lifetime.Define(run.Lifetime);
-            var waitingLifetime = waitingLifetimeDef.Lifetime;
-            cancellationToken.Register(() =>
-            {
-                waitingLifetimeDef.Terminate();
-                tcs.TrySetCanceled(); // on stop button
-            });
-
+            
             myLogger.Trace("Before calling Refresh.");
-            Refresh(waitingLifetime, cancellationToken).ContinueWith(__ =>
+            Refresh(run.Lifetime, cancellationToken).ContinueWith(__ =>
             {
                 myLogger.Trace("Refresh. OnCompleted.");
                 // KS: Can't use run.Lifetime for ExecuteOrQueueEx here and in all similar places: run.Lifetime is terminated when
                 // Unit Test Session is closed from UI without cancelling the run. This will leave task completion source in running state forever.
                 mySolution.Locks.ExecuteOrQueueEx(myLifetime, "Check compilation", () =>
                 {
-                    if (!waitingLifetime.IsAlive)
+                    if (!run.Lifetime.IsAlive || cancellationTs.IsCancellationRequested)
                     {
                         tcs.SetCanceled();
                         return;
@@ -245,7 +238,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var task = myEditorProtocol.UnityModel.Value.GetCompilationResult.Start(Unit.Instance);
                     task.Result.AdviseNotNull(myLifetime, result =>
                     {
-                        if (!waitingLifetime.IsAlive)
+                        if (!run.Lifetime.IsAlive || cancellationTs.IsCancellationRequested)
                             tcs.SetCanceled();
                         else if (!result.Result)
                         {
@@ -266,7 +259,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             var launch = SetupLaunch(run);
                             mySolution.Locks.ExecuteOrQueueEx(myLifetime, "ExecuteRunUT", () =>
                             {
-                                if (!waitingLifetime.IsAlive)
+                                if (!run.Lifetime.IsAlive || cancellationTs.IsCancellationRequested)
                                 {
                                     tcs.SetCanceled();
                                     return;
