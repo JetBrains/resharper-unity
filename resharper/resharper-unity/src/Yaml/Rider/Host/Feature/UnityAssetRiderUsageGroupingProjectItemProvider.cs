@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
             myProjectModelIcons = projectModelIcons;
             myIconHost = iconHost;
         }
-        
+
         public RdUsageGroupTextAndIcon? GetUsageGroup(IOccurrence occurrence, ProjectItemKind kind, bool takeParent)
         {
             if (occurrence is UnityAssetOccurrence unityAssetOccurrence)
@@ -31,20 +31,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 switch (kind)
                 {
                     case ProjectItemKind.PHYSICAL_FILE:
-                        var path = GetPresentablePath(unityAssetOccurrence.SourceFile.GetLocation());
-                        if (path != null)
-                            return new RdUsageGroupTextAndIcon(path, myIconHost.Transform(GetIcon(unityAssetOccurrence.SourceFile)));
+                        var filePath = GetPresentablePath(unityAssetOccurrence.SourceFile.GetLocation());
+                        if (filePath != null)
+                            return new RdUsageGroupTextAndIcon(filePath, myIconHost.Transform(GetIcon(unityAssetOccurrence.SourceFile)));
                         break;
-                    case ProjectItemKind.PHYSICAL_DIRECTORY:
-                        return new RdUsageGroupTextAndIcon("Assets", myIconHost.Transform(myProjectModelIcons.DirectoryIcon));
-                }
 
+                    case ProjectItemKind.PHYSICAL_DIRECTORY:
+                        var directoryPath = GetPresentablePath(unityAssetOccurrence.SourceFile.GetLocation().Directory);
+                        if (directoryPath != null)
+                            return new RdUsageGroupTextAndIcon(directoryPath, myIconHost.Transform(myProjectModelIcons.DirectoryIcon));
+                        break;
+                }
             }
 
             return null;
         }
 
-        private IconId GetIcon(IPsiSourceFile sourceFile)
+        private static IconId GetIcon(IPsiSourceFile sourceFile)
         {
             var location = sourceFile.GetLocation();
             if (location.IsAsset())
@@ -58,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 
             return UnityFileTypeThemedIcons.FileUnity.Id;
         }
-        
+
         private string GetPresentablePath(FileSystemPath assetFile)
         {
             var solutionFolder = mySolution.SolutionFile?.Location.Parent;

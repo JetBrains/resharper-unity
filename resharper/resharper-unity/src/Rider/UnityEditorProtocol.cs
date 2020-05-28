@@ -54,6 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         [NotNull]
         public readonly ViewableProperty<EditorPluginModel> UnityModel = new ViewableProperty<EditorPluginModel>(null);
+        
+        [NotNull]
+        public readonly ViewableProperty<SocketWire.Base> UnityWire = new ViewableProperty<SocketWire.Base>(null);
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution,
@@ -141,6 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
+                UnityWire.Value = wire;
                 wire.BackwardsCompatibleWireFormat = true;
                     
                 var protocol = new Protocol("UnityEditorPlugin", new Serializers(),

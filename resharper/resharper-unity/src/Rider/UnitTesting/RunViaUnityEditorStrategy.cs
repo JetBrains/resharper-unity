@@ -56,7 +56,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
-        private readonly ConnectionTracker myConnectionTracker;
 
         private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
         private readonly WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
@@ -77,8 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             UnityHost unityHost,
             ILogger logger,
             Lifetime lifetime,
-            PackageValidator packageValidator,
-            ConnectionTracker connectionTracker
+            PackageValidator packageValidator
         )
         {
             mySolution = solution;
@@ -93,7 +91,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
-            myConnectionTracker = connectionTracker;
             myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
@@ -217,7 +214,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             var cancellationTs = run.GetData(ourCancellationTokenSourceKey);
             var cancellationToken = cancellationTs.NotNull().Token;
-
+            
             myLogger.Trace("Before calling Refresh.");
             Refresh(run.Lifetime, cancellationToken).ContinueWith(__ =>
             {
@@ -234,7 +231,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
                     if (myEditorProtocol.UnityModel.Value == null)
                     {
-                        myLogger.Verbose("Unity Editor connection unavailable.");
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         return;
                     }
@@ -451,17 +447,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             waitingLifetime.OnTermination(() => tcs.TrySetCanceled());
             tcs.Task.ContinueWith(_ => waitingLifetimeDef.Terminate(), lifetime);
             if (cancellationToken.IsCancellationRequested) tcs.TrySetCanceled();
-            
-            // todo: Avoid pausing without focus
+
             waitingLifetime.StartMainUnguarded(() =>
             {
-                if (myConnectionTracker.State.Value == UnityEditorState.Idle)
+                myEditorProtocol.UnityWire.Advise(waitingLifetime, wire =>
                 {
-                    tcs.TrySetResult(Unit.Instance);
-                    return;
-                }
-
-                myConnectionTracker.State.Change.Advise_When(waitingLifetimeDef.Lifetime, UnityEditorState.Idle, () => tcs.TrySetResult(Unit.Instance));
+                    wire.HeartbeatAlive.Advise(waitingLifetime, res =>
+                    {
+                        if (res)
+                        {
+                            myEditorProtocol.UnityModel.Advise(waitingLifetime, model =>
+                            {
+                                if (model!=null)
+                                    tcs.TrySetResult(Unit.Instance);
+                            });
+                        }
+                    });
+                });
                 
                 myUnityProcessId.When(waitingLifetime, (int?) null, _ => tcs.TrySetException(new Exception("Unity Editor has been closed.")));
                 waitingLifetime.TryOnTermination(cancellationToken.Register(() => tcs.TrySetCanceled()));
