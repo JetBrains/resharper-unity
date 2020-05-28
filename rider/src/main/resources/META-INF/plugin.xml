@@ -302,6 +302,7 @@
 <p>
 <em>Added:</em>
 <ul>
+  <li>Add Unity code cleanup patterns that do not reorder serialised fields (<a href="https://github.com/JetBrains/resharper-unity/issues/88">#88</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1676">#1676</a>)</li>
   <li>Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor (<a href="https://github.com/JetBrains/resharper-unity/issues/1272">#1272</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1661">#1661</a>)</li>
   <li>Rider: Add sample text for "Unity", "ShaderLab" and "Cg/HLSL" Colour Scheme options pages (<a href="https://github.com/JetBrains/resharper-unity/pull/1667">#1667</a>)</li>
 </ul>

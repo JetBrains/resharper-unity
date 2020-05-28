@@ -36,7 +36,11 @@
 <releaseNotes>
 New in 2020.2
 
-### Changed
+Added:
+
+- Add Unity code cleanup patterns that do not reorder serialised fields (#88, #1676)
+
+Changed:
 
 - All applicable quick fixes are now bulk actions, and can be applied over project scope (#1648, #1649)
 
