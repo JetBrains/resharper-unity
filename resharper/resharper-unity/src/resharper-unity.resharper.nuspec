@@ -39,6 +39,7 @@ New in 2020.2
 Added:
 
 - Use Range attribute to provide hints to integer dataflow analysis (#1673)
+- Remove Packages and any subfolder from namespace suggestions (#1677)
 
 Changed:
 
