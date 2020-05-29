@@ -27,12 +27,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var result = new HashSet<IDeclaredElement>();
             switch (currentNode)
             {
+                #if JET_MODE_ASSERT
                 case IMethodDeclaration methodDeclaration when methodDeclaration.DeclaredElement is IMethod method && 
                     method.HasAttributeInstance(TestAttribute, AttributesSource.Self):
                 {
                     result.Add(method);
                     break;
                 }
+                #endif
                 case IStructDeclaration structDeclaration
                     when structDeclaration.DeclaredElement is IStruct @struct &&
                          @struct.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self):
