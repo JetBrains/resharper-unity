@@ -62,8 +62,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName PreferenceItem = new ClrTypeName("UnityEditor.PreferenceItem");
         public static readonly IClrTypeName PropertyDrawer = new ClrTypeName("UnityEditor.PropertyDrawer");
         public static readonly IClrTypeName RequiredSignatureAttribute = new ClrTypeName("UnityEditor.RequiredSignatureAttribute");
-        public static readonly IClrTypeName SettingsProvider = new ClrTypeName("UnityEditor.SettingsProvider");
-        public static readonly IClrTypeName SettingsProviderAttribute = new ClrTypeName("UnityEditor.SettingsProviderAttribute");
 
         // UnityEditor.Callbacks
         public static readonly IClrTypeName DidReloadScripts = new ClrTypeName("UnityEditor.Callbacks.DidReloadScripts");

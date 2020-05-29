@@ -74,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                         return false;
                     }
 
-                    if (IsEventHandler(unityApi, method) || IsSettingsProvider(method))
+                    if (IsEventHandler(unityApi, method) || IsRequiredSignatureMethod(method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
@@ -91,20 +91,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             }
 
             flags = ImplicitUseKindFlags.Default; // Value not used if we return false
-            return false;
-        }
-
-        private static bool IsSettingsProvider(IMethod method)
-        {
-            if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All) && method.IsStatic)
-            {
-                var typeElement = (method.ReturnType as IDeclaredType)?.GetTypeElement();
-                if(typeElement != null && typeElement.DerivesFrom(KnownTypes.SettingsProvider))
-                {
-                    return true;
-                }
-            }
-
             return false;
         }
 
@@ -170,6 +156,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                 return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
             return solution.GetComponent<UnityEventsElementContainer>().GetAssetUsagesCount(method, out bool estimatedResult) > 0 || estimatedResult;
+        }
+
+        // If the method is marked with an attribute that has a method that is itself marked with RequiredSignature,
+        // then we know Unity will be implicitly using this method. Most attributes which mean implicit use are in the
+        // external annotations, but this will capture attributes that we don't know about, as long as they follow the
+        // pattern
+        private static bool IsRequiredSignatureMethod(IMethod method)
+        {
+            foreach (var attributeInstance in method.GetAttributeInstances(AttributesSource.All))
+            {
+                var attributeType = attributeInstance.GetAttributeType().GetTypeElement();
+                if (attributeType != null)
+                {
+                    foreach (var attributeMethod in attributeType.Methods)
+                    {
+                        if (attributeMethod.HasAttributeInstance(KnownTypes.RequiredSignatureAttribute,
+                            AttributesSource.All))
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
