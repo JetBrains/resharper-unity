@@ -1,0 +1,17 @@
+﻿using UnityEditor.ShortcutManagement;
+
+public class Foo
+{
+  [|Shortcut|(0)]
+  public void |DoMethod|(1)()
+  {
+  }
+}
+
+------------------------------------------------
+0: Cannot access internal class 'ShortcutAttribute' here
+NO QUICKFIXES
+1: Incorrect method signature
+QUICKFIXES:
+Change signature to 'static void DoMethod(ShortcutArguments)'
+Change signature to 'static void DoMethod()'
