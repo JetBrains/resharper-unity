@@ -30,24 +30,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             ExcludeFolderFromNamespace(mountPoint, "Assets");
             ExcludeFolderFromNamespace(mountPoint, @"Assets\Scripts");
 
-            // Don't require Packages in namespaces
-            ExcludeFolderFromNamespace(mountPoint, "Packages");
-
-            // The subfolder of Packages is the root of the package, don't require this in the namespace
+            // Don't require Packages, or the immediate children of Packages in namespaces. The immediate children are
+            // package names, and shouldn't be considered part of the namespace.
             // E.g. Given Packages/com.foo.package/package.json don't require Packages.com.foo.packages in the namespace
-            foreach (var projectFolder in project.GetSubFolders("Packages"))
-            {
-                foreach (var subFolder in projectFolder.GetSubFolders())
-                {
-                    ExcludeFolderFromNamespace(mountPoint, projectFolder.Name + @"\" + subFolder.Name);
-                }
-            }
+            ExcludeFolderFromNamespace(mountPoint, "Packages");
+            ExcludeImmediateSubfoldersFromNamespace(mountPoint, project, "Packages");
+
+            ExcludeFolderFromNamespace(mountPoint, "Library");
+            ExcludeFolderFromNamespace(mountPoint, @"Library\PackageCache");
+            foreach (var projectFolder in project.GetSubFolders("Library"))
+                ExcludeImmediateSubfoldersFromNamespace(mountPoint, projectFolder, "PackageCache", @"Library\");
         }
 
         private void ExcludeFolderFromNamespace(ISettingsStorageMountPoint mountPoint, string path)
         {
             var index = NamespaceFolderProvider.GetIndexFromOldIndex(FileSystemPath.Parse(path, FileSystemPathInternStrategy.TRY_GET_INTERNED_BUT_DO_NOT_INTERN));
             SetIndexedValue(mountPoint, NamespaceProviderSettingsAccessor.NamespaceFoldersToSkip, index, true);
+        }
+
+        private void ExcludeImmediateSubfoldersFromNamespace(ISettingsStorageMountPoint mountPoint, IProjectFolder root, string parent, string rootPath = "")
+        {
+            foreach (var projectFolder in root.GetSubFolders(parent))
+            {
+                foreach (var subFolder in projectFolder.GetSubFolders())
+                {
+                    ExcludeFolderFromNamespace(mountPoint, rootPath + projectFolder.Name + @"\" + subFolder.Name);
+                }
+            }
         }
 
         private void SetIndexedValue<TKeyClass, TEntryIndex, TEntryValue>([NotNull] ISettingsStorageMountPoint mount,
