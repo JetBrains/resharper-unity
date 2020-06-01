@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
         }
 
-        protected override IClrTypeName AttributeTypeName => KnownTypes.Tooltip;
+        protected override IClrTypeName AttributeTypeName => KnownTypes.TooltipAttribute;
         protected override bool IsLayoutAttribute => false;
 
         // It makes no sense to apply Tooltip to each field in a multiple field declaration

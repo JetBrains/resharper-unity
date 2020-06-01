@@ -39,6 +39,7 @@ New in 2020.2
 Added:
 
 - Add Unity code cleanup patterns that do not reorder serialised fields (#88, #1676)
+- Use Range attribute to provide hints to integer dataflow analysis (#1673)
 
 Changed:
 

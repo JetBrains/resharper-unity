@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
         }
 
-        protected override IClrTypeName AttributeTypeName => KnownTypes.Header;
+        protected override IClrTypeName AttributeTypeName => KnownTypes.HeaderAttribute;
         protected override bool IsLayoutAttribute => true;
 
         protected override AttributeValue[] GetAttributeValues(IPsiModule module, IFieldDeclaration fieldDeclaration)

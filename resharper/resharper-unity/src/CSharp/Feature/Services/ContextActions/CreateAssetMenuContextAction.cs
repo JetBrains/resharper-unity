@@ -55,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (classLikeDeclaration == null)
                 return false;
             
-            var existingAttribute = classLikeDeclaration.GetAttribute(KnownTypes.CreateAssetMenu);
+            var existingAttribute = classLikeDeclaration.GetAttribute(KnownTypes.CreateAssetMenuAttribute);
             return existingAttribute == null && UnityApi.IsDescendantOfScriptableObject(classLikeDeclaration.DeclaredElement);
         }
 
@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     new Pair<string, AttributeValue>("order", new AttributeValue(new ConstantValue(0, myModule))),
                 };
                 
-                var attribute = AttributeUtil.AddAttributeToSingleDeclaration(myClassLikeDeclaration, KnownTypes.CreateAssetMenu, EmptyArray<AttributeValue>.Instance, 
+                var attribute = AttributeUtil.AddAttributeToSingleDeclaration(myClassLikeDeclaration, KnownTypes.CreateAssetMenuAttribute, EmptyArray<AttributeValue>.Instance, 
                     values, myModule, myElementFactory);
                 
                 return attribute.CreateHotspotSession();

@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
         }
 
-        protected override IClrTypeName AttributeTypeName => KnownTypes.Space;
+        protected override IClrTypeName AttributeTypeName => KnownTypes.SpaceAttribute;
         protected override bool IsLayoutAttribute => true;
     }
 }
