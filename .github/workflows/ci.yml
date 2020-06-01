@@ -3,24 +3,24 @@ name: CI
 on: [pull_request]
 
 jobs:
-    windows:
-        runs-on: windows-latest
-        steps:
-            - uses: actions/checkout@v2
-            - name: Tests
-                shell: cmd
-                run: call .\build.ps1 -RunTests -Verbose
-    linux:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-            - name: Tests
-                shell: cmd
-                run: call .\build.sh -RunTests -Verbose
-    macos:
-        runs-on: macos-latest
-        steps:
-            - uses: actions/checkout@v2
-            - name: Tests
-                shell: cmd
-                run: call .\build.sh -RunTests -Verbose
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Tests
+        shell: cmd
+        run: call .\build.ps1 -RunTests -Verbose
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Tests
+        shell: cmd
+        run: call .\build.sh -RunTests -Verbose
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Tests
+        shell: cmd
+        run: call .\build.sh -RunTests -Verbose
