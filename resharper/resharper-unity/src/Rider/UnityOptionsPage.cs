@@ -42,7 +42,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             CheckBox((UnitySettings s) => s.InstallUnity3DRiderPlugin,
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
-            CheckBox((UnitySettings s) => s.UseUnityYamlMerge, "Use UnityYamlMerge for scenes and prefabs");
 
             Header("C#");
             CheckBox(ourEnablePerformanceHighlightingAccessor,
@@ -86,6 +85,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
                 "Enable simple word-based completion in ShaderLab files");
+            
+            Header("UnityYamlMerge");
+            CheckBox((UnitySettings s) => s.UseUnityYamlMerge, "Use UnityYamlMerge for scenes and prefabs");
+            BeginSection();
+            {
+                var option = WithIndent(AddStringOption((UnitySettings s) => s.MergeParameters, "Merge parameters"));
+                AddBinding(option, BindingStyle.IsEnabledProperty, (Expression<Func<UnitySettings, bool>>) (s => s.UseUnityYamlMerge),
+                    enable => enable);
+            }
+            EndSection();
 
             if (productConfigurations.IsInternalMode())
             {

@@ -13,8 +13,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.io.readBytes
+import com.jetbrains.rd.util.reactive.hasTrueValue
+import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.toIOFile
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.projectView.solution
 import java.nio.file.Files
 
 class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
@@ -34,7 +38,8 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
 
         settings.isMergeTrustExitCode = true
         settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
-        settings.mergeParameters = "merge -p -h --fallback none %3 %2 %1 %4 $premergedBase $premergedRight"
+        val mergeParameters = project.solution.rdUnityModel.mergeParameters.valueOrThrow
+        settings.mergeParameters = "$mergeParameters $premergedBase $premergedRight"
 
         if (!ExternalDiffToolUtil.tryExecuteMerge(
             project,
@@ -53,6 +58,9 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
 
     override fun canShow(project: Project?, request: MergeRequest): Boolean {
         project?: return false
+
+        if (!project.solution.rdUnityModel.useUnityYamlMerge.hasTrueValue)
+            return false
 
         if (request is ThreesideMergeRequest) {
             val outputContent = request.outputContent

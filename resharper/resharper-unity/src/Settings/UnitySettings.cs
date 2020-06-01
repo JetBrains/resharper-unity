@@ -14,6 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         
         [SettingsEntry(true, "If this option is enabled, UnityYamlMerge would be used to merge scenes and prefabs.")]
         public bool UseUnityYamlMerge;
+        
+        [SettingsEntry("merge -p -h --fallback none %3 %2 %1 %4", "Merge parameters")] 
+        public readonly string MergeParameters;
 
         [SettingsEntry(true, "Enables syntax error highlighting, brace matching and more of ShaderLab files.")]
         public bool EnableShaderLabParsing;
