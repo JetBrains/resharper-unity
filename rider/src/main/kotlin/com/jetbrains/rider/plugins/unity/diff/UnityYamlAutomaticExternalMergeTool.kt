@@ -12,7 +12,10 @@ import com.intellij.diff.tools.external.ExternalDiffToolUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.io.readBytes
+import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import java.nio.file.Files
 
 class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     override fun show(project: Project?, request: MergeRequest) {
@@ -25,18 +28,26 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             SystemInfo.isWindows -> ".exe"
             else -> ""
         }
+
+        val premergedBase = Files.createTempFile("premergedBase", null)
+        val premergedRight = Files.createTempFile("premergedRight", null)
+
+        settings.isMergeTrustExitCode = true
         settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
-        settings.mergeParameters = "merge -p -h --fallback none %3 %2 %1 %4"
+        settings.mergeParameters = "merge -p -h --fallback none %3 %2 %1 %4 $premergedBase $premergedRight"
 
         if (!ExternalDiffToolUtil.tryExecuteMerge(
             project,
             settings,
             request as ThreesideMergeRequest)){
-//            val output: VirtualFile = (request.outputContent as FileContent).file // todo: checked cast
-//            DiffRequestFactory.getInstance().createMergeRequest(project, output, newBases, request.title, request.contentTitles,
-//                { result -> request.applyResult(result) })
 
-            DiffManagerImpl.getInstance().showMergeBuiltin(project, request)
+            val output: VirtualFile = (request.outputContent as FileContent).file
+
+            val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
+            val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title, request.contentTitles,
+                { result -> request.applyResult(result) })
+
+            DiffManagerImpl.getInstance().showMergeBuiltin(project, preMerged)
         }
     }
 
