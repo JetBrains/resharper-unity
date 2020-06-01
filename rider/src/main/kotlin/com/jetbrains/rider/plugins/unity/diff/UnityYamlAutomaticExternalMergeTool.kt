@@ -33,7 +33,6 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             settings,
             request as ThreesideMergeRequest)){
 //            val output: VirtualFile = (request.outputContent as FileContent).file // todo: checked cast
-//
 //            DiffRequestFactory.getInstance().createMergeRequest(project, output, newBases, request.title, request.contentTitles,
 //                { result -> request.applyResult(result) })
 
