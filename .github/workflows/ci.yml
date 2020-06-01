@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Tests
         shell: powershell
-        run: -File .\build.ps1 -RunTests -Verbose
+        run: powershell -File .\build.ps1 -RunTests -Verbose
   linux:
     runs-on: ubuntu-latest
     steps:
