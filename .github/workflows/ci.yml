@@ -29,7 +29,7 @@ jobs:
           path: |
             ~/.gradle/caches
             !~/.gradle/caches/**/com.jetbrains.intellij.rider
-          key: ${{ runner.os }}-gradle-${{ hashFiles('rider/**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-test1-${{ hashFiles('rider/**/*.gradle*') }}
       - name: Cache test packages
         id: cache-test-packages
         uses: actions/cache@v2
@@ -39,6 +39,8 @@ jobs:
       - name: Build and Tests
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
+      - name: Stop gradle daemons
+        run: rider/gradlew.bat --stop
   linux:
     runs-on: ubuntu-latest
     steps:
