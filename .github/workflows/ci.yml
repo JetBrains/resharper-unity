@@ -1,0 +1,38 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+    windows:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Tests
+              run: gradlew.bat build
+              shell: cmd
+            - uses: actions/upload-artifact@v1
+              with:
+                  name: test-report
+                  path: build/reports/tests/test
+    linux:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Tests
+              run: ./gradlew build
+              shell: bash
+            - uses: actions/upload-artifact@v1
+              with:
+                  name: test-report
+                  path: build/reports/tests/test
+    macos:
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Tests
+              run: ./gradlew build
+              shell: bash
+            - uses: actions/upload-artifact@v1
+              with:
+                  name: test-report
+                  path: build/reports/tests/test
