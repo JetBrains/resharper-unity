@@ -38,16 +38,20 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
                     val watchedFileName = "ProtocolInstance.json"
                     val delta = RdDelta(libraryPath.resolve(watchedFileName).toString(), RdDeltaType.Changed)
                     var key: WatchKey
-                    while (watchService.take().also { key = it } != null && it.isAlive) {
-                        for (event in key.pollEvents()) {
-                            if (event.context().toString() == watchedFileName) {
-                                application.invokeLater {
-                                    project.solution.fileSystemModel.change.fire(RdDeltaBatch(listOf(delta)))
+                    try {
+                        while (watchService.take().also { key = it } != null && it.isAlive) {
+                            for (event in key.pollEvents()) {
+                                if (event.context().toString() == watchedFileName) {
+                                    application.invokeLater {
+                                        project.solution.fileSystemModel.change.fire(RdDeltaBatch(listOf(delta)))
+                                    }
                                 }
                             }
+                            key.reset()
                         }
-                        key.reset()
                     }
+                    catch (ClosedWatchServiceException){} // this is expected on `watchService.close()`
+
                 }
             }
         }
