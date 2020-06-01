@@ -81,13 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 "Cache prefab data to improve find usage performance");
             CheckBox((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic,
                 "Automatically disable asset indexing for large solutions");
-
-            Header("ShaderLab");
-            CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
-                "Enable simple word-based completion in ShaderLab files");
-            
-            Header("UnityYamlMerge");
-            CheckBox((UnitySettings s) => s.UseUnityYamlMerge, "Use UnityYamlMerge for scenes and prefabs");
+            CheckBox((UnitySettings s) => s.UseUnityYamlMerge, "Use UnityYamlMerge for merging scenes and prefabs");
             BeginSection();
             {
                 var option = WithIndent(AddStringOption((UnitySettings s) => s.MergeParameters, "Merge parameters"));
@@ -95,6 +89,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     enable => enable);
             }
             EndSection();
+
+            Header("ShaderLab");
+            CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
+                "Enable simple word-based completion in ShaderLab files");
 
             if (productConfigurations.IsInternalMode())
             {
