@@ -63,12 +63,6 @@ jobs:
             ~/.gradle/caches
             !~/.gradle/caches/**/com.jetbrains.intellij.rider
           key: gradle-${{ hashFiles('rider/**/*.gradle*') }}
-      - name: Cache test packages
-        id: cache-test-packages
-        uses: actions/cache@v2
-        with:
-          path: ~/JetTestPackages
-          key: jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
@@ -96,12 +90,6 @@ jobs:
             ~/.gradle/caches
             !~/.gradle/caches/**/com.jetbrains.intellij.rider
           key: gradle-${{ hashFiles('rider/**/*.gradle*') }}
-      - name: Cache test packages
-        id: cache-test-packages
-        uses: actions/cache@v2
-        with:
-          path: ~/JetTestPackages
-          key: jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
