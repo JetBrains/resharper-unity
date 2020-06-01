@@ -15,7 +15,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: rider/build/gradle-jvm
-          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build/gradle-jvm/**/*') }}
+          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build.gradle') }}
       - name: Cache Gradle Wrapper
         id: cache-gradle-wrapper
         uses: actions/cache@v2
@@ -48,7 +48,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: rider/build/gradle-jvm
-          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build/gradle-jvm/**/*') }}
+          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build.gradle') }}
       - name: Cache Gradle Wrapper
         id: cache-gradle-wrapper
         uses: actions/cache@v2
@@ -75,7 +75,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: rider/build/gradle-jvm
-          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build/gradle-jvm/**/*') }}
+          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build.gradle') }}
       - name: Cache Gradle Wrapper
         id: cache-gradle-wrapper
         uses: actions/cache@v2
