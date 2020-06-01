@@ -15,12 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Tests
-        shell: cmd
+        shell: bash
         run: call .\build.sh -RunTests -Verbose
   macos:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Tests
-        shell: cmd
+        shell: bash
         run: call .\build.sh -RunTests -Verbose
