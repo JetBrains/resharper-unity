@@ -6,29 +6,21 @@ jobs:
     windows:
         runs-on: windows-latest
         steps:
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2
             - name: Tests
-                shell: powershell
-                run: .\build.ps1 -RunTests -Verbose
+                      shell: cmd
+                      run: call .\build.ps1 -RunTests -Verbose
     linux:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2
             - name: Tests
-              run: ./gradlew build
-              shell: bash
-            - uses: actions/upload-artifact@v1
-              with:
-                  name: test-report
-                  path: build/reports/tests/test
+                shell: cmd
+                run: call .\build.sh -RunTests -Verbose
     macos:
         runs-on: macos-latest
         steps:
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2
             - name: Tests
-              run: ./gradlew build
-              shell: bash
-            - uses: actions/upload-artifact@v1
-              with:
-                  name: test-report
-                  path: build/reports/tests/test
+                  shell: cmd
+                  run: call .\build.sh -RunTests -Verbose
