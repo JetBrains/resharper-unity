@@ -21,7 +21,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.gradle/wrapper
-          key: gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Cache Gradle dependencies
         id: cache-gradle
         uses: actions/cache@v2
@@ -29,13 +29,13 @@ jobs:
           path: |
             ~/.gradle/caches
             !~/.gradle/caches/**/com.jetbrains.intellij.rider
-          key: gradle-${{ hashFiles('rider/**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('rider/**/*.gradle*') }}
       - name: Cache test packages
         id: cache-test-packages
         uses: actions/cache@v2
         with:
           path: ~/JetTestPackages
-          key: jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
+          key: ${{ runner.os }}-jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
       - name: Build and Tests
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
@@ -54,7 +54,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.gradle/wrapper
-          key: gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Cache Gradle dependencies
         id: cache-gradle
         uses: actions/cache@v2
@@ -62,7 +62,7 @@ jobs:
           path: |
             ~/.gradle/caches
             !~/.gradle/caches/**/com.jetbrains.intellij.rider
-          key: gradle-${{ hashFiles('rider/**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('rider/**/*.gradle*') }}
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
@@ -81,7 +81,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.gradle/wrapper
-          key: gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Cache Gradle dependencies
         id: cache-gradle
         uses: actions/cache@v2
@@ -89,7 +89,7 @@ jobs:
           path: |
             ~/.gradle/caches
             !~/.gradle/caches/**/com.jetbrains.intellij.rider
-          key: gradle-${{ hashFiles('rider/**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('rider/**/*.gradle*') }}
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
