@@ -2,11 +2,40 @@ name: CI
 
 on: [pull_request]
 
+env:
+  JET_TEST_PACKAGES_DIR: ~/JetTestPackages
+
 jobs:
   windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Cache Build JVM
+        id: cache-gradle-jvm
+        uses: actions/cache@v2
+        with:
+          path: rider/build/gradle-jvm
+          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build/gradle-jvm/**/*') }}
+      - name: Cache Gradle Wrapper
+        id: cache-gradle-wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Cache Gradle dependencies
+        id: cache-gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            !~/.gradle/caches/**/com.jetbrains.intellij.rider
+          key: gradle-${{ hashFiles('rider/**/*.gradle*') }}
+      - name: Cache test packages
+        id: cache-test-packages
+        uses: actions/cache@v2
+        with:
+          path: ~/JetTestPackages
+          key: jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
       - name: Build and Tests
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
@@ -14,6 +43,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Cache Build JVM
+        id: cache-gradle-jvm
+        uses: actions/cache@v2
+        with:
+          path: rider/build/gradle-jvm
+          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build/gradle-jvm/**/*') }}
+      - name: Cache Gradle Wrapper
+        id: cache-gradle-wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Cache Gradle dependencies
+        id: cache-gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            !~/.gradle/caches/**/com.jetbrains.intellij.rider
+          key: gradle-${{ hashFiles('rider/**/*.gradle*') }}
+      - name: Cache test packages
+        id: cache-test-packages
+        uses: actions/cache@v2
+        with:
+          path: ~/JetTestPackages
+          key: jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
@@ -21,6 +76,32 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Cache Build JVM
+        id: cache-gradle-jvm
+        uses: actions/cache@v2
+        with:
+          path: rider/build/gradle-jvm
+          key: ${{ runner.os }}-gradle-jvm-${{ hashFiles('rider/build/gradle-jvm/**/*') }}
+      - name: Cache Gradle Wrapper
+        id: cache-gradle-wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: gradle-wrapper-${{ hashFiles('rider/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Cache Gradle dependencies
+        id: cache-gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            !~/.gradle/caches/**/com.jetbrains.intellij.rider
+          key: gradle-${{ hashFiles('rider/**/*.gradle*') }}
+      - name: Cache test packages
+        id: cache-test-packages
+        uses: actions/cache@v2
+        with:
+          path: ~/JetTestPackages
+          key: jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
