@@ -7,20 +7,20 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Tests
+      - name: Build and Tests
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
   linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Tests
+      - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
   macos:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Tests
+      - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
