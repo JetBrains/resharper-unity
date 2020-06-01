@@ -41,7 +41,7 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun autoscroll() = object : ToggleAction("Autoscroll", "", AllIcons.Actions.MoveDown){
+        fun autoscroll() = object : ToggleAction("Autoscroll", "", AllIcons.RunConfigurations.Scroll_down){
             override fun isSelected(e: AnActionEvent) = model.autoscroll.value
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.autoscroll.set(value)
