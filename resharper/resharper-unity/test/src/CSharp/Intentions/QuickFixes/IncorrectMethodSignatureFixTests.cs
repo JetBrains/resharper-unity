@@ -14,6 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void Test03() { DoNamedTest(); }
         [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
         [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test] public void MultipleRequiredSignatureCandidates01() { DoNamedTest(); }
+        [Test] public void MultipleRequiredSignatureCandidates02() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -26,5 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void Test03() { DoNamedTest(); }
         [Test] public void InitializeOnLoadMethod() { DoNamedTest(); }
         [Test] public void RuntimeInitializeOnLoadMethod() { DoNamedTest(); }
+        [Test] public void MultipleRequiredSignatureCandidates01() { DoNamedTest(); }
+        [Test] public void MultipleRequiredSignatureCandidates02() { DoNamedTest(); }
     }
 }

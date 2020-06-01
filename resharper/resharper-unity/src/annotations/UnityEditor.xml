@@ -75,7 +75,7 @@
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
   </member>
 
-  
+
   <!-- N:UnityEditor.EditorTools -->
   <member name="T:UnityEditor.EditorTools.EditorToolAttribute">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
