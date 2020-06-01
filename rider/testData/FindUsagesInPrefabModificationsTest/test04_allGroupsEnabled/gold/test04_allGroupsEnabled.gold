@@ -9,8 +9,9 @@ Found usages  (2 usages found)
                         Test()  (1 usage found)
                             [186, Assets/MethodsContainer4.cs] (11: 13)  VoidHandler4_b();
     Assets  (1 usage found)
-        Ex4\VariantRoot Variant.prefab  (1 usage found)
-            VariantRoot Variant  (1 usage found)
-                VariantBranchA  (1 usage found)
-                    Script4  (1 usage found)
-                        m_MethodName: VoidHandler4_b
+        Ex4  (1 usage found)
+            VariantRoot Variant.prefab  (1 usage found)
+                VariantRoot Variant  (1 usage found)
+                    VariantBranchA  (1 usage found)
+                        Script4  (1 usage found)
+                            m_MethodName: VoidHandler4_b

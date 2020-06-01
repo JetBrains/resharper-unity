@@ -166,8 +166,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             {
                 if (!psiSourceFile.GetLocation().ExistsFile)
                 {
-                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), removed");
+                    // assertion is incorrect, because file could be removed while we have read lock.
+                    // Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), removed");
                     toProcess.Remove(psiSourceFile);
+                    continue;
                 }
                 
                 if (!psiSourceFile.IsValid())

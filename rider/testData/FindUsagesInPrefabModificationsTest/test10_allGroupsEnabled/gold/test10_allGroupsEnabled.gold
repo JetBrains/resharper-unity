@@ -9,7 +9,8 @@ Found usages  (2 usages found)
                         Test()  (1 usage found)
                             [376, Assets/MethodsContainer4.cs] (17: 13)  VoidHandler4_b_3();
     Assets  (1 usage found)
-        Ex4\Ex4.unity  (1 usage found)
-            VariantRoot  (1 usage found)
-                Script4  (1 usage found)
-                    m_MethodName: VoidHandler4_b_3
+        Ex4  (1 usage found)
+            Ex4.unity  (1 usage found)
+                VariantRoot  (1 usage found)
+                    Script4  (1 usage found)
+                        m_MethodName: VoidHandler4_b_3

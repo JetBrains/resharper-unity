@@ -3,10 +3,11 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import javax.swing.Icon
 
-abstract class RiderUnityLogViewAction(text:String, description:String, icon: Icon) : AnAction(text, description, icon) {
+abstract class RiderUnityLogViewAction(text:String, description:String, icon: Icon) : AnAction(text, description, icon), DumbAware {
     override fun update(e: AnActionEvent) {
         e.presentation.apply {
             val dataContext = e.dataContext
