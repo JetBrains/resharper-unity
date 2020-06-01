@@ -23,13 +23,13 @@ class UnityLogTokenizer {
         UnityLogTokenType.Material to UnityLogTokenType.MaterialEnd)
 
     fun tokenize(fullString: String): List<Token> {
-        var tokens: MutableList<Token> = mutableListOf()
+        val tokens: MutableList<Token> = mutableListOf()
 
         var lastTokenIndex = 0
 
         for ((i) in fullString.withIndex()) {
             for (validToken in validTokens) {
-                var lastIndex = checkToken(fullString, validToken.key, i)
+                val lastIndex = checkToken(fullString, validToken.key, i)
                 if (lastIndex != -1) {
                     addTokens(i, lastTokenIndex, tokens, fullString, fullString.substring(i, lastIndex + 1), validToken.value)
 
@@ -80,7 +80,7 @@ class UnityLogTokenizer {
                         token.used = true
                         tokens[x].used = true
 
-                        var color = this.parseColor(getTokenValue(token.token))
+                        val color = this.parseColor(getTokenValue(token.token))
                         for (y in i until x) {
                             tokens[y].color = color
                         }
@@ -90,7 +90,7 @@ class UnityLogTokenizer {
             }
             else if(token.type == UnityLogTokenType.Quad)
             {
-                token.used = true;
+                token.used = true
             }
             else if(validTokens.containsValue(token.type))
             {
