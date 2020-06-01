@@ -8,19 +8,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Tests
-        shell: cmd
-        run: call .\build.ps1 -RunTests -Verbose
+        shell: powershell
+        run: -File .\build.ps1 -RunTests -Verbose
   linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Tests
         shell: bash
-        run: .\build.sh -RunTests -Verbose
+        run: ./build.sh --info --stacktrace
   macos:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Tests
         shell: bash
-        run: .\build.sh -RunTests -Verbose
+        run: ./build.sh --info --stacktrace
