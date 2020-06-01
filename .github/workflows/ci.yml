@@ -8,12 +8,8 @@ jobs:
         steps:
             - uses: actions/checkout@v1
             - name: Tests
-              run: gradlew.bat build
-              shell: cmd
-            - uses: actions/upload-artifact@v1
-              with:
-                  name: test-report
-                  path: build/reports/tests/test
+                shell: powershell
+                run: .\build.ps1 -RunTests -Verbose
     linux:
         runs-on: ubuntu-latest
         steps:
