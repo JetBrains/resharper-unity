@@ -3,7 +3,7 @@ name: CI
 on: [pull_request]
 
 env:
-  JET_TEST_PACKAGES_DIR: ~/JetTestPackages
+  JET_TEST_PACKAGES_DIR: ${{ github.workspace }}/JetTestPackages
 
 jobs:
   windows:
@@ -28,7 +28,7 @@ jobs:
         with:
           path: |
             ~/.gradle/caches
-            !~/.gradle/caches/**/com.jetbrains.intellij.rider
+            !~/.gradle/caches/**/com.jetbrains.intellij.rider/**/*
           key: ${{ runner.os }}-gradle-test1-${{ hashFiles('rider/**/*.gradle*') }}
       - name: Cache test packages
         id: cache-test-packages
@@ -36,6 +36,8 @@ jobs:
         with:
           path: ~/JetTestPackages
           key: ${{ runner.os }}-jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
+      - name: Dump Gradle
+        run: tree ${{ github.workspace }}/.gradle
       - name: Build and Tests
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
