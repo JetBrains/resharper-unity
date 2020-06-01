@@ -7,6 +7,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Debug Action
+        uses: hmarr/debug-action@v1.0.0
       - name: Cache Build JVM
         id: cache-gradle-jvm
         uses: actions/cache@v2
