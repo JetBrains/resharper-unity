@@ -50,7 +50,7 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
                             key.reset()
                         }
                     }
-                    catch (ClosedWatchServiceException){} // this is expected on `watchService.close()`
+                    catch (e: ClosedWatchServiceException){} // this is expected on `watchService.close()`
 
                 }
             }
