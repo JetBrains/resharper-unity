@@ -3,7 +3,7 @@ name: CI
 on: [pull_request]
 
 env:
-  JET_TEST_PACKAGES_DIR: ${{ github.workspace }}/JetTestPackages
+  JET_TEST_PACKAGES_DIR: ${{ env.HOME }}/JetTestPackages
 
 jobs:
   windows:
@@ -35,12 +35,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/JetTestPackages
-          key: ${{ runner.os }}-jet-test-packages-${{ hashFiles('~/JetTestPackages/*/*.nupkg') }}
+          key: ${{ runner.os }}-jet-test-packages-no-hash
       - name: Dump Gradle
-        run: tree ${{ github.workspace }}/.gradle
+        run: tree ${{ env.HOME }}/.gradle
       - name: Build and Tests
         shell: powershell
-        run: powershell -File .\build.ps1 -RunTests -Verbose
+        run: powershell -File .\build.ps1 -Verbose
       - name: Stop gradle daemons
         run: rider/gradlew.bat --stop
   linux:
