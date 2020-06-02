@@ -43,12 +43,15 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             settings.isMergeTrustExitCode = true
             settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
             val mergeParameters = project.solution.rdUnityModel.mergeParameters.valueOrThrow
-            settings.mergeParameters = "$mergeParameters $premergedBase $premergedRight"
+            if (mergeParameters.contains(" -p "))
+                settings.mergeParameters = "$mergeParameters $premergedBase $premergedRight"
+            else
+                settings.mergeParameters = mergeParameters
 
             if (!ExternalDiffToolUtil.tryExecuteMerge(project, settings, request as ThreesideMergeRequest)){
-                val output: VirtualFile = (request.outputContent as FileContent).file
-                val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
-                if (byteContents.all { it.count() > 0 }){
+                if (premergedBase.exists() && premergedRight.exists()){
+                    val output: VirtualFile = (request.outputContent as FileContent).file
+                    val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
                     val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents,
                         request.title, request.contentTitles) { result -> request.applyResult(result) }
 
