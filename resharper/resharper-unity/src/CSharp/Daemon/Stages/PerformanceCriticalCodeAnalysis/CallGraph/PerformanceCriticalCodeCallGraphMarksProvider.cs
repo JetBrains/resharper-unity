@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -123,10 +124,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         private class PerformanceCriticalCodeProcessor : IRecursiveElementProcessor
         {
             public bool IsPerformanceCriticalCodeFound;
+            private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
 
             public bool InteriorShouldBeProcessed(ITreeNode element)
             {
-                return true;
+                myInterruptChecker.CheckForInterrupt();
+                switch (element)
+                {
+                    case IFunctionDeclaration _:
+                    case ICSharpClosure _:
+                        return false;
+                    default:
+                        return true;
+                }
             }
 
             public void ProcessBeforeInterior(ITreeNode element)

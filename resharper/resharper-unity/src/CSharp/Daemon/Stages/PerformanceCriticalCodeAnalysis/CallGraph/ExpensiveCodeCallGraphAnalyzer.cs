@@ -1,3 +1,4 @@
+using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 return result;
             
             var processor = new ExpensiveCodeProcessor();
-            declaration.ProcessThisAndDescendants(processor);
+            declaration.ProcessDescendants(processor);
             if (processor.IsExpensiveCodeFound)
                 result.Add(declaredElement);
             
@@ -51,9 +52,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         private class ExpensiveCodeProcessor : IRecursiveElementProcessor
         {
             public bool IsExpensiveCodeFound;
+            private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
+
             public bool InteriorShouldBeProcessed(ITreeNode element)
             {
-                return true;
+                myInterruptChecker.CheckForInterrupt();
+                switch (element)
+                {
+                    case IFunctionDeclaration _:
+                    case ICSharpClosure _:
+                        return false;
+                    default:
+                        return true;
+                }
             }
 
             public void ProcessBeforeInterior(ITreeNode element)

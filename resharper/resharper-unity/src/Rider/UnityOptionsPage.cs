@@ -33,6 +33,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private static readonly Expression<Func<UnitySettings, bool>> ourEnablePerformanceHighlightingAccessor =
             s => s.EnablePerformanceCriticalCodeHighlighting;
+        
+        private static readonly Expression<Func<UnitySettings, bool>> ourEnableBurstHighlightingAccessor =
+            s => s.EnableBurstCodeHighlighting;
 
         public UnityOptionsPage(Lifetime lifetime, OptionsSettingsSmartContext settingsStore,
                                 RunsProducts.ProductConfigurations productConfigurations)
@@ -44,6 +47,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             CheckBox((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
 
             Header("C#");
+            CheckBox(ourEnableBurstHighlightingAccessor,
+                "Enables Burst code analysis");
             CheckBox(ourEnablePerformanceHighlightingAccessor,
                 "Enable performance analysis in frequently called code");
 

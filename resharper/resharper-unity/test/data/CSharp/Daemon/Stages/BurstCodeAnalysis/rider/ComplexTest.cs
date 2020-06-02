@@ -4,58 +4,36 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
-// ReSharper disable UnusedMember.Global
-// ReSharper disable RedundantExtendsListEntry
-// ReSharper disable UnusedType.Global
-// ReSharper disable UnusedType.Local
-// ReSharper disable ArrangeTypeMemberModifiers
-// ReSharper disable MemberCanBePrivate.Local
-// ReSharper disable MemberCanBeMadeStatic.Local
-// ReSharper disable SuggestVarOrType_BuiltInTypes
-// ReSharper disable ConvertToConstant.Local
-// ReSharper disable StringLiteralTypo
-// ReSharper disable NotAccessedVariable
-// ReSharper disable RedundantAssignment
-// ReSharper disable UnusedVariable
-// ReSharper disable HeuristicUnreachableCode
-// ReSharper disable ObjectCreationAsStatement
-// ReSharper disable InconsistentNaming
-// ReSharper disable UnusedParameter.Local
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable FieldCanBeMadeReadOnly.Global
-// ReSharper disable UnusedMethodReturnValue.Local
-// ReSharper disable RedundantOverriddenMember
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
-// ReSharper disable EqualExpressionComparison
-// ReSharper disable UnusedMember.Local
-// ReSharper disable ArrangeModifiersOrder
-// ReSharper disable UnusedAutoPropertyAccessor.Local
-// ReSharper disable UnassignedGetOnlyAutoProperty
+using Unity.Jobs.LowLevel.Unsafe;
 
-#pragma warning disable 168
-#pragma warning disable 162
-#pragma warning disable 219
-#pragma warning disable 414
-#pragma warning disable 1717
-
-public class TestAttribute : Attribute
-{
-    
-}
-//for attributes to work
 namespace Unity
 {
     namespace Jobs
     {
+        [JobProducerType]
         public interface IJob
         {
             void Execute();
+        }
+
+        namespace LowLevel
+        {
+            namespace Unsafe
+            {
+                public class JobProducerTypeAttribute : Attribute
+                {
+                }
+            }
         }
     }
 
     namespace Burst
     {
         public class BurstCompileAttribute : Attribute
+        {
+        }
+
+        public class BurstDiscardAttribute : Attribute
         {
         }
 
@@ -107,7 +85,7 @@ public class NewBehaviourScript
             char ch3 = new char();
         }
 
-        [Test] public void Execute()
+        public void Execute()
         {
             var varInt = 1;
             int intInt = 1;
@@ -120,7 +98,7 @@ public class NewBehaviourScript
     [BurstCompile]
     struct ExceptionsText : IJob
     {
-        [Test] public void Execute()
+        public void Execute()
         {
             F();
         }
@@ -128,7 +106,7 @@ public class NewBehaviourScript
         private void F()
         {
             throw new ArgumentException("exception");
-            new ArgumentException(nameof(F)); 
+            new ArgumentException(new object().ToString());
             try 
             {
                 int a = 1;
@@ -181,7 +159,7 @@ public class NewBehaviourScript
             a.function();
         }
 
-        [Test] public void Execute()
+        public void Execute()
         {
             Fobject(null); 
             Finterface(null); 
@@ -194,10 +172,8 @@ public class NewBehaviourScript
     [BurstCompile]
     struct ForeachTest : IJob
     {
-        [Test] public void Execute()
+        public void Execute()
         {
-            //throw new ArgumentException(new object().ToString());
-            throw new ArgumentException(new object().ToString());
             foreach (var integer in new NativeArray<int>())
             {
                 Console.WriteLine(integer);
@@ -210,7 +186,7 @@ public class NewBehaviourScript
     [BurstCompile]
     struct MethodsInvocationTest : IJob
     {
-        [Test] public void Execute()
+        public void Execute()
         {
             F();
         }
@@ -249,7 +225,7 @@ public class NewBehaviourScript
         private static int getProp { get; }
         private MyEnum ourEnum;
 
-        [Test] public void Execute()
+        public void Execute()
         {
             SimpleClass myClass = new SimpleClass();
             getSetProp = 2;
@@ -266,6 +242,27 @@ public class NewBehaviourScript
 
         public void PlainMethod()
         {
+        }
+    }
+    
+    [BurstCompile]
+    struct BurstDiscardTest : IJob
+    {
+        public void Execute()
+        {
+            F();
+            D();
+        }
+
+        [BurstDiscard]
+        void F()
+        {
+            var current = new object();
+        }
+
+        void D()
+        {
+            var current = new object();
         }
     }
 }
