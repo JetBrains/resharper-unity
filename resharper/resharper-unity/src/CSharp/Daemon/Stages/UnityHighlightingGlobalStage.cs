@@ -11,7 +11,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 {
-    [DaemonStage(GlobalAnalysisStage = true, OverridenStages = new[] {typeof(UnityHighlightingStage)})]
+    [DaemonStage(GlobalAnalysisStage = true)]
     public class UnityHighlightingGlobalStage : UnityHighlightingAbstractStage
     {
         public UnityHighlightingGlobalStage(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,

@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         private readonly ILogger myLogger;
         private readonly ISet<IDeclaredElement> myMarkedDeclarations = new HashSet<IDeclaredElement>();
         private readonly JetHashSet<IMethod> myEventFunctions;
-        private readonly HashSet<IDeclaredElement> myCollectedRootElements = new HashSet<IDeclaredElement>();
+        private readonly HashSet<IDeclaredElement> myCollectedBurstRootElements = new HashSet<IDeclaredElement>();
 
         private readonly Dictionary<UnityProblemAnalyzerContext, List<IUnityProblemAnalyzer>>
             myProblemAnalyzersByContext;
@@ -175,9 +175,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         private UnityProblemAnalyzerContext GetProblemAnalyzerContext(ITreeNode element)
         {
             var res = new UnityProblemAnalyzerContext();
-            if (myIsPerformanceAnalysisEnabled && IsPerformanceCriticalDeclaration(element))
-                res |= UnityProblemAnalyzerContext.PERFOMANCE_CONTEXT;
-            if (myIsBurstAnalysisEnabled && IsBurstDeclaration(element))
+            if (myIsPerformanceAnalysisEnabled && IsPerformanceCriticalScope(element))
+                res |= UnityProblemAnalyzerContext.PERFORMANCE_CONTEXT;
+            if (myIsBurstAnalysisEnabled && IsBurstScope(element))
                 res |= UnityProblemAnalyzerContext.BURST_CONTEXT;
             return res;
         }
@@ -220,14 +220,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 return;
             var roots = myCallGraphBurstMarksProvider.GetRootMarksFromNode(node, null);
             foreach (var element in roots)
-                myCollectedRootElements.Add(element);
+                myCollectedBurstRootElements.Add(element);
         }
 
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
-            // it's ok that creating context does not force new prohibiting context
-            // reason: prohibiting context has higher priority than creating. example: burst
             CollectRootElements(element);
+            // prohibiting context always has higher priority than creating, and they does not affect each other
             if (IsFunctionNode(element))
                 myProblemAnalyzerContexts.Push(GetProblemAnalyzerContext(element));
             if (IsProhibitedNode(element))
@@ -260,7 +259,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                         var enumContext = (UnityProblemAnalyzerContext) context;
                         if (possibleContexts.HasFlag(enumContext) && !prohibitedContexts.HasFlag(enumContext))
                         {
-                            //be aware of https://johnthiriet.com/back-to-basics-csharp-casting-an-integer-into-an-enumeration/
                             foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[enumContext])
                             {
                                 performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind,
@@ -310,17 +308,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         }
 
 
-        private bool IsPerformanceCriticalDeclaration(ITreeNode element)
+        private bool IsPerformanceCriticalScope(ITreeNode element)
         {
             return IsRootDeclaration(element,
                 PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod,
                 myPerformanceCriticalCodeCallGraphMarksProvider.Id);
         }
 
-        private bool IsBurstDeclaration(ITreeNode element)
+        private bool IsBurstScope(ITreeNode element)
         {
             return IsRootDeclaration(element,
-                declaration => myCollectedRootElements.Contains(declaration.DeclaredElement),
+                declaration => myCollectedBurstRootElements.Contains(declaration.DeclaredElement),
                 myCallGraphBurstMarksProvider.Id);
         }
 
@@ -335,6 +333,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 return false;
             var isRooted = isRootedPredicate(declaration);
             var isGlobalStage = myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS;
+            
             if (!isRooted && isGlobalStage)
             {
                 var id = myProvider.GetElementId(declaredElement);
@@ -344,7 +343,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                     rootMarksProviderId, isGlobalStage, id.Value);
             }
 
-            return isRooted;
+            return isRooted && !isGlobalStage;
         }
     }
 }

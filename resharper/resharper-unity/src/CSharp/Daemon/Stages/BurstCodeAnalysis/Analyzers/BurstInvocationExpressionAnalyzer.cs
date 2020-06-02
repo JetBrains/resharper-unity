@@ -52,13 +52,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
             if (invokedMethod == null)
                 return;
-            if (invokedMethod.IsBurstProhibitedMethod())
+            
+            if (invocationExpression.IsBurstProhibitedInvocation())
             {
                 consumer.AddHighlighting(new BC1001Error(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
             }
-            else if (invokedMethod.IsReturnValueProhibited() ||
-                     invocationExpression.ArgumentList.HasProhibitedArguments())
+            else if (invokedMethod.IsReturnValueBurstProhibited() ||
+                     invocationExpression.ArgumentList.HasBurstProhibitedArguments())
             {
                 consumer.AddHighlighting(new BC1016Error(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName));
