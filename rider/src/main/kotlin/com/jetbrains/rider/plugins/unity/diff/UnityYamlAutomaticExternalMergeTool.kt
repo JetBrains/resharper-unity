@@ -12,6 +12,8 @@ import com.intellij.diff.tools.external.ExternalDiffToolUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.io.delete
+import com.intellij.util.io.exists
 import com.intellij.util.io.readBytes
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
@@ -19,7 +21,7 @@ import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
-import java.nio.file.Files
+import java.nio.file.Paths
 
 class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     override fun show(project: Project?, request: MergeRequest) {
@@ -33,26 +35,32 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             else -> ""
         }
 
-        val premergedBase = Files.createTempFile("premergedBase", null)
-        val premergedRight = Files.createTempFile("premergedRight", null)
+        val tempDir = System.getProperty("java.io.tmpdir")
+        val premergedBase = Paths.get(tempDir).resolve("premergedBase_"+request.hashCode())
+        val premergedRight = Paths.get(tempDir).resolve("premergedRight_"+request.hashCode())
 
-        settings.isMergeTrustExitCode = true
-        settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
-        val mergeParameters = project.solution.rdUnityModel.mergeParameters.valueOrThrow
-        settings.mergeParameters = "$mergeParameters $premergedBase $premergedRight"
+        try {
+            settings.isMergeTrustExitCode = true
+            settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
+            val mergeParameters = project.solution.rdUnityModel.mergeParameters.valueOrThrow
+            settings.mergeParameters = "$mergeParameters $premergedBase $premergedRight"
 
-        if (!ExternalDiffToolUtil.tryExecuteMerge(
-            project,
-            settings,
-            request as ThreesideMergeRequest)){
+            if (!ExternalDiffToolUtil.tryExecuteMerge(project, settings, request as ThreesideMergeRequest)){
+                val output: VirtualFile = (request.outputContent as FileContent).file
+                val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
+                if (byteContents.all { it.count() > 0 }){
+                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents,
+                        request.title, request.contentTitles) { result -> request.applyResult(result) }
 
-            val output: VirtualFile = (request.outputContent as FileContent).file
-
-            val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
-            val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title, request.contentTitles,
-                { result -> request.applyResult(result) })
-
-            DiffManagerImpl.getInstance().showMergeBuiltin(project, preMerged)
+                    DiffManagerImpl.getInstance().showMergeBuiltin(project, preMerged)
+                }
+                else
+                    DiffManagerImpl.getInstance().showMergeBuiltin(project, request)
+            }
+        }
+        finally {
+            if (premergedBase.exists()) premergedBase.delete()
+            if (premergedRight.exists()) premergedRight.delete()
         }
     }
 
