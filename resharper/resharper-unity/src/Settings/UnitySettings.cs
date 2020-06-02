@@ -15,6 +15,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         [SettingsEntry(true, "If this option is enabled, UnityYamlMerge would be used to merge YAML files.")]
         public bool UseUnityYamlMerge;
         
+        // -p         Use premerging
+        // -h         Use 'headless' mode (no error dialogs)
+        // --fallback Spec file defining fallback tools on conflicts if not using builtin. Can be set to 'none' to disable fallback.
         [SettingsEntry("merge -p -h --fallback none %3 %2 %1 %4", "Merge parameters")] 
         public readonly string MergeParameters;
 
