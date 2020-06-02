@@ -1,6 +1,6 @@
 package com.jetbrains.rider.plugins.unity.diff
 
-import com.intellij.diff.DiffManagerImpl
+import com.intellij.diff.DiffManagerEx
 import com.intellij.diff.DiffRequestFactory
 import com.intellij.diff.contents.DiffContent
 import com.intellij.diff.contents.FileContent
@@ -56,10 +56,10 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                     val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents,
                         request.title, request.contentTitles) { result -> request.applyResult(result) }
 
-                    DiffManagerImpl.getInstance().showMergeBuiltin(project, preMerged)
+                    DiffManagerEx.getInstance().showMergeBuiltin(project, preMerged)
                 }
                 else
-                    DiffManagerImpl.getInstance().showMergeBuiltin(project, request)
+                    DiffManagerEx.getInstance().showMergeBuiltin(project, request)
             }
         }
         finally {
