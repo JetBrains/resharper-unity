@@ -19,6 +19,7 @@ import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.toIOFile
 import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Paths
@@ -88,6 +89,6 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
 
     private fun canProcessOutputContent(content: DiffContent): Boolean {
         return content is FileContent && content.file.isInLocalFileSystem
-            && (content.file.extension =="unity" || content.file.extension == "prefab")
+            && content.file.fileType == UnityYamlFileType
     }
 }

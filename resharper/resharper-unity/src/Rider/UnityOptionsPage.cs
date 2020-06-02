@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 "Cache prefab data to improve find usage performance");
             CheckBox((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic,
                 "Automatically disable asset indexing for large solutions");
-            CheckBox((UnitySettings s) => s.UseUnityYamlMerge, "Use UnityYamlMerge for merging scenes and prefabs");
+            CheckBox((UnitySettings s) => s.UseUnityYamlMerge, "Prefer UnityYamlMerge for merging YAML files");
             BeginSection();
             {
                 var option = WithIndent(AddStringOption((UnitySettings s) => s.MergeParameters, "Merge parameters"));
