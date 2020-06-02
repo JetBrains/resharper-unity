@@ -104,6 +104,15 @@
   <ItemGroup Label="Resources">
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
+    <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
+    <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AdditionalFileLayoutResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Live templates">

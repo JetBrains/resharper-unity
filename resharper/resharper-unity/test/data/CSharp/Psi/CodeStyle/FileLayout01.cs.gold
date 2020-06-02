@@ -1,0 +1,101 @@
+﻿using System;
+using UnityEngine;
+
+public class MyMonoBehaviour : MonoBehaviour
+{
+  public enum MyEnum
+  {
+    One,
+    Two,
+    Three
+  }
+
+  public const int EeeeeField = 42;
+  public const int OooooField = 42;
+  public static readonly int Ccccc2Field;
+  public static int DdddField;
+  public string BbbbbField; // Serialised field
+
+  [Header("Something")] [SerializeField] private int YyyyyyField; // Serialised field
+
+  public string AaaaaField; // Serialised field
+  [SerializeField] private int ZzzzzField; // Serialised field
+
+  [Header("Something else")] public string AaaaaField2; // Serialised field
+
+  public readonly int CccccField;
+  private string QqqqqField;
+
+  public void Update() // Event function
+  {
+  }
+
+  public void FixedUpdate() // Event function
+  {
+  }
+
+  public void LateUpdate() // Event function
+  {
+  }
+
+  private void OnApplicationFocus(bool hasFocus) // Event function
+  {
+  }
+
+  public void OnApplicationPause(bool pauseStatus) // Event function
+  {
+  }
+
+  public void WwwwwMethod()
+  {
+  }
+
+  public void TtttMethod()
+  {
+  }
+
+  public void AaaaaMethod()
+  {
+  }
+
+  public void WwwwMethod2()
+  {
+  }
+}
+
+// Normal class. Methods are not reordered
+public class NonUnityType
+{
+  public void Update()
+  {
+  }
+
+  public void OnApplicationPause(bool pauseStatus)
+  {
+  }
+
+  public void LateUpdate()
+  {
+  }
+}
+
+
+[Serializable]
+public class SerializableClass
+{
+  public string Bbbbb;
+  public string Ccccc;
+  public string Aaaaa;
+  public readonly string Cccc2;
+  private string Aaaaa2;
+}
+
+// Normal class. Fields are reordered
+public class NonSerializableClass
+{
+  public readonly string Cccc2;
+  public string Aaaaa;
+  private string Aaaaa2;
+  public string Bbbbb;
+  public string Ccccc;
+}
