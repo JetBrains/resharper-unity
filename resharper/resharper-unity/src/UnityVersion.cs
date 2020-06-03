@@ -6,12 +6,14 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.FileSystemTracker;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Impl;
 using JetBrains.ProjectModel.Properties;
 using JetBrains.ProjectModel.Properties.Managed;
+using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Caches;
 using JetBrains.ReSharper.Resources.Shell;
@@ -28,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private readonly ISolution mySolution;
         private Version myVersionFromProjectVersionTxt;
         private Version myVersionFromEditorInstanceJson;
+        public readonly ViewableProperty<Version> ActualVersionForSolution = new ViewableProperty<Version>();
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
@@ -50,6 +53,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 editorInstanceJsonPath,
                 _ => { myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath); });
             myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
+
+            ActualVersionForSolution.SetValue(GetActualVersionForSolution());
         }
 
         [NotNull]
@@ -63,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        public Version GetActualVersionForSolution()
+        private Version GetActualVersionForSolution()
         {
             if (myVersionFromEditorInstanceJson != null)
                 return myVersionFromEditorInstanceJson;

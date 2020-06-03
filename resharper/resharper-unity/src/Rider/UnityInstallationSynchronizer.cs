@@ -1,3 +1,4 @@
+using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
@@ -19,25 +20,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             solutionTracker.IsUnityProjectFolder.Advise(lifetime, res =>
             {
                 if (!res) return;
-                NotifyFrontend(host, unityVersion);
+                var version = unityVersion.ActualVersionForSolution.Value;
+                NotifyFrontend(host, unityVersion, version);
             });
 
             referencesTracker.HasUnityReference.Advise(lifetime, res =>
             {
                 if (!res) return;
-                NotifyFrontend(host, unityVersion);
+                var version = unityVersion.ActualVersionForSolution.Value;
+                NotifyFrontend(host, unityVersion, version);
             });
+            
+            unityVersion.ActualVersionForSolution.Advise(lifetime, version => NotifyFrontend(host, unityVersion, version));
         }
 
-        private void NotifyFrontend(UnityHost host, UnityVersion unityVersion)
+        private void NotifyFrontend(UnityHost host, UnityVersion unityVersion, Version version)
         {
             host.PerformModelAction(rd =>
             {
                 // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more correct than any counted value
                 if (myUnityEditorProtocol.UnityModel.Value != null)
                     return;
-
-                var version = unityVersion.GetActualVersionForSolution();
+                
                 var info = UnityInstallationFinder.GetApplicationInfo(version, unityVersion);
                 if (info == null) 
                     return;

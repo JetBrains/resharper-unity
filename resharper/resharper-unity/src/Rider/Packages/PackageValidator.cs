@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Packages
         {
             message = string.Empty;
 
-            if (myUnityVersion.GetActualVersionForSolution() < new Version("2019.2"))
+            if (myUnityVersion.ActualVersionForSolution.Value < new Version("2019.2"))
                 return false;
 
             var manifestJsonFile = mySolution.SolutionDirectory.Combine("Packages/manifest.json");
@@ -90,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Packages
         public bool CanRunPlayModeTests(out string message)
         {
             message = string.Empty;
-            if (myUnityVersion.GetActualVersionForSolution() >= new Version("2019.2"))
+            if (myUnityVersion.ActualVersionForSolution.Value >= new Version("2019.2"))
                 return true;
 
             message = $"Unity 2019.2 or later is required to run play-mode tests. {HelpLink}";
