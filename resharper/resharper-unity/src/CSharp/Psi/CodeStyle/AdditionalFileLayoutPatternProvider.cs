@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Application;
 using JetBrains.Application.Settings;
+using JetBrains.ReSharper.Feature.Services.CSharp.FileLayout;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.CSharp.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp.Impl.CodeStyle.MemberReordering;
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
             try
             {
                 var pattern = store.GetValue((AdditionalFileLayoutSettings s) => s.Pattern);
-                return CSharpFormatterHelper.ParseFileLayoutPattern(pattern);
+                return FileLayoutUtil.ParseFileLayoutPattern(pattern);
             }
             catch (Exception ex)
             {

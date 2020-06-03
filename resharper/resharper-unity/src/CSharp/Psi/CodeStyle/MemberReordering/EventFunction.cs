@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.MemberReorderin
 {
     public class EventFunction : INodeConstraint
     {
-        public bool Matches(ITreeNode node)
+        public bool Matches(ITreeNode node, INodeMatchingContext ctx)
         {
             if (node is IMethodDeclaration methodDeclaration)
             {
