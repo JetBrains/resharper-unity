@@ -240,7 +240,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 {
                     case PlatformUtil.Platform.Windows:
 
-                        Logger.CatchSilent(() =>
+                        ourLogger.CatchWarn(() =>
                         {
                             version = new Version(
                                 new Version(FileVersionInfo.GetVersionInfo(appPath.FullPath).FileVersion)
