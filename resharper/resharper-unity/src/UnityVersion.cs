@@ -34,32 +34,42 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
-            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, bool inTests = false)
+            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, 
+            UnitySolutionTracker unitySolutionTracker)
         {
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
 
-            if (!inTests)
+            unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
-                var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+                if (!args)
+                    return;
+
+                var projectVersionTxtPath =
+                    mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
                 fileSystemTracker.AdviseFileChanges(lifetime,
                     projectVersionTxtPath,
                     _ =>
                     {
                         myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
                         ActualVersionForSolution.SetValue(myVersionFromProjectVersionTxt ??
-                            GetActualVersionForSolution());
+                                                          GetActualVersionForSolution());
                     });
                 myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
 
                 var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
                 fileSystemTracker.AdviseFileChanges(lifetime,
                     editorInstanceJsonPath,
-                    _ => { myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath); });
-                myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
-            }
-            
-            ActualVersionForSolution.SetValue(GetActualVersionForSolution());
+                    _ =>
+                    {
+                        myVersionFromEditorInstanceJson =
+                            TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
+                    });
+                myVersionFromEditorInstanceJson =
+                    TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
+
+                ActualVersionForSolution.SetValue(GetActualVersionForSolution());
+            });
         }
 
         [NotNull]
@@ -83,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (mySolution.IsVirtualSolution())
                 return new Version(0, 0);
 
-            foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
+            foreach (var project in GetTopLevelProjectWithReadLock(mySolution).ToArray())
             {
                 if (project.IsUnityProject())
                 {
