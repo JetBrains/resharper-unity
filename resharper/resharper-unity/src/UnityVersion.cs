@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (mySolution.IsVirtualSolution())
                 return new Version(0, 0);
 
-            foreach (var project in GetTopLevelProjectWithReadLock(mySolution).ToArray())
+            foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
             {
                 var version = myUnityProjectFileCache.GetUnityVersion(project);
                 if (version != null)
@@ -109,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (mySolution.IsVirtualSolution())
                 return FileSystemPath.Empty;
 
-            foreach (var project in GetTopLevelProjectWithReadLock(mySolution).ToArray())
+            foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
             {
                 var path = myUnityProjectFileCache.GetAppPath(project);
                     if (path != null)
@@ -144,7 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             // as our main strategy because Unity doesn't write defines for Release configuration (another reason we for
             // us to hide the project configuration selector)
             var unityVersion = new Version(0, 0);
-            foreach (var project in GetTopLevelProjectWithReadLock(solution).ToArray())
+            foreach (var project in GetTopLevelProjectWithReadLock(solution))
             {
                 foreach (var configuration in project.ProjectProperties.GetActiveConfigurations<IManagedProjectConfiguration>())
                 {
