@@ -39,18 +39,21 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
 
-            var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
-            fileSystemTracker.AdviseFileChanges(lifetime,
-                projectVersionTxtPath,
-                _ => { myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath); });
-            myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
+            if (!inTests)
+            {
+                var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+                fileSystemTracker.AdviseFileChanges(lifetime,
+                    projectVersionTxtPath,
+                    _ => { myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath); });
+                myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
 
-            var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
-            fileSystemTracker.AdviseFileChanges(lifetime,
-                editorInstanceJsonPath,
-                _ => { myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath); });
-            myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
-
+                var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
+                fileSystemTracker.AdviseFileChanges(lifetime,
+                    editorInstanceJsonPath,
+                    _ => { myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath); });
+                myVersionFromEditorInstanceJson = TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
+            }
+            
             ActualVersionForSolution.SetValue(GetActualVersionForSolution());
         }
 
