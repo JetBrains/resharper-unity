@@ -2,7 +2,6 @@ using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -12,25 +11,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly UnityEditorProtocol myUnityEditorProtocol;
 
-        public UnityInstallationSynchronizer(Lifetime lifetime, UnitySolutionTracker solutionTracker,
-                                             UnityHost host, UnityVersion unityVersion, UnityReferencesTracker referencesTracker,
+        public UnityInstallationSynchronizer(Lifetime lifetime,
+                                             UnityHost host, UnityVersion unityVersion,
                                                  UnityEditorProtocol unityEditorProtocol)
         {
             myUnityEditorProtocol = unityEditorProtocol;
-            solutionTracker.IsUnityProjectFolder.Advise(lifetime, res =>
-            {
-                if (!res) return;
-                var version = unityVersion.ActualVersionForSolution.Value;
-                NotifyFrontend(host, unityVersion, version);
-            });
-
-            referencesTracker.HasUnityReference.Advise(lifetime, res =>
-            {
-                if (!res) return;
-                var version = unityVersion.ActualVersionForSolution.Value;
-                NotifyFrontend(host, unityVersion, version);
-            });
-            
             unityVersion.ActualVersionForSolution.Advise(lifetime, version => NotifyFrontend(host, unityVersion, version));
         }
 

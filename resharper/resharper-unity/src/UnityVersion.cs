@@ -79,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (project == null)
                 return new Version(0, 0);
             var version = myUnityProjectFileCache.GetUnityVersion(project);
-            return version ?? ActualVersionForSolution.Value;
+            return version ?? GetActualVersionForSolution();
         }
 
         [NotNull]
@@ -95,12 +95,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             foreach (var project in GetTopLevelProjectWithReadLock(mySolution).ToArray())
             {
-                if (project.IsUnityProject())
-                {
-                    var version = myUnityProjectFileCache.GetUnityVersion(project);
-                    if (version != null)
-                        return version;
-                }
+                var version = myUnityProjectFileCache.GetUnityVersion(project);
+                if (version != null)
+                    return version;
             }
 
             return GetVersionForTests(mySolution);
@@ -112,14 +109,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (mySolution.IsVirtualSolution())
                 return FileSystemPath.Empty;
 
-            foreach (var project in GetTopLevelProjectWithReadLock(mySolution))
+            foreach (var project in GetTopLevelProjectWithReadLock(mySolution).ToArray())
             {
-                if (project.IsUnityProject())
-                {
-                    var path = myUnityProjectFileCache.GetAppPath(project);
+                var path = myUnityProjectFileCache.GetAppPath(project);
                     if (path != null)
                         return path;
-                }
             }
             return FileSystemPath.Empty;
         }
@@ -150,7 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             // as our main strategy because Unity doesn't write defines for Release configuration (another reason we for
             // us to hide the project configuration selector)
             var unityVersion = new Version(0, 0);
-            foreach (var project in GetTopLevelProjectWithReadLock(solution))
+            foreach (var project in GetTopLevelProjectWithReadLock(solution).ToArray())
             {
                 foreach (var configuration in project.ProjectProperties.GetActiveConfigurations<IManagedProjectConfiguration>())
                 {
@@ -246,8 +240,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 {
                     case PlatformUtil.Platform.Windows:
 
-                        version = new Version(new Version(FileVersionInfo.GetVersionInfo(appPath.FullPath).FileVersion)
-                            .ToString(3));
+                        Logger.CatchSilent(() =>
+                        {
+                            version = new Version(
+                                new Version(FileVersionInfo.GetVersionInfo(appPath.FullPath).FileVersion)
+                                    .ToString(3));
+                        });
 
                         var resource = new VersionResource();
                         resource.LoadFrom(appPath.FullPath);
