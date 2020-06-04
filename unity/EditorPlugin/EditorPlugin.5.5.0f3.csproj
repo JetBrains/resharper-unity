@@ -13,6 +13,7 @@
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.0"/>
     <PackageReference Include="JetBrains.Unity.Libs.5.5.0f3" Version="2017.7.21" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>

@@ -7,11 +7,11 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\EditorPlugin\EditorPlugin.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.0"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
     <PackageReference Include="xunit" Version="1.9.2" />
   </ItemGroup>
