@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (project == null)
                 return new Version(0, 0);
             var version = myUnityProjectFileCache.GetUnityVersion(project);
-            return version ?? GetActualVersionForSolution();
+            return version ?? ActualVersionForSolution.Value;
         }
 
         [NotNull]
