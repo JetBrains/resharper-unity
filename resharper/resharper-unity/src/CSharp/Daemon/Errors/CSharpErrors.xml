@@ -78,7 +78,7 @@
         <Title>Incorrect method signature</Title>
         <Description>Method does not match expected signature.</Description>
       </Tag>
-      
+
       <Tag externalName="InefficientPropertyAccessWarning.HIGHLIGHTING_ID"
            default="WARNING">
         <Title>Repeated access of property on built in component is inefficient</Title>
@@ -214,11 +214,11 @@
       <Tag externalName="LoadSceneAmbiguousSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>Short scene name is not unique</Title>
         <Description>
-          There are several scenes with the same name in the Unity build settings. 
+          There are several scenes with the same name in the Unity build settings.
           Only scene with smallest index will be used.
-        </Description>  
+        </Description>
       </Tag>
-      
+
       <Tag externalName="LoadSceneUnknownSceneNameWarning.HIGHLIGHTING_ID" default="WARNING">
         <Title>There is no scene with the same name in the build settings</Title>
         <Description>
@@ -302,7 +302,7 @@
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
-  
+
   <Warning name="UnknownLayer" configurableSeverity="Unity.UnknownLayer">
     <Parameter type="ITreeNode" name="node" />
     <Message value="The layer is not defined in the 'Tags &amp; Layers'. The call is likely to fail at runtime." />
@@ -319,7 +319,7 @@
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="LoadSceneUnexistingSceneName" configurableSeverity="Unity.LoadSceneUnexistingScene">
     <Parameter type="IArgument" name="argument" />
     <Message value="There is no scene with same name in the project." />
@@ -334,7 +334,7 @@
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="LoadSceneUnknownSceneName" configurableSeverity="Unity.LoadSceneUnknownSceneName">
     <Parameter type="IArgument" name="argument" />
     <Parameter type="string" name="sceneName" />
@@ -357,7 +357,7 @@
     <Range>Argument.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
-  
+
   <Warning name="DuplicateEventFunction" configurableSeverity="Unity.DuplicateEventFunction">
     <Parameter type="IMethodDeclaration" name="methodDeclaration" />
     <Message value="Event function with the same name is already declared" />
@@ -388,7 +388,7 @@
     <Range>EqualityExpression.GetHighlightingRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
-  
+
   <Warning name="IncorrectMonoBehaviourInstantiation" configurableSeverity="Unity.IncorrectMonoBehaviourInstantiation">
     <Parameter type="IObjectCreationExpression" name="creationExpression" />
     <Message value="'MonoBehaviour' instances must be instantiated with 'GameObject.AddComponent&lt;T&gt;()' instead of 'new'" />
@@ -411,6 +411,15 @@
       <Argument>ExpectedMethodSignature.FormatSignature(MethodDeclaration.DeclaredName)</Argument>
     </Message>
     <Range>MethodDeclaration.GetNameDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+
+  <Warning name="IncorrectSignatureWithChoice" configurableSeverity="Unity.IncorrectMethodSignature">
+    <Parameter type="IMethodDeclaration" name="methodDeclaration" />
+    <Parameter type="MethodSignature[]" name="expectedMethodSignatures" isValid="skip" />
+    <Message value="Incorrect method signature" />
+    <Range>MethodDeclaration.GetNameDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
   </Warning>
 
   <Warning name="InefficientPropertyAccess" configurableSeverity="Unity.InefficientPropertyAccess">
@@ -623,7 +632,7 @@
     </Message>
     <Range>Declaration.GetNameDocumentRange()</Range>
   </Info>
-  
+
   <Warning name="UnityObjectNullCoalescing" configurableSeverity="Unity.NoNullCoalescing">
     <Parameter type="INullCoalescingExpression" name="expression" />
     <Message value="'??' on a type deriving from 'UnityEngine.Object' bypasses the lifetime check on the underlying Unity engine object" />

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
@@ -6,6 +5,7 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.Generate;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Util;
@@ -101,39 +101,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
         }
 
         public override double Priority => 100;
-
-        // Sort event functions, mostly alphabetically, but with some commonly used messages at the top
-        private class UnityEventFunctionComparer : IComparer<string>
-        {
-            private static readonly OrderedHashSet<string> ourSpecialNames = new OrderedHashSet<string>();
-
-            static UnityEventFunctionComparer()
-            {
-                ourSpecialNames.Add("Awake");
-                ourSpecialNames.Add("Reset");
-                ourSpecialNames.Add("Start");
-                ourSpecialNames.Add("Update");
-                ourSpecialNames.Add("FixedUpdate");
-                ourSpecialNames.Add("LateUpdate");
-                ourSpecialNames.Add("OnEnable");
-                ourSpecialNames.Add("OnDisable");
-                ourSpecialNames.Add("OnDestroy");
-                ourSpecialNames.Add("OnGUI");
-            }
-
-            public int Compare(string x, string y)
-            {
-                var xi = ourSpecialNames.IndexOf(x);
-                var yi = ourSpecialNames.IndexOf(y);
-                // -1 -> x is less than y, so goes to top
-                if (xi == -1 && yi > -1)
-                    return 1;
-                if (xi > -1 && yi == -1)
-                    return -1;
-                if (xi == -1 && yi == -1)
-                    return string.Compare(x, y, StringComparison.InvariantCulture);
-                return xi > yi ? 1 : (xi < yi ? -1 : 0);
-            }
-        }
     }
 }

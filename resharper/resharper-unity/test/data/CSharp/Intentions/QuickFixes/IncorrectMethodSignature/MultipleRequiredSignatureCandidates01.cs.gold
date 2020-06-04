@@ -1,0 +1,9 @@
+﻿using UnityEditor.ShortcutManagement;
+
+public class Foo
+{
+  [Shortcut]
+  public static void Do{caret}Method(ShortcutArguments args)
+  {
+  }
+}

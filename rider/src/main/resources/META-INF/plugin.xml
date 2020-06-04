@@ -17,21 +17,20 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
-    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
     <postStartupActivity implementation="com.jetbrains.rider.plugins.unity.ui.UnityUIMinimizer"/>
 
+    <!-- Options pages -->
     <applicationConfigurable groupId="language" instance="com.jetbrains.rider.settings.UnityPluginOptionsPage" id="preferences.build.unityPlugin" />
+    <applicationConfigurable groupId="preferences.build.unityPlugin" instance="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutOptionsPage" id="preferences.build.unityFileLayout" />
 
     <projectConfigurable parentId="FileTemplatesSettingsId" instance="com.jetbrains.rider.settings.templates.UnityFileTemplatesOptionPage" groupWeight="-120" />
     <projectConfigurable parentId="LiveTemplatesSettingsId" instance="com.jetbrains.rider.settings.templates.UnityLiveTemplatesOptionPage" groupWeight="-120" />
 
-    <!-- This has to be first, as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
-    <lang.documentationProvider language="C#" implementationClass="com.jetbrains.rider.plugins.unity.quickDoc.UnityDocumentationProvider"
-                                order="first" />
-
-
     <!--suppress PluginXmlValidity -->
     <ignoredFileProvider implementation="com.jetbrains.rider.plugins.unity.UnityIgnoredFileProvider"/>
+
+    <!-- This has to be order="first", as the default Rider handler returns an empty list instead of null, and IJ considers that handled -->
+    <lang.documentationProvider language="C#" implementationClass="com.jetbrains.rider.plugins.unity.quickDoc.UnityDocumentationProvider" order="first" />
 
     <!-- For future reference, fileTypeFactory[@id] defines the name used in the @language attributes of the other
          registration elements. This @id MUST match the value returned by FileType.getName() - case sensitive! -->
@@ -81,25 +80,33 @@
     <breadcrumbsInfoProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.UxmlFileBreadcrumbsProvider" />
     <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.uxml.codeInsight.schema.UxmlSchemaProvider" />
 
+    <!-- JSON support -->
+    <fileType name="JSON" extensions="inputactions"/>
+
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UssDisabledEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.UxmlMissingSchemaEditorNotification" />
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.unity.ui.NonUserEditableEditorNotification" />
 
-    <fileType name="JSON" extensions="inputactions"/>
-
     <!-- Unity Explorer -->
     <projectViewPane implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorer" id="UnityExplorer" order="first, before SolutionExplorer"/>
     <projectModelViewUpdater implementation="com.jetbrains.rider.plugins.unity.explorer.UnityExplorerProjectModelViewUpdater"/>
+    <projectModelViewExtensions implementation="com.jetbrains.rider.plugins.unity.explorer.UnityProjectModelViewExtensions"/>
 
+    <!-- Run configurations -->
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
+
+    <!-- Debugger -->
     <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityLocalAttachProcessDebuggerProvider" />
     <xdebugger.breakpointType implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType" />
     <rider.breakpoint.customPanelProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointPanelProvider" />
     <rider.debug.breakpoint.handler.factory implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointHandlerFactory" />
     <rider.breakpoint.customPopupActionsProvider implementation="com.jetbrains.rider.plugins.unity.debugger.breakpoints.ConvertToPausepointPopupActionProvider" />
 
+    <!-- Android support -->
     <rider.android.project.validator implementation="com.jetbrains.rider.plugins.unity.android.UnityCustomAndroidProjectValidator"/>
-    <rdclient.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
 
+    <!-- Logging and feedback -->
+    <rdclient.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
     <feedbackDescriptionProvider implementation="com.jetbrains.rider.plugins.unity.UnityFeedbackDescriptionProvider" />
 
     <!-- TODO: Fix up ordering once Rider's own status bar widgets have been migrated to StatusBarWidgetFactory
@@ -109,7 +116,9 @@
     <!--suppress PluginXmlValidity -->
     <statusBarWidgetFactory implementation="com.jetbrains.rider.plugins.unity.ui.UnityStatusBarWidget" order="after readOnlyWidget, before fatalErrorWidget" />
 
-    <projectModelViewExtensions implementation="com.jetbrains.rider.plugins.unity.explorer.UnityProjectModelViewExtensions"/>
+    <!-- File Layout -->
+    <standardResourceProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutStandardResourceProvider"/>
+    <xml.schemaProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutSchemaProvider"/>
 
     <projectService serviceImplementation="com.jetbrains.rider.plugins.unity.ui.UnityUIManager"/>
     <projectService serviceImplementation="com.jetbrains.rider.UnityProjectDiscoverer"/>
@@ -295,6 +304,7 @@
 <p>
 <em>Added:</em>
 <ul>
+  <li>Add Unity code cleanup patterns that do not reorder serialised fields (<a href="https://github.com/JetBrains/resharper-unity/issues/88">#88</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1676">#1676</a>)</li>
   <li>Use <tt>Range</tt> attribute to provide hints to integer dataflow analysis (<a href="https://github.com/JetBrains/resharper-unity/pull/1673">#1673</a>)</li>
   <li>Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor (<a href="https://github.com/JetBrains/resharper-unity/issues/1272">#1272</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1661">#1661</a>)</li>
   <li>Rider: Add sample text for "Unity", "ShaderLab" and "Cg/HLSL" Colour Scheme options pages (<a href="https://github.com/JetBrains/resharper-unity/pull/1667">#1667</a>)</li>
@@ -304,6 +314,7 @@
 <em>Changed:</em>
 <ul>
   <li>All applicable quick fixes are now bulk actions, and can be applied over project scope (<a href="https://github.com/JetBrains/resharper-unity/issues/1648">#1648</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1649">#1649</a>)</li>
+  <li>Improved method signature validation and usage suppression using Unity's <tt>RequiredSignature</tt> attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1679">#1679</a>)</li>
   <li>Rider: Significant reduction in memory usage while indexing assets (<a href="https://github.com/JetBrains/resharper-unity/pull/1645">#1645</a>)</li>
   <li>Rider: Better support for prefab modifications in Find Usages and showing Inspector values (<a href="https://github.com/JetBrains/resharper-unity/pull/1645">#1645</a>)</li>
   <li>Rider: Show method handlers for Unity events in the editor (<a href="https://github.com/JetBrains/resharper-unity/pull/1645">#1645</a>)</li>
@@ -315,8 +326,10 @@
 <ul>
   <li>Fix meta file handling when references to Unity assemblies are invalid (<a href="https://github.com/JetBrains/resharper-unity/pull/1623">#1623</a>)</li>
   <li>Public fields of type <tt>Action</tt> are no longer treated as serialised fields (<a href="https://github.com/JetBrains/resharper-unity/issues/1605">#1605</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1638">#1638</a>)</li>
-  <li>Rider: Fix grouping assets by directory (<a href="https://github.com/JetBrains/resharper-unity/pull/1668">#1668</a>)</li>
+  <li>Fix incorrect method signature validation for methods marked with <tt>OnOpenedAsset<tt> (<a href="https://github.com/JetBrains/resharper-unity/issues/1053">#1053</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1679">#1679</a>)</li>
+  <li>Rider: Fix grouping assets by directory in Find Usages results (<a href="https://github.com/JetBrains/resharper-unity/pull/1668">#1668</a>)</li>
   <li>Rider: Fix exception trying to upgrade Unity editor plugin (<a href="https://youtrack.jetbrains.com/issue/RIDER-42475">RIDER-42475</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1658">#1658</a>)</li>
+  <li>Rider: Fix unit tests not running unless Rider has focus (<a href="https://youtrack.jetbrains.com/issue/RIDER-37990">RIDER-37990</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1672">#1672</a>)</li>
   <li>Unity editor: Fix reporting of duration of Unity tests (released in Rider package 2.0.4) (<a href="https://youtrack.jetbrains.com/issue/RIDER-44853">RIDER-44853</a>)</li>
   <li>Unity editor: Delay calling Unity API to workaround potential Unity crash (<a href="https://youtrack.jetbrains.com/issue/RIDER-43951">RIDER-43951</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1647">#1647</a>)</li>
 </ul>
