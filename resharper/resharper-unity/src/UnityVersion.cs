@@ -39,9 +39,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
 
-            if (inTests)
-                return;
-
             var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
             fileSystemTracker.AdviseFileChanges(lifetime,
                 projectVersionTxtPath,
