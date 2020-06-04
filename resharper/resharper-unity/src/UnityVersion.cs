@@ -47,7 +47,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     _ =>
                     {
                         myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
-                        ActualVersionForSolution.SetValue(myVersionFromProjectVersionTxt);
+                        ActualVersionForSolution.SetValue(myVersionFromProjectVersionTxt ??
+                            GetActualVersionForSolution());
                     });
                 myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
 
