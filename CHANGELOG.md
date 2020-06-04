@@ -15,7 +15,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Added
 
 - Use `Range` attribute to provide hints to integer dataflow analysis ([#1673](https://github.com/JetBrains/resharper-unity/pull/1673))
-- Remove `Packages` and any subfolder from namespace suggestions ([#1677](https://github.com/JetBrains/resharper-unity/pull/1677))
+- Improve namespace suggestions for packages ([#1161](https://github.com/JetBrains/resharper-unity/issues/1161), [RIDER-36546](https://youtrack.jetbrains.com/issue/RIDER-36546), [#1677](https://github.com/JetBrains/resharper-unity/pull/1677))
 - Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor ([#1272](https://github.com/JetBrains/resharper-unity/issues/1272), [#1661](https://github.com/JetBrains/resharper-unity/pull/1661))
 - Rider: Add sample text for "Unity", "ShaderLab" and "Cg/HLSL" Colour Scheme options pages ([#1667](https://github.com/JetBrains/resharper-unity/pull/1667))
 
