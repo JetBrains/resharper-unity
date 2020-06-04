@@ -44,7 +44,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var projectVersionTxtPath = mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
                 fileSystemTracker.AdviseFileChanges(lifetime,
                     projectVersionTxtPath,
-                    _ => { myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath); });
+                    _ =>
+                    {
+                        myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
+                        ActualVersionForSolution.SetValue(myVersionFromProjectVersionTxt);
+                    });
                 myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
 
                 var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
