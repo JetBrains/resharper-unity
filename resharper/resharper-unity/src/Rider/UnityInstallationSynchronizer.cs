@@ -1,7 +1,7 @@
+using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -11,33 +11,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private readonly UnityEditorProtocol myUnityEditorProtocol;
 
-        public UnityInstallationSynchronizer(Lifetime lifetime, UnitySolutionTracker solutionTracker,
-                                             UnityHost host, UnityVersion unityVersion, UnityReferencesTracker referencesTracker,
+        public UnityInstallationSynchronizer(Lifetime lifetime,
+                                             UnityHost host, UnityVersion unityVersion,
                                                  UnityEditorProtocol unityEditorProtocol)
         {
             myUnityEditorProtocol = unityEditorProtocol;
-            solutionTracker.IsUnityProjectFolder.Advise(lifetime, res =>
-            {
-                if (!res) return;
-                NotifyFrontend(host, unityVersion);
-            });
-
-            referencesTracker.HasUnityReference.Advise(lifetime, res =>
-            {
-                if (!res) return;
-                NotifyFrontend(host, unityVersion);
-            });
+            unityVersion.ActualVersionForSolution.Advise(lifetime, version => NotifyFrontend(host, unityVersion, version));
         }
 
-        private void NotifyFrontend(UnityHost host, UnityVersion unityVersion)
+        private void NotifyFrontend(UnityHost host, UnityVersion unityVersion, Version version)
         {
             host.PerformModelAction(rd =>
             {
                 // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more correct than any counted value
                 if (myUnityEditorProtocol.UnityModel.Value != null)
                     return;
-
-                var version = unityVersion.GetActualVersionForSolution();
+                
                 var info = UnityInstallationFinder.GetApplicationInfo(version, unityVersion);
                 if (info == null) 
                     return;
