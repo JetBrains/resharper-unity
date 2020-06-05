@@ -23,10 +23,46 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
             myLogger = logger;
         }
 
+        // The reasoning behind this is fairly simple:
+        // * Package location should not affect namespace
+        //   The package owner is not in control of the location of the package on an end user's system. It might be
+        //   cloned into the Packages folder, or referenced and cached in the Library/PackageCache folder. It might also
+        //   be referenced in an external location with the file: syntax
+        // * Assembly definition location should affect location, but only relative to Assets or package root folder
+        //   Packages are self contained units. The location of an assembly definition in a folder structure (especially
+        //   the Assets folder) is deliberate on the part of the user and should be part of the namespace
+        // * If the asmdef defines a root namespace (Unity 2020.2a12+) this overrides everything, up to and including
+        //   the location of the .asmdef file
+        // * Exclude some folder names, based on observed convention. E.g. Assets, Runtime, Scripts.
+        //   Editor is deliberately not excluded.
+        //
+        // There are subtleties:
+        // * Exclude Assets and Assets/Scripts, Packages and Library/PackageCache
+        // * Exclude the package root folder. The package owner is not in control of this.
+        //   Referenced packages are stored in Library/PackageCache with a folder name based on ID and version
+        //   End users can clone git repos or tarballs into any folder
+        // * Exclude any folder until we get to the package root (the location of the package.json)
+        //   If we clone a git repo into Packages, and the repo doesn't have a package in the root of the repo, skip all
+        //   folders until we get to the package root. The package can be included via a file: entry in manifest.json
+        // * A package that lives inside the solution structure, but outside of Assets or Packages will have a project
+        //   with a path that is relative to the solution root. Ignore all intermediary folders between solution and
+        //   package root
+        // * A package that lives outside of the solution structure will have a root folder that is a link to the common
+        //   parent of all files in the project. This is usually the asmdef location, AND IS INCORRECT.
+        //   The linked folder is not included in namespace suggestions
+        //   TODO: The linked folder should be the package root folder (which we normally ignore)
+        //   This requires changes to the generated files. Either we include package.json to make a new default folder,
+        //   or we add Link attributes to each file item
+        // * After package root, ignore Runtime, Scripts and any combination of the two
+        //
+        // And implications:
+        // * If there is no root namespace specified for an assembly definition in a package, one can be inferred from
+        //   the path from the package root to the assembly definition file
+        //   E.g. /Packages/com.unity.collections@0.0.9-preview.9/Unity.Collections/Unity.Collections.asmdef will have
+        //   a "root namespace" of Unity.Collections
         public void InitialiseProjectSettings(Lifetime projectLifetime, IProject project,
                                               ISettingsStorageMountPoint mountPoint)
         {
-            // Don't require Assets or Assets.Scripts in namespaces
             ExcludeFolderFromNamespace(mountPoint, "Assets");
             ExcludeFolderFromNamespace(mountPoint, @"Assets\Scripts");
 
@@ -36,6 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                 ExcludeFolderFromNamespace(mountPoint, "Library");
                 ExcludePackagesFoldersFromNamespace(mountPoint, projectFolder, "PackageCache", @"Library");
             }
+
+            ExcludeExternalPackagesFromNamespace(mountPoint, project);
         }
 
         private void ExcludeFolderFromNamespace(ISettingsStorageMountPoint mountPoint, string path)
@@ -65,29 +103,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         private void ExcludePackageSubFoldersFromNamespace(ISettingsStorageMountPoint mountPoint,
                                                            IProjectFolder thisFolder, string thisPath)
         {
-            // First time called, this excludes package name, e.g. `Packages/com.unity.mathematics` or
-            // `Library/PackageCache/com.unity.collections@0.0.9-preview.9`
-            // If that folder does not have a package.json recurse until we find one, and exclude everything along the
-            // way. This handles an edge case where e.g. a GitHub repo is checked out into Packages, but the root of the
-            // project isn't the package. Instead, the package is defined one or two levels down, and included into the
-            // project via file: in the manifest.
-            // E.g. myrepo/src/mypackage/{package.json}. We don't want `myrepo` or `src` appearing in the namespace
             foreach (var subFolder in thisFolder.GetSubFolders())
             {
                 var path = thisPath + @"\" + subFolder.Name;
-                ExcludeFolderFromNamespace(mountPoint, path);
+                ExcludePackageRootFolderFromNamespace(mountPoint, subFolder, path);
+            }
+        }
 
-                // Is it a package folder? Exclude Scripts, Runtime, Scripts/Runtime and Runtime/Scripts
-                if (subFolder.Location.Combine("package.json").ExistsFile)
+        private void ExcludePackageRootFolderFromNamespace(ISettingsStorageMountPoint mountPoint,
+            IProjectFolder folder, string path)
+        {
+            ExcludeFolderFromNamespace(mountPoint, path);
+
+            // Is it a package folder? Exclude Scripts, Runtime, Scripts/Runtime and Runtime/Scripts
+            if (folder.Location.Combine("package.json").ExistsFile)
+            {
+                // The folder will be linked if the project's files belong to a package that is external to the solution
+                // folder. With a linked folder, the namespace provider must be the actual path, relative to the parent
+                // folder, rather than the visible path in the Solution Explorer
+                if (folder.IsLinked && folder.ParentFolder != null)
+                    path = folder.Location.ConvertToRelativePath(folder.ParentFolder.Location).FullPath;
+                ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime");
+                ExcludeFolderFromNamespace(mountPoint, path + @"\Scripts");
+                ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime\Scripts");
+                ExcludeFolderFromNamespace(mountPoint, path + @"\Scripts\Runtime");
+                return;
+            }
+
+            // Recurse until we hit the package root
+            ExcludePackageSubFoldersFromNamespace(mountPoint, folder, path);
+        }
+
+        private void ExcludeExternalPackagesFromNamespace(ISettingsStorageMountPoint mountPoint, IProject project)
+        {
+            // Handle assembly definitions for packages that live outside of the Unity project structure (i.e. not under
+            // Assets, Packages or Library/PackageCache), or that lives outside of the solution completely.
+            // If the assembly definition lives outside of the solution, this folder will be a link to the assembly
+            // definition location, NOT the package root. If it lives in the Unity solution folder, it will be the start
+            // of the path to the project root
+            foreach (var projectFolder in project.GetSubFolders())
+            {
+                if (projectFolder.Name.Equals("Assets", StringComparison.OrdinalIgnoreCase)
+                    || projectFolder.Name.Equals("Library", StringComparison.OrdinalIgnoreCase)
+                    || projectFolder.Name.Equals("Packages", StringComparison.OrdinalIgnoreCase))
                 {
-                    ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime");
-                    ExcludeFolderFromNamespace(mountPoint, path + @"\Scripts");
-                    ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime\Scripts");
-                    ExcludeFolderFromNamespace(mountPoint, path + @"\Scripts\Runtime");
-                    return;
+                    continue;
                 }
 
-                ExcludePackageSubFoldersFromNamespace(mountPoint, subFolder, path);
+                ExcludePackageRootFolderFromNamespace(mountPoint, projectFolder, projectFolder.Name);
             }
         }
 
