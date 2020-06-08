@@ -5,6 +5,7 @@ import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
@@ -67,12 +68,12 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                     if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener
 
                     if (hyperlinkEvent.description == "close") {
-                        ProjectUtil.closeAndDispose(project)
+                        ProjectManagerEx.getInstanceEx().closeAndDispose(project)
                         WelcomeFrame.showIfNoProjectOpened()
                     }
                     if (hyperlinkEvent.description == "reopen") {
                         StartUnityAction.startUnityAndRider(project)
-                        ProjectUtil.closeAndDispose(project)
+                        ProjectManagerEx.getInstanceEx().closeAndDispose(project)
                         WelcomeFrame.showIfNoProjectOpened()
                     }
                 }
@@ -85,7 +86,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                             // SolutionManager doesn't close the current project if focusOpenInNewFrame is set to true,
                             // and if it's set to false, we get prompted if we want to open in new or same frame. We
                             // don't care - we want to close this project, so new frame or reusing means nothing
-                            e.project?.let { ProjectUtil.closeAndDispose(it) }
+                            e.project?.let { ProjectManagerEx.getInstanceEx().closeAndDispose(it) }
                             val newProject = SolutionManager.openExistingSolution(null, true, solutionFile)
 
                             // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected

@@ -74,9 +74,10 @@ def dllFiles = [
     "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.pdb",
 ]
 
+// TODO: Temporarily disabled building and distributing debugger extension after SDK changes
 def debuggerDllFiles = [
-    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
-    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
+//    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
+//    "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
 ]
 
 def unityEditorDllFiles = [
