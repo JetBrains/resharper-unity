@@ -159,7 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         
                     myPluginInstallations.Add(mySolution.SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
                         
-                    var appVersion = myUnityVersion.GetActualVersionForSolution();
+                    var appVersion = myUnityVersion.ActualVersionForSolution.Value;
                     if (appVersion < new Version(2019, 2))
                     {
                         var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);

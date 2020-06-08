@@ -33,6 +33,7 @@
     <Compile Update="CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs">
       <DependentUpon>CSharpPerformanceErrors.xml</DependentUpon>
     </Compile>
+    <Compile Remove="ShaderLab\Rider\Host\Features\Documents\ShaderLabBreadCrumbsProvider.cs" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Cg">
@@ -138,6 +139,9 @@
     <Compile Remove="**\VisualStudio\**" />
     <EmbeddedResource Remove="**\VisualStudio\**" />
     <None Remove="**\VisualStudio\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ShaderLab\Rider\Host\Features\Documents" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props')" />
 </Project>
