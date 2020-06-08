@@ -4,6 +4,7 @@ import com.intellij.diff.DiffManagerEx
 import com.intellij.diff.DiffRequestFactory
 import com.intellij.diff.contents.DiffContent
 import com.intellij.diff.contents.FileContent
+import com.intellij.diff.merge.MergeCallback
 import com.intellij.diff.merge.MergeRequest
 import com.intellij.diff.merge.ThreesideMergeRequest
 import com.intellij.diff.merge.external.AutomaticExternalMergeTool
@@ -53,8 +54,8 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
                 if (premergedBase.exists() && premergedRight.exists()){
                     val output: VirtualFile = (request.outputContent as FileContent).file
                     val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())
-                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents,
-                        request.title, request.contentTitles) { result -> request.applyResult(result) }
+                    val preMerged = DiffRequestFactory.getInstance().createMergeRequest(project, output, byteContents, request.title, request.contentTitles)
+                    MergeCallback.retarget(request, preMerged)
 
                     DiffManagerEx.getInstance().showMergeBuiltin(project, preMerged)
                 }
