@@ -40,7 +40,7 @@ Added:
 
 - Add Unity code cleanup patterns that do not reorder serialised fields (#88, #1676)
 - Use Range attribute to provide hints to integer dataflow analysis (#1673)
-- Improve namespace suggestions for packages (#1161, RIDER-36546, #1677)
+- Improve namespace suggestions for packages (#1161, RIDER-36546, #1677, #1689)
 
 Changed:
 
