@@ -121,6 +121,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                 // The folder will be linked if the project's files belong to a package that is external to the solution
                 // folder. With a linked folder, the namespace provider must be the actual path, relative to the parent
                 // folder, rather than the visible path in the Solution Explorer
+                //
+                // NOTE: KEEP UP TO DATE WITH ExternalPackageCustomNamespaceProvider!
                 if (folder.IsLinked && folder.ParentFolder != null)
                     path = folder.Location.ConvertToRelativePath(folder.ParentFolder.Location).FullPath;
                 ExcludeFolderFromNamespace(mountPoint, path + @"\Runtime");
