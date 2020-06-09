@@ -97,5 +97,8 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         callback("allowSetForegroundWindow", void, bool)
 
         call("generateUIElementsSchema", void, bool)
+
+        property("useUnityYamlMerge", bool)
+        property("mergeParameters", string)
     }
 }
