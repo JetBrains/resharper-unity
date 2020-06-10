@@ -1,0 +1,14 @@
+Language: PsiLanguageType:CG
+ICgFile
+  IDeclaration
+    IVariableOrFunctionDeclaration
+      IVariableDeclaration
+        ISingleVariableDeclaration
+          IBuiltInType
+            CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IIdentifier
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
+          IVariableDeclarationTail
+      CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+

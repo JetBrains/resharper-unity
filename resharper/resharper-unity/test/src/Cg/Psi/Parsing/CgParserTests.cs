@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.Cg.Psi.Parsing
 {
     [TestUnity]
-    [TestFileExtension(CgProjectFileType.CG_EXTENSION)]
+    [TestFileExtension(CgProjectFileType.GLSL_EXTENSION)]
     public class CgParserTests : ParserTestBase<CgLanguage>
     {
         protected override string RelativeTestDataPath => @"Cg\Psi\Parsing";

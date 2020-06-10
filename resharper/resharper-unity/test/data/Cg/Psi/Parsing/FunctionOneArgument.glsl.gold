@@ -1,0 +1,31 @@
+Language: PsiLanguageType:CG
+ICgFile
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDeclaration
+    IVariableOrFunctionDeclaration
+      IFunctionDeclaration
+        IFunctionHeader
+          IBuiltInType
+            CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IIdentifier
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          IFunctionArgList
+            IArgument
+              ISingleVariableDeclaration
+                IBuiltInType
+                  CgBuiltInTypeTokenNode(type:SCALAR_TYPE, text:float)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IIdentifier
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:first)
+                IVariableDeclarationTail
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        IFunctionBody
+          IBlockStatement
+            CgFixedLengthTokenNode(type:LBRACE, text:{)
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgFixedLengthTokenNode(type:RBRACE, text:})
+

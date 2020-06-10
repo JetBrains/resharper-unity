@@ -1,0 +1,31 @@
+Language: PsiLanguageType:CG
+ICgFile
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDirective
+    CgPreprocessorTokenNode(type:DIRECTIVE, text:#include)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: include_content)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDirective
+    CgPreprocessorTokenNode(type:DIRECTIVE, text:#define)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: define_content)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDirective
+    CgPreprocessorTokenNode(type:DIRECTIVE, text:#undef)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: undef_content)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDirective
+    CgPreprocessorTokenNode(type:DIRECTIVE, text:#line)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: line_content)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDirective
+    CgPreprocessorTokenNode(type:DIRECTIVE, text:#error)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: error_content)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDirective
+    CgPreprocessorTokenNode(type:DIRECTIVE, text:#warning)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: warning_content)
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDirective
+    CgPreprocessorTokenNode(type:DIRECTIVE, text:#pragma)
+    CgGenericTokenNode(type:DIRECTIVE_CONTENT, text: pragma_content)
+

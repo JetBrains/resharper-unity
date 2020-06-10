@@ -1,0 +1,5 @@
+Language: PsiLanguageType:CG
+ICgFile
+  IDirective
+    CgPreprocessorTokenNode(type:DIRECTIVE, text:#pragma)
+
