@@ -82,6 +82,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return version ?? GetActualVersionForSolution();
         }
 
+        [CanBeNull]
+        public FileSystemPath GetCurrentUnityPath()
+        {
+            return UnityInstallationFinder.GetApplicationInfo(ActualVersionForSolution.Value, this)?.Path;
+        }
+
         [NotNull]
         private Version GetActualVersionForSolution()
         {

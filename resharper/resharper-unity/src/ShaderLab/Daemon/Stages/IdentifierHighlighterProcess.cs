@@ -1,4 +1,6 @@
+using System.Linq;
 using JetBrains.Application.Settings;
+using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Daemon.VisualElements;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
@@ -8,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
 {
@@ -58,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             // And then a separate identifier
             if (node is IErrorElement errorElement)
             {
-                var range = errorElement.GetDocumentRange();
+                var range = node.Children().FirstOrDefault()?.GetDocumentRange() ?? DocumentRange.InvalidRange;
                 if (!range.IsValid())
                     range = node.Parent.GetDocumentRange();
                 if (range.TextRange.IsEmpty)
