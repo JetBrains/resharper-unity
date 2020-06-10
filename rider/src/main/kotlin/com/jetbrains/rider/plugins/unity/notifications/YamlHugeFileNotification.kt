@@ -19,7 +19,7 @@ class YamlHugeFileNotification(project: Project): ProtocolSubscribedProjectCompo
     }
 
     init {
-        project.solution.rdUnityModel.notifyYamlHugeFiles.adviseNotNullOnce(componentLifetime){
+        project.solution.rdUnityModel.notifyYamlHugeFiles.adviseNotNullOnce(projectComponentLifetime){
             showNotificationIfNeeded()
         }
     }

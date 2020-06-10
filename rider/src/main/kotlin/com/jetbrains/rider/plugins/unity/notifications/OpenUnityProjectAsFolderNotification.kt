@@ -33,7 +33,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
     }
 
     init {
-        project.solution.rdUnityModel.unityApplicationData.advise(componentLifetime) {
+        project.solution.rdUnityModel.unityApplicationData.advise(projectComponentLifetime) {
             if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
                 return@advise
 

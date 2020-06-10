@@ -20,7 +20,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
     }
 
     init {
-        project.solution.rdUnityModel.hasUnityReference.whenTrue(componentLifetime) {
+        project.solution.rdUnityModel.hasUnityReference.whenTrue(projectComponentLifetime) {
             val runManager = RunManager.getInstance(project)
             // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3
             // (Was changed from a separate configuration type to just another factory under "Attach to Unity")

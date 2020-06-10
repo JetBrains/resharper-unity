@@ -9,7 +9,7 @@ import com.jetbrains.rider.projectView.solution
 class UpdateMonoNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
     init {
-        project.solution.rdUnityModel.showInstallMonoDialog.adviseOnce(componentLifetime) {
+        project.solution.rdUnityModel.showInstallMonoDialog.adviseOnce(projectComponentLifetime) {
             val dialog = com.jetbrains.rider.environmentSetup.EnvironmentSetupDialog(project, "mono")
             dialog.showAndGet()
         }

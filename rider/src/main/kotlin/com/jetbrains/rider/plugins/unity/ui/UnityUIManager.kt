@@ -20,7 +20,7 @@ class UnityUIManager(project: Project) : LifetimedProjectService(project), Persi
     val hasMinimizedUi: Property<Boolean?> = Property(null) //null means undefined, default value
 
     init {
-        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(componentLifetime) {
+        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(projectServiceLifetime) {
             // Only hide UI for generated projects, so that sidecar projects can still access nuget
             if (UnityProjectDiscoverer.getInstance(project).isUnityGeneratedProject && hasMinimizedUi.value == null) hasMinimizedUi.set(true)
         }
