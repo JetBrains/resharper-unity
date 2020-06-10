@@ -94,11 +94,11 @@ task packReSharperPlugin(type: nugetPack.class) {
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
     def ReleaseNotes = """
-    New in $productVersion
+        New in $productVersion
 
-    ${changelog.get(productVersion).toText()}
+        ${getChangelog().toText()}
 
-    See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
+        See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
     """.stripIndent().trim()
 
     nuspecFile = new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec')
