@@ -223,12 +223,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 if (tcs.Task.IsCanceled || tcs.Task.IsFaulted) // Refresh failed or was stopped
                     return;
-                
-                if (cancellationTs.IsCancellationRequested)
-                {
-                    tcs.SetCanceled();
-                    return;
-                }
 
                 myLogger.Trace("Refresh. OnCompleted.");
                 // KS: Can't use run.Lifetime for ExecuteOrQueueEx here and in all similar places: run.Lifetime is terminated when
