@@ -31,17 +31,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISolution mySolution;
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly ILogger myLogger;
+        private readonly UnityVersion myUnityVersion;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
             UnityEditorProtocol editorProtocol, ISettingsStore settingsStore,
-            ILogger logger)
+            ILogger logger, UnityVersion unityVersion)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
             myEditorProtocol = editorProtocol;
             myLogger = logger;
+            myUnityVersion = unityVersion;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -49,8 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBoundSettingsStore =
                 settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
         }
-
-        private RefreshType? mySecondaryRefreshType;
+        
         private Task myRunningRefreshTask;
 
         public void StartRefresh(RefreshType refreshType)
@@ -78,26 +79,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             if (myRunningRefreshTask != null && !myRunningRefreshTask.IsCompleted)
             {
-                myLogger.Verbose($"Secondary execution with {refreshType} type saved.");
-                mySecondaryRefreshType = refreshType;
+                // we may schedule secondary refresh here, which will start after first refresh and protocol reconnect
+                // we already do something like that in UnitTesting
+                myLogger.Verbose($"Refresh already running. Skip starting a new one.");
                 return myRunningRefreshTask;
             }
 
             myRunningRefreshTask = RefreshInternal(lifetime, refreshType);
-            return myRunningRefreshTask.ContinueWith(_ =>
-            {
-                myRunningRefreshTask = null;
-                // if refresh signal came during execution preserve it and execute after finish
-                if (mySecondaryRefreshType != null)
-                {
-                    myLogger.Verbose($"Secondary execution with {mySecondaryRefreshType}");
-                    return Refresh(lifetime, (RefreshType) mySecondaryRefreshType)
-                        .ContinueWith(___ => { mySecondaryRefreshType = null; }, 
-                            myLocks.Tasks.GuardedMainThreadScheduler);
-                }
-
-                return Task.CompletedTask;
-            }, myLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
+            return myRunningRefreshTask;
         }
         
         private async Task RefreshInternal(Lifetime lifetime, RefreshType refreshType)
@@ -111,9 +100,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     .AsIndeterminate().AsNonCancelable());
             try
             {
+                if (myEditorProtocol.UnityModel.Value == null)
+                    return;
+                    
+                var version = myUnityVersion.ActualVersionForSolution.Value;
                 try
                 {
-                    var version = UnityVersion.Parse(myEditorProtocol.UnityModel.Value.UnityApplicationData.Value.ApplicationVersion);
                     if (version != null && version.Major < 2018)
                     {
                         using (mySolution.GetComponent<VfsListener>().PauseChanges())
@@ -127,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
                 catch (Exception e)
                 {
-                    myLogger.Warn("connection usually brakes during refresh.", e);
+                    myLogger.Warn(e, comment:"connection usually brakes during refresh.");
                 }
                 finally
                 {

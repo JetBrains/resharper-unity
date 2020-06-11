@@ -14,7 +14,7 @@ import com.jetbrains.rider.projectView.solution
 class DeferredCachesInProgressNotification(project: Project): ProtocolSubscribedProjectComponent(project) {
 
     init {
-        project.solution.rdUnityModel.showDeferredCachesProgressNotification.adviseNotNull(componentLifetime) {
+        project.solution.rdUnityModel.showDeferredCachesProgressNotification.adviseNotNull(projectComponentLifetime) {
             UIUtil.invokeLaterIfNeeded {
                 val ideFrame = WindowManager.getInstance().getIdeFrame(project)
                 if (ideFrame != null) {

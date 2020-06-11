@@ -29,7 +29,7 @@ import com.jetbrains.rider.projectView.solution
 
 class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
     private val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance()
-    private var lifetimeDefinition = componentLifetime.createNested()
+    private var lifetimeDefinition = projectComponentLifetime.createNested()
     private val KEY = Key.create<Any>("PromoteAutoSave")
 
     companion object {
@@ -37,7 +37,7 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
     }
 
     init {
-        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(componentLifetime) {
+        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(projectComponentLifetime) {
             if (!propertiesComponent.getBoolean(settingName) && UnityProjectDiscoverer.getInstance(project).isUnityProject) {
 
                 val eventMulticaster = EditorFactory.getInstance().eventMulticaster

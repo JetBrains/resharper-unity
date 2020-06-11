@@ -21,7 +21,7 @@ class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjec
     }
 
     init {
-        project.solution.rdUnityModel.notifyAssetModeForceText.adviseNotNullOnce(componentLifetime){
+        project.solution.rdUnityModel.notifyAssetModeForceText.adviseNotNullOnce(projectComponentLifetime){
             showNotificationIfNeeded()
         }
     }

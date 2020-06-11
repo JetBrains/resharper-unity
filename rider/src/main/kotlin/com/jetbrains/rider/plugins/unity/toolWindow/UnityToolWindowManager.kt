@@ -15,7 +15,7 @@ class UnityToolWindowManager(project: Project) : ProtocolSubscribedProjectCompon
     }
 
     init {
-        project.solution.rdUnityModel.sessionInitialized.whenTrue(componentLifetime) {
+        project.solution.rdUnityModel.sessionInitialized.whenTrue(projectComponentLifetime) {
             myLogger.info("new session")
             val context = UnityToolWindowFactory.getInstance(project).getOrCreateContext()
             val shouldReactivateBuildToolWindow = context.isActive
@@ -25,12 +25,12 @@ class UnityToolWindowManager(project: Project) : ProtocolSubscribedProjectCompon
             }
         }
 
-        UnityHost.getInstance(project).logSignal.advise(componentLifetime) { message ->
+        UnityHost.getInstance(project).logSignal.advise(projectComponentLifetime) { message ->
             val context = UnityToolWindowFactory.getInstance(project).getOrCreateContext()
             context.addEvent(message)
         }
 
-        project.solution.rdUnityModel.activateUnityLogView.advise(componentLifetime){
+        project.solution.rdUnityModel.activateUnityLogView.advise(projectComponentLifetime){
             val context = UnityToolWindowFactory.getInstance(project).getOrCreateContext()
             context.activateToolWindowIfNotActive()
         }

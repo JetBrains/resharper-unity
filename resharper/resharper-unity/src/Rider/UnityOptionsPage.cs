@@ -81,6 +81,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 "Cache prefab data to improve find usage performance");
             CheckBox((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic,
                 "Automatically disable asset indexing for large solutions");
+            CheckBox((UnitySettings s) => s.UseUnityYamlMerge, "Prefer UnityYamlMerge for merging YAML files");
+            BeginSection();
+            {
+                var option = WithIndent(AddStringOption((UnitySettings s) => s.MergeParameters, "Merge parameters"));
+                AddBinding(option, BindingStyle.IsEnabledProperty, (Expression<Func<UnitySettings, bool>>) (s => s.UseUnityYamlMerge),
+                    enable => enable);
+            }
+            EndSection();
 
             Header("ShaderLab");
             CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
