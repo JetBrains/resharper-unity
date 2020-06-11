@@ -66,7 +66,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
 
         public IEnumerable<CppFileLocation> GetIncludes(CppFileLocation cppFileLocation)
         {
-            mySolution.GetPsiServices().Files.AssertAllDocumentAreCommitted("All documents should be commited");
             var sourceFile = cppFileLocation.GetRandomSourceFile(mySolution);
             var cgInclude = GetCgIncludeLocation(sourceFile);
             if (!cgInclude.Equals(CppFileLocation.EMPTY))
