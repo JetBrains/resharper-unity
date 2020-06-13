@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using MetadataLite.API;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
@@ -12,7 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         private readonly IValueReference<TValue> myOriginalReference;
         private readonly IValueRoleFactory<TValue> myRoleFactory;
 
-        public NamedReferenceDecorator(IValueReference<TValue> originalReference, string name, ValueOriginKind kind, IMetadataTypeLite declaredType, IValueRoleFactory<TValue> roleFactory)
+        public NamedReferenceDecorator(IValueReference<TValue> originalReference, [NotNull] string name,
+                                       ValueOriginKind kind, [CanBeNull] IMetadataTypeLite declaredType,
+                                       IValueRoleFactory<TValue> roleFactory)
         {
             myOriginalReference = originalReference;
             DefaultName = name;

@@ -16,63 +16,76 @@ using Mono.Debugging.Soft;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class SceneRootChildrenRenderer<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>> where TValue : class
+    public class SceneRootChildrenRenderer<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
+        where TValue : class
     {
-        private static MethodSelector GetRootGameObjectsSelector = new MethodSelector(m => m.Name == "GetRootGameObjects" && m.Parameters.Length == 0);
-        
-        protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole, IMetadataTypeLite instanceType, IPresentationOptions options, IUserDataHolder dataHolder, CancellationToken token)
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly MethodSelector ourGetRootGameObjectsSelector =
+            new MethodSelector(m => m.Name == "GetRootGameObjects" && m.Parameters.Length == 0);
+
+        protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options,
+                                             IUserDataHolder dataHolder)
         {
-            var getRootObjectMethod = valueRole.ReifiedType.MetadataType.GetMethods().FirstOrDefault(GetRootGameObjectsSelector);
-            if (getRootObjectMethod == null)
-                yield break;
-            var gameObjectsArray = new SimpleValueReference<TValue>(valueRole.CallInstanceMethod(getRootObjectMethod), valueRole.ValueReference.OriginatingFrame, ValueServices.RoleFactory)
-                .GetExactPrimaryRoleSafe<TValue, IArrayValueRole<TValue>>(options);
-            if (gameObjectsArray == null)
-                yield break;
-            yield return new GameObjectsGroup(gameObjectsArray, ValueServices);
+            // UnityEngine.SceneManagement.Scene was introduced in Unity 5.3
+            return type.Is("UnityEngine.SceneManagement.Scene");
         }
 
-        protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options, IUserDataHolder dataHolder) => type.Is("UnityEngine.SceneManagement.Scene");
+        protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole,
+                                                                 IMetadataTypeLite instanceType,
+                                                                 IPresentationOptions options,
+                                                                 IUserDataHolder dataHolder, CancellationToken token)
+        {
+            // GetRootGameObjects was introduced in Unity 5.3.2
+            var getRootObjectMethod = valueRole.ReifiedType.MetadataType.GetMethods()
+                .FirstOrDefault(ourGetRootGameObjectsSelector);
+            if (getRootObjectMethod == null)
+                yield break;
+
+            yield return new GameObjectsGroup(valueRole, getRootObjectMethod, ValueServices);
+        }
 
         public override int Priority => 100;
-        
-        private class GameObjectsGroup : IValueGroup
+        public override bool IsExclusive => false;
+
+        private class GameObjectsGroup : ValueGroupBase
         {
-            private readonly IArrayValueRole<TValue> myGameObjectsArray;
+            private readonly IObjectValueRole<TValue> myValueRole;
+            private readonly IMetadataMethodLite myGetRootObjectMethod;
             private readonly IValueServicesFacade<TValue> myValueServices;
 
-            public GameObjectsGroup(IArrayValueRole<TValue> gameObjectsArray, IValueServicesFacade<TValue> valueServices)
+            public GameObjectsGroup(IObjectValueRole<TValue> valueRole, IMetadataMethodLite getRootObjectMethod,
+                                    IValueServicesFacade<TValue> valueServices)
+                : base("Game Objects")
             {
-                myGameObjectsArray = gameObjectsArray;
+                myValueRole = valueRole;
+                myGetRootObjectMethod = getRootObjectMethod;
                 myValueServices = valueServices;
             }
 
-            public IValueKeyPresentation GetKeyPresentation(IPresentationOptions options, CancellationToken token = new CancellationToken())
+            public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options,
+                                                                  CancellationToken token = new CancellationToken())
             {
-                return new ValueKeyPresentation(SimpleName, ValueOriginKind.Group, ValueFlags.None);
-            }
+                var gameObjectsArray = new SimpleValueReference<TValue>(
+                        myValueRole.CallInstanceMethod(myGetRootObjectMethod),
+                        myValueRole.ValueReference.OriginatingFrame, myValueServices.RoleFactory)
+                    .GetExactPrimaryRoleSafe<TValue, IArrayValueRole<TValue>>(options);
+                if (gameObjectsArray == null)
+                   yield break;
 
-            public IValuePresentation GetValuePresentation(IPresentationOptions options, CancellationToken token = new CancellationToken())
-            {
-                return SimplePresentation.EmptyPresentation;
-            }
-
-            public IEnumerable<IValueEntity> GetChildren(IPresentationOptions options, CancellationToken token = new CancellationToken())
-            {
-                var childReferencesEnumerator = (IChildReferencesEnumerator<TValue>) myGameObjectsArray;
+                var childReferencesEnumerator = (IChildReferencesEnumerator<TValue>) gameObjectsArray;
                 foreach (var childReference in childReferencesEnumerator.GetChildReferences())
                 {
                     var childRole = childReference.AsObjectSafe(options);
                     if (childRole == null)
                         continue;
-                    var name = childRole?.GetInstancePropertyReference("name", true)?.AsStringSafe(options)?.GetString();
-                    yield return new NamedReferenceDecorator<TValue>(childRole.ValueReference, name, ValueOriginKind.Property, childRole.ReifiedType.MetadataType, myValueServices.RoleFactory).ToValue(myValueServices);
+
+                    var name = childRole.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
+                        ?.GetString() ?? "Game Object";
+                    yield return new NamedReferenceDecorator<TValue>(childRole.ValueReference, name,
+                            ValueOriginKind.Property, childRole.ReifiedType.MetadataType, myValueServices.RoleFactory)
+                        .ToValue(myValueServices);
                 }
             }
-
-            public string SimpleName => "Game Objects";
-
-            public bool IsTop => true;
         }
     }
 }

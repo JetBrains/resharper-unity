@@ -3,7 +3,7 @@ using MetadataLite.API;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
 {
-    // TODO move into platfrom
+    // TODO move into platform
     public static class MetadataTypeEx
     {
         [CanBeNull]
