@@ -8,7 +8,5 @@
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
-    <ItemGroup>
-    </ItemGroup>
     <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props')" />
 </Project>
