@@ -2,6 +2,8 @@
 using System.IO;
 using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
+using JetBrains.Application.Environment;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -27,7 +29,7 @@ using JetBrains.ReSharper.Host.Env;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
     [ZoneDefinition]
-    public interface IUnityTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>
+    public interface IUnityTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>, IRequire<ILanguageCppZone>
 #if RIDER
         , IRequire<IRiderPlatformZone>
 #endif
