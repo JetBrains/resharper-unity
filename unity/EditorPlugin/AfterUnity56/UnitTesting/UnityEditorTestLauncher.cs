@@ -85,7 +85,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           args = new object[] {mode, assemblyNames, testNames, null, null, null};
         }
         
-        SupportAbortNew();
+        SupportAbortNew(); // TestFramework 1.2.x
 
         runTestsMethod.Invoke(null, args);
         return true;
