@@ -319,6 +319,7 @@
 <ul>
   <li>All applicable quick fixes are now bulk actions, and can be applied over project scope (<a href="https://github.com/JetBrains/resharper-unity/issues/1648">#1648</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1649">#1649</a>)</li>
   <li>Improved method signature validation and usage suppression using Unity's <tt>RequiredSignature</tt> attribute (<a href="https://github.com/JetBrains/resharper-unity/pull/1679">#1679</a>)</li>
+  <li>Update <tt>.meta</tt> file icons to something less distracting (<a href="https://youtrack.jetbrains.com/issue/RIDER-45675">RIDER-45675</a>, <a href="https://github.com/JetBrains/resharper-unity/pull/1698">#1698</a>)</li>
   <li>Rider: Significant reduction in memory usage while indexing assets (<a href="https://github.com/JetBrains/resharper-unity/pull/1645">#1645</a>)</li>
   <li>Rider: Better support for prefab modifications in Find Usages and showing Inspector values (<a href="https://github.com/JetBrains/resharper-unity/pull/1645">#1645</a>)</li>
   <li>Rider: Show method handlers for Unity events in the editor (<a href="https://github.com/JetBrains/resharper-unity/pull/1645">#1645</a>)</li>
