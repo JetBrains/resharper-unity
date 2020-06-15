@@ -84,8 +84,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
           args = new object[] {mode, assemblyNames, testNames, null, null, null};
         }
-        
-        SupportAbortNew(); // TestFramework 1.2.x
 
         runTestsMethod.Invoke(null, args);
         return true;
@@ -98,7 +96,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       return false;
     }
 
-    private void SupportAbortNew()
+    internal static void SupportAbortNew(UnitTestLaunch launch)
     {
       try
       {
@@ -124,7 +122,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           }
         }
       
-        myLaunch.Abort.Set((lifetime, _) =>
+        launch.Abort.Set((lifetime, _) =>
         {
           var task = new RdTask<bool>();
 
@@ -135,8 +133,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
             {
               stopRunMethod.Invoke(null, null);
               task.Set(true);
-              if (!myLaunch.RunStarted.HasTrueValue()) // if RunStarted never happened 
-                  myLaunch.RunResult(new RunResult(false));
+              if (!launch.RunStarted.HasTrueValue()) // if RunStarted never happened 
+                  launch.RunResult(new RunResult(false));
             }
             catch (Exception)
             {
