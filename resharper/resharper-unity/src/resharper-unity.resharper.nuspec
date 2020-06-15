@@ -46,6 +46,7 @@ Changed:
 
 - All applicable quick fixes are now bulk actions, and can be applied over project scope (#1648, #1649)
 - Improved method signature validation and usage suppression using Unity's RequiredSignature attribute (#1679)
+- Update .meta file icons to something less distracting (RIDER-45675, #1698)
 
 Fixed:
 
