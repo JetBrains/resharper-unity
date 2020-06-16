@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using MetadataLite.API.Selectors;
@@ -19,7 +20,7 @@ using TypeSystem;
 
 // ReSharper disable StaticMemberInGenericType
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class GameObjectChildrenRenderer<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>

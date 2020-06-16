@@ -6,7 +6,7 @@ using Mono.Debugging.Client.CallStacks;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences
 {
     internal class NamedReferenceDecorator<TValue> : IValueReference<TValue> where TValue : class
     {

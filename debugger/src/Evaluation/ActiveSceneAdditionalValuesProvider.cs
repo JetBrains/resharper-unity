@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values;
 using JetBrains.Util;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;

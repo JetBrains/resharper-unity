@@ -3,7 +3,7 @@ using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Client.CallStacks;
 using TypeSystem;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
 {
     public static class Util
     {
