@@ -122,7 +122,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                     var componentName = GetComponentName(componentReference, objectNamesType, getInspectorTitleMethod,
                         frame, options, myValueServices);
                     yield return new NamedReferenceDecorator<TValue>(componentReference, componentName,
-                            ValueOriginKind.ArrayElement, componentType.MetadataType, myValueServices.RoleFactory)
+                            ValueOriginKind.Property, componentType.MetadataType, myValueServices.RoleFactory)
                         .ToValue(myValueServices);
                 }
             }
