@@ -85,14 +85,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                                                                   CancellationToken token = new CancellationToken())
             {
                 var frame = myGameObjectRole.ValueReference.OriginatingFrame;
-                var componentType =
-                    myValueServices.TypeUniverse.GetReifiedType(frame, "UnityEngine.Component, UnityEngine.CoreModule");
+                var componentType = myValueServices.GetReifiedType(frame, "UnityEngine.Component, UnityEngine.CoreModule")
+                    ?? myValueServices.GetReifiedType(frame, "UnityEngine.Component, UnityEngine");
                 if (componentType == null)
-                {
-                    componentType = myValueServices.TypeUniverse.GetReifiedType(frame, "UnityEngine.Component, UnityEngine");
-                    if (componentType == null)
-                        yield break;
-                }
+                    yield break;
 
                 var getComponentsMethod = myGameObjectRole.ReifiedType.MetadataType.GetMethods()
                     .FirstOrDefault(ourGetComponentsSelector);
@@ -116,8 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                 // TODO: Support extra fallback names
                 // Unity doesn't use the short name, but will look at the type and use GameObject.name,
                 // MonoBehaviour.GetScriptClassName and so on.
-                var objectNamesType = (IReifiedType<TValue>) myValueServices.TypeUniverse.GetReifiedType(frame,
-                    "UnityEditor.ObjectNames, UnityEditor");
+                var objectNamesType = myValueServices.GetReifiedType(frame, "UnityEditor.ObjectNames, UnityEditor");
                 var getInspectorTitleMethod = objectNamesType?.MetadataType.GetMethods()
                     .FirstOrDefault(ourGetInspectorTitleSelector);
 
