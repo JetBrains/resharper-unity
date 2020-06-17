@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -11,7 +12,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 {
-    [DaemonStage(GlobalAnalysisStage = true)]
+    [DaemonStage(GlobalAnalysisStage = true, OverridenStages = new Type[] {typeof(UnityHighlightingStage)})]
     public class UnityHighlightingGlobalStage : UnityHighlightingAbstractStage
     {
         public UnityHighlightingGlobalStage(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,

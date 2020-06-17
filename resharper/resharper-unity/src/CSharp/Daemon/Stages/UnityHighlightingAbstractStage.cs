@@ -343,7 +343,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                     rootMarksProviderId, isGlobalStage, id.Value);
             }
 
-            return isRooted && !isGlobalStage;
+            return isRooted;
         }
     }
 }

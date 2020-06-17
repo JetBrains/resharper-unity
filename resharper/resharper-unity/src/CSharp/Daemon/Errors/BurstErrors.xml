@@ -13,77 +13,77 @@
 
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Burst">
-      <Tag externalName="BC1001Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1001Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1001</Title>
         <Description>
           Unable to access the managed method from type
         </Description>
       </Tag>
 
-      <Tag externalName="BC1005Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1005Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1005</Title>
         <Description>
           The `try` construction is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1016Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1016Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1016</Title>
         <Description>
           The managed function is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1020Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1020Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1020</Title>
         <Description>
           Boxing a valuetype to a managed object is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1021Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1021Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1021</Title>
         <Description>
           Creating a managed object is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1033Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1033Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1033</Title>
         <Description>
           Loading a managed string literal is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1034Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1034Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1034</Title>
         <Description>
           Writing to a static field is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1036Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1036Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1036</Title>
         <Description>
           The `finally` construction (e.g `foreach`/`using`) is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1037Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1037Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1037</Title>
         <Description>
           The `try` construction (e.g `foreach`/`using`) is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1042Error.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1042Error.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1042</Title>
         <Description>
           The managed class type is not supported. Loading from a non-readonly static field is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1042ShortError.HIGHLIGHTING_ID" default="ERROR">
+      <Tag externalName="BC1042ShortError.HIGHLIGHTING_ID" default="WARNING">
         <Title>BC1042</Title>
         <Description>
           The managed class type is not supported. Loading from a non-readonly static field is not supported
@@ -101,7 +101,7 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1005" configurableSeverity="Unity.BC1005">
@@ -109,7 +109,7 @@
     <Message value="BC1005: The `try` construction is not supported.">
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1016" configurableSeverity="Unity.BC1016">
@@ -119,7 +119,7 @@
       <Argument>FunctionSignature</Argument>
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1020" configurableSeverity="Unity.BC1020">
@@ -129,7 +129,7 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1021" configurableSeverity="Unity.BC1021">
@@ -139,14 +139,14 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1033" configurableSeverity="Unity.BC1033">
     <Parameter type="DocumentRange" name="range" />
     <Message value="BC1033: Loading a managed string literal is not supported"/>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1034" configurableSeverity="Unity.BC1034">
@@ -156,7 +156,7 @@
       <Argument>FieldQualification</Argument>
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1036" configurableSeverity="Unity.BC1036">
@@ -164,7 +164,7 @@
     <Message value="BC1036: The `finally` construction (e.g `foreach`/`using`) is not supported">
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1037" configurableSeverity="Unity.BC1037">
@@ -172,7 +172,7 @@
     <Message value="BC1037: The `try` construction (e.g `foreach`/`using`) is not supported">
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1042" configurableSeverity="Unity.BC1042">
@@ -184,7 +184,7 @@
       <Argument>FieldQualification</Argument>
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 
   <Error name="BC1042Short" configurableSeverity="Unity.BC1042Short">
@@ -194,6 +194,6 @@
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
-    <Behavour overlapResolvePolicy="ERROR" />
+    <Behavour overlapResolvePolicy="NONE" />
   </Error>
 </Errors>
