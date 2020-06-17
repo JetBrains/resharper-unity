@@ -16,12 +16,18 @@ fun addPlayModeArguments(args : MutableList<String>) {
 
 fun getUnityWithProjectArgs(project: Project) : MutableList<String> {
     val finder = UnityInstallationFinder.getInstance(project)
-    val args = mutableListOf(finder.getApplicationPath().toString(), "-projectPath", project.basePath.toString())
+    val args = mutableListOf(finder.getApplicationPath().toString(), "-projectPath", project.basePath.toString(), "-debugCodeOptimization")
     val riderPath = Restarter.getIdeStarter()?.path
     if (riderPath!=null)
     {
         val originArgs = mutableListOf("-riderPath", riderPath)
         args.addAll(originArgs)
     }
+    return args
+}
+
+fun getUnityWithProjectArgsAndDebugCodeOptimization(project: Project) : MutableList<String> {
+    val args = getUnityWithProjectArgs(project)
+    args.add("-debugCodeOptimization")
     return args
 }
