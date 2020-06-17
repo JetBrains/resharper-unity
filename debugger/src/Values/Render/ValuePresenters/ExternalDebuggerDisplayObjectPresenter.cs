@@ -39,6 +39,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             {"UnityEngine.Vector2", "({x}, {y})"},
             {"UnityEngine.Vector3", "({x}, {y}, {z})"},
             {"UnityEngine.Vector4", "({x}, {y}, {z}, {w})"},
+
+            // Scene doesn't have any useful display details
+            {"UnityEngine.SceneManagement.Scene", "{name} ({path})"}
         };
 
         public ExternalDebuggerDisplayObjectPresenter(ILogger logger)
