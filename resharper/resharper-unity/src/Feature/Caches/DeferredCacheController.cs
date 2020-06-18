@@ -76,7 +76,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             myShellLocks.Dispatcher.AssertAccess();
             if (myCurrentBackgroundActivityLifetime.IsAlive)
                 return;
-            
+
+            if (!HasDirtyFiles())
+            {
+                myCompletedOnce.Value = true;
+                return;
+            }
+
             myCurrentBackgroundActivityLifetimeDefinition = new LifetimeDefinition(myLifetime);
             myCurrentBackgroundActivityLifetime = myCurrentBackgroundActivityLifetimeDefinition.Lifetime;
             
@@ -158,10 +164,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             var checker = new SeldomInterruptChecker();
             foreach (var psiSourceFile in toProcess)
             {
+                if (!psiSourceFile.GetLocation().ExistsFile)
+                {
+                    // assertion is incorrect, because file could be removed while we have read lock.
+                    // Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), removed");
+                    toProcess.Remove(psiSourceFile);
+                    continue;
+                }
+                
                 if (!psiSourceFile.IsValid())
                 {
                     // file could be dropped, because we are working with snapshot, do not call build for invalid files
-                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile)");
+                    Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), "!myDeferredHelperCache.FilesToProcess.Contains(psiSourceFile), invalid");
                     toProcess.Remove(psiSourceFile);
                     calculatedData.TryRemove(psiSourceFile, out var _);
                     continue;

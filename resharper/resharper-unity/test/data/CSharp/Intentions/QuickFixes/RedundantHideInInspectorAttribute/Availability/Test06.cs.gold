@@ -1,0 +1,86 @@
+﻿// ${RUN:2}
+using System;
+using UnityEngine;
+
+public class Test
+{
+    [|HideInInspector|(0)] [NonSerialized] public int Value1;
+    [|HideInInspector|(1)] private int ||Value2|(2)|(3);
+    [|HideInInspector|(4)] public const int Value3 = 42;
+}
+
+public class Test2
+{
+    [|HideInInspector|(5)] public static int Value1 = 42;
+    [|HideInInspector|(6)] public readonly int Value2 = 42;
+}
+
+------------------------------------------------
+0: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+1: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+2: Field 'Value2' is never used
+QUICKFIXES:
+Initialize field from constructor
+Encapsulate field
+Remove unused field
+--Comment unused field
+3: Name 'Value2' does not match rule 'Instance fields (private)'. Suggested name is 'myValue2'.
+QUICKFIXES:
+Rename to 'myValue2'
+--Fix naming in class 'Test'
+--Fix naming in file
+--Fix naming in project
+--Fix naming in solution
+4: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+5: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution
+6: Redundant 'HideInInspector' attribute
+QUICKFIXES:
+Remove redundant attribute
+--Remove redundant Unity attributes in class 'Test2'
+--Remove redundant Unity attributes in file
+--Remove redundant Unity attributes in project
+--Remove redundant Unity attributes in solution
+Remove redundant code in class 'Test2'
+--Remove redundant code in file
+--Remove redundant code in project
+--Remove redundant code in solution

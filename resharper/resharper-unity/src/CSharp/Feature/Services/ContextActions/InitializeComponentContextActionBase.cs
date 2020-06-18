@@ -121,6 +121,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         
         public virtual bool IsAvailable(IUserDataHolder cache)
         {
+            if (!(myDataProvider.GetSelectedElement<IClassLikeDeclaration>() is IClassDeclaration))
+                return false;
+            
             var typeOwner = myDataProvider.GetSelectedElement<T>();
             var type = typeOwner?.Type.GetTypeElement();
             if (type == null || !type.IsUnityComponent(out _))

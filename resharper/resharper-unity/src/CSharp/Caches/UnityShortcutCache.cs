@@ -85,10 +85,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
                         {
                             var arguments = attribute.Arguments;
                             var validateArgument = GetArgument(1, "isValidateFunction", arguments);
-                            var isValidateFunction = validateArgument?.Value.ConstantValue.IsTrue();
+                            var isValidateFunction = validateArgument?.Value?.ConstantValue.IsTrue();
                             if (!isValidateFunction.HasValue || !isValidateFunction.Value)
                             {
-                                var name = GetArgument(0, "itemName", arguments)?.Value.ConstantValue.Value as string;
+                                var name = GetArgument(0, "itemName", arguments)?.Value?.ConstantValue.Value as string;
                                 if (name != null)
                                 {
                                     var shortcut = ExtractShortcutFromName(name);

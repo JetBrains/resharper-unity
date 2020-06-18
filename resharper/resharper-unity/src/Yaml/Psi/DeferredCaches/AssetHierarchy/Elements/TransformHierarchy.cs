@@ -1,72 +1,46 @@
-using JetBrains.Annotations;
-using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
-    [PolymorphicMarshaller]
-    public class TransformHierarchy : ComponentHierarchy, ITransformHierarchy
+    public readonly struct TransformHierarchy : ITransformHierarchy
     {
-        [UsedImplicitly] 
-        public new static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
+        public LocalReference Location { get; }
+        public LocalReference OwningGameObject { get; }
+        public LocalReference ParentTransform { get; }
+        private readonly int myRootIndex;
 
-        private static object Read(UnsafeReader reader) => new TransformHierarchy(reader.ReadPolymorphic<LocalReference>(), reader.ReadPolymorphic<LocalReference>(),
-            reader.ReadPolymorphic<LocalReference>(), reader.ReadInt32(), reader.ReadPolymorphic<LocalReference>(),
-            reader.ReadPolymorphic<ExternalReference>(), reader.ReadBool());
-
-        [UsedImplicitly]
-        public new static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as TransformHierarchy);
-
-        private static void Write(UnsafeWriter writer, TransformHierarchy value)
+        public TransformHierarchy(LocalReference location, LocalReference owner, LocalReference parent, int rootIndex)
         {
-            writer.WritePolymorphic(value.Location);
-            writer.WritePolymorphic(value.GameObjectReference);
-            writer.WritePolymorphic(value.Parent);
-            writer.Write(value.RootIndex);
-            writer.WritePolymorphic(value.PrefabInstance);
-            writer.WritePolymorphic(value.CorrespondingSourceObject);
-            writer.Write(value.IsStripped);
-        }
-        public virtual LocalReference Parent { get; }
-        public virtual int RootIndex { get; }
-
-        public TransformHierarchy(LocalReference location, LocalReference gameObjectReference, LocalReference parent,
-            int rootIndex, LocalReference prefabInstance, ExternalReference correspondingSourceObject, bool isStripped) 
-            : base("Transform", location, gameObjectReference, prefabInstance, correspondingSourceObject, isStripped)
-        {
-            Parent = parent;
-            RootIndex = rootIndex;
+            Location = location;
+            OwningGameObject = owner;
+            ParentTransform = parent;
+            myRootIndex = rootIndex;
         }
 
-        public override IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
         {
             return new ImportedTransformHierarchy(prefabInstanceHierarchy, this);
         }
 
-        protected bool Equals(TransformHierarchy other)
+        public string Name => "Transform";
+        public int RootIndex => myRootIndex;
+
+        public static void Write(UnsafeWriter writer, TransformHierarchy transformHierarchy)
         {
-            return base.Equals(other) && Equals(Parent, other.Parent) && RootIndex == other.RootIndex;
+            transformHierarchy.Location.WriteTo(writer);
+            transformHierarchy.OwningGameObject.WriteTo(writer);
+            transformHierarchy.ParentTransform.WriteTo(writer);
+            writer.Write(transformHierarchy.myRootIndex);
         }
 
-        public override bool Equals(object obj)
+        public static TransformHierarchy Read(UnsafeReader reader)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((TransformHierarchy) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = base.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Parent != null ? Parent.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ RootIndex;
-                return hashCode;
-            }
+            return new TransformHierarchy(HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+                HierarchyReferenceUtil.ReadLocalReferenceFrom(reader),
+                reader.ReadInt32());
         }
     }
 }

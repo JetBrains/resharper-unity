@@ -1,8 +1,13 @@
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using System.Drawing;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.UI.Icons;
+using JetBrains.UI.RichText;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -11,32 +16,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public InspectorVariableUsage InspectorVariableUsage { get; }
 
         public UnityInspectorValuesOccurrence(IPsiSourceFile sourceFile, InspectorVariableUsage inspectorVariableUsage,
-            IDeclaredElementPointer<IDeclaredElement> declaredElement, IHierarchyElement attachedElement)
-            : base(sourceFile, declaredElement, attachedElement)
+            IDeclaredElementPointer<IDeclaredElement> declaredElement, LocalReference owningElementLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement, owningElementLocation, isPrefabModification)
         {
             InspectorVariableUsage = inspectorVariableUsage;
         }
 
-        protected bool Equals(UnityInspectorValuesOccurrence other)
+        public override RichText GetDisplayText()
         {
-            return base.Equals(other) && InspectorVariableUsage.Equals(other.InspectorVariableUsage);
+            var declaredElement = DeclaredElementPointer.FindDeclaredElement();
+            if (declaredElement == null)
+                return base.GetDisplayText();
+            
+            var solution = GetSolution();
+            var valuePresentation = InspectorVariableUsage.Value.GetPresentation(solution, declaredElement , true);
+            if (SourceFile.GetLocation().IsAsset())
+                return valuePresentation;
+            
+            var richText = new RichText(valuePresentation);
+            var inText = new RichText(" in ", TextStyle.FromForeColor(Color.DarkGray));
+            var objectText = base.GetDisplayText();
+
+            return richText.Append(inText).Append(objectText);
         }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((UnityInspectorValuesOccurrence) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (base.GetHashCode() * 397) ^ InspectorVariableUsage.GetHashCode();
-            }
-        }
+        private bool IsRelatedToScriptableObject() => UnityApi.IsDescendantOfScriptableObject((DeclaredElementPointer.FindDeclaredElement() as IField)?.Type.GetTypeElement());
 
         public override string ToString()
         {
@@ -44,10 +48,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             {
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
                 {
-                    var value = InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true);
-                    return $"{InspectorVariableUsage.Name} = {value}";
+                    var de = DeclaredElementPointer.FindDeclaredElement();
+                    if (de == null)
+                        return "INVALID";
+                    
+                    if (IsRelatedToScriptableObject())
+                    {
+                        var value = InspectorVariableUsage.Value.GetFullPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true);
+                        return $"{de.ShortName} = {value}";
+                    }
+                    else
+                    {
+                        var value = InspectorVariableUsage.Value.GetPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true);
+                        return $"{de.ShortName} = {value}";
+                    }
                 }
             }
+        }
+
+        public override IconId GetIcon()
+        {
+            if (IsPrefabModification)
+                return UnityFileTypeThemedIcons.FileUnityPrefab.Id;
+
+            return base.GetIcon();
         }
     }
 }

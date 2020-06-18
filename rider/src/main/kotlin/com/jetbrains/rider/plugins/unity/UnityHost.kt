@@ -4,18 +4,16 @@ import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.ide.impl.ProjectUtil
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.BitUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.jetbrains.rd.framework.impl.RdTask
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.AddRemove
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.model.rdUnityModel
@@ -28,21 +26,17 @@ import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorR
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.projectView.solution
-import com.jetbrains.rider.util.idea.getComponent
-import com.sun.jna.Native
-import com.sun.jna.win32.StdCallLibrary
 import java.awt.Frame
 
 class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
     private val model = project.solution.rdUnityModel
-    private val logger = Logger.getInstance(UnityHost::class.java)
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
 
     val logSignal = Signal<RdLogEvent>()
 
     init {
-        model.activateRider.advise(componentLifetime) {
+        model.activateRider.advise(projectComponentLifetime) {
             ProjectUtil.focusProjectWindow(project, true)
             val frame = WindowManager.getInstance().getFrame(project)
             if (frame != null) {
@@ -51,13 +45,13 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
             }
         }
 
-        model.onUnityLogEvent.adviseNotNull(componentLifetime) {
+        model.onUnityLogEvent.adviseNotNull(projectComponentLifetime) {
             val type = RdLogEventType.values()[it.type]
             val mode = RdLogEventMode.values()[it.mode]
             logSignal.fire(RdLogEvent(it.ticks, type, mode, it.message, it.stackTrace))
         }
 
-        model.startUnity.advise(componentLifetime) {
+        model.startUnity.advise(projectComponentLifetime) {
             StartUnityAction.startUnity(project)
         }
 
@@ -77,8 +71,8 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
 
                 }
                 if (!isAttached) {
-                    val processTracker: RiderDebugActiveDotNetSessionsTracker = project.getComponent()
-                    processTracker.dotNetDebugProcesses.change.advise(componentLifetime) { (event, debugProcess) ->
+                    val processTracker: RiderDebugActiveDotNetSessionsTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
+                    processTracker.dotNetDebugProcesses.change.advise(projectComponentLifetime) { (event, debugProcess) ->
                         if (event == AddRemove.Add) {
                             debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
                                 if (it == DebuggerInitializingState.Initialized)
@@ -111,7 +105,7 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
     }
 
     companion object {
-        fun getInstance(project: Project) = project.getComponent<UnityHost>()
+        fun getInstance(project: Project): UnityHost = project.getComponent(UnityHost::class.java)
     }
 
 }

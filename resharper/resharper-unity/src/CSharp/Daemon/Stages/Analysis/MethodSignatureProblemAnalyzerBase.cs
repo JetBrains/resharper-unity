@@ -38,5 +38,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     consumer.AddHighlighting(new InvalidTypeParametersWarning(methodDeclaration, expectedMethodSignature));
             }
         }
+
+        protected void AddMethodSignatureInspections(IHighlightingConsumer consumer,
+            IMethodDeclaration methodDeclaration, MethodSignature[] expectedMethodSignatures)
+        {
+            consumer.AddHighlighting(new IncorrectSignatureWithChoiceWarning(methodDeclaration, expectedMethodSignatures));
+        }
     }
 }

@@ -1,0 +1,56 @@
+﻿// ${RUN:2}
+using System;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEditor;
+
+{caret}public class Foo : MonoBehaviour
+{
+  private int myField;
+
+  public static int Value1;
+  [NonSerialized] public int Value2;
+  public int RedundantValue;
+  public int RedundantValue2;
+
+  [NonSerialized] public int Value1;
+  private int Value2;
+  public const int Value3 = 42;
+
+  [NonSerialized] public int Value1;
+  [NonSerialized] public int Value2;
+  [NonSerialized] public int Value3;
+  [NonSerialized] public int Value4;
+}
+
+public class Test2 : MonoBehaviour
+{
+  [NonSerialized] public int RedundantValue;
+
+  public static int Value1 = 42;
+  public readonly int Value2 = 42;
+}
+
+public struct Tes3
+{
+  public int Bar;
+
+  [NonSerialized] public int Value1;
+  [NonSerialized] public int Value2;
+  [NonSerialized] public int Value3;
+  [NonSerialized] public int Value4;
+}
+
+public delegate void MyEventHandler(object sender, EventArgs e);
+
+public class MissingConstructor
+{
+}
+
+public class MissingConstructor2
+{
+}
+
+public class MissingConstructor3
+{
+}

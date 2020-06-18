@@ -1,0 +1,2 @@
+﻿Prefab is serialized with m_Target which points to 0
+Scene modification points to correct script

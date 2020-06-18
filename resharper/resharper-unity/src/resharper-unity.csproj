@@ -5,7 +5,7 @@
     <RootNamespace>JetBrains.ReSharper.Plugins.Unity</RootNamespace>
     <!-- TODO: Fix up the .psi files so we don't get the obsolete warnings -->
     <NoWarn>0618</NoWarn>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <!-- This is needed for ReferenceAssemblyRedirects to pick up app.config -->
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -18,8 +18,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE;RESHARPER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
-  <ItemGroup>
-    <!-- C# -->
+  <ItemGroup Label="C#">
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
       <OutputFile>CSharp\Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
@@ -36,15 +35,13 @@
     <Compile Update="CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs">
       <DependentUpon>CSharpPerformanceErrors.xml</DependentUpon>
     </Compile>
-    <!-- Cg language -->
+  </ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="Cg">
     <PsiLanguageNames Include="Cg">
       <Visible>False</Visible>
     </PsiLanguageNames>
     <CsLex Include="Cg\Psi\Parsing\Cg.lex" />
-    <None Remove="Cg\Psi\Parsing\Cg_lex.depends" />
-    <Compile Update="Cg\Psi\Parsing\Cg_lex.cs">
-      <DependentUpon>Cg.lex</DependentUpon>
-    </Compile>
     <TokenGenerator Include="Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.xml">
       <OutputFile>Cg\Psi\Parsing\TokenNodeTypes\CgTokenNodeTypes.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
@@ -60,15 +57,13 @@
     <Compile Update="Cg\Daemon\Errors\CgErrors.Generated.cs">
       <DependentUpon>CgErrors.xml</DependentUpon>
     </Compile>
-    <!-- ShaderLab language -->
+  </ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="ShaderLab">
     <PsiLanguageNames Include="ShaderLab">
       <Visible>False</Visible>
     </PsiLanguageNames>
     <CsLex Include="ShaderLab\Psi\Parsing\ShaderLab.lex" />
-    <None Remove="ShaderLab\Psi\Parsing\ShaderLab_lex.depends" />
-    <Compile Update="ShaderLab\Psi\Parsing\ShaderLab_lex.cs">
-      <DependentUpon>ShaderLab.lex</DependentUpon>
-    </Compile>
     <TokenGenerator Include="ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.xml">
       <OutputFile>ShaderLab\Psi\Parsing\ShaderLabTokenType.Tokens.generated.cs</OutputFile>
     </TokenGenerator>
@@ -84,7 +79,9 @@
     <Compile Update="ShaderLab\Daemon\Errors\ShaderLabErrors.generated.cs">
       <DependentUpon>ShaderLabErrors.xml</DependentUpon>
     </Compile>
-    <!-- AsmDef/JSON "language" -->
+  </ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="AsmDef/JSON">
     <ErrorsGen Include="AsmDef\Daemon\Errors\AsmDefErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.AsmDef.Daemon.Errors</Namespace>
       <OutputFile>AsmDef\Daemon\Errors\AsmDefErrors.generated.cs</OutputFile>
@@ -93,13 +90,20 @@
     <Compile Update="AsmDef\Daemon\Errors\AsmDefErrors.generated.cs">
       <DependentUpon>AsmDefErrors.xml</DependentUpon>
     </Compile>
+    <Compile Remove="JsonNew\**" />
+    <EmbeddedResource Remove="JsonNew\**" />
+    <None Remove="JsonNew\**" />
+    <Compile Remove="AsmDefNew\**" />
+    <EmbeddedResource Remove="AsmDefNew\**" />
+    <None Remove="AsmDefNew\**" />
   </ItemGroup>
-  <!-- Resources - Unity3dRider, api.xml, icons -->
-  <ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="Resources">
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
   </ItemGroup>
-  <ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="Live templates">
     <LiveTemplate Include="Templates\**\*.md">
       <OutputFile>Templates\templates.generated.dotSettings</OutputFile>
       <ReadmeFile>Templates\README.md</ReadmeFile>
@@ -108,31 +112,23 @@
       <LogicalName>JetBrains.ReSharper.Plugins.Unity.Templates.templates.dotSettings</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <!-- References -->
-  <ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="References">
     <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.4.2" />
     <PackageReference Include="VSSDK.Text.10" Version="10.0.4" />
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
+    <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
   </ItemGroup>
-  <ItemGroup>
+  <!-- ********** -->
+  <ItemGroup Label="Remove Rider specific files">
     <Compile Remove="**\Rider\**" />
     <EmbeddedResource Remove="**\Rider\**" />
     <None Remove="**\Rider\**" />
   </ItemGroup>
-    <ItemGroup>
-        <Compile Remove="JsonNew\**" />
-        <EmbeddedResource Remove="JsonNew\**" />
-        <None Remove="JsonNew\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Remove="AsmdefNew\**" />
-        <EmbeddedResource Remove="AsmdefNew\**" />
-        <None Remove="AsmdefNew\**" />
-    </ItemGroup>
-    <ItemGroup>
+  <ItemGroup>
     <!-- Format definitions can't compile on Mac/Linux due to missing PresentationCore dependencies -->
     <Compile Remove="**\VisualStudio\**\*FormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>

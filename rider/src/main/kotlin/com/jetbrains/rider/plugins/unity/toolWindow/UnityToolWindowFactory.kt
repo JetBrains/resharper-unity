@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.ide.impl.ContentManagerWatcher
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowAnchor
@@ -12,9 +13,9 @@ import com.intellij.ui.content.ContentManagerListener
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
+import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
-import com.jetbrains.rider.util.idea.getComponent
 import icons.UnityIcons
 
 // todo: it lacks init {}, so it's not a component and doesn't need to be initialized automatically
@@ -25,7 +26,7 @@ class UnityToolWindowFactory(project: Project) : LifetimedProjectComponent(proje
         const val TOOL_WINDOW_ID = "Unity"
         const val ACTION_PLACE = "Unity"
 
-        fun getInstance(project: Project) = project.getComponent<UnityToolWindowFactory>()
+        fun getInstance(project: Project): UnityToolWindowFactory = project.getComponent(UnityToolWindowFactory::class.java)
 
         fun show(project: Project) {
             ToolWindowManager.getInstance(project).getToolWindow(TOOL_WINDOW_ID)?.show(null)
@@ -50,6 +51,7 @@ class UnityToolWindowFactory(project: Project) : LifetimedProjectComponent(proje
             toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
                 add(RiderUnityOpenEditorLogAction())
                 add(RiderUnityOpenPlayerLogAction())
+                add(ActionManager.getInstance().getAction(UnityPluginShowSettingsAction.actionId))
             })
         }
 

@@ -1,23 +1,26 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
-    public class UnityMethodsFindResult : UnityAssetFindResult
+    public class UnityEventHandlerFindResult : UnityAssetFindResult
     {
-        public AssetMethodData AssetMethodData { get; }
+        public AssetMethodUsages AssetMethodUsages { get; }
+        public bool IsPrefabModification { get; }
 
-        public UnityMethodsFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodData assetMethodData, IHierarchyElement attachedElement)
-            : base(sourceFile, declaredElement, attachedElement)
+        public UnityEventHandlerFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetMethodUsages assetMethodUsages,
+            LocalReference owningElemetLocation, bool isPrefabModification)
+            : base(sourceFile, declaredElement, owningElemetLocation)
         {
-            AssetMethodData = assetMethodData;
-            
+            AssetMethodUsages = assetMethodUsages;
+            IsPrefabModification = isPrefabModification;
         }
 
-        protected bool Equals(UnityMethodsFindResult other)
+        protected bool Equals(UnityEventHandlerFindResult other)
         {
-            return base.Equals(other) && AssetMethodData.Equals(other.AssetMethodData);
+            return base.Equals(other) && AssetMethodUsages.Equals(other.AssetMethodUsages);
         }
 
         public override bool Equals(object obj)
@@ -25,14 +28,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((UnityMethodsFindResult) obj);
+            return Equals((UnityEventHandlerFindResult) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ AssetMethodData.GetHashCode();
+                return (base.GetHashCode() * 397) ^ AssetMethodUsages.GetHashCode();
             }
         }
     }

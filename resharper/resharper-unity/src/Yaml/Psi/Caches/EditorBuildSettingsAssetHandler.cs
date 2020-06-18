@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         }
         public bool IsApplicable(IPsiSourceFile sourceFile)
         {
-            return sourceFile.Name.Equals("EditorBuildSettings.asset");
+            return sourceFile.Name.Equals("EditorBuildSettings.asset") && sourceFile.GetLocation().SniffYamlHeader();
         }
 
         public void Build(IPsiSourceFile sourceFile, ProjectSettingsCacheItem cacheItem)

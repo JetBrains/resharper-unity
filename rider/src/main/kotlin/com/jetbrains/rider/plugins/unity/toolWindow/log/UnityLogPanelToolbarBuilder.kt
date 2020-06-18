@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.DumbAwareAction
-import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
@@ -42,6 +41,14 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
+        fun autoscroll() = object : ToggleAction("Autoscroll", "", AllIcons.RunConfigurations.Scroll_down){
+            override fun isSelected(e: AnActionEvent) = model.autoscroll.value
+            override fun setSelected(e: AnActionEvent, value: Boolean) {
+                model.autoscroll.set(value)
+                model.events.onAutoscrollChanged.fire(value)
+            }
+        }
+
         val actionGroup = DefaultActionGroup().apply {
             addSeparator("Mode filters")
             add(createMode(RdLogEventMode.Edit))
@@ -52,10 +59,10 @@ object UnityLogPanelToolbarBuilder {
             add(createType(RdLogEventType.Message))
             addSeparator("Other")
             add(collapseall())
+            add(autoscroll())
             add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
             addAll(consoleActionsList)
             add(mainSplitterToggleAction)
-            add(ActionManager.getInstance().getAction(UnityPluginShowSettingsAction.actionId))
         }
 
         return create(actionGroup, BorderLayout.WEST, false)

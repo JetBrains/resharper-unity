@@ -19,6 +19,10 @@ class UnityInstallationFinder(private val project: Project) {
         return getApplicationContentsPath()?.resolve("Resources/PackageManager/BuiltInPackages")
     }
 
+    fun getPackageManagerDefaultManifest(): Path? {
+        return getApplicationContentsPath()?.resolve("Resources/PackageManager/Editor/manifest.json")
+    }
+
     fun getDocumentationRoot(): Path? {
         return getApplicationContentsPath()?.resolve("Documentation/en")
     }
@@ -27,7 +31,7 @@ class UnityInstallationFinder(private val project: Project) {
     // E.g. Mac: /Applications/Unity/Hub/Editor/2018.2.0f2/Unity.app/Contents
     // Windows: C:\Program Files\Unity\Hub\Editor\2018.2.1f1\Editor\Data
     // Linux: /home/ivan/Unity-2018.1.0f2/Editor/Data
-    private fun getApplicationContentsPath(): Path? {
+    fun getApplicationContentsPath(): Path? {
         val contentsPath = getApplicationContentsPathFromProtocol()
         if (contentsPath != null) return contentsPath
 

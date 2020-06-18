@@ -17,7 +17,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       
       modelValue.GetCompilationResult.Set(_ => !EditorUtility.scriptCompilationFailed);
 
-#if !UNITY_5_6
+#if !UNITY_5_6 // before 5.6 this file is not included at all
       CompiledAssembliesTracker.Init(modelAndLifetime);
 #endif
 

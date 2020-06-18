@@ -18,9 +18,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Psi.CodeAnnotations
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile sourceFile,
             IContextBoundSettingsStore settingsStore)
         {
-            return highlighting is MustUseReturnValueWarning || highlighting is IteratorMethodResultIsIgnoredWarning;
+            return highlighting is MustUseReturnValueWarning || highlighting is IteratorMethodResultIsIgnoredWarning ||
+                   highlighting is ConditionIsAlwaysTrueOrFalseWarning;
         }
 
         [Test] public void TestUnusedCoroutineReturnValue() { DoNamedTest2(); }
+
+        // Note that this test includes a definition of the ValueRangeAttribute in the source. This is because the
+        // external annotations module cannot load JetBrains.Annotations in a test context. Other annotation based tests
+        // work because Unity.Engine includes a subset of our annotations, and it's enough to run the tests
+        [Test] public void TestRangeAttributeAsValueRangeAttribute() { DoNamedTest2(); }
     }
 }

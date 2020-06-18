@@ -5,8 +5,8 @@ using JetBrains.Application.changes;
 using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
@@ -31,96 +31,118 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISolution mySolution;
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly ILogger myLogger;
+        private readonly UnityVersion myUnityVersion;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
             UnityEditorProtocol editorProtocol, ISettingsStore settingsStore,
-            ILogger logger)
+            ILogger logger, UnityVersion unityVersion)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
             myEditorProtocol = editorProtocol;
             myLogger = logger;
+            myUnityVersion = unityVersion;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
+            myBoundSettingsStore =
+                settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
         }
+        
+        private Task myRunningRefreshTask;
 
-        private RefreshType? myRefreshType;
-        private bool myIsRunning;
+        public void StartRefresh(RefreshType refreshType)
+        {
+#pragma warning disable 4014
+            Refresh(myLifetime, refreshType);
+#pragma warning restore 4014
+        }
 
         /// <summary>
         /// Calls Refresh in Unity, and RefreshPaths in vfs. If called multiple times while already running, schedules itself again
         /// </summary>
+        /// <param name="lifetime"></param>
         /// <param name="refreshType"></param>
-        public async void Refresh(RefreshType refreshType)
+        public Task Refresh(Lifetime lifetime, RefreshType refreshType)
         {
             myLocks.AssertMainThread();
+
             if (myEditorProtocol.UnityModel.Value == null)
-                return;
+                return Task.CompletedTask;
 
-            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) && refreshType == RefreshType.Normal)
-                return;
+            if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&
+                refreshType == RefreshType.Normal)
+                return Task.CompletedTask;
 
-            if (myIsRunning)
+            if (myRunningRefreshTask != null && !myRunningRefreshTask.IsCompleted)
             {
-                myLogger.Verbose($"Secondary execution with {refreshType} type saved.");
-                myRefreshType = refreshType;
-                return;
+                // we may schedule secondary refresh here, which will start after first refresh and protocol reconnect
+                // we already do something like that in UnitTesting
+                myLogger.Verbose($"Refresh already running. Skip starting a new one.");
+                return myRunningRefreshTask;
             }
 
-            myIsRunning = true;
-
-            await RefreshInternal(refreshType);
-
-            myIsRunning = false;
-
-            if (myRefreshType == null)
-                return;
-
-            var type = myRefreshType.Value;
-            myRefreshType = null;
-
-            myLogger.Verbose($"Secondary execution with {type}");
-            Refresh(type); // if refresh signal came during execution preserve it and execute after finish
+            myRunningRefreshTask = RefreshInternal(lifetime, refreshType);
+            return myRunningRefreshTask;
         }
-
-        private async Task RefreshInternal(RefreshType force)
+        
+        private async Task RefreshInternal(Lifetime lifetime, RefreshType refreshType)
         {
-            var lifetimeDef = Lifetime.Define(myLifetime);
+            myLocks.ReentrancyGuard.AssertGuarded();
+            var lifetimeDef = Lifetime.Define(lifetime);
 
-            myLogger.Verbose(
-                $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Started");
+            myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
+            mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime,
+                RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...")
+                    .AsIndeterminate().AsNonCancelable());
             try
             {
-                using (mySolution.GetComponent<VfsListener>().PauseChanges())
+                if (myEditorProtocol.UnityModel.Value == null)
+                    return;
+                    
+                var version = myUnityVersion.ActualVersionForSolution.Value;
+                try
                 {
-                    await myEditorProtocol.UnityModel.Value.Refresh.Start(force).AsTask();
+                    if (version != null && version.Major < 2018)
+                    {
+                        using (mySolution.GetComponent<VfsListener>().PauseChanges())
+                        {
+                            await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                            await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                        }
+                    }
+                    else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
+                        await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                 }
-                myLogger.Verbose(
-                    $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {force} Finished");
-
-                var solution = mySolution.GetProtocolSolution();
-                var solFolder = mySolution.SolutionDirectory;
-
-                mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime,
-                    RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...")
-                        .AsIndeterminate().AsNonCancelable());
-
-                var list = new List<string> {solFolder.FullPath};
-                myLogger.Verbose($"RefreshPaths.StartAsTask Started.");
-                await solution.GetFileSystemModel().RefreshPaths.Start(new RdRefreshRequest(list, true)).AsTask();
-                myLogger.Verbose($"RefreshPaths.StartAsTask Finished.");
-
-                myLogger.Verbose($"lifetimeDef.Terminate");
-                lifetimeDef.Terminate();
+                catch (Exception e)
+                {
+                    myLogger.Warn(e, comment:"connection usually brakes during refresh.");
+                }
+                finally
+                {
+                    await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                    
+                    myLogger.Verbose(
+                            $"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Finished"); 
+                    var solution = mySolution.GetProtocolSolution(); 
+                    var solFolder = mySolution.SolutionDirectory; 
+                    var list = new List<string> {solFolder.FullPath}; 
+                    myLogger.Verbose($"RefreshPaths.StartAsTask Finished."); 
+                    await solution.GetFileSystemModel().RefreshPaths
+                            .Start(lifetimeDef.Lifetime, new RdRefreshRequest(list, true)).AsTask();
+                    await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                }
             }
             catch (Exception e)
             {
-                myLogger.Log(LoggingLevel.ERROR, "Exception during Refresh.", e);
+                myLogger.LogException(e);
+            }
+            finally
+            {
+                lifetimeDef.Terminate();
             }
         }
     }
@@ -128,7 +150,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityRefreshTracker
     {
-        private readonly UnityRefresher myRefresher;
         private readonly ILogger myLogger;
         private GroupingEvent myGroupingEvent;
 
@@ -138,7 +159,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             UnityHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
-            myRefresher = refresher;
             myLogger = logger;
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -152,13 +172,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     TimeSpan.FromMilliseconds(500),
                     Rgc.Guarded, () =>
                     {
-                        refresher.Refresh(RefreshType.Normal);
+                        refresher.StartRefresh(RefreshType.Normal);
                     });
                 
                 host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force =>
                     {
                         if (force)
-                            refresher.Refresh(RefreshType.ForceRequestScriptReload);
+                            refresher.StartRefresh(RefreshType.ForceRequestScriptReload);
                         else
                             myGroupingEvent.FireIncoming();
                     }));
@@ -167,13 +187,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 if (!args) return;
-
-                var protocolSolution = solution.GetProtocolSolution();
-                protocolSolution.Editors.AfterDocumentInEditorSaved.Advise(lifetime, _ =>
-                {
-                    logger.Verbose("protocolSolution.Editors.AfterDocumentInEditorSaved");
-                    myGroupingEvent.FireIncoming();
-                });
                 
                 fileSystemTracker.RegisterPrioritySink(lifetime, FileSystemChange, HandlingPriority.Other);
             });

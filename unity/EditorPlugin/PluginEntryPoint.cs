@@ -306,7 +306,9 @@ namespace JetBrains.Rider.Unity.Editor
           InitEditorLogPath(model);
 
           model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
-          model.UnityApplicationData.SetValue(new UnityApplicationData(EditorApplication.applicationPath, EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
+          model.UnityApplicationData.SetValue(new UnityApplicationData(
+            EditorApplication.applicationPath,
+            EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           if (UnityUtils.UnityVersion >= new Version(2018, 2))
@@ -316,6 +318,7 @@ namespace JetBrains.Rider.Unity.Editor
 
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
           AdviseGenerateUISchema(model);
+          AdviseExitUnity(model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -333,6 +336,30 @@ namespace JetBrains.Rider.Unity.Editor
     private static void AdviseGenerateUISchema(EditorPluginModel model)
     {
       model.GenerateUIElementsSchema.Set(_ => UIElementsSupport.GenerateSchema());
+    }
+
+    private static void AdviseExitUnity(EditorPluginModel model)
+    {
+      model.ExitUnity.Set((_, rdVoid) =>
+      {
+        var task = new RdTask<bool>();
+        MainThreadDispatcher.Instance.Queue(() =>
+        {
+          try
+          {
+            ourLogger.Verbose("ExitUnity: Started");
+            EditorApplication.Exit(0);
+            ourLogger.Verbose("ExitUnity: Completed");
+            task.Set(true);
+          }
+          catch (Exception e)
+          {
+            ourLogger.Log(LoggingLevel.WARN, "EditorApplication.Exit failed.", e);
+            task.Set(false);
+          }
+        });
+        return task;
+      });
     }
 
     private static void AdviseShowPreferences(EditorPluginModel model, Lifetime connectionLifetime, ILog log)
@@ -414,27 +441,50 @@ namespace JetBrains.Rider.Unity.Editor
     {
       model.Refresh.Set((l, force) =>
       {
-        var task = new RdTask<Unit>();
+        var refreshTask = new RdTask<Unit>();
+        void SendResult()
+        {
+          if (!EditorApplication.isCompiling)
+          {
+            // ReSharper disable once DelegateSubtraction
+            EditorApplication.update -= SendResult;
+            ourLogger.Verbose("Refresh: SyncSolution Completed");
+            refreshTask.Set(Unit.Instance);
+          }
+        }
+        
         ourLogger.Verbose("Refresh: SyncSolution Enqueue");
         MainThreadDispatcher.Instance.Queue(() =>
         {
           if (!EditorApplication.isPlaying && EditorPrefsWrapper.AutoRefresh || force != RefreshType.Normal)
           {
-            if (force == RefreshType.ForceRequestScriptReload)
+            try
             {
-              ourLogger.Verbose("Refresh: RequestScriptReload");
-              UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
-            }
+              if (force == RefreshType.ForceRequestScriptReload)
+              {
+                ourLogger.Verbose("Refresh: RequestScriptReload");
+                UnityEditorInternal.InternalEditorUtility.RequestScriptReload();
+              }
 
-            ourLogger.Verbose("Refresh: SyncSolution Started");
-            UnityUtils.SyncSolution();
-            ourLogger.Verbose("Refresh: SyncSolution Completed");
+              ourLogger.Verbose("Refresh: SyncSolution Started");
+              UnityUtils.SyncSolution();
+            }
+            catch (Exception e)
+            {
+              ourLogger.Error("Refresh failed with exception", e);
+            }
+            finally
+            {
+              EditorApplication.update += SendResult;
+            }
           }
           else
+          {
+            refreshTask.Set(Unit.Instance);
             ourLogger.Verbose("AutoRefresh is disabled via Unity settings.");
-          task.Set(Unit.Instance);
+          }
         });
-        return task;
+        return refreshTask;
       });
     }
 

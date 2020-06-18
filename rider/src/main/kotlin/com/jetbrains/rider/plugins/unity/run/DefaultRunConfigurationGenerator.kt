@@ -4,8 +4,8 @@ import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.UnknownConfigurationType
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorAndPlayFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFactory
@@ -20,7 +20,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
     }
 
     init {
-        project.solution.rdUnityModel.hasUnityReference.whenTrue(componentLifetime) {
+        project.solution.rdUnityModel.hasUnityReference.whenTrue(projectComponentLifetime) {
             val runManager = RunManager.getInstance(project)
             // Clean up the renamed "attach and play" configuration from 2018.2 EAP1-3
             // (Was changed from a separate configuration type to just another factory under "Attach to Unity")

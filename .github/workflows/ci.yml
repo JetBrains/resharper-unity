@@ -1,0 +1,38 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  # Make sure we only invoke known gradle-wrapper.jar files
+  gradleValidation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
+  windows:
+    needs: gradleValidation
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and Tests
+        shell: powershell
+        run: powershell -File .\build.ps1 -RunTests -Verbose
+  linux:
+    needs: gradleValidation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        shell: bash
+        run: ./build.sh --info --stacktrace
+  macos:
+    needs: gradleValidation
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        shell: bash
+        run: ./build.sh --info --stacktrace

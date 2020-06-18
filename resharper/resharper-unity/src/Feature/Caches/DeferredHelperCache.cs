@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+using JetBrains.Util.PersistentMap;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 {
@@ -82,7 +83,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
         public void Drop(IPsiSourceFile sourceFile)
         {
             DropFromProcess(sourceFile);
-            FilesToDrop.Add(sourceFile);
+            
+            bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
+            if (isApplicable)
+                FilesToDrop.Add(sourceFile);
         }
 
         public void OnPsiChange(ITreeNode elementContainingChanges, PsiChangedElementType type)

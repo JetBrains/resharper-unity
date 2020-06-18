@@ -2,19 +2,18 @@ using System;
 using JetBrains.Application.Progress;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 {
     [QuickFix]
-    public class ConvertToCompareTagQuickFix : QuickFixBase
+    public class ConvertToCompareTagQuickFix : UnityScopedQuickFixBase
     {
         private readonly IEqualityExpression myExpression;
         private readonly bool myRewriteLeftOperand;
@@ -29,7 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         {
             using (WriteLockCookie.Create())
             {
-                var qualifierOperand = (myRewriteLeftOperand ? myExpression.LeftOperand : myExpression.RightOperand) as IReferenceExpression;
+                var qualifierOperand =
+                    (myRewriteLeftOperand ? myExpression.LeftOperand : myExpression.RightOperand) as
+                    IReferenceExpression;
                 var qualifierExpression = qualifierOperand?.QualifierExpression;
                 var otherOperand = myRewriteLeftOperand ? myExpression.RightOperand : myExpression.LeftOperand;
                 var factory = CSharpElementFactory.GetInstance(myExpression);
@@ -46,16 +47,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
                         myExpression.EqualityType == EqualityExpressionType.EQEQ ? string.Empty : "!",
                         otherOperand);
                 }
+
                 ModificationUtil.ReplaceChild(myExpression, newExpression);
             }
+
             return null;
         }
 
         public override string Text => "Convert to 'CompareTag'";
-
-        public override bool IsAvailable(IUserDataHolder cache)
-        {
-            return ValidUtils.Valid(myExpression);
-        }
+        protected override ITreeNode TryGetContextTreeNode() => myExpression;
     }
 }

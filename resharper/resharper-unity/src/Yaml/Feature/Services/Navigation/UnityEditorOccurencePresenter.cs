@@ -1,13 +1,13 @@
+using System;
+using System.Drawing;
+using System.Text;
 using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Diagnostics;
-using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
-using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
-using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Feature.Services.Presentation;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.UI.RichText;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 {
@@ -17,48 +17,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
         public bool Present(IMenuItemDescriptor descriptor, IOccurrence occurrence,
             OccurrencePresentationOptions occurrencePresentationOptions)
         {
+            
             var unityOccurrence = (occurrence as UnityAssetOccurrence).NotNull("occurrence as UnityAssetOccurrence != null");
-            
-            var displayText = GetDisplayText(unityOccurrence) + OccurrencePresentationUtil.TextContainerDelimiter;
+            var declaredElement = unityOccurrence.DeclaredElementPointer.FindDeclaredElement();
+            if (declaredElement == null)
+                return false;
+
+            var displayText = unityOccurrence.GetDisplayText() + OccurrencePresentationUtil.TextContainerDelimiter;
             descriptor.Text = displayText;
-            OccurrencePresentationUtil.AppendRelatedFile(descriptor, unityOccurrence.SourceFile.DisplayName.Replace('\\', '/'));
             
-            descriptor.Icon = UnityFileTypeThemedIcons.FileUnity.Id;
+            
+            AppendRelatedFile(descriptor, unityOccurrence.GetRelatedFilePresentation(), unityOccurrence.GetRelatedFolderPresentation());
+
+            descriptor.Icon = unityOccurrence.GetIcon();
             return true;
         }
+        
+        public static void AppendRelatedFile(IMenuItemDescriptor descriptor, string relatedFilePresentation, string relatedFolderPresentation)
+        {
+            var sb = new StringBuilder();
+            if (relatedFilePresentation != null)
+                sb.Append($"{relatedFilePresentation}");
+            
+            if (relatedFolderPresentation != null)
+            {
+                if (relatedFilePresentation != null)
+                    sb.Append(" ");
+                
+                sb.Append($"in {relatedFolderPresentation}");
+            }
+            
+            descriptor.ShortcutText = new RichText(sb.ToString(), TextStyle.FromForeColor(Color.DarkGray));
+        }
 
+        
         public bool IsApplicable(IOccurrence occurrence)
         {
             return occurrence is UnityAssetOccurrence;
-        }
-
-        protected RichText GetDisplayText(UnityAssetOccurrence occurrence)
-        {
-            if (occurrence.SourceFile.GetLocation().IsAsset())
-                return "Scriptable Object";
-            var processor = occurrence.GetSolution().NotNull("occurrence.GetSolution() != null").GetComponent<AssetHierarchyProcessor>();
-            var name =  GetAttachedGameObjectName(processor, occurrence);
-
-            if (occurrence is UnityInspectorValuesOccurrence inspectorValuesOccurrence)
-            {
-                var solution = occurrence.GetSolution();
-                var valuePresentation = inspectorValuesOccurrence.InspectorVariableUsage.Value.GetPresentation(solution, occurrence.DeclaredElementPointer.FindDeclaredElement(), true);
-                if (inspectorValuesOccurrence.SourceFile.GetLocation().IsAsset())
-                    return valuePresentation;
-                return $"{valuePresentation} in {name}";
-            }
-            return name;
-        }
-
-        private string GetAttachedGameObjectName(AssetHierarchyProcessor processor, UnityAssetOccurrence occurrence)
-        {
-            var consumer = new UnityScenePathGameObjectConsumer();
-            processor.ProcessSceneHierarchyFromComponentToRoot(occurrence.AttachedElementLocation, consumer, true, true);
-
-            var parts = consumer.NameParts;
-            if (parts.Count == 0)
-                return "...";
-            return string.Join("/", consumer.NameParts);
         }
     }
 }

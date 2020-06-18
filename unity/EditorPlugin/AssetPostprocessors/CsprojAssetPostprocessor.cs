@@ -22,18 +22,19 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
     private static readonly string ourProjectManualConfigFilePath = Path.GetFullPath("Assets/mcs.rsp");
     private static readonly string ourPlayerProjectManualConfigFilePath = Path.GetFullPath("Assets/smcs.rsp");
     private static readonly string ourEditorProjectManualConfigFilePath = Path.GetFullPath("Assets/gmcs.rsp");
-    private static readonly int ourApiCompatibilityLevel;
+    private static int? ourApiCompatibilityLevel;
+    private static int OurApiCompatibilityLevel
+    {
+      get
+      {
+        if (ourApiCompatibilityLevel == null) 
+          ourApiCompatibilityLevel = GetApiCompatibilityLevel();
+        return (int) ourApiCompatibilityLevel;
+      }
+    }
     private const int APICompatibilityLevelNet20Subset = 2;
     private const int APICompatibilityLevelNet46 = 3;
-    
-    static CsprojAssetPostprocessor()
-    {
-      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
-        return;
-      
-      ourApiCompatibilityLevel = GetApiCompatibilityLevel();
-    }
-    
+
     // Note that this does not affect the order in which postprocessors are evaluated. Order of execution is undefined.
     // https://github.com/Unity-Technologies/UnityCsReference/blob/2018.2/Editor/Mono/AssetPostprocessor.cs#L152
     public override int GetPostprocessOrder()
@@ -235,7 +236,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (UnityUtils.ScriptingRuntime == 0)
         return false;
 
-      if (ourApiCompatibilityLevel != APICompatibilityLevelNet46)
+      if (OurApiCompatibilityLevel != APICompatibilityLevelNet46)
         return false;
       
       var hintPath = GetHintPath(referenceName);
@@ -495,7 +496,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
       if (UnityUtils.ScriptingRuntime == 0)
       {
         mask = "2.*"; // 1 = ApiCompatibilityLevel.NET_2_0
-        if (ourApiCompatibilityLevel == APICompatibilityLevelNet20Subset) // ApiCompatibilityLevel.NET_2_0_Subset
+        if (OurApiCompatibilityLevel == APICompatibilityLevelNet20Subset) // ApiCompatibilityLevel.NET_2_0_Subset
           mask = "unity";
       }
 
@@ -638,7 +639,7 @@ namespace JetBrains.Rider.Unity.Editor.AssetPostprocessors
         return "6";
 
       // Unity 5.5+ supports C# 6, but only when targeting .NET 4.6. The enum doesn't exist pre Unity 5.5
-      if (ourApiCompatibilityLevel >= APICompatibilityLevelNet46)
+      if (OurApiCompatibilityLevel >= APICompatibilityLevelNet46)
         return "6";
 
       return "4";

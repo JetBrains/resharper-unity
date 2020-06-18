@@ -16,13 +16,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
         protected override string RelativeTestDataPath => @"CSharp\CodeCompletion\List";
         protected override bool CheckAutomaticCompletionDefault() => true;
 
-
-        protected override Pair<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>> CreateProjectDescriptor(string projectName, string outputAssemblyName, ICollection<FileSystemPath> absoluteFileSet,
-            ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> libraries, Guid projectGuid)
+        protected override Pair<IProjectDescriptor, IList<Pair<IProjectReferenceDescriptor, IProjectReferenceProperties>>>
+            CreateProjectDescriptor(string projectName, string outputAssemblyName,
+                ICollection<FileSystemPath> absoluteFileSet,
+                ICollection<KeyValuePair<TargetFrameworkId, IEnumerable<string>>> libraries, Guid projectGuid,
+                FileSystemPath originalLocation = null)
         {
-            var projectDescriptor = base.CreateProjectDescriptor(projectName, outputAssemblyName, absoluteFileSet, libraries, projectGuid);
+            var projectDescriptor = base.CreateProjectDescriptor(projectName, outputAssemblyName, absoluteFileSet,
+                libraries, projectGuid, originalLocation);
             var activeConfigurations = projectDescriptor.First.ProjectProperties.ActiveConfigurations;
-            var projectConfiguration = (CSharpProjectConfiguration)activeConfigurations.GetOrCreateConfiguration(TargetFrameworkId.Default);
+            var projectConfiguration =
+                (CSharpProjectConfiguration) activeConfigurations.GetOrCreateConfiguration(TargetFrameworkId.Default);
             var testUnityAttributes = GetClassAttributes<TestUnityAttribute>().Single();
             projectConfiguration.DefineConstants = testUnityAttributes.DefineConstants;
             return projectDescriptor;

@@ -14,11 +14,11 @@ import com.intellij.openapi.util.Key
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.LightColors
 import com.jetbrains.rd.platform.util.application
+import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rd.util.reactive.*
-import com.jetbrains.rdclient.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.document.getFirstEditor
 import com.jetbrains.rider.model.EditorState
@@ -29,7 +29,7 @@ import com.jetbrains.rider.projectView.solution
 
 class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
     private val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance()
-    private var lifetimeDefinition = componentLifetime.createNested()
+    private var lifetimeDefinition = projectComponentLifetime.createNested()
     private val KEY = Key.create<Any>("PromoteAutoSave")
 
     companion object {
@@ -37,7 +37,7 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
     }
 
     init {
-        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(componentLifetime) {
+        SolutionLifecycleHost.getInstance(project).isBackendLoaded.whenTrue(projectComponentLifetime) {
             if (!propertiesComponent.getBoolean(settingName) && UnityProjectDiscoverer.getInstance(project).isUnityProject) {
 
                 val eventMulticaster = EditorFactory.getInstance().eventMulticaster

@@ -12,13 +12,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         {
             if (AssetUtils.IsReferenceValue(node.GetTextAsBuffer()))
             {
-                var fileId = node.Value.AsFileID();
-                if (fileId == null)
+                var reference = node.Value.ToHierarchyReference(owner);
+                if (reference == null)
                     return null;
 
-                var reference = fileId.ToReference(owner);
-                if (reference != null)
-                    return new AssetReferenceValue(reference);
+                return new AssetReferenceValue(reference);
             }
 
             return null;

@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing.TokenNodeTypes
         public override string TokenRepresentation => "0.0";
 
         public override bool IsConstantLiteral => true;
-        
+
         public override LeafElementBase Create(IBuffer buffer, TreeOffset startOffset, TreeOffset endOffset)
         {
             return new CgGenericTokenNode(this, buffer.GetText(new TextRange(startOffset.Offset, endOffset.Offset)));

@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
         }
 
-        protected override IClrTypeName AttributeTypeName => KnownTypes.Range;
+        protected override IClrTypeName AttributeTypeName => KnownTypes.RangeAttribute;
         protected override bool IsLayoutAttribute => false;
 
         // It can make sense to apply Range to all of the fields in a multiple field declaration, but it's unintuitive,

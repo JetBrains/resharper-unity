@@ -15,6 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void Test04() { DoNamedTest(); }
         [Test] public void Test05() { DoNamedTest(); }
         [Test] public void Test06() { DoNamedTest(); }
+        [Test] public void Test07() { DoNamedTest(); }
+        [Test] public void Test08() { DoNamedTest(); }
     }
 
     [TestUnity]
@@ -29,5 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
         [Test] public void Test04() { DoNamedTest(); }
         [Test] public void Test05() { DoNamedTest(); }
         [Test] public void Test06() { DoNamedTest(); }
+        [Test, ExecuteScopedQuickFixInFile] public void Test07() { DoNamedTest(); }
+        [Test, ExecuteScopedQuickFixInFile] public void Test08() { DoNamedTest(); }
     }
 }

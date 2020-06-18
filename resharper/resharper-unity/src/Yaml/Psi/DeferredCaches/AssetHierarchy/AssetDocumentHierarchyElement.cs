@@ -1,115 +1,101 @@
+using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using JetBrains.Application.PersistentMap;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Prefabs;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements.Stripped;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.Serialization;
+using JetBrains.ReSharper.Psi;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy
 {
-    [PolymorphicMarshaller]
-    public class AssetDocumentHierarchyElement : IUnityAssetDataElement
+    public partial class AssetDocumentHierarchyElement : IUnityAssetDataElement
     {
-        private readonly Dictionary<ulong, IHierarchyElement> myLocalAnchorToHierarchyElement =
-            new Dictionary<ulong, IHierarchyElement>();
 
-        private readonly Dictionary<ulong, ITransformHierarchy> myGameObjectLocationToTransform = new Dictionary<ulong, ITransformHierarchy>(); 
+        // for avoiding boxing (use less memory) we are stroing popular elements in lists with specified type
+        private readonly List<IHierarchyElement> myOtherBoxedElements;
         
-        private readonly List<ITransformHierarchy> myTransformHierarchies = new List<ITransformHierarchy>();
+        // Prefab instances' modifications points to locations which are not existing. 
+        // To simplify our inner logic, we will create stripped hierarchy element for each component/gameobject reference (m_Target)
+        // in prefab modifications
+        private readonly List<IHierarchyElement> myOtherFakeStrippedElements;
+        
+        // avoid boxing
+        private readonly List<TransformHierarchy> myTransformElements;
+        private readonly List<ScriptComponentHierarchy> myScriptComponentElements;
+        private readonly List<ComponentHierarchy> myComponentElements;
+        private readonly List<GameObjectHierarchy> myGameObjectHierarchies;
 
-        private readonly List<IPrefabInstanceHierarchy>
-            myPrefabInstanceHierarchies = new List<IPrefabInstanceHierarchy>();
+        private readonly Dictionary<ulong, int> myGameObjectLocationToTransform; 
 
-        [UsedImplicitly] 
-        public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
-        [UsedImplicitly]
-        public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as AssetDocumentHierarchyElement);
+        private readonly List<int> myPrefabInstanceHierarchies = new List<int>();
 
         public bool IsScene { get; internal set; }
 
         public AssetDocumentHierarchyElementContainer AssetDocumentHierarchyElementContainer { get; internal set; }
-
-        private static object Read(UnsafeReader reader)
-        {
-            var count = reader.ReadInt32();
-            var result = new AssetDocumentHierarchyElement();
-
-            for (int i = 0; i < count; i++)
-            {
-                var hierarchyElement = reader.ReadPolymorphic<IHierarchyElement>();
-                result.myLocalAnchorToHierarchyElement[hierarchyElement.Location.LocalDocumentAnchor] = hierarchyElement;
-                if (hierarchyElement is ITransformHierarchy transformHierarchy)
-                    result.myTransformHierarchies.Add(transformHierarchy);
-
-                if (hierarchyElement is IPrefabInstanceHierarchy prefabInstanceHierarchy)
-                    result.myPrefabInstanceHierarchies.Add(prefabInstanceHierarchy);
-            }
-            return result;
-        }
-
-        private static void Write(UnsafeWriter writer, AssetDocumentHierarchyElement value)
-        {
-            writer.Write(value.myLocalAnchorToHierarchyElement.Count);
-            foreach (var v in value.myLocalAnchorToHierarchyElement)
-            {
-                writer.WritePolymorphic(v.Value);
-            }
-        }
-        public AssetDocumentHierarchyElement(IHierarchyElement hierarchyElements)
-        {
-            myLocalAnchorToHierarchyElement[hierarchyElements.Location.LocalDocumentAnchor] = hierarchyElements;
-            if (hierarchyElements is ITransformHierarchy transformHierarchy)
-                myTransformHierarchies.Add(transformHierarchy);
-
-            if (hierarchyElements is IPrefabInstanceHierarchy prefabInstanceHierarchy)
-                myPrefabInstanceHierarchies.Add(prefabInstanceHierarchy);
-        }
         
-        public AssetDocumentHierarchyElement()
+        public AssetDocumentHierarchyElement() : this(0, 0, 0, 0, 0)
         {
         }
-        
+
+        private AssetDocumentHierarchyElement(int otherCount, int gameObjectsCount, int transformCount, int scriptCount, int componentsCount)
+        {
+            myOtherBoxedElements = new List<IHierarchyElement>(otherCount);
+            myTransformElements = new List<TransformHierarchy>(transformCount);
+            myComponentElements = new List<ComponentHierarchy>(componentsCount);
+            myGameObjectHierarchies = new List<GameObjectHierarchy>(gameObjectsCount);
+            myScriptComponentElements = new List<ScriptComponentHierarchy>(scriptCount);
+            myGameObjectLocationToTransform = new Dictionary<ulong, int>(transformCount);
+            myOtherFakeStrippedElements = new List<IHierarchyElement>();
+        }
+
         public string ContainerId => nameof(AssetDocumentHierarchyElementContainer);
-        
-        public void AddData(IUnityAssetDataElement unityAssetDataElement)
+        public void AddData(object data)
         {
-            var hierarchyElement = (AssetDocumentHierarchyElement)unityAssetDataElement;
-            foreach (var element in hierarchyElement.myLocalAnchorToHierarchyElement)
-            {
-                myLocalAnchorToHierarchyElement[element.Key] = element.Value;
-            }
+            if (data == null)
+                return;
             
-            foreach (var element in hierarchyElement.myTransformHierarchies)
-            {
-                myTransformHierarchies.Add(element);
-            }
-            
-            foreach (var element in hierarchyElement.myPrefabInstanceHierarchies)
-            {
-                myPrefabInstanceHierarchies.Add(element);
-            }
+            // avoid boxing
+            if (data is GameObjectHierarchy gameObjectHierarchy)
+                myGameObjectHierarchies.Add(gameObjectHierarchy);
+            else if (data is ScriptComponentHierarchy scriptComponentHierarchy)
+                myScriptComponentElements.Add(scriptComponentHierarchy);
+            else if (data is TransformHierarchy transformHierarchy)
+                myTransformElements.Add(transformHierarchy);
+            else if (data is ComponentHierarchy componentHierarchy)
+                myComponentElements.Add(componentHierarchy);
+            else 
+                myOtherBoxedElements.Add(data as IHierarchyElement);
         }
 
-        public IHierarchyElement GetHierarchyElement(string ownerGuid, ulong anchor, PrefabImportCache prefabImportCache)
+        public IHierarchyElement GetHierarchyElement(Guid? ownerGuid, ulong anchor, PrefabImportCache prefabImportCache)
         {
-            if (myLocalAnchorToHierarchyElement.TryGetValue(anchor, out var result))
+            var result = SearchForAnchor(anchor);
+            if (result != null)
             {
-                if (!result.IsStripped || prefabImportCache == null) // stipped means, that element is not real and we should import prefab
+                if (!(result is IStrippedHierarchyElement) || prefabImportCache == null) // stipped means, that element is not real and we should import prefab
                     return result;
-            }
+            }  
             
-            if (result != null && IsScene && result.IsStripped )
+            // In prefabs files, anchor for stripped element is always generated by formula in PrefabsUtil. This means
+            // that after we import elements from prefab file into another file, we could reuse anchor from stripped element to
+            // get real element (in current implementation, imported objects are store in PrefabImportCache)
+            // It is not true(!!!) for scene files, anchors for scene files could be generated by sequence generator. This means,
+            // that anchor for stripped element could be '19' for example, but imported element will have another anchor.
+            //
+            // To unify all logic, if ownerGuid is related to scene file and achor points to stripped file, we will 
+            // use new anchor which calculated in same way with prefab import  
+            if (result != null && IsScene && result is IStrippedHierarchyElement strippedHierarchyElement )
             {
-                var prefabInstance = result.PrefabInstance;
-                var correspondingObject = result.CorrespondingSourceObject;
-                if (prefabInstance != null && correspondingObject != null)
-                    anchor = PrefabsUtil.Import(prefabInstance.LocalDocumentAnchor, correspondingObject.LocalDocumentAnchor);
+                var prefabInstance = strippedHierarchyElement.PrefabInstance;
+                var correspondingObject = strippedHierarchyElement.CorrespondingSourceObject;
+                anchor = PrefabsUtil.GetImportedDocumentAnchor(prefabInstance.LocalDocumentAnchor, correspondingObject.LocalDocumentAnchor);
             }
 
-            if (prefabImportCache != null)
+            if (prefabImportCache != null && ownerGuid != null)
             {
-                var elements = prefabImportCache.GetImportedElementsFor(ownerGuid, this);
+                var elements = prefabImportCache.GetImportedElementsFor(ownerGuid.Value, this);
                 
                 if (elements.TryGetValue(anchor, out var importedResult))
                     return importedResult;
@@ -118,27 +104,184 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return null;
         }
 
-        public List<IPrefabInstanceHierarchy> PrefabInstanceHierarchies => myPrefabInstanceHierarchies;
-
-        public void RestoreHierarchy()
+        // boxing is not problem here
+        private IHierarchyElement SearchForAnchor(ulong anchor)
         {
-            foreach (var transformHierarchy in myTransformHierarchies)
+            return
+                SearchForAnchor(myGameObjectHierarchies, anchor) ??
+                SearchForAnchor(myTransformElements, anchor) ??
+                SearchForAnchor(myScriptComponentElements, anchor) ??
+                SearchForAnchor(myComponentElements, anchor) ??
+                SearchForAnchor(myOtherBoxedElements, anchor) ??
+                SearchForAnchor(myOtherFakeStrippedElements, anchor);
+        }
+
+
+        private IHierarchyElement SearchForAnchor<T>(List<T> elements, ulong anchor) where T : IHierarchyElement
+        {
+            var searchResult = elements.BinarySearchEx(a => a.Location.LocalDocumentAnchor.CompareTo(anchor));
+            if (searchResult.IsHit)
+                return searchResult.HitItem;
+
+            return null;
+        }
+        
+
+        public IEnumerable<IPrefabInstanceHierarchy> GetPrefabInstanceHierarchies()
+        {
+            for (int i = 0; i < myPrefabInstanceHierarchies.Count; i++)
             {
-                var reference = transformHierarchy.GameObjectReference;
-                if (reference != null)
+                var element = GetElementByInternalIndex(myPrefabInstanceHierarchies[i]);
+                if (element != null)
+                    Assertion.Assert(element is IPrefabInstanceHierarchy, "element is IPrefabInstanceHierarchy");
+                yield return element as IPrefabInstanceHierarchy;
+            }
+        }
+
+        private readonly object myLockObject = new object();
+        private volatile bool myIsRestored = false;
+        public void RestoreHierarchy(AssetDocumentHierarchyElementContainer hierarchyElementContainer, IPsiSourceFile sourceFile)
+        {
+            if (myIsRestored)
+                return;
+            
+            lock (myLockObject)
+            {
+                if (myIsRestored)
+                    return;
+                
+                myIsRestored = true;
+                
+                AssetDocumentHierarchyElementContainer = hierarchyElementContainer;
+                IsScene = sourceFile.GetLocation().ExtensionWithDot.Equals(UnityYamlConstants.Scene);
+
+ 
+                var offset = 0;
+                // concating arrays to one by index. see GetElementByInternalIndex too
+                PrepareElements(myOtherBoxedElements, offset);
+                offset += myOtherBoxedElements.Count;
+                
+                PrepareElements(myTransformElements, offset);
+                offset += myTransformElements.Count;
+
+                PrepareElements(myGameObjectHierarchies, offset);
+                offset += myGameObjectHierarchies.Count;
+
+                PrepareElements(myComponentElements, offset);
+                offset += myComponentElements.Count;
+                
+                PrepareElements(myScriptComponentElements, offset);
+                offset += myScriptComponentElements.Count;
+
+                foreach (var prefabInstanceHierarchy in GetPrefabInstanceHierarchies())
                 {
-                    myGameObjectLocationToTransform[reference.LocalDocumentAnchor] = transformHierarchy;
+                    var correspondingSourceObjects = new HashSet<ExternalReference>();
+                    foreach (var modification in prefabInstanceHierarchy.PrefabModifications)
+                    {
+                        var target = modification.Target;
+                        if (!(target is ExternalReference externalReference))
+                            continue;
+                        correspondingSourceObjects.Add(externalReference);
+                    }
+
+                    foreach (var correspondingSourceObject in correspondingSourceObjects)
+                    {
+                        var fakeAnchor = PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, correspondingSourceObject.LocalDocumentAnchor);
+                        myOtherFakeStrippedElements.Add(new StrippedHierarchyElement(
+                            new LocalReference(sourceFile.PsiStorage.PersistentIndex, fakeAnchor),
+                            prefabInstanceHierarchy.Location, correspondingSourceObject));
+                    }
                 }
             }
+        }
+
+
+        private void PrepareElements<T>(List<T> list, int curOffset) where  T : IHierarchyElement
+        {
+            list.Sort((a, b) => a.Location.LocalDocumentAnchor.CompareTo(b.Location.LocalDocumentAnchor));
             
-            myTransformHierarchies.Clear();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var element = list[i];
+                if (element is ITransformHierarchy transformHierarchy)
+                {
+                    var reference = transformHierarchy.OwningGameObject;
+                    myGameObjectLocationToTransform[reference.LocalDocumentAnchor] = curOffset + i;
+                }
+
+                if (element is IPrefabInstanceHierarchy prefabInstanceHierarchy)
+                    myPrefabInstanceHierarchies.Add(curOffset + i);
+            }
         }
 
         internal ITransformHierarchy GetTransformHierarchy(GameObjectHierarchy gameObjectHierarchy)
         {
-            return myGameObjectLocationToTransform.GetValueSafe(gameObjectHierarchy.Location.LocalDocumentAnchor);
+            var transformIndex = myGameObjectLocationToTransform.GetValueSafe(gameObjectHierarchy.Location.LocalDocumentAnchor, -1);
+            if (transformIndex == -1)
+                return null;
+
+            var element = GetElementByInternalIndex(transformIndex);
+            if (element != null)
+                Assertion.Assert(element is ITransformHierarchy, "element is ITransformHierarchy");
+            
+            return element as ITransformHierarchy;
         }
 
-        public IEnumerable<IHierarchyElement> Elements => myLocalAnchorToHierarchyElement.Values;
+        private IHierarchyElement GetElementByInternalIndex(int index)
+        {
+            if (index < myOtherBoxedElements.Count)
+                return myOtherBoxedElements[index];
+
+            index -= myOtherBoxedElements.Count;
+            
+            if (index < myTransformElements.Count)
+                return myTransformElements[index];
+
+            index -= myTransformElements.Count;
+            
+            if (index < myGameObjectHierarchies.Count)
+                return myGameObjectHierarchies[index];
+
+            index -= myGameObjectHierarchies.Count;
+            
+            if (index < myComponentElements.Count)
+                return myComponentElements[index];
+
+            index -= myComponentElements.Count;
+            
+            if (index < myScriptComponentElements.Count)
+                return myScriptComponentElements[index];
+
+            index -= myScriptComponentElements.Count;
+            
+            if (index < myOtherFakeStrippedElements.Count)
+                return myOtherFakeStrippedElements[index];
+
+            index -= myOtherFakeStrippedElements.Count;
+            
+            
+            throw new IndexOutOfRangeException("Index was out of range in concated array");
+        }
+
+        public IEnumerable<IHierarchyElement> Elements()
+        {
+            foreach (var otherElement in myOtherBoxedElements)
+                yield return otherElement;
+            
+            foreach (var otherElement in myTransformElements)
+                yield return otherElement;
+            
+            foreach (var otherElement in myGameObjectHierarchies)
+                yield return otherElement;
+            
+            foreach (var otherElement in myComponentElements)
+                yield return otherElement;
+            
+            foreach (var otherElement in myScriptComponentElements)
+                yield return otherElement;
+            
+            foreach (var fakeStrippedElement in myOtherFakeStrippedElements)
+                yield return fakeStrippedElement;
+        }
     }
 }

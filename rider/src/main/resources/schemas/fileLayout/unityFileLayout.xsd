@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+           targetNamespace="urn:schemas-jetbrains-com:member-reordering-patterns-unity"
+           xmlns:patterns="urn:schemas-jetbrains-com:member-reordering-patterns">
+
+  <xs:element name="SerializableClass" substitutionGroup="patterns:CustomConstraint" type="patterns:TSimpleConstraint">
+    <xs:annotation>
+      <xs:documentation>Matches any Unity class that can contain serialized fields, such as MonoBehaviour, ScriptableObject or classes marked with [Serializable]</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="SerializedField" substitutionGroup="patterns:CustomConstraint" type="patterns:TSimpleConstraint">
+    <xs:annotation>
+      <xs:documentation>Matches a Unity serialized field</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="EventFunction" substitutionGroup="patterns:CustomConstraint" type="patterns:TSimpleConstraint">
+    <xs:annotation>
+      <xs:documentation>Matches a Unity event function</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="EventFunctionName" substitutionGroup="patterns:CustomSortRule" type="patterns:TSimpleSort">
+    <xs:annotation>
+      <xs:documentation>Sort based on event function name</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+</xs:schema>

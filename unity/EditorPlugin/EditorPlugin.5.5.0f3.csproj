@@ -13,8 +13,7 @@
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.RdFramework" Version="201.20200319.351" />
-    <PackageReference Include="JetBrains.Unity.Libs.5.5.0f3" Version="2017.7.21" />
+    <PackageReference Include="JetBrains.Unity.Libs.Ref.5.5.0f3" Version="2020.6.10" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />

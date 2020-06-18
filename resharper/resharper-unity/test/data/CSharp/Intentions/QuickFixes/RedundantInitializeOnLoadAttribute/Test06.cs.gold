@@ -1,0 +1,14 @@
+﻿// ${RUN:2}
+using UnityEditor;
+
+{caret}public class MissingConstructor
+{
+}
+
+public class MissingConstructor2
+{
+}
+
+public class MissingConstructor3
+{
+}

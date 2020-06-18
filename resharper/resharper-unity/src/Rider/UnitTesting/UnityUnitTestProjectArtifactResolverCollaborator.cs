@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         
         public bool CanResolveArtifact(IProject project, TargetFrameworkId targetFrameworkId)
         {
-            return myUnitySolutionTracker.IsUnityProject.Maybe.Value;
+            return myUnitySolutionTracker.IsUnityGeneratedProject.Maybe.Value;
         }
 
         public FileSystemPath ResolveArtifact(IProject project, TargetFrameworkId targetFrameworkId)

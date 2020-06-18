@@ -17,6 +17,8 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.unscramble.AnalyzeStacktraceUtil
+import com.intellij.util.ui.update.MergingUpdateQueue
+import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -47,6 +49,10 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         .console as ConsoleViewImpl
 
     private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
+    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelView->ensureIndexIsVisible", 250, true, MergingUpdateQueue.ANY_COMPONENT, project, null, true).setRestartTimerOnAdd(false)
+    private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->ensureIndexIsVisible") {
+        override fun run() = eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
+    }
 
     private val eventList = UnityLogPanelEventList(lifetime).apply {
         addListSelectionListener {
@@ -95,7 +101,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
 
         object : DoubleClickListener() {
-            override fun onDoubleClick(event: MouseEvent?): Boolean {
+            override fun onDoubleClick(event: MouseEvent): Boolean {
                 getNavigatableForSelected(eventList1, project)?.navigate(true)
                 return true
             }
@@ -103,6 +109,11 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
         project.solution.rdUnityModel.clearOnPlay.adviseNotNull(lifetime) {
             logModel.events.clearBefore(it)
+        }
+
+        logModel.events.onAutoscrollChanged.advise(lifetime){
+            if (it)
+                eventList1.ensureIndexIsVisible(eventList1.itemsCount-1)
         }
     }
 
@@ -201,13 +212,14 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         } else
             eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
-        // on big amount of logs it causes frontend hangs
-//        if (logModel.selectedItem == null) {
-//            eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
-//        }
+
         // since we do not follow new items which appear, it makes sense to auto-select first one. RIDER-19937
         if (eventList.itemsCount == 1)
             eventList.selectedIndex = 0
+
+        if (logModel.autoscroll.value){
+            mergingUpdateQueue.queue(mergingUpdateQueueAction)
+        }
     }
 
     // TODO: optimize

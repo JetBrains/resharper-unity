@@ -112,10 +112,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     var hubLocations = new List<FileSystemPath> {defaultHubLocation};
 
                     // Hub custom location
-                    var appData = FileSystemPath.Parse(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-                    var hubCustomLocation = GetCustomHubInstallPath(appData);
-                    if (!hubCustomLocation.IsEmpty)
-                        hubLocations.Add(hubCustomLocation);
+                    var home = Environment.GetEnvironmentVariable("HOME");
+                    if (!string.IsNullOrEmpty(home))
+                    {
+                        var localAppData = FileSystemPath.Parse(home).Combine("Library/Application Support");
+                        var hubCustomLocation = GetCustomHubInstallPath(localAppData);
+                        if (!hubCustomLocation.IsEmpty)
+                            hubLocations.Add(hubCustomLocation);
+                    }
 
                     // /Applications/Unity/Hub/Editor/2018.1.0b4/Unity.app
                     unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
@@ -241,26 +245,42 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             if (filePath.ExistsFile)
             {
-                if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
+                switch (PlatformUtil.RuntimePlatform)
                 {
-                    var exePath = filePath.Combine("../../../Unity.exe"); // Editor\Data\Managed\UnityEngine.dll
-                    if (!exePath.ExistsFile)
-                        exePath = filePath.Combine("../../../../Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
-                    if (exePath.ExistsFile)
-                        return exePath;
-                }
-                else if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
-                {
-                    var appPath = filePath;
-                    while (!appPath.Name.Equals("Contents"))
+                    case PlatformUtil.Platform.Windows:
                     {
-                        appPath = appPath.Directory;
-                        if (!appPath.ExistsDirectory || appPath.IsEmpty)
-                            return null;
+                        var exePath = filePath.Combine("../../../Unity.exe"); // Editor\Data\Managed\UnityEngine.dll
+                        if (!exePath.ExistsFile)
+                            exePath = filePath.Combine("../../../../Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
+                        if (exePath.ExistsFile)
+                            return exePath;
+                        break;
                     }
+                    case PlatformUtil.Platform.Linux:
+                    {
+                        var exePath = filePath.Combine("../../../Unity"); // Editor\Data\Managed\UnityEngine.dll
+                        if (!exePath.ExistsFile)
+                            exePath = filePath.Combine("../../../../Unity"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
+                        if (exePath.ExistsFile)
+                            return exePath;
+                        break;
+                    }
+                    case PlatformUtil.Platform.MacOsX:
+                    {
+                        var appPath = filePath;
+                        while (!appPath.Name.Equals("Contents"))
+                        {
+                            appPath = appPath.Directory;
+                            if (!appPath.ExistsDirectory || appPath.IsEmpty)
+                                return null;
+                        }
 
-                    appPath = appPath.Directory;
-                    return appPath;
+                        appPath = appPath.Directory;
+                        return appPath;
+                    }
+                    default:
+                        ourLogger.Error("Unknown runtime platform");
+                        break;
                 }
             }
 
@@ -274,17 +294,24 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (path.IsEmpty || path.Exists == FileSystemPath.Existence.Missing)
                 return;
 
-            if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
+            switch (PlatformUtil.RuntimePlatform)
             {
-                Assertion.Assert(path.ExistsDirectory, "path.ExistsDirectory");
-                Assertion.Assert(path.FullPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase),
-                    "path.FullPath.EndsWith('.app', StringComparison.OrdinalIgnoreCase)");
-            }
-            else
-            {
-                Assertion.Assert(path.ExistsFile, "path.ExistsFile");
-                Assertion.Assert(path.FullPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase),
-                    "path.FullPath.EndsWith('.exe', StringComparison.OrdinalIgnoreCase)");
+                case PlatformUtil.Platform.MacOsX:
+                    Assertion.Assert(path.ExistsDirectory, "path.ExistsDirectory");
+                    Assertion.Assert(path.FullPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase),
+                        "path.FullPath.EndsWith('.app', StringComparison.OrdinalIgnoreCase)");
+                    break;
+                case PlatformUtil.Platform.Windows:
+                    Assertion.Assert(path.ExistsFile, "path.ExistsFile");
+                    Assertion.Assert(path.FullPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase),
+                        "path.FullPath.EndsWith('.exe', StringComparison.OrdinalIgnoreCase)");
+                    break;
+                case PlatformUtil.Platform.Linux:
+                    Assertion.Assert(path.ExistsFile, "path.ExistsFile");
+                    break;
+                default:
+                    Assertion.Fail("Unknown runtime platform");
+                    break;
             }
         }
     }

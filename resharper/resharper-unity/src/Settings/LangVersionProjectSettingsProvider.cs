@@ -133,7 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
                     var contentPath = UnityInstallationFinder.GetApplicationContentsPath(appPath);
                     if (!contentPath.IsNullOrEmpty())
                     {
-                        var roslynDir = contentPath.Combine(@"Tools\Roslyn");
+                        var roslynDir = contentPath.Combine("Tools").Combine("Roslyn");
                         if (roslynDir.ExistsDirectory)
                             languageLevel = myLanguageLevelProjectProperty.GetLatestAvailableLanguageLevel(roslynDir).ToSettingsLanguageLevel();
                     }
