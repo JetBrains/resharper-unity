@@ -17,6 +17,7 @@ import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
+import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 import java.awt.Color
 import javax.swing.Icon
@@ -124,9 +125,9 @@ open class UnityExplorerNode(project: Project,
 
         // Add tooltip for non-imported folders (anything ending with tilde). Also, show the full name if we're hiding
         // the tilde suffix
-        if (virtualFile.isDirectory && virtualFile.name.endsWith("~")) {
+        if (isHiddenFolder(virtualFile)) {
             var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else "<br/>"
-            if (!unityExplorer.showHiddenItems) {
+            if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
                 tooltip += virtualFile.name + "<br/>"
             }
             presentation.tooltip = tooltip + "This folder is not imported into the asset database"
@@ -136,11 +137,14 @@ open class UnityExplorerNode(project: Project,
     override fun getName(): String {
         // Remember that *~ is a default ignore pattern for IntelliJ. Any files/folders in and under this folder won't
         // be indexed. Hopefully this comment will stop someone wasting as much time as I did.
-        if (virtualFile.isDirectory && !UnityExplorer.getInstance(myProject).showHiddenItems) {
+        if (isHiddenFolder(virtualFile) && !SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
             return super.getName().removeSuffix("~")
         }
         return super.getName()
     }
+
+    private fun isHiddenFolder(file: VirtualFile)
+        = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.endsWith("~")
 
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = nodes   // One node for each project that this directory is part of
@@ -286,7 +290,7 @@ open class UnityExplorerNode(project: Project,
 
             // Note that its only the root node that's marked as "unloaded"/not imported. Child files and folder icons
             // are rendered as normal
-            if (virtualFile.name.endsWith("~") && virtualFile.isDirectory) {
+            if (isHiddenFolder(virtualFile)) {
                 return UnityIcons.Explorer.UnloadedFolder
             }
         }
@@ -308,7 +312,7 @@ open class UnityExplorerNode(project: Project,
     }
 
     private fun shouldShowVirtualFile(file: VirtualFile): Boolean {
-        if (UnityExplorer.getInstance(myProject).showHiddenItems) {
+        if (SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
             return true
         }
 
@@ -329,8 +333,8 @@ open class UnityExplorerNode(project: Project,
            be used for distributing code, too. This code will not be treated as assets by Unity, but will still be added
            to the generated .csproj files to allow for use as e.g. command line tools
         */
-        if (file.name.endsWith("~")) {
-            return file.isDirectory && UnityExplorer.getInstance(myProject).showTildeFolders
+        if (isHiddenFolder(file)) {
+            return UnityExplorer.getInstance(myProject).showTildeFolders
         }
 
         return true
