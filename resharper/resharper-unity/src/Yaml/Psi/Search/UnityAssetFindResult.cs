@@ -1,4 +1,5 @@
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
@@ -10,19 +11,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         public IPsiSourceFile SourceFile { get; }
         public IDeclaredElementPointer<IDeclaredElement> DeclaredElementPointer { get; }
-        public IHierarchyElement AttachedElement { get; }
+        public LocalReference OwningElemetLocation { get; }
 
-        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, IHierarchyElement attachedElement)
+        protected UnityAssetFindResult(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, LocalReference owningElemetLocation)
         {
             SourceFile = sourceFile;
-            AttachedElement = attachedElement;
+            OwningElemetLocation = owningElemetLocation;
             DeclaredElementPointer = new SourceElementPointer<IDeclaredElement>(declaredElement);
         }
         
 
         protected bool Equals(UnityAssetFindResult other)
         {
-            return SourceFile.Equals(other.SourceFile) && AttachedElement.Equals(other.AttachedElement);
+            return SourceFile.Equals(other.SourceFile) && OwningElemetLocation.Equals(other.OwningElemetLocation);
         }
 
         public override bool Equals(object obj)
@@ -38,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             unchecked
             {
                 var hashCode = SourceFile.GetHashCode();
-                hashCode = (hashCode * 397) ^ AttachedElement.GetHashCode();
+                hashCode = (hashCode * 397) ^ OwningElemetLocation.GetHashCode();
                 return hashCode;
             }
         }

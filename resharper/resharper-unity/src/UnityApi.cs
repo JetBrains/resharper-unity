@@ -7,7 +7,6 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.JavaScript.Tree.JsDoc;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.Util;
 
@@ -68,6 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return false;
         }
+
         public bool IsSerializableType([CanBeNull] ITypeElement type)
         {
             // A class or struct with the `[System.Serializable]` attribute
@@ -84,9 +84,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return false;
         }
 
-        public bool IsEventFunction([NotNull] IMethod method)
+        public bool IsEventFunction([CanBeNull] IMethod method)
         {
-            return GetUnityEventFunction(method) != null;
+            return method != null && GetUnityEventFunction(method) != null;
         }
 
         public bool IsSerialisedField([CanBeNull] IField field)
@@ -208,18 +208,23 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var mb = TypeFactory.CreateTypeByCLRName(unityTypeClrName, type.Module);
             return type.IsDescendantOf(mb.GetTypeElement());
         }
-        
+
         public static bool IsDescendantOfMonoBehaviour([CanBeNull] ITypeElement type)
         {
             return IsDescendantOf(KnownTypes.MonoBehaviour, type);
         }
-        
-        
+
+
         public static bool IsDescendantOfScriptableObject([CanBeNull] ITypeElement type)
         {
             return IsDescendantOf(KnownTypes.ScriptableObject, type);
         }
 
+        public static bool IsDescendantOfUnityEvent([CanBeNull] ITypeElement type)
+        {
+            return IsDescendantOf(KnownTypes.UnityEvent, type);
+        }
+        
         public Version GetNormalisedActualVersion(IProject project)
         {
             return myTypes.Value.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));

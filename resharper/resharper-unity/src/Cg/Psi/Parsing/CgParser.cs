@@ -17,40 +17,40 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
     {
         [NotNull]
         private readonly ILexer<int> myOriginalLexer;
-        
+
         private readonly CommonIdentifierIntern myIntern;
 
         private ITokenIntern myTokenIntern;
         private CgPreProcessor myPreProcessor;
 
         private ITokenIntern TokenIntern => myTokenIntern ?? (myTokenIntern = new LexerTokenIntern(10));
-        
-        
+
+
         public CgParser([NotNull] ILexer<int> originalLexer, CommonIdentifierIntern intern)
         {
             myOriginalLexer = originalLexer;
             myIntern = intern;
-            
+
             SetLexer(myOriginalLexer);
-            
+
             myPreProcessor = new CgPreProcessor();
             myPreProcessor.Run(myOriginalLexer, this, new SeldomInterruptChecker());
-            
+
             SetLexer(new CgFilteringLexer(myOriginalLexer, myPreProcessor));
         }
-        
+
         protected override TreeElement CreateToken()
         {
             var tokenType = myLexer.TokenType;
 
             Assertion.Assert(tokenType != null, "tokenType != null");
-            
+
             var tokenStart = myLexer.TokenStart;
             var element = CreateToken(tokenType);
             var leaf = element as LeafElementBase;
             if (leaf != null)
                 SetOffset(leaf, tokenStart);
-            
+
             return element;
         }
 
@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Cg.Psi.Parsing
                 return (IFile) element;
             });
         }
-        
+
         private void InsertMissingTokens(TreeElement root, ITokenIntern intern)
         {
             var interruptChecker = new SeldomInterruptChecker();

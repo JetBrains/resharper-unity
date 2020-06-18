@@ -5,6 +5,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.3.50'
     id 'org.jetbrains.intellij' // Version comes from buildSrc
+    id 'org.jetbrains.changelog' version '0.3.2'
     id 'com.jetbrains.rdgen' version '0.201.57'
     id 'com.ullink.nuget' version '2.18'
     id 'com.ullink.nunit' version '1.14'
@@ -47,6 +48,10 @@ buildSearchableOptions.enabled = BuildConfiguration == "Release"
 logger.lifecycle("version=$version")
 logger.lifecycle("BuildConfiguration=$BuildConfiguration")
 
+changelog {
+    path = "../CHANGELOG.md"
+    headerFormat = "{0}"
+}
 
 apply from: 'model.gradle'
 apply from: 'backend.gradle'

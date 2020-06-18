@@ -36,7 +36,7 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
     val logSignal = Signal<RdLogEvent>()
 
     init {
-        model.activateRider.advise(componentLifetime) {
+        model.activateRider.advise(projectComponentLifetime) {
             ProjectUtil.focusProjectWindow(project, true)
             val frame = WindowManager.getInstance().getFrame(project)
             if (frame != null) {
@@ -45,13 +45,13 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
             }
         }
 
-        model.onUnityLogEvent.adviseNotNull(componentLifetime) {
+        model.onUnityLogEvent.adviseNotNull(projectComponentLifetime) {
             val type = RdLogEventType.values()[it.type]
             val mode = RdLogEventMode.values()[it.mode]
             logSignal.fire(RdLogEvent(it.ticks, type, mode, it.message, it.stackTrace))
         }
 
-        model.startUnity.advise(componentLifetime) {
+        model.startUnity.advise(projectComponentLifetime) {
             StartUnityAction.startUnity(project)
         }
 
@@ -72,7 +72,7 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
                 }
                 if (!isAttached) {
                     val processTracker: RiderDebugActiveDotNetSessionsTracker = RiderDebugActiveDotNetSessionsTracker.getInstance(project)
-                    processTracker.dotNetDebugProcesses.change.advise(componentLifetime) { (event, debugProcess) ->
+                    processTracker.dotNetDebugProcesses.change.advise(projectComponentLifetime) { (event, debugProcess) ->
                         if (event == AddRemove.Add) {
                             debugProcess.initializeDebuggerTask.debuggerInitializingState.advise(lt) {
                                 if (it == DebuggerInitializingState.Initialized)

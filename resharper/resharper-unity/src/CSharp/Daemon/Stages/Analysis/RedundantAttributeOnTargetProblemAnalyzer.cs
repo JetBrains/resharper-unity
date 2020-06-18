@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 // UnityEngine
                 {KnownTypes.AddComponentMenu, AttributeTargets.Class},
                 {KnownTypes.ExecuteInEditMode, AttributeTargets.Class},
-                {KnownTypes.HideInInspector, AttributeTargets.Field},
+                {KnownTypes.HideInInspectorAttribute, AttributeTargets.Field},
                 // All but undocumented. Appears to have the same usage as ImageEffectOpaque
                 // The ImageEffect* attributes that are applied to methods are only useful
                 // when applied to OnRenderImage

@@ -50,9 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
             if (build != null)
             {
-                myTimeStamps[psiSourceFile] = psiSourceFile.GetAggregatedTimestamp();
-                Map[psiSourceFile] = (T) build;
                 MergeData(psiSourceFile, (T) build);
+                Map[psiSourceFile] = (T) build;
+                myTimeStamps[psiSourceFile] = psiSourceFile.GetAggregatedTimestamp();
             }
             else
             {

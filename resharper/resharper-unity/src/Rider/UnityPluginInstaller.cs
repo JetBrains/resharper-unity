@@ -110,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.InstallUnity3DRiderPlugin))
                 return;
 
-            var versionForSolution = myUnityVersion.GetActualVersionForSolution();
+            var versionForSolution = myUnityVersion.ActualVersionForSolution.Value;
             if (versionForSolution >= new Version("2019.2")) // 2019.2+ would not work fine either without Rider package, and when package is present it loads EditorPlugin directly from Rider installation.
             {
                 var installationInfoToRemove = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: FileSystemPath.Empty);
@@ -292,7 +292,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var targetPath = installation.PluginDirectory.Combine(editorPluginPath.Name);
                 try
                 {
-                    var versionForSolution = myUnityVersion.GetActualVersionForSolution();
+                    var versionForSolution = myUnityVersion.ActualVersionForSolution.Value;
                     if (versionForSolution < new Version("5.6"))
                     {
                         myLogger.Verbose($"Coping {editorPluginPath} -> {targetPath}");

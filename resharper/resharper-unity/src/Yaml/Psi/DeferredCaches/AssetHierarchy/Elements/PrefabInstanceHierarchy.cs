@@ -1,90 +1,79 @@
+using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 using JetBrains.Serialization;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements
 {
-    [PolymorphicMarshaller]
-    public class PrefabInstanceHierarchy : IPrefabInstanceHierarchy
+    public readonly struct PrefabInstanceHierarchy : IPrefabInstanceHierarchy
     {
-        private readonly Dictionary<(ulong, string), IAssetValue> myModifications = new Dictionary<(ulong, string), IAssetValue>();
-        
-        [UsedImplicitly] 
-        public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
-
-        private static object Read(UnsafeReader reader)
-        {
-            var location = reader.ReadPolymorphic<LocalReference>();
-            var sourcePrefabGuid = reader.ReadString();
-            var parentTransform = reader.ReadPolymorphic<LocalReference>();
-            var count = reader.ReadInt32();
-            var modifications = new List<PrefabModification>();
-            for (int i = 0; i < count; i++)
-                modifications.Add(reader.ReadPolymorphic<PrefabModification>());
-            return new PrefabInstanceHierarchy(location, sourcePrefabGuid, parentTransform, modifications);
-        }
-
-        [UsedImplicitly]
-        public static UnsafeWriter.WriteDelegate<object> WriteDelegate = (w, o) => Write(w, o as PrefabInstanceHierarchy);
-
-        private static void Write(UnsafeWriter writer, PrefabInstanceHierarchy value)
-        {
-            writer.WritePolymorphic(value.Location);
-            writer.Write(value.SourcePrefabGuid);
-            writer.WritePolymorphic(value.ParentTransform);
-            writer.Write(value.PrefabModifications.Count);
-            foreach (var prefabModification in value.PrefabModifications)
-            {
-                writer.WritePolymorphic(prefabModification);
-            }
-        }
-
-        public PrefabInstanceHierarchy(LocalReference location, string sourcePrefabGuid, LocalReference parentTransform, List<PrefabModification> prefabModifications)
+        private readonly Dictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> myModifications;
+        public PrefabInstanceHierarchy(LocalReference location, LocalReference parentTransform, List<PrefabModification> prefabModifications, Guid sourcePrefabGuid)
         {
             Location = location;
             ParentTransform = parentTransform;
             PrefabModifications = prefabModifications;
             SourcePrefabGuid = sourcePrefabGuid;
+            myModifications  = new Dictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> ();
 
             foreach (var modification in prefabModifications)
             {
-                myModifications[(modification.Target.LocalDocumentAnchor, modification.PropertyPath)] = modification.Value;
+                Dictionary<ulong, PrefabModification> dictionary;
+                if (myModifications.TryGetValue(modification.PropertyPath, out var rDictionary))
+                {
+                    dictionary = (Dictionary<ulong, PrefabModification>) rDictionary;
+                }
+                else
+                {
+                    dictionary = new Dictionary<ulong, PrefabModification>();
+                    myModifications[modification.PropertyPath] = dictionary;
+                }
+                
+                dictionary[modification.Target.LocalDocumentAnchor] = modification;
             }
         }
 
-        public IReadOnlyDictionary<(ulong, string), IAssetValue> Modifications => myModifications;
-        public IReadOnlyList<PrefabModification> PrefabModifications { get; }
-        public LocalReference ParentTransform { get; }
         public LocalReference Location { get; }
-        public LocalReference GameObjectReference => null;
-        public bool IsStripped => false;
-        public LocalReference PrefabInstance => null;
-        public ExternalReference CorrespondingSourceObject => null;
+        public LocalReference ParentTransform { get; }
+        public PrefabModification GetModificationFor(ulong owningObject, string fieldName)
+        {
+            if (myModifications.TryGetValue(fieldName, out var result) &&
+                result.TryGetValue(owningObject, out var modification))
+                return modification;
+            return null;
+        }
+
+        public IReadOnlyList<PrefabModification> PrefabModifications { get; }
+        public Guid SourcePrefabGuid { get; }
+
         public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy) => null;
-        public string SourcePrefabGuid { get; }
-        
-        protected bool Equals(PrefabInstanceHierarchy other)
-        {
-            return Location.Equals(other.Location) && SourcePrefabGuid == other.SourcePrefabGuid;
-        }
 
-        public override bool Equals(object obj)
+        public static void Write(UnsafeWriter writer, PrefabInstanceHierarchy prefabInstanceHierarchy)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((PrefabInstanceHierarchy) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
+            prefabInstanceHierarchy.Location.WriteTo(writer);
+            prefabInstanceHierarchy.ParentTransform.WriteTo(writer);
+            
+            writer.Write(prefabInstanceHierarchy.PrefabModifications.Count);
+            foreach (var prefabModification in prefabInstanceHierarchy.PrefabModifications)
             {
-                return (Location.GetHashCode() * 397) ^ SourcePrefabGuid.GetHashCode();
+                writer.WritePolymorphic(prefabModification);
             }
+
+            writer.Write(prefabInstanceHierarchy.SourcePrefabGuid);
+        }
+
+        public static PrefabInstanceHierarchy Read(UnsafeReader reader)
+        {
+            var location = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
+            var parentTransform = HierarchyReferenceUtil.ReadLocalReferenceFrom(reader);
+            var count = reader.ReadInt32();
+            var modifications = new List<PrefabModification>();
+            for (int i = 0; i < count; i++)
+                modifications.Add(reader.ReadPolymorphic<PrefabModification>());
+            
+            var sourcePrefabGuid = reader.ReadGuid();
+            return new PrefabInstanceHierarchy(location, parentTransform, modifications, sourcePrefabGuid);
         }
     }
 }

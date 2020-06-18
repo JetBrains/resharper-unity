@@ -33,5 +33,5 @@ public class TestClass
 ---------------------------------------------------------
 (0): ReSharper Warning: Missing static modifier
 (1): ReSharper Warning: Incorrect return type. Expected 'void'
-(2): ReSharper Warning: Incorrect method parameters. Expected '(BuildTarget target, string pathToBuildProject)'
+(2): ReSharper Warning: Incorrect method parameters. Expected '(BuildTarget target, string pathToBuiltProject)'
 (3): ReSharper Warning: Incorrect type parameters

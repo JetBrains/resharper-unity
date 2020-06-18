@@ -1,0 +1,10 @@
+﻿// ${RUN:1}
+using UnityEditor.ShortcutManagement;
+
+public class Foo
+{
+  [Shortcut]
+  public static void Do{caret}Method()
+  {
+  }
+}

@@ -8,8 +8,8 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
@@ -48,9 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             var solution = elements.FirstOrDefault().NotNull("elements.FirstOrDefault() != null").GetSolution();
             var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
-            var methodsContainer = solution.GetComponent<AssetMethodsElementContainer>();
+            var methodsContainer = solution.GetComponent<UnityEventsElementContainer>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
-            var assetUsagesContainer = solution.GetComponent<AssetUsagesElementContainer>();
+            var assetUsagesContainer = solution.GetComponent<AssetScriptUsagesElementContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
             
@@ -109,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     return unityApi.IsUnityType(c);
                 case IProperty _:
                 case IMethod _:
-                    return solution.GetComponent<AssetMethodsElementContainer>().GetAssetUsagesCount(element, out var estimatedResult) > 0 || estimatedResult;
+                    return solution.GetComponent<UnityEventsElementContainer>().GetAssetUsagesCount(element, out var estimatedResult) > 0 || estimatedResult;
                 case IField field:
                     return unityApi.IsSerialisedField(field);
             }

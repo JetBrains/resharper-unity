@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application;
+using JetBrains.Application.changes;
+using JetBrains.Application.FileSystemTracker;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
@@ -53,13 +54,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         [NotNull]
         public readonly ViewableProperty<EditorPluginModel> UnityModel = new ViewableProperty<EditorPluginModel>(null);
+        
+        [NotNull]
+        public readonly ViewableProperty<SocketWire.Base> UnityWire = new ViewableProperty<SocketWire.Base>(null);
 
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
             IScheduler dispatcher, IShellLocks locks, ISolution solution,
             ISettingsStore settingsStore, JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
             UnitySolutionTracker unitySolutionTracker, IThreading threading,
             UnityVersion unityVersion, NotificationsModel notificationsModel,
-            IHostProductInfo hostProductInfo)
+            IHostProductInfo hostProductInfo, IFileSystemTracker fileSystemTracker)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
             
@@ -89,36 +93,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 // todo: consider non-Unity Solution with Unity-generated projects
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
-                protocolInstancePath.Directory.CreateDirectory();
-
-                solution.Locks.Tasks.Queue(lf, () =>
-                {
-                    var watcher = new FileSystemWatcher();
-                    watcher.Path = protocolInstancePath.Directory.FullPath;
-                    watcher.NotifyFilter = NotifyFilters.LastWrite; //Watch for changes in LastWrite times
-                    watcher.Filter = protocolInstancePath.Name;
-
-                    // Add event handlers.
-                    watcher.Changed += OnChanged;
-                    watcher.Created += OnChanged;
-                    
-                    lf.OnTermination(watcher.Dispose);
-                    
-                    watcher.EnableRaisingEvents = true; // Begin watching. Can take significant time to start
-                });
-                
+                fileSystemTracker.AdviseFileChanges(lf, protocolInstancePath, OnChangeAction);
                 // connect on start of Rider
                 CreateProtocols(protocolInstancePath);
             });
         }
-
-        private void OnChanged(object sender, FileSystemEventArgs e)
+        
+        private void OnChangeAction(FileSystemChangeDelta delta)
         {
-            var protocolInstancePath = FileSystemPath.Parse(e.FullPath);
             // connect on reload of server
+            if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
             if (!myComponentLifetime.IsTerminated)
                 myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
-                    () => CreateProtocols(protocolInstancePath));
+                    () => CreateProtocols(delta.NewPath));
         }
 
         private void AdviseModelData(Lifetime lifetime)
@@ -157,6 +144,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
                 var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
+                UnityWire.Value = wire;
                 wire.BackwardsCompatibleWireFormat = true;
                     
                 var protocol = new Protocol("UnityEditorPlugin", new Serializers(),
@@ -171,7 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         
                     myPluginInstallations.Add(mySolution.SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
                         
-                    var appVersion = myUnityVersion.GetActualVersionForSolution();
+                    var appVersion = myUnityVersion.ActualVersionForSolution.Value;
                     if (appVersion < new Version(2019, 2))
                     {
                         var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);

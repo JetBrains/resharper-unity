@@ -12,7 +12,6 @@ using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
@@ -21,7 +20,6 @@ using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Impl.Search.Operations;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Resources.Shell;
-using JetBrains.Rider.Model;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -62,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var finder = mySolution.GetPsiServices().AsyncFinder;
             var consumer = new UnityUsagesFinderConsumer(myAssetHierarchyProcessor, myPersistentIndexManager, mySolutionDirectoryPath);
 
-            var sourceFile = myPersistentIndexManager[location.OwnerId];
+            var sourceFile = myPersistentIndexManager[location.OwningPsiPersistentIndex];
             if (sourceFile == null)
                 return;
             
@@ -155,11 +153,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             public FindExecution Merge(UnityAssetFindResult data)
             {
-                var sourceFile = myPersistentIndexManager[data.AttachedElement.Location.OwnerId];
+                var sourceFile = myPersistentIndexManager[data.OwningElemetLocation.OwningPsiPersistentIndex];
                 if (sourceFile == null)
                     return myFindExecution;
                 
-                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.AttachedElement.Location, sourceFile);
+                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.OwningElemetLocation, sourceFile);
                 if (request != null)
                     Result.Add(request);
                 

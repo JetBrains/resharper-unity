@@ -7,7 +7,6 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
-import java.util.function.Predicate
 
 class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
     private val lock = Object()
@@ -121,6 +120,8 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
         }
 
         val onChanged = Signal.Void()
+
+        val onAutoscrollChanged = Signal<Boolean>()
     }
 
     private fun isVisibleEvent(event: RdLogEvent):Boolean
@@ -140,6 +141,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
     val textFilter = TextFilter()
     val events = Events()
     val mergeSimilarItems = Property(false)
+    val autoscroll = Property(false)
 
     val onAdded = Signal<RdLogEvent>()
     val onChanged = Signal<List<RdLogEvent>>()

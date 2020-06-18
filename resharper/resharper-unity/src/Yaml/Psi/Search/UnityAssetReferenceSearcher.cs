@@ -1,16 +1,14 @@
-using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
-using JetBrains.ReSharper.Plugins.Yaml.Psi.Search;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Util;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
@@ -18,18 +16,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
-        private readonly AssetUsagesElementContainer myAssetUsagesElementContainer;
-        private readonly AssetMethodsElementContainer myAssetMethodsElementContainer;
+        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
+        private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
         private readonly IDeclaredElementsSet myElements;
 
-        public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,  AssetUsagesElementContainer assetUsagesElementContainer,
-            AssetMethodsElementContainer assetMethodsElementContainer, AssetInspectorValuesContainer assetInspectorValuesContainer, MetaFileGuidCache metaFileGuidCache, IDeclaredElementsSet elements, bool findCandidates)
+        public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,  AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
+            UnityEventsElementContainer unityEventsElementContainer, AssetInspectorValuesContainer assetInspectorValuesContainer, MetaFileGuidCache metaFileGuidCache, IDeclaredElementsSet elements, bool findCandidates)
         {
             myDeferredCacheController = deferredCacheController;
             myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
-            myAssetUsagesElementContainer = assetUsagesElementContainer;
-            myAssetMethodsElementContainer = assetMethodsElementContainer;
+            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
+            myUnityEventsElementContainer = unityEventsElementContainer;
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myElements = elements;
         }
@@ -43,39 +41,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             {
                 if (element is IMethod || element is IProperty)
                 {
-                    var usages = myAssetMethodsElementContainer.GetAssetUsagesFor(sourceFile, element);
-                    foreach (var assetMethodData in usages)
+                    var usages = myUnityEventsElementContainer.GetAssetUsagesFor(sourceFile, element);
+                    foreach (var findResult in usages)
                     {
-                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetMethodData.Location, false);
-                        if (hierarchyElement != null)
-                            consumer.Accept(new UnityMethodsFindResult(sourceFile, element, assetMethodData, hierarchyElement));
+                        consumer.Accept(findResult);
                     }
                 }
 
                 if (element is ITypeElement typeElement)
                 {
-                    var usages = myAssetUsagesElementContainer.GetAssetUsagesFor(sourceFile, typeElement);
+                    var usages = myAssetScriptUsagesElementContainer.GetAssetUsagesFor(sourceFile, typeElement);
 
                     foreach (var assetUsage in usages)
                     {
-                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetUsage.Location, false);
-                        if (hierarchyElement == null)
-                            continue;
-
-                        consumer.Accept(new UnityScriptsFindResults(sourceFile, element, assetUsage, hierarchyElement));
+                        consumer.Accept(new UnityScriptsFindResults(sourceFile, element, assetUsage, assetUsage.Location));
                     }
                 }
 
                 if (element is IField field)
                 {
-                    var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
-                    foreach (var assetUsage in usages)
+                    if (UnityApi.IsDescendantOfUnityEvent(field.Type.GetTypeElement()))
                     {
-                        var hierarchyElement = myAssetDocumentHierarchyElementContainer.GetHierarchyElement(assetUsage.Location, false);
-                        if (hierarchyElement == null)
-                            continue;
-
-                        consumer.Accept(new UnityInspectorFindResults(sourceFile, element, assetUsage, hierarchyElement));
+                        foreach (var findResult in myUnityEventsElementContainer.GetMethodsForUnityEvent(sourceFile, field))
+                        {
+                            consumer.Accept(findResult);
+                        }
+                    }
+                    else
+                    {
+                        var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
+                        foreach (var findResult in usages)
+                        {
+                            consumer.Accept(findResult);
+                        }
                     }
                 }
             }

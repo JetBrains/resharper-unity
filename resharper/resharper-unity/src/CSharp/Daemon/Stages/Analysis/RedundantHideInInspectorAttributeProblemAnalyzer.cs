@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!(attribute.TypeReference?.Resolve().DeclaredElement is ITypeElement attributeTypeElement))
                 return;
 
-            if (!Equals(attributeTypeElement.GetClrName(), KnownTypes.HideInInspector))
+            if (!Equals(attributeTypeElement.GetClrName(), KnownTypes.HideInInspectorAttribute))
                 return;
 
             var fields = attribute.GetFieldsByAttribute();

@@ -12,14 +12,47 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net201...net202)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/36?closed=1)
 
+### Added
+
+- Add Unity code cleanup patterns that do not reorder serialised fields ([#88](https://github.com/JetBrains/resharper-unity/issues/88), [#1676](https://github.com/JetBrains/resharper-unity/pull/1676))
+- Use `Range` attribute to provide hints to integer dataflow analysis ([#1673](https://github.com/JetBrains/resharper-unity/pull/1673))
+- Improve namespace suggestions for packages ([#1161](https://github.com/JetBrains/resharper-unity/issues/1161), [RIDER-36546](https://youtrack.jetbrains.com/issue/RIDER-36546), [#1677](https://github.com/JetBrains/resharper-unity/pull/1677), [#1689](https://github.com/JetBrains/resharper-unity/pull/1689))
+- Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor ([#1272](https://github.com/JetBrains/resharper-unity/issues/1272), [#1661](https://github.com/JetBrains/resharper-unity/pull/1661))
+- Rider: Automatically use UnityYamlMerge to merge asset files ([RIDER-33411](https://youtrack.jetbrains.com/issue/RIDER-33411), [#1682](https://github.com/JetBrains/resharper-unity/pull/1682))
+- Rider: Add sample text for "Unity", "ShaderLab" and "Cg/HLSL" Colour Scheme options pages ([#1667](https://github.com/JetBrains/resharper-unity/pull/1667))
+
 ### Changed
 
 - All applicable quick fixes are now bulk actions, and can be applied over project scope ([#1648](https://github.com/JetBrains/resharper-unity/issues/1648), [#1649](https://github.com/JetBrains/resharper-unity/pull/1649))
+- Improved method signature validation and usage suppression using Unity's `RequiredSignature` attribute ([#1679](https://github.com/JetBrains/resharper-unity/pull/1679))
+- Update `.meta` file icons to something less distracting ([RIDER-45675](https://youtrack.jetbrains.com/issue/RIDER-45675), [#1698](https://github.com/JetBrains/resharper-unity/pull/1698))
+- Rider: Significant reduction in memory usage while indexing assets ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
+- Rider: Better support for prefab modifications in Find Usages and showing Inspector values ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
+- Rider: Show method handlers for Unity events in the editor ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
+- Rider: Disable "Start Unity" action when Unity is running ([RIDER-36108](https://youtrack.jetbrains.com/issue/RIDER-36108), [#1554](https://github.com/JetBrains/resharper-unity/pull/1554))
+- Rider: Unity Log view optionally scrolls to show new items ([RIDER-14377](https://youtrack.jetbrains.com/issue/RIDER-14377), [#1678](https://github.com/JetBrains/resharper-unity/pull/1678))
+- Rider: Play/pause/step buttons no longer disabled while Rider is indexing ([#1678](https://github.com/JetBrains/resharper-unity/pull/1678))
 
 ### Fixed
 
 - Fix meta file handling when references to Unity assemblies are invalid ([#1623](https://github.com/JetBrains/resharper-unity/pull/1623))
 - Public fields of type `Action` are no longer treated as serialised fields ([#1605](https://github.com/JetBrains/resharper-unity/issues/1605), [#1638](https://github.com/JetBrains/resharper-unity/pull/1638))
+- Fix incorrect method signature validation for methods marked with `OnOpenedAsset` ([#1053](https://github.com/JetBrains/resharper-unity/issues/1053), [#1679](https://github.com/JetBrains/resharper-unity/pull/1679))
+- Rider: Fix debugger sometimes treating user code as external code ([#1671](https://github.com/JetBrains/resharper-unity/issues/1671), [#1697](https://github.com/JetBrains/resharper-unity/pull/1697))
+- Rider: Fix grouping assets by directory in Find Usages results ([#1668](https://github.com/JetBrains/resharper-unity/pull/1668))
+- Rider: Fix exception trying to upgrade Unity editor plugin ([RIDER-42475](https://youtrack.jetbrains.com/issue/RIDER-42475), [#1658](https://github.com/JetBrains/resharper-unity/pull/1658))
+- Rider: Fix unit tests not running unless Rider has focus ([RIDER-37990](https://youtrack.jetbrains.com/issue/RIDER-37990), [#1672](https://github.com/JetBrains/resharper-unity/pull/1672))
+- Unity editor: Fix reporting of duration of Unity tests (released in Rider package 2.0.4) ([RIDER-44853](https://youtrack.jetbrains.com/issue/RIDER-44853))
+- Unity editor: Delay calling Unity API to workaround potential Unity crash ([RIDER-43951](https://youtrack.jetbrains.com/issue/RIDER-43951), [#1647](https://github.com/JetBrains/resharper-unity/pull/1647))
+
+
+
+## 2020.1.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.2...net201)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/39?closed=1)
+
+### Fixed
+- Rider: Fix unit test discovery in non-Unity solutions inside a Unity folder ([RIDER-44139](https://youtrack.jetbrains.com/issue/RIDER-44139), [#1657](https://github.com/JetBrains/resharper-unity/pull/1657))
 
 
 

@@ -4,6 +4,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
     {
         string ContainerId { get; }
 
-        void AddData(IUnityAssetDataElement unityAssetDataElement);
+        void AddData(object data);
     }
 }

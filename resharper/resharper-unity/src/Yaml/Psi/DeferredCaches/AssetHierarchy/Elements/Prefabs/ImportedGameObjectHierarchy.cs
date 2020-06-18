@@ -1,4 +1,3 @@
-using System;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues.Values;
 
@@ -14,19 +13,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myPrefabInstanceHierarchy = prefabInstanceHierarchy;
             myGameObjectHierarchy = gameObjectHierarchy;
         }
+        
+        internal ITransformHierarchy TransformHierarchy { get;  set; }
+        public LocalReference Location => myGameObjectHierarchy.Location.GetImportedReference( myPrefabInstanceHierarchy);
 
-        public LocalReference Location => myGameObjectHierarchy.Location.GetImportedReference(myPrefabInstanceHierarchy);
-        public LocalReference GameObjectReference => null;
-        public bool IsStripped => false;
-        public LocalReference PrefabInstance => null;
-        public ExternalReference CorrespondingSourceObject => null;
-        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy) => new ImportedGameObjectHierarchy(prefabInstanceHierarchy, this);
+        public IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy)
+        {
+            return new ImportedGameObjectHierarchy(prefabInstanceHierarchy, this);
+        }
 
         public string Name
         {
             get
             {
-                if (myPrefabInstanceHierarchy.Modifications.TryGetValue((myGameObjectHierarchy.Location.LocalDocumentAnchor, "m_Name"), out var result) && result is AssetSimpleValue simpleValue)
+                var modification = myPrefabInstanceHierarchy.GetModificationFor(myGameObjectHierarchy.Location.LocalDocumentAnchor, "m_Name");
+                if (modification?.Value is AssetSimpleValue simpleValue)
                 {
                     return simpleValue.SimpleValue;
                 }
@@ -39,7 +40,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         {
             return TransformHierarchy;
         }
-        
-        internal ITransformHierarchy TransformHierarchy { get;  set; }
     }
 }

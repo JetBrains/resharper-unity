@@ -7,13 +7,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
     {
         [NotNull]
         LocalReference Location { get; }
+        
         [CanBeNull]
-        LocalReference GameObjectReference { get; }
-        bool IsStripped { get; }
-        [CanBeNull]
-        LocalReference PrefabInstance { get; }
-        [CanBeNull]
-        ExternalReference CorrespondingSourceObject { get; }
         IHierarchyElement Import(IPrefabInstanceHierarchy prefabInstanceHierarchy);
     }
 }

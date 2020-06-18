@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application;
-using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetMethods;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 {
     [ShellComponent]
     public class UsageInspectionsSuppressor : IUsageInspectionsSuppressor
     {
-        private readonly ILogger myLogger;
-
-        private readonly List<IClrTypeName> myImplicitlyUsedInterfaces = new List<IClrTypeName>()
+        private readonly JetHashSet<IClrTypeName> myImplicitlyUsedInterfaces = new JetHashSet<IClrTypeName>
         {
             new ClrTypeName("UnityEditor.Build.IPreprocessBuild"),
             new ClrTypeName("UnityEditor.Build.IPostprocessBuild"),
@@ -35,30 +30,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             new ClrTypeName("UnityEditor.Build.IOrderedCallback"),
         };
 
-        public UsageInspectionsSuppressor(ILogger logger)
-        {
-            myLogger = logger;
-        }
-
         public bool SuppressUsageInspectionsOnElement(IDeclaredElement element, out ImplicitUseKindFlags flags)
         {
             flags = ImplicitUseKindFlags.Default;
 
-            try
-            {
-                if (!element.IsFromUnityProject()) return false;
-            }
-            catch (Exception e)
-            {
-                /*
-                 * TODO: radically rethink Unity / non-Unity project detection.
-                 * Currently we check project's assemblies using extensions for IProject,
-                 * with no way to log errors and/or react to targetFrameworkChanges should they happen on the fly.
-                 * This should be replaced with something more stable and fast.
-                 */
-                myLogger.LogExceptionSilently(e);
-                return false;
-            }
+            if (!element.IsFromUnityProject()) return false;
 
             var solution = element.GetSolution();
             var unityApi = solution.GetComponent<UnityApi>();
@@ -69,14 +45,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 
-
-                case ITypeElement typeElement when IsImplicitlyUsedInterfaceType(typeElement):
-                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                    return true;
-
                 case ITypeElement typeElement when unityApi.IsSerializableType(typeElement):
                     // TODO: We should only really mark it as in use if it's actually used somewhere
                     // That is, it should be used as a field in a Unity type, or another serializable type
+                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                    return true;
+
+                case ITypeElement typeElement when IsImplicitlyUsedInterfaceType(typeElement):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 
@@ -90,36 +65,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     {
                         if (match == MethodSignatureMatch.ExactMatch)
                         {
-                            foreach (var parameter in function.Parameters)
-                            {
-                                if (parameter.IsOptional)
-                                {
-                                    // Allows optional parameters to be marked as unused
-                                    // TODO: Might need to process IParameter if optional gets more complex
-                                    flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                                    return true;
-                                }
-                            }
-
-                            flags = ImplicitUseKindFlags.Access;
+                            flags = HasOptionalParameter(function)
+                                ? ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature
+                                : ImplicitUseKindFlags.Access;
                             return true;
                         }
 
                         return false;
                     }
 
-                    if (IsEventHandler(unityApi, method))
+                    if (IsEventHandler(unityApi, method) || IsRequiredSignatureMethod(method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
                     }
-
-                    if (IsSettingsProvider(method))
-                    {
-                        flags = ImplicitUseKindFlags.Access;
-                        return true;
-                    }
-
                     break;
 
                 case IField field when unityApi.IsSerialisedField(field) || unityApi.IsInjectedField(field):
@@ -135,15 +94,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             return false;
         }
 
-        private static bool IsSettingsProvider(IMethod method)
+        private bool IsImplicitlyUsedInterfaceType(ITypeElement typeElement)
         {
-            if (method.HasAttributeInstance(KnownTypes.SettingsProviderAttribute, AttributesSource.All) && method.IsStatic)
+            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
             {
-                var typeElement = (method.ReturnType as IDeclaredType)?.GetTypeElement();
-                if(typeElement != null && typeElement.DerivesFrom(KnownTypes.SettingsProvider))
-                {
+                if (typeElement.DerivesFrom(implicitlyUsedTypeName))
                     return true;
-                }
             }
 
             return false;
@@ -151,20 +107,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
         private bool IsImplicitlyUsedInterfaceMethod(IMethod method)
         {
-            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
+            foreach (var overridableMemberInstance in method.GetRootSuperMembers())
             {
-                var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, method.Module).GetTypeElement();
-
-                if (type == null)
-                    return false;
-                
-                foreach (var overridableMemberInstance in method.GetRootSuperMembers())
-                {
-                    if (type.GetClrName().ShortName == overridableMemberInstance.DeclaringType.GetClrName().ShortName)
-                    {
-                        return true;
-                    }
-                }
+                if (myImplicitlyUsedInterfaces.Contains(overridableMemberInstance.DeclaringType.GetClrName()))
+                    return true;
             }
 
             return false;
@@ -172,35 +118,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
         private bool IsImplicitlyUsedInterfaceProperty(IProperty property)
         {
-            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
+            foreach (var overridableMemberInstance in property.GetRootSuperMembers())
             {
-                var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, property.Module).GetTypeElement();
-
-                if (type == null)
-                    continue;
-                
-                foreach (var overridableMemberInstance in property.GetRootSuperMembers())
-                {
-                    if (type.GetClrName().ShortName == overridableMemberInstance.DeclaringType.GetClrName().ShortName)
-                    {
-                        return true;
-                    }
-                }
+                if (myImplicitlyUsedInterfaces.Contains(overridableMemberInstance.DeclaringType.GetClrName()))
+                    return true;
             }
 
             return false;
         }
 
-        private bool IsImplicitlyUsedInterfaceType(ITypeElement typeElement)
+        private bool HasOptionalParameter(UnityEventFunction function)
         {
-            foreach (var implicitlyUsedTypeName in myImplicitlyUsedInterfaces)
+            foreach (var parameter in function.Parameters)
             {
-                var type = TypeFactory.CreateTypeByCLRName(implicitlyUsedTypeName, typeElement.Module).GetTypeElement();
-
-                if (type == null)
-                    return false;
-                
-                if (typeElement.DerivesFrom(type.GetClrName()))
+                if (parameter.IsOptional)
                     return true;
             }
 
@@ -224,8 +155,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText || !solution.GetComponent<DeferredCacheController>().CompletedOnce.Value)
                 return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
+            return solution.GetComponent<UnityEventsElementContainer>().GetAssetUsagesCount(method, out bool estimatedResult) > 0 || estimatedResult;
+        }
 
-            return solution.GetComponent<AssetMethodsElementContainer>().GetAssetUsagesCount(method, out bool estimatedResult) > 0 || estimatedResult;
+        // If the method is marked with an attribute that has a method that is itself marked with RequiredSignature,
+        // then we know Unity will be implicitly using this method. Most attributes which mean implicit use are in the
+        // external annotations, but this will capture attributes that we don't know about, as long as they follow the
+        // pattern
+        private static bool IsRequiredSignatureMethod(IMethod method)
+        {
+            foreach (var attributeInstance in method.GetAttributeInstances(AttributesSource.All))
+            {
+                var attributeType = attributeInstance.GetAttributeType().GetTypeElement();
+                if (attributeType != null)
+                {
+                    foreach (var attributeMethod in attributeType.Methods)
+                    {
+                        if (attributeMethod.HasAttributeInstance(KnownTypes.RequiredSignatureAttribute,
+                            AttributesSource.All))
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

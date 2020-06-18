@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    "compile"("gradle.plugin.org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "0.4.16")
+    "compile"("gradle.plugin.org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "0.4.21")
 }
 
 plugins {
