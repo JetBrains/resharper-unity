@@ -94,6 +94,7 @@
 
     <!-- Run configurations -->
     <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType" />
+    <configurationType implementation="com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType" />
 
     <!-- Debugger -->
     <xdebugger.attachDebuggerProvider implementation="com.jetbrains.rider.plugins.unity.run.attach.UnityLocalAttachProcessDebuggerProvider" />
