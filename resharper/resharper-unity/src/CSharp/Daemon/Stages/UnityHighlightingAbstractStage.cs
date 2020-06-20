@@ -22,6 +22,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
+using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 {
@@ -182,39 +183,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             return res;
         }
 
-        private bool IsProhibitedNode(ITreeNode node)
-        {
-            switch (node)
-            {
-                case IThrowStatement _:
-                case IThrowExpression _:
-                case IInvocationExpression invocationExpression when IsBurstDiscarded(invocationExpression):
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        private static bool IsBurstDiscarded(ITreeNode node)
-        {
-            if (!(node is IInvocationExpression expression))
-                return false;
-            var invokedMethod = expression.InvocationExpressionReference.Resolve().DeclaredElement as IMethod;
-            if (invokedMethod == null)
-                return false;
-            return invokedMethod.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self).Count !=
-                   0;
-        }
-
         private UnityProblemAnalyzerContext GetProhibitedContexts(ITreeNode node)
         {
             var context = UnityProblemAnalyzerContext.NONE;
-            if (node is IThrowStatement || node is IThrowExpression || IsBurstDiscarded(node))
+            if (IsBurstProhibitedNode(node))
                 context |= UnityProblemAnalyzerContext.BURST_CONTEXT;
             return context;
         }
 
-        public void CollectRootElements(ITreeNode node)
+        private void CollectRootElements(ITreeNode node)
         {
             if (!myIsBurstAnalysisEnabled)
                 return;
@@ -229,7 +206,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             // prohibiting context always has higher priority than creating, and they does not affect each other
             if (IsFunctionNode(element))
                 myProblemAnalyzerContexts.Push(GetProblemAnalyzerContext(element));
-            if (IsProhibitedNode(element))
+            if (IsBurstProhibitedNode(element))
                 myProhibitedContexts.Push(GetProhibitedContexts(element));
 
             if (element is ICSharpDeclaration declaration)
@@ -287,26 +264,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 myProblemAnalyzerContexts.Pop();
             }
 
-            if (IsProhibitedNode(element))
+            if (IsBurstProhibitedNode(element))
             {
                 Assertion.Assert(myProhibitedContexts.Count > 0, "myProhibitedContexts.Count > 0");
                 myProhibitedContexts.Pop();
             }
         }
-
-
-        private static bool IsFunctionNode(ITreeNode node)
-        {
-            switch (node)
-            {
-                case IFunctionDeclaration _:
-                case ICSharpClosure _:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
 
         private bool IsPerformanceCriticalScope(ITreeNode element)
         {

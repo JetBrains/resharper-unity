@@ -12,13 +12,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstObjectCreationExpressionAnalyzer : BurstProblemAnalyzerBase<IObjectCreationExpression>
     {
-        protected override void Analyze(IObjectCreationExpression objectCreationExpression, IDaemonProcess daemonProcess,
-            DaemonProcessKind kind, IHighlightingConsumer consumer)
+        protected override bool CheckAndAnalyze(IObjectCreationExpression objectCreationExpression, IHighlightingConsumer consumer)
         {
             if (!objectCreationExpression.Type().IsSuitableForBurst())
             {
-                consumer.AddHighlighting(new BC1021Error(objectCreationExpression.GetDocumentRange(), (objectCreationExpression.ConstructorReference.Resolve().DeclaredElement as IConstructor)?.GetContainingType()?.ShortName));
+                consumer?.AddHighlighting(new BC1021Error(objectCreationExpression.GetDocumentRange(), (objectCreationExpression.ConstructorReference.Resolve().DeclaredElement as IConstructor)?.GetContainingType()?.ShortName));
+                return true;
             }
+
+            return false;
         }
     }
 }

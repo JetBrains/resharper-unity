@@ -10,8 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstInvocationExpressionAnalyzer : BurstProblemAnalyzerBase<IInvocationExpression>
     {
-        protected override void Analyze(IInvocationExpression invocationExpression, IDaemonProcess daemonProcess,
-            DaemonProcessKind kind, IHighlightingConsumer consumer)
+        protected override bool CheckAndAnalyze(IInvocationExpression invocationExpression, IHighlightingConsumer consumer)
         {
             //algorithm:
             //if conditional qualifier is open type
@@ -51,19 +50,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var invokedMethod =
                 invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
             if (invokedMethod == null)
-                return;
+                return false;
             
             if (invocationExpression.IsBurstProhibitedInvocation())
             {
-                consumer.AddHighlighting(new BC1001Error(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BC1001Error(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
+                return true;
             }
-            else if (invokedMethod.IsReturnValueBurstProhibited() ||
+            
+            if (invokedMethod.IsReturnValueBurstProhibited() ||
                      invocationExpression.ArgumentList.HasBurstProhibitedArguments())
             {
-                consumer.AddHighlighting(new BC1016Error(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BC1016Error(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName));
+                return true;
             }
+
+            return false;
         }
     }
 }

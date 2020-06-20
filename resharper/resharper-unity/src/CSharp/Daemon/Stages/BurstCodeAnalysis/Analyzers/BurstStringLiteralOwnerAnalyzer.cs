@@ -10,13 +10,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstStringLiteralOwnerAnalyzer : BurstProblemAnalyzerBase<ICSharpLiteralExpression>
     {
-        protected override void Analyze(ICSharpLiteralExpression cSharpLiteralExpression, IDaemonProcess daemonProcess, DaemonProcessKind kind,
-            IHighlightingConsumer consumer)
+        protected override bool CheckAndAnalyze(ICSharpLiteralExpression cSharpLiteralExpression, IHighlightingConsumer consumer)
         {
             if (cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
             {
-                consumer.AddHighlighting(new BC1033Error(cSharpLiteralExpression.GetDocumentRange()));
+                consumer?.AddHighlighting(new BC1033Error(cSharpLiteralExpression.GetDocumentRange()));
+                return true;
             }
+            return false;
         }
     }
 }

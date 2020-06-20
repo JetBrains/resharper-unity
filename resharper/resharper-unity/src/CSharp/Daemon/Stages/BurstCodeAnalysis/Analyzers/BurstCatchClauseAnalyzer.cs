@@ -9,9 +9,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstCatchClauseAnalyzer : BurstProblemAnalyzerBase<ICatchClause>
     {
-        protected override void Analyze(ICatchClause catchClause, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
+        protected override bool CheckAndAnalyze(ICatchClause catchClause, IHighlightingConsumer consumer)
         {
-            consumer.AddHighlighting(new BC1037Error(catchClause.CatchKeyword.GetDocumentRange()));
+            consumer?.AddHighlighting(new BC1037Error(catchClause.CatchKeyword.GetDocumentRange()));
+            return true;
         }
     }
 }

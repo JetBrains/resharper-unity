@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis
@@ -73,6 +75,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             }
 
             return false;
+        }
+
+        public static bool IsFunctionNode(ITreeNode node)
+        {
+            switch (node)
+            {
+                case IFunctionDeclaration _:
+                case ICSharpClosure _:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsBurstProhibitedNode(ITreeNode node)
+        {
+            switch (node)
+            {
+                case IThrowStatement _:
+                case IThrowExpression _:
+                case IInvocationExpression invocationExpression
+                    when CallGraphUtil.GetCallee(invocationExpression) is IMethod method && IsBurstDiscarded(method):
+                case IMethodDeclaration methodDeclaration when IsBurstDiscarded(methodDeclaration.DeclaredElement):
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool IsBurstDiscarded(IMethod invokedMethod)
+        {
+            if (invokedMethod == null)
+                return false;
+            return invokedMethod.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self).Count !=
+                   0;
         }
     }
 }
