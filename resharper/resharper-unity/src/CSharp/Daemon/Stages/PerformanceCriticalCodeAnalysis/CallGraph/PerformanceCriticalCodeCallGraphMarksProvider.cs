@@ -18,14 +18,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class PerformanceCriticalCodeCallGraphMarksProvider : CallGraphRootMarksProviderBase
     {
-        private readonly UnityApi myUnityApi;
         public static readonly string MarkId = "Unity.PerformanceCriticalContext";
 
-        public PerformanceCriticalCodeCallGraphMarksProvider(Lifetime lifetime, ISolution solution, UnityApi unityApi,
+        public PerformanceCriticalCodeCallGraphMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker)
             : base(MarkId, new CallGraphOutcomingPropagator(solution, MarkId))
         {
-            myUnityApi = unityApi;
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
