@@ -105,8 +105,6 @@
   <ItemGroup Label="Resources">
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
-    <None Remove="CSharp\Feature\Respeller\Abbreviations.txt" />
-    <EmbeddedResource Include="CSharp\Feature\Respeller\Abbreviations.txt" />
     <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatterns.xaml" />
     <EmbeddedResource Include="CSharp\Psi\CodeStyle\Resources\AdditionalFileLayoutPatternsWithRegions.xaml" />
     <EmbeddedResource Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.resx">
@@ -116,6 +114,8 @@
     <Compile Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
+    <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Live templates">
@@ -137,16 +137,13 @@
     <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="Remove Visual Studio specific files">
+  <ItemGroup Label="Remove Visual Studio or ReSharper specific files">
     <Compile Remove="**\VisualStudio\**" />
     <EmbeddedResource Remove="**\VisualStudio\**" />
     <None Remove="**\VisualStudio\**" />
     <Compile Remove="**\ReSharper\**" />
     <EmbeddedResource Remove="**\ReSharper\**" />
     <None Remove="**\ReSharper\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ShaderLab\Rider\Host\Features\Documents" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props')" />
 </Project>

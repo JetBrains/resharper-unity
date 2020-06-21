@@ -1,11 +1,11 @@
 using JetBrains.Application.BuildScript.Application.Zones;
+using JetBrains.ReSharper.Features.ReSpeller;
 using JetBrains.VsIntegration.Shell.Zones;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Respeller
 {
-    // ReSharper disable once InconsistentNaming
     [ZoneMarker]
-    public class VisualStudioEnv_ZoneMarker : IRequire<IVisualStudioEnvZone>
+    public class ZoneMarker : IRequire<IReSpellerZone>, IRequire<IVisualStudioEnvZone>
     {
     }
 }

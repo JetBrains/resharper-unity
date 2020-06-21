@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Respeller
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Naming.Settings
 {
     [SolutionComponent]
     public class AbbreviationsSettingsProvider : IUnitySolutionSettingsProvider

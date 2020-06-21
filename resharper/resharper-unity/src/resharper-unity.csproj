@@ -101,6 +101,8 @@
   <ItemGroup Label="Resources">
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
+    <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
+    <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Live templates">
