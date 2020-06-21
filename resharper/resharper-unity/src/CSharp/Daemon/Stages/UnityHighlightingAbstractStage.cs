@@ -244,7 +244,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 if (!id.HasValue)
                     return false;
 
-                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(
+                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
                     myPerformanceCriticalCodeCallGraphMarksProvider.Id,
                     true, id.Value);
             }

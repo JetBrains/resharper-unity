@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 if (!id.HasValue)
                     return;
 
-                if (mySwaExtensionProvider.IsMarkedByCallGraphAnalyzer(myExpensiveCodeCallGraphAnalyzer.Id, true, id.Value))
+                if (mySwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(myExpensiveCodeCallGraphAnalyzer.Id, true, id.Value))
                 {
                     CreateHiglighting(expression, consumer);
                 }
