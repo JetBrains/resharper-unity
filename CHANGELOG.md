@@ -21,11 +21,12 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor ([#1272](https://github.com/JetBrains/resharper-unity/issues/1272), [#1661](https://github.com/JetBrains/resharper-unity/pull/1661))
 - Rider: Automatically use UnityYamlMerge to merge asset files ([RIDER-33411](https://youtrack.jetbrains.com/issue/RIDER-33411), [#1682](https://github.com/JetBrains/resharper-unity/pull/1682))
 - Rider: Add sample text for "Unity", "ShaderLab" and "Cg/HLSL" Colour Scheme options pages ([#1667](https://github.com/JetBrains/resharper-unity/pull/1667))
+- Rider: Filter `.meta` files from the navigation bar ([RIDER-28425](https://youtrack.jetbrains.com/issue/RIDER-28425), [#1703](https://github.com/JetBrains/resharper-unity/pull/1703))
 
 ### Changed
 
 - All applicable quick fixes are now bulk actions, and can be applied over project scope ([#1648](https://github.com/JetBrains/resharper-unity/issues/1648), [#1649](https://github.com/JetBrains/resharper-unity/pull/1649))
-- Improved method signature validation and usage suppression using Unity's `RequiredSignature` attribute ([#1679](https://github.com/JetBrains/resharper-unity/pull/1679))
+- Improved method signature validation and usage suppression using Unity's `RequiredSignature` attribute ([#1679](https://github.com/JetBrains/resharper-unity/pull/1679), [#1689](https://github.com/JetBrains/resharper-unity/pull/1689))
 - Update `.meta` file icons to something less distracting ([RIDER-45675](https://youtrack.jetbrains.com/issue/RIDER-45675), [#1698](https://github.com/JetBrains/resharper-unity/pull/1698))
 - Rider: Significant reduction in memory usage while indexing assets ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
 - Rider: Better support for prefab modifications in Find Usages and showing Inspector values ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
@@ -39,10 +40,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix meta file handling when references to Unity assemblies are invalid ([#1623](https://github.com/JetBrains/resharper-unity/pull/1623))
 - Public fields of type `Action` are no longer treated as serialised fields ([#1605](https://github.com/JetBrains/resharper-unity/issues/1605), [#1638](https://github.com/JetBrains/resharper-unity/pull/1638))
 - Fix incorrect method signature validation for methods marked with `OnOpenedAsset` ([#1053](https://github.com/JetBrains/resharper-unity/issues/1053), [#1679](https://github.com/JetBrains/resharper-unity/pull/1679))
-- Rider: Fix debugger sometimes treating user code as external code ([#1671](https://github.com/JetBrains/resharper-unity/issues/1671), [#1697](https://github.com/JetBrains/resharper-unity/pull/1697))
+- Rider: Fix debugger sometimes treating user code as external code ([#1671](https://github.com/JetBrains/resharper-unity/issues/1671), [RIDER-43846](https://youtrack.jetbrains.com/issue/RIDER-43846), [#1697](https://github.com/JetBrains/resharper-unity/pull/1697))
 - Rider: Fix grouping assets by directory in Find Usages results ([#1668](https://github.com/JetBrains/resharper-unity/pull/1668))
 - Rider: Fix exception trying to upgrade Unity editor plugin ([RIDER-42475](https://youtrack.jetbrains.com/issue/RIDER-42475), [#1658](https://github.com/JetBrains/resharper-unity/pull/1658))
 - Rider: Fix unit tests not running unless Rider has focus ([RIDER-37990](https://youtrack.jetbrains.com/issue/RIDER-37990), [#1672](https://github.com/JetBrains/resharper-unity/pull/1672))
+- Rider: Suppress incorrect refresh behaviour when saving files that are in multiple projects (e.g. Player projects) ([#1669](https://github.com/JetBrains/resharper-unity/pull/1669))
 - Unity editor: Fix reporting of duration of Unity tests (released in Rider package 2.0.4) ([RIDER-44853](https://youtrack.jetbrains.com/issue/RIDER-44853))
 - Unity editor: Delay calling Unity API to workaround potential Unity crash ([RIDER-43951](https://youtrack.jetbrains.com/issue/RIDER-43951), [#1647](https://github.com/JetBrains/resharper-unity/pull/1647))
 

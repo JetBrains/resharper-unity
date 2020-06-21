@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
@@ -58,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
 
         protected override bool IsApplicable(IPsiSourceFile sf)
         {
-            return sf.Name.EndsWith(".meta", StringComparison.InvariantCultureIgnoreCase);
+            return sf.Name.EndsWith(".meta", StringComparison.InvariantCultureIgnoreCase) && sf.PsiModule is UnityExternalFilesPsiModule;
         }
 
         public override object Build(IPsiSourceFile sourceFile, bool isStartup)
@@ -145,7 +146,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
             {
                 var assetLocation = GetAssetLocationFromMetaFile(metaFileLocation);
                 myAssetGuidToAssetFilePaths.AddValue(cacheItem.Guid, assetLocation);
-                myAssetFilePathToGuid.Add(assetLocation, cacheItem.Guid);
+
+                if (myAssetFilePathToGuid.ContainsKey(assetLocation))
+                {
+                    // That error means, that merge/drop event ordering is incorrect or file is added twice to UnityExternalFilesPsiModule
+                    // Order of merge/drop events are matter for move refactoring, drop should be first, because we should remove assetLocation
+                    // from myAssetFilePathToGuid for old psiSourceFile (file in old folder)
+                    // and add it again for new psiSourceFile (file in new folder)
+                    myLogger.Error($"{assetLocation.Name} has been already added to myAssetFilePathToGuid, replacing old guid : {myAssetFilePathToGuid[assetLocation]} by {cacheItem.Guid}");
+                }
+                myAssetFilePathToGuid[assetLocation] = cacheItem.Guid;
             }
         }
 
