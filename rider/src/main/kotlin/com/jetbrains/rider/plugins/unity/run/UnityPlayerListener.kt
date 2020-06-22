@@ -11,6 +11,7 @@ import java.util.*
 import java.util.regex.Pattern
 
 class UnityPlayerListener(private val project: Project,
+                          private val onPlayerRefresh: (Boolean) -> Unit,
                           private val onPlayerAdded: (UnityPlayer) -> Unit,
                           private val onPlayerRemoved: (UnityPlayer) -> Unit, lifetime: Lifetime) {
 
@@ -54,9 +55,10 @@ class UnityPlayerListener(private val project: Project,
 """, Pattern.COMMENTS)
     }
 
-    private val defaultHeartbeat = 30
+    // Refresh once a second. If a player hasn't been seen for 3 iterations, remove it from the list
+    private val refreshPeriod: Long = 1000
+    private val defaultHeartbeat = 3
 
-    private val refreshPeriod: Long = 100
     private val waitOnSocketLength = 50
     private val multicastPorts = listOf(54997, 34997, 57997, 58997)
     private val playerMulticastGroup = "225.0.0.222"
@@ -92,7 +94,10 @@ class UnityPlayerListener(private val project: Project,
             }
         }
 
+        onPlayerRefresh(true)
         addLocalProcesses()
+        onPlayerRefresh(false)
+
         refreshTimer = startAddingPlayers()
 
         lifetime.onTermination {
@@ -152,41 +157,55 @@ class UnityPlayerListener(private val project: Project,
 
     private fun refreshUnityPlayersList() {
         synchronized(unityPlayerDescriptorsHeartbeats) {
-            logger.trace("Refreshing Unity players list...")
-            for (playerDescriptor in unityPlayerDescriptorsHeartbeats.keys) {
-                val currentPlayerTimeout = unityPlayerDescriptorsHeartbeats[playerDescriptor] ?: continue
-                if (currentPlayerTimeout <= 0) {
-                    unityPlayerDescriptorsHeartbeats.remove(playerDescriptor)
-                    logger.trace("Removing old Unity player $playerDescriptor")
-                    unityPlayers.remove(playerDescriptor)?.let { onPlayerRemoved(it) }
-                } else
-                    unityPlayerDescriptorsHeartbeats[playerDescriptor] = currentPlayerTimeout - 1
-            }
 
-            synchronized(socketsLock) {
-                for (socket in multicastSockets) {
-                    val buf = ByteArray(1024)
-                    val recv = DatagramPacket(buf, buf.size)
-                    try {
-                        if (socket.isClosed)
-                            continue
-                        socket.receive(recv)
-                        val descriptor = String(buf, 0, recv.length - 1)
-                        val hostAddress = recv.address.hostAddress
-                        logger.trace("Get heartbeat on port ${socket.port} from $hostAddress: $descriptor")
-                        if (!unityPlayerDescriptorsHeartbeats.containsKey(descriptor)) {
-                            parseUnityPlayer(descriptor, hostAddress)?.let {
-                                unityPlayers[descriptor] = it
-                                onPlayerAdded(it)
+            onPlayerRefresh(true)
+
+            val start = System.currentTimeMillis()
+            logger.trace("Refreshing Unity players list...")
+            try {
+                for (playerDescriptor in unityPlayerDescriptorsHeartbeats.keys) {
+                    val currentPlayerTimeout = unityPlayerDescriptorsHeartbeats[playerDescriptor] ?: continue
+                    if (currentPlayerTimeout <= 0) {
+                        unityPlayerDescriptorsHeartbeats.remove(playerDescriptor)
+                        logger.trace("Removing old Unity player $playerDescriptor")
+                        unityPlayers.remove(playerDescriptor)?.let { onPlayerRemoved(it) }
+                    } else
+                        unityPlayerDescriptorsHeartbeats[playerDescriptor] = currentPlayerTimeout - 1
+                }
+
+                synchronized(socketsLock) {
+                    for (socket in multicastSockets) {
+                        val buf = ByteArray(1024)
+                        val recv = DatagramPacket(buf, buf.size)
+                        try {
+                            if (socket.isClosed)
+                                continue
+                            socket.receive(recv)
+                            val descriptor = String(buf, 0, recv.length - 1)
+                            val hostAddress = recv.address.hostAddress
+                            logger.trace("Get heartbeat on ${socket.networkInterface.name}${socket.`interface`}:${socket.localPort} from $hostAddress: $descriptor")
+                            if (!unityPlayerDescriptorsHeartbeats.containsKey(descriptor)) {
+                                parseUnityPlayer(descriptor, hostAddress)?.let {
+                                    unityPlayers[descriptor] = it
+                                    onPlayerAdded(it)
+                                }
                             }
+                            unityPlayerDescriptorsHeartbeats[descriptor] = defaultHeartbeat
+                        } catch (e: SocketTimeoutException) {
+                            //wait timeout, go to the next port
+                            logger.debug("Socket timed out: ${socket.networkInterface.name}${socket.`interface`}:${socket.localPort}")
                         }
-                        unityPlayerDescriptorsHeartbeats[descriptor] = defaultHeartbeat
-                    } catch (e: SocketTimeoutException) {
-                        //wait timeout, go to the next port
                     }
                 }
+
+                if (logger.isTraceEnabled) {
+                    val duration = System.currentTimeMillis() - start
+                    logger.trace("Finished refreshing of Unity players list. Took $duration")
+                }
             }
-            logger.trace("Finished refreshing of Unity players list.")
+            finally {
+                onPlayerRefresh(false)
+            }
         }
     }
 

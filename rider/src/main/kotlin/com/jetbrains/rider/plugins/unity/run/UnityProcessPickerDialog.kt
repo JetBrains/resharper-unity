@@ -15,6 +15,7 @@ import java.awt.Dimension
 import java.awt.Insets
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
+import java.lang.Integer.max
 import javax.swing.*
 import javax.swing.tree.*
 
@@ -24,8 +25,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
     private val treeModel = DefaultTreeModel(DefaultMutableTreeNode())
     private val treeModelLock = Object()
-    private val tree: JTree
+    private val tree: Tree
     private val peerPanel: JPanel
+    private var busyCount = 0
 
     init {
         title = "Searching for Unity Editors and Players..."
@@ -48,8 +50,6 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             TreeSpeedSearch(this, { path -> path.lastPathComponent?.toString() }, true)
                 .apply { comparator = SpeedSearchComparator(false) }
 
-            // Mark as always busy, because we're continually listening for remote players
-            setPaintBusy(true)
             emptyText.text = "Searching"
         }
 
@@ -102,7 +102,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         Lifetime.using { lifetime ->
             object : Task.Backgroundable(project, "Getting list of Unity processes...") {
                 override fun run(indicator: ProgressIndicator) {
-                    UnityPlayerListener(project, {
+                    UnityPlayerListener(project, ::setSearching, {
                         val model = UnityPlayerModel(it, UnityRunUtil.isDebuggerAttached(it.host, it.debuggerPort, project))
                         synchronized(treeModelLock) {
                             val root = treeModel.root as DefaultMutableTreeNode
@@ -161,6 +161,20 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             return@dialog emptyList<ValidationInfo>()
         }
         dialog.showAndGet()
+    }
+
+    private fun setSearching(flag: Boolean) {
+        if (flag) {
+            if (++busyCount > 0) {
+                tree.setPaintBusy(true)
+            }
+        }
+        else {
+            busyCount = max(0, busyCount - 1)
+            if (busyCount == 0) {
+                tree.setPaintBusy(false)
+            }
+        }
     }
 
     private fun getSelectedPlayerModel(): UnityPlayerModel? {
