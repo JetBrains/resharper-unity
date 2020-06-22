@@ -13,7 +13,6 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
-import com.jetbrains.rd.util.reactive.Signal
 import java.awt.Dimension
 import java.awt.Insets
 import java.awt.event.MouseEvent
@@ -27,7 +26,6 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private val listModelLock = Object()
     private val list: JBList<UnityPlayerModel>
     private val peerPanel: JPanel
-    val onDisposed = Signal<Boolean>()
 
     init {
         title = "Searching for Unity Editors and Players..."
@@ -91,11 +89,6 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
             close(OK_EXIT_CODE)
         }
-    }
-
-    override fun dispose() {
-        onDisposed.fire(isOK)
-        super.dispose()
     }
 
     override fun show() {
