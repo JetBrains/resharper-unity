@@ -3,75 +3,82 @@ package com.jetbrains.rider.plugins.unity.run
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.rd.defineNestedLifetime
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
-import com.intellij.ui.ColoredListCellRenderer
-import com.intellij.ui.DoubleClickListener
-import com.intellij.ui.PortField
-import com.intellij.ui.SimpleTextAttributes
-import com.intellij.ui.components.JBList
+import com.intellij.ui.*
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
+import com.intellij.ui.speedSearch.SpeedSearchUtil
+import com.intellij.ui.treeStructure.Tree
+import com.jetbrains.rd.util.lifetime.Lifetime
 import java.awt.Dimension
 import java.awt.Insets
+import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
 import javax.swing.*
+import javax.swing.tree.*
 
 class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
 
     data class UnityPlayerModel(val player: UnityPlayer, val debuggerAttached: Boolean)
 
-    private val listModel = DefaultListModel<UnityPlayerModel>()
-    private val listModelLock = Object()
-    private val list: JBList<UnityPlayerModel>
+    private val treeModel = DefaultTreeModel(DefaultMutableTreeNode())
+    private val treeModelLock = Object()
+    private val tree: JTree
     private val peerPanel: JPanel
 
     init {
         title = "Searching for Unity Editors and Players..."
 
-        list = JBList<UnityPlayerModel>().apply {
-            model = listModel
-            cellRenderer = UnityProcessCellRenderer(project)
-            selectionMode = ListSelectionModel.SINGLE_SELECTION
-            selectionModel.addListSelectionListener {
-                isOKActionEnabled = selectedIndex != -1
-                if (selectedIndex != -1) {
-                    isOKActionEnabled = !selectedValue.debuggerAttached && selectedValue.player.allowDebugging
+        tree = Tree().apply {
+            model = treeModel
+            isRootVisible = false
+            showsRootHandles = false
+            cellRenderer = UnityProcessTreeCellRenderer(project)
+            selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
+            selectionModel.addTreeSelectionListener {
+                isOKActionEnabled = !isSelectionEmpty
+                getSelectedPlayerModel()?.let {
+                    isOKActionEnabled = !it.debuggerAttached && it.player.allowDebugging
                 }
             }
 
+            registerKeyboardAction(okAction, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED)
+
+            TreeSpeedSearch(this, { path -> path.lastPathComponent?.toString() }, true)
+                .apply { comparator = SpeedSearchComparator(false) }
+
             // Mark as always busy, because we're continually listening for remote players
             setPaintBusy(true)
-            setEmptyText("Searching")
+            emptyText.text = "Searching"
         }
 
         object: DoubleClickListener() {
             override fun onDoubleClick(event: MouseEvent): Boolean {
-                if (list.selectedIndex != -1) {
+                if (!tree.isSelectionEmpty) {
                     doOKAction()
                 }
                 return true
             }
-        }.installOn(list)
+        }.installOn(tree)
 
         peerPanel = panel {
-            row { scrollPane(list) }
+            row { label("Players and Editors:") }
+            row { scrollPane(tree) }
             row {
                 button("Add player address manually...", actionListener = { enterCustomIp() })
             }
             commentRow("Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
                 "Standalone players must be visible to the current network.")
-        }.apply { preferredSize = Dimension(650, 450) }
+        }.apply { preferredSize = Dimension(650, 450) } // 600x300
 
         isOKActionEnabled = false
-        cancelAction.putValue(FOCUSED_ACTION, true)
         init()
         setResizable(true)
+
+        myPreferredFocusedComponent = tree
     }
 
-    // DialogWrapper only lets the Mac set the preferred component via FOCUSED_ACTION because reasons
-    override fun getPreferredFocusedComponent(): JComponent? = myPreferredFocusedComponent
     override fun createCenterPanel() = peerPanel
 
     override fun createHelpButton(insets: Insets): JButton {
@@ -82,9 +89,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
     override fun doOKAction() {
         if (okAction.isEnabled) {
-            val selected = list.selectedValue
-            val player = selected.player
-            if (selected != null && !selected.debuggerAttached && selected.player.allowDebugging) {
+            val model = getSelectedPlayerModel() ?: return
+            val player = model.player
+            if (!model.debuggerAttached && player.allowDebugging) {
                 UnityRunUtil.attachToUnityProcess(player.host, player.debuggerPort, player.id, project, player.isEditor)
             }
             close(OK_EXIT_CODE)
@@ -92,27 +99,28 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     }
 
     override fun show() {
-        val lifetimeDefinition = project.defineNestedLifetime()
-        try {
+        Lifetime.using { lifetime ->
             object : Task.Backgroundable(project, "Getting list of Unity processes...") {
                 override fun run(indicator: ProgressIndicator) {
                     UnityPlayerListener(project, {
                         val model = UnityPlayerModel(it, UnityRunUtil.isDebuggerAttached(it.host, it.debuggerPort, project))
-                        synchronized(listModelLock) {
-                            listModel.addElement(model)
+                        synchronized(treeModelLock) {
+                            val root = treeModel.root as DefaultMutableTreeNode
+                            root.add(UnityPlayerTreeNode(model))
+                            treeModel.reload()
                         }
                     }, {
-                        synchronized(listModelLock) {
-                            val element = listModel.elements().asSequence().first { e -> e.player == it }
-                            listModel.removeElement(element)
+                        synchronized(treeModelLock) {
+                            val node = (treeModel.root as DefaultMutableTreeNode).children().asSequence().first {
+                                c -> (c as? UnityPlayerTreeNode)?.model?.player == it
+                            } as MutableTreeNode
+                            treeModel.removeNodeFromParent(node)
+                            treeModel.reload()
                         }
-                    }, lifetimeDefinition.lifetime)
+                    }, lifetime)
                 }
             }.queue()
             super.show()
-        }
-        finally {
-            lifetimeDefinition.terminate()
         }
     }
 
@@ -143,38 +151,59 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             val player = UnityPlayer.createRemotePlayer(hostAddress, port)
             val debuggerAttached = UnityRunUtil.isDebuggerAttached(hostAddress, port, project)
-            synchronized(listModelLock) {
-                listModel.addElement(UnityPlayerModel(player, debuggerAttached))
-                list.selectedIndex = listModel.size() - 1
-                return@dialog emptyList<ValidationInfo>()
+            synchronized(treeModelLock) {
+                val root = treeModel.root as DefaultMutableTreeNode
+                val node = UnityPlayerTreeNode(UnityPlayerModel(player, debuggerAttached))
+                root.add(node)
+                treeModel.reload()
+                tree.selectionPath = TreePath(node.path)
             }
+            return@dialog emptyList<ValidationInfo>()
         }
         dialog.showAndGet()
     }
 
-    class UnityProcessCellRenderer(private val project: Project) : ColoredListCellRenderer<UnityPlayerModel>() {
-        override fun customizeCellRenderer(list: JList<out UnityPlayerModel>, model: UnityPlayerModel?, index: Int, selected: Boolean, hasFocus: Boolean) {
-            model ?: return
-            val player = model.player
-            val debug = player.allowDebugging && !UnityRunUtil.isDebuggerAttached(player.host, player.port, project)
-            val attributes = if (debug) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
-            append(player.id, attributes)
-            if (player.roleName != null) {
-                append(" ${player.roleName}", attributes)
+    private fun getSelectedPlayerModel(): UnityPlayerModel? {
+        return (tree.lastSelectedPathComponent as? UnityPlayerTreeNode)?.model
+    }
+
+    data class UnityPlayerTreeNode(val model: UnityPlayerModel): DefaultMutableTreeNode(model)
+
+    class UnityProcessTreeCellRenderer(private val project: Project) : ColoredTreeCellRenderer() {
+        init {
+            // Override default behaviour, so we can match the entire text, including attributed fragments, rather than
+            // just the main text fragment
+            this.myUsedCustomSpeedSearchHighlighting = true
+        }
+
+        override fun customizeCellRenderer(tree: JTree, value: Any, selected: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean) {
+
+            if (value is UnityPlayerTreeNode) {
+                val model = value.model
+                val player = model.player
+                val debug = player.allowDebugging && !UnityRunUtil.isDebuggerAttached(player.host, player.port, project)
+                val attributes = if (debug) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
+                append(player.id, attributes)
+                if (player.roleName != null) {
+                    append(" ${player.roleName}", attributes)
+                }
+                if (player.projectName != null) {
+                    append(" - ${player.projectName}", attributes)
+                }
+                if (model.debuggerAttached) {
+                    append(" (Debugger attached)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
+                }
+                if (!player.allowDebugging) {
+                    append(" (Script Debugging disabled)", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES)
+                }
+                append(" ${player.host}:${player.debuggerPort}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+                if (player.pid != null) {
+                    append(" (pid: ${player.pid})", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+                }
             }
-            if (player.projectName != null) {
-                append(" - ${player.projectName}", attributes)
-            }
-            if (model.debuggerAttached) {
-                append(" (Debugger attached)", SimpleTextAttributes.GRAYED_ITALIC_ATTRIBUTES)
-            }
-            if (!player.allowDebugging) {
-                append(" (Script Debugging disabled)", SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES)
-            }
-            append(" ${player.host}:${player.debuggerPort}", SimpleTextAttributes.GRAYED_ATTRIBUTES)
-            if (player.pid != null) {
-                append(" (pid: ${player.pid})", SimpleTextAttributes.GRAYED_ATTRIBUTES)
-            }
+
+            // The default implementation only applies to the main text. We want to highlight across all fragments
+            SpeedSearchUtil.applySpeedSearchHighlighting(tree, this, false, selected)
         }
     }
 }
