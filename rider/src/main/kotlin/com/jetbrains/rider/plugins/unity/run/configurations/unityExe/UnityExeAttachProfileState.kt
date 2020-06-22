@@ -38,6 +38,10 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler): ExecutionResult {
+        throw UnsupportedOperationException("Should use overload with session")
+    }
+
+    override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
         workerProcessHandler.attachTargetProcess(targetProcessHandler)
         dotNetExecutable.onProcessStarter(executionEnvironment.runProfile, workerProcessHandler)
         return DefaultExecutionResult(console, workerProcessHandler)
@@ -65,7 +69,7 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
                     UIUtil.invokeLaterIfNeeded {
                         logger.trace("Connecting to Player with port: ${it.debuggerPort}")
                         remoteConfiguration.port = it.debuggerPort
-                        result.setResult(createWorkerRunInfoFor(it.debuggerPort, DebuggerWorkerPlatform.AnyCpu))
+                        result.setResult(createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu))
                     }
                 }
             }, {}, lifetime)
