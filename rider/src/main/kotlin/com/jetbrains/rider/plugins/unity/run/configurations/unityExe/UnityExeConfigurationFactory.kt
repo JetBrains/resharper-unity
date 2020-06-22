@@ -42,8 +42,8 @@ class UnityExeConfigurationFactory(type: ConfigurationType) : ConfigurationFacto
     }
 
     override fun createConfiguration(name: String?, template: RunConfiguration): RunConfiguration =
-        DotNetExeConfiguration(name ?: "Unity Executable", template.project, this, createParameters(template.project))
+        UnityExeConfiguration(name ?: "Unity Executable", template.project, this, createParameters(template.project))
 
     override fun createTemplateConfiguration(@NotNull project: Project): RunConfiguration =
-        DotNetExeConfiguration("Unity Executable", project, this, createParameters(project))
+        UnityExeConfiguration("Unity Executable", project, this, createParameters(project))
 }
