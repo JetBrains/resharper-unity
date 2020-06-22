@@ -20,6 +20,7 @@ import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
 import com.jetbrains.rider.run.*
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
+import com.jetbrains.rider.test.scriptingApi.stop
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 
@@ -42,8 +43,11 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
-        workerProcessHandler.attachTargetProcess(targetProcessHandler)
         dotNetExecutable.onProcessStarter(executionEnvironment.runProfile, workerProcessHandler)
+        workerProcessHandler.attachTargetProcess(targetProcessHandler)
+        workerProcessHandler.debuggerWorkerRealHandler.addProcessListener(object: ProcessAdapter() {
+            override fun processTerminated(event: ProcessEvent) = targetProcessHandler.stop()
+        })
         return DefaultExecutionResult(console, workerProcessHandler)
     }
 
@@ -66,6 +70,7 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
         application.executeOnPooledThread {
             UnityPlayerListener(project, {
                 if (!it.isEditor) {
+                    Thread.sleep(10000)
                     UIUtil.invokeLaterIfNeeded {
                         logger.trace("Connecting to Player with port: ${it.debuggerPort}")
                         remoteConfiguration.port = it.debuggerPort
