@@ -5,8 +5,10 @@ import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
+import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
+import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.application
@@ -27,16 +29,24 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
 
     private val logger = Logger.getInstance(UnityExeAttachProfileState::class.java)
     private val project = executionEnvironment.project
+    private lateinit var console: ConsoleView
+    private lateinit var targetProcessHandler:ProcessHandler
+    val dotNetExecutable = exeConfiguration.parameters.toDotNetExecutable()
 
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
         throw UnsupportedOperationException("Should use overload with session")
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler): ExecutionResult {
-        val dotNetExecutable = exeConfiguration.parameters.toDotNetExecutable()
+        workerProcessHandler.attachTargetProcess(targetProcessHandler)
+        dotNetExecutable.onProcessStarter(executionEnvironment.runProfile, workerProcessHandler)
+        return DefaultExecutionResult(console, workerProcessHandler)
+    }
+
+    override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
         val useExternalConsole = exeConfiguration.parameters.useExternalConsole
         val commandLine = dotNetExecutable.createRunCommandLine()
-        val targetProcessHandler = if (useExternalConsole)
+        targetProcessHandler = if (useExternalConsole)
             ExternalConsoleMediator.createProcessHandler(commandLine)
         else
             TerminalProcessHandler(commandLine)
@@ -45,16 +55,9 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
         targetProcessHandler.addProcessListener(object: ProcessAdapter() {
             override fun processTerminated(event: ProcessEvent) = logger.info("Process terminated: $commandLineString")
         })
-        val console = createConsole(useExternalConsole, targetProcessHandler, commandLineString, executionEnvironment.project)
-
+        console = createConsole(useExternalConsole, targetProcessHandler, commandLineString, executionEnvironment.project)
         targetProcessHandler.startNotify()
-        workerProcessHandler.attachTargetProcess(targetProcessHandler)
-        dotNetExecutable.onProcessStarter(executionEnvironment.runProfile, workerProcessHandler)
 
-        return DefaultExecutionResult(console, workerProcessHandler)
-    }
-
-    override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
         val result = AsyncPromise<WorkerRunInfo>()
         application.executeOnPooledThread {
             UnityPlayerListener(project, {
