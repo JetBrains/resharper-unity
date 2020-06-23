@@ -73,7 +73,7 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
             UnityPlayerListener(project, {
                 if (!it.isEditor) {
                     while (isAvailable(it.debuggerPort))
-                        Thread.sleep(100)
+                        Thread.sleep(10)
 
                     UIUtil.invokeLaterIfNeeded {
                         logger.trace("Connecting to Player with port: ${it.debuggerPort}")
@@ -86,10 +86,10 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
         return result
     }
 
-    fun isAvailable(portNr: Int): Boolean {
+    private fun isAvailable(port: Int): Boolean {
         var portFree = false
         try {
-            ServerSocket(portNr).use { portFree = true }
+            ServerSocket(port).use { portFree = true }
         } catch (e: IOException) {
             portFree = false
         }
