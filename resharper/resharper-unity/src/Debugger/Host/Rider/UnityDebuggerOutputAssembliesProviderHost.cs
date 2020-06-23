@@ -8,10 +8,11 @@ using JetBrains.Lifetimes;
 using JetBrains.Metadata.Utils;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.Debugger.Utils;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Host.DebuggerOutputAssemblies
+namespace JetBrains.ReSharper.Plugins.Unity.Debugger.Host.Rider
 {
     // Unity sets up the C# projects to build to Temp\Bin\Debug, but doesn't use these at runtime. It compiles its own
     // versions to Library/ScriptAssemblies, optionally post-processing/IL rewriting, and loads them from here. This can
@@ -36,6 +37,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Host.DebuggerOutputAssemblies
 
         public Task<IReadOnlyList<DebuggerOutputAssemblyInfo>> GetOutputAssembliesInfoAsync(Lifetime lifetime)
         {
+            if (!mySolution.HasUnityReference())
+            {
+                return Task.FromResult<IReadOnlyList<DebuggerOutputAssemblyInfo>>(
+                    EmptyList<DebuggerOutputAssemblyInfo>.Instance);
+            }
+
             return lifetime.StartBackgroundRead(() =>
                 (IReadOnlyList<DebuggerOutputAssemblyInfo>) GetOutputAssembliesInfoInternal()
                     .ToList());
