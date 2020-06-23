@@ -33,28 +33,7 @@
 - Unity specific file and live templates.
 - And much more!
 </description>
-<releaseNotes>
-New in 2020.2
-
-Added:
-
-- Add Unity code cleanup patterns that do not reorder serialised fields (#88, #1676)
-- Use Range attribute to provide hints to integer dataflow analysis (#1673)
-- Improve namespace suggestions for packages (#1161, RIDER-36546, #1677, #1689)
-
-Changed:
-
-- All applicable quick fixes are now bulk actions, and can be applied over project scope (#1648, #1649)
-- Improved method signature validation and usage suppression using Unity's RequiredSignature attribute (#1679)
-
-Fixed:
-
-- Fix meta file handling when references to Unity assemblies are invalid (#1623)
-- Public fields of type Action are no longer treated as serialised fields (#1605, #1638)
-- Fix incorrect method signature validation for methods marked with OnOpenedAsset (#1053, #1679)
-
-See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history.
-</releaseNotes>
+    <releaseNotes>$ReleaseNotes$</releaseNotes>
     <projectUrl>https://github.com/JetBrains/resharper-unity</projectUrl>
     <licenseUrl>https://raw.githubusercontent.com/JetBrains/resharper-unity/master/license.txt</licenseUrl>
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>

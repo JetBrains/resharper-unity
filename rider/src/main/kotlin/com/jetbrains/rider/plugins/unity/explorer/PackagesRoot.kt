@@ -15,6 +15,7 @@ import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
 import com.jetbrains.rider.projectView.views.navigateToSolutionView
+import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 
 // Packages are included in a project by listing in the "dependencies" node of Packages/manifest.json. Packages can
@@ -294,7 +295,7 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
 
-        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
+        if (SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
             return super.calculateChildren()
         }
 
@@ -314,14 +315,14 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
     }
 
     override fun canNavigateToSource(): Boolean {
-        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
+        if (SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
             return super.canNavigateToSource()
         }
         return true
     }
 
     override fun navigate(requestFocus: Boolean) {
-        if (UnityExplorer.getInstance(project!!).showHiddenItems) {
+        if (SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
             return super.navigate(requestFocus)
         }
 
@@ -336,8 +337,9 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
     override fun update(presentation: PresentationData) {
         presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
         presentation.setIcon(UnityIcons.Explorer.BuiltInPackage)
-        if (UnityExplorer.getInstance(myProject).showHiddenItems)
+        if (SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
             presentation.addNonIndexedMark(myProject, virtualFile)
+        }
 
         val tooltip = getPackageTooltip(name, packageData)
         if (tooltip != name) {
