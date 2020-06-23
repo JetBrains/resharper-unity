@@ -14,6 +14,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
     <PackageReference Include="xunit" Version="1.9.2" />
+    <PackageReference Include="JetBrains.RdFramework.net35" Version="2020.2.0-preview380"/>
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
 </Project>
