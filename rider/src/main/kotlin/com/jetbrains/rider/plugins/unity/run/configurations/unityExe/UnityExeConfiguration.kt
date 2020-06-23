@@ -21,7 +21,10 @@ class UnityExeConfiguration(name:String, project: Project, factory: Configuratio
         if (executorId == DefaultRunExecutor.EXECUTOR_ID)
             return ExeRunProfileState(parameters, environment)
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID)
+        {
+            // this.parameters.envs = this.parameters.envs.plus(Pair("UNITY_GIVE_CHANCE_TO_ATTACH_DEBUGGER", "1")) // https://github.com/JetBrains/resharper-unity/issues/388
             return UnityExeAttachProfileState(this, DotNetRemoteConfiguration(project, this.factory!!, name), environment)
+        }
 
         return super.getState(executor, environment)
     }
