@@ -20,7 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Internal
     {
         public bool Update(IDataContext context, ActionPresentation presentation, DelegateUpdate nextUpdate)
         {
-            // TODO: Make sure it's only visible/available in internal mode?
             return true;
         }
 
