@@ -58,6 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
                 if (!typeOwner.Type().IsSuitableForBurst())
                 {
+                    if(typeOwner is IAttributesOwner attributesOwner && attributesOwner.HasAttributeInstance(KnownTypes.NativeSetClassTypeToNullOnScheduleAttribute, AttributesSource.Self))
+                        return false;
+                    
                     consumer?.AddHighlighting(new BC1042ShortError(referenceExpression.GetDocumentRange(),
                         typeOwner.Type().GetTypeElement()?.ShortName));
                     return true;

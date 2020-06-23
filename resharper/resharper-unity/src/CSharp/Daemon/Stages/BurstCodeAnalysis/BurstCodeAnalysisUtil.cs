@@ -45,7 +45,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (function == null)
                 return false;
             var containingType = function.GetContainingType();
-            //CGTD test for equals + comment that equals prohibited
+            // GetHashCode permitted in burst only if no boxing happens i.e. calling base.GetHashCode
+            // Equals is prohibited because it works through System.Object and require boxing, which 
+            // Burst does not support
             if (containingType is IStruct && function is IMethod method && method.IsOverridesObjectGetHashCode())
                 return false;
             var isValueTypeOrObject = containingType is IClass @class && (@class.IsSystemValueTypeClass() || @class.IsObjectClass());
@@ -97,19 +99,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case IThrowExpression _:
                 case IInvocationExpression invocationExpression
                     when CallGraphUtil.GetCallee(invocationExpression) is IMethod method && IsBurstDiscarded(method):
-                case IMethodDeclaration methodDeclaration when IsBurstDiscarded(methodDeclaration.DeclaredElement):
+                case IFunctionDeclaration functionDeclaration when IsBurstProhibited(functionDeclaration.DeclaredElement):
                     return true;
                 default:
                     return false;
             }
         }
 
-        private static bool IsBurstDiscarded(IMethod invokedMethod)
+        public static bool IsBurstProhibited(IFunction function)
         {
-            if (invokedMethod == null)
-                return false;
-            return invokedMethod.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self).Count !=
-                   0;
+            if (function.IsStatic || function.GetContainingTypeMember() is IStruct)
+                return function is IMethod method && IsBurstDiscarded(method);
+            return true;
+        }
+
+        private static bool IsBurstDiscarded(IMethod method)
+        {
+            var attributes = method.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self);
+            
+            return attributes.Count != 0;
         }
     }
 }

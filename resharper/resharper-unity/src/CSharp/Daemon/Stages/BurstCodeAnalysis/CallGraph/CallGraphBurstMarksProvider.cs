@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.A
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
@@ -100,17 +101,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var result = new LocalList<IDeclaredElement>();
             if (containingFunction == null)
                 return result;
-            var methodDeclaration = currentNode as IMethodDeclaration;
-            var method = methodDeclaration?.DeclaredElement;
-            if (method == null)
+            var functionDeclaration = currentNode as IFunctionDeclaration;
+            var function = functionDeclaration?.DeclaredElement;
+            if (function == null)
                 return result;
-            Assertion.Assert(ReferenceEquals(containingFunction, method), "containingFunction == method");
-            if (method.HasAttributeInstance(KnownTypes.BurstDiscardAttribute, AttributesSource.Self) || CheckBurstBannedAnalyzers(methodDeclaration))
-                result.Add(method);
+            if (IsBurstProhibited(function) || CheckBurstBannedAnalyzers(functionDeclaration))
+                result.Add(function);
             return result;
         }
 
-        private bool CheckBurstBannedAnalyzers(IMethodDeclaration node)
+        private bool CheckBurstBannedAnalyzers(IFunctionDeclaration node)
         {
             var processor = new BurstBannedProcessor(myBurstBannedAnalyzers);
             node.ProcessDescendants(processor);
