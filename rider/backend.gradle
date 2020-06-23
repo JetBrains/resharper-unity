@@ -13,6 +13,18 @@ task prepareRiderBuildProps(type: GenerateDotNetSdkPathPropsTask) {
     dotNetSdkPath { backend.getDotNetSdkPath() }
 }
 
+task prepareRdFrameworkNet35Props {
+    dependsOn prepareRiderBuildProps
+    doLast{
+        def dotNetSdkPath = backend.getDotNetSdkPath()
+        logger.warn("dotNetSdkPath='$dotNetSdkPath'")
+        assert dotNetSdkPath.isDirectory()
+        def propsFile = new File("${project.projectDir}/../unity/build/generated/PackageReference.JetBrains.RdFramework.net35.Props")
+        buildServer.progress("Generating $propsFile")
+        propsFile.text = new File("$dotNetSdkPath/Build/PackageReference.JetBrains.RdFramework.Props").text.replace("JetBrains.RdFramework", "JetBrains.RdFramework.net35")
+    }
+}
+
 task prepareNuGetConfig {
     dependsOn prepareRiderBuildProps
 
