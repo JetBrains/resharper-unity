@@ -14,6 +14,7 @@
     <PackageReference Include="JetBrains.Unity.Libs.Ref.4.7.2f1" Version="2020.6.10" />
     <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="JetBrains.RdFramework.net35" Version="2020.2.0-preview380"/>
   </ItemGroup>
   <ItemGroup>
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
@@ -29,5 +30,4 @@
     <None Remove="AfterUnity56\**" />
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
 </Project>
