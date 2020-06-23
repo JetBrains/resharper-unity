@@ -23,6 +23,8 @@ import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.test.scriptingApi.stop
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
+import java.io.IOException
+import java.net.ServerSocket
 
 class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,
                               executionEnvironment: ExecutionEnvironment)
@@ -70,7 +72,9 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
         application.executeOnPooledThread {
             UnityPlayerListener(project, {
                 if (!it.isEditor) {
-                    Thread.sleep(10000)
+                    while (isAvailable(it.debuggerPort))
+                        Thread.sleep(100)
+
                     UIUtil.invokeLaterIfNeeded {
                         logger.trace("Connecting to Player with port: ${it.debuggerPort}")
                         remoteConfiguration.port = it.debuggerPort
@@ -80,5 +84,15 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
             }, {}, lifetime)
         }
         return result
+    }
+
+    fun isAvailable(portNr: Int): Boolean {
+        var portFree = false
+        try {
+            ServerSocket(portNr).use { portFree = true }
+        } catch (e: IOException) {
+            portFree = false
+        }
+        return portFree
     }
 }
