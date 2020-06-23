@@ -188,7 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     {
                         if (!run.Lifetime.IsAlive)
                         {
-                            tcs.SetCanceled();
+                            tcs.TrySetCanceled();
                             return;
                         }
 
@@ -196,7 +196,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         task.Result.AdviseNotNull(myLifetime, result =>
                         {
                             if (!run.Lifetime.IsAlive)
-                                tcs.SetCanceled();
+                                tcs.TrySetCanceled();
                             else if (!result.Result)
                                 tcs.SetException(new Exception("Unable to attach debugger."));
                             else
@@ -231,58 +231,50 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 {
                     if (!run.Lifetime.IsAlive || cancellationTs.IsCancellationRequested)
                     {
-                        tcs.SetCanceled();
+                        tcs.TrySetCanceled();
                         return;
                     }
 
                     var launch = SetupLaunch(run);
-                    mySolution.Locks.ExecuteOrQueueEx(myLifetime, "ExecuteRunUT", () =>
+
+                    if (myEditorProtocol.UnityModel.Value == null)
                     {
-                        if (!run.Lifetime.IsAlive || cancellationTs.IsCancellationRequested)
-                        {
-                            tcs.SetCanceled();
-                            return;
-                        }
+                        tcs.SetException(new Exception("Unity Editor connection unavailable."));
+                        return;
+                    }
 
-                        if (myEditorProtocol.UnityModel.Value == null)
-                        {
-                            tcs.SetException(new Exception("Unity Editor connection unavailable."));
-                            return;
-                        }
+                    myEditorProtocol.UnityModel.ViewNotNull(taskLifetime, (lt, model) =>
+                    {
+                        // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
+                        myLogger.Trace("UnitTestLaunch.SetValue.");
+                        model.UnitTestLaunch.SetValue(launch);
+                        SubscribeResults(run, lt, tcs, launch);
+                    });
 
-                        myEditorProtocol.UnityModel.ViewNotNull(taskLifetime, (lt, model) =>
+                    myLogger.Trace("RunUnitTestLaunch.Start.");
+                    var rdTask = myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
+                    rdTask?.Result.Advise(taskLifetime, res =>
+                    {
+                        myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
+                        if (!res.Result)
                         {
-                            // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
-                            myLogger.Trace("UnitTestLaunch.SetValue.");
-                            model.UnitTestLaunch.SetValue(launch);
-                            SubscribeResults(run, lt, tcs, launch);
-                        });
+                            var defaultMessage = "Failed to start tests in Unity.";
 
-                        myLogger.Trace("RunUnitTestLaunch.Start.");
-                        var rdTask = myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
-                        rdTask?.Result.Advise(taskLifetime, res =>
-                        {
-                            myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
-                            if (!res.Result)
+                            var isCoverage =
+                                run.HostController.HostId != WellKnownHostProvidersIds.DebugProviderId &&
+                                run.HostController.HostId != WellKnownHostProvidersIds.RunProviderId;
+
+                            if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
+                                defaultMessage = $"{defaultMessage} {message}";
+
+                            if (myEditorProtocol.UnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
                             {
-                                var defaultMessage = "Failed to start tests in Unity.";
-
-                                var isCoverage =
-                                    run.HostController.HostId != WellKnownHostProvidersIds.DebugProviderId &&
-                                    run.HostController.HostId != WellKnownHostProvidersIds.RunProviderId;
-
-                                if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
-                                    defaultMessage = $"{defaultMessage} {message}";
-
-                                if (myEditorProtocol.UnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
-                                {
-                                    if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
-                                        defaultMessage = $"{defaultMessage} {playMessage}";
-                                }
-
-                                tcs.TrySetException(new Exception(defaultMessage));
+                                if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
+                                    defaultMessage = $"{defaultMessage} {playMessage}";
                             }
-                        });
+
+                            tcs.TrySetException(new Exception(defaultMessage));
+                        }
                     });
                 });
             }, cancellationToken);
@@ -298,7 +290,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 // On cancel we don't want to stop run, if tests are already running, but we want to stop, if we are waiting for refresh
                 if (refreshLifetimeDef.Lifetime.IsAlive)
                 {
-                    tcs.SetCanceled();
+                    tcs.TrySetCanceled();
                     refreshLifetimeDef.Terminate();
                 }
             });
