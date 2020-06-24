@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
@@ -56,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     return true;
                 }
 
-                if (!typeOwner.Type().IsBurstPermittedType())
+                if (!IsBurstPermittedType(typeOwner.Type()))
                 {
                     if(typeOwner is IAttributesOwner attributesOwner && attributesOwner.HasAttributeInstance(KnownTypes.NativeSetClassTypeToNullOnScheduleAttribute, AttributesSource.Self))
                         return false;

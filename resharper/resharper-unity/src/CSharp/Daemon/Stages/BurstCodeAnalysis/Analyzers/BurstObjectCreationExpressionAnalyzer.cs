@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
+using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         protected override bool CheckAndAnalyze(IObjectCreationExpression objectCreationExpression, IHighlightingConsumer consumer)
         {
-            if (!objectCreationExpression.Type().IsBurstPermittedType())
+            if (!IsBurstPermittedType(objectCreationExpression.Type()))
             {
                 consumer?.AddHighlighting(new BC1021Error(objectCreationExpression.GetDocumentRange(), (objectCreationExpression.ConstructorReference.Resolve().DeclaredElement as IConstructor)?.GetContainingType()?.ShortName));
                 return true;

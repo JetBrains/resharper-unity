@@ -89,6 +89,13 @@
           The managed class type is not supported. Loading from a non-readonly static field is not supported
         </Description>
       </Tag>
+
+      <Tag externalName="BC1349Error.HIGHLIGHTING_ID" default="WARNING">
+        <Title>BC1349</Title>
+        <Description>
+          Invalid argument. Expecting string literal or string.
+        </Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -193,6 +200,13 @@
     <Message value="BC1042: The managed class type `{0}` is not supported.">
       <Argument>TypeQualification</Argument>
     </Message>
+    <Range>Range</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Error>
+
+  <Error name="BC1349" configurableSeverity="Unity.BC1349">
+    <Parameter type="DocumentRange" name="range" />
+    <Message value="Invalid argument. Expecting string literal or string."/>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Error>
