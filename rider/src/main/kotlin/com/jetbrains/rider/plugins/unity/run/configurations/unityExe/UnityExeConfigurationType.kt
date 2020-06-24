@@ -2,11 +2,10 @@ package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 
 import com.intellij.execution.configurations.ConfigurationTypeBase
 import com.intellij.util.IconUtil
-import icons.RiderIcons
+import icons.UnityIcons
 
-// TODO(enkn): use Unity icon from RiderIcons.RunConfiguration
 class UnityExeConfigurationType : ConfigurationTypeBase("RunUnityExe", "Unity Executable",
-    "Unity executable configuration", IconUtil.scale(RiderIcons.Wizard.Unity, null, 0.33f)) {
+    "Unity executable configuration", IconUtil.scale(UnityIcons.RunConfigurations.UnityExe, null, 0.33f)) {
 
     val factory: UnityExeConfigurationFactory = UnityExeConfigurationFactory(this)
 
