@@ -50,7 +50,7 @@ task prepareNuGetConfig {
 task restoreReSharperHostPluginPackages(type: nugetRestore.class) {
     group backendGroup
     description 'Restores packages for backend plugin'
-    dependsOn prepareNuGetConfig
+    dependsOn prepareNuGetConfig, prepareRdFrameworkNet35Props
 
     solutionFile backend.resharperHostPluginSolution
     noCache = true
