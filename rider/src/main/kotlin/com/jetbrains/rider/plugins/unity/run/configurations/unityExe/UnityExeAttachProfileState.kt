@@ -29,7 +29,7 @@ import org.jetbrains.concurrency.Promise
 import java.io.IOException
 import java.net.ServerSocket
 
-class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,
+class UnityExeAttachProfileState(private val exeConfiguration : UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,
                               executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
 
@@ -37,7 +37,7 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
     private val project = executionEnvironment.project
     private lateinit var console: ConsoleView
     private lateinit var targetProcessHandler: KillableProcessHandler
-    val dotNetExecutable = exeConfiguration.parameters.toDotNetExecutable()
+    val dotNetExecutable = exeConfiguration.params.toDotNetExecutable()
 
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
         throw UnsupportedOperationException("Should use overload with session")
@@ -48,7 +48,7 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
-        dotNetExecutable.onProcessStarter(executionEnvironment.runProfile, workerProcessHandler)
+        //dotNetExecutable.onProcessStarter(executionEnvironment.runProfile, workerProcessHandler)
 
         lifetime.onTermination {
             if (!targetProcessHandler.isProcessTerminated)
@@ -58,7 +58,7 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
     }
 
     override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
-        val useExternalConsole = exeConfiguration.parameters.useExternalConsole
+        val useExternalConsole = exeConfiguration.params.useExternalConsole
         val commandLine = dotNetExecutable.createRunCommandLine()
         targetProcessHandler = if (useExternalConsole)
             ExternalConsoleMediator.createProcessHandler(commandLine) as KillableProcessHandler
