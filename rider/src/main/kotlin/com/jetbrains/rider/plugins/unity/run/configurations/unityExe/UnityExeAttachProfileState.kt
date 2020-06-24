@@ -3,9 +3,9 @@ package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
+import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
-import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
@@ -13,14 +13,17 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerPlatform
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
-import com.jetbrains.rider.run.*
+import com.jetbrains.rider.run.ExternalConsoleMediator
+import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import com.jetbrains.rider.test.scriptingApi.stop
+import com.jetbrains.rider.run.createConsole
+import com.jetbrains.rider.run.createRunCommandLine
 import org.jetbrains.concurrency.AsyncPromise
 import org.jetbrains.concurrency.Promise
 import java.io.IOException
@@ -33,7 +36,7 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
     private val logger = Logger.getInstance(UnityExeAttachProfileState::class.java)
     private val project = executionEnvironment.project
     private lateinit var console: ConsoleView
-    private lateinit var targetProcessHandler:ProcessHandler
+    private lateinit var targetProcessHandler: KillableProcessHandler
     val dotNetExecutable = exeConfiguration.parameters.toDotNetExecutable()
 
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
@@ -46,10 +49,11 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
         dotNetExecutable.onProcessStarter(executionEnvironment.runProfile, workerProcessHandler)
-        workerProcessHandler.attachTargetProcess(targetProcessHandler)
-        workerProcessHandler.debuggerWorkerRealHandler.addProcessListener(object: ProcessAdapter() {
-            override fun processTerminated(event: ProcessEvent) = targetProcessHandler.stop()
-        })
+
+        lifetime.onTermination {
+            if (!targetProcessHandler.isProcessTerminated)
+                targetProcessHandler.destroyProcess()
+        }
         return DefaultExecutionResult(console, workerProcessHandler)
     }
 
@@ -57,9 +61,9 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
         val useExternalConsole = exeConfiguration.parameters.useExternalConsole
         val commandLine = dotNetExecutable.createRunCommandLine()
         targetProcessHandler = if (useExternalConsole)
-            ExternalConsoleMediator.createProcessHandler(commandLine)
+            ExternalConsoleMediator.createProcessHandler(commandLine) as KillableProcessHandler
         else
-            TerminalProcessHandler(commandLine)
+            KillableProcessHandler(commandLine)
         val commandLineString = commandLine.commandLineString
         logger.info("Process started: $commandLineString")
         targetProcessHandler.addProcessListener(object: ProcessAdapter() {
@@ -73,7 +77,7 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
             UnityPlayerListener(project, {
                 if (!it.isEditor) {
                     while (isAvailable(it.debuggerPort))
-                        Thread.sleep(10)
+                        Thread.sleep(1)
 
                     UIUtil.invokeLaterIfNeeded {
                         logger.trace("Connecting to Player with port: ${it.debuggerPort}")
