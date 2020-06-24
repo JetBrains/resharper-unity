@@ -47,12 +47,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             //                then it would be highlighted as error
             //            else
             //                ok. burst alows invoking static functions.
+
+            if (BurstCodeAnalysisUtil.IsBurstPermittedInvocation(invocationExpression))
+                return false;
+            
             var invokedMethod =
                 invocationExpression.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
+            
             if (invokedMethod == null)
                 return false;
             
-            if (invocationExpression.IsBurstProhibitedInvocation())
+            if (invocationExpression.IsObjectMethodInvocation())
             {
                 consumer?.AddHighlighting(new BC1001Error(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));

@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         protected override bool CheckAndAnalyze(IObjectCreationExpression objectCreationExpression, IHighlightingConsumer consumer)
         {
-            if (!objectCreationExpression.Type().IsSuitableForBurst())
+            if (!objectCreationExpression.Type().IsBurstPermittedType())
             {
                 consumer?.AddHighlighting(new BC1021Error(objectCreationExpression.GetDocumentRange(), (objectCreationExpression.ConstructorReference.Resolve().DeclaredElement as IConstructor)?.GetContainingType()?.ShortName));
                 return true;

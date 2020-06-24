@@ -186,7 +186,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         private UnityProblemAnalyzerContext GetProhibitedContexts(ITreeNode node)
         {
             var context = UnityProblemAnalyzerContext.NONE;
-            if (IsBurstProhibitedNode(node))
+            if (IsBurstContextBannedNode(node))
                 context |= UnityProblemAnalyzerContext.BURST_CONTEXT;
             return context;
         }
@@ -206,7 +206,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             // prohibiting context always has higher priority than creating, and they does not affect each other
             if (IsFunctionNode(element))
                 myProblemAnalyzerContexts.Push(GetProblemAnalyzerContext(element));
-            if (IsBurstProhibitedNode(element))
+            if (IsBurstContextBannedNode(element))
                 myProhibitedContexts.Push(GetProhibitedContexts(element));
 
             if (element is ICSharpDeclaration declaration)
@@ -264,7 +264,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 myProblemAnalyzerContexts.Pop();
             }
 
-            if (IsBurstProhibitedNode(element))
+            if (IsBurstContextBannedNode(element))
             {
                 Assertion.Assert(myProhibitedContexts.Count > 0, "myProhibitedContexts.Count > 0");
                 myProhibitedContexts.Pop();

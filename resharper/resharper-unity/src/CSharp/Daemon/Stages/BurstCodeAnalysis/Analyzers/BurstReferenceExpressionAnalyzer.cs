@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     return true;
                 }
 
-                if (!typeOwner.Type().IsSuitableForBurst())
+                if (!typeOwner.Type().IsBurstPermittedType())
                 {
                     if(typeOwner is IAttributesOwner attributesOwner && attributesOwner.HasAttributeInstance(KnownTypes.NativeSetClassTypeToNullOnScheduleAttribute, AttributesSource.Self))
                         return false;

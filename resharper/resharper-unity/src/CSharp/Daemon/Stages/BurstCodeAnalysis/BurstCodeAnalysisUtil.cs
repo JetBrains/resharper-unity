@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public static class BurstCodeAnalysisUtil
     {
         [ContractAnnotation("null => false")]
-        public static bool IsSuitableForBurst([CanBeNull] this IType type)
+        public static bool IsBurstPermittedType([CanBeNull] this IType type)
         {
             if (type == null)
                 return false;
@@ -33,12 +33,69 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return conditionalAccessExpression.ConditionalQualifier?.Type().IsOpenType ?? false;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="invocation"></param>
-        /// <returns></returns>
-        public static bool IsBurstProhibitedInvocation([CanBeNull] this IInvocationExpression invocation)
+        public static bool IsBurstPermittedInvocation([NotNull] IInvocationExpression invocationExpression)
+        {
+            var invokedMethod = CallGraphUtil.GetCallee(invocationExpression) as IMethod;
+            if (invokedMethod == null)
+                return false;
+            if (IsDebugLog(invokedMethod))
+                return true;
+            if (IsStringFormat(invokedMethod))
+                return true;
+            return false;
+        }
+
+        private static bool IsDebugLog([NotNull] IMethod method)
+        {
+            if (!method.IsStatic)
+                return false;
+            
+            if (method.Parameters.Count != 1)
+                return false;
+            
+            if (method.ShortName != "Log" && method.ShortName != "LogError" && method.ShortName != "LogWarning")
+                return false;
+            
+            var clrTypeName = method.GetContainingType()?.GetClrName();
+            if (clrTypeName == null)
+                return false;
+
+            if (!clrTypeName.Equals(KnownTypes.Debug))
+                return false;
+            
+            var parameter = method.Parameters[0];
+            if (!parameter.Type.IsObject())
+                return false;
+            
+            return true;
+        }
+
+        private static bool IsStringFormat([NotNull] IMethod method)
+        {
+            if (!method.IsStatic)
+                return false;
+            
+            if (method.ShortName != "Format")
+                return false;
+            
+            var clrTypeName = method.GetContainingType()?.GetClrName();
+            if (clrTypeName == null)
+                return false;
+
+            if (!clrTypeName.Equals(PredefinedType.STRING_FQN))
+                return false;
+
+            var parameters = method.Parameters;
+            if (parameters.Count < 2)
+                return false;
+            
+            if (!parameters[0].Type.IsString())
+                return false;
+
+            return true;
+        }
+        
+        public static bool IsObjectMethodInvocation([CanBeNull] this IInvocationExpression invocation)
         {
             var function =
                 invocation?.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
@@ -72,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             
             foreach (var argument in argumentList.Arguments)
             {
-                if (!(argument.MatchingParameter?.Type.IsSuitableForBurst() ?? true))
+                if (!(argument.MatchingParameter?.Type.IsBurstPermittedType() ?? true))
                     return true;
             }
 
@@ -91,7 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             }
         }
 
-        public static bool IsBurstProhibitedNode(ITreeNode node)
+        public static bool IsBurstContextBannedNode(ITreeNode node)
         {
             switch (node)
             {
@@ -99,14 +156,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case IThrowExpression _:
                 case IInvocationExpression invocationExpression
                     when CallGraphUtil.GetCallee(invocationExpression) is IMethod method && IsBurstDiscarded(method):
-                case IFunctionDeclaration functionDeclaration when IsBurstProhibited(functionDeclaration.DeclaredElement):
+                case IFunctionDeclaration functionDeclaration when IsBurstContextBannedFunction(functionDeclaration.DeclaredElement):
                     return true;
                 default:
                     return false;
             }
         }
 
-        public static bool IsBurstProhibited(IFunction function)
+        public static bool IsBurstContextBannedFunction(IFunction function)
         {
             if (function.IsStatic || function.GetContainingTypeMember() is IStruct)
                 return function is IMethod method && IsBurstDiscarded(method);

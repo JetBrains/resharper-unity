@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         .Where(declaredType => declaredType.IsInterfaceType())
                         .Select(declaredType => declaredType.GetTypeElement())
                         .WhereNotNull()
-                        .Where(typeElement => typeElement.HasAttributeInstance(KnownTypes.JobProducer, AttributesSource.Self))
+                        .Where(typeElement => typeElement.HasAttributeInstance(KnownTypes.JobProducerAttrubyte, AttributesSource.Self))
                         .ToList();
                     var structMethods = @struct.Methods.ToList();
                     
@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var function = functionDeclaration?.DeclaredElement;
             if (function == null)
                 return result;
-            if (IsBurstProhibited(function) || CheckBurstBannedAnalyzers(functionDeclaration))
+            if (IsBurstContextBannedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
                 result.Add(function);
             return result;
         }
@@ -131,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             public bool InteriorShouldBeProcessed(ITreeNode element)
             {
                 myInterruptChecker.CheckForInterrupt();
-                return !IsFunctionNode(element) && !IsBurstProhibitedNode(element);
+                return !IsFunctionNode(element) && !IsBurstContextBannedNode(element);
             }
 
             public void ProcessBeforeInterior(ITreeNode element)
