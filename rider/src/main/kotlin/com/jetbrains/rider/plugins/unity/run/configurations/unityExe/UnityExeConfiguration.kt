@@ -18,6 +18,10 @@ import com.jetbrains.rider.run.configurations.remote.MonoRemoteConfigType
 class UnityExeConfiguration(name:String, project: Project, factory: ConfigurationFactory, val params: DotNetExeConfigurationParameters)
     : ExeConfiguration(name, project, factory, params) {
 
+    override fun isNative(): Boolean {
+        return false
+    }
+
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState{
         val executorId = executor.id
 
