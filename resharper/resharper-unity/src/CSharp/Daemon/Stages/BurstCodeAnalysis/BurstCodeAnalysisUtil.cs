@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         [ContractAnnotation("null => false")]
-        private static bool IsFixedString([CanBeNull] IType type)
+        public static bool IsFixedString([CanBeNull] IType type)
         {
             var declaredType = type as IDeclaredType;
             if (declaredType == null)
@@ -46,14 +46,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         [ContractAnnotation("null => false")]
-        public static bool IsBurstPermittedString(ICSharpExpression expression)
+        public static bool IsBurstPermittedString(IType type)
         {
             // if expression is type A -> then everything that returns form it is A. 
             // if in burst context there are managed variables(like string) -> it will be highlighted
             // assume there are no
             // then there are only IStringLiteralOwners, fixedStrings and IInvocatoinExressions
 
-            return expression.Type().IsString() || IsFixedString(expression.Type());
+            return type.IsString() || IsFixedString(type);
         }
 
         [ContractAnnotation("null => false")]

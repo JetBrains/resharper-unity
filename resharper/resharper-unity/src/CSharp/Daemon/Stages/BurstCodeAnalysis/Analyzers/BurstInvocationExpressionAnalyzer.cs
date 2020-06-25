@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
@@ -58,16 +59,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (IsDebugLog(invokedMethod))
             {
                 var argumentList = invocationExpression.ArgumentList.Arguments;
-                
+
                 if (argumentList.Count != 1)
-                    return false;
-                
-                var argument = argumentList[0];
-                if (!IsBurstPermittedString(argument.Expression as ICSharpExpression))
                 {
-                    consumer?.AddHighlighting(new BC1349Error(argument.Expression.GetDocumentRange()));
-                    
-                    return true;
+                    var argument = argumentList[0];
+                    if (!IsBurstPermittedString(argument.Expression.Type()))
+                    {
+                        consumer?.AddHighlighting(new BC1349Error(argument.Expression.GetDocumentRange()));
+                        
+                        return true;
+                    }
                 }
 
                 return false;
@@ -75,28 +76,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             if (IsStringFormat(invokedMethod))
             {
+                //CGTD check that if i am at the string literal owner - return
                 var argumentList = invocationExpression.ArgumentList.Arguments;
-                
-                if (argumentList.Count == 0)
-                    return false;
-                
-                var firstArgument = argumentList[0];
-                var cSharpLiteralExpression = firstArgument.Expression as ICSharpLiteralExpression;
-                
-                if (cSharpLiteralExpression == null || !cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
-                {
-                    consumer?.AddHighlighting(new BC1349Error(firstArgument.Expression.GetDocumentRange()));
-                    return true;
-                }
 
-                return false;
+                if (argumentList.Count != 0)
+                {
+                    var firstArgument = argumentList[0];
+                    var cSharpLiteralExpression = firstArgument.Expression as ICSharpLiteralExpression;
+
+                    if (cSharpLiteralExpression == null ||
+                        !cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
+                    {
+                        consumer?.AddHighlighting(new BC1349Error(firstArgument.Expression.GetDocumentRange()));
+                        return true;
+                    }
+                }
+                return BurstStringLiteralOwnerAnalyzer.CheckAndAnalyze(invocationExpression, new BC1349Error(invocationExpression.GetDocumentRange()), consumer);
             }
 
             if (IsObjectMethodInvocation(invocationExpression))
             {
                 consumer?.AddHighlighting(new BC1001Error(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
-                
+
                 return true;
             }
 
@@ -105,7 +107,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             {
                 consumer?.AddHighlighting(new BC1016Error(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName));
-                
+
                 return true;
             }
 
