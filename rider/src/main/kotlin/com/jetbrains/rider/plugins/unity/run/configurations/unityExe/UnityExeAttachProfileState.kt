@@ -24,7 +24,7 @@ import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileSta
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.createConsole
 import com.jetbrains.rider.run.createRunCommandLine
-import org.jetbrains.concurrency.AsyncPromise
+import com.jetbrains.rider.util.idea.createNestedAsyncPromise
 import org.jetbrains.concurrency.Promise
 import java.io.IOException
 import java.net.ServerSocket
@@ -58,6 +58,8 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
     }
 
     override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
+        val result = lifetime.createNestedAsyncPromise<WorkerRunInfo>()
+
         val useExternalConsole = exeConfiguration.parameters.useExternalConsole
         val commandLine = dotNetExecutable.createRunCommandLine()
         targetProcessHandler = if (useExternalConsole)
@@ -72,7 +74,6 @@ class UnityExeAttachProfileState(private val exeConfiguration:UnityExeConfigurat
         console = createConsole(useExternalConsole, targetProcessHandler, commandLineString, executionEnvironment.project)
         targetProcessHandler.startNotify()
 
-        val result = AsyncPromise<WorkerRunInfo>()
         application.executeOnPooledThread {
             UnityPlayerListener(project, {
                 if (!it.isEditor) {
