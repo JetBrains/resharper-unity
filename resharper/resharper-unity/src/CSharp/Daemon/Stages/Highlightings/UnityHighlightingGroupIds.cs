@@ -11,6 +11,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     {
         public const string Unity = "UNITY";
         public const string UnityPerformance = "UNITY_PERFORMANCE";
-        public const string Burst = "Burst";
+        public const string Burst = "UNITY_BURST";
     }
 }

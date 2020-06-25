@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
         {
             Header("C#");
             CheckBox((UnitySettings s) => s.EnableBurstCodeHighlighting,
-                "Enables Burst code analysis");
+                "Enable analysis for Burst compiler issues");
             CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
                 "Enable performance analysis in frequently called code");
 

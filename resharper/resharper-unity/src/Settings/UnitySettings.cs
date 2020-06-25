@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         [SettingsEntry(true, "Enables performance analysis in frequently called code")]
         public bool EnablePerformanceCriticalCodeHighlighting;
         
-        [SettingsEntry(true, "Enables Burst code analysis")]
+        [SettingsEntry(true, "Enable analysis for Burst compiler issues")]
         public bool EnableBurstCodeHighlighting;
 
         // UX for performance critical analysis

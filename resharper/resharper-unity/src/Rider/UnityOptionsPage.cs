@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             Header("C#");
             CheckBox(ourEnableBurstHighlightingAccessor,
-                "Enables Burst code analysis");
+                "Enable analysis for Burst compiler issues");
             CheckBox(ourEnablePerformanceHighlightingAccessor,
                 "Enable performance analysis in frequently called code");
 
