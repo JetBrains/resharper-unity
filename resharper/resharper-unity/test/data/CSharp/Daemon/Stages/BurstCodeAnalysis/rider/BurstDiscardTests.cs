@@ -1,0 +1,148 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Jobs.LowLevel.Unsafe;
+using Unity.UnityEngine;
+
+namespace Unity
+{
+    namespace Jobs
+    {
+        [JobProducerType]
+        public interface IJob
+        {
+            void Execute();
+        }
+
+        namespace LowLevel
+        {
+            namespace Unsafe
+            {
+                public class JobProducerTypeAttribute : Attribute
+                {
+                }
+            }
+        }
+    }
+
+    namespace Burst
+    {
+        public class BurstCompileAttribute : Attribute
+        {
+        }
+
+        public class BurstDiscardAttribute : Attribute
+        {
+        }
+    }
+
+    namespace UnityEngine
+    {
+        public class Debug
+        {
+            public static void Log(object message)
+            {
+            }
+        }
+    }
+
+    namespace Collections
+    {
+        public struct NativeArray<T> : IDisposable, IEnumerable<T>, IEnumerable, IEquatable<NativeArray<T>>
+            where T : struct
+        {
+            public void Dispose()
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                throw new NotImplementedException();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public bool Equals(NativeArray<T> other)
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
+}
+
+namespace BurstDiscardTests
+{
+    public class BurstDiscardTests
+    {
+        [BurstCompile]
+        struct BurstDiscardTest1 : IJob
+        {
+            public void Execute()
+            {
+                F();
+                D();
+            }
+
+            [BurstDiscard]
+            void F()
+            {
+                var current = new object();
+            }
+
+            void D()
+            {
+                var current = new object();
+            }
+        }
+
+        [BurstCompile]
+        struct BurstDiscardTest2 : IJob
+        {
+            public void Execute()
+            {
+                F();
+                D();
+            }
+
+            [BurstDiscard]
+            void F()
+            {
+                var current = new object();
+            }
+
+            [BurstDiscard]
+            void D()
+            {
+                var current = new object();
+            }
+        }
+
+        [BurstCompile]
+        struct BurstDiscardTest3 : IJob
+        {
+            public void Execute()
+            {
+                F();
+                D();
+            }
+
+            void F()
+            {
+                var current = new object();
+            }
+
+            void D()
+            {
+                var current = new object();
+            }
+        }
+    }
+}
