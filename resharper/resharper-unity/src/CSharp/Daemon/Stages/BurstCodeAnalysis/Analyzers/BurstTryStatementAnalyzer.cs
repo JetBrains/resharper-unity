@@ -12,7 +12,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         protected override bool CheckAndAnalyze(ITryStatement tryStatement, IHighlightingConsumer consumer)
         {
             consumer?.AddHighlighting(new BC1005Error(tryStatement.TryKeyword.GetDocumentRange()));
-            consumer?.AddHighlighting(new BC1036Error(tryStatement.FinallyKeyword.GetDocumentRange()));
             return true;
         }
     }

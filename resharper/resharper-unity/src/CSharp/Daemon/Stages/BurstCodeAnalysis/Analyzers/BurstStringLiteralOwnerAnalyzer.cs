@@ -88,7 +88,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
         protected override bool CheckAndAnalyze(IStringLiteralOwner stringLiteralOwner, IHighlightingConsumer consumer)
         {
-            var isString = stringLiteralOwner.Type().IsString();
+            bool isString = false;
+            if (stringLiteralOwner is ICSharpLiteralExpression cSharpLiteralExpression)
+                isString = cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral;
+            else
+                isString = true;
             if (!isString)
                 return false;
 
