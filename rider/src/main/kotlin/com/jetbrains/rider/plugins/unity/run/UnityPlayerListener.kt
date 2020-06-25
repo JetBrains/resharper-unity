@@ -10,10 +10,11 @@ import java.net.*
 import java.util.*
 import java.util.regex.Pattern
 
-class UnityPlayerListener(private val project: Project,
+
+class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
                           private val onPlayerRefresh: (Boolean) -> Unit,
-                          private val onPlayerAdded: (UnityPlayer) -> Unit,
-                          private val onPlayerRemoved: (UnityPlayer) -> Unit, lifetime: Lifetime) {
+                          private val onPlayerAdded: (UnityProcess) -> Unit,
+                          private val onPlayerRemoved: (UnityProcess) -> Unit) {
 
     companion object {
         private val logger = Logger.getInstance(UnityPlayerListener::class.java)
@@ -65,7 +66,7 @@ class UnityPlayerListener(private val project: Project,
     private val multicastSockets = mutableListOf<MulticastSocket>()
 
     private val unityPlayerDescriptorsHeartbeats = mutableMapOf<String, Int>()
-    private val unityPlayers = mutableMapOf<String, UnityPlayer>()
+    private val unityProcesses = mutableMapOf<String, UnityProcess>()
 
     private val refreshTimer: Timer
     private val socketsLock = Object()
@@ -110,9 +111,13 @@ class UnityPlayerListener(private val project: Project,
         val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
         unityProcesses.map { processInfo ->
             val unityProcessInfo = unityProcessInfoMap[processInfo.pid]
-            val port = convertPidToDebuggerPort(processInfo.pid)
-            UnityPlayer.createEditorPlayer("127.0.0.1", port, processInfo.executableName, processInfo.pid,
-                unityProcessInfo?.projectName, unityProcessInfo?.roleName)
+
+            if (!unityProcessInfo?.roleName.isNullOrEmpty()) {
+                UnityEditorHelper(processInfo.executableName, unityProcessInfo?.roleName!!, processInfo.pid, unityProcessInfo.projectName)
+            }
+            else {
+                UnityEditor(processInfo.executableName, processInfo.pid, unityProcessInfo?.projectName)
+            }
         }.forEach {
             onPlayerAdded(it)
         }
@@ -124,35 +129,43 @@ class UnityPlayerListener(private val project: Project,
         }
     }
 
-    private fun parseUnityPlayer(unityPlayerDescriptor: String, hostAddress: String): UnityPlayer? {
+    private fun parseUnityPlayer(unityPlayerDescriptor: String, hostAddress: InetAddress): UnityProcess? {
         try {
             val matcher = unityPlayerDescriptorRegex.matcher(unityPlayerDescriptor)
             if (matcher.find()) {
-//                val ip = matcher.group("ip")
-                val port = matcher.group("port").toInt()
-                val flags = matcher.group("flags").toLong()
-                val guid = matcher.group("guid").toLong()
-                val editorGuid = matcher.group("editorId").toLong()
-                val version = matcher.group("version").toInt()
                 val id = matcher.group("id")
                 val allowDebugging = matcher.group("debug").startsWith("1")
-                // Guid's not actually a pid, but it's what we have to do
+                val guid = matcher.group("guid").toLong()
                 val debuggerPort = matcher.group("debuggerPort")?.toIntOrNull() ?: convertPidToDebuggerPort(guid)
-                val packageName: String? = matcher.group("packageName")
                 val projectName: String? = matcher.group("projectName")
 
-                // We use hostAddress instead of ip because this is the address we actually received the mulitcast from.
+                // We use hostAddress instead of ip because this is the address we actually received the multicast from.
                 // This is more accurate than what we're told, because the Unity process might be reporting the IP
                 // address of an interface that isn't reachable. For example, the iPhone player can report the local IP
                 // address of the mobile data network, which we can't reach from the current network (if we disable
                 // mobile data it works as expected)
-                return UnityPlayer(hostAddress, port, debuggerPort, flags, guid, editorGuid, version, id,
-                    allowDebugging, packageName, projectName)
+                return if (isLocalAddress(hostAddress)) {
+                    UnityLocalPlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName)
+                }
+                else {
+                    UnityRemotePlayer(id, hostAddress.hostAddress, debuggerPort, allowDebugging, projectName)
+                }
             }
         } catch (e: Exception) {
             logger.warn("Failed to parse Unity Player: ${e.message}")
         }
         return null
+    }
+
+    // https://stackoverflow.com/questions/2406341/how-to-check-if-an-ip-address-is-the-local-host-on-a-multi-homed-system
+    private fun isLocalAddress(addr: InetAddress): Boolean {
+        // Check if the address is a valid special local or loop back
+        return if (addr.isAnyLocalAddress || addr.isLoopbackAddress) true else try {
+            // Check if the address is defined on any interface
+            NetworkInterface.getByInetAddress(addr) != null
+        } catch (e: SocketException) {
+            false
+        }
     }
 
     private fun refreshUnityPlayersList() {
@@ -163,12 +176,14 @@ class UnityPlayerListener(private val project: Project,
             val start = System.currentTimeMillis()
             logger.trace("Refreshing Unity players list...")
             try {
+                // TODO: Seen a ConcurrentModificationException here
+                // I don't think it's legal to remove while enumerating
                 for (playerDescriptor in unityPlayerDescriptorsHeartbeats.keys) {
                     val currentPlayerTimeout = unityPlayerDescriptorsHeartbeats[playerDescriptor] ?: continue
                     if (currentPlayerTimeout <= 0) {
                         unityPlayerDescriptorsHeartbeats.remove(playerDescriptor)
                         logger.trace("Removing old Unity player $playerDescriptor")
-                        unityPlayers.remove(playerDescriptor)?.let { onPlayerRemoved(it) }
+                        unityProcesses.remove(playerDescriptor)?.let { onPlayerRemoved(it) }
                     } else
                         unityPlayerDescriptorsHeartbeats[playerDescriptor] = currentPlayerTimeout - 1
                 }
@@ -182,11 +197,11 @@ class UnityPlayerListener(private val project: Project,
                                 continue
                             socket.receive(recv)
                             val descriptor = String(buf, 0, recv.length - 1)
-                            val hostAddress = recv.address.hostAddress
+                            val hostAddress = recv.address
                             logger.trace("Get heartbeat on ${socket.networkInterface.name}${socket.`interface`}:${socket.localPort} from $hostAddress: $descriptor")
                             if (!unityPlayerDescriptorsHeartbeats.containsKey(descriptor)) {
                                 parseUnityPlayer(descriptor, hostAddress)?.let {
-                                    unityPlayers[descriptor] = it
+                                    unityProcesses[descriptor] = it
                                     onPlayerAdded(it)
                                 }
                             }
@@ -200,7 +215,7 @@ class UnityPlayerListener(private val project: Project,
 
                 if (logger.isTraceEnabled) {
                     val duration = System.currentTimeMillis() - start
-                    logger.trace("Finished refreshing of Unity players list. Took $duration")
+                    logger.trace("Finished refreshing of Unity players list. Took ${duration}ms")
                 }
             }
             finally {

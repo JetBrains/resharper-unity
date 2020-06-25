@@ -237,7 +237,7 @@ object UnityRunUtil {
         if (SystemInfo.isWindows) return
 
         try {
-            val processIds = processList.joinToString(",") { it.pid.toString() }
+            val processIds = processList.filter { !projectNames.containsKey(it.pid) }.joinToString(",") { it.pid.toString() }
             val command = when {
                 SystemInfo.isMac -> "/usr/sbin/lsof"
                 else -> "/usr/bin/lsof"
@@ -253,7 +253,11 @@ object UnityRunUtil {
                     val pid = stdout[i].substring(1).toInt()
                     val cwd = getProjectNameFromPath(stdout[i + 2].substring(1))
 
-                    projectNames[pid] = UnityProcessInfo(cwd, projectNames[pid]?.roleName)
+                    // We might have found the project name for this process from the command line. Even if we had, the
+                    // working directory should be the same as the command line project name
+                    if (!projectNames.containsKey(pid)) {
+                        projectNames[pid] = UnityProcessInfo(cwd, projectNames[pid]?.roleName)
+                    }
                 }
             }
         }
