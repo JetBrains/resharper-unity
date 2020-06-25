@@ -118,12 +118,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return result;
         }
 
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
-            IDeclaredElement containingFunction)
-        {
-            return new LocalList<IDeclaredElement>();
-        }
-
         private class PerformanceCriticalCodeProcessor : IRecursiveElementProcessor
         {
             public bool IsPerformanceCriticalCodeFound;
