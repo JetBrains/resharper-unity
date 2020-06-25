@@ -100,6 +100,7 @@ namespace DirectivesTests
             int* m_Counter;
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
+            // without this attribute Burst fails!
             [NativeSetClassTypeToNullOnScheduleAttribute] AtomicSafetyHandle m_Safety;
 
             DisposeSentinel m_DisposeSentinel;

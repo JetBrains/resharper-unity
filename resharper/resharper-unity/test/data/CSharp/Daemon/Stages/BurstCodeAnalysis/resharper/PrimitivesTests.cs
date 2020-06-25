@@ -87,7 +87,7 @@ namespace PrimitivesTests
         {
             public void ContainsWarning()
             {
-                string str2 = "asdasd"; //Burst error BC1033: Loading a managed string literal is not supported
+                string str2 = "asdasd";
             }
 
             void NoWarnings()
@@ -136,12 +136,9 @@ namespace PrimitivesTests
                 string str2 = null;
                 string str1 = null;
                 str1 = str2;
-                // Burst can operate with managed type if its value is null
-                // I don't think it worth warning because of [NativeSetClassTypeToNullOnSchedule] attribute,
-                // it may be desired behaviour
                 if (str1 != null)
                 {
-                    char c = str2[0]; //Burst error BC1016: The managed function `System.String.get_Chars(System.String* this, int index)` is not supported
+                    char c = str2[0]; 
                 }
             }
 
@@ -161,7 +158,7 @@ namespace PrimitivesTests
                 // but cannot operate with them because decimal uses internal calls
                 // which is not supported by burst. 
                 var decel = new decimal();
-                res = decimal.ToInt32(decel); // CGTD Unable to find internal function
+                res = decimal.ToInt32(decel);
             }
 
             public void Execute()

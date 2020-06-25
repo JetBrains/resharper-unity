@@ -102,7 +102,7 @@ namespace MethodInvocationTests
             public void Execute()
             {
                 SimpleClass.StaticMethod();
-                GetType(); //Burst error BC1001: Unable to access the managed method `object.GetType()` from type `object`
+                GetType();
             }
         }
 
@@ -111,7 +111,7 @@ namespace MethodInvocationTests
         {
             public void Execute()
             {
-                Equals(null, null); // CGTD Burst error BC1016: The managed function `object.Equals(object objA, object objB)` is not supported
+                Equals(null, null);
             }
         }
 
@@ -120,7 +120,7 @@ namespace MethodInvocationTests
         {
             public void Execute()
             {
-                Equals(null); //Burst error BC1001: Unable to access the managed method `object.Equals(object)` from type `NewBehaviourScript.MethodsInvocationTest`
+                Equals(null);
             }
         }
 
@@ -129,7 +129,7 @@ namespace MethodInvocationTests
         {
             public void Execute()
             {
-                ToString(); //Burst error BC1001: Unable to access the managed method `object.ToString()` from type `NewBehaviourScript.MethodsInvocationTest`
+                ToString();
             }
         }
 
@@ -138,7 +138,7 @@ namespace MethodInvocationTests
         {
             public void Execute()
             {
-                var kek = myClasss; //Burst error BC1042: The managed class type `NewBehaviourScript/SimpleClass` is not supported. Loading from a non-readonly static field `NewBehaviourScript.myClasss` is not supported
+                var kek = myClasss;
             }
         }
 
@@ -147,7 +147,7 @@ namespace MethodInvocationTests
         {
             public void Execute()
             {
-                myClasss.PlainMethod(); //Burst error BC1042: The managed class type `NewBehaviourScript/SimpleClass` is not supported. Loading from a non-readonly static field `NewBehaviourScript.myClasss` is not supported
+                myClasss.PlainMethod();
             }
         }
 
@@ -156,7 +156,7 @@ namespace MethodInvocationTests
         {
             public void Execute()
             {
-                GetHashCode(); // Burst error BC1001: Unable to access the managed method `object.GetHashCode()` from type `NewBehaviourScript.MethodsInvocationTest`
+                GetHashCode();
             }
         }
 
@@ -170,8 +170,7 @@ namespace MethodInvocationTests
 
             public override int GetHashCode()
             {
-                //CGTD boxing is very hard, don't know how to check every boxing problem
-                return base.GetHashCode(); // Burst error BC1020: Boxing a valuetype `NewBehaviourScript.MethodsInvocationTest` to a managed object is not supported
+                return base.GetHashCode();
             }
         }
     }

@@ -99,7 +99,7 @@ namespace ExceptionsTests
 
             private void ContainsWarning()
             {
-                new ArgumentException(nameof(ContainsWarning)); //Burst error BC1021: Creating a managed object `here placed object ref' is not supported
+                new ArgumentException(nameof(ContainsWarning));
             }
         }
 
@@ -108,12 +108,10 @@ namespace ExceptionsTests
         {
             public void Execute()
             {
-                // very strange, but burst compiler places errors on line 41 and 42 (open and close brackets).
-                // I decided to place them on keywors, imo it's better
-                try //Burst error BC1005: The `try` construction is not supported.
+                try
                 {
                 }
-                catch (Exception e) //Burst error BC1037: The `catch` construction (e.g `foreach`/`using`) is not supported.
+                catch (Exception e)
                 {
                 }
                 finally
@@ -127,10 +125,10 @@ namespace ExceptionsTests
         {
             public void Execute()
             {
-                try //Burst error BC1005: The `try` construction is not supported
+                try
                 {
                 }
-                finally //Burst error BC1037: The `finally` construction (e.g `foreach`/`using`) is not supported.
+                finally
                 {
                 }
             }
@@ -141,10 +139,10 @@ namespace ExceptionsTests
         {
             public void Execute()
             {
-                try //Burst error BC1005: The `try` construction is not supported
+                try
                 {
                 }
-                catch (ArgumentException e) //Burst error BC1037: The `finally` construction (e.g `foreach`/`using`) is not supported.
+                catch (ArgumentException e) 
                 {
                 }
                 catch (NullReferenceException e)
@@ -161,8 +159,7 @@ namespace ExceptionsTests
         {
             public void Execute()
             {
-                // also here is placed BC1005, but I think BC1037 is sufficient
-                foreach (var i in new NativeArray<int>()) //Burst error BC1037: The `try` construction (e.g `foreach`/`using`) is not supported.
+                foreach (var i in new NativeArray<int>())
                 {
                     Debug.Log(i);
                 }

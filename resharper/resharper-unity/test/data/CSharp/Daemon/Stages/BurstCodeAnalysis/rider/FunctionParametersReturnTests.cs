@@ -117,7 +117,7 @@ namespace FunctionParametersReturnTests
             public void Execute()
             {
                 FStruct(new Struct());
-                Fobject(null); // Burst error BC1016: The managed function `NewBehaviourScript.FunctionParametersReturnValueTest.Fobject(NewBehaviourScript.FunctionParametersReturnValueTest* this, object a)` is not supported
+                Fobject(null); 
             }
         }
 
@@ -130,7 +130,7 @@ namespace FunctionParametersReturnTests
 
             public void Execute()
             {
-                FFoo(null); // BC1016
+                FFoo(null);
             }
         }
 
@@ -144,7 +144,7 @@ namespace FunctionParametersReturnTests
 
             public void Execute()
             {
-                FReturn(); // BC1016
+                FReturn();
             }
         }
 

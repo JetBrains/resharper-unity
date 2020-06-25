@@ -206,7 +206,7 @@
 
   <Error name="BC1349" configurableSeverity="Unity.BC1349">
     <Parameter type="DocumentRange" name="range" />
-    <Message value="Invalid argument. Expecting string literal or string."/>
+    <Message value="BC1349: Invalid argument. Expecting string literal or string."/>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Error>

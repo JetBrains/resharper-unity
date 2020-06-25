@@ -90,7 +90,7 @@ namespace ReferenceExpressionTests
             {
                 ourEnum = ourEnum;
                 ourEnum = MyEnum.enumElem1;
-                var myClass = new SimpleClass(); //Burst error BC1021: Creating a managed object `here placed object ref' is not supported
+                var myClass = new SimpleClass();
             }
         }
 
@@ -103,7 +103,7 @@ namespace ReferenceExpressionTests
             public void Execute()
             {
                 var vari1 = getProp;
-                getSetProp = 2; //Burst error BC1034: Writing to a static field `NewBehaviourScript.ReferenceExpressionTest.<getSetProp>k__BackingField` is not supported.
+                getSetProp = 2;
             }
         }
 
@@ -118,7 +118,7 @@ namespace ReferenceExpressionTests
             {
                 var var1 = field2;
                 var var2 = field3;
-                field1 = 2; //Burst error BC1034: Writing to a static field `fullname till field` is not supported
+                field1 = 2; 
             }
         }
 
@@ -129,7 +129,7 @@ namespace ReferenceExpressionTests
 
             public void Execute()
             {
-                var var1 = field1; //Burst error BC1040: Loading from a non-readonly static field
+                var var1 = field1;
             }
         }
     }

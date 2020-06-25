@@ -87,8 +87,8 @@ namespace EqualsTests
         {
             public void Execute()
             {
-                var lol = new EqualsTest1();
-                if (Equals(lol))// Burst error BC1020: Boxing a valuetype `EqualsTests.EqualsTests.EqualsTest1` to a managed object is not supported
+                var var1 = new EqualsTest1();
+                if (Equals(var1))
                     Debug.Log("1");
             }
 

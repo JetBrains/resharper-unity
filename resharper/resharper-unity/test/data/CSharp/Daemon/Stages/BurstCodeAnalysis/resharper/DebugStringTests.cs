@@ -128,7 +128,7 @@ namespace DebugStringTests
                 int var1 = 2;
                 FixedString128 variable = "string";
 
-                string.Format("{0} asdasd", variable); //BC1033 - beucase no var
+                string.Format("{0} asdasd", variable);
             }
         }
 
@@ -137,7 +137,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string kopa1 = $"as{2}d{3}asd"; //LOADING string literal
+                string kopa1 = $"as{2}d{3}asd";
             }
         }
 
@@ -146,7 +146,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                var fixasdfed = new FixedString128("variable"); //BC1033
+                var fixasdfed = new FixedString128("variable");
             }
         }
 
@@ -155,7 +155,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string.Format(new CultureInfo(1), "", null); //BC1021 creating managed
+                string.Format(new CultureInfo(1), "", null);
             }
         }
 
@@ -164,7 +164,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string.Format(toFormat, 12); //BC1042 managed loading not supported
+                string.Format(toFormat, 12);
             }
         }
 
@@ -173,7 +173,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                Debug.Log(12); // BC1349 Invalid argument. Expecting string literal or string.
+                Debug.Log(12);
             }
         }
 
@@ -184,7 +184,7 @@ namespace DebugStringTests
             {
                 FixedString128 variable = "string";
 
-                var lola = string.Format("{0} asdasd", variable); //BC1033 - beucase no var
+                var lola = string.Format("{0} asdasd", variable);
             }
         }
 
@@ -193,7 +193,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string kopa = "asdasd";//BC1033
+                string kopa = "asdasd";
             }
         }
     }

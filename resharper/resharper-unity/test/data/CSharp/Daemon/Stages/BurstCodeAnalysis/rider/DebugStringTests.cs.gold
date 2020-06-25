@@ -128,7 +128,7 @@ namespace DebugStringTests
                 int var1 = 2;
                 FixedString128 variable = "string";
 
-                |string.Format("{0} asdasd", variable)|(0); //BC1033 - beucase no var
+                |string.Format("{0} asdasd", variable)|(0);
             }
         }
 
@@ -137,7 +137,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string kopa1 = |$"as{2}d{3}asd"|(1); //LOADING string literal
+                string kopa1 = |$"as{2}d{3}asd"|(1);
             }
         }
 
@@ -146,7 +146,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                var fixasdfed = new FixedString128(|"variable"|(2)); //BC1033
+                var fixasdfed = new FixedString128(|"variable"|(2));
             }
         }
 
@@ -155,7 +155,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                |string.Format(|new CultureInfo(1)|(4), |""|(5), null)|(3); //BC1021 creating managed
+                |string.Format(|new CultureInfo(1)|(4), |""|(5), null)|(3);
             }
         }
 
@@ -164,7 +164,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string.Format(||toFormat|(6)|(7), 12); //BC1042 managed loading not supported
+                string.Format(||toFormat|(6)|(7), 12);
             }
         }
 
@@ -173,7 +173,7 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                Debug.Log(|12|(8)); // BC1349 Invalid argument. Expecting string literal or string.
+                Debug.Log(|12|(8));
             }
         }
 
@@ -184,7 +184,7 @@ namespace DebugStringTests
             {
                 FixedString128 variable = "string";
 
-                var lola = |string.Format("{0} asdasd", variable)|(9); //BC1033 - beucase no var
+                var lola = |string.Format("{0} asdasd", variable)|(9);
             }
         }
 
@@ -193,20 +193,20 @@ namespace DebugStringTests
         {
             public void Execute()
             {
-                string kopa = |"asdasd"|(10);//BC1033
+                string kopa = |"asdasd"|(10);
             }
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Invalid argument. Expecting string literal or string.
-(1): ReSharper Warning: Invalid argument. Expecting string literal or string.
-(2): ReSharper Warning: Invalid argument. Expecting string literal or string.
+(0): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(1): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(2): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
 (3): ReSharper Warning: BC1016: The managed function `Format` is not supported.
 (4): ReSharper Warning: BC1021: Creating a managed object `CultureInfo` is not supported
-(5): ReSharper Warning: Invalid argument. Expecting string literal or string.
+(5): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
 (6): ReSharper Warning: BC1042: The managed class type `DebugStringTests` is not supported. Loading from a non-readonly static field `toFormat` is not supported
-(7): ReSharper Warning: Invalid argument. Expecting string literal or string.
-(8): ReSharper Warning: Invalid argument. Expecting string literal or string.
-(9): ReSharper Warning: Invalid argument. Expecting string literal or string.
-(10): ReSharper Warning: Invalid argument. Expecting string literal or string.
+(7): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(8): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(9): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(10): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
