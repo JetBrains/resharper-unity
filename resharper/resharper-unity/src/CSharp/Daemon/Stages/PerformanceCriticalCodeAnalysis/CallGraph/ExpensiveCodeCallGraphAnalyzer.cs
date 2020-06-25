@@ -91,5 +91,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             public bool ProcessingIsFinished => IsExpensiveCodeFound;
         }
+
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        {
+            return new LocalList<IDeclaredElement>();
+        }
     }
 }

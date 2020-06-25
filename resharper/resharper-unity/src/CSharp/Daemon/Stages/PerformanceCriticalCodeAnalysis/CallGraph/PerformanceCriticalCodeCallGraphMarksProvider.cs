@@ -28,6 +28,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        {
+            return new LocalList<IDeclaredElement>();
+        }
+
         private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
         {
             if (currentNode is IInvocationExpression invocationExpression)
