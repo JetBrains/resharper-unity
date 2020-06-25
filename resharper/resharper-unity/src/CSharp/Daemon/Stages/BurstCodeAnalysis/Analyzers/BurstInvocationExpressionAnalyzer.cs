@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             {
                 var argumentList = invocationExpression.ArgumentList.Arguments;
 
-                if (argumentList.Count != 1)
+                if (argumentList.Count == 1)
                 {
                     var argument = argumentList[0];
                     if (!IsBurstPermittedString(argument.Expression.Type()))
@@ -76,7 +76,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             if (IsStringFormat(invokedMethod))
             {
-                //CGTD check that if i am at the string literal owner - return
                 var argumentList = invocationExpression.ArgumentList.Arguments;
 
                 if (argumentList.Count != 0)
