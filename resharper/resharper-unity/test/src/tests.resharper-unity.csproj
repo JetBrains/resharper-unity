@@ -33,6 +33,7 @@
   <ItemGroup>
     <PackageReference Include="NUnit.Console" Version="3.10.0" />
     <PackageReference Include="Lib.Harmony" Version="2.0.0.8" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-unity.csproj" />
