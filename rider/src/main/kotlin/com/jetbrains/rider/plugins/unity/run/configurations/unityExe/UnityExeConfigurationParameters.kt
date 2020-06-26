@@ -1,27 +1,19 @@
 package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 
-import com.intellij.openapi.project.Project
-import com.jetbrains.rider.run.configurations.dotNetExe.DotNetExeConfigurationParameters
+import com.jetbrains.rider.run.configurations.exe.ExeConfigurationParameters
 
 open class UnityExeConfigurationParameters(
-    project: Project,
     exePath: String,
     programParameters: String,
     workingDirectory: String,
     envs: Map<String, String>,
     isPassParentEnvs: Boolean,
-    useExternalConsole: Boolean,
-    runtimeArguments: String
-) : DotNetExeConfigurationParameters(
-    project,
+    useExternalConsole: Boolean
+) : ExeConfigurationParameters(
     exePath,
     programParameters,
     workingDirectory,
     envs,
     isPassParentEnvs,
-    useExternalConsole,
-    false,
-    false,
-    null,
-    runtimeArguments
+    useExternalConsole
 )

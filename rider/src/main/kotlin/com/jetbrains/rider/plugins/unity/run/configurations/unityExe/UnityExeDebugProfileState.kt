@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 import com.intellij.execution.DefaultExecutionResult
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.execution.process.ProcessAdapter
 import com.intellij.execution.process.ProcessEvent
@@ -23,21 +24,20 @@ import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.createConsole
-import com.jetbrains.rider.run.createRunCommandLine
+import com.jetbrains.rider.run.createEmptyConsoleCommandLine
 import com.jetbrains.rider.util.idea.createNestedAsyncPromise
 import org.jetbrains.concurrency.Promise
 import java.io.IOException
 import java.net.ServerSocket
 
-class UnityExeAttachProfileState(private val exeConfiguration : UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,
-                              executionEnvironment: ExecutionEnvironment)
+class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,
+                                executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
 
-    private val logger = Logger.getInstance(UnityExeAttachProfileState::class.java)
+    private val logger = Logger.getInstance(UnityExeDebugProfileState::class.java)
     private val project = executionEnvironment.project
     private lateinit var console: ConsoleView
     private lateinit var targetProcessHandler: KillableProcessHandler
-    val dotNetExecutable = exeConfiguration.params.toDotNetExecutable()
 
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
         throw UnsupportedOperationException("Should use overload with session")
@@ -48,33 +48,42 @@ class UnityExeAttachProfileState(private val exeConfiguration : UnityExeConfigur
     }
 
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
-        //dotNetExecutable.onProcessStarter(executionEnvironment.runProfile, workerProcessHandler)
-
         lifetime.onTermination {
             if (!targetProcessHandler.isProcessTerminated)
                 targetProcessHandler.destroyProcess()
         }
+
         return DefaultExecutionResult(console, workerProcessHandler)
     }
 
     override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
         val result = lifetime.createNestedAsyncPromise<WorkerRunInfo>()
 
-        val useExternalConsole = exeConfiguration.params.useExternalConsole
-        val commandLine = dotNetExecutable.createRunCommandLine()
-        targetProcessHandler = if (useExternalConsole)
-            ExternalConsoleMediator.createProcessHandler(commandLine) as KillableProcessHandler
+        val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.useExternalConsole)
+            .withEnvironment(exeConfiguration.parameters.envs)
+            .withParentEnvironmentType(if (exeConfiguration.parameters.isPassParentEnvs) {
+                GeneralCommandLine.ParentEnvironmentType.CONSOLE
+            } else {
+                GeneralCommandLine.ParentEnvironmentType.NONE
+            })
+            .withExePath(exeConfiguration.parameters.exePath)
+            .withWorkDirectory(exeConfiguration.parameters.workingDirectory)
+            .withParameters(exeConfiguration.parameters.programParameters)
+
+        targetProcessHandler = if (exeConfiguration.parameters.useExternalConsole)
+            ExternalConsoleMediator.createProcessHandler(runCommandLine) as KillableProcessHandler
         else
-            KillableProcessHandler(commandLine)
-        val commandLineString = commandLine.commandLineString
+            KillableProcessHandler(runCommandLine)
+        val commandLineString = runCommandLine.commandLineString
         logger.info("Process started: $commandLineString")
         targetProcessHandler.addProcessListener(object: ProcessAdapter() {
             override fun processTerminated(event: ProcessEvent) = logger.info("Process terminated: $commandLineString")
         })
-        console = createConsole(useExternalConsole, targetProcessHandler, commandLineString, executionEnvironment.project)
+
+        console = createConsole(exeConfiguration.parameters.useExternalConsole, targetProcessHandler, commandLineString, executionEnvironment.project)
+        console.attachToProcess(targetProcessHandler)
         targetProcessHandler.startNotify()
 
-        val result = AsyncPromise<WorkerRunInfo>()
         application.executeOnPooledThread {
             UnityPlayerListener(project, {
                 if (!it.isEditor) {

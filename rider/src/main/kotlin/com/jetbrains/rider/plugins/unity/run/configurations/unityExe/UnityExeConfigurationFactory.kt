@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.jetbrains.rider.build.tasks.BuildSolutionBeforeRunTask
 import com.jetbrains.rider.build.tasks.BuildSolutionBeforeRunTaskProvider
-import com.jetbrains.rider.run.configurations.dotNetExe.DotNetExeConfiguration
 import org.jetbrains.annotations.NotNull
 
 class UnityExeConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
@@ -28,22 +27,20 @@ class UnityExeConfigurationFactory(type: ConfigurationType) : ConfigurationFacto
         return true
     }
 
-    private fun createParameters(project: Project): UnityExeConfigurationParameters {
+    private fun createParameters(): UnityExeConfigurationParameters {
         return UnityExeConfigurationParameters(
-            project,
             "",
             "",
             "",
             hashMapOf(),
-            true,
             false,
-            ""
+            false
         )
     }
 
     override fun createConfiguration(name: String?, template: RunConfiguration): RunConfiguration =
-        UnityExeConfiguration(name ?: "Unity Executable", template.project, this, createParameters(template.project))
+        UnityExeConfiguration(name ?: "Unity Executable", template.project, this, createParameters())
 
     override fun createTemplateConfiguration(@NotNull project: Project): RunConfiguration =
-        UnityExeConfiguration("Unity Executable", project, this, createParameters(project))
+        UnityExeConfiguration("Unity Executable", project, this, createParameters())
 }
