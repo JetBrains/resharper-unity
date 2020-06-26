@@ -35,6 +35,9 @@
       <DependentUpon>YamlErrors.xml</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup Label="References">
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
