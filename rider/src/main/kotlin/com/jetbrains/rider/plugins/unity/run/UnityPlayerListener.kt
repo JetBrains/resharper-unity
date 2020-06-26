@@ -7,12 +7,15 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import java.net.*
+import java.nio.ByteBuffer
+import java.nio.channels.DatagramChannel
+import java.nio.channels.SelectionKey
+import java.nio.channels.Selector
 import java.util.*
 import java.util.regex.Pattern
 
 
 class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
-                          private val onPlayerRefresh: (Boolean) -> Unit,
                           private val onPlayerAdded: (UnityProcess) -> Unit,
                           private val onPlayerRemoved: (UnityProcess) -> Unit) {
 
@@ -60,44 +63,41 @@ class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
     private val refreshPeriod: Long = 1000
     private val defaultHeartbeat = 3
 
-    private val waitOnSocketLength = 50
     private val multicastPorts = listOf(54997, 34997, 57997, 58997)
-    private val playerMulticastGroup = "225.0.0.222"
-    private val multicastSockets = mutableListOf<MulticastSocket>()
+    private val playerMulticastGroup = InetAddress.getByName("225.0.0.222")
+    private val selector = Selector.open()
 
     private val unityPlayerDescriptorsHeartbeats = mutableMapOf<String, Int>()
     private val unityProcesses = mutableMapOf<String, UnityProcess>()
 
     private val refreshTimer: Timer
-    private val socketsLock = Object()
+    private val syncLock = Object()
 
     init {
+
         for (networkInterface in NetworkInterface.getNetworkInterfaces()) {
             if (!networkInterface.isUp || !networkInterface.supportsMulticast()
                     || !networkInterface.inetAddresses.asSequence().any { it is Inet4Address }) {
                 continue
             }
 
-            synchronized(socketsLock) {
-                for (port in multicastPorts) {
-                    try {
-                        val multicastSocket = MulticastSocket(port)
-                        val address = InetAddress.getByName(playerMulticastGroup)
-                        multicastSocket.reuseAddress = true
-                        multicastSocket.networkInterface = networkInterface
-                        multicastSocket.soTimeout = waitOnSocketLength
-                        multicastSocket.joinGroup(address)
-                        multicastSockets.add(multicastSocket)
-                    } catch (e: Exception) {
-                        logger.warn(e.message)
-                    }
+            multicastPorts.forEach { port ->
+                try {
+                    // Setting the network interface will set the first IPv4 address on the socket's fd
+                    val channel = DatagramChannel.open(StandardProtocolFamily.INET)
+                        .setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                        .setOption(StandardSocketOptions.IP_MULTICAST_IF, networkInterface)
+                        .bind(InetSocketAddress(port))
+                    channel.configureBlocking(false)
+                    channel.join(playerMulticastGroup, networkInterface)
+                    channel.register(selector, SelectionKey.OP_READ)
+                } catch (e: Exception) {
+                    logger.warn(e.message)
                 }
             }
         }
 
-        onPlayerRefresh(true)
         addLocalProcesses()
-        onPlayerRefresh(false)
 
         refreshTimer = startAddingPlayers()
 
@@ -109,17 +109,15 @@ class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
     private fun addLocalProcesses() {
         val unityProcesses = OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }
         val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
-        unityProcesses.map { processInfo ->
+        unityProcesses.forEach { processInfo ->
             val unityProcessInfo = unityProcessInfoMap[processInfo.pid]
-
-            if (!unityProcessInfo?.roleName.isNullOrEmpty()) {
+            val process = if (!unityProcessInfo?.roleName.isNullOrEmpty()) {
                 UnityEditorHelper(processInfo.executableName, unityProcessInfo?.roleName!!, processInfo.pid, unityProcessInfo.projectName)
             }
             else {
                 UnityEditor(processInfo.executableName, processInfo.pid, unityProcessInfo?.projectName)
             }
-        }.forEach {
-            onPlayerAdded(it)
+            onPlayerAdded(process)
         }
     }
 
@@ -152,7 +150,7 @@ class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
                 }
             }
         } catch (e: Exception) {
-            logger.warn("Failed to parse Unity Player: ${e.message}")
+            logger.warn(e)
         }
         return null
     }
@@ -169,67 +167,81 @@ class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
     }
 
     private fun refreshUnityPlayersList() {
-        synchronized(unityPlayerDescriptorsHeartbeats) {
-
-            onPlayerRefresh(true)
+        synchronized(syncLock) {
 
             val start = System.currentTimeMillis()
             logger.trace("Refreshing Unity players list...")
-            try {
-                // TODO: Seen a ConcurrentModificationException here
-                // I don't think it's legal to remove while enumerating
-                for (playerDescriptor in unityPlayerDescriptorsHeartbeats.keys) {
-                    val currentPlayerTimeout = unityPlayerDescriptorsHeartbeats[playerDescriptor] ?: continue
-                    if (currentPlayerTimeout <= 0) {
-                        unityPlayerDescriptorsHeartbeats.remove(playerDescriptor)
-                        logger.trace("Removing old Unity player $playerDescriptor")
-                        unityProcesses.remove(playerDescriptor)?.let { onPlayerRemoved(it) }
-                    } else
-                        unityPlayerDescriptorsHeartbeats[playerDescriptor] = currentPlayerTimeout - 1
-                }
 
-                synchronized(socketsLock) {
-                    for (socket in multicastSockets) {
-                        val buf = ByteArray(1024)
-                        val recv = DatagramPacket(buf, buf.size)
-                        try {
-                            if (socket.isClosed)
-                                continue
-                            socket.receive(recv)
-                            val descriptor = String(buf, 0, recv.length - 1)
-                            val hostAddress = recv.address
-                            logger.trace("Get heartbeat on ${socket.networkInterface.name}${socket.`interface`}:${socket.localPort} from $hostAddress: $descriptor")
-                            if (!unityPlayerDescriptorsHeartbeats.containsKey(descriptor)) {
-                                parseUnityPlayer(descriptor, hostAddress)?.let {
-                                    unityProcesses[descriptor] = it
-                                    onPlayerAdded(it)
-                                }
-                            }
-                            unityPlayerDescriptorsHeartbeats[descriptor] = defaultHeartbeat
-                        } catch (e: SocketTimeoutException) {
-                            //wait timeout, go to the next port
-                            logger.debug("Socket timed out: ${socket.networkInterface.name}${socket.`interface`}:${socket.localPort}")
+            for (playerDescriptor in unityPlayerDescriptorsHeartbeats.keys) {
+                val currentPlayerTimeout = unityPlayerDescriptorsHeartbeats[playerDescriptor] ?: continue
+                unityPlayerDescriptorsHeartbeats[playerDescriptor] = currentPlayerTimeout - 1
+            }
+
+            unityPlayerDescriptorsHeartbeats.filterValues { it <= 0 }.keys.forEach { playerDescription ->
+                unityPlayerDescriptorsHeartbeats.remove(playerDescription)
+                logger.trace("Removing old Unity player $playerDescription")
+                unityProcesses.remove(playerDescription)?.let { onPlayerRemoved(it) }
+            }
+
+            // Read all data from all channels that is currently available. There might be more than one message ready
+            // on a channel as players continuously send multicast messages, so make sure we read them all. If there is
+            // nothing available, we return immediately and start sleeping.
+            val buffer = ByteBuffer.allocate(1024)
+            while (true) {
+                val readyChannels = selector.selectNow { key ->
+                    try {
+                        buffer.clear()
+
+                        val channel = key.channel() as DatagramChannel
+                        val hostAddress = channel.receive(buffer) as InetSocketAddress
+                        val descriptor = String(buffer.array(), 0, buffer.position() - 1)
+
+                        if (logger.isTraceEnabled) {
+                            logger.trace("Got heartbeat on ${channel.remoteAddress} from $hostAddress: $descriptor")
                         }
+
+                        if (!unityPlayerDescriptorsHeartbeats.containsKey(descriptor)) {
+                            parseUnityPlayer(descriptor, hostAddress.address)?.let { player ->
+                                unityProcesses[descriptor] = player
+                                onPlayerAdded(player)
+                            }
+                        }
+
+                        unityPlayerDescriptorsHeartbeats[descriptor] = defaultHeartbeat
+                    } catch (e: Exception) {
+                        logger.warn(e)
                     }
                 }
 
-                if (logger.isTraceEnabled) {
-                    val duration = System.currentTimeMillis() - start
-                    logger.trace("Finished refreshing of Unity players list. Took ${duration}ms")
+                if (readyChannels == 0) {
+                    break
                 }
             }
-            finally {
-                onPlayerRefresh(false)
+
+            if (logger.isTraceEnabled) {
+                val duration = System.currentTimeMillis() - start
+                logger.trace("Finished refreshing of Unity players list. Took ${duration}ms")
             }
         }
     }
 
     private fun close() {
         refreshTimer.cancel()
-        synchronized(socketsLock) {
-            for (socket in multicastSockets) {
-                socket.close()
+
+        synchronized(syncLock) {
+            selector.keys().forEach {
+                try {
+                    // Close the channel. This will cancel the selection key and removes multicast group membership. It
+                    // doesn't close the socket, as there are still selector registrations active
+                    it.channel().close()
+                } catch (e: Throwable) {
+                    logger.warn(e)
+                }
             }
+
+            // Close the selector. This deregisters the selector from all channels, and then kills the socket attached to
+            // the already closed channel
+            selector.close()
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.run
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
@@ -35,7 +36,6 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private val treeModelLock = Object()
     private val tree: Tree
     private val peerPanel: JPanel
-    private var busyCount = 0
 
     init {
         title = "Searching for Unity Editors and Players..."
@@ -61,6 +61,10 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 .apply { comparator = SpeedSearchComparator(false) }
 
             emptyText.text = "Searching"
+
+            // Show that we're always searching. We poll players every second, but that is so fast that we can't show it
+            // for the poll duration, so just always show it.
+            setPaintBusy(true)
         }
 
         object: DoubleClickListener() {
@@ -118,7 +122,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         Lifetime.using { lifetime ->
             object : Task.Backgroundable(project, "Getting list of Unity processes...") {
                 override fun run(indicator: ProgressIndicator) {
-                    UnityPlayerListener(project, lifetime, ::setSearching,
+                    UnityPlayerListener(project, lifetime,
                         { UIUtil.invokeLaterIfNeeded { addProcess(it) } },
                         { UIUtil.invokeLaterIfNeeded { removeProcess(it) } }
                     )
@@ -163,20 +167,6 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             validationResult
         }
         dialog.showAndGet()
-    }
-
-    private fun setSearching(flag: Boolean) {
-        if (flag) {
-            if (++busyCount > 0) {
-                tree.setPaintBusy(true)
-            }
-        }
-        else {
-            busyCount = max(0, busyCount - 1)
-            if (busyCount == 0) {
-                tree.setPaintBusy(false)
-            }
-        }
     }
 
     private fun addProcess(process: UnityProcess): UnityProcessTreeNode {
