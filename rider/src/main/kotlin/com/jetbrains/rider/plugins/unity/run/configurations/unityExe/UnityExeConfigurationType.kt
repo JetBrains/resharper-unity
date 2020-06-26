@@ -14,5 +14,4 @@ class UnityExeConfigurationType : ConfigurationTypeBase("RunUnityExe", "Unity Ex
     init {
         addFactory(factory)
     }
-
 }
