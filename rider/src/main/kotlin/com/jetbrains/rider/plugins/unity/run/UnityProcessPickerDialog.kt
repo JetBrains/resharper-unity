@@ -1,8 +1,5 @@
 package com.jetbrains.rider.plugins.unity.run
 
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
@@ -20,7 +17,6 @@ import java.awt.Graphics
 import java.awt.Insets
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
-import java.lang.Integer.max
 import javax.swing.*
 import javax.swing.tree.*
 
@@ -120,14 +116,10 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
     override fun show() {
         Lifetime.using { lifetime ->
-            object : Task.Backgroundable(project, "Getting list of Unity processes...") {
-                override fun run(indicator: ProgressIndicator) {
-                    UnityPlayerListener(project, lifetime,
-                        { UIUtil.invokeLaterIfNeeded { addProcess(it) } },
-                        { UIUtil.invokeLaterIfNeeded { removeProcess(it) } }
-                    )
-                }
-            }.queue()
+            UnityDebuggableProcessListener(project, lifetime,
+                { UIUtil.invokeLaterIfNeeded { addProcess(it) } },
+                { UIUtil.invokeLaterIfNeeded { removeProcess(it) } }
+            )
             super.show()
         }
     }

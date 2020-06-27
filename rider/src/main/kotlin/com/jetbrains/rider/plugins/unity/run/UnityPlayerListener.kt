@@ -1,10 +1,6 @@
 package com.jetbrains.rider.plugins.unity.run
 
-import com.intellij.execution.process.OSProcessUtil
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import java.net.*
 import java.nio.ByteBuffer
@@ -14,9 +10,7 @@ import java.nio.channels.Selector
 import java.util.*
 import java.util.regex.Pattern
 
-
-class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
-                          private val onPlayerAdded: (UnityProcess) -> Unit,
+class UnityPlayerListener(private val onPlayerAdded: (UnityProcess) -> Unit,
                           private val onPlayerRemoved: (UnityProcess) -> Unit) {
 
     companion object {
@@ -97,33 +91,28 @@ class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
             }
         }
 
-        addLocalProcesses()
-
-        refreshTimer = startAddingPlayers()
-
-        lifetime.onTermination {
-            close()
-        }
-    }
-
-    private fun addLocalProcesses() {
-        val unityProcesses = OSProcessUtil.getProcessList().filter { UnityRunUtil.isUnityEditorProcess(it) }
-        val unityProcessInfoMap = UnityRunUtil.getAllUnityProcessInfo(unityProcesses, project)
-        unityProcesses.forEach { processInfo ->
-            val unityProcessInfo = unityProcessInfoMap[processInfo.pid]
-            val process = if (!unityProcessInfo?.roleName.isNullOrEmpty()) {
-                UnityEditorHelper(processInfo.executableName, unityProcessInfo?.roleName!!, processInfo.pid, unityProcessInfo.projectName)
-            }
-            else {
-                UnityEditor(processInfo.executableName, processInfo.pid, unityProcessInfo?.projectName)
-            }
-            onPlayerAdded(process)
-        }
-    }
-
-    private fun startAddingPlayers(): Timer {
-        return kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
+        refreshTimer = kotlin.concurrent.timer("Listen for Unity Players", true, 0L, refreshPeriod) {
             refreshUnityPlayersList()
+        }
+    }
+
+    fun stop() {
+        refreshTimer.cancel()
+
+        synchronized(syncLock) {
+            selector.keys().forEach {
+                try {
+                    // Close the channel. This will cancel the selection key and removes multicast group membership. It
+                    // doesn't close the socket, as there are still selector registrations active
+                    it.channel().close()
+                } catch (e: Throwable) {
+                    logger.warn(e)
+                }
+            }
+
+            // Close the selector. This deregisters the selector from all channels, and then kills the socket attached to
+            // the already closed channel
+            selector.close()
         }
     }
 
@@ -220,28 +209,8 @@ class UnityPlayerListener(private val project: Project, lifetime: Lifetime,
 
             if (logger.isTraceEnabled) {
                 val duration = System.currentTimeMillis() - start
-                logger.trace("Finished refreshing of Unity players list. Took ${duration}ms")
+                logger.trace("Finished refreshing Unity players list. Took ${duration}ms")
             }
-        }
-    }
-
-    private fun close() {
-        refreshTimer.cancel()
-
-        synchronized(syncLock) {
-            selector.keys().forEach {
-                try {
-                    // Close the channel. This will cancel the selection key and removes multicast group membership. It
-                    // doesn't close the socket, as there are still selector registrations active
-                    it.channel().close()
-                } catch (e: Throwable) {
-                    logger.warn(e)
-                }
-            }
-
-            // Close the selector. This deregisters the selector from all channels, and then kills the socket attached to
-            // the already closed channel
-            selector.close()
         }
     }
 }
