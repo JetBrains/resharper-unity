@@ -15,6 +15,6 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.Ref.5.5.0f3" Version="2020.6.10" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-    <PackageReference Include="JetBrains.RdFramework.net35" Version="2020.2.0-preview380"/>
   </ItemGroup>
+    <Import Project="$(MSBuildProjectDirectory)/../build/generated/PackageReference.JetBrains.RdFramework.net35.Props" />
 </Project>

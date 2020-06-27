@@ -216,24 +216,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public static string GetRawComponentName(IBuffer assetDocumentBuffer)
         {
-            var pos = ourColumnSearcher.Find(assetDocumentBuffer);
+            var pos = ourColumnSearcher.Find(assetDocumentBuffer) - 1;
             if (pos < 0)
                 return null;
 
-            pos--;
-            var sb = new StringBuilder();
-            while (pos >= 0)
+            var startPos = pos--;
+            while (startPos >= 0)
             {
-                if (pos == '\r')
+                if (assetDocumentBuffer[startPos] == '\r')
                     break;
-                if (pos == '\n')
+                if (assetDocumentBuffer[startPos] == '\n')
                     break;
 
-                sb.Append(assetDocumentBuffer[pos]);
-                pos--;
+                startPos--;
             }
 
-            return sb.ToString();
+            return assetDocumentBuffer.GetText(new TextRange(startPos, pos));
         }
         
         public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
