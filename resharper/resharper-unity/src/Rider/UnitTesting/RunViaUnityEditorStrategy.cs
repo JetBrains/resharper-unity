@@ -385,9 +385,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             var clientControllerInfo = firstRun.HostController.GetClientControllerInfo(firstRun);
             if (clientControllerInfo != null)
-                unityClientControllerInfo = new UnitTestLaunchClientControllerInfo(clientControllerInfo.AssemblyLocation,
+                unityClientControllerInfo = new UnitTestLaunchClientControllerInfo(clientControllerInfo.ControllerType.Assembly.CodeBase,
                                                                                    clientControllerInfo.ExtraDependencies?.ToList(),
-                                                                                   clientControllerInfo.TypeName);
+                                                                                   clientControllerInfo.ControllerType.FullName.NotNull());
 
             var launch = new UnitTestLaunch(firstRun.Launch.Session.Id, tests, emptyList, emptyList, mode, unityClientControllerInfo);
             return launch;
@@ -430,13 +430,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     case Status.Ignored:
                     case Status.Inconclusive:
                         string message = result.Status.ToString();
-                        var taskResult = UnitTestStatus.Inconclusive;
+                        TaskResult taskResult = TaskResult.Inconclusive;
                         if (result.Status == Status.Failure)
-                            taskResult = UnitTestStatus.Failed;
+                            taskResult = TaskResult.Error;
                         else if (result.Status == Status.Ignored)
-                            taskResult = UnitTestStatus.Aborted;
+                            taskResult = TaskResult.Skipped;
                         else if (result.Status == Status.Success)
-                            taskResult = UnitTestStatus.Success;
+                            taskResult = TaskResult.Success;
 
                         myUnitTestResultManager.TestOutput(unitTestElement, firstRun.Launch.Session, result.Output, TaskOutputType.STDOUT);
                         myUnitTestResultManager.TestDuration(unitTestElement, firstRun.Launch.Session, TimeSpan.FromMilliseconds(result.Duration));

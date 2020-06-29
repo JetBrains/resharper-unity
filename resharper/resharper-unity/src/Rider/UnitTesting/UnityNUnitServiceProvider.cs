@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.UnitTestFramework;
 using JetBrains.ReSharper.UnitTestFramework.Elements;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
+using JetBrains.ReSharper.UnitTestProvider.nUnit;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.Rider.Model;
 
@@ -22,23 +23,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly RdUnityModel myRdUnityModel;
 
-        public UnityNUnitServiceProvider(ISolution solution,
-            IPsiModules psiModules,
-            ISymbolCache symbolCache,
-            IUnitTestElementIdFactory idFactory,
-            IUnitTestElementManager elementManager,
-            NUnitTestProvider provider,
-            IUnitTestingSettings settings,
-            ISettingsStore settingsStore,
-            ISettingsOptimization settingsOptimization,
-            ISettingsCache settingsCache,
-            UnitTestingCachingService cachingService,
-            INUnitTestParametersProvider testParametersProvider,
+        public UnityNUnitServiceProvider(ISolution solution, IPsiModules psiModules, ISymbolCache symbolCache,
+            IUnitTestElementIdFactory idFactory, IUnitTestElementManager elementManager, NUnitTestProvider provider,
+            ISettingsStore settingsStore, ISettingsOptimization settingsOptimization, ISettingsCache settingsCache,
+            UnitTestingCachingService cachingService, INUnitTestParametersProvider testParametersProvider,
             UnityEditorProtocol editorProtocol,
             RunViaUnityEditorStrategy runViaUnityEditorStrategy,
+            NUnitOutOfProcessUnitTestRunStrategy nUnitOutOfProcessUnitTestRunStrategy,
             UnitySolutionTracker unitySolutionTracker)
-            : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settings, settingsStore,
-                settingsOptimization, settingsCache, cachingService, testParametersProvider)
+            : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settingsStore,
+                settingsOptimization, settingsCache, cachingService, nUnitOutOfProcessUnitTestRunStrategy, testParametersProvider)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
