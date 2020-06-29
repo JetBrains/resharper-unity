@@ -11,9 +11,11 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.util.io.exists
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerPlatform
@@ -29,6 +31,9 @@ import com.jetbrains.rider.util.idea.createNestedAsyncPromise
 import org.jetbrains.concurrency.Promise
 import java.io.IOException
 import java.net.ServerSocket
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,
                                 executionEnvironment: ExecutionEnvironment)
@@ -58,6 +63,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
 
     override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
         val result = lifetime.createNestedAsyncPromise<WorkerRunInfo>()
+        val nestedLifetimeDef = lifetime.createNested()
 
         val runCommandLine = createEmptyConsoleCommandLine(exeConfiguration.parameters.useExternalConsole)
             .withEnvironment(exeConfiguration.parameters.envs)
@@ -84,19 +90,32 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         console.attachToProcess(targetProcessHandler)
         targetProcessHandler.startNotify()
 
+        // Read player-connection-guid from Library/PlayerDataCache/Linux64/Data/boot.config
+        val playerDataCache: Path = Paths.get(project.basePath!!, "Library/PlayerDataCache")
+        val bootFiles = Files.newDirectoryStream(playerDataCache).map { it.resolve("Data/boot.config") }.filter { it.exists() }
+        val prefix  = "player-connection-guid="
+        val guids = bootFiles.map { it.toFile().useLines { it.filter { it.startsWith(prefix) }.first().substring(prefix.length).toLong() } }
+
         application.executeOnPooledThread {
             UnityPlayerListener(project, {
-                if (!it.isEditor) {
+                if (!nestedLifetimeDef.lifetime.isAlive)
+                    return@UnityPlayerListener
+
+                if (!it.isEditor && guids.contains(it.editorId)) {
+                    if (!it.allowDebugging)
+                        result.setError("Make sure the \"Script Debugging\" is enabled for this Standalone Player.") //https://docs.unity3d.com/Manual/BuildSettings.html
+
                     while (isAvailable(it.debuggerPort))
-                        Thread.sleep(1)
+                        Thread.sleep(10)
 
                     UIUtil.invokeLaterIfNeeded {
                         logger.trace("Connecting to Player with port: ${it.debuggerPort}")
                         remoteConfiguration.port = it.debuggerPort
                         result.setResult(createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu))
                     }
+                    nestedLifetimeDef.terminate()
                 }
-            }, {}, lifetime)
+            }, {}, nestedLifetimeDef.lifetime)
         }
         return result
     }
