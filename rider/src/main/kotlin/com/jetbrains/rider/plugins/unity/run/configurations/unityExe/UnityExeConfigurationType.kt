@@ -4,8 +4,8 @@ import com.intellij.execution.configurations.ConfigurationTypeBase
 import com.intellij.util.IconUtil
 import icons.UnityIcons
 
-class UnityExeConfigurationType : ConfigurationTypeBase("RunUnityExe", "Unity Executable",
-    "Unity executable configuration", IconUtil.scale(UnityIcons.RunConfigurations.UnityExe, null, 0.33f)) {
+class UnityExeConfigurationType : ConfigurationTypeBase("RunUnityExe", "Standalone Player",
+    "Unity Standalone Player configuration", IconUtil.scale(UnityIcons.RunConfigurations.UnityExe, null, 0.33f)) {
 
     val factory: UnityExeConfigurationFactory = UnityExeConfigurationFactory(this)
 

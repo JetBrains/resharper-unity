@@ -21,7 +21,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         if (!ourCompiledAssemblyPaths.Contains(assemblyPath))
           UpdateAssemblies();
       }
-      
+
       modelAndLifetime.Lifetime.Bracket(
         () => CompilationPipeline.assemblyCompilationFinished += OnCompilationFinished,
         () => CompilationPipeline.assemblyCompilationFinished -= OnCompilationFinished);

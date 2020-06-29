@@ -11,11 +11,11 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
     override fun getBestParentProjectModelNode(virtualFile: VirtualFile): ProjectModelNode? {
         if (!project.isUnityGeneratedProject())
-            return super.getBestParentProjectModelNode(virtualFile)
+            return super.getBestParentProjectModelNode(virtualFile, null)
 
         val host = ProjectModelViewHost.getInstance(project)
 
-        return recursiveSearch(virtualFile, host) ?: super.getBestParentProjectModelNode(virtualFile)
+        return recursiveSearch(virtualFile, host) ?: super.getBestParentProjectModelNode(virtualFile, null)
     }
 
     private fun recursiveSearch(virtualFile: VirtualFile?, host: ProjectModelViewHost): ProjectModelNode?
