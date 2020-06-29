@@ -94,7 +94,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         val playerDataCache: Path = Paths.get(project.basePath!!, "Library/PlayerDataCache")
         val bootFiles = Files.newDirectoryStream(playerDataCache).map { it.resolve("Data/boot.config") }.filter { it.exists() }
         val prefix  = "player-connection-guid="
-        val guids = bootFiles.map { it.toFile().useLines { it.filter { it.startsWith(prefix) }.first().substring(prefix.length).toLong() } }
+        val guids = bootFiles.map { it.toFile().useLines { it.first { line -> line.startsWith(prefix)}.substring(prefix.length).toLong() } }
 
         application.executeOnPooledThread {
             UnityPlayerListener(project, {
