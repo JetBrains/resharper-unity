@@ -27,13 +27,13 @@ class UnityExeConfigurationFactory(type: ConfigurationType) : ConfigurationFacto
         return true
     }
 
-    private fun createParameters(): UnityExeConfigurationParameters {
+    fun createParameters(): UnityExeConfigurationParameters {
         return UnityExeConfigurationParameters(
             "",
             "",
             "",
             hashMapOf(),
-            false,
+            true,
             false
         )
     }
