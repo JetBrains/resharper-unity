@@ -40,8 +40,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
         protected override CppFileLocation GetFileLocation(IPsiSourceFile sourceFile, ITreeNode originalNode)
         {
             var cppFileLocation = new CppFileLocation(sourceFile, originalNode.GetDocumentRange().TextRange);
-            sourceFile.GetSolution().GetComponent<ShaderLabCppFileLocationTracker>()
-                .VerifyLocation(sourceFile, cppFileLocation);
+            if (!sourceFile.GetSolution().GetComponent<ShaderLabCppFileLocationTracker>().IsSuitableLocation(sourceFile, cppFileLocation))
+                return CppFileLocation.EMPTY;
+            
             return cppFileLocation;
         }
 
