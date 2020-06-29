@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull
 
 class UnityExeConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
     override fun getId(): String {
-        // super.getId() does the same, but prints a deprecation message
-        return name
+        // For compatibility with Rider 2020.1
+        return "Unity Executable"
     }
 
     override fun configureBeforeRunTaskDefaults(providerID: Key<out BeforeRunTask<BeforeRunTask<*>>>?,
@@ -39,8 +39,8 @@ class UnityExeConfigurationFactory(type: ConfigurationType) : ConfigurationFacto
     }
 
     override fun createConfiguration(name: String?, template: RunConfiguration): RunConfiguration =
-        UnityExeConfiguration(name ?: "Unity Executable", template.project, this, createParameters())
+        UnityExeConfiguration(name ?: this.name, template.project, this, createParameters())
 
     override fun createTemplateConfiguration(@NotNull project: Project): RunConfiguration =
-        UnityExeConfiguration("Unity Executable", project, this, createParameters())
+        UnityExeConfiguration(this.name, project, this, createParameters())
 }
