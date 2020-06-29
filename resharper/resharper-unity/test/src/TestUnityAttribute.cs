@@ -31,10 +31,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         Unity2018_4,
         Unity2019_1,
         Unity2019_2,
+        Unity2019_3,
+        Unity2019_4,
+        Unity2020_1,
+        Unity2020_2,
 
-        // General rule: Keep the default version at the latest LTS Unity version (.4)
-        // If you need a newer version for a specific test, use [TestUnity(UnityVersion.Unity2019_1)], etc.
-        DefaultTestVersion = Unity2018_4
+        // General rule: Keep the default version at the latest LTS Unity version
+        // If you need a newer/specific version for a specific test, use [TestUnity(UnityVersion.Unity2020_1)], etc.
+        DefaultTestVersion = Unity2019_4
     }
     // ReSharper restore InconsistentNaming
 
@@ -118,6 +122,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                     case UnityVersion.Unity2018_4: return "UNITY_2018_4";
                     case UnityVersion.Unity2019_1: return "UNITY_2019_1";
                     case UnityVersion.Unity2019_2: return "UNITY_2019_2";
+                    case UnityVersion.Unity2019_3: return "UNITY_2019_3";
+                    case UnityVersion.Unity2019_4: return "UNITY_2019_4";
+                    case UnityVersion.Unity2020_1: return "UNITY_2020_1";
+                    case UnityVersion.Unity2020_2: return "UNITY_2020_2";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -143,6 +151,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 case UnityVersion.Unity2018_4: return "2018.4.0";
                 case UnityVersion.Unity2019_1: return "2019.1.0";
                 case UnityVersion.Unity2019_2: return "2019.2.0";
+                case UnityVersion.Unity2019_3: return "2019.3.0";
+                case UnityVersion.Unity2019_4: return "2019.4.0";
+                case UnityVersion.Unity2020_1: return "2020.1.0";
+                case UnityVersion.Unity2020_2: return "2020.2.0";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unityVersion), unityVersion, null);
             }
