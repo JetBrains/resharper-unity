@@ -54,6 +54,13 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (candidates.count() == 1)
             return candidates.single()
 
+        if (candidates.count()==2) { // maybe Player project
+            val firstVirtualFile = candidates.first().containingProject()!!.getVirtualFile()
+            val secondVirtualFile = candidates.last().containingProject()!!.getVirtualFile()
+            if (firstVirtualFile!!.nameWithoutExtension + ".Player" == secondVirtualFile!!.nameWithoutExtension || firstVirtualFile.nameWithoutExtension == secondVirtualFile.nameWithoutExtension + ".Player")
+                return candidates.filter { !it.containingProject()!!.getVirtualFile()!!.nameWithoutExtension.endsWith(".Player") }.single()
+        }
+
         return recursiveSearch(virtualFile.parent, host)
     }
 }
