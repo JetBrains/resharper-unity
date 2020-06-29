@@ -336,7 +336,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void GetBuildLocation(EditorPluginModel model)
     {
-        model.BuildLocation.Value = EditorUserBuildSettings.GetBuildLocation(BuildTarget.StandaloneLinux64);
+        var path = EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.selectedStandaloneTarget);
+        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+            model.BuildLocation.Value = path;
     }
 
     private static void AdviseGenerateUISchema(EditorPluginModel model)
