@@ -83,7 +83,11 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         val commandLineString = runCommandLine.commandLineString
         logger.info("Process started: $commandLineString")
         targetProcessHandler.addProcessListener(object: ProcessAdapter() {
-            override fun processTerminated(event: ProcessEvent) = logger.info("Process terminated: $commandLineString")
+            override fun processTerminated(event: ProcessEvent){
+                logger.info("Process terminated: $commandLineString")
+                if (lifetime.isAlive)
+                    result.setError("Process $commandLineString has terminated.")
+            }
         })
 
         console = createConsole(exeConfiguration.parameters.useExternalConsole, targetProcessHandler, commandLineString, executionEnvironment.project)
@@ -113,8 +117,12 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
                     if (!it.allowDebugging)
                         result.setError("Make sure the \"Script Debugging\" is enabled for this Standalone Player.") //https://docs.unity3d.com/Manual/BuildSettings.html
 
-                    while (isAvailable(it.debuggerPort))
-                        Thread.sleep(10)
+                    if (!SystemInfo.isMac)
+                        while (lifetime.isAlive && isAvailable(it.debuggerPort)) // this hack doesn't work on mac
+                            Thread.sleep(10)
+                    else
+                        if (lifetime.isAlive)
+                            Thread.sleep(10000)
 
                     UIUtil.invokeLaterIfNeeded {
                         logger.trace("Connecting to Player with port: ${it.debuggerPort}")
