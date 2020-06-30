@@ -337,6 +337,8 @@ namespace JetBrains.Rider.Unity.Editor
     private static void GetBuildLocation(EditorPluginModel model)
     {
         var path = EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.selectedStandaloneTarget);
+        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
+            path = Path.Combine(Path.Combine(Path.Combine(path, "Contents"), "MacOS"), PlayerSettings.productName);
         if (!string.IsNullOrEmpty(path) && File.Exists(path))
             model.BuildLocation.Value = path;
     }
