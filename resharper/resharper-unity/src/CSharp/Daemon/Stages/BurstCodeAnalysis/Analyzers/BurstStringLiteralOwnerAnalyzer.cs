@@ -26,10 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     {
                         do
                         {
-                            node = node.Parent;
+                            node = parent;
                             parent = node.Parent;
-                        } while (!(parent is IInitializerOwnerDeclaration));
+                        } while (parent != null && !(parent is IInitializerOwnerDeclaration));
 
+                        if (parent == null)
+                            return true;
+                        
                         var initializerOwnerDeclaration = (IInitializerOwnerDeclaration) parent;
                         if (ReferenceEquals(initializerOwnerDeclaration.Initializer, expressionInitializer))
                         {
@@ -39,6 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                                 return false;
                         }
                     }
+
                     consumer?.AddHighlighting(highlighting);
                     return true;
                 }
@@ -86,17 +90,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             consumer?.AddHighlighting(highlighting);
             return true;
         }
+
         protected override bool CheckAndAnalyze(IStringLiteralOwner stringLiteralOwner, IHighlightingConsumer consumer)
         {
-            bool isString = false;
+            bool isString;
+
             if (stringLiteralOwner is ICSharpLiteralExpression cSharpLiteralExpression)
                 isString = cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral;
             else
                 isString = true;
-            if (!isString)
-                return false;
 
-            return CheckAndAnalyze(stringLiteralOwner, new BC1349Error(stringLiteralOwner.GetDocumentRange()), consumer);
+            return isString && CheckAndAnalyze(stringLiteralOwner,
+                new BC1349Error(stringLiteralOwner.GetDocumentRange()), consumer);
         }
     }
 }

@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 if (argumentList.Count == 1)
                 {
                     var argument = argumentList[0];
-                    if (!IsBurstPermittedString(argument.Expression.Type()))
+                    if (!IsBurstPermittedString(argument.Expression?.Type()))
                     {
                         consumer?.AddHighlighting(new BC1349Error(argument.Expression.GetDocumentRange()));
                         
