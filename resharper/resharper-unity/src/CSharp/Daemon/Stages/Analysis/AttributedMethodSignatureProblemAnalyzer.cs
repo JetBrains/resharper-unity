@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -89,7 +90,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             var attributeClrName = attributeTypeElement.GetClrName();
             if (myMethodSignatures.TryGetValue(attributeClrName, out var signatures))
-                return signatures;
+            {
+                if (signatures.All(s => s.IsValid()))
+                    return signatures;
+
+                // If any of the signatures are no longer valid, clear the cache and try again
+                myMethodSignatures.Clear();
+            }
 
             // Try to get the expected signature from a method marked with RequiredSignatureAttribute (introduced in
             // Unity 2017.3). If the attribute does not exist, either because it's not applied, or we're on an earlier
