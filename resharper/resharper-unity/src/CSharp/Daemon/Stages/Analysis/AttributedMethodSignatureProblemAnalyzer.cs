@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             // if another thread beats us.
             signatures = GetSignaturesFromRequiredSignatureAttribute(attributeTypeElement)
                          ?? GetSignaturesFromKnownAttributes(attributeClrName, predefinedType);
-            if (signatures != null) myMethodSignatures.TryAdd(attributeClrName, signatures);
+            if (signatures != null) myMethodSignatures.TryAdd(attributeClrName.GetPersistent(), signatures);
             return signatures;
         }
 
