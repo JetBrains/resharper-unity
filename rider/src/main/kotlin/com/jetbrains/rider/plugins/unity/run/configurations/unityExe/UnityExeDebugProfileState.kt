@@ -11,6 +11,7 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.exists
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.application
@@ -91,12 +92,16 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
 
         // Read player-connection-guid from boot.config near the exePath
         val exePath = Paths.get(exeConfiguration.parameters.exePath)
-        val config = exePath.parent.resolve(exePath.toFile().nameWithoutExtension+"_Data").resolve("boot.config")
-        assert(config.exists()){"Config file $config doesn't exist."}
-        val guidPrefix  = "player-connection-guid="
+        val config = if (SystemInfo.isMac) {
+            exePath.parent.parent.resolve("Resources/Data/boot.config")
+        } else {
+            exePath.parent.resolve(exePath.toFile().nameWithoutExtension + "_Data").resolve("boot.config")
+        }
+        assert(config.exists()) { "Config file $config doesn't exist." }
+        val guidPrefix = "player-connection-guid="
         val ipPrefix = "player-connection-ip="
         val lines = config.toFile().readLines()
-        val guid = lines.first { line -> line.startsWith(guidPrefix)}.substring(guidPrefix.length).toLong().absoluteValue
+        val guid = lines.first { line -> line.startsWith(guidPrefix) }.substring(guidPrefix.length).toLong().absoluteValue
         val ips = lines.filter { line -> line.startsWith(ipPrefix) }.map { it.substring(ipPrefix.length) }.toList()
 
         application.executeOnPooledThread {
