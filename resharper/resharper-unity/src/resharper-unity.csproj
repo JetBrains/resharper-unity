@@ -136,4 +136,8 @@
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio.Props')" />
+  <Target Name="CppHack" AfterTargets="PrepareForRun">
+    <Delete Files="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" />
+  </Target>
 </Project>
