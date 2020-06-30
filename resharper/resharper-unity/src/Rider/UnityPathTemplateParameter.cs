@@ -10,11 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     public class UnityPathTemplateParameter : DotNetTemplateParameter
     {
-        private readonly UnityMonoPathProvider myUnityMonoPathProvider;
-
-        public UnityPathTemplateParameter(UnityMonoPathProvider unityMonoPathProvider) : base("PathToUnityEngine", "Path to UnityEngine.dll", "Path to UnityEngine.dll")
+        public UnityPathTemplateParameter() : base("PathToUnityEngine", "Path to UnityEngine.dll", "Path to UnityEngine.dll")
         {
-            myUnityMonoPathProvider = unityMonoPathProvider;
         }
 
         public override RdProjectTemplateContent CreateContent(DotNetProjectTemplateExpander expander, IDotNetTemplateContentFactory factory,
@@ -27,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return content;
             }
             
-            var possiblePaths = myUnityMonoPathProvider.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).Where(b => b.ExistsFile).ToArray();
+            var possiblePaths = UnityInstallationFinder.GetPossibleMonoPaths().Select(a=>a.Directory.Combine("Managed/UnityEngine.dll")).Where(b => b.ExistsFile).ToArray();
             var options = new List<RdProjectTemplateGroupOption>();
             
             foreach (var path in possiblePaths)
@@ -51,12 +48,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [ShellComponent]
     public class UnityPathParameterProvider : IDotNetTemplateParameterProvider
     {
-        private readonly UnityMonoPathProvider myUnityMonoPathProvider;
-
-        public UnityPathParameterProvider(UnityMonoPathProvider unityMonoPathProvider)
-        {
-            myUnityMonoPathProvider = unityMonoPathProvider;
-        }
         public int Priority
         {
             get { return 50; }
@@ -64,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     
         public IReadOnlyCollection<DotNetTemplateParameter> Get()
         {
-            return new[] {new UnityPathTemplateParameter(myUnityMonoPathProvider)};
+            return new[] {new UnityPathTemplateParameter()};
         }
     }
 }
