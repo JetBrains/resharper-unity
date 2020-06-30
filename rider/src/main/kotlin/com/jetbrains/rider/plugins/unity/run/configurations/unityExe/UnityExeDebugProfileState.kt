@@ -11,16 +11,14 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.util.io.exists
 import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.lifetime.isAlive
 import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerWorkerPlatform
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
-import com.jetbrains.rider.plugins.unity.run.UnityPlayerListener
+import com.jetbrains.rider.plugins.unity.run.UnityProcessPickerDialog
 import com.jetbrains.rider.run.ExternalConsoleMediator
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
@@ -31,9 +29,6 @@ import com.jetbrains.rider.util.idea.createNestedAsyncPromise
 import org.jetbrains.concurrency.Promise
 import java.io.IOException
 import java.net.ServerSocket
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 
 class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,
                                 executionEnvironment: ExecutionEnvironment)
@@ -90,33 +85,57 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         console.attachToProcess(targetProcessHandler)
         targetProcessHandler.startNotify()
 
-        // Read player-connection-guid from Library/PlayerDataCache/Linux64/Data/boot.config
-        val playerDataCache: Path = Paths.get(project.basePath!!, "Library/PlayerDataCache")
-        val bootFiles = Files.newDirectoryStream(playerDataCache).map { it.resolve("Data/boot.config") }.filter { it.exists() }
-        val prefix  = "player-connection-guid="
-        val guids = bootFiles.map { it.toFile().useLines { it.first { line -> line.startsWith(prefix)}.substring(prefix.length).toLong() } }
+        val dialog = UnityProcessPickerDialog(project)
+        dialog.onOk.advise(nestedLifetimeDef.lifetime) {
+            logger.trace("Connecting to Player with port: ${it.debuggerPort}")
+            remoteConfiguration.port = it.debuggerPort
 
-        application.executeOnPooledThread {
-            UnityPlayerListener(project, {
-                if (!nestedLifetimeDef.lifetime.isAlive)
-                    return@UnityPlayerListener
+            application.executeOnPooledThread {
+                while (isAvailable(it.debuggerPort))
+                    Thread.sleep(10)
 
-                if (!it.isEditor && guids.contains(it.editorId)) {
-                    if (!it.allowDebugging)
-                        result.setError("Make sure the \"Script Debugging\" is enabled for this Standalone Player.") //https://docs.unity3d.com/Manual/BuildSettings.html
-
-                    while (isAvailable(it.debuggerPort))
-                        Thread.sleep(10)
-
-                    UIUtil.invokeLaterIfNeeded {
-                        logger.trace("Connecting to Player with port: ${it.debuggerPort}")
-                        remoteConfiguration.port = it.debuggerPort
-                        result.setResult(createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu))
-                    }
+                UIUtil.invokeLaterIfNeeded {
+                    result.setResult(createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu))
                     nestedLifetimeDef.terminate()
                 }
-            }, {}, nestedLifetimeDef.lifetime)
+            }
         }
+        dialog.onCancel.advise(nestedLifetimeDef.lifetime){
+            result.setError("Attach cancelled.")
+            if (!targetProcessHandler.isProcessTerminated)
+                targetProcessHandler.destroyProcess()
+            nestedLifetimeDef.terminate()
+        }
+        dialog.show()
+
+        // the following would work only in UnityGenerated project
+//        // Read player-connection-guid from Library/PlayerDataCache/Linux64/Data/boot.config
+//        val playerDataCache: Path = Paths.get(project.basePath!!, "Library/PlayerDataCache")
+//        val bootFiles = Files.newDirectoryStream(playerDataCache).map { it.resolve("Data/boot.config") }.filter { it.exists() }
+//        val prefix  = "player-connection-guid="
+//        val guids = bootFiles.map { it.toFile().useLines { it.first { line -> line.startsWith(prefix)}.substring(prefix.length).toLong() } }
+//
+//        application.executeOnPooledThread {
+//            UnityPlayerListener(project, {
+//                if (!nestedLifetimeDef.lifetime.isAlive)
+//                    return@UnityPlayerListener
+//
+//                if (!it.isEditor && guids.contains(it.editorId)) {
+//                    if (!it.allowDebugging)
+//                        result.setError("Make sure the \"Script Debugging\" is enabled for this Standalone Player.") //https://docs.unity3d.com/Manual/BuildSettings.html
+//
+//                    while (isAvailable(it.debuggerPort))
+//                        Thread.sleep(10)
+//
+//                    UIUtil.invokeLaterIfNeeded {
+//                        logger.trace("Connecting to Player with port: ${it.debuggerPort}")
+//                        remoteConfiguration.port = it.debuggerPort
+//                        result.setResult(createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu))
+//                    }
+//                    nestedLifetimeDef.terminate()
+//                }
+//            }, {}, nestedLifetimeDef.lifetime)
+//        }
         return result
     }
 
