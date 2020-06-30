@@ -27,6 +27,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - All applicable quick fixes are now bulk actions, and can be applied over project scope ([#1648](https://github.com/JetBrains/resharper-unity/issues/1648), [#1649](https://github.com/JetBrains/resharper-unity/pull/1649))
 - Improved method signature validation and usage suppression using Unity's `RequiredSignature` attribute ([#1679](https://github.com/JetBrains/resharper-unity/pull/1679), [#1689](https://github.com/JetBrains/resharper-unity/pull/1689))
+- Fields must have correct type to be considered a serialised field ([#1605](https://github.com/JetBrains/resharper-unity/issues/1605), [#1638](https://github.com/JetBrains/resharper-unity/pull/1638), [#1720](https://github.com/JetBrains/resharper-unity/pull/1720))
 - Update `.meta` file icons to something less distracting ([RIDER-45675](https://youtrack.jetbrains.com/issue/RIDER-45675), [#1698](https://github.com/JetBrains/resharper-unity/pull/1698))
 - Rider: Significant reduction in memory usage while indexing assets ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
 - Rider: Better support for prefab modifications in Find Usages and showing Inspector values ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
@@ -38,7 +39,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Fixed
 
 - Fix meta file handling when references to Unity assemblies are invalid ([#1623](https://github.com/JetBrains/resharper-unity/pull/1623))
-- Public fields of type `Action` are no longer treated as serialised fields ([#1605](https://github.com/JetBrains/resharper-unity/issues/1605), [#1638](https://github.com/JetBrains/resharper-unity/pull/1638))
+- Public fields of type `Action` are no longer treated as serialised fields ([#1605](https://github.com/JetBrains/resharper-unity/issues/1605), )
 - Fix incorrect method signature validation for methods marked with `OnOpenedAsset` ([#1053](https://github.com/JetBrains/resharper-unity/issues/1053), [#1679](https://github.com/JetBrains/resharper-unity/pull/1679))
 - Rider: Fix debugger sometimes treating user code as external code ([#1671](https://github.com/JetBrains/resharper-unity/issues/1671), [RIDER-43846](https://youtrack.jetbrains.com/issue/RIDER-43846), [#1697](https://github.com/JetBrains/resharper-unity/pull/1697))
 - Rider: Fix grouping assets by directory in Find Usages results ([#1668](https://github.com/JetBrains/resharper-unity/pull/1668))

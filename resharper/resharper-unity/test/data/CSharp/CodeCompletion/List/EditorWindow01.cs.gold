@@ -1,4 +1,4 @@
-﻿# 1072 ITEMS #
+﻿# 1120 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -116,6 +116,7 @@ AnimatorUpdateMode
 AnimatorUtility
 AnisotropicFiltering
 ApiCompatibilityLevel
+AppleMobileArchitecture
 Application
 ApplicationInstallMode
 ApplicationSandboxType
@@ -138,6 +139,7 @@ AssetDeleteResult
 AssetImporter
 AssetModificationProcessor
 AssetMoveResult
+AssetPipelineMode
 AssetPostprocessor
 AssetPreview
 AssetSettingsProvider
@@ -193,6 +195,7 @@ BodyDof
 BodyPart
 BoneState
 BoneWeight
+BoneWeight1
 BoundingSphere
 Bounds
 BoundsInt
@@ -210,6 +213,7 @@ BuildTargetGroup
 BuoyancyEffector2D
 Cache
 CacheIndex
+CacheServerMode
 CachedAssetBundle
 Caching
 CalendarIdentifier
@@ -257,12 +261,18 @@ ColorSpace
 ColorUsageAttribute
 ColorUtility
 CombineInstance
+CommandExecuteContext
+CommandHandler
+CommandHandlerAttribute
+CommandHint
+CommandService
 Compass
 Component
 CompositeCollider2D
 CompressionLevel
 CompressionType
 ComputeBuffer
+ComputeBufferMode
 ComputeBufferType
 ComputeShader
 ConfigurableJoint
@@ -300,6 +310,7 @@ CustomRenderTextureUpdateZoneSpace
 CustomYieldInstruction
 D3D11FullscreenMode
 D3D9FullscreenMode
+D3DHDRDisplayBitDepth
 DDSImporter
 Debug
 DecoratorDrawer
@@ -312,6 +323,7 @@ DetailPrototype
 DetailRenderMode
 DeviceOrientation
 DeviceType
+DialogOptOutDecisionType
 DisallowMultipleComponent
 Display
 DistanceJoint2D
@@ -341,6 +353,7 @@ EditorPrefs
 EditorSelectedRenderState
 EditorSettings
 EditorSkin
+EditorSnapSettings
 EditorStyles
 EditorUserBuildSettings
 EditorUserSettings
@@ -349,6 +362,7 @@ EditorWindow
 Effector2D
 EffectorForceMode2D
 EffectorSelection2D
+EnterPlayModeOptions
 Event
 EventModifiers
 EventProvider
@@ -412,23 +426,21 @@ GenericMenu
 GeometryUtility
 GizmoType
 Gizmos
+GlobalObjectId
 Gradient
 GradientAlphaKey
 GradientColorKey
 GradientMode
 GradientUsageAttribute
 Graphics
+GraphicsBuffer
 GraphicsJobMode
 Grid
-GridBrush
 GridBrushBase
-GridBrushEditor
-GridBrushEditorBase
 GridLayout
-GridPaintSortingAttribute
 GridPalette
-GridSelection
 Gyroscope
+HDROutputSettings
 Handheld
 HandleUtility
 Handles
@@ -470,6 +482,8 @@ ILogHandler
 ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
+ISubsystem
+ISubsystemDescriptor
 ITerrainLayerCustomUI
 IconDrawStyle
 IconKind
@@ -479,12 +493,19 @@ ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
+ImageEffectUsesCommandBuffer
 ImagePosition
 ImportAssetOptions
+InitializeOnEnterPlayModeAttribute
 InitializeOnLoadAttribute
 InitializeOnLoadMethodAttribute
 Input
 InspectorMode
+InspectorNameAttribute
+IntegratedSubsystem
+IntegratedSubsystem<>
+IntegratedSubsystemDescriptor
+IntegratedSubsystemDescriptor<>
 InteractionMode
 Joint
 Joint2D
@@ -508,6 +529,7 @@ LODFadeMode
 LODGroup
 LODUtility
 LayerMask
+LazyLoadReference<>
 LegDof
 LensFlare
 Light
@@ -519,11 +541,13 @@ LightProbes
 LightRenderMode
 LightShadowCasterMode
 LightShadows
+LightShape
 LightType
 LightingDataAsset
 LightingExplorerExtensionAttribute
 LightingExplorerTab
 LightingExplorerTableColumn
+LightingWindowEnvironmentSection
 LightmapBakeQuality
 LightmapBakeType
 LightmapData
@@ -545,6 +569,7 @@ LocalizationAsset
 LocationInfo
 LocationService
 LocationServiceStatus
+LogOption
 LogType
 Logger
 MacFullscreenMode
@@ -569,6 +594,7 @@ Mesh
 MeshCollider
 MeshColliderCookingOptions
 MeshFilter
+MeshOptimizationFlags
 MeshRenderer
 MeshTopology
 MeshUtility
@@ -579,14 +605,17 @@ MissingComponentException
 MissingReferenceException
 MixedLightingMode
 MobileTextureSubtarget
+ModeService
 ModelImporter
 ModelImporterAnimationCompression
 ModelImporterAnimationType
+ModelImporterAvatarSetup
 ModelImporterClipAnimation
 ModelImporterGenerateAnimations
 ModelImporterGenerateMaterials
 ModelImporterHumanoidOversampling
 ModelImporterIndexFormat
+ModelImporterMaterialImportMode
 ModelImporterMaterialLocation
 ModelImporterMaterialName
 ModelImporterMaterialSearch
@@ -594,6 +623,7 @@ ModelImporterMeshCompression
 ModelImporterNormalCalculationMode
 ModelImporterNormalSmoothingSource
 ModelImporterNormals
+ModelImporterSkinWeights
 ModelImporterTangentSpaceMode
 ModelImporterTangents
 MonoBehaviour
@@ -608,6 +638,7 @@ MultilineAttribute
 NPOTSupport
 Network
 NetworkConnectionError
+NetworkDetailStats
 NetworkDisconnection
 NetworkLogLevel
 NetworkMessageInfo
@@ -633,6 +664,7 @@ ParticleCollisionEvent
 ParticlePhysicsExtensions
 ParticleSystem
 ParticleSystemAnimationMode
+ParticleSystemAnimationRowMode
 ParticleSystemAnimationTimeMode
 ParticleSystemAnimationType
 ParticleSystemCollisionMode
@@ -700,6 +732,7 @@ PlayerPrefsException
 PlayerSettings
 PluginImporter
 PointEffector2D
+PointerType
 PolygonCollider2D
 PopupWindow
 PopupWindowContent
@@ -744,6 +777,7 @@ Ray2D
 RaycastCommand
 RaycastHit
 RaycastHit2D
+ReceiveGI
 Rect
 RectInt
 RectOffset
@@ -783,6 +817,7 @@ RigidbodyInterpolation
 RigidbodyInterpolation2D
 RigidbodySleepMode2D
 RigidbodyType2D
+RootEditorAttribute
 RotationDriveMode
 RuntimeAnimatorController
 RuntimeInitializeLoadType
@@ -795,6 +830,7 @@ ScaleMode
 SceneAsset
 SceneModeUtility
 SceneView
+SceneVisibilityManager
 Screen
 ScreenCapture
 ScreenOrientation
@@ -806,6 +842,7 @@ ScriptableWizard
 ScriptingImplementation
 ScriptingRuntimeVersion
 SearchableEditorWindow
+SecondarySpriteTexture
 Security
 Selection
 SelectionBaseAttribute
@@ -815,6 +852,7 @@ SendMessageOptions
 SerializationMode
 SerializeField
 SerializePrivateVariables
+SerializeReference
 SerializedObject
 SerializedProperty
 SerializedPropertyType
@@ -823,7 +861,6 @@ SettingsProvider
 SettingsProviderAttribute
 SettingsProviderGroupAttribute
 SettingsScope
-SettingsScopes
 SettingsService
 Shader
 ShaderData
@@ -831,6 +868,7 @@ ShaderGUI
 ShaderImporter
 ShaderIncludePathAttribute
 ShaderInfo
+ShaderMessage
 ShaderUtil
 ShaderVariantCollection
 ShadowProjection
@@ -843,10 +881,13 @@ SketchUpImportCamera
 SketchUpImportScene
 SketchUpImporter
 SkinQuality
+SkinWeights
 SkinnedMeshRenderer
 Skybox
 SleepTimeout
 SliderJoint2D
+SnapAxis
+Snapping
 Social
 SoftJointLimit
 SoftJointLimitSpring
@@ -872,7 +913,6 @@ SpriteMetaData
 SpritePackerMode
 SpritePackingMode
 SpritePackingRotation
-SpriteRect
 SpriteRenderer
 SpriteSortPoint
 SpriteTileMode
@@ -888,6 +928,11 @@ StereoRenderingPath
 StereoTargetEyeMask
 StreamingController
 StrippingLevel
+Subsystem
+Subsystem<>
+SubsystemDescriptor
+SubsystemDescriptor<>
+SubsystemManager
 SurfaceEffector2D
 SystemInfo
 SystemLanguage
@@ -900,7 +945,9 @@ TerrainChangedFlags
 TerrainCollider
 TerrainData
 TerrainExtensions
+TerrainHeightmapSyncControl
 TerrainLayer
+TerrainLayerInspector
 TerrainLayerUtility
 TerrainRenderFlags
 TexGenMode
@@ -917,8 +964,7 @@ Texture
 Texture2D
 Texture2DArray
 Texture3D
-TextureCompressionQuality (in UnityEditor)
-TextureCompressionQuality (in UnityEngine)
+TextureCompressionQuality
 TextureFormat
 TextureImporter
 TextureImporterAlphaSource
@@ -956,6 +1002,7 @@ Tree
 TreeInstance
 TreePrototype
 TrueTypeFontImporter
+TypeCache
 Types
 UICharInfo
 UILineInfo
@@ -1070,10 +1117,11 @@ UnityEditorInternal
 UnityEngine
 UnityEngineInternal
 public override Equals(object) { … }    bool
+public override GetExtraPaneTypes() { … }    IEnumerable<Type>
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 1072 ITEMS #
+# 1120 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -1191,6 +1239,7 @@ AnimatorUpdateMode
 AnimatorUtility
 AnisotropicFiltering
 ApiCompatibilityLevel
+AppleMobileArchitecture
 Application
 ApplicationInstallMode
 ApplicationSandboxType
@@ -1213,6 +1262,7 @@ AssetDeleteResult
 AssetImporter
 AssetModificationProcessor
 AssetMoveResult
+AssetPipelineMode
 AssetPostprocessor
 AssetPreview
 AssetSettingsProvider
@@ -1268,6 +1318,7 @@ BodyDof
 BodyPart
 BoneState
 BoneWeight
+BoneWeight1
 BoundingSphere
 Bounds
 BoundsInt
@@ -1285,6 +1336,7 @@ BuildTargetGroup
 BuoyancyEffector2D
 Cache
 CacheIndex
+CacheServerMode
 CachedAssetBundle
 Caching
 CalendarIdentifier
@@ -1332,12 +1384,18 @@ ColorSpace
 ColorUsageAttribute
 ColorUtility
 CombineInstance
+CommandExecuteContext
+CommandHandler
+CommandHandlerAttribute
+CommandHint
+CommandService
 Compass
 Component
 CompositeCollider2D
 CompressionLevel
 CompressionType
 ComputeBuffer
+ComputeBufferMode
 ComputeBufferType
 ComputeShader
 ConfigurableJoint
@@ -1375,6 +1433,7 @@ CustomRenderTextureUpdateZoneSpace
 CustomYieldInstruction
 D3D11FullscreenMode
 D3D9FullscreenMode
+D3DHDRDisplayBitDepth
 DDSImporter
 Debug
 DecoratorDrawer
@@ -1387,6 +1446,7 @@ DetailPrototype
 DetailRenderMode
 DeviceOrientation
 DeviceType
+DialogOptOutDecisionType
 DisallowMultipleComponent
 Display
 DistanceJoint2D
@@ -1416,6 +1476,7 @@ EditorPrefs
 EditorSelectedRenderState
 EditorSettings
 EditorSkin
+EditorSnapSettings
 EditorStyles
 EditorUserBuildSettings
 EditorUserSettings
@@ -1424,6 +1485,7 @@ EditorWindow
 Effector2D
 EffectorForceMode2D
 EffectorSelection2D
+EnterPlayModeOptions
 Event
 EventModifiers
 EventProvider
@@ -1487,23 +1549,21 @@ GenericMenu
 GeometryUtility
 GizmoType
 Gizmos
+GlobalObjectId
 Gradient
 GradientAlphaKey
 GradientColorKey
 GradientMode
 GradientUsageAttribute
 Graphics
+GraphicsBuffer
 GraphicsJobMode
 Grid
-GridBrush
 GridBrushBase
-GridBrushEditor
-GridBrushEditorBase
 GridLayout
-GridPaintSortingAttribute
 GridPalette
-GridSelection
 Gyroscope
+HDROutputSettings
 Handheld
 HandleUtility
 Handles
@@ -1545,6 +1605,8 @@ ILogHandler
 ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
+ISubsystem
+ISubsystemDescriptor
 ITerrainLayerCustomUI
 IconDrawStyle
 IconKind
@@ -1554,12 +1616,19 @@ ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
+ImageEffectUsesCommandBuffer
 ImagePosition
 ImportAssetOptions
+InitializeOnEnterPlayModeAttribute
 InitializeOnLoadAttribute
 InitializeOnLoadMethodAttribute
 Input
 InspectorMode
+InspectorNameAttribute
+IntegratedSubsystem
+IntegratedSubsystem<>
+IntegratedSubsystemDescriptor
+IntegratedSubsystemDescriptor<>
 InteractionMode
 Joint
 Joint2D
@@ -1583,6 +1652,7 @@ LODFadeMode
 LODGroup
 LODUtility
 LayerMask
+LazyLoadReference<>
 LegDof
 LensFlare
 Light
@@ -1594,11 +1664,13 @@ LightProbes
 LightRenderMode
 LightShadowCasterMode
 LightShadows
+LightShape
 LightType
 LightingDataAsset
 LightingExplorerExtensionAttribute
 LightingExplorerTab
 LightingExplorerTableColumn
+LightingWindowEnvironmentSection
 LightmapBakeQuality
 LightmapBakeType
 LightmapData
@@ -1620,6 +1692,7 @@ LocalizationAsset
 LocationInfo
 LocationService
 LocationServiceStatus
+LogOption
 LogType
 Logger
 MacFullscreenMode
@@ -1644,6 +1717,7 @@ Mesh
 MeshCollider
 MeshColliderCookingOptions
 MeshFilter
+MeshOptimizationFlags
 MeshRenderer
 MeshTopology
 MeshUtility
@@ -1654,14 +1728,17 @@ MissingComponentException
 MissingReferenceException
 MixedLightingMode
 MobileTextureSubtarget
+ModeService
 ModelImporter
 ModelImporterAnimationCompression
 ModelImporterAnimationType
+ModelImporterAvatarSetup
 ModelImporterClipAnimation
 ModelImporterGenerateAnimations
 ModelImporterGenerateMaterials
 ModelImporterHumanoidOversampling
 ModelImporterIndexFormat
+ModelImporterMaterialImportMode
 ModelImporterMaterialLocation
 ModelImporterMaterialName
 ModelImporterMaterialSearch
@@ -1669,6 +1746,7 @@ ModelImporterMeshCompression
 ModelImporterNormalCalculationMode
 ModelImporterNormalSmoothingSource
 ModelImporterNormals
+ModelImporterSkinWeights
 ModelImporterTangentSpaceMode
 ModelImporterTangents
 MonoBehaviour
@@ -1683,6 +1761,7 @@ MultilineAttribute
 NPOTSupport
 Network
 NetworkConnectionError
+NetworkDetailStats
 NetworkDisconnection
 NetworkLogLevel
 NetworkMessageInfo
@@ -1708,6 +1787,7 @@ ParticleCollisionEvent
 ParticlePhysicsExtensions
 ParticleSystem
 ParticleSystemAnimationMode
+ParticleSystemAnimationRowMode
 ParticleSystemAnimationTimeMode
 ParticleSystemAnimationType
 ParticleSystemCollisionMode
@@ -1775,6 +1855,7 @@ PlayerPrefsException
 PlayerSettings
 PluginImporter
 PointEffector2D
+PointerType
 PolygonCollider2D
 PopupWindow
 PopupWindowContent
@@ -1819,6 +1900,7 @@ Ray2D
 RaycastCommand
 RaycastHit
 RaycastHit2D
+ReceiveGI
 Rect
 RectInt
 RectOffset
@@ -1858,6 +1940,7 @@ RigidbodyInterpolation
 RigidbodyInterpolation2D
 RigidbodySleepMode2D
 RigidbodyType2D
+RootEditorAttribute
 RotationDriveMode
 RuntimeAnimatorController
 RuntimeInitializeLoadType
@@ -1870,6 +1953,7 @@ ScaleMode
 SceneAsset
 SceneModeUtility
 SceneView
+SceneVisibilityManager
 Screen
 ScreenCapture
 ScreenOrientation
@@ -1881,6 +1965,7 @@ ScriptableWizard
 ScriptingImplementation
 ScriptingRuntimeVersion
 SearchableEditorWindow
+SecondarySpriteTexture
 Security
 Selection
 SelectionBaseAttribute
@@ -1890,6 +1975,7 @@ SendMessageOptions
 SerializationMode
 SerializeField
 SerializePrivateVariables
+SerializeReference
 SerializedObject
 SerializedProperty
 SerializedPropertyType
@@ -1898,7 +1984,6 @@ SettingsProvider
 SettingsProviderAttribute
 SettingsProviderGroupAttribute
 SettingsScope
-SettingsScopes
 SettingsService
 Shader
 ShaderData
@@ -1906,6 +1991,7 @@ ShaderGUI
 ShaderImporter
 ShaderIncludePathAttribute
 ShaderInfo
+ShaderMessage
 ShaderUtil
 ShaderVariantCollection
 ShadowProjection
@@ -1918,10 +2004,13 @@ SketchUpImportCamera
 SketchUpImportScene
 SketchUpImporter
 SkinQuality
+SkinWeights
 SkinnedMeshRenderer
 Skybox
 SleepTimeout
 SliderJoint2D
+SnapAxis
+Snapping
 Social
 SoftJointLimit
 SoftJointLimitSpring
@@ -1947,7 +2036,6 @@ SpriteMetaData
 SpritePackerMode
 SpritePackingMode
 SpritePackingRotation
-SpriteRect
 SpriteRenderer
 SpriteSortPoint
 SpriteTileMode
@@ -1963,6 +2051,11 @@ StereoRenderingPath
 StereoTargetEyeMask
 StreamingController
 StrippingLevel
+Subsystem
+Subsystem<>
+SubsystemDescriptor
+SubsystemDescriptor<>
+SubsystemManager
 SurfaceEffector2D
 SystemInfo
 SystemLanguage
@@ -1975,7 +2068,9 @@ TerrainChangedFlags
 TerrainCollider
 TerrainData
 TerrainExtensions
+TerrainHeightmapSyncControl
 TerrainLayer
+TerrainLayerInspector
 TerrainLayerUtility
 TerrainRenderFlags
 TexGenMode
@@ -1992,8 +2087,7 @@ Texture
 Texture2D
 Texture2DArray
 Texture3D
-TextureCompressionQuality (in UnityEditor)
-TextureCompressionQuality (in UnityEngine)
+TextureCompressionQuality
 TextureFormat
 TextureImporter
 TextureImporterAlphaSource
@@ -2031,6 +2125,7 @@ Tree
 TreeInstance
 TreePrototype
 TrueTypeFontImporter
+TypeCache
 Types
 UICharInfo
 UILineInfo
@@ -2145,5 +2240,6 @@ UnityEditorInternal
 UnityEngine
 UnityEngineInternal
 public override Equals(object) { … }    bool
+public override GetExtraPaneTypes() { … }    IEnumerable<Type>
 public override GetHashCode() { … }    int
 public override ToString() { … }    string

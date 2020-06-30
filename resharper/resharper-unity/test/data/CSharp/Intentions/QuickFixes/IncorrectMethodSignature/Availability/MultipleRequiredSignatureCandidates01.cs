@@ -2,7 +2,7 @@ using UnityEditor.ShortcutManagement;
 
 public class Foo
 {
-  [Shortcut]
+  [Shortcut("id")]
   public void Do{caret}Method()
   {
   }

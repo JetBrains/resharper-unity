@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.HighlightingEye
+namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Pencils
 {
     public static class PencilsGroupKind
     {
