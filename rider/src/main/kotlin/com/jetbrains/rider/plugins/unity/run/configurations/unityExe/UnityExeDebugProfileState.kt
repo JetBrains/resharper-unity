@@ -85,6 +85,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         console.attachToProcess(targetProcessHandler)
         targetProcessHandler.startNotify()
 
+        // todo: bypass showing the dialog, when running from Unity-generated project
         val dialog = UnityProcessPickerDialog(project, false)
         dialog.onOk.advise(nestedLifetimeDef.lifetime) {
             logger.trace("Connecting to Player with port: ${it.debuggerPort}")
