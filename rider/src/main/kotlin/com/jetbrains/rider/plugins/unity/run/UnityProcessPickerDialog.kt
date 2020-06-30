@@ -19,7 +19,7 @@ import java.awt.Insets
 import java.awt.event.MouseEvent
 import javax.swing.*
 
-class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
+class UnityProcessPickerDialog(private val project: Project, private val includeEditor:Boolean = true) : DialogWrapper(project) {
 
     data class UnityPlayerModel(val player: UnityPlayer, val debuggerAttached: Boolean)
 
@@ -31,7 +31,11 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     val onCancel = Signal<Unit>()
 
     init {
-        title = "Searching for Unity Editors and Players..."
+        title = if (includeEditor) {
+            "Searching for Unity Editors and Players..."
+        } else {
+            "\"Searching for Unity Players...\""
+        }
 
         list = JBList<UnityPlayerModel>().apply {
             model = listModel
@@ -105,14 +109,18 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             object : Task.Backgroundable(project, "Getting list of Unity processes...") {
                 override fun run(indicator: ProgressIndicator) {
                     UnityPlayerListener(project, {
-                        val model = UnityPlayerModel(it, UnityRunUtil.isDebuggerAttached(it.host, it.debuggerPort, project))
-                        synchronized(listModelLock) {
-                            listModel.addElement(model)
+                        if (includeEditor || !it.isEditor) {
+                            val model = UnityPlayerModel(it, UnityRunUtil.isDebuggerAttached(it.host, it.debuggerPort, project))
+                            synchronized(listModelLock) {
+                                listModel.addElement(model)
+                            }
                         }
                     }, {
-                        synchronized(listModelLock) {
-                            val element = listModel.elements().asSequence().first { e -> e.player == it }
-                            listModel.removeElement(element)
+                        if (includeEditor || !it.isEditor) {
+                            synchronized(listModelLock) {
+                                val element = listModel.elements().asSequence().first { e -> e.player == it }
+                                listModel.removeElement(element)
+                            }
                         }
                     }, lifetimeDefinition.lifetime)
                 }
