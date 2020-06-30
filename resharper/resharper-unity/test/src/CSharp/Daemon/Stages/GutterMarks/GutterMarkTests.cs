@@ -10,5 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.GutterMar
         protected override string RelativeTestDataRoot => @"CSharp\Daemon\Stages\GutterMark";
 
         [Test] public void Test01() { DoNamedTest(); }
+
+        [Test, TestUnity(UnityVersion.Unity2019_4)] public void TestGenericSerialisedFields_2019_4() { DoNamedTest2(); }
+        [Test, TestUnity(UnityVersion.Unity2020_1)] public void TestGenericSerialisedFields_2020_1() { DoNamedTest2(); }
     }
 }

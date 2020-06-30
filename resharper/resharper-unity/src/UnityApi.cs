@@ -88,11 +88,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
         // expose stricter checking publicly
         public bool IsSerializableTypeDeclaration([CanBeNull] ITypeElement type)
         {
-            return IsSerializableType(type, false);
+            // We only support type declarations in a project. We shouldn't get any other type
+            if (type?.Module is IProjectPsiModule projectPsiModule)
+            {
+                var project = projectPsiModule.Project;
+                return IsSerializableType(type, project, false);
+            }
+
+            return false;
         }
 
         // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
-        private static bool IsSerializableType([CanBeNull] ITypeElement type, bool isTypeUsage)
+        private bool IsSerializableType([CanBeNull] ITypeElement type, [NotNull] IProject project, bool isTypeUsage)
         {
             if (!(type is IStruct || type is IClass))
                 return false;
@@ -104,12 +111,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 if (type is IModifiersOwner modifiersOwner && modifiersOwner.IsAbstract)
                     return false;
 
-                // TODO: Unity 2020.1 beta allows generic types to be serialised as a field
-                // However, this is undocumented, and the rules are unknown - what type parameter types are acceptable?
-                // How many type parameters are allowed? Can we have nested type parameters?
+                // Unity 2020.1 allows fields to have generic types. It's currently undocumented, but there are no
+                // limitations on the number of type parameters, or even nested type parameters. The base type needs to
+                // be serializable, but type parameters don't (if a non-serializable type parameter is used as a field,
+                // it just isn't serialised).
                 // https://blogs.unity3d.com/2020/03/17/unity-2020-1-beta-is-now-available-for-feedback/
-                if (type is ITypeParametersOwner typeParametersOwner && typeParametersOwner.TypeParameters.Count > 0)
+                var unityVersion = myUnityVersion.GetActualVersion(project);
+                if (unityVersion < new Version(2020, 1) && type is ITypeParametersOwner typeParametersOwner &&
+                    typeParametersOwner.TypeParameters.Count > 0)
+                {
                     return false;
+                }
             }
 
             if (type is IClass @class && @class.IsStaticClass())
@@ -149,24 +161,28 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 return false;
             }
 
+            // We need the project to get the current Unity version. this is only called for type usage (e.g. field
+            // type), so it's safe to assume that the field is in a source file belonging to a project
+            var project = (field.Module as IProjectPsiModule)?.Project;
+
             // Rules for what field types can be serialised.
             // See https://docs.unity3d.com/ScriptReference/SerializeField.html
-            return IsSimpleSerialisedFieldType(field.Type) || IsSerialisedFieldContainerType(field.Type);
+            return project != null && IsSimpleSerialisedFieldType(field.Type, project) || IsSerialisedFieldContainerType(field.Type, project);
         }
 
-        private static bool IsSimpleSerialisedFieldType([CanBeNull] IType type)
+        private bool IsSimpleSerialisedFieldType([CanBeNull] IType type, [NotNull] IProject project)
         {
             return type != null && (type.IsSimplePredefined()
                                     || type.IsEnumType()
                                     || IsUnityBuiltinType(type as IDeclaredType)
                                     || IsDescendantOfUnityObject(type.GetTypeElement())
-                                    || IsSerializableType(type.GetTypeElement(), true));
+                                    || IsSerializableType(type.GetTypeElement(), project, true));
         }
 
-        private bool IsSerialisedFieldContainerType(IType type)
+        private bool IsSerialisedFieldContainerType(IType type, IProject project)
         {
             if (type is IArrayType arrayType && arrayType.Rank == 1 &&
-                IsSimpleSerialisedFieldType(arrayType.ElementType))
+                IsSimpleSerialisedFieldType(arrayType.ElementType, project))
             {
                 return true;
             }
@@ -178,7 +194,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var typeParameter = declaredType.GetTypeElement()?.TypeParameters[0];
                 if (typeParameter != null)
                 {
-                    return IsSimpleSerialisedFieldType(substitution.Apply(typeParameter));
+                    return IsSimpleSerialisedFieldType(substitution.Apply(typeParameter), project);
                 }
             }
 
