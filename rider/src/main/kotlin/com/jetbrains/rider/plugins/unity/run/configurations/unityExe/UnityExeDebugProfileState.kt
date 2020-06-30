@@ -104,7 +104,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
         dialog.onCancel.advise(nestedLifetimeDef.lifetime){
             result.setError("Attach cancelled.")
             if (!targetProcessHandler.isProcessTerminated)
-                targetProcessHandler.destroyProcess()
+                targetProcessHandler.killProcess()
             nestedLifetimeDef.terminate()
         }
         dialog.show()
