@@ -35,12 +35,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
 
     // These two tests have different parameters in different versions, make sure
     // we using the right version
+    [Ignore("TODO: krasnotsvetov")]
     [TestUnity(UnityVersion.Unity54)]
     public class Unity54CompletionListTest : VersionSpecificCompletionListTest
     {
         [Test] public void OnParticleTriggerWithOneArg54() { DoNamedTest(); }
     }
 
+    [Ignore("TODO: krasnotsvetov")]
     [TestUnity(UnityVersion.Unity55)]
     public class Unity55CompletionListTest : VersionSpecificCompletionListTest
     {

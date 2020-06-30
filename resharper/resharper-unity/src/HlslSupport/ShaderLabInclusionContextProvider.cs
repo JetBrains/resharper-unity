@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
 
             var cgIncludeFolder =
                 CgIncludeDirectoryTracker.GetCgIncludeFolderPath(cache.Solution.GetComponent<UnityVersion>());
-            if (cgIncludeFolder != null)
+            if (!cgIncludeFolder.IsEmpty)
             {
                 properties.IncludePaths.Add(cgIncludeFolder);
             }

@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                         if (solutionCaches.PersistentProperties.TryGetValue(CG_FOLDER_PATH, out var result))
                         {
                             var oldPath = FileSystemPath.TryParse(result, FileSystemPathInternStrategy.INTERN);
-                            var newPath = GetCgIncludeFolderPath(unityVersion) ?? FileSystemPath.Empty;
+                            var newPath = GetCgIncludeFolderPath(unityVersion);
                             if (!oldPath.Equals(newPath))
                             {
                                 cppGlobalCache.IsInitialUpdateFinished.Change.Advise(lifetime, v =>
@@ -48,8 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                         }
                         else
                         {
-                            solutionCaches.PersistentProperties[CG_FOLDER_PATH] =
-                                (GetCgIncludeFolderPath(unityVersion) ?? FileSystemPath.Empty).FullPath;
+                            solutionCaches.PersistentProperties[CG_FOLDER_PATH] = GetCgIncludeFolderPath(unityVersion).FullPath;
                         }
                     });
                 }));
@@ -61,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
         {
             var path = unityVersion.GetActualAppPathForSolution();
             if (path.IsEmpty)
-                return null;
+                return FileSystemPath.Empty;
 
             var contentPath = UnityInstallationFinder.GetApplicationContentsPath(path);
             return contentPath.Combine("CGIncludes");

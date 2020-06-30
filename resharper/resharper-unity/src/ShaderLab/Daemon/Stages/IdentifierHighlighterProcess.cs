@@ -61,7 +61,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             // And then a separate identifier
             if (node is IErrorElement errorElement)
             {
-                var range = node.Children().FirstOrDefault()?.GetDocumentRange() ?? DocumentRange.InvalidRange;
+                DocumentRange range;
+                if (node.Children().Any(t => t.Children<ICgContent>().Any()))
+                    range = node.MeaningfulChildren().FirstOrDefault()?.GetDocumentRange() ?? DocumentRange.InvalidRange;
+                else
+                    range = errorElement.GetDocumentRange();
+                
                 if (!range.IsValid())
                     range = node.Parent.GetDocumentRange();
                 if (range.TextRange.IsEmpty)

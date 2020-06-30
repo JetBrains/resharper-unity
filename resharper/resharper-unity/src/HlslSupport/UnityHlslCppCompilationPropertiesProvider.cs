@@ -24,7 +24,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             {
                 var properties = new CppCompilationProperties();
                 properties.LanguageKind = CppLanguageKind.HLSL;
-                properties.IncludePaths.Add(CgIncludeDirectoryTracker.GetCgIncludeFolderPath(myUnityVersion));
+                var path = CgIncludeDirectoryTracker.GetCgIncludeFolderPath(myUnityVersion);
+                if (!path.IsEmpty)
+                    properties.IncludePaths.Add(path);
 
                 return properties;
             }
