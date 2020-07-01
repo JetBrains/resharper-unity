@@ -34,7 +34,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
     private val peerPanel: JPanel
 
     init {
-        title = "Searching for Unity Editors and Players..."
+        title = "Searching..."
 
         tree = Tree().apply {
             model = treeModel
@@ -73,13 +73,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         }.installOn(tree)
 
         peerPanel = panel {
-            row { label("Players and Editors:") }
             row { scrollPane(tree) }
             row {
                 button("Add player address manually...", actionListener = { enterCustomIp() })
             }
             commentRow("Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
-                "Standalone players must be visible to the current network.")
+                "Device players must be visible to the current network.")
         }.apply { preferredSize = Dimension(650, 450) }
 
         isOKActionEnabled = false
