@@ -100,7 +100,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
     override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
         remoteConfiguration.listenPortForConnections = true
         remoteConfiguration.port = NetUtils.findFreePort(500013, setOf(port))
-        remoteConfiguration.address="127.0.0.1"
+        remoteConfiguration.address = "127.0.0.1"
 
         val result = lifetime.createNestedAsyncPromise<WorkerRunInfo>()
         result.setResult(createWorkerRunInfoFor(port, DebuggerWorkerPlatform.AnyCpu))
