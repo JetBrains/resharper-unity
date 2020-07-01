@@ -86,12 +86,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
             {
                 var frame = myGameObjectRole.ValueReference.OriginatingFrame;
                 var componentType =
-                    myValueServices.TypeUniverse.GetReifiedType(frame, "UnityEngine.Component, UnityEngine.CoreModule");
+                    myValueServices.TypeUniverse.GetReifiedType(frame, "UnityEngine.Component, UnityEngine.CoreModule")
+                    ?? myValueServices.TypeUniverse.GetReifiedType(frame, "UnityEngine.Component, UnityEngine");
                 if (componentType == null)
                 {
-                    componentType = myValueServices.TypeUniverse.GetReifiedType(frame, "UnityEngine.Component, UnityEngine");
-                    if (componentType == null)
-                        yield break;
+                    yield break;
                 }
 
                 var getComponentsMethod = myGameObjectRole.ReifiedType.MetadataType.GetMethods()
@@ -116,8 +115,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
                 // TODO: Support extra fallback names
                 // Unity doesn't use the short name, but will look at the type and use GameObject.name,
                 // MonoBehaviour.GetScriptClassName and so on.
-                var objectNamesType = (IReifiedType<TValue>) myValueServices.TypeUniverse.GetReifiedType(frame,
-                    "UnityEditor.ObjectNames, UnityEditor");
+                var objectNamesType = (IReifiedType<TValue>)
+                    (myValueServices.TypeUniverse.GetReifiedType(frame, "UnityEditor.ObjectNames, UnityEditor")
+                     ?? myValueServices.TypeUniverse.GetReifiedType(frame, "UnityEditor.ObjectNames, UnityEditor.CoreModule"));
                 var getInspectorTitleMethod = objectNamesType?.MetadataType.GetMethods()
                     .FirstOrDefault(ourGetInspectorTitleSelector);
 

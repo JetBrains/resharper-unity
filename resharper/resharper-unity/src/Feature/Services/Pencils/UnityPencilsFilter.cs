@@ -4,11 +4,10 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Pencils.Filters;
-using JetBrains.ReSharper.Plugins.Unity.Feature.HighlightingEye;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Feature.Pencils
+namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Pencils
 {
     public class UnityPencilsFilter : PencilsFilterSettingsBase<UnitySettings>
     {
@@ -20,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Pencils
 
         public override string Kind => PencilsGroupKind.UnityPerformanceKind;
     }
-    
+
     [SolutionComponent]
     public class UnityPencilsFilterProvider : IPencilsFiltersProvider
     {

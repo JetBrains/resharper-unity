@@ -1,4 +1,4 @@
-﻿# 720 ITEMS #
+﻿# 749 ITEMS #
 
 + abstract
 async
@@ -134,6 +134,7 @@ BitStream
 BlendWeights
 BodyDof
 BoneWeight
+BoneWeight1
 BoundingSphere
 Bounds
 BoundsInt
@@ -189,6 +190,7 @@ CompositeCollider2D
 CompressionLevel
 CompressionType
 ComputeBuffer
+ComputeBufferMode
 ComputeBufferType
 ComputeShader
 ConfigurableJoint
@@ -220,6 +222,7 @@ CustomRenderTextureUpdateMode
 CustomRenderTextureUpdateZone
 CustomRenderTextureUpdateZoneSpace
 CustomYieldInstruction
+D3DHDRDisplayBitDepth
 Debug
 DefaultExecutionOrder
 DelayedAttribute
@@ -295,10 +298,12 @@ GradientColorKey
 GradientMode
 GradientUsageAttribute
 Graphics
+GraphicsBuffer
 Grid
 GridBrushBase
 GridLayout
 Gyroscope
+HDROutputSettings
 Handheld
 Hash128
 HashUnsafeUtilities
@@ -327,13 +332,21 @@ ILogHandler
 ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
+ISubsystem
+ISubsystemDescriptor
 ImageConversion
 ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
+ImageEffectUsesCommandBuffer
 ImagePosition
 Input
+InspectorNameAttribute
+IntegratedSubsystem
+IntegratedSubsystem<>
+IntegratedSubsystemDescriptor
+IntegratedSubsystemDescriptor<>
 Joint
 Joint2D
 JointAngleLimits2D
@@ -354,6 +367,7 @@ LOD
 LODFadeMode
 LODGroup
 LayerMask
+LazyLoadReference<>
 LegDof
 LensFlare
 Light
@@ -364,6 +378,7 @@ LightProbes
 LightRenderMode
 LightShadowCasterMode
 LightShadows
+LightShape
 LightType
 LightmapBakeType
 LightmapData
@@ -380,6 +395,7 @@ LocalizationAsset
 LocationInfo
 LocationService
 LocationServiceStatus
+LogOption
 LogType
 Logger
 MasterServer
@@ -427,6 +443,7 @@ ParticleCollisionEvent
 ParticlePhysicsExtensions
 ParticleSystem
 ParticleSystemAnimationMode
+ParticleSystemAnimationRowMode
 ParticleSystemAnimationTimeMode
 ParticleSystemAnimationType
 ParticleSystemCollisionMode
@@ -484,6 +501,7 @@ PlayMode
 PlayerPrefs
 PlayerPrefsException
 PointEffector2D
+PointerType
 PolygonCollider2D
 Pose
 PreferBinarySerialization
@@ -514,6 +532,7 @@ Ray2D
 RaycastCommand
 RaycastHit
 RaycastHit2D
+ReceiveGI
 Rect
 RectInt
 RectOffset
@@ -561,11 +580,13 @@ Screen
 ScreenCapture
 ScreenOrientation
 ScriptableObject
+SecondarySpriteTexture
 Security
 SelectionBaseAttribute
 SendMessageOptions
 SerializeField
 SerializePrivateVariables
+SerializeReference
 Shader
 ShaderVariantCollection
 ShadowProjection
@@ -575,10 +596,13 @@ ShadowmaskMode
 SharedBetweenAnimatorsAttribute
 SkeletonBone
 SkinQuality
+SkinWeights
 SkinnedMeshRenderer
 Skybox
 SleepTimeout
 SliderJoint2D
+SnapAxis
+Snapping
 Social
 SoftJointLimit
 SoftJointLimitSpring
@@ -608,6 +632,11 @@ StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
 StreamingController
+Subsystem
+Subsystem<>
+SubsystemDescriptor
+SubsystemDescriptor<>
+SubsystemManager
 SurfaceEffector2D
 SystemInfo
 SystemLanguage
@@ -617,6 +646,7 @@ TerrainChangedFlags
 TerrainCollider
 TerrainData
 TerrainExtensions
+TerrainHeightmapSyncControl
 TerrainLayer
 TerrainRenderFlags
 TexGenMode
@@ -633,7 +663,6 @@ Texture
 Texture2D
 Texture2DArray
 Texture3D
-TextureCompressionQuality
 TextureFormat
 TextureWrapMode
 ThreadPriority
@@ -721,7 +750,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 720 ITEMS #
+# 749 ITEMS #
 
 + abstract
 async
@@ -857,6 +886,7 @@ BitStream
 BlendWeights
 BodyDof
 BoneWeight
+BoneWeight1
 BoundingSphere
 Bounds
 BoundsInt
@@ -912,6 +942,7 @@ CompositeCollider2D
 CompressionLevel
 CompressionType
 ComputeBuffer
+ComputeBufferMode
 ComputeBufferType
 ComputeShader
 ConfigurableJoint
@@ -943,6 +974,7 @@ CustomRenderTextureUpdateMode
 CustomRenderTextureUpdateZone
 CustomRenderTextureUpdateZoneSpace
 CustomYieldInstruction
+D3DHDRDisplayBitDepth
 Debug
 DefaultExecutionOrder
 DelayedAttribute
@@ -1018,10 +1050,12 @@ GradientColorKey
 GradientMode
 GradientUsageAttribute
 Graphics
+GraphicsBuffer
 Grid
 GridBrushBase
 GridLayout
 Gyroscope
+HDROutputSettings
 Handheld
 Hash128
 HashUnsafeUtilities
@@ -1050,13 +1084,21 @@ ILogHandler
 ILogger
 IMECompositionMode
 ISerializationCallbackReceiver
+ISubsystem
+ISubsystemDescriptor
 ImageConversion
 ImageEffectAfterScale
 ImageEffectAllowedInSceneView
 ImageEffectOpaque
 ImageEffectTransformsToLDR
+ImageEffectUsesCommandBuffer
 ImagePosition
 Input
+InspectorNameAttribute
+IntegratedSubsystem
+IntegratedSubsystem<>
+IntegratedSubsystemDescriptor
+IntegratedSubsystemDescriptor<>
 Joint
 Joint2D
 JointAngleLimits2D
@@ -1077,6 +1119,7 @@ LOD
 LODFadeMode
 LODGroup
 LayerMask
+LazyLoadReference<>
 LegDof
 LensFlare
 Light
@@ -1087,6 +1130,7 @@ LightProbes
 LightRenderMode
 LightShadowCasterMode
 LightShadows
+LightShape
 LightType
 LightmapBakeType
 LightmapData
@@ -1103,6 +1147,7 @@ LocalizationAsset
 LocationInfo
 LocationService
 LocationServiceStatus
+LogOption
 LogType
 Logger
 MasterServer
@@ -1150,6 +1195,7 @@ ParticleCollisionEvent
 ParticlePhysicsExtensions
 ParticleSystem
 ParticleSystemAnimationMode
+ParticleSystemAnimationRowMode
 ParticleSystemAnimationTimeMode
 ParticleSystemAnimationType
 ParticleSystemCollisionMode
@@ -1207,6 +1253,7 @@ PlayMode
 PlayerPrefs
 PlayerPrefsException
 PointEffector2D
+PointerType
 PolygonCollider2D
 Pose
 PreferBinarySerialization
@@ -1237,6 +1284,7 @@ Ray2D
 RaycastCommand
 RaycastHit
 RaycastHit2D
+ReceiveGI
 Rect
 RectInt
 RectOffset
@@ -1284,11 +1332,13 @@ Screen
 ScreenCapture
 ScreenOrientation
 ScriptableObject
+SecondarySpriteTexture
 Security
 SelectionBaseAttribute
 SendMessageOptions
 SerializeField
 SerializePrivateVariables
+SerializeReference
 Shader
 ShaderVariantCollection
 ShadowProjection
@@ -1298,10 +1348,13 @@ ShadowmaskMode
 SharedBetweenAnimatorsAttribute
 SkeletonBone
 SkinQuality
+SkinWeights
 SkinnedMeshRenderer
 Skybox
 SleepTimeout
 SliderJoint2D
+SnapAxis
+Snapping
 Social
 SoftJointLimit
 SoftJointLimitSpring
@@ -1331,6 +1384,11 @@ StateMachineBehaviour
 StaticBatchingUtility
 StereoTargetEyeMask
 StreamingController
+Subsystem
+Subsystem<>
+SubsystemDescriptor
+SubsystemDescriptor<>
+SubsystemManager
 SurfaceEffector2D
 SystemInfo
 SystemLanguage
@@ -1340,6 +1398,7 @@ TerrainChangedFlags
 TerrainCollider
 TerrainData
 TerrainExtensions
+TerrainHeightmapSyncControl
 TerrainLayer
 TerrainRenderFlags
 TexGenMode
@@ -1356,7 +1415,6 @@ Texture
 Texture2D
 Texture2DArray
 Texture3D
-TextureCompressionQuality
 TextureFormat
 TextureWrapMode
 ThreadPriority

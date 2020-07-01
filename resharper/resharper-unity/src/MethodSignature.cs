@@ -6,6 +6,8 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
 {
+    // Be very careful about caching this. The IType can easily become invalid. It's ok to cache for highlightings and
+    // references, as the daemon will invalidate correctly. Call IsValid to be sure.
     public class MethodSignature
     {
         public MethodSignature(IType returnType, bool? isStatic)
@@ -27,16 +29,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public bool? IsStatic { get; }    // Null means usage ignores static modifier
         public Parameters Parameters { get; }
 
+        public bool IsValid() => ReturnType.IsValid() && Parameters.IsValid();
+
         public string FormatSignature(string methodName)
         {
             var modifier = IsStatic == true ? "static " : string.Empty;
             return $"{modifier}{GetReturnTypeName()} {methodName}({Parameters.GetParameterTypes()})";
         }
 
-        public string GetReturnTypeName()
-        {
-            return ReturnType.GetPresentableName(CSharpLanguage.Instance);
-        }
+        // ReSharper disable once AssignNullToNotNullAttribute
+        public string GetReturnTypeName() => ReturnType.GetPresentableName(CSharpLanguage.Instance);
     }
 
     public class Parameters
@@ -50,6 +52,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public ParameterSignature this[int i] => myParameters[i];
         public int Length => myParameters.Length;
+
+        public bool IsValid() => myParameters.All(p => p.IsValid());
 
         public string GetParameterList()
         {
@@ -73,14 +77,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public string Name { get; }
         public IType Type { get; }
 
-        public string GetTypeName()
-        {
-            return Type.GetPresentableName(CSharpLanguage.Instance);
-        }
-
-        public override string ToString()
-        {
-            return $"{GetTypeName()} {Name}";
-        }
+        public bool IsValid() => Type.IsValid();
+        // ReSharper disable once AssignNullToNotNullAttribute
+        public string GetTypeName() => Type.GetPresentableName(CSharpLanguage.Instance);
+        public override string ToString() => $"{GetTypeName()} {Name}";
     }
 }

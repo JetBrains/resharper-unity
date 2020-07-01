@@ -1,0 +1,39 @@
+﻿using UnityEditor.Callbacks;
+
+public class TestClass
+{
+    [OnOpenAsset]
+    private static bool Valid(int instanceID, int line)
+    {
+        return true;
+    }
+
+    [OnOpenAsset]
+    private bool |MissingStatic|(0)(int instanceID, int line)
+    {
+        return true;
+    }
+
+    [OnOpenAsset]
+    private static |void|(1) WrongReturnType(int instanceID, int line)
+    {
+    }
+
+    [OnOpenAsset]
+    private static bool WrongParameters|()|(2)
+    {
+        return true;
+    }
+
+    [OnOpenAsset]
+    private static bool WrongTypeParameters|<T1, T2>|(3)(int instanceID, int line)
+    {
+        return true;
+    }
+}
+
+---------------------------------------------------------
+(0): ReSharper Warning: Missing static modifier
+(1): ReSharper Warning: Incorrect return type. Expected 'bool'
+(2): ReSharper Warning: Incorrect method parameters. Expected '(int instanceID, int line)'
+(3): ReSharper Warning: Incorrect type parameters

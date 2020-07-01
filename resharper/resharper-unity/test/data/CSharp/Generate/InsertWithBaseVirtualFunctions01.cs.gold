@@ -43,23 +43,24 @@
  41: OnParticleCollision(UnityEngine.GameObject):System.Void
  42: OnParticleSystemStopped():System.Void
  43: OnParticleTrigger():System.Void
- 44: OnPostRender():System.Void
- 45: OnPreCull():System.Void
- 46: OnPreRender():System.Void
- 47: OnRectTransformDimensionsChange():System.Void
- 48: OnRenderImage(UnityEngine.RenderTexture,UnityEngine.RenderTexture):System.Void
- 49: OnRenderObject():System.Void
- 50: OnServerInitialized():System.Void
- 51: OnTransformChildrenChanged():System.Void
- 52: OnTransformParentChanged():System.Void
- 53: OnTriggerEnter(UnityEngine.Collider):System.Void
- 54: OnTriggerEnter2D(UnityEngine.Collider2D):System.Void
- 55: OnTriggerExit(UnityEngine.Collider):System.Void
- 56: OnTriggerExit2D(UnityEngine.Collider2D):System.Void
- 57: OnTriggerStay(UnityEngine.Collider):System.Void
- 58: OnTriggerStay2D(UnityEngine.Collider2D):System.Void
- 59: OnValidate():System.Void
- 60: OnWillRenderObject():System.Void
+ 44: OnParticleUpdateJobScheduled():System.Void
+ 45: OnPostRender():System.Void
+ 46: OnPreCull():System.Void
+ 47: OnPreRender():System.Void
+ 48: OnRectTransformDimensionsChange():System.Void
+ 49: OnRenderImage(UnityEngine.RenderTexture,UnityEngine.RenderTexture):System.Void
+ 50: OnRenderObject():System.Void
+ 51: OnServerInitialized():System.Void
+ 52: OnTransformChildrenChanged():System.Void
+ 53: OnTransformParentChanged():System.Void
+ 54: OnTriggerEnter(UnityEngine.Collider):System.Void
+ 55: OnTriggerEnter2D(UnityEngine.Collider2D):System.Void
+ 56: OnTriggerExit(UnityEngine.Collider):System.Void
+ 57: OnTriggerExit2D(UnityEngine.Collider2D):System.Void
+ 58: OnTriggerStay(UnityEngine.Collider):System.Void
+ 59: OnTriggerStay2D(UnityEngine.Collider2D):System.Void
+ 60: OnValidate():System.Void
+ 61: OnWillRenderObject():System.Void
 
 // ${KIND:Unity.EventFunctions}
 // ${SELECT0:Update():System.Void}

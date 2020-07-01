@@ -14,7 +14,8 @@ namespace JetBrains.Rider.Unity.Editor
       ourLogger.Verbose("Generating UXML schema");
 
       // This type was first introduced in 2019.1
-      var generator = Type.GetType("UnityEditor.UIElements.UxmlSchemaGenerator,UnityEditor");
+      var generator = Type.GetType("UnityEditor.UIElements.UxmlSchemaGenerator,UnityEditor")
+                      ?? Type.GetType("UnityEditor.UIElements.UxmlSchemaGenerator,UnityEditor.UIElementsModule");
       if (generator == null)
       {
         ourLogger.Verbose("Cannot find type: UnityEditor.UIElements.UxmlSchemaGenerator. Trying obsolete API");

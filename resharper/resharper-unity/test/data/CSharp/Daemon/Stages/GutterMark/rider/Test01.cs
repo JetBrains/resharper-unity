@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
@@ -9,6 +10,15 @@ public class A : MonoBehaviour
     public string ImplicitlyAssignedField;
     public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
     [SerializeField] private int myImplicitlyAssignedPrivateField;
+    public Vector2 ImplicitlyAssignedBuiltinType;
+    public Vector3 ImplicitlyAssignedBuiltinType2;
+    public Vector4 ImplicitlyAssignedBuiltinType3;
+    public List<string> ImplicitlyAssignedList;
+    public string[] ImplicitlyAssignedArray;
+    public SerialisableClass ImplicitlyAssignedCustomSerialisableClass;
+    public SerialisableStruct ImplicitlyAssignedCustomSerialisableStruct;
+    public SerialisableClass[] ImplicitlyAssignedCustomSerialisableClassArray;
+    public SerialisableStruct[] ImplicitlyAssignedCustomSerialisableStructArray;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -21,6 +31,12 @@ public class A : MonoBehaviour
     [NonSerialized, SerializeField] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
     [SerializeField] private static string ourUnusedPrivateStaticField;
+    public Version NotSerialisedStruct;
+    public Dictionary<string, string> NotSerialisedDictionary;
+    public NotSerialisableClass NotSerialisedClass;
+    public List<Version> NotSerialisedList;
+    public string[,] NotSerialisedMultidimensionalArray;
+    public string[][] NotSerialisedJaggedArray;
 
     // Unity function
     private void OnDestroy()
@@ -97,12 +113,21 @@ class MyClass
 }
 
 [Serializable]
-class SerialisableClass
+public class SerialisableClass
 {
     // All serialised by Unity - gutter icons
     public string ImplicitlyAssignedField;
     public string ImplicitlyAssignedMultiField1, ImplicitlyAssignedMultiField2;
     [SerializeField] private int myImplicitlyAssignedPrivateField;
+    public Vector2 ImplicitlyAssignedBuiltinType;
+    public Vector3 ImplicitlyAssignedBuiltinType2;
+    public Vector4 ImplicitlyAssignedBuiltinType3;
+    public List<string> ImplicitlyAssignedList;
+    public string[] ImplicitlyAssignedArray;
+    public SerialisableClass ImplicitlyAssignedCustomSerialisableClass;
+    public SerialisableStruct ImplicitlyAssignedCustomSerialisableStruct;
+    public SerialisableClass[] ImplicitlyAssignedCustomSerialisableClassArray;
+    public SerialisableStruct[] ImplicitlyAssignedCustomSerialisableStructArray;
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
@@ -115,10 +140,16 @@ class SerialisableClass
     [NonSerialized, SerializeField] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
     [SerializeField] private static string ourUnusedPrivateStaticField;
+    public Version NotSerialisedStruct;
+    public Dictionary<string, string> NotSerialisedDictionary;
+    public NotSerialisableClass NotSerialisedClass;
+    public List<Version> NotSerialisedList;
+    public string[,] NotSerialisedMultidimensionalArray;
+    public string[][] NotSerialisedJaggedArray;
 }
 
 [Serializable]
-struct SerialisableStruct
+public struct SerialisableStruct
 {
     // All serialised by Unity - gutter icons
     public string ImplicitlyAssignedField;
@@ -138,7 +169,7 @@ struct SerialisableStruct
     [SerializeField] private static string ourUnusedPrivateStaticField;
 }
 
-class NotSerialisableClass
+public class NotSerialisableClass
 {
     public string NotSerialised1;
     [SerializeField] public string NotSerialised2;
@@ -151,8 +182,8 @@ struct NotSerialisableStruct
 }
 
 [Serializable]
-static class NotSerialisableClass
+static class NotSerialisableStaticClass
 {
-    public string NotSerialised1;
-    [SerializeField] public string NotSerialised2;
+    public static string NotSerialised1;
+    [SerializeField] public static string NotSerialised2;
 }

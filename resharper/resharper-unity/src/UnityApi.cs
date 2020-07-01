@@ -8,6 +8,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Modules;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity
@@ -15,6 +16,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
     [SolutionComponent]
     public class UnityApi
     {
+        // https://docs.unity3d.com/Documentation/Manual/script-Serialization.html
+        private static readonly JetHashSet<IClrTypeName> ourUnityBuiltinSerializedFieldTypes = new JetHashSet<IClrTypeName>
+        {
+            KnownTypes.Vector2, KnownTypes.Vector3, KnownTypes.Vector4,
+            KnownTypes.Rect, KnownTypes.RectOffset,
+            KnownTypes.Quaternion,
+            KnownTypes.Matrix4x4,
+            KnownTypes.Color, KnownTypes.Color32,
+            KnownTypes.LayerMask,
+            KnownTypes.AnimationCurve,
+            KnownTypes.Gradient,
+            KnownTypes.GUIStyle
+        };
+
         private readonly UnityVersion myUnityVersion;
         private readonly Lazy<UnityTypes> myTypes;
 
@@ -68,20 +83,58 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return false;
         }
 
-        public bool IsSerializableType([CanBeNull] ITypeElement type)
+        // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
+        // method differentiates between a type declaration and a type usage. Consider renaming if we ever need to
+        // expose stricter checking publicly
+        public bool IsSerializableTypeDeclaration([CanBeNull] ITypeElement type)
         {
-            // A class or struct with the `[System.Serializable]` attribute
-            // Should not be abstract, static or generic
-            // We'll ignore abstract or generic because it might be being used as a base class
-            // TODO: Add a warning if the serializable class isn't inherited
-            var clazz = type as IClass;
-            if (clazz?.IsStaticClass() == true)
-                return false;
-
-            if (type?.IsClassLike() == true)
-                return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
+            // We only support type declarations in a project. We shouldn't get any other type
+            if (type?.Module is IProjectPsiModule projectPsiModule)
+            {
+                var project = projectPsiModule.Project;
+                return IsSerializableType(type, project, false);
+            }
 
             return false;
+        }
+
+        // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
+        private bool IsSerializableType([CanBeNull] ITypeElement type, [NotNull] IProject project, bool isTypeUsage)
+        {
+            if (!(type is IStruct || type is IClass))
+                return false;
+
+            if (isTypeUsage)
+            {
+                // Type usage (e.g. field declaration) is stricter. Means it must be a concrete type with no type
+                // parameters
+                if (type is IModifiersOwner modifiersOwner && modifiersOwner.IsAbstract)
+                    return false;
+
+                // Unity 2020.1 allows fields to have generic types. It's currently undocumented, but there are no
+                // limitations on the number of type parameters, or even nested type parameters. The base type needs to
+                // be serializable, but type parameters don't (if a non-serializable type parameter is used as a field,
+                // it just isn't serialised).
+                // https://blogs.unity3d.com/2020/03/17/unity-2020-1-beta-is-now-available-for-feedback/
+                var unityVersion = myUnityVersion.GetActualVersion(project);
+                if (unityVersion < new Version(2020, 1) && type is ITypeParametersOwner typeParametersOwner &&
+                    typeParametersOwner.TypeParameters.Count > 0)
+                {
+                    return false;
+                }
+            }
+
+            if (type is IClass @class && @class.IsStaticClass())
+                return false;
+
+            // System.Version seems to be special cased. In Mono, it's marked as [Serializable], but in netstandard,
+            // it's not. Which means that depending on what runtime you're using, you could potentially get different
+            // fields serialised. However, it never shows up in Inspector, so it's a good indication that it's handled
+            // specially.
+            if (Equals(type.GetClrName(), KnownTypes.SystemVersion))
+                return false;
+
+            return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
         }
 
         public bool IsEventFunction([CanBeNull] IMethod method)
@@ -95,25 +148,57 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 return false;
 
             var containingType = field.GetContainingType();
-            if (!IsUnityType(containingType) && !IsSerializableType(containingType))
+            if (!IsUnityType(containingType) && !IsSerializableTypeDeclaration(containingType))
                 return false;
 
             // [NonSerialized] trumps everything, even if there's a [SerializeField] as well
             if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
                 return false;
 
-            // TODO: This should also check the type of the field
-            // Only allow serializable fields
-            // See https://docs.unity3d.com/ScriptReference/SerializeField.html
-            // This should probably also be an inspection
-
-            if (field.HasAttributeInstance(KnownTypes.SerializeField, false))
-                return true;
-
-            if (field.Type.IsAction())
+            if (field.GetAccessRights() != AccessRights.PUBLIC &&
+                !field.HasAttributeInstance(KnownTypes.SerializeField, false))
+            {
                 return false;
-            
-            return field.GetAccessRights() == AccessRights.PUBLIC;
+            }
+
+            // We need the project to get the current Unity version. this is only called for type usage (e.g. field
+            // type), so it's safe to assume that the field is in a source file belonging to a project
+            var project = (field.Module as IProjectPsiModule)?.Project;
+
+            // Rules for what field types can be serialised.
+            // See https://docs.unity3d.com/ScriptReference/SerializeField.html
+            return project != null && IsSimpleSerialisedFieldType(field.Type, project) || IsSerialisedFieldContainerType(field.Type, project);
+        }
+
+        private bool IsSimpleSerialisedFieldType([CanBeNull] IType type, [NotNull] IProject project)
+        {
+            return type != null && (type.IsSimplePredefined()
+                                    || type.IsEnumType()
+                                    || IsUnityBuiltinType(type as IDeclaredType)
+                                    || IsDescendantOfUnityObject(type.GetTypeElement())
+                                    || IsSerializableType(type.GetTypeElement(), project, true));
+        }
+
+        private bool IsSerialisedFieldContainerType(IType type, IProject project)
+        {
+            if (type is IArrayType arrayType && arrayType.Rank == 1 &&
+                IsSimpleSerialisedFieldType(arrayType.ElementType, project))
+            {
+                return true;
+            }
+
+            if (type is IDeclaredType declaredType &&
+                Equals(declaredType.GetClrName(), PredefinedType.GENERIC_LIST_FQN))
+            {
+                var substitution = declaredType.GetSubstitution();
+                var typeParameter = declaredType.GetTypeElement()?.TypeParameters[0];
+                if (typeParameter != null)
+                {
+                    return IsSimpleSerialisedFieldType(substitution.Apply(typeParameter), project);
+                }
+            }
+
+            return false;
         }
 
         public bool IsInjectedField([CanBeNull] IField field)
@@ -209,11 +294,15 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return type.IsDescendantOf(mb.GetTypeElement());
         }
 
+        private static bool IsDescendantOfUnityObject([CanBeNull] ITypeElement type)
+        {
+            return IsDescendantOf(KnownTypes.Object, type);
+        }
+
         public static bool IsDescendantOfMonoBehaviour([CanBeNull] ITypeElement type)
         {
             return IsDescendantOf(KnownTypes.MonoBehaviour, type);
         }
-
 
         public static bool IsDescendantOfScriptableObject([CanBeNull] ITypeElement type)
         {
@@ -224,7 +313,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             return IsDescendantOf(KnownTypes.UnityEvent, type);
         }
-        
+
         public Version GetNormalisedActualVersion(IProject project)
         {
             return myTypes.Value.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
@@ -237,6 +326,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
                     return t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(type.Module));
             });
+        }
+
+        private static bool IsUnityBuiltinType(IType type)
+        {
+            return type is IDeclaredType declaredType && ourUnityBuiltinSerializedFieldTypes.Contains(declaredType.GetClrName());
         }
     }
 }

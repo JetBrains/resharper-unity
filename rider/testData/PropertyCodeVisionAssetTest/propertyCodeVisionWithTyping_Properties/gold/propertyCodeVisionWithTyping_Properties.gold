@@ -29,11 +29,6 @@ Right
     Visible
         Text RdTextRange(startOffset=725, endOffset=733) Changed in 2 assets
     Hidden
-Inline 757 InlineLensListRenderer
-Right
-    Visible
-        Text RdTextRange(startOffset=752, endOffset=756) Serializable
-    Hidden
 Block 142 BlockLensListRenderer
 Top
     Visible
@@ -70,11 +65,6 @@ Inline 735 InlineLensListRenderer
 Right
     Visible
         Text RdTextRange(startOffset=726, endOffset=734) Changed in 2 assets
-    Hidden
-Inline 758 InlineLensListRenderer
-Right
-    Visible
-        Text RdTextRange(startOffset=753, endOffset=757) Serializable
     Hidden
 Block 142 BlockLensListRenderer
 Top

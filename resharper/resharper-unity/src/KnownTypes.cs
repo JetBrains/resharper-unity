@@ -5,15 +5,23 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public static class KnownTypes
     {
+        // System
+        public static readonly IClrTypeName SystemVersion = new ClrTypeName("System.Version");
+
         // UnityEngine
         public static readonly IClrTypeName AddComponentMenu = new ClrTypeName("UnityEngine.AddComponentMenu");
+        public static readonly IClrTypeName AnimationCurve = new ClrTypeName("UnityEngine.AnimationCurve");
         public static readonly IClrTypeName Animator = new ClrTypeName("UnityEngine.Animator");
         public static readonly IClrTypeName Camera = new ClrTypeName("UnityEngine.Camera");
+        public static readonly IClrTypeName Color = new ClrTypeName("UnityEngine.Color");
+        public static readonly IClrTypeName Color32 = new ClrTypeName("UnityEngine.Color32");
         public static readonly IClrTypeName Component = new ClrTypeName("UnityEngine.Component");
         public static readonly IClrTypeName CreateAssetMenuAttribute = new ClrTypeName("UnityEngine.CreateAssetMenuAttribute");
         public static readonly IClrTypeName Debug = new ClrTypeName("UnityEngine.Debug");
         public static readonly IClrTypeName ExecuteInEditMode = new ClrTypeName("UnityEngine.ExecuteInEditMode");
         public static readonly IClrTypeName GameObject = new ClrTypeName("UnityEngine.GameObject");
+        public static readonly IClrTypeName Gradient = new ClrTypeName("UnityEngine.Gradient");
+        public static readonly IClrTypeName GUIStyle = new ClrTypeName("UnityEngine.GUIStyle");
         public static readonly IClrTypeName HeaderAttribute = new ClrTypeName("UnityEngine.HeaderAttribute");
         public static readonly IClrTypeName HideInInspectorAttribute = new ClrTypeName("UnityEngine.HideInInspector");
         public static readonly IClrTypeName ImageEffectAfterScale = new ClrTypeName("UnityEngine.ImageEffectAfterScale");
@@ -24,12 +32,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName LayerMask = new ClrTypeName("UnityEngine.LayerMask");
         public static readonly IClrTypeName Material = new ClrTypeName("UnityEngine.Material");
         public static readonly IClrTypeName MaterialPropertyBlock = new ClrTypeName("UnityEngine.MaterialPropertyBlock");
+        public static readonly IClrTypeName Matrix4x4 = new ClrTypeName("UnityEngine.Matrix4x4");
+        public static readonly IClrTypeName MinAttribute = new ClrTypeName("UnityEngine.MinAttribute");
         public static readonly IClrTypeName MonoBehaviour = new ClrTypeName("UnityEngine.MonoBehaviour");
         public static readonly IClrTypeName Object = new ClrTypeName("UnityEngine.Object");
         public static readonly IClrTypeName Physics = new ClrTypeName("UnityEngine.Physics");
         public static readonly IClrTypeName Physics2D = new ClrTypeName("UnityEngine.Physics2D");
+        public static readonly IClrTypeName Quaternion = new ClrTypeName("UnityEngine.Quaternion");
         public static readonly IClrTypeName RangeAttribute = new ClrTypeName("UnityEngine.RangeAttribute");
         public static readonly IClrTypeName RequireComponent = new ClrTypeName("UnityEngine.RequireComponent");
+        public static readonly IClrTypeName Rect = new ClrTypeName("UnityEngine.Rect");
+        public static readonly IClrTypeName RectOffset = new ClrTypeName("UnityEngine.RectOffset");
         public static readonly IClrTypeName Resources = new ClrTypeName("UnityEngine.Resources");
         public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
         public static readonly IClrTypeName ScriptableObject = new ClrTypeName("UnityEngine.ScriptableObject");
@@ -38,6 +51,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName SpaceAttribute = new ClrTypeName("UnityEngine.SpaceAttribute");
         public static readonly IClrTypeName TooltipAttribute = new ClrTypeName("UnityEngine.TooltipAttribute");
         public static readonly IClrTypeName Transform = new ClrTypeName("UnityEngine.Transform");
+        public static readonly IClrTypeName Vector2 = new ClrTypeName("UnityEngine.Vector2");
+        public static readonly IClrTypeName Vector3 = new ClrTypeName("UnityEngine.Vector3");
+        public static readonly IClrTypeName Vector4 = new ClrTypeName("UnityEngine.Vector4");
 
         public static readonly IClrTypeName UnityEvent = new ClrTypeName("UnityEngine.Events.UnityEventBase");
 
