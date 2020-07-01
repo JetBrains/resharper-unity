@@ -9,7 +9,6 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Key
 import com.jetbrains.rd.util.addUnique
 import com.jetbrains.rd.util.lifetime.Lifetime
@@ -26,6 +25,7 @@ import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.createEmptyConsoleCommandLine
+import com.jetbrains.rider.run.withRawParameters
 import com.jetbrains.rider.util.NetUtils
 import com.jetbrains.rider.util.idea.createNestedAsyncPromise
 import org.jetbrains.concurrency.Promise
@@ -33,8 +33,6 @@ import org.jetbrains.concurrency.Promise
 class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,
                                 executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
-
-    private val logger = Logger.getInstance(UnityExeDebugProfileState::class.java)
 
     override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
         throw UnsupportedOperationException("Should use overload with session")
@@ -56,7 +54,7 @@ class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfigura
             })
             .withExePath(exeConfiguration.parameters.exePath)
             .withWorkDirectory(exeConfiguration.parameters.workingDirectory)
-            .withParameters(exeConfiguration.parameters.programParameters)
+            .withRawParameters(exeConfiguration.parameters.programParameters)
 
         val commandLineString = runCommandLine.commandLineString
         val monoConnectResult = super.execute(executor, runner, workerProcessHandler)
