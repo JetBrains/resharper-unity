@@ -13,13 +13,12 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.dialog
 import com.intellij.ui.layout.panel
-import com.jetbrains.rd.util.reactive.Signal
 import java.awt.Dimension
 import java.awt.Insets
 import java.awt.event.MouseEvent
 import javax.swing.*
 
-class UnityProcessPickerDialog(private val project: Project, private val includeEditor:Boolean = true) : DialogWrapper(project) {
+class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(project) {
 
     data class UnityPlayerModel(val player: UnityPlayer, val debuggerAttached: Boolean)
 
@@ -27,15 +26,9 @@ class UnityProcessPickerDialog(private val project: Project, private val include
     private val listModelLock = Object()
     private val list: JBList<UnityPlayerModel>
     private val peerPanel: JPanel
-    val onOk = Signal<UnityPlayer>()
-    val onCancel = Signal<Unit>()
 
     init {
-        title = if (includeEditor) {
-            "Searching for Unity Editors and Players..."
-        } else {
-            "\"Searching for Unity Players...\""
-        }
+        title = "Searching for Unity Editors and Players..."
 
         list = JBList<UnityPlayerModel>().apply {
             model = listModel
@@ -92,15 +85,10 @@ class UnityProcessPickerDialog(private val project: Project, private val include
             val selected = list.selectedValue
             val player = selected.player
             if (selected != null && !selected.debuggerAttached && selected.player.allowDebugging) {
-                onOk.fire(player)
+                UnityRunUtil.attachToUnityProcess(player.host, player.debuggerPort, player.id, project, player.isEditor)
             }
             close(OK_EXIT_CODE)
         }
-    }
-
-    override fun doCancelAction() {
-        onCancel.fire(Unit)
-        super.doCancelAction()
     }
 
     override fun show() {
@@ -109,18 +97,14 @@ class UnityProcessPickerDialog(private val project: Project, private val include
             object : Task.Backgroundable(project, "Getting list of Unity processes...") {
                 override fun run(indicator: ProgressIndicator) {
                     UnityPlayerListener(project, {
-                        if (includeEditor || !it.isEditor) {
-                            val model = UnityPlayerModel(it, UnityRunUtil.isDebuggerAttached(it.host, it.debuggerPort, project))
-                            synchronized(listModelLock) {
-                                listModel.addElement(model)
-                            }
+                        val model = UnityPlayerModel(it, UnityRunUtil.isDebuggerAttached(it.host, it.debuggerPort, project))
+                        synchronized(listModelLock) {
+                            listModel.addElement(model)
                         }
                     }, {
-                        if (includeEditor || !it.isEditor) {
-                            synchronized(listModelLock) {
-                                val element = listModel.elements().asSequence().first { e -> e.player == it }
-                                listModel.removeElement(element)
-                            }
+                        synchronized(listModelLock) {
+                            val element = listModel.elements().asSequence().first { e -> e.player == it }
+                            listModel.removeElement(element)
                         }
                     }, lifetimeDefinition.lifetime)
                 }
