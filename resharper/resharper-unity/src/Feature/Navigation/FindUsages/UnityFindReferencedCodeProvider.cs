@@ -4,7 +4,7 @@ using JetBrains.ReSharper.Feature.Services.Navigation.Requests;
 using JetBrains.ReSharper.Features.Navigation.Features.FindUsages;
 using JetBrains.ReSharper.Psi;
 
-namespace JetBrains.ReSharper.Plugins.Unity
+namespace JetBrains.ReSharper.Plugins.Unity.Feature.Navigation.FindUsages
 {
     [ShellComponent]
     public class UnityFindUsagesProvider : FindUsagesProvider
@@ -40,8 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
                         return request.Title + " are only implicit.";
                     }
                 }
-
-                
             }
 
             return base.GetNotFoundMessage(request);

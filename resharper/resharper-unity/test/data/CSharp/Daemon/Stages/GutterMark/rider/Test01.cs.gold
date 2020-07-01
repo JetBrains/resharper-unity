@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
@@ -9,23 +10,38 @@ public class ||A|(0)|(1) : MonoBehaviour
     public string ||ImplicitlyAssignedField|(2)|(3);
     public string ||ImplicitlyAssignedMultiField1|(4)|(5), ||ImplicitlyAssignedMultiField2|(6)|(7);
     [SerializeField] private int ||myImplicitlyAssignedPrivateField|(8)|(9);
+    public Vector2 ||ImplicitlyAssignedBuiltinType|(10)|(11);
+    public Vector3 ||ImplicitlyAssignedBuiltinType2|(12)|(13);
+    public Vector4 ||ImplicitlyAssignedBuiltinType3|(14)|(15);
+    public List<string> ||ImplicitlyAssignedList|(16)|(17);
+    public string[] ||ImplicitlyAssignedArray|(18)|(19);
+    public SerialisableClass ||ImplicitlyAssignedCustomSerialisableClass|(20)|(21);
+    public SerialisableStruct ||ImplicitlyAssignedCustomSerialisableStruct|(22)|(23);
+    public SerialisableClass[] ||ImplicitlyAssignedCustomSerialisableClassArray|(24)|(25);
+    public SerialisableStruct[] ||ImplicitlyAssignedCustomSerialisableStructArray|(26)|(27);
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
     private const string UnusedPrivateConst = "hello";
-    [|SerializeField|(10)] private const string UnusedPrivateConst2 = "hello";
+    [|SerializeField|(28)] private const string UnusedPrivateConst2 = "hello";
     private string myUnusedField;
     public readonly string UnusedReadonlyField;
     [NonSerialized] public string ExplicitlyUnusedField;
-    [NonSerialized, |SerializeField|(11)] public string ExplicitlyUnusedField2;
-    [NonSerialized, |SerializeField|(12)] private string myExplicitlyUnusedField3;
+    [NonSerialized, |SerializeField|(29)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(30)] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
-    [|SerializeField|(13)] private static string ourUnusedPrivateStaticField;
+    [|SerializeField|(31)] private static string ourUnusedPrivateStaticField;
+    public Version NotSerialisedStruct;
+    public Dictionary<string, string> NotSerialisedDictionary;
+    public NotSerialisableClass NotSerialisedClass;
+    public List<Version> NotSerialisedList;
+    public string[,] NotSerialisedMultidimensionalArray;
+    public string[][] NotSerialisedJaggedArray;
 
     // Unity function
-    |private void ||OnDestroy|(15)|(16)()
+    |private void ||OnDestroy|(33)|(34)()
     {
-    }|(14)
+    }|(32)
 
     // Not a Unity function
     private void NotMessage()
@@ -33,21 +49,21 @@ public class ||A|(0)|(1) : MonoBehaviour
     }
 
     // Unity message as coroutine
-    private IEnumerator ||Start|(17)|(18)()
+    private IEnumerator ||Start|(35)|(36)()
     {
         return null;
     }
 
     // Optional parameter
-    |private void ||OnCollisionStay|(20)|(21)()
+    |private void ||OnCollisionStay|(38)|(39)()
     {
-    }|(19)
+    }|(37)
 }
 
 [InitializeOnLoad]
 public class Startup
 {
-    static |Startup|(22)()
+    static |Startup|(40)()
     {
         Debug.Log("Up and running");
     }
@@ -73,7 +89,7 @@ class MyClass
     }
 
     [RuntimeInitializeOnLoadMethod]
-    public void |NotAppliedToInstanceMethods|(23)()
+    public void |NotAppliedToInstanceMethods|(41)()
     {
     }
 
@@ -90,71 +106,86 @@ class MyClass
     }
 
     [InitializeOnLoadMethod]
-    public void |NotAppliedToInstanceMethod|(24)()
+    public void |NotAppliedToInstanceMethod|(42)()
     {
         Debug.Log("Project loaded in Unity Editor");
     }
 }
 
 [Serializable]
-class SerialisableClass
+public class SerialisableClass
 {
     // All serialised by Unity - gutter icons
-    public string ||ImplicitlyAssignedField|(25)|(26);
-    public string ||ImplicitlyAssignedMultiField1|(27)|(28), ||ImplicitlyAssignedMultiField2|(29)|(30);
-    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(31)|(32);
+    public string ||ImplicitlyAssignedField|(43)|(44);
+    public string ||ImplicitlyAssignedMultiField1|(45)|(46), ||ImplicitlyAssignedMultiField2|(47)|(48);
+    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(49)|(50);
+    public Vector2 ||ImplicitlyAssignedBuiltinType|(51)|(52);
+    public Vector3 ||ImplicitlyAssignedBuiltinType2|(53)|(54);
+    public Vector4 ||ImplicitlyAssignedBuiltinType3|(55)|(56);
+    public List<string> ||ImplicitlyAssignedList|(57)|(58);
+    public string[] ||ImplicitlyAssignedArray|(59)|(60);
+    public SerialisableClass ||ImplicitlyAssignedCustomSerialisableClass|(61)|(62);
+    public SerialisableStruct ||ImplicitlyAssignedCustomSerialisableStruct|(63)|(64);
+    public SerialisableClass[] ||ImplicitlyAssignedCustomSerialisableClassArray|(65)|(66);
+    public SerialisableStruct[] ||ImplicitlyAssignedCustomSerialisableStructArray|(67)|(68);
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
     private const string UnusedPrivateConst = "hello";
-    [|SerializeField|(33)] private const string UnusedPrivateConst2 = "hello";
+    [|SerializeField|(69)] private const string UnusedPrivateConst2 = "hello";
     private string myUnusedField;
     public readonly string UnusedReadonlyField;
     [NonSerialized] public string ExplicitlyUnusedField;
-    [NonSerialized, |SerializeField|(34)] public string ExplicitlyUnusedField2;
-    [NonSerialized, |SerializeField|(35)] private string myExplicitlyUnusedField3;
+    [NonSerialized, |SerializeField|(70)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(71)] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
-    [|SerializeField|(36)] private static string ourUnusedPrivateStaticField;
+    [|SerializeField|(72)] private static string ourUnusedPrivateStaticField;
+    public Version NotSerialisedStruct;
+    public Dictionary<string, string> NotSerialisedDictionary;
+    public NotSerialisableClass NotSerialisedClass;
+    public List<Version> NotSerialisedList;
+    public string[,] NotSerialisedMultidimensionalArray;
+    public string[][] NotSerialisedJaggedArray;
 }
 
 [Serializable]
-struct SerialisableStruct
+public struct SerialisableStruct
 {
     // All serialised by Unity - gutter icons
-    public string ||ImplicitlyAssignedField|(37)|(38);
-    public string ||ImplicitlyAssignedMultiField1|(39)|(40), ||ImplicitlyAssignedMultiField2|(41)|(42);
-    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(43)|(44);
+    public string ||ImplicitlyAssignedField|(73)|(74);
+    public string ||ImplicitlyAssignedMultiField1|(75)|(76), ||ImplicitlyAssignedMultiField2|(77)|(78);
+    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(79)|(80);
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
     private const string UnusedPrivateConst = "hello";
-    [|SerializeField|(45)] private const string UnusedPrivateConst2 = "hello";
+    [|SerializeField|(81)] private const string UnusedPrivateConst2 = "hello";
     private string myUnusedField;
     public readonly string UnusedReadonlyField;
     [NonSerialized] public string ExplicitlyUnusedField;
-    [NonSerialized, |SerializeField|(46)] public string ExplicitlyUnusedField2;
-    [NonSerialized, |SerializeField|(47)] private string myExplicitlyUnusedField3;
+    [NonSerialized, |SerializeField|(82)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(83)] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
-    [|SerializeField|(48)] private static string ourUnusedPrivateStaticField;
+    [|SerializeField|(84)] private static string ourUnusedPrivateStaticField;
 }
 
-class NotSerialisableClass
+public class NotSerialisableClass
 {
     public string NotSerialised1;
-    [|SerializeField|(49)] public string NotSerialised2;
+    [|SerializeField|(85)] public string NotSerialised2;
 }
 
 struct NotSerialisableStruct
 {
     public string NotSerialised1;
-    [|SerializeField|(50)] public string NotSerialised2;
+    [|SerializeField|(86)] public string NotSerialised2;
 }
 
 [Serializable]
-static class NotSerialisableClass
+static class NotSerialisableStaticClass
 {
-    public string NotSerialised1;
-    [|SerializeField|(51)] public string NotSerialised2;
+    public static string NotSerialised1;
+    [|SerializeField|(87)] public static string NotSerialised2;
 }
 
 ---------------------------------------------------------
@@ -168,45 +199,81 @@ static class NotSerialisableClass
 (7): UnityCodeInsights: 
 (8): ReSharper Unity Implicitly Used Identifier: 
 (9): UnityCodeInsights: 
-(10): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(11): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(12): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(13): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(14): ReSharper Dead Code: Redundant Unity event function
-(15): ReSharper Unity Implicitly Used Identifier: 
-(16): UnityCodeInsights: 
-(17): ReSharper Unity Implicitly Used Identifier: 
-(18): UnityCodeInsights: 
-(19): ReSharper Dead Code: Redundant Unity event function
+(10): ReSharper Unity Implicitly Used Identifier: 
+(11): UnityCodeInsights: 
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): UnityCodeInsights: 
+(14): ReSharper Unity Implicitly Used Identifier: 
+(15): UnityCodeInsights: 
+(16): ReSharper Unity Implicitly Used Identifier: 
+(17): UnityCodeInsights: 
+(18): ReSharper Unity Implicitly Used Identifier: 
+(19): UnityCodeInsights: 
 (20): ReSharper Unity Implicitly Used Identifier: 
 (21): UnityCodeInsights: 
-(22): UnityCodeInsights: 
-(23): ReSharper Warning: Missing static modifier
-(24): ReSharper Warning: Missing static modifier
-(25): ReSharper Unity Implicitly Used Identifier: 
-(26): UnityCodeInsights: 
-(27): ReSharper Unity Implicitly Used Identifier: 
-(28): UnityCodeInsights: 
-(29): ReSharper Unity Implicitly Used Identifier: 
-(30): UnityCodeInsights: 
-(31): ReSharper Unity Implicitly Used Identifier: 
-(32): UnityCodeInsights: 
-(33): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(34): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(35): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(36): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(37): ReSharper Unity Implicitly Used Identifier: 
-(38): UnityCodeInsights: 
-(39): ReSharper Unity Implicitly Used Identifier: 
+(22): ReSharper Unity Implicitly Used Identifier: 
+(23): UnityCodeInsights: 
+(24): ReSharper Unity Implicitly Used Identifier: 
+(25): UnityCodeInsights: 
+(26): ReSharper Unity Implicitly Used Identifier: 
+(27): UnityCodeInsights: 
+(28): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(29): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(30): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(31): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(32): ReSharper Dead Code: Redundant Unity event function
+(33): ReSharper Unity Implicitly Used Identifier: 
+(34): UnityCodeInsights: 
+(35): ReSharper Unity Implicitly Used Identifier: 
+(36): UnityCodeInsights: 
+(37): ReSharper Dead Code: Redundant Unity event function
+(38): ReSharper Unity Implicitly Used Identifier: 
+(39): UnityCodeInsights: 
 (40): UnityCodeInsights: 
-(41): ReSharper Unity Implicitly Used Identifier: 
-(42): UnityCodeInsights: 
+(41): ReSharper Warning: Missing static modifier
+(42): ReSharper Warning: Missing static modifier
 (43): ReSharper Unity Implicitly Used Identifier: 
 (44): UnityCodeInsights: 
-(45): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(46): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(47): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(48): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(49): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(50): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(51): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(45): ReSharper Unity Implicitly Used Identifier: 
+(46): UnityCodeInsights: 
+(47): ReSharper Unity Implicitly Used Identifier: 
+(48): UnityCodeInsights: 
+(49): ReSharper Unity Implicitly Used Identifier: 
+(50): UnityCodeInsights: 
+(51): ReSharper Unity Implicitly Used Identifier: 
+(52): UnityCodeInsights: 
+(53): ReSharper Unity Implicitly Used Identifier: 
+(54): UnityCodeInsights: 
+(55): ReSharper Unity Implicitly Used Identifier: 
+(56): UnityCodeInsights: 
+(57): ReSharper Unity Implicitly Used Identifier: 
+(58): UnityCodeInsights: 
+(59): ReSharper Unity Implicitly Used Identifier: 
+(60): UnityCodeInsights: 
+(61): ReSharper Unity Implicitly Used Identifier: 
+(62): UnityCodeInsights: 
+(63): ReSharper Unity Implicitly Used Identifier: 
+(64): UnityCodeInsights: 
+(65): ReSharper Unity Implicitly Used Identifier: 
+(66): UnityCodeInsights: 
+(67): ReSharper Unity Implicitly Used Identifier: 
+(68): UnityCodeInsights: 
+(69): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(70): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(71): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(72): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(73): ReSharper Unity Implicitly Used Identifier: 
+(74): UnityCodeInsights: 
+(75): ReSharper Unity Implicitly Used Identifier: 
+(76): UnityCodeInsights: 
+(77): ReSharper Unity Implicitly Used Identifier: 
+(78): UnityCodeInsights: 
+(79): ReSharper Unity Implicitly Used Identifier: 
+(80): UnityCodeInsights: 
+(81): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(82): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(83): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(84): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(85): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(86): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(87): ReSharper Dead Code: Redundant 'SerializeField' attribute

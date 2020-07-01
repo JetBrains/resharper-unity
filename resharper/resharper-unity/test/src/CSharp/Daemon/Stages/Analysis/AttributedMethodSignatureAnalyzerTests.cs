@@ -11,6 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
         [Test] public void TestInitializeOnLoadMethodAttributeSignature() { DoNamedTest2(); }
         [Test] public void TestRuntimeInitializeOnLoadMethodAttributeSignature() { DoNamedTest2(); }
         [Test] public void TestOnOpenAssetAttributeSignature() { DoNamedTest2(); }
+        [Test, TestUnity(UnityVersion.Unity2018_4)] public void TestSingleOnOpenAssetAttributeSignature() { DoNamedTest2(); }
         [Test] public void TestDidReloadScriptsSignature() { DoNamedTest2(); }
         [Test] public void TestPostProcessSceneAttributeSignature() { DoNamedTest2(); }
         [Test] public void TestPostProcessBuildAttributeSignature() { DoNamedTest2(); }

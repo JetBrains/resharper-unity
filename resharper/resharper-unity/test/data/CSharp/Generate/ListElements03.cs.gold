@@ -21,9 +21,10 @@
  19: OnPreprocessAssembly(System.String):System.Void
  20: OnPreprocessAsset():System.Void
  21: OnPreprocessAudio():System.Void
- 22: OnPreprocessModel():System.Void
- 23: OnPreprocessSpeedTree():System.Void
- 24: OnPreprocessTexture():System.Void
+ 22: OnPreprocessMaterialDescription(UnityEditor.AssetImporters.MaterialDescription,UnityEngine.Material,UnityEngine.AnimationClip[]):System.Void
+ 23: OnPreprocessModel():System.Void
+ 24: OnPreprocessSpeedTree():System.Void
+ 25: OnPreprocessTexture():System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;

@@ -80,21 +80,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return processIdString == null ? (int?) null : Convert.ToInt32(processIdString);
         }
 
+        public Task<int> WaitConnectedUnityProcessId()
+        {
+            var source = new TaskCompletionSource<int>();
+            myUnityEditorProtocol.UnityModel.ViewNotNull(myLifetime, (lt, model) =>
+            {
+                model.UnityProcessId.Advise(myLifetime, id =>
+                {
+                    source.SetResult(id);
+                });
+            });
+            return source.Task;
+        }
+
         [CanBeNull]
         public string[] GetUnityCommandline()
         {
-            var unityPathData = myUnityEditorProtocol.UnityModel.Value?.UnityApplicationData;
+            var unityPathData = myRdUnityModel.UnityApplicationData;
             if (!unityPathData.HasValue()) 
                 return null;
-            
-            var unityPath = unityPathData?.Value?.ApplicationPath;
-
-            if (unityPath == null)
-                unityPath = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "app_path");
-            
+            var unityPath = unityPathData.Value?.ApplicationPath;
             if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 unityPath = FileSystemPath.Parse(unityPath).Combine("Contents/MacOS/Unity").FullPath;
-            
             return unityPath != null ? new[] {unityPath, "-projectPath", mySolution.SolutionDirectory.FullPath} : null;
         }
 

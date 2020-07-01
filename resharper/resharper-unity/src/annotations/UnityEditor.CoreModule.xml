@@ -1,0 +1,110 @@
+<assembly name="UnityEditor.CoreModule">
+  <!-- Nullness -->
+  <member name="P:UnityEditor.Editor.serializedObject">
+    <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
+  </member>
+
+  <!-- Attribute usage. Grouped by namespace -->
+  <!-- N:UnityEditor -->
+  <member name="T:UnityEditor.CallbackOrderAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.CanEditMultipleObjects">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.Editor</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEditor.CustomEditor">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.Editor</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEditor.CustomEditorForRenderPipelineAttribute">
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.Editor</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEditor.CustomPreviewAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.ObjectPreview</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEditor.CustomPropertyDrawer">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.GUIDrawer</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEditor.DrawGizmo">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.InitializeOnEnterPlayModeAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.InitializeOnLoadAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.InitializeOnLoadMethodAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.LightingExplorerExtensionAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.ILightingExplorerExtension</argument>
+    </attribute>
+  </member>
+  <member name="T:UnityEditor.MenuItem">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.PreferenceItem">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+
+  <!-- N:UnityEditor.Callbacks -->
+  <member name="T:UnityEditor.Callbacks.DidReloadScripts">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.Callbacks.OnOpenAssetAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.Callbacks.PostProcessBuildAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.Callbacks.PostProcessSceneAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+
+
+  <!-- N:UnityEditor.EditorTools -->
+  <member name="T:UnityEditor.EditorTools.EditorToolAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.EditorTools.EditorTool</argument>
+    </attribute>
+  </member>
+
+  <!-- N:UnityEditor.Experimental -->
+  <member name="T:UnityEditor.Experimental.AssetImporters.CollectImportedDependenciesAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.Experimental.AssetImporters.ScriptedImporterAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
+      <argument>UnityEditor.Experimental.AssetImporters.ScriptedImporter</argument>
+    </attribute>
+  </member>
+
+  <!-- N:UnityEditor.Rendering -->
+  <member name="T:UnityEditor.Rendering.ScriptableRenderPipelineExtensionAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+
+  <!-- N:UnityEditor.ShortcutManagement -->
+  <member name="T:UnityEditor.ShortcutManagement.ShortcutAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+  <member name="T:UnityEditor.ShortcutManagement.ClutchShortcutAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
+  </member>
+</assembly>
