@@ -148,7 +148,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 .Any(t => t.GetClrName().ShortName.Equals(name));
         }
 
-        public static bool IsPerformanceCriticalRootMethod(UnityApi api, ITreeNode node)
+        public static bool IsPerformanceCriticalRootMethod(ITreeNode node)
         {
 
             if (!(node is ICSharpDeclaration declaration))
@@ -158,7 +158,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (declaration.DeclaredElement is IAttributesOwner attributesOwner && HasFrequentlyCalledMethodAttribute(attributesOwner))
                 return true;
 
-            var typeElement = node.GetContainingNode<IClassLikeDeclaration>()?.DeclaredElement;
+            if (!(declaration is ITypeMemberDeclaration typeMemberDeclaration))
+                return false;
+
+            var typeElement = typeMemberDeclaration.DeclaredElement?.GetContainingType();
+            
             if (typeElement == null)
                 return false;
 

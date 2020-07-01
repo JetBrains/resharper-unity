@@ -288,7 +288,7 @@
          for this highlight. Only used when the file is processed in QUICKFIX mode (default is
          to use ERROR mode)
        -->
-
+  
   <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
     <Parameter type="ITreeNode" name="node" />
     <Message value="The name is not defined in the Input manager. The call is likely to fail at runtime." />

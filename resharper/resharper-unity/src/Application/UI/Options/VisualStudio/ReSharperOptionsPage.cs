@@ -23,12 +23,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
 
         private static readonly Expression<Func<UnitySettings, bool>> ourEnablePerformanceHighlightingAccessor =
             s => s.EnablePerformanceCriticalCodeHighlighting;
+        private static readonly Expression<Func<UnitySettings, bool>> ourEnableBurstHighlightingAccessor =
+            s => s.EnableBurstCodeHighlighting;
 
         public ReSharperOptionsPage(Lifetime lifetime, [NotNull] OptionsSettingsSmartContext settingsStore,
                                     RunsProducts.ProductConfigurations productConfigurations)
             : base(lifetime, settingsStore)
         {
             Header("C#");
+            CheckBox((UnitySettings s) => s.EnableBurstCodeHighlighting,
+                "Enable analysis for Burst compiler issues");
             CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
                 "Enable performance analysis in frequently called code");
 
