@@ -48,10 +48,10 @@
         </Description>
       </Tag>
 
-      <Tag externalName="BurstManagedStringLiteralWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Loading a managed string literal is not supported</Title>
+      <Tag externalName="BurstManagedStringWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Loading a managed string is not supported</Title>
         <Description>
-          Loading a managed string literal is not supported
+          Loading a managed string is not supported
         </Description>
       </Tag>
 
@@ -84,9 +84,9 @@
       </Tag>
 
       <Tag externalName="BurstDebugLogInvalidArgumentWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Invalid argument. Expecting string literal or string.</Title>
+        <Title>Debug logging functions accepts only strings</Title>
         <Description>
-          Invalid argument. Expecting string literal or string.
+          Debug logging functions accepts only strings
         </Description>
       </Tag>
     </Group>
@@ -142,9 +142,9 @@
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 
-  <Warning name="BurstManagedStringLiteral" configurableSeverity="Unity.BurstManagedStringLiteral">
+  <Warning name="BurstManagedString" configurableSeverity="Unity.BurstManagedString">
     <Parameter type="DocumentRange" name="range" />
-    <Message value="Burst: Loading a managed string literal is not supported"/>
+    <Message value="Burst: Loading a managed string is not supported"/>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
@@ -189,7 +189,7 @@
 
   <Warning name="BurstDebugLogInvalidArgument" configurableSeverity="Unity.BurstDebugLogInvalidArgument">
     <Parameter type="DocumentRange" name="range" />
-    <Message value="Invalid argument. Expecting string literal or string"/>
+    <Message value="Burst: Debug logging functions accepts only strings"/>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
