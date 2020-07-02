@@ -236,6 +236,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         rd.GenerateUIElementsSchema.Set((l, u) =>
                             editor.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
                     });
+                    
+                    editor.BuildLocation.Advise(lf, b => myHost.PerformModelAction(rd => rd.BuildLocation.SetValue(b)));
 
                     TrackActivity(editor, lf);
 

@@ -1,0 +1,212 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Jobs.LowLevel.Unsafe;
+using UnityEngine;
+
+namespace UnityEngine
+{
+    public class Debug
+    {
+        public static void Log(object message)
+        {
+        }
+        public static void LogWarning(object message)
+        {
+        }
+        public static void LogError(object message)
+        {
+        }
+    }
+}
+namespace Unity
+{
+    namespace Jobs
+    {
+        [JobProducerType]
+        public interface IJob
+        {
+            void Execute();
+        }
+
+        namespace LowLevel
+        {
+            namespace Unsafe
+            {
+                public class JobProducerTypeAttribute : Attribute
+                {
+                }
+            }
+        }
+    }
+
+    namespace Burst
+    {
+        public class BurstCompileAttribute : Attribute
+        {
+        }
+
+        public class BurstDiscardAttribute : Attribute
+        {
+        }
+
+    }
+
+    namespace Collections
+    {
+        public struct FixedString128
+        {
+            public FixedString128(String source)
+            {
+            }
+
+            public static implicit operator FixedString128(string b) => new FixedString128(b);
+
+        }
+        public struct FixedString512
+        {
+            public FixedString512(String source)
+            {
+            }
+
+            public static implicit operator FixedString512(string b) => new FixedString512(b);
+
+        }
+
+        public struct NativeArray<T> : IDisposable, IEnumerable<T>, IEnumerable, IEquatable<NativeArray<T>>
+            where T : struct
+        {
+            public void Dispose()
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                throw new NotImplementedException();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public bool Equals(NativeArray<T> other)
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
+}
+
+namespace DebugStringTests
+{
+    public class DebugStringTests
+    {
+        private static string toFormat = "228{0}";
+
+        [BurstCompile]
+        private struct DebugStringTests1 : IJob
+        {
+            public void Execute()
+            {
+                Debug.Log("Plain log");
+                Debug.LogWarning("Warning log");
+                Debug.LogError("Error log");
+                Debug.Log($"AAA{1}, {2}, {3}");
+                Debug.Log(3 / 2 > 1 ? $"AAA{1}" : $"{2}, {3}");
+                Debug.Log(string.Format("AAA{0}, {1}, {2}", 1, 2, 3));
+                FixedString128 fixedString128 = "This is an integer value {12} used with FixedString128";
+                FixedString512 fixedString512 = string.Format("{0}", 1);
+                Debug.Log(fixedString128);
+                fixedString512 = "asdasd";
+                fixedString512 = "as{2}d{3}asd";
+                int var1 = 2;
+                FixedString128 variable = "string";
+
+                |string.Format("{0} asdasd", variable)|(0);
+            }
+        }
+
+        [BurstCompile]
+        private struct DebugStringTests2 : IJob
+        {
+            public void Execute()
+            {
+                string kopa1 = |$"as{2}d{3}asd"|(1);
+            }
+        }
+
+        [BurstCompile]
+        private struct DebugStringTests3 : IJob
+        {
+            public void Execute()
+            {
+                var fixasdfed = new FixedString128(|"variable"|(2));
+            }
+        }
+
+        [BurstCompile]
+        private struct DebugStringTests4 : IJob
+        {
+            public void Execute()
+            {
+                |string.Format(|new CultureInfo(1)|(4), |""|(5), null)|(3);
+            }
+        }
+
+        [BurstCompile]
+        private struct DebugStringTests5 : IJob
+        {
+            public void Execute()
+            {
+                string.Format(||toFormat|(6)|(7), 12);
+            }
+        }
+
+        [BurstCompile]
+        private struct DebugStringTests6 : IJob
+        {
+            public void Execute()
+            {
+                Debug.Log(|12|(8));
+            }
+        }
+
+        [BurstCompile]
+        private struct DebugStringTests7 : IJob
+        {
+            public void Execute()
+            {
+                FixedString128 variable = "string";
+
+                var lola = |string.Format("{0} asdasd", variable)|(9);
+            }
+        }
+
+        [BurstCompile]
+        private struct DebugStringTests8 : IJob
+        {
+            public void Execute()
+            {
+                string kopa = |"asdasd"|(10);
+            }
+        }
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(1): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(2): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(3): ReSharper Warning: BC1016: The managed function `Format` is not supported.
+(4): ReSharper Warning: BC1021: Creating a managed object `CultureInfo` is not supported
+(5): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(6): ReSharper Warning: BC1042: The managed class type `DebugStringTests` is not supported. Loading from a non-readonly static field `toFormat` is not supported
+(7): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(8): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(9): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(10): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.

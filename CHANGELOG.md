@@ -20,7 +20,9 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add Unity specific spell check dictionary ([#1187](https://github.com/JetBrains/resharper-unity/issues/1187), [#1570](https://github.com/JetBrains/resharper-unity/pull/1570))
 - Add support for UnityEditor.dll being split into modules in Unity 2020.2 ([#1699](https://github.com/JetBrains/resharper-unity/issues/1699), [RIDER-46544](https://youtrack.jetbrains.com/issue/RIDER-46544), [#1724](https://github.com/JetBrains/resharper-unity/pull/1724))
 - Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor ([#1272](https://github.com/JetBrains/resharper-unity/issues/1272), [#1661](https://github.com/JetBrains/resharper-unity/pull/1661))
+- Rider: Add analysis and inspections for Burst compiled code ([#1665](https://github.com/JetBrains/resharper-unity/pull/1665))
 - Rider: Automatically use UnityYamlMerge to merge asset files ([RIDER-33411](https://youtrack.jetbrains.com/issue/RIDER-33411), [#1682](https://github.com/JetBrains/resharper-unity/pull/1682))
+- Rider: Automatically add run configuration for standalone player build targets ([#1708](https://github.com/JetBrains/resharper-unity/pull/1708))
 - Rider: Add sample text for "Unity", "ShaderLab" and "Cg/HLSL" Colour Scheme options pages ([#1667](https://github.com/JetBrains/resharper-unity/pull/1667))
 - Rider: Filter `.meta` files from the navigation bar ([RIDER-28425](https://youtrack.jetbrains.com/issue/RIDER-28425), [#1703](https://github.com/JetBrains/resharper-unity/pull/1703))
 
@@ -33,6 +35,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Significant reduction in memory usage while indexing assets ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
 - Rider: Better support for prefab modifications in Find Usages and showing Inspector values ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
 - Rider: Show method handlers for Unity events in the editor ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
+- Rider: Allow aborting tests while waiting for Unity ([#1675](https://github.com/JetBrains/resharper-unity/issues/1675), [36389](https://youtrack.jetbrains.com/issue/RIDER-36389), [#1692](https://github.com/JetBrains/resharper-unity/pull/1692))
+- Rider: Allow launching and debugging standalone player via run configuration ([#1708](https://github.com/JetBrains/resharper-unity/pull/1708))
 - Rider: Disable "Start Unity" action when Unity is running ([RIDER-36108](https://youtrack.jetbrains.com/issue/RIDER-36108), [#1554](https://github.com/JetBrains/resharper-unity/pull/1554))
 - Rider: Unity Log view optionally scrolls to show new items ([RIDER-14377](https://youtrack.jetbrains.com/issue/RIDER-14377), [#1678](https://github.com/JetBrains/resharper-unity/pull/1678))
 - Rider: Play/pause/step buttons no longer disabled while Rider is indexing ([#1678](https://github.com/JetBrains/resharper-unity/pull/1678))
@@ -46,7 +50,9 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix grouping assets by directory in Find Usages results ([#1668](https://github.com/JetBrains/resharper-unity/pull/1668))
 - Rider: Fix exception trying to upgrade Unity editor plugin ([RIDER-42475](https://youtrack.jetbrains.com/issue/RIDER-42475), [#1658](https://github.com/JetBrains/resharper-unity/pull/1658))
 - Rider: Fix unit tests not running unless Rider has focus ([RIDER-37990](https://youtrack.jetbrains.com/issue/RIDER-37990), [#1672](https://github.com/JetBrains/resharper-unity/pull/1672))
+- Rider: Fix test runner hanging using continuous testing ([#1695](https://github.com/JetBrains/resharper-unity/issues/1695), [#1692](https://github.com/JetBrains/resharper-unity/pull/1692))
 - Rider: Suppress incorrect refresh behaviour when saving files that are in multiple projects (e.g. Player projects) ([#1669](https://github.com/JetBrains/resharper-unity/pull/1669))
+- Rider: Fix incorrect component name shown in Code Vision ([#1713](https://github.com/JetBrains/resharper-unity/pull/1713))
 - Unity editor: Fix reporting of duration of Unity tests (released in Rider package 2.0.4) ([RIDER-44853](https://youtrack.jetbrains.com/issue/RIDER-44853))
 - Unity editor: Delay calling Unity API to workaround potential Unity crash ([RIDER-43951](https://youtrack.jetbrains.com/issue/RIDER-43951), [#1647](https://github.com/JetBrains/resharper-unity/pull/1647))
 
