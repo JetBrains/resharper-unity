@@ -6,7 +6,7 @@
         <LangVersion>7.3</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <SignAssembly>true</SignAssembly>
-        <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
+        <AssemblyOriginatorKeyFile>..\..\..\sign.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
     <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props')" />
 </Project>

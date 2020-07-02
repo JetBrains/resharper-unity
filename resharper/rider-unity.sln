@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gradle-launcher", "gradle-l
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{D61F53F1-F209-4313-9FF2-B1DBD286BE11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "debugger", "..\debugger\src\debugger.csproj", "{4B54084A-6F70-43E1-883F-8A69ED7CE64A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "debugger", "..\debugger\debugger-worker\src\debugger.csproj", "{4B54084A-6F70-43E1-883F-8A69ED7CE64A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RiderHost", "RiderHost", "{5B475CDF-F046-4823-A994-BD5261058461}"
 EndProject
