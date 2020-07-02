@@ -132,7 +132,7 @@ namespace SmartMarkingTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: BC1021: Creating a managed object `Object` is not supported
-(1): ReSharper Warning: BC1021: Creating a managed object `Object` is not supported
-(2): ReSharper Warning: BC1021: Creating a managed object `Object` is not supported
-(3): ReSharper Warning: BC1042: The managed class type `SimpleClass` is not supported.
+(0): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
+(1): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
+(2): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
+(3): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported

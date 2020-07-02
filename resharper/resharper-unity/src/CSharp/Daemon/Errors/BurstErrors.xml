@@ -13,201 +13,184 @@
 
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Burst">
-      <Tag externalName="BC1001Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1001</Title>
+      <Tag externalName="BurstAccessingManagedMethodWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Accessing managed methods is not supported</Title>
         <Description>
-          Unable to access the managed method from type
+          Accessing managed methods is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1005Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1005</Title>
+      <Tag externalName="BurstTryNotSupportedWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Try statement is not supported</Title>
         <Description>
-          The `try` construction is not supported
+          Try statement is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1016Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1016</Title>
+      <Tag externalName="BurstFunctionSignatureContainsManagedTypesWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Function signature cannot contain managed types</Title>
         <Description>
-          The managed function is not supported
+          Function signature cannot contain managed types
         </Description>
       </Tag>
 
-      <Tag externalName="BC1020Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1020</Title>
+      <Tag externalName="BurstBoxingNotSupportedWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Boxing is not supported</Title>
         <Description>
-          Boxing a valuetype to a managed object is not supported
+          Boxing is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1021Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1021</Title>
+      <Tag externalName="BurstCreatingManagedTypeWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Creating a managed type is not supported</Title>
         <Description>
-          Creating a managed object is not supported
+          Creating a managed type is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1033Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1033</Title>
+      <Tag externalName="BurstManagedStringWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Loading a managed string is not supported</Title>
         <Description>
-          Loading a managed string literal is not supported
+          Loading a managed string is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1034Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1034</Title>
+      <Tag externalName="BurstWriteStaticFieldWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Writing to a static field is not supported</Title>
         <Description>
           Writing to a static field is not supported
         </Description>
       </Tag>
-
-      <Tag externalName="BC1036Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1036</Title>
+      
+      <Tag externalName="BurstForeachNotSupportedWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>The 'foreach' construction is not supported</Title>
         <Description>
-          The `finally` construction (e.g `foreach`/`using`) is not supported
+          The 'foreach' construction is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1037Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1037</Title>
+      <Tag externalName="BurstLoadingStaticNotReadonlyWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Loading from a non-readonly static field is not supported</Title>
         <Description>
-          The `try` construction (e.g `foreach`/`using`) is not supported
+          Loading from a non-readonly static field is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1042Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1042</Title>
+      <Tag externalName="BurstLoadingManagedTypeWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Loading managed type is not supported</Title>
         <Description>
-          The managed class type is not supported. Loading from a non-readonly static field is not supported
+          Loading managed type is not supported
         </Description>
       </Tag>
 
-      <Tag externalName="BC1042ShortError.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1042</Title>
+      <Tag externalName="BurstDebugLogInvalidArgumentWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Debug logging functions accepts only strings</Title>
         <Description>
-          The managed class type is not supported. Loading from a non-readonly static field is not supported
-        </Description>
-      </Tag>
-
-      <Tag externalName="BC1349Error.HIGHLIGHTING_ID" default="WARNING">
-        <Title>BC1349</Title>
-        <Description>
-          Invalid argument. Expecting string literal or string.
+          Debug logging functions accepts only strings
         </Description>
       </Tag>
     </Group>
   </SeverityConfiguration>
   
-  <Error name="BC1001" configurableSeverity="Unity.BC1001">
+  <Warning name="BurstAccessingManagedMethod" configurableSeverity="Unity.BurstAccessingManagedMethod">
     <Parameter type="DocumentRange" name="range" />
     <Parameter type="string" name="methodQualification"/>
     <Parameter type="string" name="typeQualification"/>
-    <Message value="BC1001: Unable to access the managed method `{0}` from type `{1}`.">
+    <Message value="Burst: Accessing managed method '{0}' from type '{1}' is not supported">
       <Argument>MethodQualification</Argument>
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1005" configurableSeverity="Unity.BC1005">
+  <Warning name="BurstTryNotSupported" configurableSeverity="Unity.BurstTryNotSupported">
     <Parameter type="DocumentRange" name="range" />
-    <Message value="BC1005: The `try` construction is not supported.">
+    <Message value="Burst: Try statement is not supported">
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1016" configurableSeverity="Unity.BC1016">
+  <Warning name="BurstFunctionSignatureContainsManagedTypes" configurableSeverity="Unity.BurstFunctionSignatureContainsManagedTypes">
     <Parameter type="DocumentRange" name="range" />
     <Parameter type="string" name="functionSignature"/>
-    <Message value="BC1016: The managed function `{0}` is not supported.">
+    <Message value="Burst: '{0}' signature contains managed types">
       <Argument>FunctionSignature</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1020" configurableSeverity="Unity.BC1020">
+  <Warning name="BurstBoxingNotSupported" configurableSeverity="Unity.BurstBoxingNotSupported">
     <Parameter type="DocumentRange" name="range" />
     <Parameter type="string" name="typeQualification"/>
-    <Message value="BC1020: Boxing a value type `{0}` to a managed object is not supported">
+    <Message value="Burst: Boxing '{0}' is not supported">
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1021" configurableSeverity="Unity.BC1021">
+  <Warning name="BurstCreatingManagedType" configurableSeverity="Unity.BurstCreatingManagedType">
     <Parameter type="DocumentRange" name="range" />
     <Parameter type="string" name="typeQualification"/>
-    <Message value="BC1021: Creating a managed object `{0}` is not supported">
+    <Message value="Burst: Creating a managed type '{0}' is not supported">
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1033" configurableSeverity="Unity.BC1033">
+  <Warning name="BurstManagedString" configurableSeverity="Unity.BurstManagedString">
     <Parameter type="DocumentRange" name="range" />
-    <Message value="BC1033: Loading a managed string literal is not supported"/>
+    <Message value="Burst: Loading a managed string is not supported"/>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1034" configurableSeverity="Unity.BC1034">
+  <Warning name="BurstWriteStaticField" configurableSeverity="Unity.BurstWriteStaticField">
     <Parameter type="DocumentRange" name="range" />
     <Parameter type="string" name="fieldQualification"/>
-    <Message value="BC1034: Writing to a static field `{0}` is not supported">
+    <Message value="Burst: Writing to a static field '{0}' is not supported">
       <Argument>FieldQualification</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1036" configurableSeverity="Unity.BC1036">
+  <Warning name="BurstForeachNotSupported" configurableSeverity="Unity.BurstForeachNotSupported">
     <Parameter type="DocumentRange" name="range" />
-    <Message value="BC1036: The `finally` construction (e.g `foreach`/`using`) is not supported">
+    <Message value="Burst: The 'foreach' construction is not supported">
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1037" configurableSeverity="Unity.BC1037">
+  <Warning name="BurstLoadingStaticNotReadonly" configurableSeverity="Unity.BurstLoadingStaticNotReadonly">
     <Parameter type="DocumentRange" name="range" />
-    <Message value="BC1037: The `try` construction (e.g `foreach`/`using`) is not supported">
-    </Message>
-    <Range>Range</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Error>
-
-  <Error name="BC1042" configurableSeverity="Unity.BC1042">
-    <Parameter type="DocumentRange" name="range" />
-    <Parameter type="string" name="typeQualification"/>
     <Parameter type="string" name="fieldQualification"/>
-    <Message value="BC1042: The managed class type `{0}` is not supported. Loading from a non-readonly static field `{1}` is not supported">
-      <Argument>TypeQualification</Argument>
+    <Message value="Burst: Loading from a non-readonly static field '{0}' is not supported">
       <Argument>FieldQualification</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1042Short" configurableSeverity="Unity.BC1042Short">
+  <Warning name="BurstLoadingManagedType" configurableSeverity="Unity.BurstLoadingManagedType">
     <Parameter type="DocumentRange" name="range" />
     <Parameter type="string" name="typeQualification"/>
-    <Message value="BC1042: The managed class type `{0}` is not supported.">
+    <Message value="Burst: Loading managed type '{0}' is not supported">
       <Argument>TypeQualification</Argument>
     </Message>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 
-  <Error name="BC1349" configurableSeverity="Unity.BC1349">
+  <Warning name="BurstDebugLogInvalidArgument" configurableSeverity="Unity.BurstDebugLogInvalidArgument">
     <Parameter type="DocumentRange" name="range" />
-    <Message value="BC1349: Invalid argument. Expecting string literal or string."/>
+    <Message value="Burst: Debug logging functions accepts only strings"/>
     <Range>Range</Range>
     <Behavour overlapResolvePolicy="NONE" />
-  </Error>
+  </Warning>
 </Errors>

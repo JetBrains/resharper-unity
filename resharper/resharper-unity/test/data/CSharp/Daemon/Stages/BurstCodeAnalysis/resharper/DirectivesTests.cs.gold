@@ -197,4 +197,4 @@ namespace DirectivesTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: BC1021: Creating a managed object `Object` is not supported
+(0): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported

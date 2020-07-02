@@ -60,42 +60,47 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             {
                 var argumentList = invocationExpression.ArgumentList.Arguments;
 
-                if (argumentList.Count == 1)
-                {
-                    var argument = argumentList[0];
-                    if (!IsBurstPermittedString(argument.Expression?.Type()))
-                    {
-                        consumer?.AddHighlighting(new BC1349Error(argument.Expression.GetDocumentRange()));
+                if (argumentList.Count != 1)
+                    return false;
+                
+                var argument = argumentList[0];
+                
+                if (IsBurstPermittedString(argument.Expression?.Type()))
+                    return false;
+                
+                consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(argument.Expression.GetDocumentRange()));
                         
-                        return true;
-                    }
-                }
+                return true;
 
-                return false;
             }
 
             if (IsStringFormat(invokedMethod))
             {
                 var argumentList = invocationExpression.ArgumentList.Arguments;
 
-                if (argumentList.Count != 0)
-                {
-                    var firstArgument = argumentList[0];
-                    var cSharpLiteralExpression = firstArgument.Expression as ICSharpLiteralExpression;
+                var isWarningPlaced = BurstStringLiteralOwnerAnalyzer.CheckAndAnalyze(invocationExpression,
+                    new BurstManagedStringWarning(invocationExpression.GetDocumentRange()), consumer);
 
-                    if (cSharpLiteralExpression == null ||
-                        !cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
-                    {
-                        consumer?.AddHighlighting(new BC1349Error(firstArgument.Expression.GetDocumentRange()));
-                        return true;
-                    }
-                }
-                return BurstStringLiteralOwnerAnalyzer.CheckAndAnalyze(invocationExpression, new BC1349Error(invocationExpression.GetDocumentRange()), consumer);
+                if (isWarningPlaced)
+                    return true;
+
+                if (argumentList.Count == 0) 
+                    return false;
+                
+                var firstArgument = argumentList[0];
+                var cSharpLiteralExpression = firstArgument.Expression as ICSharpLiteralExpression;
+
+                if (cSharpLiteralExpression != null && cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
+                    return false;
+                
+                consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(firstArgument.Expression.GetDocumentRange()));
+                return true;
+
             }
 
             if (IsObjectMethodInvocation(invocationExpression))
             {
-                consumer?.AddHighlighting(new BC1001Error(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BurstAccessingManagedMethodWarning(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
 
                 return true;
@@ -104,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (IsReturnValueBurstProhibited(invokedMethod) ||
                 HasBurstProhibitedArguments(invocationExpression.ArgumentList))
             {
-                consumer?.AddHighlighting(new BC1016Error(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName));
 
                 return true;
