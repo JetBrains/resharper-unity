@@ -96,7 +96,7 @@
     <Parameter type="DocumentRange" name="range" />
     <Parameter type="string" name="methodQualification"/>
     <Parameter type="string" name="typeQualification"/>
-    <Message value="Burst: Accessing managed method '{0}' from type '{0}' is not supported">
+    <Message value="Burst: Accessing managed method '{0}' from type '{1}' is not supported">
       <Argument>MethodQualification</Argument>
       <Argument>TypeQualification</Argument>
     </Message>
