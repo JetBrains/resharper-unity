@@ -1,14 +1,12 @@
 package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.configurations.ConfigurationTypeBase
+import com.intellij.openapi.project.DumbAware
 import icons.UnityIcons
 
-// We need to keep "UNITY_DEBUG_RUN_CONFIGURATION" for backwards compatibility - a user can run a newer EAP side by side
-// with 2018.1 and still load the standard attach/debug run config. The new attach/debug/play config will still come up
-// as "Unknown", but we can't help that
 class UnityDebugConfigurationType : ConfigurationTypeBase(id,
     "Attach to Unity Editor", "Attach to Unity process and debug",
-    UnityIcons.RunConfigurations.AttachToUnityParentConfiguration) {
+    UnityIcons.RunConfigurations.AttachToUnityParentConfiguration), DumbAware {
 
     val attachToEditorFactory = UnityAttachToEditorFactory(this)
     val attachToEditorAndPlayFactory = UnityAttachToEditorAndPlayFactory(this)
@@ -19,6 +17,9 @@ class UnityDebugConfigurationType : ConfigurationTypeBase(id,
     }
 
     companion object {
-        val id = "UNITY_DEBUG_RUN_CONFIGURATION"
+        // Note that this value is incorrect. The JavaDoc states that the ID should be camel cased without dashes or
+        // underscores, etc. But it's used as the key for persisting run configuration settings, and so shouldn't ever
+        // be changed. Too late now.
+        const val id = "UNITY_DEBUG_RUN_CONFIGURATION"
     }
 }

@@ -319,6 +319,7 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
           AdviseGenerateUISchema(model);
           AdviseExitUnity(model);
+          GetBuildLocation(model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -331,6 +332,15 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
+    }
+
+    private static void GetBuildLocation(EditorPluginModel model)
+    {
+        var path = EditorUserBuildSettings.GetBuildLocation(EditorUserBuildSettings.selectedStandaloneTarget);
+        if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
+            path = Path.Combine(Path.Combine(Path.Combine(path, "Contents"), "MacOS"), PlayerSettings.productName);
+        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+            model.BuildLocation.Value = path;
     }
 
     private static void AdviseGenerateUISchema(EditorPluginModel model)

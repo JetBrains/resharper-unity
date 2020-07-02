@@ -27,6 +27,14 @@
     <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
       <DependentUpon>CSharpErrors.xml</DependentUpon>
     </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\BurstErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\BurstErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\BurstErrors.generated.cs">
+      <DependentUpon>BurstErrors.xml</DependentUpon>
+    </Compile>
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpPerformanceErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
       <OutputFile>CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs</OutputFile>
@@ -101,6 +109,8 @@
   <ItemGroup Label="Resources">
     <None Remove="api.xml" />
     <EmbeddedResource Include="api.xml" />
+    <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
+    <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Live templates">
@@ -131,6 +141,14 @@
   <ItemGroup>
     <!-- Format definitions can't compile on Mac/Linux due to missing PresentationCore dependencies -->
     <Compile Remove="**\VisualStudio\**\*FormatDefinitions.cs" Condition=" '$(OS)' == 'Unix' " />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ShaderLab\Host\**" />
+    <EmbeddedResource Remove="ShaderLab\Host\**" />
+    <None Remove="ShaderLab\Host\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\resharper-yaml\src\resharper-yaml.csproj" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props')" />

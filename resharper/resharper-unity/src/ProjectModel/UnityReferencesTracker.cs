@@ -12,7 +12,6 @@ using JetBrains.ProjectModel.Assemblies.Impl;
 using JetBrains.ProjectModel.Tasks;
 using JetBrains.Rd.Base;
 using JetBrains.Util;
-using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Reflection;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
@@ -27,24 +26,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
     [SolutionComponent]
     public class UnityReferencesTracker : IChangeProvider
     {
-        private static readonly AssemblyNameInfo ourUnityEngineReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine", null);
-        private static readonly AssemblyNameInfo ourUnityEditorReferenceName = AssemblyNameInfoFactory.Create2("UnityEditor", null);
-
-        // Unity 2017.3 has refactored UnityEngine into modules. Generated projects will still
-        // reference UnityEngine.dll as well as the new module assemblies. But non-generated
-        // projects (with output copied to Assets) can now reference the modules. Transitive
-        // dependencies mean that these projects will reference either UnityEngine.CoreModule or
-        // UnityEngine.SharedInternalsModule. Best practice is still to reference UnityEngine.dll,
-        // but we need to cater for all sorts of projects.
-        private static readonly AssemblyNameInfo ourUnityEngineCoreModuleReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine.CoreModule", null);
-        private static readonly AssemblyNameInfo ourUnityEngineSharedInternalsModuleReferenceName = AssemblyNameInfoFactory.Create2("UnityEngine.SharedInternalsModule", null);
-
-        public static readonly ICollection<AssemblyNameInfo> UnityReferenceNames = new List<AssemblyNameInfo>()
+        // Unity 2017.3 split UnityEngine into modules. The copy in the Managed folder is the original monolithic build.
+        // The Managed/UnityEngine/ folder contains the version split into modules, and generated projects reference the
+        // UnityEngine.dll in this folder, as well as the modules. Managed/UnityEngine/UnityEngine.dll has a load of
+        // type forwards to the new modules. Non-generated/manually maintained projects can still reference the original
+        // Managed/UnityEngine.dll, and the type forwards will fix things up at runtime.
+        // We check for references to UnityEngine.dll, UnityEngine.CoreModule.dll and (just in case)
+        // UnityEngine.ShaderInternalsModule.dll
+        // Unity 2020.2 similarly splits UnityEditor.dll, primarily to allow packages to override implementations, such
+        // as UIElements.
+        private static readonly JetHashSet<string> ourUnityReferenceNames = new JetHashSet<string>
         {
-            ourUnityEditorReferenceName, ourUnityEngineReferenceName, ourUnityEngineCoreModuleReferenceName, ourUnityEngineSharedInternalsModuleReferenceName
+            "UnityEngine",
+            "UnityEngine.CoreModule",
+            "UnityEngine.SharedInternalsModule",
+            "UnityEditor",
+            "UnityEditor.CoreModule"
         };
 
-        
+        private static readonly ICollection<AssemblyNameInfo> ourUnityReferenceNameInfos;
+
         private readonly Lifetime myLifetime;
         private readonly ILogger myLogger;
         private readonly ISolution mySolution;
@@ -61,6 +62,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         // IUnityReferenceChangeHandler
         public readonly ViewableProperty<bool> HasUnityReference = new ViewableProperty<bool>(false);
 
+        static UnityReferencesTracker()
+        {
+            ourUnityReferenceNameInfos = new List<AssemblyNameInfo>();
+            foreach (var name in ourUnityReferenceNames)
+                ourUnityReferenceNameInfos.Add(AssemblyNameInfoFactory.Create2(name, null));
+        }
+
         public UnityReferencesTracker(
             Lifetime lifetime,
             IEnumerable<IUnityReferenceChangeHandler> handlers,
@@ -73,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             myAllProjectLifetimes = new Dictionary<IProject, Lifetime>();
             myUnityProjects = new HashSet<IProject>();
-            
+
             myHandlers = handlers.ToList();
             myLifetime = lifetime;
             myLogger = logger;
@@ -139,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 return null;
 
             var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange,
-                UnityReferenceNames, myLogger);
+                ourUnityReferenceNameInfos, myLogger);
 
             var newUnityProjects = new List<KeyValuePair<IProject, Lifetime>>();
             foreach (var change in changes)
@@ -181,19 +189,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         {
             return project.HasUnityFlavour() || ReferencesUnity(project);
         }
-        
+
         public static bool ReferencesUnity(IProject project)
         {
             var targetFrameworkId = project.GetCurrentTargetFrameworkId();
-            return ReferencesAssembly(project, targetFrameworkId, ourUnityEngineReferenceName)
-                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEditorReferenceName)
-                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEngineCoreModuleReferenceName)
-                   || ReferencesAssembly(project, targetFrameworkId, ourUnityEngineSharedInternalsModuleReferenceName);
-        }
-        
-        private static bool ReferencesAssembly(IProject project, TargetFrameworkId targetFrameworkId, AssemblyNameInfo name)
-        {
-            return project.GetModuleReferences(targetFrameworkId).Any(a=>a.Name == name.Name);
+            foreach (var reference in project.GetModuleReferences(targetFrameworkId))
+            {
+                if (ourUnityReferenceNames.Contains(reference.Name))
+                    return true;
+            }
+            return false;
         }
     }
 }

@@ -25,6 +25,14 @@
     <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
       <DependentUpon>CSharpErrors.xml</DependentUpon>
     </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\BurstErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\BurstErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\BurstErrors.generated.cs">
+      <DependentUpon>BurstErrors.xml</DependentUpon>
+    </Compile>
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpPerformanceErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
       <OutputFile>CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs</OutputFile>
@@ -33,7 +41,6 @@
     <Compile Update="CSharp\Daemon\Errors\CSharpPerformanceErrors.generated.cs">
       <DependentUpon>CSharpPerformanceErrors.xml</DependentUpon>
     </Compile>
-    <Compile Remove="ShaderLab\Rider\Host\Features\Documents\ShaderLabBreadCrumbsProvider.cs" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Cg">
@@ -114,6 +121,8 @@
     <Compile Update="CSharp\Psi\CodeStyle\AdditionalFileLayoutResources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Remove="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
+    <EmbeddedResource Include="CSharp\Psi\Naming\Settings\Abbreviations.txt" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Live templates">
@@ -135,13 +144,13 @@
     <ProjectReference Include="..\..\resharper-yaml\src\rider-yaml.csproj" />
   </ItemGroup>
   <!-- ********** -->
-  <ItemGroup Label="Remove Visual Studio specific files">
+  <ItemGroup Label="Remove Visual Studio or ReSharper specific files">
     <Compile Remove="**\VisualStudio\**" />
     <EmbeddedResource Remove="**\VisualStudio\**" />
     <None Remove="**\VisualStudio\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ShaderLab\Rider\Host\Features\Documents" />
+    <Compile Remove="**\ReSharper\**" />
+    <EmbeddedResource Remove="**\ReSharper\**" />
+    <None Remove="**\ReSharper\**" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props')" />

@@ -100,5 +100,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("useUnityYamlMerge", bool)
         property("mergeParameters", string)
+
+        property("buildLocation", string)
     }
 }

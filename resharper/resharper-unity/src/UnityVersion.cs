@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
 
-            unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
+            unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
             {
                 if (!args)
                     return;

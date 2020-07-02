@@ -314,6 +314,29 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     break;
             }
         }
+        
+        public static List<FileSystemPath> GetPossibleMonoPaths()
+        {
+            var possibleApplicationPaths = GetPossibleApplicationPaths();
+            switch (PlatformUtil.RuntimePlatform)
+            {
+                // dotTrace team uses these constants to detect unity's mono. 
+                // If you want change any constant, please notify dotTrace team
+                case PlatformUtil.Platform.MacOsX:
+                {
+                    var monoFolders = possibleApplicationPaths.Select(a => a.Combine("Contents/MonoBleedingEdge")).ToList();
+                    monoFolders.AddRange(possibleApplicationPaths.Select(a => a.Combine("Contents/Frameworks/MonoBleedingEdge")));
+                    return monoFolders;
+                }
+                case PlatformUtil.Platform.Linux:
+                case PlatformUtil.Platform.Windows:
+                {
+                    return possibleApplicationPaths.Select(a => a.Directory.Combine(@"Data/MonoBleedingEdge")).ToList();
+                }
+            }
+            ourLogger.Error("Unknown runtime platform");
+            return new List<FileSystemPath>();
+        }
     }
 
     public class UnityInstallationInfo

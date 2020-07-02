@@ -66,5 +66,5 @@ Occurrence's navigation result. Opened file: Test03.asmdef
 
 +++ JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages.GoToUnityUsagesProvider navigation provider results +++
 Tooltip: Usages of 'Ref1' were not found.
-+++ JetBrains.ReSharper.Plugins.Unity.UnityFindUsagesProvider navigation provider results +++
++++ JetBrains.ReSharper.Plugins.Unity.Feature.Navigation.FindUsages.UnityFindUsagesProvider navigation provider results +++
 FindResults window with 2 results

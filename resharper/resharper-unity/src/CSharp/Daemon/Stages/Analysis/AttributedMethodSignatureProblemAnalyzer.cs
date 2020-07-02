@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -41,13 +43,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         };
 
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
-        private readonly Dictionary<IClrTypeName, MethodSignature[]> myMethodSignatures;
+        private readonly ConcurrentDictionary<IClrTypeName, MethodSignature[]> myMethodSignatures;
 
         public AttributedMethodSignatureProblemAnalyzer(UnityApi unityApi, IPredefinedTypeCache predefinedTypeCache)
             : base(unityApi)
         {
             myPredefinedTypeCache = predefinedTypeCache;
-            myMethodSignatures = new Dictionary<IClrTypeName, MethodSignature[]>();
+            myMethodSignatures = new ConcurrentDictionary<IClrTypeName, MethodSignature[]>();
         }
 
         protected override void Analyze(IAttribute element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
@@ -88,14 +90,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         {
             var attributeClrName = attributeTypeElement.GetClrName();
             if (myMethodSignatures.TryGetValue(attributeClrName, out var signatures))
-                return signatures;
+            {
+                if (signatures.All(s => s.IsValid()))
+                    return signatures;
+
+                // If any of the signatures are no longer valid, clear the cache and try again
+                myMethodSignatures.Clear();
+            }
 
             // Try to get the expected signature from a method marked with RequiredSignatureAttribute (introduced in
             // Unity 2017.3). If the attribute does not exist, either because it's not applied, or we're on an earlier
             // version, check our known attributes for a signature
+            // Remember that we're run on pooled threads, so try to add to the concurrent dictionary. It doesn't matter
+            // if another thread beats us.
             signatures = GetSignaturesFromRequiredSignatureAttribute(attributeTypeElement)
                          ?? GetSignaturesFromKnownAttributes(attributeClrName, predefinedType);
-            if (signatures != null) myMethodSignatures.Add(attributeClrName, signatures);
+            if (signatures != null) myMethodSignatures.TryAdd(attributeClrName.GetPersistent(), signatures);
             return signatures;
         }
 
