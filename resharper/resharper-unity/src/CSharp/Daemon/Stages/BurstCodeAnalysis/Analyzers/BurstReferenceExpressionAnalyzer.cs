@@ -12,12 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstReferenceExpressionAnalyzer : BurstProblemAnalyzerBase<IReferenceExpression>
     {
-        protected override bool CheckAndAnalyze(IReferenceExpression referenceExpression, IHighlightingConsumer consumer)
+        protected override bool CheckAndAnalyze(IReferenceExpression referenceExpression,
+            IHighlightingConsumer consumer)
         {
             var element = referenceExpression.Reference.Resolve().DeclaredElement;
 
             //here I want to handle next situations
-            //1. accessing typemembers, whether static or not, including: properties, fields, localVariable, Parameters
+            //1. accessing type members, whether static or not, including: properties, fields, localVariable, parameters
 
             //non auto property are not interested cuz they are not prohibited,
             //and any backing field will be handled inside accessor 
@@ -31,38 +32,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     !typeMember.IsEnumMember() &&
                     !(typeMember is IProperty prop && !prop.IsWritable && prop.IsReadable))
                 {
-                    consumer?.AddHighlighting(new BC1042Error(referenceExpression.GetDocumentRange(),
-                        typeMember.GetContainingType()?.ShortName, element.ShortName));
+                    consumer?.AddHighlighting(new BurstLoadingStaticNotReadonlyWarning(
+                        referenceExpression.GetDocumentRange(),
+                        typeMember.GetContainingType()?.ShortName + " " + element.ShortName));
                     return true;
                 }
+
                 if (referenceExpression.GetAccessType().HasFlag(ExpressionAccessType.Write) && typeMember.IsStatic)
                 {
                     //there are no static write-only auto properties
                     var field = element.ShortName;
                     if (element is IProperty)
                         field += "__backing_field";
-                    consumer?.AddHighlighting(new BC1034Error(referenceExpression.GetDocumentRange(), field));
+                    consumer?.AddHighlighting(new BurstWriteStaticFieldWarning(referenceExpression.GetDocumentRange(),
+                        field));
                     return true;
                 }
             }
-            
+
             if (element is ITypeOwner typeOwner)
             {
                 if (element is IModifiersOwner modifiersOwner &&
                     (modifiersOwner.IsVirtual || modifiersOwner.IsOverride || modifiersOwner.IsAbstract))
                 {
                     //virtual and abstract cannot be in struct. only override is getHashCode -> function
-                    consumer?.AddHighlighting(new BC1042Error(referenceExpression.GetDocumentRange(),
-                        typeOwner.Type().GetTypeElement()?.ShortName, element.ShortName));
+                    consumer?.AddHighlighting(new BurstLoadingManagedObjectWarning(
+                        referenceExpression.GetDocumentRange(),
+                        typeOwner.Type().GetTypeElement()?.ShortName + " " + element.ShortName));
                     return true;
                 }
 
                 if (!IsBurstPermittedType(typeOwner.Type()))
                 {
-                    if(typeOwner is IAttributesOwner attributesOwner && attributesOwner.HasAttributeInstance(KnownTypes.NativeSetClassTypeToNullOnScheduleAttribute, AttributesSource.Self))
+                    if (typeOwner is IAttributesOwner attributesOwner &&
+                        attributesOwner.HasAttributeInstance(KnownTypes.NativeSetClassTypeToNullOnScheduleAttribute,
+                            AttributesSource.Self))
                         return false;
-                    
-                    consumer?.AddHighlighting(new BC1042ShortError(referenceExpression.GetDocumentRange(),
+
+                    consumer?.AddHighlighting(new BurstLoadingManagedObjectWarning(
+                        referenceExpression.GetDocumentRange(),
                         typeOwner.Type().GetTypeElement()?.ShortName));
                     return true;
                 }

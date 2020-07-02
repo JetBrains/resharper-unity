@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     var argument = argumentList[0];
                     if (!IsBurstPermittedString(argument.Expression?.Type()))
                     {
-                        consumer?.AddHighlighting(new BC1349Error(argument.Expression.GetDocumentRange()));
+                        consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(argument.Expression.GetDocumentRange()));
                         
                         return true;
                     }
@@ -86,16 +86,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     if (cSharpLiteralExpression == null ||
                         !cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
                     {
-                        consumer?.AddHighlighting(new BC1349Error(firstArgument.Expression.GetDocumentRange()));
+                        consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(firstArgument.Expression.GetDocumentRange()));
                         return true;
                     }
                 }
-                return BurstStringLiteralOwnerAnalyzer.CheckAndAnalyze(invocationExpression, new BC1349Error(invocationExpression.GetDocumentRange()), consumer);
+                return BurstStringLiteralOwnerAnalyzer.CheckAndAnalyze(invocationExpression, new BurstDebugLogInvalidArgumentWarning(invocationExpression.GetDocumentRange()), consumer);
             }
 
             if (IsObjectMethodInvocation(invocationExpression))
             {
-                consumer?.AddHighlighting(new BC1001Error(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BurstUnableToAccessManagedMethodWarning(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
 
                 return true;
@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (IsReturnValueBurstProhibited(invokedMethod) ||
                 HasBurstProhibitedArguments(invocationExpression.ArgumentList))
             {
-                consumer?.AddHighlighting(new BC1016Error(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BurstFunctionSignatureContainsManagedObjectsWarning(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName));
 
                 return true;

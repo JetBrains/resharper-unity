@@ -101,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 isString = true;
 
             return isString && CheckAndAnalyze(stringLiteralOwner,
-                new BC1349Error(stringLiteralOwner.GetDocumentRange()), consumer);
+                new BurstDebugLogInvalidArgumentWarning(stringLiteralOwner.GetDocumentRange()), consumer);
         }
     }
 }
