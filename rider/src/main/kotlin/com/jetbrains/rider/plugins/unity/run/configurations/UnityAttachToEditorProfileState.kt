@@ -84,6 +84,18 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                     remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
 
                     Thread.sleep(2000)
+
+                    // alternative approach
+                    // it is better because mono waits for attach, so rider would not miss any frames,
+                    // but if you disconnect and try to attach again it fails, because updatePidAndPort would try different port
+//                    val actualPort = com.jetbrains.rider.util.NetUtils.findFreePort(500013, setOf(port))
+//                    val processBuilder = ProcessBuilder(args)
+//                    processBuilder.environment().set("MONO_ARGUMENTS", "--debugger-agent=transport=dt_socket,address=${remoteConfiguration.address}:$actualPort,embedding=1,server=y,suspend=y")
+//                    val process = processBuilder.start()
+//
+//                    val actualPid = OSProcessUtil.getProcessID(process)
+//                    remoteConfiguration.pid = actualPid
+//                    remoteConfiguration.port = actualPort
                 }
                 UIUtil.invokeLaterIfNeeded {
                     logger.trace("DebuggerWorker port: $port")

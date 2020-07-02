@@ -166,6 +166,7 @@ class UnityIcons {
             val AttachToUnityParentConfiguration = Icons.UnityLogo
             val AttachAndDebug = Common.UnityEditMode
             val AttachDebugAndPlay = Common.UnityPlayMode
+            val UnityExe = Common.UnityPlayMode
         }
     }
 

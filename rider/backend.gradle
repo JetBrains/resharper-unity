@@ -135,7 +135,6 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
 }
 
 task nunitReSharperYaml(type: nunit.class) {
-    nunitVersion "3.9.0"
     shadowCopy false
     outputs.upToDateWhen { false }
 
@@ -145,7 +144,6 @@ task nunitReSharperYaml(type: nunit.class) {
 }
 
 task nunitRiderYaml(type: nunit.class) {
-    nunitVersion "3.9.0"
     shadowCopy false
     outputs.upToDateWhen { false }
 
@@ -155,7 +153,6 @@ task nunitRiderYaml(type: nunit.class) {
 }
 
 task nunitReSharperUnity(type: nunit.class) {
-    nunitVersion "3.9.0"
     shadowCopy false
     outputs.upToDateWhen { false }
 
@@ -165,7 +162,6 @@ task nunitReSharperUnity(type: nunit.class) {
 }
 
 task nunitRiderUnity(type: nunit.class) {
-    nunitVersion "3.9.0"
     shadowCopy false
     outputs.upToDateWhen { false }
 

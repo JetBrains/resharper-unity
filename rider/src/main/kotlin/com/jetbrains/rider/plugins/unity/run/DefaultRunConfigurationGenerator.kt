@@ -5,12 +5,17 @@ import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.UnknownConfigurationType
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorAndPlayFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
+import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationFactory
+import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
 import com.jetbrains.rider.projectView.solution
+import java.io.File
 
 class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
@@ -45,6 +50,19 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
                 val runConfiguration = runManager.createConfiguration(ATTACH_AND_PLAY_CONFIGURATION_NAME, configurationType.attachToEditorAndPlayFactory)
                 runConfiguration.storeInLocalWorkspace()
                 runManager.addConfiguration(runConfiguration)
+            }
+
+            // create it, if it doesn't exist, to advertise the feature
+            project.solution.rdUnityModel.buildLocation.adviseNotNull(projectComponentLifetime){
+                if (!runManager.allSettings.any { it.type is UnityExeConfigurationType && it.factory is UnityExeConfigurationFactory }) {
+                    val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
+                    val runConfiguration = runManager.createConfiguration(configurationType.displayName, configurationType.factory)
+                    val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
+                    unityExeConfiguration.parameters.exePath = it
+                    unityExeConfiguration.parameters.workingDirectory = File(it).parent!!
+                    runConfiguration.storeInLocalWorkspace()
+                    runManager.addConfiguration(runConfiguration)
+                }
             }
 
             // make Attach Unity Editor configuration selected if nothing is selected

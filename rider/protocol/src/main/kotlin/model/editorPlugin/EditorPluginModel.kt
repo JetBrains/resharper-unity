@@ -161,5 +161,7 @@ object EditorPluginModel: Root() {
 
         call("generateUIElementsSchema", void, bool)
         call("exitUnity", void, bool)
+
+        property("buildLocation", string)
     }
 }
