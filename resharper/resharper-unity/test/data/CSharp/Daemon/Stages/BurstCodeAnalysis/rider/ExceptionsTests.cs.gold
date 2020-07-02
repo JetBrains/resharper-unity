@@ -168,9 +168,9 @@ namespace ExceptionsTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: BC1021: Creating a managed object `ArgumentException` is not supported
-(1): ReSharper Warning: BC1005: The `try` construction is not supported.
-(2): ReSharper Warning: BC1005: The `try` construction is not supported.
-(3): ReSharper Warning: BC1005: The `try` construction is not supported.
-(4): ReSharper Warning: BC1037: The `try` construction (e.g `foreach`/`using`) is not supported
-(5): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
+(0): ReSharper Warning: Burst: Creating a managed type 'ArgumentException' is not supported
+(1): ReSharper Warning: Burst: Try statement is not supported
+(2): ReSharper Warning: Burst: Try statement is not supported
+(3): ReSharper Warning: Burst: Try statement is not supported
+(4): ReSharper Warning: Burst: The 'foreach' construction is not supported
+(5): ReSharper Warning: Burst: Debug logging functions accepts only strings

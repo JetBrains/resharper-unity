@@ -170,8 +170,8 @@ namespace PrimitivesTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: BC1349: Invalid argument. Expecting string literal or string.
-(1): ReSharper Warning: BC1042: The managed class type `String` is not supported.
-(2): ReSharper Warning: BC1042: The managed class type `String` is not supported.
-(3): ReSharper Warning: BC1042: The managed class type `String` is not supported.
-(4): ReSharper Warning: BC1042: The managed class type `String` is not supported.
+(0): ReSharper Warning: Burst: Loading a managed string is not supported
+(1): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(2): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(3): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(4): ReSharper Warning: Burst: Loading managed type 'String' is not supported

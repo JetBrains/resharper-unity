@@ -164,6 +164,6 @@ namespace FunctionParametersReturnTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: BC1016: The managed function `Fobject` is not supported.
-(1): ReSharper Warning: BC1016: The managed function `FFoo` is not supported.
-(2): ReSharper Warning: BC1016: The managed function `FReturn` is not supported.
+(0): ReSharper Warning: Burst: 'Fobject' signature contains managed types
+(1): ReSharper Warning: Burst: 'FFoo' signature contains managed types
+(2): ReSharper Warning: Burst: 'FReturn' signature contains managed types

@@ -176,11 +176,11 @@ namespace MethodInvocationTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: BC1001: Unable to access the managed method `GetType` from type `Object`.
-(1): ReSharper Warning: BC1001: Unable to access the managed method `Equals` from type `Object`.
-(2): ReSharper Warning: BC1001: Unable to access the managed method `Equals` from type `ValueType`.
-(3): ReSharper Warning: BC1001: Unable to access the managed method `ToString` from type `ValueType`.
-(4): ReSharper Warning: BC1042: The managed class type `MethodInvocationTests` is not supported. Loading from a non-readonly static field `myClasss` is not supported
-(5): ReSharper Warning: BC1042: The managed class type `MethodInvocationTests` is not supported. Loading from a non-readonly static field `myClasss` is not supported
-(6): ReSharper Warning: BC1001: Unable to access the managed method `GetHashCode` from type `ValueType`.
-(7): ReSharper Warning: BC1001: Unable to access the managed method `GetHashCode` from type `ValueType`.
+(0): ReSharper Warning: Burst: Accessing managed method 'GetType' from type 'Object' is not supported
+(1): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'Object' is not supported
+(2): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'ValueType' is not supported
+(3): ReSharper Warning: Burst: Accessing managed method 'ToString' from type 'ValueType' is not supported
+(4): ReSharper Warning: Burst: Loading from a non-readonly static field 'MethodInvocationTests.myClasss' is not supported
+(5): ReSharper Warning: Burst: Loading from a non-readonly static field 'MethodInvocationTests.myClasss' is not supported
+(6): ReSharper Warning: Burst: Accessing managed method 'GetHashCode' from type 'ValueType' is not supported
+(7): ReSharper Warning: Burst: Accessing managed method 'GetHashCode' from type 'ValueType' is not supported
