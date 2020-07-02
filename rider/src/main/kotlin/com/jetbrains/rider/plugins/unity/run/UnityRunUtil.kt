@@ -29,30 +29,23 @@ object UnityRunUtil {
     private val logger = Logger.getInstance(UnityRunUtil::class.java)
 
     fun isUnityEditorProcess(processInfo: ProcessInfo): Boolean {
-        logger.trace("Checking Unity Process: isUnityEditorProcess")
         val name = processInfo.executableDisplayName
-        logger.trace("Checking Unity Process, name: $name")
-        var execPathName = ""
-        if (processInfo.executableCannonicalPath.isPresent)
-            execPathName = Paths.get(processInfo.executableCannonicalPath.get()).fileName.toString() // for the case of symlink
 
-        logger.trace("Checking Unity Process, execPathName: $execPathName")
+        // For symlinks
+        val canonicalName = if (processInfo.executableCannonicalPath.isPresent) {
+            Paths.get(processInfo.executableCannonicalPath.get()).fileName.toString()
+        }
+        else ""
 
-        val result = (name.startsWith("Unity", true)
-            || name.contains("Unity.app")
-            || execPathName.equals("Unity", true))
-            && !name.contains("UnityDebug")
-            && !name.contains("UnityShader")
-            && !name.contains("UnityHelper")
-            && !name.contains("Unity Helper")
-            && !name.contains("Unity Hub")
-            && !name.contains("UnityCrashHandler")
-            && !name.contains("UnityPackageManager")
-            && !name.contains("Unity.Licensing.Client")
-            && !name.contains("UnityDownloadAssistant")
-            && !name.contains("unityhub", true)
-        logger.trace("Checking Unity Process, result: $result")
-        return result
+        logger.trace("isUnityEditorProcess: $name")
+        logger.trace("Checking Unity Process, execPathName: $canonicalName")
+
+        // Based on Unity's own VS Code debugger, we simply look for "Unity" or "Unity Editor". Java's
+        // ProcessInfo#executableDisplayName is the executable name with `.exe` removed. This matches the behaviour of
+        // .NET's Process.ProcessName
+        // https://github.com/Unity-Technologies/MonoDevelop.Debugger.Soft.Unity/blob/9f116ee5d344bce5888e838a75ded418bd7852c7/UnityProcessDiscovery.cs#L155
+        return (name.equals("Unity", true) || name.equals("Unity Editor", true)
+            || canonicalName.equals("unity", true) || canonicalName.equals("Unity Editor", true))
     }
 
     fun isValidUnityEditorProcess(pid: Int, processList: Array<out ProcessInfo>): Boolean {
@@ -244,7 +237,7 @@ object UnityRunUtil {
         if (SystemInfo.isWindows) return
 
         try {
-            val processIds = processList.joinToString(",") { it.pid.toString() }
+            val processIds = processList.filter { !projectNames.containsKey(it.pid) }.joinToString(",") { it.pid.toString() }
             val command = when {
                 SystemInfo.isMac -> "/usr/sbin/lsof"
                 else -> "/usr/bin/lsof"
@@ -260,7 +253,11 @@ object UnityRunUtil {
                     val pid = stdout[i].substring(1).toInt()
                     val cwd = getProjectNameFromPath(stdout[i + 2].substring(1))
 
-                    projectNames[pid] = UnityProcessInfo(cwd, projectNames[pid]?.roleName)
+                    // We might have found the project name for this process from the command line. Even if we had, the
+                    // working directory should be the same as the command line project name
+                    if (!projectNames.containsKey(pid)) {
+                        projectNames[pid] = UnityProcessInfo(cwd, projectNames[pid]?.roleName)
+                    }
                 }
             }
         }
