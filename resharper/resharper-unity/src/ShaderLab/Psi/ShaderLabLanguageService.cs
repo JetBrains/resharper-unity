@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
+ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting;
+ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
+ using JetBrains.ReSharper.Psi.CodeStyle;
+ using JetBrains.ReSharper.Psi.ExtensionsAPI.Caches2;
 using JetBrains.ReSharper.Psi.Impl;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Parsing;
@@ -17,18 +19,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi
     public class ShaderLabLanguageService : LanguageService
     {
         private readonly CommonIdentifierIntern myCommonIdentifierIntern;
+        private readonly ShaderLabCodeFormatter myCodeFormatter;
         private IDeclaredElementPresenter myPresenter;
 
-        public ShaderLabLanguageService(ShaderLabLanguage psiLanguageType, IConstantValueService constantValueService, CommonIdentifierIntern commonIdentifierIntern)
+        public ShaderLabLanguageService(ShaderLabLanguage psiLanguageType, IConstantValueService constantValueService, CommonIdentifierIntern commonIdentifierIntern, ShaderLabCodeFormatter codeFormatter)
             : base(psiLanguageType, constantValueService)
         {
-            myCommonIdentifierIntern = commonIdentifierIntern;
+          myCommonIdentifierIntern = commonIdentifierIntern;
+          myCodeFormatter = codeFormatter;
         }
 
         public override ILexerFactory GetPrimaryLexerFactory()
         {
             return new ShaderLabLexerFactory();
         }
+
+        public override ICodeFormatter CodeFormatter => myCodeFormatter;
 
         public override ILexer CreateFilteringLexer(ILexer lexer)
         {

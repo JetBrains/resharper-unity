@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using JetBrains.Application.BuildScript.Application.Zones;
+using JetBrains.Application.Environment;
+using JetBrains.Application.License2;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.TestFramework;
 using JetBrains.TestFramework;
 using JetBrains.TestFramework.Application.Zones;
@@ -27,11 +31,22 @@ using JetBrains.ReSharper.Host.Env;
 namespace JetBrains.ReSharper.Plugins.Unity.Tests
 {
     [ZoneDefinition]
-    public interface IUnityTestZone : ITestsEnvZone, IRequire<PsiFeatureTestZone>
-#if RIDER
-        , IRequire<IRiderPlatformZone>
-#endif
+    public interface IUnityTestZone : ITestsEnvZone
+
     {
+    }
+    
+    [ZoneActivator]
+    class CppTestZoneActivator : IActivate<ILanguageCppZone>, IActivate<PsiFeatureTestZone>
+#if RIDER
+        , IActivate<IRiderPlatformZone>
+#endif
+    ,IRequire<IUnityTestZone>
+    {
+        public bool ActivatorEnabled()
+        {
+            return true;
+        }
     }
 
     [SetUpFixture]

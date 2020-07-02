@@ -1,0 +1,54 @@
+Language: PsiLanguageType:CG
+ICgFile
+  IDeclaration
+    IVariableOrFunctionDeclaration
+      IFunctionDeclaration
+        IAttribute
+          CgFixedLengthTokenNode(type:LBRACKET, text:[)
+          IIdentifier
+            CgIdentifierTokenNode(type:IDENTIFIER, text:numthreads)
+          ICallOperator
+            CgFixedLengthTokenNode(type:LPAREN, text:()
+            IExpression
+              ICommaExpression
+                IAssignmentExpression
+                  ITernaryExpression
+                    IBinaryExpression
+                      IPrefixExpression
+                        IPostfixExpression
+                          IConstantValue
+                            CgGenericTokenNode(type:NUMERIC_LITERAL, text:1)
+                CgFixedLengthTokenNode(type:COMMA, text:,)
+                ICommaExpression
+                  IAssignmentExpression
+                    ITernaryExpression
+                      IBinaryExpression
+                        IPrefixExpression
+                          IPostfixExpression
+                            IConstantValue
+                              CgGenericTokenNode(type:NUMERIC_LITERAL, text:2)
+                  CgFixedLengthTokenNode(type:COMMA, text:,)
+                  ICommaExpression
+                    IAssignmentExpression
+                      ITernaryExpression
+                        IBinaryExpression
+                          IPrefixExpression
+                            IPostfixExpression
+                              IConstantValue
+                                CgGenericTokenNode(type:NUMERIC_LITERAL, text:3)
+            CgFixedLengthTokenNode(type:RPAREN, text:))
+          CgFixedLengthTokenNode(type:RBRACKET, text:])
+        CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+        IFunctionHeader
+          IBuiltInType
+            CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IIdentifier
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        IFunctionBody
+          IBlockStatement
+            CgFixedLengthTokenNode(type:LBRACE, text:{)
+            CgFixedLengthTokenNode(type:RBRACE, text:})
+

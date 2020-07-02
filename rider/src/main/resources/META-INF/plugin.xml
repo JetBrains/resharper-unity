@@ -47,11 +47,16 @@
     <backend.autoPopup.support language="ShaderLab" implementationClass="com.jetbrains.rider.completion.BackendAndGenericRider" />
     <iconProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabIconProvider" />
     <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rdclient.completion.ProtocolCompletionContributor" />
-    <completion.contributor language="ShaderLab" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgCompletionContributor" />
+    <codeInsight.parameterInfo language="ShaderLab" implementationClass="com.jetbrains.rdclient.parameterInfo.FrontendParameterInfoHandler"/>
+    <lang.documentationProvider language="ShaderLab" implementationClass="com.jetbrains.rdclient.quickDoc.FrontendDocumentationProvider"/>
+    <backend.typedHandler language="ShaderLab" implementationClass="com.jetbrains.rider.cpp.fileType.CppTypedHandler"/>
+    <langCodeStyleSettingsProvider implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.settings.ShaderLabStyleSettingsProvider"/>
+
+    <fileType name="C++" extensions="cg;cginc;hlslinc;compute" />
 
     <!-- Cg support -->
     <!-- Don't forget to update CgProjectFileType list on the backend -->
-    <fileType name="Cg" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgFileType" language="Cg" extensions="cginc;compute;hlsl;glsl;hlslinc;glslinc"/>
+    <fileType name="Cg" fieldName="INSTANCE" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgFileType" language="Cg" extensions="glsl;glslinc"/>
     <lang.parserDefinition language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgParserDefinition" />
     <lang.syntaxHighlighterFactory language="Cg" implementationClass="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.cg.CgSyntaxHighlighterProvider" />
     <backend.markup.adapterFactory language="Cg" implementationClass="com.jetbrains.rdclient.daemon.FrontendMarkupAdapterFactory" />
