@@ -135,7 +135,7 @@ namespace ReferenceExpressionTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: BC1021: Creating a managed object `SimpleClass` is not supported
-(1): ReSharper Warning: BC1034: Writing to a static field `getSetProp__backing_field` is not supported
-(2): ReSharper Warning: BC1034: Writing to a static field `field1` is not supported
-(3): ReSharper Warning: BC1042: The managed class type `ReferenceExpressionTest4` is not supported. Loading from a non-readonly static field `field1` is not supported
+(0): ReSharper Warning: Burst: Creating a managed type 'SimpleClass' is not supported
+(1): ReSharper Warning: Burst: Writing to a static field 'getSetProp__backing_field' is not supported
+(2): ReSharper Warning: Burst: Writing to a static field 'field1' is not supported
+(3): ReSharper Warning: Burst: Loading from a non-readonly static field 'ReferenceExpressionTest4.field1' is not supported

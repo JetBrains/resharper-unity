@@ -100,4 +100,4 @@ namespace EqualsTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: BC1001: Unable to access the managed method `Equals` from type `EqualsTest1`.
+(0): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'EqualsTest1' is not supported
