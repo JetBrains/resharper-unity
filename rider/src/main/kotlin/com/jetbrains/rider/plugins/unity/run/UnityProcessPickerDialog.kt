@@ -311,7 +311,9 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
         override fun createItemComponent(): JComponent {
             myTextLabel = ErrorLabel() // dummy component required by base class
-            return SimpleColoredComponent()
+            return SimpleColoredComponent().apply {
+                isOpaque = false
+            }
         }
 
         private fun isChildProcess(node: UnityProcessTreeNode) = node.parent is UnityProcessTreeNode
