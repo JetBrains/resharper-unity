@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     (modifiersOwner.IsVirtual || modifiersOwner.IsOverride || modifiersOwner.IsAbstract))
                 {
                     //virtual and abstract cannot be in struct. only override is getHashCode -> function
-                    consumer?.AddHighlighting(new BurstLoadingManagedObjectWarning(
+                    consumer?.AddHighlighting(new BurstLoadingManagedTypeWarning(
                         referenceExpression.GetDocumentRange(),
                         typeOwner.Type().GetTypeElement()?.ShortName + " " + element.ShortName));
                     return true;
@@ -69,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                             AttributesSource.Self))
                         return false;
 
-                    consumer?.AddHighlighting(new BurstLoadingManagedObjectWarning(
+                    consumer?.AddHighlighting(new BurstLoadingManagedTypeWarning(
                         referenceExpression.GetDocumentRange(),
                         typeOwner.Type().GetTypeElement()?.ShortName));
                     return true;

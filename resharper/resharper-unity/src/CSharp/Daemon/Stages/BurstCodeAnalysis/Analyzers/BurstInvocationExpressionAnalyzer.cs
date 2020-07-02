@@ -95,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             if (IsObjectMethodInvocation(invocationExpression))
             {
-                consumer?.AddHighlighting(new BurstUnableToAccessManagedMethodWarning(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BurstAccessingManagedMethodWarning(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
 
                 return true;
@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (IsReturnValueBurstProhibited(invokedMethod) ||
                 HasBurstProhibitedArguments(invocationExpression.ArgumentList))
             {
-                consumer?.AddHighlighting(new BurstFunctionSignatureContainsManagedObjectsWarning(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression.GetDocumentRange(),
                     invokedMethod.ShortName));
 
                 return true;
