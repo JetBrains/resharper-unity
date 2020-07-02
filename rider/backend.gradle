@@ -133,7 +133,7 @@ task nunitReSharperUnity(type: nunit.class) {
     nunitVersion "3.9.0"
     shadowCopy false
     outputs.upToDateWhen { false }
-
+    useX86 true
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
     def testDll = new File(buildDir, "tests.resharper-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
     testAssemblies = [ testDll ]
@@ -143,6 +143,7 @@ task nunitRiderUnity(type: nunit.class) {
     nunitVersion "3.9.0"
     shadowCopy false
     outputs.upToDateWhen { false }
+    useX86 true
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
     def testDll = new File(buildDir, "tests.rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
