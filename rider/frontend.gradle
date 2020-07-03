@@ -80,7 +80,7 @@ patchPluginXml {
     """.stripIndent()
 }
 
-def dllFiles = [
+def dotnetDllFiles = [
     "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.dll",
     "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.pdb",
     "../resharper/build/rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.dll",
@@ -90,6 +90,11 @@ def dllFiles = [
 def debuggerDllFiles = [
     "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.dll",
     "../resharper/build/debugger/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.pdb",
+]
+
+def helperExeFiles = [
+    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.ListIosUsbDevices.exe",
+    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
 ]
 
 def unityEditorDllFiles = [
@@ -125,12 +130,17 @@ tasks.withType(PrepareSandboxTask).configureEach {
     // Copy projectTemplates to `rider-unity/projectTemplates`
 
     doLast {
-        dllFiles.forEach({ f ->
+        dotnetDllFiles.forEach({ f ->
             def file = file("$f")
             if (!file.exists()) throw new RuntimeException("File $file does not exist")
         })
 
         debuggerDllFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists()) throw new RuntimeException("File $file does not exist")
+        })
+
+        helperExeFiles.forEach({ f ->
             def file = file("$f")
             if (!file.exists()) throw new RuntimeException("File $file does not exist")
         })
@@ -141,9 +151,12 @@ tasks.withType(PrepareSandboxTask).configureEach {
         })
     }
 
-    dllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/dotnet" }) })
+    dotnetDllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/dotnet" }) })
     debuggerDllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/dotnetDebuggerWorker" }) })
     unityEditorDllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/EditorPlugin" }) })
+
+    // This folder name allows RiderEnvironment.getBundledFile(file, pluginClass = this.class) to work
+    helperExeFiles.forEach({f -> from(file(f), { into "$intellij.pluginName/DotFiles" }) })
 
     from('../resharper/resharper-unity/src/annotations', { into "$intellij.pluginName/dotnet/Extensions/com.intellij.resharper.unity/annotations" })
     from('projectTemplates', { into "$intellij.pluginName/projectTemplates" })
