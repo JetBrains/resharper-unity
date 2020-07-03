@@ -68,7 +68,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                     logger.trace("Do not found Unity, starting new Unity Editor")
 
                     val model = project.solution.rdUnityModel
-                    if (UnityInstallationFinder.getInstance(project).getApplicationPath() == null ||
+                    if (UnityInstallationFinder.getInstance(project).getApplicationExecutablePath() == null ||
                         model.hasUnityReference.hasTrueValue && !project.isUnityProject()) {
                         throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")
                     }

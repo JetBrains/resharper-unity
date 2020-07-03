@@ -24,4 +24,4 @@ class UnityLocalPlayer(displayName: String, override val host: String, override 
 class UnityRemotePlayer(displayName: String, override val host: String, override val port: Int, allowDebugging: Boolean, projectName: String?)
     : UnityProcess(displayName, allowDebugging, projectName), UnityRemoteConnectionDetails
 
-// TODO: USB player(s)
+class UnityIosUsbProcess(displayName: String, val deviceId: String) : UnityProcess(displayName, true)

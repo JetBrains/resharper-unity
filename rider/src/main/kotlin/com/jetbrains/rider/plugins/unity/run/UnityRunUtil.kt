@@ -35,10 +35,9 @@ object UnityRunUtil {
         val canonicalName = if (processInfo.executableCannonicalPath.isPresent) {
             Paths.get(processInfo.executableCannonicalPath.get()).fileName.toString()
         }
-        else ""
+        else name
 
-        logger.trace("isUnityEditorProcess: $name")
-        logger.trace("Checking Unity Process, execPathName: $canonicalName")
+        logger.debug("isUnityEditorProcess: '$name', '$canonicalName'")
 
         // Based on Unity's own VS Code debugger, we simply look for "Unity" or "Unity Editor". Java's
         // ProcessInfo#executableDisplayName is the executable name with `.exe` removed. This matches the behaviour of
@@ -49,8 +48,7 @@ object UnityRunUtil {
     }
 
     fun isValidUnityEditorProcess(pid: Int, processList: Array<out ProcessInfo>): Boolean {
-        logger.trace("Checking Unity Process, current pid: $pid")
-        logger.trace("Checking Unity Process, processCount: ${processList.count()}")
+        logger.trace("Checking Unity Process, current pid: $pid. Process count: ${processList.size}")
         return processList.any { it.pid == pid && isUnityEditorProcess(it) }
     }
 
