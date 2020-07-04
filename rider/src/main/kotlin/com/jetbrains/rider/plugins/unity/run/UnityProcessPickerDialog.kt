@@ -11,6 +11,7 @@ import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
@@ -102,13 +103,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val model = getSelectedUnityProcessTreeNode() ?: return
             val process = model.process
             if (!model.debuggerAttached && process.allowDebugging) {
-
-                // TODO: Handle USB, etc.
-                // Also, we should probably create a temporary run configuration here
-                if (process is UnityRemoteConnectionDetails) {
-                    // TODO: This is clunky
-                    UnityRunUtil.attachToUnityProcess(process.host, process.port, process.displayName, project, process is UnityEditor || process is UnityEditorHelper)
-                }
+                attachToUnityProcess(project, process)
             }
             close(OK_EXIT_CODE)
         }

@@ -8,14 +8,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
-import com.jetbrains.rd.util.reactive.fire
 import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.model.debuggerWorker.OutputMessageWithSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputSubject
 import com.jetbrains.rider.model.debuggerWorker.OutputType
-import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import javax.swing.event.HyperlinkEvent
 
@@ -27,19 +24,20 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
             var text = "Unable to connect to $targetName"
 
             val unityVersion: String? = UnityInstallationFinder.getInstance(project).getApplicationVersion(2)
-            if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2018.2") >= 0) {
+            text += if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2018.2") >= 0) {
                 val url = "https://docs.unity3d.com/$unityVersion/Documentation/Manual/ManagedCodeDebugging.html"
                 if (isEditor) {
-                    text += "\nPlease follow <a href=\"$url\">Debugging in the Editor</a> documentation.\n"
+                    "\nPlease follow <a href=\"$url\">Debugging in the Editor</a> documentation.\n"
                 } else {
-                    text += "\nPlease follow <a href=\"$url\">Debugging in the Player</a> documentation.\n"
+                    "\nPlease follow <a href=\"$url\">Debugging in the Player</a> documentation.\n"
                 }
-            } else
+            } else {
                 if (isEditor) {
-                    text += "\nPlease ensure 'Editor Attaching' is enabled in Unity's External Tools settings page.\n"
+                    "\nPlease ensure 'Editor Attaching' is enabled in Unity's External Tools settings page.\n"
                 } else {
-                    text += "\nPlease ensure that the player has 'Script Debugging' enabled and that the host '$host' is reachable.\n"
+                    "\nPlease ensure that the player has 'Script Debugging' enabled and that the host '$host' is reachable.\n"
                 }
+            }
 
             val debugNotification = XDebuggerManagerImpl.NOTIFICATION_GROUP.createNotification(text, NotificationType.ERROR)
 
@@ -65,6 +63,5 @@ class UnityDebuggerOutputListener(val project: Project, private val host: String
                 })
             }
         }
-        super.onOutputMessageAvailable(message)
     }
 }

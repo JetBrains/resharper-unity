@@ -1,11 +1,8 @@
 package com.jetbrains.rider.plugins.unity.run
 
-import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.configurations.CommandLineTokenizer
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.process.ProcessInfo
-import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.execution.util.ExecUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
@@ -14,10 +11,8 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.xdebugger.XDebuggerManager
-import com.jetbrains.rider.plugins.unity.run.attach.UnityAttachProcessConfiguration
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJsonStatus
-import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -274,18 +269,5 @@ object UnityRunUtil {
             }
             else false
         }
-    }
-
-    fun attachToLocalUnityProcess(pid: Int, project: Project) {
-        val port = convertPidToDebuggerPort(pid)
-        attachToUnityProcess("127.0.0.1", port, "Unity Editor", project, true)
-    }
-
-    fun attachToUnityProcess(host: String, port: Int, playerId: String, project: Project, isEditor: Boolean) {
-        val configuration = UnityAttachProcessConfiguration(host, port, playerId, isEditor)
-        val environment = ExecutionEnvironmentBuilder
-            .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), configuration)
-            .build()
-        ProgramRunnerUtil.executeConfiguration(environment, false, true)
     }
 }
