@@ -1,5 +1,6 @@
-﻿using System;
+﻿﻿using System;
 using System.Text.RegularExpressions;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Text;
 using JetBrains.Util;
@@ -8,9 +9,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
 {
     public partial class ShaderLabLexerGenerated
     {
-        private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>(false);
+      private readonly Func<IBuffer, ILexer> myCppLexerFactory = null;
+      private static readonly LexerDictionary<TokenNodeType> Keywords = new LexerDictionary<TokenNodeType>(false);
 
-        private readonly ReusableBufferRange myBufferRange = new ReusableBufferRange();
+         private readonly ReusableBufferRange myBufferRange = new ReusableBufferRange();
         // ReSharper disable once InconsistentNaming
         private TokenNodeType currentTokenType;
 
@@ -30,6 +32,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
                 var keyword = (TokenNodeType) nodeType;
                 Keywords[keyword.TokenRepresentation] = keyword;
             }
+        }
+        
+        public ShaderLabLexerGenerated(IBuffer buffer, Func<IBuffer,ILexer> cppLexerFactory) : this(buffer)
+        {
+          myCppLexerFactory = cppLexerFactory;
         }
 
         public void Start()
@@ -117,14 +124,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing
         public int LexemIndent => 7;    // No, I don't know why
         public uint LexerStateEx => (uint) yy_lexical_state;
 
+
+        private ILexer myActiveCppLexer = null;
+        private int LastCGContentStart = -1;
+        private int LastCGContentEnd = -1;
+
+        private void PropagateChangesFromCppLexer()
+        {
+          Assertion.Assert(myActiveCppLexer != null, "myActiveCppLexer != null");
+          yy_buffer_start = myActiveCppLexer.TokenStart + LastCGContentStart;
+          yy_buffer_end = myActiveCppLexer.TokenEnd + LastCGContentStart;
+          yy_buffer_index = myActiveCppLexer.TokenStart + LastCGContentStart;
+          currentTokenType = myActiveCppLexer.TokenType;  
+        }
+
         private TokenNodeType LocateToken()
         {
             if (currentTokenType == null)
             {
                 try
                 {
+                    if (myActiveCppLexer != null)
+                    {
+                      myActiveCppLexer.Advance();
+                      PropagateChangesFromCppLexer();
+                      if (currentTokenType == null)
+                      {
+                        myActiveCppLexer = null;
+                        Assertion.Assert(yy_buffer_start == LastCGContentEnd, "yy_buffer_start == LastCGContentEnd");
+                        Assertion.Assert(yy_buffer_end == LastCGContentEnd, "yy_buffer_start == LastCGContentEnd");
+                        Assertion.Assert(yy_buffer_index == LastCGContentEnd, "yy_buffer_start == LastCGContentEnd");
+                      }
+                      else
+                        return currentTokenType;
+                    }
                     currentTokenType = _locateToken();
 
+                    if (currentTokenType == ShaderLabTokenType.CG_CONTENT && myCppLexerFactory != null)
+                    {
+                        myActiveCppLexer = myCppLexerFactory(ProjectedBuffer.Create(yy_buffer, new TextRange(TokenStart, TokenEnd)));
+                        myActiveCppLexer.Start();
+                        LastCGContentStart = TokenStart;
+                        LastCGContentEnd = TokenEnd;
+                        PropagateChangesFromCppLexer();
+                        
+                        Assertion.Assert(currentTokenType != null, "cppLexer.TokenType != null");
+                        return currentTokenType;
+                    }
+                    
                     if (currentTokenType == ShaderLabTokenType.UNQUOTED_STRING_LITERAL)
                     {
                         while (yy_buffer_index < yy_eof_pos)

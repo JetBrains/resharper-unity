@@ -190,7 +190,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             return project.HasUnityFlavour() || ReferencesUnity(project);
         }
 
-        private static bool ReferencesUnity(IProject project)
+        public static bool ReferencesUnity(IProject project)
         {
             var targetFrameworkId = project.GetCurrentTargetFrameworkId();
             foreach (var reference in project.GetModuleReferences(targetFrameworkId))

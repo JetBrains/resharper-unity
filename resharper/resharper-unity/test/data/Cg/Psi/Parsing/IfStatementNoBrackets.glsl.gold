@@ -1,0 +1,61 @@
+Language: PsiLanguageType:CG
+ICgFile
+  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+  IDeclaration
+    IVariableOrFunctionDeclaration
+      IFunctionDeclaration
+        IFunctionHeader
+          IBuiltInType
+            CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IIdentifier
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        IFunctionBody
+          IBlockStatement
+            CgFixedLengthTokenNode(type:LBRACE, text:{)
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
+            IStatement
+              IIfStatement
+                CgKeywordTokenNode(type:IF_KEYWORD, text:if)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                CgFixedLengthTokenNode(type:LPAREN, text:()
+                IExpression
+                  ICommaExpression
+                    IAssignmentExpression
+                      ITernaryExpression
+                        IBinaryExpression
+                          IPrefixExpression
+                            IPostfixExpression
+                              IConstantValue
+                                CgKeywordTokenNode(type:TRUE_KEYWORD, text:true)
+                CgFixedLengthTokenNode(type:RPAREN, text:))
+                CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                CgWhitespaceTokenNode(type:WHITESPACE, text:		) spaces: "		"
+                IStatement
+                  IExpressionStatement
+                    IIdentifier
+                      CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
+                    ICallOperator
+                      CgFixedLengthTokenNode(type:LPAREN, text:()
+                      CgFixedLengthTokenNode(type:RPAREN, text:))
+                  CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+                CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                CgWhitespaceTokenNode(type:WHITESPACE, text:	) spaces: "	"
+                IElseStatement
+                  CgKeywordTokenNode(type:ELSE_KEYWORD, text:else)
+                  CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                  CgWhitespaceTokenNode(type:WHITESPACE, text:		) spaces: "		"
+                  IStatement
+                    IExpressionStatement
+                      IIdentifier
+                        CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
+                      ICallOperator
+                        CgFixedLengthTokenNode(type:LPAREN, text:()
+                        CgFixedLengthTokenNode(type:RPAREN, text:))
+                    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgFixedLengthTokenNode(type:RBRACE, text:})
+

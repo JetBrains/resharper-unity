@@ -3,7 +3,7 @@
 #warning This is a warning!
 
 #line 23
-{caret}Shader "Unlit/SingleColor"
+Shader "Unlit/SingleColor"
 {
     #error Another error!
     #warning And another warning!

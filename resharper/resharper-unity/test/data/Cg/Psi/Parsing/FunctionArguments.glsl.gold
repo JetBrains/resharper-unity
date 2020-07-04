@@ -1,0 +1,75 @@
+Language: PsiLanguageType:CG
+ICgFile
+  IDeclaration
+    IVariableOrFunctionDeclaration
+      IFunctionDeclaration
+        IFunctionHeader
+          IBuiltInType
+            CgBuiltInTypeTokenNode(type:VECTOR_TYPE, text:float4)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IIdentifier
+            CgIdentifierTokenNode(type:IDENTIFIER, text:frag)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+          CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+          IFunctionArgList
+            IArgument
+              ISingleVariableDeclaration
+                IBuiltInType
+                  CgBuiltInTypeTokenNode(type:VECTOR_TYPE, text:float4)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IIdentifier
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:vertex)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IVariableDeclarationTail
+                  CgFixedLengthTokenNode(type:COLON, text::)
+                  CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                  ISemantic
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:POSITION)
+            CgFixedLengthTokenNode(type:COMMA, text:,)
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+            IArgument
+              ISingleVariableDeclaration
+                IBuiltInType
+                  CgBuiltInTypeTokenNode(type:VECTOR_TYPE, text:float2)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IIdentifier
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:uv)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IVariableDeclarationTail
+                  CgFixedLengthTokenNode(type:COLON, text::)
+                  CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                  ISemantic
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:TEXCOORD0)
+            CgFixedLengthTokenNode(type:COMMA, text:,)
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+            IArgument
+              ISingleVariableDeclaration
+                IModifierKeywordList
+                  CgKeywordTokenNode(type:OUT_KEYWORD, text:out)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IBuiltInType
+                  CgBuiltInTypeTokenNode(type:VECTOR_TYPE, text:float4)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IIdentifier
+                  CgIdentifierTokenNode(type:IDENTIFIER, text:outpos)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                IVariableDeclarationTail
+                  CgFixedLengthTokenNode(type:COLON, text::)
+                  CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                  ISemantic
+                    CgIdentifierTokenNode(type:IDENTIFIER, text:SV_POSITION)
+          CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+          CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+        IFunctionBody
+          IBlockStatement
+            CgFixedLengthTokenNode(type:LBRACE, text:{)
+            CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgFixedLengthTokenNode(type:RBRACE, text:})
+
