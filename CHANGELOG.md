@@ -20,6 +20,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add Unity specific spell check dictionary ([#1187](https://github.com/JetBrains/resharper-unity/issues/1187), [#1570](https://github.com/JetBrains/resharper-unity/pull/1570))
 - Add support for UnityEditor.dll being split into modules in Unity 2020.2 ([#1699](https://github.com/JetBrains/resharper-unity/issues/1699), [RIDER-46544](https://youtrack.jetbrains.com/issue/RIDER-46544), [#1724](https://github.com/JetBrains/resharper-unity/pull/1724))
 - Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor ([#1272](https://github.com/JetBrains/resharper-unity/issues/1272), [#1661](https://github.com/JetBrains/resharper-unity/pull/1661))
+- Rider: Add USB debugging for iPhone/iPad ([#1734](https://github.com/JetBrains/resharper-unity/pull/1734))
 - Rider: Add analysis and inspections for Burst compiled code ([#1665](https://github.com/JetBrains/resharper-unity/pull/1665))
 - Rider: Automatically use UnityYamlMerge to merge asset files ([RIDER-33411](https://youtrack.jetbrains.com/issue/RIDER-33411), [#1682](https://github.com/JetBrains/resharper-unity/pull/1682))
 - Rider: Automatically add run configuration for standalone player build targets ([#1708](https://github.com/JetBrains/resharper-unity/pull/1708))
