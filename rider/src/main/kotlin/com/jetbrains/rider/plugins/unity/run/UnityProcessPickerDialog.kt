@@ -11,6 +11,7 @@ import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.tree.TreeUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.plugins.unity.run.configurations.attachToUnityProcess
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.Graphics
@@ -24,6 +25,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
     companion object {
         const val UNKNOWN_PROJECTS = "Unknown Projects"
+        const val USB_DEVICES = "USB Devices"
     }
 
     private class UnityProcessTreeNode(val process: UnityProcess, val debuggerAttached: Boolean): DefaultMutableTreeNode()
@@ -101,13 +103,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val model = getSelectedUnityProcessTreeNode() ?: return
             val process = model.process
             if (!model.debuggerAttached && process.allowDebugging) {
-
-                // TODO: Handle USB, etc.
-                // Also, we should probably create a temporary run configuration here
-                if (process is UnityRemoteConnectionDetails) {
-                    // TODO: This is clunky
-                    UnityRunUtil.attachToUnityProcess(process.host, process.port, process.displayName, project, process is UnityEditor || process is UnityEditorHelper)
-                }
+                attachToUnityProcess(project, process)
             }
             close(OK_EXIT_CODE)
         }
@@ -239,6 +235,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 name1 == name2 -> getSortKey(o1.process).compareTo(getSortKey(o2.process))
                 name1 == projectName -> -1
                 name2 == projectName -> 1
+                name1 == USB_DEVICES -> -1
+                name2 == USB_DEVICES -> 1
                 name1 == UNKNOWN_PROJECTS -> -1
                 name2 == UNKNOWN_PROJECTS -> 1
                 else -> name1.compareTo(name2, true)
@@ -248,9 +246,10 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
         private fun getSortKey(process: UnityProcess): Int {
             return when (process) {
                 is UnityEditor -> 10
-                is UnityEditorHelper -> 20   // This is handled as a child node of UnityEditor
-                is UnityLocalPlayer -> 30
-                is UnityRemotePlayer -> 40
+                is UnityEditorHelper -> 20  // This is handled as a child node of UnityEditor
+                is UnityIosUsbProcess -> 30 // This is put into its own group
+                is UnityLocalPlayer -> 40
+                is UnityRemotePlayer -> 50
             }
         }
     }
@@ -268,7 +267,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val unityProcess = node.process
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
 
-            val projectName = unityProcess.projectName ?: UNKNOWN_PROJECTS
+            val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess) USB_DEVICES else UNKNOWN_PROJECTS
             val hasSeparator = !isChildProcess(node) && getPreviousSiblingProjectName(node) != projectName
             // TODO: Is there anything more useful we could show in the tooltip?
             val component = configureComponent("", "", null, null, selected, hasSeparator, projectName, -1)

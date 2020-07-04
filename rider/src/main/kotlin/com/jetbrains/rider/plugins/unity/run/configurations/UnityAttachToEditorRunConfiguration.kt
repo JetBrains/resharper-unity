@@ -65,7 +65,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                 }
 
                 return ext.executor(UnityAttachConfigurationParametersImpl(project.solution.rdUnityModel.unityProcessId.valueOrNull ?: pid,
-                    finder.getApplicationPath(), args, finder.getApplicationVersion()), environment)
+                    finder.getApplicationExecutablePath(), args, finder.getApplicationVersion()), environment)
             }
         }
 

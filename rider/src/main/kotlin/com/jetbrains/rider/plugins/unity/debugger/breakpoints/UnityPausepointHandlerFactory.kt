@@ -10,7 +10,7 @@ import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.IDotNetSupportedBreakpointHandlerFactory
 import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.plugins.unity.run.attach.UnityAttachProcessConfiguration
+import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.projectView.solution
 
@@ -73,7 +73,7 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
     private fun isSupportedSession(): Boolean {
         val runProfile = debugProcess.session.runProfile
         return runProfile is UnityAttachToEditorRunConfiguration
-            || (runProfile is UnityAttachProcessConfiguration && runProfile.isEditor)
+            || (runProfile is UnityAttachProfileState && runProfile.isEditor)
     }
 
     private fun isUnityEditorConnected(): Boolean {

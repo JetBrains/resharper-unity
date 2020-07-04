@@ -10,11 +10,13 @@ class UnityDebuggableProcessListener(project: Project, lifetime: Lifetime,
 
     private val editorListener: UnityEditorListener = UnityEditorListener(project, onProcessAdded, onProcessRemoved)
     private val playerListener: UnityPlayerListener = UnityPlayerListener(onProcessAdded, onProcessRemoved)
+    private val appleDeviceListener: AppleDeviceListener = AppleDeviceListener(project, onProcessAdded, onProcessRemoved)
 
     init {
         lifetime.onTermination {
             editorListener.stop()
             playerListener.stop()
+            appleDeviceListener.stop()
         }
     }
 }
