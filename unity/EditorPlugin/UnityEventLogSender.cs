@@ -58,6 +58,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
+      if (!PluginSettings.LogEventsCollectorEnabled) // stop collecting, if setting was disabled
+        return;
+      
       RdLogEventType eventType;
       switch (type)
       {
