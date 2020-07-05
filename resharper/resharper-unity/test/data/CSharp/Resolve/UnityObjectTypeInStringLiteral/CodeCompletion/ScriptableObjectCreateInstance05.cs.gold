@@ -1,4 +1,4 @@
-﻿# 363 ITEMS #
+﻿# 385 ITEMS #
 
 + ADBannerView
 + ADInterstitialAd
@@ -155,10 +155,12 @@ Experimental
 + Gradient
 + GradientUsageAttribute
 + Graphics
++ GraphicsBuffer
 + Grid
 + GridBrushBase
 + GridLayout
 + Gyroscope
++ HDROutputSettings
 + Handheld
 + HashUnsafeUtilities
 + HashUtilities
@@ -175,7 +177,13 @@ Experimental
 + ImageEffectAllowedInSceneView
 + ImageEffectOpaque
 + ImageEffectTransformsToLDR
++ ImageEffectUsesCommandBuffer
 + Input
++ InspectorNameAttribute
++ IntegratedSubsystem
++ IntegratedSubsystem<>
++ IntegratedSubsystemDescriptor
++ IntegratedSubsystemDescriptor<>
 Internal
 Jobs
 + Joint
@@ -195,6 +203,8 @@ Jobs
 + LocalizationAsset
 + LocationService
 + Logger
+LowLevel
+Lumin
 + MasterServer
 + Material
 + MaterialPropertyBlock
@@ -220,6 +230,7 @@ Networking
 + ParticlePhysicsExtensions
 + ParticleSystem
 + ParticleSystemForceField
+ParticleSystemJobs
 + ParticleSystemRenderer
 + PhysicMaterial
 + Physics
@@ -231,6 +242,7 @@ Networking
 + Ping
 + PlatformEffector2D
 Playables
+PlayerLoop
 + PlayerPrefs
 + PlayerPrefsException
 + PointEffector2D
@@ -277,6 +289,7 @@ Scripting
 Serialization
 + SerializeField
 + SerializePrivateVariables
++ SerializeReference
 + Shader
 + ShaderVariantCollection
 + SharedBetweenAnimatorsAttribute
@@ -284,6 +297,7 @@ Serialization
 + Skybox
 + SleepTimeout
 + SliderJoint2D
++ Snapping
 + Social
 SocialPlatforms
 + SpaceAttribute
@@ -300,7 +314,12 @@ Sprites
 + StateMachineBehaviour
 + StaticBatchingUtility
 + StreamingController
-StyleSheets
++ Subsystem
++ Subsystem<>
++ SubsystemDescriptor
++ SubsystemDescriptor<>
++ SubsystemManager
+Subsystems
 + SurfaceEffector2D
 + SystemInfo
 + TargetJoint2D
@@ -309,6 +328,7 @@ StyleSheets
 + TerrainData
 + TerrainExtensions
 + TerrainLayer
+TestTools
 + TextAreaAttribute
 + TextAsset
 TextCore
@@ -330,12 +350,13 @@ Tilemaps
 + TreePrototype
 + Types
 U2D
-UIR
+UIElements
 + UISystemProfilerApi
 + UnassignedReferenceException
 + UnityAPICompatibilityVersionAttribute
 + UnityEventQueueSystem
 + UnityException
+VFX
 VR
 Video
 WSA
@@ -356,6 +377,7 @@ Windows
 XR
 + YieldInstruction
 Yoga
+_Scripting
 iOS
 + iPhone
 + iPhoneInput
@@ -364,7 +386,7 @@ iOS
 + iPhoneUtils
 tvOS
 # AUTOMATIC #
-# 363 ITEMS #
+# 385 ITEMS #
 
 + ADBannerView
 + ADInterstitialAd
@@ -521,10 +543,12 @@ Experimental
 + Gradient
 + GradientUsageAttribute
 + Graphics
++ GraphicsBuffer
 + Grid
 + GridBrushBase
 + GridLayout
 + Gyroscope
++ HDROutputSettings
 + Handheld
 + HashUnsafeUtilities
 + HashUtilities
@@ -541,7 +565,13 @@ Experimental
 + ImageEffectAllowedInSceneView
 + ImageEffectOpaque
 + ImageEffectTransformsToLDR
++ ImageEffectUsesCommandBuffer
 + Input
++ InspectorNameAttribute
++ IntegratedSubsystem
++ IntegratedSubsystem<>
++ IntegratedSubsystemDescriptor
++ IntegratedSubsystemDescriptor<>
 Internal
 Jobs
 + Joint
@@ -561,6 +591,8 @@ Jobs
 + LocalizationAsset
 + LocationService
 + Logger
+LowLevel
+Lumin
 + MasterServer
 + Material
 + MaterialPropertyBlock
@@ -586,6 +618,7 @@ Networking
 + ParticlePhysicsExtensions
 + ParticleSystem
 + ParticleSystemForceField
+ParticleSystemJobs
 + ParticleSystemRenderer
 + PhysicMaterial
 + Physics
@@ -597,6 +630,7 @@ Networking
 + Ping
 + PlatformEffector2D
 Playables
+PlayerLoop
 + PlayerPrefs
 + PlayerPrefsException
 + PointEffector2D
@@ -643,6 +677,7 @@ Scripting
 Serialization
 + SerializeField
 + SerializePrivateVariables
++ SerializeReference
 + Shader
 + ShaderVariantCollection
 + SharedBetweenAnimatorsAttribute
@@ -650,6 +685,7 @@ Serialization
 + Skybox
 + SleepTimeout
 + SliderJoint2D
++ Snapping
 + Social
 SocialPlatforms
 + SpaceAttribute
@@ -666,7 +702,12 @@ Sprites
 + StateMachineBehaviour
 + StaticBatchingUtility
 + StreamingController
-StyleSheets
++ Subsystem
++ Subsystem<>
++ SubsystemDescriptor
++ SubsystemDescriptor<>
++ SubsystemManager
+Subsystems
 + SurfaceEffector2D
 + SystemInfo
 + TargetJoint2D
@@ -675,6 +716,7 @@ StyleSheets
 + TerrainData
 + TerrainExtensions
 + TerrainLayer
+TestTools
 + TextAreaAttribute
 + TextAsset
 TextCore
@@ -696,12 +738,13 @@ Tilemaps
 + TreePrototype
 + Types
 U2D
-UIR
+UIElements
 + UISystemProfilerApi
 + UnassignedReferenceException
 + UnityAPICompatibilityVersionAttribute
 + UnityEventQueueSystem
 + UnityException
+VFX
 VR
 Video
 WSA
@@ -722,6 +765,7 @@ Windows
 XR
 + YieldInstruction
 Yoga
+_Scripting
 iOS
 + iPhone
 + iPhoneInput

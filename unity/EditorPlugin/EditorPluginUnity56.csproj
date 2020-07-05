@@ -25,5 +25,5 @@
   <ItemGroup>
     <Compile Remove="AfterUnity56\UnitTesting\CompiledAssembliesTracker.cs" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
+    <Import Project="$(MSBuildProjectDirectory)/../build/generated/PackageReference.JetBrains.RdFramework.net35.Props" />
 </Project>

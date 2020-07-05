@@ -15,7 +15,7 @@ public class TestClass
     }
 
     [OnOpenAsset]
-    private static void WrongReturnType(int instanceID, int line)
+    private static void WrongReturnType(int instanceID, int line, int column)
     {
     }
 

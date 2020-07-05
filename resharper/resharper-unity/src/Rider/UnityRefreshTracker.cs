@@ -85,6 +85,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return myRunningRefreshTask;
             }
 
+            lifetime.OnTermination(() => myRunningRefreshTask = Task.CompletedTask);
+
             myRunningRefreshTask = RefreshInternal(lifetime, refreshType);
             return myRunningRefreshTask;
         }

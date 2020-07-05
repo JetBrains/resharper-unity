@@ -1,4 +1,4 @@
-﻿# 8 ITEMS #
+﻿# 9 ITEMS #
 
 + GameObject
 GUILayoutOption
@@ -7,9 +7,10 @@ AddedGameObject (in UnityEditor.SceneManagement)
 ComponentGuaranteesOptions (in System.Runtime.Versioning)
 GameObjectRecorder (in UnityEditor.Animations)
 GameObjectUtility (in UnityEditor)
+GlobalObjectId (in UnityEditor)
 TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)
 # AUTOMATIC #
-# 8 ITEMS #
+# 9 ITEMS #
 
 + GameObject
 GUILayoutOption
@@ -18,4 +19,5 @@ AddedGameObject (in UnityEditor.SceneManagement)
 ComponentGuaranteesOptions (in System.Runtime.Versioning)
 GameObjectRecorder (in UnityEditor.Animations)
 GameObjectUtility (in UnityEditor)
+GlobalObjectId (in UnityEditor)
 TextureGenerationOutput (in UnityEditor.Experimental.AssetImporters)

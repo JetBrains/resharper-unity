@@ -7,7 +7,7 @@
     }
     SubShader
     {
-        |Whatever { }
+        |Whatever|(0) { }
         Pass
         {
             CGPROGRAM
@@ -34,7 +34,7 @@
             ENDCG
         }
     }
-}|(0)
+}
 
 ---------------------------------------------------------
 (0): ReSharper Underlined Error Highlighting: } expected

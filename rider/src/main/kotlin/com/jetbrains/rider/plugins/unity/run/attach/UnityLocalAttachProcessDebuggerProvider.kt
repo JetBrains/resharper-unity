@@ -9,7 +9,6 @@ import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.plugins.unity.run.UnityProcessInfo
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 
-@Suppress("UnstableApiUsage")
 class UnityLocalAttachProcessDebuggerProvider : XAttachDebuggerProvider {
 
     companion object {
@@ -18,13 +17,13 @@ class UnityLocalAttachProcessDebuggerProvider : XAttachDebuggerProvider {
 
     override fun getAvailableDebuggers(project: Project, host: XAttachHost, process: ProcessInfo, userData: UserDataHolder): MutableList<XAttachDebugger> {
         if (UnityRunUtil.isUnityEditorProcess(process)) {
-            // Cache the processes display names. When we're asked for the display text for the menu, we're on the EDT
-            // thread, and can't call this
-            UnityRunUtil.getUnityProcessInfo(process, project)?.let {
+
+            // Fetch the project + role names while we're not on the EDT, and cache so we can use it in the presenter
+            val unityProcessInfo = UnityRunUtil.getUnityProcessInfo(process, project)?.apply {
                 val map = userData.getOrCreateUserData(PROCESS_INFO_KEY) { mutableMapOf() }
-                map[process.pid]= it
+                map[process.pid] = this
             }
-            return mutableListOf(UnityLocalAttachDebugger())
+            return mutableListOf(UnityLocalAttachDebugger(unityProcessInfo))
         }
         return mutableListOf()
     }

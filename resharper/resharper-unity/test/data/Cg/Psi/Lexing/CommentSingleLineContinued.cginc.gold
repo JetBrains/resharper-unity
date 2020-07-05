@@ -1,7 +1,0 @@
-﻿0000: SINGLE_LINE_COMMENT '// comment \\r\ncontinued text'
-0028: NEW_LINE '\r\n'
-0030: IDENTIFIER 'not'
-0033: WHITESPACE ' '
-0034: IDENTIFIER 'a'
-0035: WHITESPACE ' '
-0036: IDENTIFIER 'comment'

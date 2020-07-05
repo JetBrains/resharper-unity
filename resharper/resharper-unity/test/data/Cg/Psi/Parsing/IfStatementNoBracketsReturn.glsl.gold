@@ -1,0 +1,51 @@
+Language: PsiLanguageType:CG
+ICgFile
+  IDeclaration
+    IVariableOrFunctionDeclaration
+      IFunctionDeclaration
+        IFunctionHeader
+          IBuiltInType
+            CgKeywordTokenNode(type:VOID_KEYWORD, text:void)
+          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+          IIdentifier
+            CgIdentifierTokenNode(type:IDENTIFIER, text:foo)
+          CgFixedLengthTokenNode(type:LPAREN, text:()
+          CgFixedLengthTokenNode(type:RPAREN, text:))
+        IFunctionBody
+          IBlockStatement
+            CgFixedLengthTokenNode(type:LBRACE, text:{)
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgWhitespaceTokenNode(type:WHITESPACE, text:    ) spaces: "    "
+            IStatement
+              IIfStatement
+                CgKeywordTokenNode(type:IF_KEYWORD, text:if)
+                CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                CgFixedLengthTokenNode(type:LPAREN, text:()
+                IExpression
+                  ICommaExpression
+                    IAssignmentExpression
+                      ITernaryExpression
+                        IBinaryExpression
+                          IPrefixExpression
+                            IPostfixExpression
+                              IConstantValue
+                                CgGenericTokenNode(type:NUMERIC_LITERAL, text:0)
+                          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                          IBinaryOperator
+                            CgFixedLengthTokenNode(type:LT, text:<)
+                          CgWhitespaceTokenNode(type:WHITESPACE, text: ) spaces: " "
+                          IBinaryExpression
+                            IPrefixExpression
+                              IPostfixExpression
+                                IConstantValue
+                                  CgGenericTokenNode(type:NUMERIC_LITERAL, text:1)
+                CgFixedLengthTokenNode(type:RPAREN, text:))
+                CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+                CgWhitespaceTokenNode(type:WHITESPACE, text:        ) spaces: "        "
+                IStatement
+                  IReturnStatement
+                    CgKeywordTokenNode(type:RETURN_KEYWORD, text:return)
+                    CgFixedLengthTokenNode(type:SEMICOLON, text:;)
+            CgNewLineTokenNode(type:NEW_LINE, text:\n) spaces: "\n"
+            CgFixedLengthTokenNode(type:RBRACE, text:})
+

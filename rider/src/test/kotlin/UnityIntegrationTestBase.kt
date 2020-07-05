@@ -43,7 +43,7 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
         }
         else
         {
-            val localAppPath = UnityInstallationFinder.getInstance(project).getApplicationPath()
+            val localAppPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
             assertNotNull(localAppPath, "Unity installation was not found.")
             appPath = localAppPath
         }

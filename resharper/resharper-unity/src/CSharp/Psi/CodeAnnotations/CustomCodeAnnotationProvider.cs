@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         {
             if (GetCoroutineMustUseReturnValueAttribute(element, out var collection)) return collection;
             if (GetPublicAPIImplicitlyUsedAttribute(element, out collection)) return collection;
-            if (GetValueRangeFromRangeAttribute(element, out collection)) return collection;
+            if (GetValueRangeAttribute(element, out collection)) return collection;
 
             return EmptyList<IAttributeInstance>.Instance;
         }
@@ -122,12 +122,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
 
         // Treat Unity's RangeAttribute as ReSharper's ValueRangeAttribute annotation
-        private bool GetValueRangeFromRangeAttribute(IClrDeclaredElement element,
-            out ICollection<IAttributeInstance> collection)
+        private bool GetValueRangeAttribute(IClrDeclaredElement element,
+                                            out ICollection<IAttributeInstance> collection)
         {
             collection = EmptyList<IAttributeInstance>.InstanceList;
 
             if (!(element is IField field) || !element.IsFromUnityProject()) return false;
+
+            if (!myUnityApi.IsSerialisedField(field))
+                return false;
 
             // Integer value analysis only works on integers, but it will make use of annotations applied to values that
             // are convertible to int, such as byte/sbyte and short/ushort. It doesn't currently use values applied to
@@ -143,9 +146,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
             foreach (var attributeInstance in field.GetAttributeInstances(KnownTypes.RangeAttribute, false))
             {
-                if (!myUnityApi.IsSerialisedField(field))
-                    continue;
-
                 // Values are floats, but applied to an integer field. Convert to integer values
                 var unityFrom = attributeInstance.PositionParameter(0);
                 var unityTo = attributeInstance.PositionParameter(1);
@@ -158,22 +158,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
 
                 // The check above means this is not null. We take the floor, because that's how Unity works.
                 // E.g. Unity's Inspector treats [Range(1.7f, 10.9f)] as between 1 and 10 inclusive
-                var f = Math.Floor((float) unityFrom.ConstantValue.Value.NotNull());
-                var t = Math.Floor((float) unityTo.ConstantValue.Value.NotNull());
+                var from = Convert.ToInt64(Math.Floor((float) unityFrom.ConstantValue.Value.NotNull()));
+                var to = Convert.ToInt64(Math.Floor((float) unityTo.ConstantValue.Value.NotNull()));
 
-                // The ctorArguments lambda result is not cached, so let's allocate everything up front
-                var from = new AttributeValue(new ConstantValue(Convert.ToInt64(Math.Floor(f)), predefinedType.Long));
-                var to = new AttributeValue(new ConstantValue(Convert.ToInt64(Math.Floor(t)), predefinedType.Long));
-                var args = new[] {from, to};
+                collection = CreateRangeAttributeInstance(element, predefinedType, from, to);
+                return true;
+            }
 
-                collection = new[]
-                {
-                    new SpecialAttributeInstance(ourValueRangeAttributeFullName, GetModule(element), () => args)
-                };
+            foreach (var attributeInstance in field.GetAttributeInstances(KnownTypes.MinAttribute, false))
+            {
+                var unityMinValue = attributeInstance.PositionParameter(0);
+
+                if (!unityMinValue.IsConstant || !unityMinValue.ConstantValue.IsFloat())
+                    continue;
+
+                // Even though the constructor for ValueRange takes long, it only works with int.MaxValue
+                var min = Convert.ToInt64(Math.Floor((float) unityMinValue.ConstantValue.Value.NotNull()));
+                var max = int.MaxValue;
+
+                collection = CreateRangeAttributeInstance(element, predefinedType, min, max);
                 return true;
             }
 
             return false;
+        }
+
+        private SpecialAttributeInstance[] CreateRangeAttributeInstance(IClrDeclaredElement element,
+                                                                        PredefinedType predefinedType,
+                                                                        long from, long to)
+        {
+            var args = new[]
+            {
+                new AttributeValue(new ConstantValue(from, predefinedType.Long)),
+                new AttributeValue(new ConstantValue(to, predefinedType.Long))
+            };
+
+            return new[] {new SpecialAttributeInstance(ourValueRangeAttributeFullName, GetModule(element), () => args)};
         }
 
         private IPsiModule GetModule(IClrDeclaredElement element)

@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (!id.HasValue)
                 return false;
 
-            return callGraphSwaExtensionProvider.IsMarkedByCallGraphAnalyzer(marksProvider.Id, 
+            return callGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(marksProvider.Id, 
                 kind == DaemonProcessKind.GLOBAL_WARNINGS, id.Value);
         }
 

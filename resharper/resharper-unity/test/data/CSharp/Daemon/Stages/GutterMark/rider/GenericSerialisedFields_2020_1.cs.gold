@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+public class ||A|(0)|(1) : MonoBehaviour
+{
+    public SerialisableClass1<string> ||value1|(2)|(3);
+    public SerialisableClass2<string, int> ||value2|(4)|(5);
+    public SerialisableClass2<string, SerializableClass1<string>> ||value3|(6)|(7);
+}
+
+[Serializable]
+public class SerialisableClass1<T>
+{
+    public T one;
+}
+
+[Serializable]
+public class SerialisableClass2<T1, T2>
+{
+    public T1 one;
+    public T2 two;
+}
+
+
+---------------------------------------------------------
+(0): ReSharper Unity Implicitly Used Identifier: 
+(1): UnityCodeInsights: 
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): UnityCodeInsights: 
+(4): ReSharper Unity Implicitly Used Identifier: 
+(5): UnityCodeInsights: 
+(6): ReSharper Unity Implicitly Used Identifier: 
+(7): UnityCodeInsights: 

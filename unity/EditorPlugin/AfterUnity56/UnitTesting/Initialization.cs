@@ -24,6 +24,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       modelValue.UnitTestLaunch.Advise(connectionLifetime, launch =>
       {
         new TestEventsSender(launch);
+        UnityEditorTestLauncher.SupportAbortNew(launch); // TestFramework 1.2.x
       });
       
       modelValue.RunUnitTestLaunch.Set(rdVoid =>

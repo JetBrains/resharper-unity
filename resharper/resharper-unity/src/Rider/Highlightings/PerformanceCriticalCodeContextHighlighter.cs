@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 if (!elementId.HasValue)
                     return;
 
-                if (callGraphExtension.IsMarkedByCallGraphAnalyzer(callGraphAnalyzer.Id, false, elementId.Value))
+                if (callGraphExtension.IsMarkedByCallGraphRootMarksProvider(callGraphAnalyzer.Id, false, elementId.Value))
                 {
                     consumer.ConsumeHighlighting(new UnityPerformanceContextHighlightInfo(node.GetDocumentRange()));
                 }
