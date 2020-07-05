@@ -2,34 +2,41 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.rider.isUnityGeneratedProject
 import com.jetbrains.rider.projectView.ProjectModelViewExtensions
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
 
 class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtensions(project) {
 
-    override fun getBestParentProjectModelNode(targetLocation: VirtualFile, originalNode: ProjectModelNode?): ProjectModelNode? {
-        if (!project.isUnityGeneratedProject())
-            return super.getBestParentProjectModelNode(targetLocation, originalNode)
-
+    override fun getBestProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
         val host = ProjectModelViewHost.getInstance(project)
+        val node = recursiveSearch(targetLocation, host)
+        if (node != null && node.getVirtualFile() == targetLocation)
+            return node
 
-        return recursiveSearch(targetLocation, host) ?: super.getBestParentProjectModelNode(targetLocation, originalNode)
+        return null
     }
 
-    private fun recursiveSearch(virtualFile: VirtualFile?, host: ProjectModelViewHost): ProjectModelNode?
-    {
+    override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
+        val host = ProjectModelViewHost.getInstance(project)
+        return recursiveSearch(targetLocation, host) ?: super.getBestParentProjectModelNode(targetLocation)
+    }
+
+    override fun filterProjectModelNodesBeforeOperation(nodes: List<ProjectModelNode>): List<ProjectModelNode> {
+        return nodes.filter { !it.containingProject()!!.name.endsWith(".Player") }
+    }
+
+    private fun recursiveSearch(virtualFile: VirtualFile?, host: ProjectModelViewHost): ProjectModelNode? {
         if (virtualFile == null) // may happen for packages outside of solution folder
-          return null
+            return null
 
         // when to stop going up
         val items = host.getItemsByVirtualFile(virtualFile).toList()
-        if (items.filter { it.isSolutionFolder()}.any()
-            || items.filter{it.isSolution()}.any()) // don't forget to check File System Explorer
+        if (items.filter { it.isSolutionFolder() }.any()
+            || items.filter { it.isSolution() }.any()) // don't forget to check File System Explorer
             return null
 
-        assert(items.all{it.isProjectFolder()}) {"Only ProjectFolders are expected."}
+        //assert(items.all{it.isProjectFolder()}) {"Only ProjectFolders are expected."}
 
         // one of the predefined projects
         if (items.count() > 1) {
@@ -50,7 +57,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         }
 
         // we are in a folder, which contains scripts - choose same node as scripts
-        val candidates = items.filter { node -> node.getChildren().any {it.isProjectFile()} }
+        val candidates = items.filter { node -> node.getChildren().any { it.isProjectFile() } }
         if (candidates.count() == 1)
             return candidates.single()
 
