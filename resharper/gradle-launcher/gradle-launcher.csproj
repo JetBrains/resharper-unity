@@ -7,7 +7,10 @@
     <AssemblyOriginatorKeyFile>..\..\sign.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\debugger\src\debugger.csproj">
+    <ProjectReference Include="..\..\debugger\debugger-worker\src\debugger.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\debugger\ios-list-usb-devices\src\ios-list-usb-devices.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\unity\EditorPlugin\EditorPlugin.csproj">

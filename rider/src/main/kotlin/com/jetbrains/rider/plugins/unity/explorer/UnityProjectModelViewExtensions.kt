@@ -9,13 +9,13 @@ import com.jetbrains.rider.projectView.nodes.*
 
 class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtensions(project) {
 
-    override fun getBestParentProjectModelNode(targetLocation: VirtualFile, originalNode: ProjectModelNode?): ProjectModelNode? {
+    override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
         if (!project.isUnityGeneratedProject())
-            return super.getBestParentProjectModelNode(targetLocation, originalNode)
+            return super.getBestParentProjectModelNode(targetLocation)
 
         val host = ProjectModelViewHost.getInstance(project)
 
-        return recursiveSearch(targetLocation, host) ?: super.getBestParentProjectModelNode(targetLocation, originalNode)
+        return recursiveSearch(targetLocation, host) ?: super.getBestParentProjectModelNode(targetLocation)
     }
 
     private fun recursiveSearch(virtualFile: VirtualFile?, host: ProjectModelViewHost): ProjectModelNode?
