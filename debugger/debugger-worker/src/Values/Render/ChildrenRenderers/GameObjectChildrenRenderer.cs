@@ -9,7 +9,6 @@ using MetadataLite.API;
 using MetadataLite.API.Selectors;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
-using Mono.Debugging.Backend.Values.Render.ChildrenRenderers;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.CallStacks;
@@ -23,7 +22,7 @@ using TypeSystem;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class GameObjectChildrenRenderer<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
+    public class GameObjectChildrenRenderer<TValue> : DeprecatedPropertyFilteringChildrenRendererBase<TValue>
         where TValue : class
     {
         private static readonly MethodSelector ourGetChildSelector = new MethodSelector(m =>
@@ -36,13 +35,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             m.IsStatic && m.Name == "GetInspectorTitle" && m.Parameters.Length == 1 &&
             m.Parameters[0].Type.Is("UnityEngine.Object"));
 
-        private readonly ILogger myLogger;
         private readonly IUnityOptions myUnityOptions;
+        private readonly ILogger myLogger;
 
         public GameObjectChildrenRenderer(IUnityOptions unityOptions, ILogger logger)
         {
-            myLogger = logger;
             myUnityOptions = unityOptions;
+            myLogger = logger;
         }
 
         protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options,
@@ -63,10 +62,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             var transformProperty = valueRole.GetInstancePropertyReference("transform");
             if (transformProperty != null)
                 yield return new GameObjectChildrenGroup(transformProperty, ValueServices);
-        }
 
-        public override int Priority => 100;
-        public override bool IsExclusive => false;
+            // Add everything else. Everything apart from the filtered deprecated properties, that is.
+            foreach (var valueEntity in base.GetChildren(valueRole, instanceType, options, dataHolder, token))
+                yield return valueEntity;
+        }
 
         private class GameObjectComponentsGroup : ValueGroupBase
         {
