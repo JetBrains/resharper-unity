@@ -1,13 +1,9 @@
 ﻿<Project>
   <PropertyGroup>
-    <ILRepackOutputAssembly>$(OutputPath)$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
+    <ILRepackOutputAssembly>$(OutputPath)/$(TargetFramework)/$(AssemblyName).Repacked.dll</ILRepackOutputAssembly>
+    <LibDirectory>$(OutputPath)/$(TargetFramework)</LibDirectory>
   </PropertyGroup>
   <Target Name="RiderILRepack" AfterTargets="Build" Inputs="@(ILRepackInputAssemblies)" Outputs="$(ILRepackOutputAssembly)">
-    <ItemGroup>
-      <SearchDirectories Include="$(OutputPath)" />
-    </ItemGroup>
-    <ILRepack Parallel="true" Internalize="true" DebugInfo="true" InputAssemblies="@(ILRepackInputAssemblies)" 
-              LibraryPath="@(SearchDirectories)"
-              OutputFile="$(ILRepackOutputAssembly)" />
+      <Exec Command="&quot;$(DOTNET_HOST_PATH)&quot; $(ILRepackNetCore) /internalize /lib:&quot;$(LibDirectory)&quot; /out:&quot;$(ILRepackOutputAssembly)&quot; @(ILRepackInputAssemblies -> '&quot;%(FullPath)&quot;', ' ')"/>
   </Target>
 </Project>

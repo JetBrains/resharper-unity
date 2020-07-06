@@ -12,7 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.Ref.2017.3.0f3" Version="2020.6.10" />
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
+    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.1" />
     <PackageReference Include="JetBrains.Toolset.RefAsm.Net461.NetStandard" Version="2.0.20190130.182358" />
   </ItemGroup>
   <ItemGroup>
@@ -28,4 +28,5 @@
     <Compile Remove="RiderMenu.cs" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
+  <Import Project="$(MSBuildProjectDirectory)/../EditorPlugin/ILRepack.targets" />
 </Project>
