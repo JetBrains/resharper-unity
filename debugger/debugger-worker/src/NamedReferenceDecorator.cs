@@ -44,5 +44,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
         public ValueFlags DefaultFlags => ValueFlags.None;
 
         public IStackFrame OriginatingFrame => myOriginalReference.OriginatingFrame;
+        public IDebuggerHierarchyObject Parent => myOriginalReference.Parent;
     }
 }
