@@ -24,11 +24,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
         private static readonly MethodSelector ourGetRootGameObjectsSelector =
             new MethodSelector(m => m.Name == "GetRootGameObjects" && m.Parameters.Length == 0);
 
+        private readonly IUnityOptions myUnityOptions;
+
+        public SceneRootChildrenRenderer(IUnityOptions unityOptions)
+        {
+            myUnityOptions = unityOptions;
+        }
+
         protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options,
                                              IUserDataHolder dataHolder)
         {
             // UnityEngine.SceneManagement.Scene was introduced in Unity 5.3
-            return type.Is("UnityEngine.SceneManagement.Scene");
+            return myUnityOptions.ExtensionsEnabled && type.Is("UnityEngine.SceneManagement.Scene");
         }
 
         protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole,

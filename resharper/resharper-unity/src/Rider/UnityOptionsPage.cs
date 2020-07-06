@@ -101,6 +101,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             AddBoolOption((UnitySettings s) => s.EnableShaderLabHippieCompletion,
                 "Enable simple word-based completion in ShaderLab files");
 
+            AddHeader("Debugging");
+            AddBoolOption((UnitySettings s) => s.EnableDebuggerExtensions,
+                "Extend value rendering");
+            using (Indent())
+            {
+                // AddCommentText doesn't match the UI guidelines for inline help. It should wrap at about 70 characters
+                // and have a slightly smaller font size. We can do the wrapping manually, but there's nothing we can do
+                // about the font.
+                // https://youtrack.jetbrains.com/issue/RIDER-47090
+                AddCommentText("When enabled, Rider will show extra values in debugger object views,\n" +
+                               "such as active scene and GameObject component data and children.\n" +
+                               "Rendering of summary values is also improved, such as showing Vector3\n" +
+                               "float values with full precision.");
+            }
+
             if (productConfigurations.IsInternalMode())
             {
                 AddHeader("Internal");

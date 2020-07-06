@@ -37,16 +37,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             m.Parameters[0].Type.Is("UnityEngine.Object"));
 
         private readonly ILogger myLogger;
+        private readonly IUnityOptions myUnityOptions;
 
-        public GameObjectChildrenRenderer(ILogger logger)
+        public GameObjectChildrenRenderer(IUnityOptions unityOptions, ILogger logger)
         {
             myLogger = logger;
+            myUnityOptions = unityOptions;
         }
 
         protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options,
                                              IUserDataHolder dataHolder)
         {
-            return type.Is("UnityEngine.GameObject");
+            return myUnityOptions.ExtensionsEnabled && type.Is("UnityEngine.GameObject");
         }
 
         protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole,

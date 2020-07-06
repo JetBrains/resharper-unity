@@ -22,20 +22,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
     {
         private readonly IDebuggerSession mySession;
         private readonly IValueServicesFacade<TValue> myValueServices;
+        private readonly IUnityOptions myUnityOptions;
         private readonly ILogger myLogger;
 
         public UnityAdditionalValuesProvider(IDebuggerSession session, IValueServicesFacade<TValue> valueServices,
-                                             ILogger logger)
+                                             IUnityOptions unityOptions, ILogger logger)
         {
             // We can't use EvaluationOptions here, it hasn't been set yet
             mySession = session;
             myValueServices = valueServices;
+            myUnityOptions = unityOptions;
             myLogger = logger;
         }
 
         public IEnumerable<IValueReference<TValue>> GetAdditionalLocals(IStackFrame frame)
         {
-            // TODO: Skip early if we're not a Unity project?
+            if (!myUnityOptions.ExtensionsEnabled)
+                yield break;
 
             // Add "Active Scene" as a top level item to mimic the Hierarchy window in Unity
             var activeScene = GetActiveScene(frame);

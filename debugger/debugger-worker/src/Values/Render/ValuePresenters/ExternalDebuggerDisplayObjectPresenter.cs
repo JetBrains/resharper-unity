@@ -19,6 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
     public class ExternalDebuggerDisplayObjectPresenter<TValue> : ValuePresenterBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
     {
+        private readonly IUnityOptions myUnityOptions;
         private readonly ILogger myLogger;
 
         private readonly IDictionary<string, string> myDebuggerDisplayValues = new Dictionary<string, string>
@@ -44,8 +45,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             {"UnityEngine.SceneManagement.Scene", "{name} ({path})"}
         };
 
-        public ExternalDebuggerDisplayObjectPresenter(ILogger logger)
+        public ExternalDebuggerDisplayObjectPresenter(IUnityOptions unityOptions, ILogger logger)
         {
+            myUnityOptions = unityOptions;
             myLogger = logger;
         }
 
@@ -59,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
                                           IUserDataHolder dataHolder)
         {
             // Note that DebuggerDisplayObjectPresenter checks options.AllowTargetInvoke here
-            return options.AllowDebuggerDisplayEvaluation &&
+            return myUnityOptions.ExtensionsEnabled && options.AllowDebuggerDisplayEvaluation &&
                    myDebuggerDisplayValues.ContainsKey(instanceType.GetGenericTypeDefinition().FullName);
         }
 
