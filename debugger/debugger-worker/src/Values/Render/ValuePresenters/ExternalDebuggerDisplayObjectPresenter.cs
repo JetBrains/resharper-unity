@@ -54,8 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
         [Injected]
         public IExpressionEvaluators<TValue> ExpressionEvaluators { get; protected internal set; }
 
-        // Make sure we have a higher priority than the default implementations so we're called first
-        public override int Priority => 100;
+        public override int Priority => UnityRendererUtil.ValueRendererPriority;
 
         public override bool IsApplicable(IMetadataTypeLite instanceType, IPresentationOptions options,
                                           IUserDataHolder dataHolder)

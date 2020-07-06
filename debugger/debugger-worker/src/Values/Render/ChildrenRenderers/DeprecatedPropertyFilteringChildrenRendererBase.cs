@@ -9,7 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
     public abstract class DeprecatedPropertyFilteringChildrenRendererBase<TValue> : FilteredObjectChildrenRendererBase<TValue>
         where TValue : class
     {
-        public override int Priority => 100;
+        public override int Priority => UnityRendererUtil.ChildrenRendererPriority;
         public override bool IsExclusive => true;
 
         protected override bool IsAllowedReference(IValueReference<TValue> reference)

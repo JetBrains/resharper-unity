@@ -31,6 +31,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             myUnityOptions = unityOptions;
         }
 
+        public override int Priority => UnityRendererUtil.ChildrenRendererPriority;
+        public override bool IsExclusive => false;
+
         protected override bool IsApplicable(IMetadataTypeLite type, IPresentationOptions options,
                                              IUserDataHolder dataHolder)
         {
@@ -51,9 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
             yield return new GameObjectsGroup(valueRole, getRootObjectMethod, ValueServices);
         }
-
-        public override int Priority => 100;
-        public override bool IsExclusive => false;
 
         private class GameObjectsGroup : ValueGroupBase
         {
