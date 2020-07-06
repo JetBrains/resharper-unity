@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Host.Features.ProjectModel.SharedProjects;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.ProjectModel
 {
     [SolutionComponent]
     public class UnityPlayerProjectOperations : ISharedProjectOperations
