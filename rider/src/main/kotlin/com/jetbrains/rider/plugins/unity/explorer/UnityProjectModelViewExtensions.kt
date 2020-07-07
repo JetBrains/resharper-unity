@@ -12,7 +12,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     override fun getBestProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
         val host = ProjectModelViewHost.getInstance(project)
 
-        val items = filterOutItemsFromNonPrimaryProjects(host, virtualFile)
+        val items = filterOutItemsFromNonPrimaryProjects(host, targetLocation)
 
         if (items.count() == 1)
             return items.single()
