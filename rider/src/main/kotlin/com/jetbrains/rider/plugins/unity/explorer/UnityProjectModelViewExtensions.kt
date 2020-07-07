@@ -31,7 +31,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
             return null
 
         // when to stop going up
-        val items = host.getItemsByVirtualFile(virtualFile).toList()
+        val items = host.getItemsByVirtualFile(virtualFile)
+            .map { Pair(constructNameWithPlayer(it), it) }.groupBy { a->a.first } // filter out Player projects
+            .mapValues { it.value.first().second  }.values.toList()
         if (items.filter { it.isSolutionFolder() }.any()
             || items.filter { it.isSolution() }.any()) // don't forget to check File System Explorer
             return null
@@ -62,5 +64,13 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
             return candidates.single()
 
         return recursiveSearch(virtualFile.parent, host)
+    }
+
+    fun constructNameWithPlayer(node:ProjectModelNode):String{
+        val name = node.containingProject()!!.name
+        if (name.endsWith(".Player"))
+            return name
+        else
+            return name+".Player"
     }
 }
