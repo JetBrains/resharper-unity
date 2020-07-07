@@ -32,7 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             // Color uses F3. Matrix4x4 uses F5. Arguably, this is enough
             {"UnityEngine.Bounds", "Center: {m_Center}, Extents: {m_Extents}"},
             {"UnityEngine.Plane", "(normal:{m_Normal}, distance:{m_Distance})"},
-            {"UnityEngine.Quaternion", "({x}, {y}, {z}, {w})"},
             {"UnityEngine.Ray", "Origin: {m_Origin}, Dir: {m_Direction}"},
             {"UnityEngine.Ray2D", "Origin: {m_Origin}, Dir: {m_Direction}"},
             {"UnityEngine.Rect", "(x:{m_XMin}, y:{m_YMin}, width:{m_Width}, height:{m_Height})"},
@@ -41,8 +40,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             {"UnityEngine.Vector3", "({x}, {y}, {z})"},
             {"UnityEngine.Vector4", "({x}, {y}, {z}, {w})"},
 
+            // Default is ({x}, {y}, {z}, {w}) to F1 precision. Euler angles is more useful
+            {"UnityEngine.Quaternion", "eulerAngles: {eulerAngles}"},
+
             // Scene doesn't have any useful display details
-            {"UnityEngine.SceneManagement.Scene", "{name} ({path})"}
+            {"UnityEngine.SceneManagement.Scene", "{name} ({path})"},
+
+            // Local values, as shown in the Inspector
+            {"UnityEngine.Transform", "({name}) pos: {localPosition} rot: {localRotation} scale: {localScale}"},
+
+            // Default implementation is external, but only shows "Name (UnityEngine.GameObject)"
+            {"UnityEngine.GameObject", "{name} (active: {activeInHierarchy}, layer: {layer})"},
+
+            {"UnityEngine.MeshFilter", "vertex count: {sharedMesh.vertexCount}"}
         };
 
         public ExternalDebuggerDisplayObjectPresenter(IUnityOptions unityOptions, ILogger logger)
