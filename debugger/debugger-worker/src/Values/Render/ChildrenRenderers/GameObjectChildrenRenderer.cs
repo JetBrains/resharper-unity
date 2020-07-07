@@ -55,6 +55,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                                                  IPresentationOptions options,
                                                                  IUserDataHolder dataHolder, CancellationToken token)
         {
+            var scenePathValue = ScenePathValueHelper.GetScenePathValue(valueRole, options, ValueServices, myLogger);
+            if (scenePathValue != null) yield return scenePathValue;
+
             yield return new GameObjectComponentsGroup(valueRole, ValueServices, myLogger);
             yield return new GameObjectChildrenGroup(valueRole, ValueServices, myLogger);
 
