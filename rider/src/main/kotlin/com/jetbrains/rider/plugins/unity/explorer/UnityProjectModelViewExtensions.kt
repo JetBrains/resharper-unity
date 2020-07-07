@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rd.util.assert
 import com.jetbrains.rider.projectView.ProjectModelViewExtensions
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
@@ -16,6 +17,8 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
         if (items.count() == 1)
             return items.single()
+
+        assert(items.count() > 1) { "Failed to determine corresponding project." }
 
         return null
     }
