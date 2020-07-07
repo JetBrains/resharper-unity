@@ -36,8 +36,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                                                  IPresentationOptions options,
                                                                  IUserDataHolder dataHolder, CancellationToken token)
         {
-            var scenePathValue = GetGameObjectScenePath(valueRole, options);
-            if (scenePathValue != null) yield return scenePathValue;
+            // Only add it to the most derived type, not every "base" node back to Component
+            var valueType = valueRole.ValueReference.GetValueType(options, ValueServices.ValueMetadataProvider);
+            if (valueType.Equals(instanceType))
+            {
+                var scenePathValue = GetGameObjectScenePath(valueRole, options);
+                if (scenePathValue != null) yield return scenePathValue;
+            }
 
             foreach (var valueEntity in base.GetChildren(valueRole, instanceType, options, dataHolder, token))
                 yield return valueEntity;
