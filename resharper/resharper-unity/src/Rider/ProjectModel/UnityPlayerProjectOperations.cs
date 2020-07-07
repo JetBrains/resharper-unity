@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.ProjectModel
         public IList<IProjectItem> GetProjectItemInSharedProjects(IProjectItem projectItem)
         {
             var playerProject = projectItem.GetProject().NotNull();
-            if (!playerProject.Name.EndsWith(PlayerProjectSuffix))
+            if (!playerProject.Name.EndsWith(PlayerProjectSuffix)) // todo: check that define `UNITY_EDITOR` is not be present
                 return EmptyList<IProjectItem>.InstanceList;
 
             var originalProject = mySolution
