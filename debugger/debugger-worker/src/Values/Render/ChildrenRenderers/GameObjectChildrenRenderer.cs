@@ -56,14 +56,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                                                  IUserDataHolder dataHolder, CancellationToken token)
         {
             yield return new GameObjectComponentsGroup(valueRole, ValueServices, myLogger);
+            yield return new GameObjectChildrenGroup(valueRole, ValueServices, myLogger);
 
-            // The children of the current GameObject (as seen in Unity's Hierarchy view) are actually the children of
-            // GameObject.transform. This should never be null
-            var transformProperty = valueRole.GetInstancePropertyReference("transform");
-            if (transformProperty != null)
-                yield return new GameObjectChildrenGroup(transformProperty, ValueServices);
-
-            // Add everything else. Everything apart from the filtered deprecated properties, that is.
             foreach (var valueEntity in base.GetChildren(valueRole, instanceType, options, dataHolder, token))
                 yield return valueEntity;
         }
@@ -161,49 +155,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
         private class GameObjectChildrenGroup : ValueGroupBase
         {
-            private readonly IValueReference<TValue> myTransformReference;
-            private readonly IValueServicesFacade<TValue> myServices;
+            private readonly IObjectValueRole<TValue> myGameObjectRole;
+            private readonly IValueServicesFacade<TValue> myValueServices;
+            private readonly ILogger myLogger;
 
-            public GameObjectChildrenGroup(IValueReference<TValue> transformReference,
-                                           IValueServicesFacade<TValue> services)
+            public GameObjectChildrenGroup(IObjectValueRole<TValue> gameObjectRole,
+                                           IValueServicesFacade<TValue> valueServices, ILogger logger)
                 : base("Children")
             {
-                myTransformReference = transformReference;
-                myServices = services;
+                myGameObjectRole = gameObjectRole;
+                myValueServices = valueServices;
+                myLogger = logger;
             }
 
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options,
                                                                   CancellationToken token = new CancellationToken())
             {
-                var transformObject = myTransformReference.AsObjectSafe(options);
-                var childCountRole = transformObject?.GetInstancePropertyReference("childCount", true)
-                    ?.AsPrimitiveSafe(options);
-                if (childCountRole == null)
+                // The children of a GameObject (as seen in Unity's Hierarchy view) are actually the children of
+                // gameObject.transform. This will never be null.
+                var transformRole = myGameObjectRole.GetInstancePropertyReference("transform")?.AsObjectSafe(options);
+                if (transformRole == null)
                     yield break;
 
-                if (!(childCountRole.GetPrimitive() is int childCount))
+                var childCount = transformRole.GetInstancePropertyReference("childCount", true)
+                    ?.AsPrimitiveSafe(options)?.GetPrimitiveSafe<int>() ?? 0;
+                if (childCount == 0)
                     yield break;
 
-                var transformType =
-                    transformObject.ReifiedType.MetadataType.FindTypeThroughHierarchy("UnityEngine.Transform");
+                var transformType = transformRole.ReifiedType.MetadataType.FindTypeThroughHierarchy("UnityEngine.Transform");
                 var getChildMethod = transformType?.GetMethods().FirstOrDefault(ourGetChildSelector);
                 if (getChildMethod == null)
                     yield break;
 
-                for (int i = 0; i < childCount; i++)
+                for (var i = 0; i < childCount; i++)
                 {
-                    var frame = myTransformReference.OriginatingFrame;
-                    var index = myServices.ValueFactory.CreatePrimitive(frame, options, i);
-                    var childTransform = new SimpleValueReference<TValue>(
-                            transformObject.CallInstanceMethod(getChildMethod, index), frame, myServices.RoleFactory)
-                        .AsObjectSafe(options);
-                    if (childTransform == null)
-                        continue;
-
-                    var name = childTransform.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
-                        ?.GetString() ?? "Game Object";
-                    yield return new NamedReferenceDecorator<TValue>(childTransform.ValueReference, name,
-                        ValueOriginKind.Property, transformType, myServices.RoleFactory).ToValue(myServices);
+                    var frame = myGameObjectRole.ValueReference.OriginatingFrame;
+                    var index = myValueServices.ValueFactory.CreatePrimitive(frame, options, i);
+                    var childTransformValue = transformRole.CallInstanceMethod(getChildMethod, index);
+                    var childTransform = new SimpleValueReference<TValue>(childTransformValue,
+                        frame, myValueServices.RoleFactory).AsObjectSafe(options);
+                    var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
+                        ?.AsObjectSafe(options);
+                    if (gameObject != null) // Transform.gameObject should never be null
+                    {
+                        var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
+                            ?.GetString() ?? "Game Object";
+                        yield return new NamedReferenceDecorator<TValue>(gameObject.ValueReference, name,
+                                ValueOriginKind.Property, myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory)
+                            .ToValue(myValueServices);
+                    }
                 }
             }
         }
