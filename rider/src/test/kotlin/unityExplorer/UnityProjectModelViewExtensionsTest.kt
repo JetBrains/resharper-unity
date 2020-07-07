@@ -13,8 +13,8 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override val persistCaches: Boolean
         get() = true
 
-    @Test
-    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+//    @Test
+//    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {
             //dump("Init", project, activeSolutionDirectory) {}
@@ -30,8 +30,8 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Test
-    @TestEnvironment(solution = "RiderMoveFile") // RIDER-41182
+//    @Test
+//    @TestEnvironment(solution = "RiderMoveFile") // RIDER-41182
     fun testMoveFile() {
         val action = {
             // in Rider move the script file "MyScript" into "SomeFolder"
