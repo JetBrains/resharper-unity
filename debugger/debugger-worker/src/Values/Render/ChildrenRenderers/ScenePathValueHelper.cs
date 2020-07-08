@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using MetadataLite.API.Selectors;
@@ -29,7 +30,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             try
             {
                 // Only available in the editor. Not available for players, where we'll display nothing.
-                // TODO: Hand roll this. Simply follow transform.parent
+                // TODO: Hand roll this for players. Simply follow transform.parent
+                // However, this will obviously be more expensive to calculate
                 var frame = gameObjectRole.ValueReference.OriginatingFrame;
                 var animationUtilityType =
                     valueServices.GetReifiedType(frame, "UnityEditor.AnimationUtility, UnityEditor")
@@ -37,14 +39,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 var method = animationUtilityType?.MetadataType.GetMethods()
                     .FirstOrDefault(ourCalculateTransformPathSelector);
                 if (method == null)
+                {
+                    logger.Trace("Unable to get metadata for AnimationUtility.CalculateTransformPath method. Is this a player?");
                     return null;
+                }
 
                 var targetTransformReference = gameObjectRole.GetInstancePropertyReference("transform");
                 var targetTransformRole = targetTransformReference?.AsObjectSafe(options);
                 var rootTransformReference = targetTransformRole?.GetInstancePropertyReference("root");
 
                 if (targetTransformReference == null || rootTransformReference == null)
+                {
+                    logger.Warn("Unable to evaluate gameObject.transform and/or gameObject.root. Unexpected.");
                     return null;
+                }
 
                 var rootTransformName = rootTransformReference.AsObjectSafe(options)
                     ?.GetInstancePropertyReference("name", true)
@@ -55,12 +63,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 var path = new SimpleValueReference<TValue>(pathValue, frame, valueServices.RoleFactory)
                     .AsStringSafe(options)?.GetString();
                 if (path == null)
+                {
+                    // We expect empty string at least
+                    logger.Warn("Unexpected null returned from AnimationUtility.CalculateTransformPath");
                     return null;
+                }
 
                 var fullPath = path.IsNullOrEmpty() ? rootTransformName : rootTransformName + "/" + path;
                 var fullPathValue = valueServices.ValueFactory.CreateString(frame, options, fullPath);
-                return new SimpleValueReference<TValue>(fullPathValue, null, "Scene Path", ValueOriginKind.Property,
-                    ValueFlags.None, frame, valueServices.RoleFactory).ToValue(valueServices);
+
+                // Don't show type presentation. This is informational, rather than an actual property
+                var simpleReference = new SimpleValueReference<TValue>(fullPathValue, null, "Scene path",
+                    ValueOriginKind.Property,
+                    ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation, frame,
+                    valueServices.RoleFactory);
+
+                // Wrap the simple reference - the default StringValuePresenter will display simple reference as a
+                // string property, with syntax colouring, quotes and type name. Our TextValuePresenter will catch any
+                // IStringValueRole with a NamedReferenceDecorator and use the flags we've set
+                return new NamedReferenceDecorator<TValue>(simpleReference, simpleReference.DefaultName,
+                        simpleReference.OriginKind, simpleReference.DefaultFlags, simpleReference.DeclaredType,
+                        valueServices.RoleFactory)
+                    .ToValue(valueServices);
             }
             catch (Exception e)
             {

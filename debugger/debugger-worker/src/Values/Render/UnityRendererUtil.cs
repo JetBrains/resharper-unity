@@ -6,8 +6,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render
         // DebuggerTypeProxyChildrenRenderer, so if Unity ever add a DebuggerTypeProxy, it will take precedence
         public const int ChildrenRendererPriority = 50;
 
-        // Higher than default, but lower than anything else. If Unity add a DebuggerDisplay attribute, it will take
-        // precedence
-        public const int ValueRendererPriority = 5;
+        // Higher than ValuePresenterBase, but lower than DebuggerDisplayObjectPresenter, so any DebuggerDisplay
+        // attributes take precedence. Note that it's also lower than Decimal, Enum and Nullable presenters
+        public const int ValuePresenterPriority = 5;
     }
 }

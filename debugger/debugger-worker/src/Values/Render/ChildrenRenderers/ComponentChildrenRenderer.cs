@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                                                  IPresentationOptions options,
                                                                  IUserDataHolder dataHolder, CancellationToken token)
         {
-            // Only add it to the most derived type, not every "base" node back to Component
+            // Only add "Scene Path" to the most derived type, not every "base" node back to Component
             var valueType = valueRole.ValueReference.GetValueType(options, ValueServices.ValueMetadataProvider);
             if (valueType.Equals(instanceType))
             {

@@ -13,13 +13,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReference
         private readonly IValueReference<TValue> myOriginalReference;
         private readonly IValueRoleFactory<TValue> myRoleFactory;
 
-        public NamedReferenceDecorator(IValueReference<TValue> originalReference, [NotNull] string name,
-                                       ValueOriginKind kind, [CanBeNull] IMetadataTypeLite declaredType,
+        public NamedReferenceDecorator(IValueReference<TValue> originalReference,
+                                       [NotNull] string name,
+                                       ValueOriginKind kind,
+                                       ValueFlags flags,
+                                       [CanBeNull] IMetadataTypeLite declaredType,
                                        IValueRoleFactory<TValue> roleFactory)
         {
             myOriginalReference = originalReference;
             DefaultName = name;
             OriginKind = kind;
+            DefaultFlags = flags;
             DeclaredType = declaredType;
             myRoleFactory = roleFactory;
         }
@@ -41,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReference
 
         public ValueOriginKind OriginKind { get; }
 
-        public ValueFlags DefaultFlags => ValueFlags.None;
+        public ValueFlags DefaultFlags { get; }
 
         public IStackFrame OriginatingFrame => myOriginalReference.OriginatingFrame;
         public IDebuggerHierarchyObject Parent => myOriginalReference.Parent;

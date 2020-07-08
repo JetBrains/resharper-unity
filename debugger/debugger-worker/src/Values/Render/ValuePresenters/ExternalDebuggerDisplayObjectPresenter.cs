@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
         [Injected]
         public IExpressionEvaluators<TValue> ExpressionEvaluators { get; protected internal set; }
 
-        public override int Priority => UnityRendererUtil.ValueRendererPriority;
+        public override int Priority => UnityRendererUtil.ValuePresenterPriority;
 
         public override bool IsApplicable(IMetadataTypeLite instanceType, IPresentationOptions options,
                                           IUserDataHolder dataHolder)
@@ -92,8 +92,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
                         ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj,
                             debuggerDisplayString, evaluationOptions, token);
                     return SimplePresentation.CreateSuccess(
-                        ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)), ValueFlags.None,
-                        instanceType, displayString);
+                        ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)),
+                        valueReference.DefaultFlags, instanceType, displayString);
                 }
                 catch (Exception ex)
                 {

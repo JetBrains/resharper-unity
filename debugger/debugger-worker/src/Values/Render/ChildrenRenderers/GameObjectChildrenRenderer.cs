@@ -122,8 +122,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 {
                     var componentName = GetComponentName(componentReference, objectNamesType, getInspectorTitleMethod,
                         frame, options, myValueServices);
+
+                    // No IsDefaultTypePresentation. Show type name as it will be different for each component
                     yield return new NamedReferenceDecorator<TValue>(componentReference, componentName,
-                            ValueOriginKind.Property, componentType.MetadataType, myValueServices.RoleFactory)
+                            ValueOriginKind.Property, ValueFlags.None | ValueFlags.IsReadOnly,
+                            componentType.MetadataType, myValueServices.RoleFactory)
                         .ToValue(myValueServices);
                 }
             }
@@ -204,7 +207,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                         var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
                             ?.GetString() ?? "Game Object";
                         yield return new NamedReferenceDecorator<TValue>(gameObject.ValueReference, name,
-                                ValueOriginKind.Property, myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory)
+                                ValueOriginKind.Property,
+                                ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation,
+                                myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory)
                             .ToValue(myValueServices);
                     }
                 }

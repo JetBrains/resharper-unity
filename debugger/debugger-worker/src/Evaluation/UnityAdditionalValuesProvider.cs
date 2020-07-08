@@ -82,8 +82,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
                     return null;
                 }
 
+                // Don't show type presentation. We know it's a scene, the clue's in the name
                 return new SimpleValueReference<TValue>(activeScene, sceneManagerType.MetadataType,
-                    "Active Scene", ValueOriginKind.Property, ValueFlags.None, frame, myValueServices.RoleFactory);
+                    "Active scene", ValueOriginKind.Property,
+                    ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation, frame,
+                    myValueServices.RoleFactory);
             }
             catch (Exception e)
             {
@@ -114,9 +117,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
                     }
 
                     var gameObject = gameObjectReference.GetValue(mySession.EvaluationOptions);
-                    return new SimpleValueReference<TValue>(gameObject,
-                        gameObjectReference.GetValueType(mySession.EvaluationOptions, myValueServices.ValueMetadataProvider),
-                        "this.gameObject", ValueOriginKind.Property, ValueFlags.None, frame,
+                    var gameObjectType = gameObjectReference.GetValueType(mySession.EvaluationOptions,
+                        myValueServices.ValueMetadataProvider);
+
+                    // Don't show type for each child game object. It's always "GameObject", and we know they're game
+                    // objects from the synthetic group.
+                    return new SimpleValueReference<TValue>(gameObject, gameObjectType, "this.gameObject",
+                        ValueOriginKind.Property,
+                        ValueFlags.None | ValueFlags.IsDefaultTypePresentation | ValueFlags.IsReadOnly, frame,
                         myValueServices.RoleFactory);
                 }
             }
