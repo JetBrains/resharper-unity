@@ -6,6 +6,7 @@ import com.jetbrains.rider.test.scriptingApi.TemplateType
 import com.jetbrains.rider.test.scriptingApi.testProjectModel
 import org.testng.Assert
 import org.testng.annotations.Test
+import java.io.File
 import java.nio.file.Paths
 
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
@@ -114,22 +115,23 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     fun testMoveFile() {
         val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("Class1.cs.meta").toFile()
         val metaFileContent = metaFile.readText()
+        val movedFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewDirectory1").resolve("Class1.cs").toFile()
         Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
 
         testProjectModel(testGoldFile, project, false) {
             dump("Move file", project, activeSolutionDirectory) {
+
                 doActionAndWait(project, {
-                    doActionAndWait(project, {
-                        cutItem2(project, arrayOf("Assets", "Class1.cs"))
-                        pasteItem2(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), "Class1.cs")
-                    }, true)
-                },true)
+                    cutItem2(project, arrayOf("Assets", "Class1.cs"))
+                    pasteItem2(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"))
+                }, true)
 
                 Assert.assertFalse(metaFile.exists(), "We expect meta file removed.")
+                Assert.assertTrue(movedFile.exists(), "File should have been moved")
             }
         }
 
-        val movedMetaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewDirectory1").resolve("Class1.cs.meta").toFile()
+        val movedMetaFile = File(movedFile.absolutePath+".meta")
         Assert.assertTrue(movedMetaFile.exists(), "meta file $movedMetaFile doesn't exist.")
         Assert.assertEquals(metaFileContent, movedMetaFile.readText())
     }
