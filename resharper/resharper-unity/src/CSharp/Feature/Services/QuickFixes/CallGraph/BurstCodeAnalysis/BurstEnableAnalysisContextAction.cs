@@ -12,9 +12,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class BurstEnableAnalysisContextAction : BurstAnalysisContextActionBase
+    public sealed class BurstEnableAnalysisContextAction : BurstAnalysisActionBase
     {
-        public BurstEnableAnalysisContextAction(ICSharpContextActionDataProvider dataProvider) : base(dataProvider)
+        public BurstEnableAnalysisContextAction(ICSharpContextActionDataProvider dataProvider)
+            : base(dataProvider)
         {
         }
 

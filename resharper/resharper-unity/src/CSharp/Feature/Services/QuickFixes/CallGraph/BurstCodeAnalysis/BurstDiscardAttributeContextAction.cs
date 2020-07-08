@@ -1,6 +1,6 @@
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
@@ -12,16 +12,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class BurstDisableAnalysisContextAction : BurstAnalysisActionBase
+    public sealed class BurstDiscardAttributeContextAction : BurstDiscardAttributeAction
     {
-        public BurstDisableAnalysisContextAction(ICSharpContextActionDataProvider dataProvider)
+        public BurstDiscardAttributeContextAction(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
 
-        protected override IClrTypeName ProtagonistAttribute => CallGraphActionUtil.BurstCodeAnalysisDisableAttribute;
-        protected override IClrTypeName AntagonistAttribute => CallGraphActionUtil.BurstCodeAnalysisEnableAttribute;
-
-        public override string Text => "Disable Burst code analysis";
+        public BurstDiscardAttributeContextAction(IBurstHighlighting burstHighlighting)
+            : base(burstHighlighting)
+        {
+        }
     }
+
 }

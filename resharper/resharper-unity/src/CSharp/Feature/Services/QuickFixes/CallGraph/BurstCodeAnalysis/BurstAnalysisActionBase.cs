@@ -2,18 +2,23 @@ using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
 {
-    public abstract class BurstAnalysisContextActionBase : CallGraphContextActionBase
+    public abstract class BurstAnalysisActionBase : CallGraphActionBase
     {
-        protected BurstAnalysisContextActionBase(ICSharpContextActionDataProvider dataProvider)
+        protected BurstAnalysisActionBase(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
 
-        protected BurstAnalysisContextActionBase(IBurstHighlighting burstHighlighting) : base(burstHighlighting)
+        protected BurstAnalysisActionBase(IBurstHighlighting burstHighlighting) : base(burstHighlighting)
+        {
+        }
+
+        protected BurstAnalysisActionBase(IMethodDeclaration methodDeclaration) : base(methodDeclaration)
         {
         }
         

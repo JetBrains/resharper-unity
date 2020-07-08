@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -22,25 +23,24 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph
 {
-    public abstract class CallGraphContextActionBase : IContextAction, IBulbAction
+    public abstract class CallGraphActionBase : IBulbAction, IContextAction, IQuickFix
     {
         [CanBeNull] protected readonly IMethodDeclaration MethodDeclaration;
 
-        [NotNull]
-        protected abstract IClrTypeName ProtagonistAttribute { get; }
+        [NotNull] protected abstract IClrTypeName ProtagonistAttribute { get; }
 
-        [CanBeNull]
-        protected abstract IClrTypeName AntagonistAttribute { get; }
+        [CanBeNull] protected abstract IClrTypeName AntagonistAttribute { get; }
 
-        protected CallGraphContextActionBase(ICSharpContextActionDataProvider dataProvider)
+        protected CallGraphActionBase(ICSharpContextActionDataProvider dataProvider)
         {
             var identifier = dataProvider.GetSelectedTreeNode<ITreeNode>() as ICSharpIdentifier;
             // var selectedTreeNode = dataProvider.GetSelectedElement<ITreeNode>(); CGTD difference?
             MethodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
         }
-
-        protected CallGraphContextActionBase(IBurstHighlighting burstHighlighting) 
+        
+        protected CallGraphActionBase(IBurstHighlighting burstHighlighting) 
         {
+            //CGTD repeat
             if (burstHighlighting == null)
                 return;
             
@@ -81,6 +81,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var context = psiFile.FindNodeAt(treeTextRange);
             MethodDeclaration = context?.GetContainingNode<IMethodDeclaration>();
         }
+        
+        protected CallGraphActionBase(IMethodDeclaration methodDeclaration)
+        {
+            MethodDeclaration = methodDeclaration;
+        }
 
         public void Execute(ISolution solution, ITextControl textControl)
         {
@@ -94,9 +99,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
                 GetType().Name);
         }
 
-        public IEnumerable<IntentionAction> CreateBulbItems() => this.ToContextActionIntentions();
-
         public abstract string Text { get; }
+
+        public IEnumerable<IntentionAction> CreateBulbItems() => this.ToContextActionIntentions();
 
         public abstract bool IsAvailable(IUserDataHolder cache);
     }

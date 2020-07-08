@@ -17,17 +17,17 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Resolve;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
 {
     [CustomHighlightingActionProvider(typeof(CSharpProjectFileType))]
-    public class BurstDiscardAttributeHighlightingActionProvider : ICustomHighlightingActionProvider
+    public sealed class BurstDiscardAttributeHighlightingActionProvider : ICustomHighlightingActionProvider
     {
         public IEnumerable<IntentionAction> GetActions(IHighlighting highlighting, DocumentRange range,
             IPsiSourceFile sourceFile,
             IAnchor configureAnchor)
         {
+            //CGTD repeat
             if (!(highlighting is IBurstHighlighting))
                 yield break;
             
@@ -86,6 +86,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             if (methodDeclaration == null)
                 yield break;
 
+            //CGTD asserts
             Assertion.Assert(methodDeclaration.DeclaredElement
                     ?.HasAttributeInstance(KnownTypes.BurstDiscardAttribute, AttributesSource.Self) == false,
                 "no highlightings allowed at burst discarded method");
@@ -95,28 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
                     CallGraphActionUtil.BurstCodeAnalysisDisableAttribute, AttributesSource.Self) == false,
                 "no highlightings allowed at burst disabled method");
 
-            yield return new BurstDiscardAttributeBulbAction(methodDeclaration);
-        }
-
-        private class BurstDiscardAttributeBulbAction : IBulbAction
-        {
-            [NotNull] private readonly IMethodDeclaration myMethodDeclaration;
-
-            public BurstDiscardAttributeBulbAction([NotNull] IMethodDeclaration methodDeclaration)
-            {
-                myMethodDeclaration = methodDeclaration;
-            }
-
-            public void Execute(ISolution solution, ITextControl textControl)
-            {
-                CallGraphActionUtil.AppendAttributeInTransaction(
-                    myMethodDeclaration,
-                    KnownTypes.BurstDiscardAttribute,
-                     null,
-                    GetType().Name);
-            }
-
-            public string Text => "Burst Discard method";
+            yield return new BurstDiscardAttributeAction(methodDeclaration);
         }
     }
 }
