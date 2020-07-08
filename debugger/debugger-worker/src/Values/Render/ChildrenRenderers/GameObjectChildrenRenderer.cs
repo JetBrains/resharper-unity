@@ -84,18 +84,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options,
                                                                   CancellationToken token = new CancellationToken())
             {
+                try
+                {
+                    return GetChildrenImpl(options);
+                }
+                catch (Exception e)
+                {
+                    myLogger.Error(e);
+                    return EmptyList<IValueEntity>.Enumerable;
+                }
+            }
+
+            private IEnumerable<IValueEntity> GetChildrenImpl(IPresentationOptions options)
+            {
                 var frame = myGameObjectRole.ValueReference.OriginatingFrame;
-                var componentType = myValueServices.GetReifiedType(frame, "UnityEngine.Component, UnityEngine.CoreModule")
+                var componentType =
+                    myValueServices.GetReifiedType(frame, "UnityEngine.Component, UnityEngine.CoreModule")
                     ?? myValueServices.GetReifiedType(frame, "UnityEngine.Component, UnityEngine");
                 if (componentType == null)
+                {
+                    myLogger.Warn("Unable to find UnityEngine.Component");
                     yield break;
+                }
 
                 var getComponentsMethod = myGameObjectRole.ReifiedType.MetadataType.GetMethods()
                     .FirstOrDefault(ourGetComponentsSelector);
                 if (getComponentsMethod == null)
+                {
+                    myLogger.Warn("Unable to find UnityEngine.GameObject.GetComponents method");
                     yield break;
+                }
 
-                // Component[] GameObject.GetComponents(typeof(Component))
+                // Call Component[] GameObject.GetComponents(typeof(Component))
                 var typeObject = (IValueReference<TValue>) componentType.GetTypeObject(frame);
                 var componentsArray =
                     myGameObjectRole.CallInstanceMethod(getComponentsMethod, typeObject.GetValue(options));
@@ -103,7 +123,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     new SimpleValueReference<TValue>(componentsArray, frame, myValueServices.RoleFactory)
                         .GetExactPrimaryRoleSafe<TValue, IArrayValueRole<TValue>>(options);
                 if (componentArray == null)
+                {
+                    myLogger.Warn("Cannot get return value of GameObject.GetComponents or method returned null");
                     yield break;
+                }
 
                 // string UnityEditor.ObjectNames.GetInspectorTitle(UnityEngine.Object)
                 // Returns the name of the component, formatted the same as in the Inspector. Values are also cached per
@@ -113,14 +136,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 // Unity doesn't use the short name, but will look at the type and use GameObject.name,
                 // MonoBehaviour.GetScriptClassName and so on.
                 var objectNamesType = myValueServices.GetReifiedType(frame, "UnityEditor.ObjectNames, UnityEditor")
-                     ?? myValueServices.GetReifiedType(frame, "UnityEditor.ObjectNames, UnityEditor.CoreModule");
+                                      ?? myValueServices.GetReifiedType(frame,
+                                          "UnityEditor.ObjectNames, UnityEditor.CoreModule");
                 var getInspectorTitleMethod = objectNamesType?.MetadataType.GetMethods()
                     .FirstOrDefault(ourGetInspectorTitleSelector);
 
                 var childReferencesEnumerator = (IChildReferencesEnumerator<TValue>) componentArray;
                 foreach (var componentReference in childReferencesEnumerator.GetChildReferences())
                 {
-                    var componentName = GetComponentName(componentReference, objectNamesType, getInspectorTitleMethod,
+                    var componentName = GetComponentName(componentReference, objectNamesType,
+                        getInspectorTitleMethod,
                         frame, options, myValueServices);
 
                     // No IsDefaultTypePresentation. Show type name as it will be different for each component
@@ -177,35 +202,72 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             public override IEnumerable<IValueEntity> GetChildren(IPresentationOptions options,
                                                                   CancellationToken token = new CancellationToken())
             {
+                try
+                {
+                    return GetChildrenImpl(options);
+                }
+                catch (Exception e)
+                {
+                    myLogger.Error(e);
+                    return EmptyList<IValueEntity>.Enumerable;
+                }
+            }
+
+            private IEnumerable<IValueEntity> GetChildrenImpl(IPresentationOptions options)
+            {
                 // The children of a GameObject (as seen in Unity's Hierarchy view) are actually the children of
                 // gameObject.transform. This will never be null.
                 var transformRole = myGameObjectRole.GetInstancePropertyReference("transform")?.AsObjectSafe(options);
                 if (transformRole == null)
+                {
+                    myLogger.Warn("Unable to retrieve GameObject.transform");
                     yield break;
+                }
 
                 var childCount = transformRole.GetInstancePropertyReference("childCount", true)
                     ?.AsPrimitiveSafe(options)?.GetPrimitiveSafe<int>() ?? 0;
                 if (childCount == 0)
+                {
+                    myLogger.Trace("No child transform, or unable to fetch childCount");
                     yield break;
+                }
 
                 var transformType = transformRole.ReifiedType.MetadataType.FindTypeThroughHierarchy("UnityEngine.Transform");
                 var getChildMethod = transformType?.GetMethods().FirstOrDefault(ourGetChildSelector);
                 if (getChildMethod == null)
+                {
+                    myLogger.Warn("Unable to find Transform.GetChild method");
                     yield break;
+                }
 
                 for (var i = 0; i < childCount; i++)
                 {
-                    var frame = myGameObjectRole.ValueReference.OriginatingFrame;
-                    var index = myValueServices.ValueFactory.CreatePrimitive(frame, options, i);
-                    var childTransformValue = transformRole.CallInstanceMethod(getChildMethod, index);
-                    var childTransform = new SimpleValueReference<TValue>(childTransformValue,
-                        frame, myValueServices.RoleFactory).AsObjectSafe(options);
-                    var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
-                        ?.AsObjectSafe(options);
-                    if (gameObject != null) // Transform.gameObject should never be null
+                    IObjectValueRole<TValue> gameObject = null;
+                    string name = null;
+                    try
                     {
-                        var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
+                        var frame = myGameObjectRole.ValueReference.OriginatingFrame;
+                        var index = myValueServices.ValueFactory.CreatePrimitive(frame, options, i);
+                        var childTransformValue = transformRole.CallInstanceMethod(getChildMethod, index);
+                        var childTransform = new SimpleValueReference<TValue>(childTransformValue,
+                            frame, myValueServices.RoleFactory).AsObjectSafe(options);
+                        gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
+                            ?.AsObjectSafe(options);
+                        name = gameObject?.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
                             ?.GetString() ?? "Game Object";
+                        if (gameObject == null)
+                        {
+                            myLogger.Warn($"Unexpected null gameObject. Index {i}");
+                            continue;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        myLogger.Error($"Error retrieving name of child game object {i}", e);
+                    }
+
+                    if (gameObject != null && name != null)
+                    {
                         yield return new NamedReferenceDecorator<TValue>(gameObject.ValueReference, name,
                                 ValueOriginKind.Property,
                                 ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation,

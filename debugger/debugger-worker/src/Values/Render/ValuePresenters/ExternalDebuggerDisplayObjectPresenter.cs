@@ -42,17 +42,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
 
             // Default is ({x}, {y}, {z}, {w}) to F1 precision. Euler angles is more useful
             {"UnityEngine.Quaternion", "eulerAngles: {eulerAngles}"},
-
-            // Scene doesn't have any useful display details
+            {"UnityEngine.MeshFilter", "vertex count: {sharedMesh.vertexCount}"},
             {"UnityEngine.SceneManagement.Scene", "{name} ({path})"},
 
             // Local values, as shown in the Inspector
-            {"UnityEngine.Transform", "({name}) pos: {localPosition} rot: {localRotation} scale: {localScale}"},
+            // We don't show name, as the component name is the same as GameObject name, and isn't as useful in a
+            // debugger context
+            {"UnityEngine.Transform", "pos: {localPosition} rot: {localRotation} scale: {localScale}"},
 
-            // Default implementation is external, but only shows "Name (UnityEngine.GameObject)"
-            {"UnityEngine.GameObject", "{name} (active: {activeInHierarchy}, layer: {layer})"},
-
-            {"UnityEngine.MeshFilter", "vertex count: {sharedMesh.vertexCount}"}
+            // Default implementation is implemented in native code, so not 100% sure what it does, but it seems to only
+            // show "Name (UnityEngine.GameObject)". Note that we override this setting in the synthetic list of game
+            // objects. See GameObjectChildrenRenderer
+            {"UnityEngine.GameObject", "{name} (active: {activeInHierarchy}, layer: {layer})"}
         };
 
         public ExternalDebuggerDisplayObjectPresenter(IUnityOptions unityOptions, ILogger logger)

@@ -49,10 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             // GetRootGameObjects was introduced in Unity 5.3.2
             var getRootObjectMethod = valueRole.ReifiedType.MetadataType.GetMethods()
                 .FirstOrDefault(ourGetRootGameObjectsSelector);
-            if (getRootObjectMethod == null)
-                yield break;
-
-            yield return new GameObjectsGroup(valueRole, getRootObjectMethod, ValueServices);
+            if (getRootObjectMethod != null)
+                yield return new GameObjectsGroup(valueRole, getRootObjectMethod, ValueServices);
         }
 
         private class GameObjectsGroup : ValueGroupBase
