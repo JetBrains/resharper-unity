@@ -30,22 +30,38 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
     fun testRenameFile() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename file", project, activeSolutionDirectory) {
-                renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1", "AsmdefClass.cs"), "AsmdefClass2.cs")
+                val metaFileContent = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript.cs.meta").toFile().readText()
+
+                doActionAndWait(project, {
+                    renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewBehaviourScript.cs"), "NewBehaviourScript_renamed.cs")
+                },true)
+
+                val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript_renamed.cs.meta").toFile()
+                Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
+                Assert.assertEquals(metaFileContent, metaFile.readText())
             }
         }
     }
 
-    @Test(enabled = false)
+    @Test
     @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
     fun testRenameFolder() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
-                renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), "NewDirectory2")
+                val metaFileContent = Paths.get(project.basePath!!).resolve("Assets").resolve("Dir1.meta").toFile().readText()
+
+                doActionAndWait(project, {
+                    renameItem(project, arrayOf("Assets", "Dir1"), "Dir1_renamed")
+                },true)
+
+                val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("Dir1_renamed.meta").toFile()
+                Assert.assertTrue(metaFile.exists(), "meta file $metaFile doesn't exist.")
+                Assert.assertEquals(metaFileContent, metaFile.readText())
             }
         }
     }

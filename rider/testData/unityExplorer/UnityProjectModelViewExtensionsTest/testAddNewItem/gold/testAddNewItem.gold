@@ -13,6 +13,8 @@ Add files and classes
     Assets/AsmdefResponse/SS/rrr.cs
    Assets/AsmdefResponse/AsmdefResponse.asmdef
    Assets/AsmdefResponse/NewBehaviourScript.cs
+  -Assets/Dir1
+   Assets/Dir1/ClassInDir1.cs
   -Assets/NewDirectory1
    Assets/NewDirectory1/MainClass.cs
    Assets/NewDirectory1/zero
@@ -63,6 +65,9 @@ Project [Name:Assembly-CSharp, GUID:GUID]
     Folder [Name:Assets]
       Child items:
         ProjectFileImpl(Path : Class1.cs)[COMPILE ]
+        Folder [Name:Dir1]
+          Child items:
+            ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
         Folder [Name:NewDirectory1]
           Child items:
             ProjectFileImpl(Path : MainClass.cs)[COMPILE ]
