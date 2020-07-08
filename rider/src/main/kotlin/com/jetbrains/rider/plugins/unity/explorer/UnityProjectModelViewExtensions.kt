@@ -18,8 +18,6 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (items.count() == 1)
             return items.single()
 
-        assert(items.count() > 1) { "Failed to determine corresponding project." }
-
         return null
     }
 
