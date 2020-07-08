@@ -30,6 +30,26 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
+    @Test(enabled = false)
+    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    fun testRenameFile() {
+        testProjectModel(testGoldFile, project, false) {
+            dump("Rename file", project, activeSolutionDirectory) {
+                renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1", "AsmdefClass.cs"), "AsmdefClass2.cs")
+            }
+        }
+    }
+
+    @Test(enabled = false)
+    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    fun testRenameFolder() {
+        testProjectModel(testGoldFile, project, false) {
+            dump("Rename folder", project, activeSolutionDirectory) {
+                renameItem(project, arrayOf("Assets", "AsmdefResponse", "NewDirectory1"), "NewDirectory2")
+            }
+        }
+    }
+
     @Test
     @TestEnvironment(solution = "RiderMoveFile") // RIDER-41182
     fun testMoveFile() {
