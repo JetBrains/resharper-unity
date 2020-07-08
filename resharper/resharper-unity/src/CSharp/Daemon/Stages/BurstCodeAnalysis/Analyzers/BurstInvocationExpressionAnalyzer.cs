@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 if (IsBurstPermittedString(argument.Expression?.Type()))
                     return false;
                 
-                consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(argument.Expression.GetDocumentRange()));
+                consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(argument.Expression));
                         
                 return true;
 
@@ -79,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 var argumentList = invocationExpression.ArgumentList.Arguments;
 
                 var isWarningPlaced = BurstStringLiteralOwnerAnalyzer.CheckAndAnalyze(invocationExpression,
-                    new BurstManagedStringWarning(invocationExpression.GetDocumentRange()), consumer);
+                    new BurstManagedStringWarning(invocationExpression), consumer);
 
                 if (isWarningPlaced)
                     return true;
@@ -93,14 +93,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 if (cSharpLiteralExpression != null && cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
                     return false;
                 
-                consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(firstArgument.Expression.GetDocumentRange()));
+                consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(firstArgument.Expression));
                 return true;
 
             }
 
             if (IsObjectMethodInvocation(invocationExpression))
             {
-                consumer?.AddHighlighting(new BurstAccessingManagedMethodWarning(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BurstAccessingManagedMethodWarning(invocationExpression,
                     invokedMethod.ShortName, invokedMethod.GetContainingType()?.ShortName));
 
                 return true;
@@ -109,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (IsReturnValueBurstProhibited(invokedMethod) ||
                 HasBurstProhibitedArguments(invocationExpression.ArgumentList))
             {
-                consumer?.AddHighlighting(new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression.GetDocumentRange(),
+                consumer?.AddHighlighting(new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression,
                     invokedMethod.ShortName));
 
                 return true;

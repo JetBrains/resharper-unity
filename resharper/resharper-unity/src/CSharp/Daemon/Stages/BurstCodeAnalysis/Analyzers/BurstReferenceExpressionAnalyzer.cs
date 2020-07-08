@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     !(typeMember is IProperty prop && !prop.IsWritable && prop.IsReadable))
                 {
                     consumer?.AddHighlighting(new BurstLoadingStaticNotReadonlyWarning(
-                        referenceExpression.GetDocumentRange(),
+                        referenceExpression,
                         typeMember.GetContainingType()?.ShortName + "." + element.ShortName));
                     return true;
                 }
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     var field = element.ShortName;
                     if (element is IProperty)
                         field += "__backing_field";
-                    consumer?.AddHighlighting(new BurstWriteStaticFieldWarning(referenceExpression.GetDocumentRange(),
+                    consumer?.AddHighlighting(new BurstWriteStaticFieldWarning(referenceExpression,
                         field));
                     return true;
                 }
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 {
                     //virtual and abstract cannot be in struct. only override is getHashCode -> function
                     consumer?.AddHighlighting(new BurstLoadingManagedTypeWarning(
-                        referenceExpression.GetDocumentRange(),
+                        referenceExpression,
                         typeOwner.Type().GetTypeElement()?.ShortName + "." + element.ShortName));
                     return true;
                 }
@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         return false;
 
                     consumer?.AddHighlighting(new BurstLoadingManagedTypeWarning(
-                        referenceExpression.GetDocumentRange(),
+                        referenceExpression,
                         typeOwner.Type().GetTypeElement()?.ShortName));
                     return true;
                 }
