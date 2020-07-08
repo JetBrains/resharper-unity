@@ -67,6 +67,23 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
+    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    fun testDeleteFile() {
+        testProjectModel(testGoldFile, project, false) {
+            dump("Rename folder", project, activeSolutionDirectory) {
+                val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript.cs.meta").toFile()
+                Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
+
+                doActionAndWait(project, {
+                    deleteElement(project, arrayOf("Assets", "AsmdefResponse", "NewBehaviourScript.cs"))
+                },true)
+
+                Assert.assertFalse(metaFile.exists(), "We expect meta file removed.")
+            }
+        }
+    }
+
+    @Test
     @TestEnvironment(solution = "RiderMoveFile") // RIDER-41182
     fun testMoveFile() {
         val action = {
