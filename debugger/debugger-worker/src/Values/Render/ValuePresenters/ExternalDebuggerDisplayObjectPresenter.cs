@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
 using Mono.Debugging.Autofac;
@@ -56,6 +58,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             {"UnityEngine.GameObject", "{name} (active: {activeInHierarchy}, layer: {layer})"}
         };
 
+        // Alternative debugger display strings for when the key is the same as the value's name, in which case, we
+        // don't want to include the name in the value as well ("My awesome thing = {GameObject} My awesome thing (...)")
+        // This is only used in the synthetic list of child game objects. It's not worth allocating a whole new
+        // dictionary for this. Special case it until we have more instances.
+        private const string GameObjectDebuggerDisplayStringWithoutName = "active: {activeInHierarchy}, layer: {layer}";
+
         public ExternalDebuggerDisplayObjectPresenter(IUnityOptions unityOptions, ILogger logger)
         {
             myUnityOptions = unityOptions;
@@ -67,7 +75,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
 
         public override int Priority => UnityRendererUtil.ValuePresenterPriority;
 
-        public override bool IsApplicable(IMetadataTypeLite instanceType, IPresentationOptions options,
+        public override bool IsApplicable(IObjectValueRole<TValue> valueRole, IMetadataTypeLite instanceType,
+                                          IPresentationOptions options,
                                           IUserDataHolder dataHolder)
         {
             // Note that DebuggerDisplayObjectPresenter checks options.AllowTargetInvoke here
@@ -81,7 +90,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
                                                         CancellationToken token)
         {
             var type = instanceType.GetGenericTypeDefinition();
-            if (myDebuggerDisplayValues.TryGetValue(type.FullName, out var debuggerDisplayString))
+            var debuggerDisplayString = GetDebuggerDisplayString(valueRole, type);
             {
                 try
                 {
@@ -104,6 +113,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             }
 
             return SimplePresentation.EmptyPresentation;
+        }
+
+        [CanBeNull]
+        private string GetDebuggerDisplayString(IObjectValueRole<TValue> valueRole, IMetadataTypeLite type)
+        {
+            // Special case. Replace with a second dictionary or whatever if we need to handle more types
+            if (valueRole.ValueReference is NamedReferenceDecorator<TValue> reference && reference.IsNameFromValue
+                && type.FullName == "UnityEngine.GameObject")
+            {
+                return GameObjectDebuggerDisplayStringWithoutName;
+            }
+
+            if (myDebuggerDisplayValues.TryGetValue(type.FullName, out var debuggerDisplayString))
+                return debuggerDisplayString;
+
+            return null;
         }
     }
 }

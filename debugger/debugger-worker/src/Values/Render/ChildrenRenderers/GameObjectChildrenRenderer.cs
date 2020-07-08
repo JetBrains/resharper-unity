@@ -145,13 +145,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 foreach (var componentReference in childReferencesEnumerator.GetChildReferences())
                 {
                     var componentName = GetComponentName(componentReference, objectNamesType,
-                        getInspectorTitleMethod,
-                        frame, options, myValueServices);
+                        getInspectorTitleMethod, frame, options, myValueServices, out var isNameFromValue);
 
-                    // No IsDefaultTypePresentation. Show type name as it will be different for each component
                     yield return new NamedReferenceDecorator<TValue>(componentReference, componentName,
                             ValueOriginKind.Property, ValueFlags.None | ValueFlags.IsReadOnly,
-                            componentType.MetadataType, myValueServices.RoleFactory)
+                            componentType.MetadataType, myValueServices.RoleFactory, isNameFromValue)
                         .ToValue(myValueServices);
                 }
             }
@@ -160,7 +158,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                             [CanBeNull] IReifiedType<TValue> objectNamesType,
                                             [CanBeNull] IMetadataMethodLite getInspectorTitleMethod,
                                             IStackFrame frame,
-                                            IValueFetchOptions options, IValueServicesFacade<TValue> services)
+                                            IValueFetchOptions options, IValueServicesFacade<TValue> services,
+                                            out bool isNameFromValue)
             {
                 if (objectNamesType != null && getInspectorTitleMethod != null)
                 {
@@ -172,7 +171,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                             new SimpleValueReference<TValue>(inspectorTitle, frame, services.RoleFactory)
                                 .AsStringSafe(options);
                         if (stringValueRole != null)
+                        {
+                            isNameFromValue = true;
                             return stringValueRole.GetString();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -180,6 +182,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     }
                 }
 
+                isNameFromValue = false;
                 return componentValue.GetPrimaryRole(options).ReifiedType.MetadataType.ShortName;
             }
         }
@@ -270,8 +273,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     {
                         yield return new NamedReferenceDecorator<TValue>(gameObject.ValueReference, name,
                                 ValueOriginKind.Property,
-                                ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation,
-                                myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory)
+                                ValueFlags.None | ValueFlags.IsReadOnly,
+                                myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory, true)
                             .ToValue(myValueServices);
                     }
                 }

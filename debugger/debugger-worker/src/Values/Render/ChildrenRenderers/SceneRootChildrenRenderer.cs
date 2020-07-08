@@ -85,11 +85,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     if (childRole == null)
                         continue;
 
+                    var isNameFromValue = true;
                     var name = childRole.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
-                        ?.GetString() ?? "Game Object";
+                        ?.GetString();
+                    if (name == null)
+                    {
+                        name = "Game Object";
+                        isNameFromValue = false;
+                    }
                     yield return new NamedReferenceDecorator<TValue>(childRole.ValueReference, name,
-                            ValueOriginKind.Property, ValueFlags.IsDefaultTypePresentation,
-                            childRole.ReifiedType.MetadataType, myValueServices.RoleFactory)
+                            ValueOriginKind.Property, ValueFlags.None | ValueFlags.IsReadOnly,
+                            childRole.ReifiedType.MetadataType, myValueServices.RoleFactory, isNameFromValue)
                         .ToValue(myValueServices);
                 }
             }

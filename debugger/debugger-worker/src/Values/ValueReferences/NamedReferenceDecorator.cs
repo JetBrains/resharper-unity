@@ -18,7 +18,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReference
                                        ValueOriginKind kind,
                                        ValueFlags flags,
                                        [CanBeNull] IMetadataTypeLite declaredType,
-                                       IValueRoleFactory<TValue> roleFactory)
+                                       IValueRoleFactory<TValue> roleFactory,
+                                       bool isNameFromValue = false)
         {
             myOriginalReference = originalReference;
             DefaultName = name;
@@ -26,7 +27,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReference
             DefaultFlags = flags;
             DeclaredType = declaredType;
             myRoleFactory = roleFactory;
+            IsNameFromValue = isNameFromValue;
         }
+
+        // Is the name of this reference the same as the name of the value? If so, don't include the name in the value,
+        // presentation, as it will just be noise, e.g. "My Component = {GameObject} My Component", repeated for all
+        // GameObjects in the list
+        public bool IsNameFromValue { get; }
 
         public IValueRole GetPrimaryRole(IValueFetchOptions options)
         {
