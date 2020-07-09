@@ -20,7 +20,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add Unity specific spell check dictionary ([#1187](https://github.com/JetBrains/resharper-unity/issues/1187), [#1570](https://github.com/JetBrains/resharper-unity/pull/1570))
 - Add support for UnityEditor.dll being split into modules in Unity 2020.2 ([#1699](https://github.com/JetBrains/resharper-unity/issues/1699), [RIDER-46544](https://youtrack.jetbrains.com/issue/RIDER-46544), [#1724](https://github.com/JetBrains/resharper-unity/pull/1724))
 - Rider: Add "pausepoints" a type of breakpoint that doesn't suspend code execution, but pauses the Unity editor ([#1272](https://github.com/JetBrains/resharper-unity/issues/1272), [#1661](https://github.com/JetBrains/resharper-unity/pull/1661))
-- Rider: Add USB debugging for iPhone/iPad ([#1734](https://github.com/JetBrains/resharper-unity/pull/1734))
+- Rider: Add USB debugging for iPhone/iPad ([RIDER-25430](https://youtrack.jetbrains.com/issue/RIDER-25430), [#1734](https://github.com/JetBrains/resharper-unity/pull/1734))
 - Rider: Add analysis and inspections for Burst compiled code ([#1665](https://github.com/JetBrains/resharper-unity/pull/1665))
 - Rider: Automatically use UnityYamlMerge to merge asset files ([RIDER-33411](https://youtrack.jetbrains.com/issue/RIDER-33411), [#1682](https://github.com/JetBrains/resharper-unity/pull/1682))
 - Rider: Automatically add run configuration for standalone player build targets ([#1708](https://github.com/JetBrains/resharper-unity/pull/1708))
@@ -58,8 +58,10 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix editor discovery listing incorrect processes in Attach to Unity Process dialog ([#1478](https://github.com/JetBrains/resharper-unity/issues/1478), [#1730](https://github.com/JetBrains/resharper-unity/pull/1730))
 - Rider: Suppress incorrect refresh behaviour when saving files that are in multiple projects (e.g. Player projects) ([#1669](https://github.com/JetBrains/resharper-unity/pull/1669))
 - Rider: Fix incorrect component name shown in Code Vision ([#1713](https://github.com/JetBrains/resharper-unity/pull/1713))
+- Rider: Fix issues moving files in Unity Explorer when player projects are generated ([RIDER-46467](https://youtrack.jetbrains.com/issue/RIDER-46467), #1738[](https://github.com/JetBrains/resharper-unity/pull/1738))
 - Unity editor: Fix reporting of duration of Unity tests (released in Rider package 2.0.4) ([RIDER-44853](https://youtrack.jetbrains.com/issue/RIDER-44853))
 - Unity editor: Delay calling Unity API to workaround potential Unity crash ([RIDER-43951](https://youtrack.jetbrains.com/issue/RIDER-43951), [#1647](https://github.com/JetBrains/resharper-unity/pull/1647))
+- Unity editor: Unchecking sending Console messages to Rider is respected without having to restart ([#1733](https://github.com/JetBrains/resharper-unity/pull/1733))
 
 
 
