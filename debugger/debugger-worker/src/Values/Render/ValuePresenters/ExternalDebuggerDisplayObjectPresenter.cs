@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
@@ -21,6 +20,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
     public class ExternalDebuggerDisplayObjectPresenter<TValue> : ValuePresenterBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
     {
+        // This is fine. We're only ever instantiated with one type of TValue
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly Key<string> ourDebuggerDisplayStringKey = new Key<string>("DebuggerDisplayString");
+
         private readonly IUnityOptions myUnityOptions;
         private readonly ILogger myLogger;
 
@@ -55,7 +58,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             // Default implementation is implemented in native code, so not 100% sure what it does, but it seems to only
             // show "Name (UnityEngine.GameObject)". Note that we override this setting in the synthetic list of game
             // objects. See GameObjectChildrenRenderer
-            {"UnityEngine.GameObject", "{name} (active: {activeInHierarchy}, layer: {layer})"}
+            {"UnityEngine.GameObject", "{name} (active: {activeInHierarchy}, layer: {layer})"},
+
+            // Used by Behaviour and derived classes.
+            {"UnityEngine.Behaviour", "enabled: {enabled}, gameObject: {name}"}
         };
 
         // Alternative debugger display strings for when the key is the same as the value's name, in which case, we
@@ -81,54 +87,65 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
         {
             // Note that DebuggerDisplayObjectPresenter checks options.AllowTargetInvoke here
             return myUnityOptions.ExtensionsEnabled && options.AllowDebuggerDisplayEvaluation &&
-                   myDebuggerDisplayValues.ContainsKey(instanceType.GetGenericTypeDefinition().FullName);
+                   TryCacheDebuggerDisplay(valueRole, instanceType.GetGenericTypeDefinition(), dataHolder);
         }
 
         public override IValuePresentation PresentValue(IObjectValueRole<TValue> valueRole,
                                                         IMetadataTypeLite instanceType,
-                                                        IPresentationOptions options, IUserDataHolder dataHolder,
+                                                        IPresentationOptions options,
+                                                        IUserDataHolder dataHolder,
                                                         CancellationToken token)
         {
-            var type = instanceType.GetGenericTypeDefinition();
-            var debuggerDisplayString = GetDebuggerDisplayString(valueRole, type);
+            var debuggerDisplayString = dataHolder.GetData(ourDebuggerDisplayStringKey);
+            try
             {
-                try
-                {
-                    var valueReference = valueRole.ValueReference;
-                    var thisObj = valueReference.GetValue(options);
-                    var evaluationOptions =
-                        valueReference.OriginatingFrame.DebuggerSession.Options.EvaluationOptions.Apply(options);
-                    var displayString =
-                        ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj,
-                            debuggerDisplayString, evaluationOptions, token);
-                    return SimplePresentation.CreateSuccess(
-                        ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)),
-                        valueReference.DefaultFlags, instanceType, displayString);
-                }
-                catch (Exception ex)
-                {
-                    myLogger.Error(ex,
-                        $"Unable to evaluate debugger display string for type ${type.FullName}: ${debuggerDisplayString}");
-                }
+                var valueReference = valueRole.ValueReference;
+                var thisObj = valueReference.GetValue(options);
+                var evaluationOptions =
+                    valueReference.OriginatingFrame.DebuggerSession.Options.EvaluationOptions.Apply(options);
+                var displayString =
+                    ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj,
+                        debuggerDisplayString, evaluationOptions, token);
+                return SimplePresentation.CreateSuccess(
+                    ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)),
+                    valueReference.DefaultFlags, instanceType, displayString);
+            }
+            catch (Exception ex)
+            {
+                myLogger.Error(ex,
+                    $"Unable to evaluate debugger display string for type ${instanceType.GetGenericTypeDefinition().FullName}: ${debuggerDisplayString}");
             }
 
             return SimplePresentation.EmptyPresentation;
         }
 
-        [CanBeNull]
-        private string GetDebuggerDisplayString(IObjectValueRole<TValue> valueRole, IMetadataTypeLite type)
+        private bool TryCacheDebuggerDisplay(IObjectValueRole<TValue> valueRole, IMetadataTypeLite instanceType,
+                                             IUserDataHolder userDataHolder)
         {
             // Special case. Replace with a second dictionary or whatever if we need to handle more types
             if (valueRole.ValueReference is NamedReferenceDecorator<TValue> reference && reference.IsNameFromValue
-                && type.FullName == "UnityEngine.GameObject")
+                && instanceType.FullName == "UnityEngine.GameObject")
             {
-                return GameObjectDebuggerDisplayStringWithoutName;
+                userDataHolder.PutData(ourDebuggerDisplayStringKey, GameObjectDebuggerDisplayStringWithoutName);
+                return true;
             }
 
-            if (myDebuggerDisplayValues.TryGetValue(type.FullName, out var debuggerDisplayString))
-                return debuggerDisplayString;
+            // DebuggerDisplayAttribute is inherited. This is important for applying a debug string on Behaviour, and
+            // having it used in custom MonoBehaviour classes
+            var current = instanceType;
+            while (current != null)
+            {
+                if (myDebuggerDisplayValues.TryGetValue(current.GetGenericTypeDefinition().FullName,
+                    out var displayString))
+                {
+                    userDataHolder.PutData(ourDebuggerDisplayStringKey, displayString);
+                    return true;
+                }
 
-            return null;
+                current = current.BaseType;
+            }
+
+            return false;
         }
     }
 }
