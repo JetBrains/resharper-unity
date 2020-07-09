@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
                     CallGraphActionUtil.BurstCodeAnalysisDisableAttribute, AttributesSource.Self) == false,
                 "no highlightings allowed at burst disabled method");
 
-            yield return new BurstDiscardAttributeAction(methodDeclaration);
+            yield return new BurstCodeAnalysisAddDiscardAttributeAction(methodDeclaration);
         }
     }
 }

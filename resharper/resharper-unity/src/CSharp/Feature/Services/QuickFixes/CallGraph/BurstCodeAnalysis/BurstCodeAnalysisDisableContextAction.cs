@@ -7,14 +7,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = "BurstAnalysisDisable",
-        Description = "Disable Burst code analysis",
+        Name = MESSAGE,
+        Description = MESSAGE,
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class BurstAnalysisDisableContextAction : BurstAnalysisActionBase
+    public sealed class BurstCodeAnalysisDisableContextAction : BurstCodeAnalysisActionBase
     {
-        public BurstAnalysisDisableContextAction(ICSharpContextActionDataProvider dataProvider)
+        private const string MESSAGE = "Disable Burst code analysis";
+        public BurstCodeAnalysisDisableContextAction(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
@@ -22,6 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         protected override IClrTypeName ProtagonistAttribute => CallGraphActionUtil.BurstCodeAnalysisDisableAttribute;
         protected override IClrTypeName AntagonistAttribute => CallGraphActionUtil.BurstCodeAnalysisEnableAttribute;
 
-        public override string Text => "Disable Burst code analysis";
+        public override string Text => MESSAGE;
     }
 }

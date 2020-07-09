@@ -6,14 +6,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = nameof(BurstDiscardAttributeContextAction),
-        Description = "Add BurstDiscard attribute",
+        Name = Message,
+        Description = Message,
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class BurstDiscardAttributeContextAction : BurstDiscardAttributeAction
+    public sealed class BurstCodeAnalysisAddDiscardAttributeContextAction : BurstCodeAnalysisAddDiscardAttributeAction
     {
-        public BurstDiscardAttributeContextAction(ICSharpContextActionDataProvider dataProvider)
+        public BurstCodeAnalysisAddDiscardAttributeContextAction(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }

@@ -4,9 +4,9 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
 {
     [QuickFix]
-    public sealed class BurstDiscardAttributeQuickFix : BurstDiscardAttributeAction
+    public sealed class BurstCodeAnalysisAddDiscardAttributeQuickFix : BurstCodeAnalysisAddDiscardAttributeAction
     {
-        public BurstDiscardAttributeQuickFix(IBurstHighlighting burstHighlighting)
+        public BurstCodeAnalysisAddDiscardAttributeQuickFix(IBurstHighlighting burstHighlighting)
             : base(burstHighlighting)
         {
         }

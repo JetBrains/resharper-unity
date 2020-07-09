@@ -7,19 +7,19 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
 {
-    public abstract class BurstAnalysisActionBase : CallGraphActionBase
+    public abstract class BurstCodeAnalysisActionBase : CallGraphActionBase
     {
-        protected BurstAnalysisActionBase(ICSharpContextActionDataProvider dataProvider)
+        protected BurstCodeAnalysisActionBase(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
 
-        protected BurstAnalysisActionBase(IBurstHighlighting burstHighlighting)
+        protected BurstCodeAnalysisActionBase(IBurstHighlighting burstHighlighting)
             : base(burstHighlighting)
         {
         }
 
-        protected BurstAnalysisActionBase(IMethodDeclaration methodDeclaration)
+        protected BurstCodeAnalysisActionBase(IMethodDeclaration methodDeclaration)
             : base(methodDeclaration)
         {
         }

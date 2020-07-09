@@ -5,25 +5,27 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
 {
-    public class BurstDiscardAttributeAction : BurstAnalysisActionBase
+    public class BurstCodeAnalysisAddDiscardAttributeAction : BurstCodeAnalysisActionBase
     {
-        protected BurstDiscardAttributeAction(ICSharpContextActionDataProvider dataProvider)
+        protected const string Message = "Add BurstDiscard attribute";
+
+        protected BurstCodeAnalysisAddDiscardAttributeAction(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
         
-        protected BurstDiscardAttributeAction(IBurstHighlighting burstHighlighting)
+        protected BurstCodeAnalysisAddDiscardAttributeAction(IBurstHighlighting burstHighlighting)
             : base(burstHighlighting)
         {
         }
         
-        public BurstDiscardAttributeAction(IMethodDeclaration methodDeclaration)
+        public BurstCodeAnalysisAddDiscardAttributeAction(IMethodDeclaration methodDeclaration)
             : base(methodDeclaration)
         {
         }
 
         protected override IClrTypeName ProtagonistAttribute => KnownTypes.BurstDiscardAttribute;
         protected override IClrTypeName AntagonistAttribute => null;
-        public override string Text => "Add BurstDiscard attribute";
+        public override string Text => Message;
     }
 }
