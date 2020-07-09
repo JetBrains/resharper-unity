@@ -136,7 +136,11 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
-    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.4.2" />
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.5.1" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <Reference Include="PresentationCore" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="PresentationFramework" Condition=" '$(OS)' != 'Unix' " />
     <Reference Include="System.Xaml" />
