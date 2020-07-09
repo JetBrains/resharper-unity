@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using JetBrains.Application;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Threading;
 using JetBrains.DocumentModel;
@@ -91,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
       }
     }
 
-    public string Name => string.Empty;
+    public string Name => "Reformat ShaderLab";
 
     [DefaultValue(false)]
     [DisplayName("Reformat code")]
