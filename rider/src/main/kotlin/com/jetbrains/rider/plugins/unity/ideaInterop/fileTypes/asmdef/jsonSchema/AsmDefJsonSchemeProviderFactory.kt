@@ -1,4 +1,4 @@
-package com.jetbrains.rider.plugins.unity.asmdef
+package com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.jsonSchema
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -8,7 +8,7 @@ import com.jetbrains.jsonSchema.extension.SchemaType
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.AsmDefFileType
 
 class AsmDefJsonSchemeProviderFactory : JsonSchemaProviderFactory {
-    override fun getProviders(p0: Project): MutableList<JsonSchemaFileProvider> {
+    override fun getProviders(project: Project): MutableList<JsonSchemaFileProvider> {
         return mutableListOf(
             object : JsonSchemaFileProvider {
                 private val schemaFile = JsonSchemaProviderFactory.getResourceFile(this::class.java, "/schemas/unity/asmdef.json")
