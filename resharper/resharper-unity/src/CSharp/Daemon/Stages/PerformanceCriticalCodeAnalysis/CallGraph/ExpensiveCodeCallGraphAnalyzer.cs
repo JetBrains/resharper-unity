@@ -1,9 +1,9 @@
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -17,7 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         public const string MarkId = "Unity.ExpensiveCode";
 
-        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
+        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
+            UnityReferencesTracker referencesTracker,
             UnitySolutionTracker unitySolutionTracker)
             : base(MarkId, new CallGraphIncomingPropagator(solution, MarkId))
         {
@@ -25,28 +26,58 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
-        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
+            
             if (containingFunction == null)
                 return result;
 
             var declaration = currentNode as IDeclaration;
             var declaredElement = declaration?.DeclaredElement;
+            
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
-            
+
+            if (containingFunction is IAttributesSet attributesSet &&
+                attributesSet.HasAttributeInstance(CallGraphActionUtil.ExpensiveCodeAnalysisEnableAttribute,
+                    AttributesSource.Self))
+            {
+                result.Add(containingFunction);
+                return result;
+            }
+
             var processor = new ExpensiveCodeProcessor();
+            
             declaration.ProcessDescendants(processor);
+            
             if (processor.IsExpensiveCodeFound)
                 result.Add(declaredElement);
-            
+
             return result;
         }
 
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
-            return new LocalList<IDeclaredElement>();
+            var result = new LocalList<IDeclaredElement>();
+            
+            if (containingFunction == null)
+                return result;
+
+            var declaration = currentNode as IDeclaration;
+            var declaredElement = declaration?.DeclaredElement;
+            
+            if (!ReferenceEquals(containingFunction, declaredElement))
+                return result;
+            
+            if (containingFunction is IAttributesSet attributesSet &&
+                attributesSet.HasAttributeInstance(CallGraphActionUtil.ExpensiveCodeAnalysisDisableAttribute,
+                    AttributesSource.Self))
+                result.Add(containingFunction);
+            
+            return result;
         }
 
         private class ExpensiveCodeProcessor : IRecursiveElementProcessor

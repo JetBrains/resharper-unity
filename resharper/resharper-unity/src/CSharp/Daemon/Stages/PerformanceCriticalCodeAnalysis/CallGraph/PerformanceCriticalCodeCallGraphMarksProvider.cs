@@ -1,10 +1,10 @@
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -28,9 +28,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
-            return new LocalList<IDeclaredElement>();
+            var result = new LocalList<IDeclaredElement>();
+
+            if (containingFunction == null)
+                return result;
+
+            var declaration = currentNode as IDeclaration;
+            var declaredElement = declaration?.DeclaredElement;
+
+            if (!ReferenceEquals(containingFunction, declaredElement))
+                return result;
+
+            if (containingFunction is IAttributesSet attributesSet &&
+                attributesSet.HasAttributeInstance(CallGraphActionUtil.PerformanceCriticalCodeAnalysisDisableAttribute,
+                    AttributesSource.Self))
+                result.Add(containingFunction);
+
+            return result;
         }
 
         private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
@@ -101,17 +118,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             var result = new LocalList<IDeclaredElement>();
             var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
+
             if (coroutineOrInvoke != null)
                 result.Add(coroutineOrInvoke);
 
             if (containingFunction == null)
                 return result;
+
             var declaration = currentNode as IDeclaration;
             var declaredElement = declaration?.DeclaredElement;
+
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
+
+            if (containingFunction is IAttributesSet attributesSet &&
+                attributesSet.HasAttributeInstance(CallGraphActionUtil.PerformanceCriticalCodeAnalysisEnableAttribute,
+                    AttributesSource.Self))
+            {
+                result.Add(containingFunction);
+                return result;
+            }
+
             var processor = new PerformanceCriticalCodeProcessor();
+
             declaration.ProcessThisAndDescendants(processor);
+
             if (processor.IsPerformanceCriticalCodeFound)
                 result.Add(declaredElement);
 
@@ -125,6 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             public bool InteriorShouldBeProcessed(ITreeNode element)
             {
+                //CGTD tests
                 myInterruptChecker.CheckForInterrupt();
                 switch (element)
                 {
