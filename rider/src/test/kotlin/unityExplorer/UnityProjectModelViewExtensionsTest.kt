@@ -93,7 +93,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         }
     }
 
-    @Test
+    @Test(enabled = false)
     @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
     fun testDeleteFile() {
         val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript.cs.meta").toFile()
@@ -107,7 +107,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
         Assert.assertFalse(metaFile.exists(), "We expect meta file removed.")
     }
 
-    @Test
+    @Test(enabled = false)
     @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest") // RIDER-41182
     fun testMoveFile() {
         val originFile = Paths.get(project.basePath!!).resolve("Assets").resolve("Class1.cs").toFile()
