@@ -187,11 +187,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             }
         }
 
-        private class GameObjectChildrenGroup : ValueGroupBase
+        private class GameObjectChildrenGroup : ChunkedValueGroupBase<IObjectValueRole<TValue>>
         {
             private readonly IObjectValueRole<TValue> myGameObjectRole;
             private readonly IValueServicesFacade<TValue> myValueServices;
             private readonly ILogger myLogger;
+            private IMetadataMethodLite myGetChildMethod;
 
             public GameObjectChildrenGroup(IObjectValueRole<TValue> gameObjectRole,
                                            IValueServicesFacade<TValue> valueServices, ILogger logger)
@@ -207,7 +208,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             {
                 try
                 {
-                    return GetChildrenImpl(options);
+                    return GetChildrenImpl(options, token);
                 }
                 catch (Exception e)
                 {
@@ -216,7 +217,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 }
             }
 
-            private IEnumerable<IValueEntity> GetChildrenImpl(IPresentationOptions options)
+            private IEnumerable<IValueEntity> GetChildrenImpl(IPresentationOptions options, CancellationToken token)
             {
                 // The children of a GameObject (as seen in Unity's Hierarchy view) are actually the children of
                 // gameObject.transform. This will never be null.
@@ -236,48 +237,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 }
 
                 var transformType = transformRole.ReifiedType.MetadataType.FindTypeThroughHierarchy("UnityEngine.Transform");
-                var getChildMethod = transformType?.GetMethods().FirstOrDefault(ourGetChildSelector);
-                if (getChildMethod == null)
+                myGetChildMethod = transformType?.GetMethods().FirstOrDefault(ourGetChildSelector);
+                if (myGetChildMethod == null)
                 {
                     myLogger.Warn("Unable to find Transform.GetChild method");
                     yield break;
                 }
 
-                for (var i = 0; i < childCount; i++)
+                if (options.ClusterArrays)
                 {
-                    IObjectValueRole<TValue> gameObject = null;
-                    string name = null;
-                    try
-                    {
-                        var frame = myGameObjectRole.ValueReference.OriginatingFrame;
-                        var index = myValueServices.ValueFactory.CreatePrimitive(frame, options, i);
-                        var childTransformValue = transformRole.CallInstanceMethod(getChildMethod, index);
-                        var childTransform = new SimpleValueReference<TValue>(childTransformValue,
-                            frame, myValueServices.RoleFactory).AsObjectSafe(options);
-                        gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
-                            ?.AsObjectSafe(options);
-                        name = gameObject?.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
-                            ?.GetString() ?? "Game Object";
-                        if (gameObject == null)
-                        {
-                            myLogger.Warn($"Unexpected null gameObject. Index {i}");
-                            continue;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        myLogger.Error($"Error retrieving name of child game object {i}", e);
-                    }
-
-                    if (gameObject != null && name != null)
-                    {
-                        yield return new NamedReferenceDecorator<TValue>(gameObject.ValueReference, name,
-                                ValueOriginKind.Property,
-                                ValueFlags.None | ValueFlags.IsReadOnly,
-                                myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory, true)
-                            .ToValue(myValueServices);
-                    }
+                    foreach (var valueEntity in GetChunkedChildren(transformRole, 0, childCount, options, token))
+                        yield return valueEntity;
                 }
+                else
+                {
+                    for (var i = 0; i < childCount; i++)
+                        yield return GetElementValueAt(transformRole, i, options);
+                }
+            }
+
+            protected override IValue GetElementValueAt(IObjectValueRole<TValue> collection, int index, IValueFetchOptions options)
+            {
+                var frame = myGameObjectRole.ValueReference.OriginatingFrame;
+                var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
+                var childTransformValue = collection.CallInstanceMethod(myGetChildMethod, indexValue);
+                var childTransform = new SimpleValueReference<TValue>(childTransformValue,
+                    frame, myValueServices.RoleFactory).AsObjectSafe(options);
+                var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
+                    ?.AsObjectSafe(options);
+                var name = gameObject?.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
+                    ?.GetString() ?? "Game Object";
+
+                return new NamedReferenceDecorator<TValue>(gameObject.ValueReference, name,
+                        ValueOriginKind.Property,
+                        ValueFlags.None | ValueFlags.IsReadOnly,
+                        myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory, true)
+                    .ToValue(myValueServices);
             }
         }
     }
