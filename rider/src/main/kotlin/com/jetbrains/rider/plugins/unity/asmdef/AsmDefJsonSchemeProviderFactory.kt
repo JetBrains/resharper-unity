@@ -16,6 +16,7 @@ class AsmDefJsonSchemeProviderFactory : JsonSchemaProviderFactory {
                 override fun getName() = "Unity Assembly Definition"
                 override fun getSchemaFile() = schemaFile
                 override fun getSchemaType() = SchemaType.embeddedSchema
+                override fun getRemoteSource() = "https://json.schemastore.org/asmdef.json"
             })
     }
 }
