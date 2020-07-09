@@ -1,27 +1,24 @@
 ===================
-Add files and classes
+Rename file
 
 -Project
  -Assets
   References
   -Assets/AsmdefResponse
    -Assets/AsmdefResponse/NewDirectory1
-    Assets/AsmdefResponse/NewDirectory1/AsmdefClass_added.cs
     Assets/AsmdefResponse/NewDirectory1/zero
    -Assets/AsmdefResponse/SS
     Assets/AsmdefResponse/SS/AsmdefResponse2.asmdef
     Assets/AsmdefResponse/SS/rrr.cs
    Assets/AsmdefResponse/AsmdefResponse.asmdef
-   Assets/AsmdefResponse/NewBehaviourScript.cs
+   Assets/AsmdefResponse/NewBehaviourScript_renamed.cs
   -Assets/Dir1
    Assets/Dir1/ClassInDir1.cs
   -Assets/NewDirectory1
-   Assets/NewDirectory1/MainClass_added.cs
    Assets/NewDirectory1/zero
   -Assets/Scripts
    -Assets/Scripts/Editor
     -Assets/Scripts/Editor/NewDirectory1
-     Assets/Scripts/Editor/NewDirectory1/EditorClass_added.cs
      Assets/Scripts/Editor/NewDirectory1/zero
     Assets/Scripts/Editor/XMLUtilities.cs
    -Assets/Scripts/NewDirectory1
@@ -42,10 +39,7 @@ Project [Name:AsmdefResponse, GUID:GUID]
         Folder [Name:AsmdefResponse]
           Child items:
             ProjectFileImpl(Path : AsmdefResponse.asmdef)[NONE ]
-            ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
-            Folder [Name:NewDirectory1]
-              Child items:
-                ProjectFileImpl(Path : AsmdefClass_added.cs)[COMPILE ]
+            ProjectFileImpl(Path : NewBehaviourScript_renamed.cs)[COMPILE ]
 
 Project [Name:AsmdefResponse.Player, GUID:GUID]
   Child items:
@@ -55,10 +49,7 @@ Project [Name:AsmdefResponse.Player, GUID:GUID]
         Folder [Name:AsmdefResponse]
           Child items:
             ProjectFileImpl(Path : AsmdefResponse.asmdef)[NONE ]
-            ProjectFileImpl(Path : NewBehaviourScript.cs)[COMPILE ]
-            Folder [Name:NewDirectory1]
-              Child items:
-                ProjectFileImpl(Path : AsmdefClass_added.cs)[COMPILE ]
+            ProjectFileImpl(Path : NewBehaviourScript_renamed.cs)[COMPILE ]
 
 Project [Name:AsmdefResponse2, GUID:GUID]
   Child items:
@@ -93,9 +84,6 @@ Project [Name:Assembly-CSharp, GUID:GUID]
         Folder [Name:Dir1]
           Child items:
             ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
-        Folder [Name:NewDirectory1]
-          Child items:
-            ProjectFileImpl(Path : MainClass_added.cs)[COMPILE ]
 
 Project [Name:Assembly-CSharp.Player, GUID:GUID]
   Child items:
@@ -106,9 +94,6 @@ Project [Name:Assembly-CSharp.Player, GUID:GUID]
         Folder [Name:Dir1]
           Child items:
             ProjectFileImpl(Path : ClassInDir1.cs)[COMPILE ]
-        Folder [Name:NewDirectory1]
-          Child items:
-            ProjectFileImpl(Path : MainClass_added.cs)[COMPILE ]
 
 Project [Name:Assembly-CSharp-Editor, GUID:GUID]
   Child items:
@@ -119,9 +104,6 @@ Project [Name:Assembly-CSharp-Editor, GUID:GUID]
           Child items:
             Folder [Name:Editor]
               Child items:
-                Folder [Name:NewDirectory1]
-                  Child items:
-                    ProjectFileImpl(Path : EditorClass_added.cs)[COMPILE ]
                 ProjectFileImpl(Path : XMLUtilities.cs)[COMPILE ]
 
 Project [Name:Miscellaneous Files, GUID:GUID]
