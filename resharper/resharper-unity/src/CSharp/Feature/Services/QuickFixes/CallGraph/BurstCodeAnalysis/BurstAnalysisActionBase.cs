@@ -14,14 +14,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         {
         }
 
-        protected BurstAnalysisActionBase(IBurstHighlighting burstHighlighting) : base(burstHighlighting)
+        protected BurstAnalysisActionBase(IBurstHighlighting burstHighlighting)
+            : base(burstHighlighting)
         {
         }
 
-        protected BurstAnalysisActionBase(IMethodDeclaration methodDeclaration) : base(methodDeclaration)
+        protected BurstAnalysisActionBase(IMethodDeclaration methodDeclaration)
+            : base(methodDeclaration)
         {
         }
-        
+
         public sealed override bool IsAvailable(IUserDataHolder cache)
         {
             var declaredElement = MethodDeclaration?.DeclaredElement;
