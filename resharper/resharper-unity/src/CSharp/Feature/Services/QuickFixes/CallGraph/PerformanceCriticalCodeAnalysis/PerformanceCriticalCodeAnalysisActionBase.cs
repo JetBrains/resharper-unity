@@ -2,11 +2,11 @@ using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceCriticalAnalysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceCriticalCodeAnalysis
 {
-    public abstract class PerformanceCriticalAnalysisActionBase : CallGraphActionBase
+    public abstract class PerformanceCriticalCodeAnalysisActionBase : CallGraphActionBase
     {
-        protected PerformanceCriticalAnalysisActionBase(ICSharpContextActionDataProvider dataProvider)
+        protected PerformanceCriticalCodeAnalysisActionBase(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }

@@ -3,18 +3,19 @@ using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceCriticalAnalysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceCriticalCodeAnalysis
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = "PerformanceCriticalAnalysisEnable",
-        Description = "Enable Performance critical code analysis",
+        Name = MESSAGE,
+        Description = MESSAGE,
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public class PerformanceCriticalAnalysisEnableContextAction : PerformanceCriticalAnalysisActionBase
+    public class PerformanceCriticalCodeAnalysisEnableContextAction : PerformanceCriticalCodeAnalysisActionBase
     {
-        public PerformanceCriticalAnalysisEnableContextAction(ICSharpContextActionDataProvider dataProvider)
+        private const string MESSAGE = "Enable Performance critical code analysis";
+        public PerformanceCriticalCodeAnalysisEnableContextAction(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
@@ -25,6 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         protected override IClrTypeName AntagonistAttribute =>
             CallGraphActionUtil.PerformanceCriticalCodeAnalysisDisableAttribute;
 
-        public override string Text => "Enable Performance critical code analysis";
+        public override string Text => MESSAGE;
     }
 }
