@@ -92,6 +92,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
       }
     }
 
+    public string Name => "Reformat ShaderLab";
+
     [DefaultValue(false)]
     [DisplayName("Reformat code")]
     [Category("ShaderLab")]
