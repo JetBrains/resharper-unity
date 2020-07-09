@@ -41,7 +41,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
             || items.filter { it.isSolution() }.any()) // don't forget to check File System Explorer
             return null
 
-        //assert(items.all{it.isProjectFolder()}) {"Only ProjectFolders are expected."}
+        assert(items.all{it.isProjectFolder()}) {"Only ProjectFolders are expected."}
 
         // one of the predefined projects
         if (items.count() > 1) {
