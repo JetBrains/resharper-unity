@@ -14,6 +14,8 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     override val persistCaches: Boolean
         get() = true
 
+    // todo: add test with solution, where one of the asmdef-s doesn't target Editor, this would cause only .Player project without normal one
+
     @Test
     @TestEnvironment
     fun testAddNewItem() {
