@@ -24,7 +24,7 @@ open class StartUnityAction : DumbAwareAction() {
         if (version != null)
             e.presentation.text = "Start Unity ($version)"
 
-        e.presentation.isEnabled = state == EditorState.Disconnected
+        e.presentation.isEnabled = version != null && (state == null || state == EditorState.Disconnected)
         super.update(e)
     }
 

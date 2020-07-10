@@ -268,7 +268,7 @@
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">
-    <JsonSchema.ProviderFactory implementation="com.jetbrains.rider.plugins.unity.asmdef.AsmDefJsonSchemeProviderFactory"/>
+    <JsonSchema.ProviderFactory implementation="com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.asmdef.jsonSchema.AsmDefJsonSchemeProviderFactory"/>
   </extensions>
 
 

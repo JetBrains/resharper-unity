@@ -4,13 +4,16 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
+import com.intellij.refactoring.rename.RenameHandlerRegistry
 import com.jetbrains.rider.ideaInterop.vfs.VfsWriteOperationsHost
 import com.jetbrains.rider.model.RdProjectModelDumpFlags
 import com.jetbrains.rider.model.RdProjectModelDumpParams
 import com.jetbrains.rider.model.projectModelTasks
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorerNode
+import com.jetbrains.rider.projectView.actions.renameAction.RiderRenameItemHandler
 import com.jetbrains.rider.projectView.moveProviders.RiderCutProvider
+import com.jetbrains.rider.projectView.moveProviders.RiderDeleteProvider
 import com.jetbrains.rider.projectView.moveProviders.RiderPasteProvider
 import com.jetbrains.rider.projectView.moveProviders.impl.ActionOrderType
 import com.jetbrains.rider.projectView.moveProviders.impl.ProjectModelData
@@ -77,6 +80,20 @@ fun addNewItem(project: Project, path: Array<String>, template: TemplateType, it
     }
     persistAllFilesOnDisk()
     frameworkLogger.info("New item '$itemName' is added")
+}
+
+fun renameItem(project: Project, path: Array<String>, newName: String) {
+    val dataContext = createDataContextFor2(project, arrayOf(path))
+    val renameHandler = RenameHandlerRegistry.getInstance().getRenameHandler(dataContext) as RiderRenameItemHandler
+    assert(renameHandler.isRenaming(dataContext)) { "Can't rename elements" }
+    RiderRenameItemHandler.execute(dataContext, newName)
+}
+
+fun deleteElement(project: Project, path: Array<String>) {
+    val dataContext = createDataContextFor2(project, arrayOf(path))
+    assert(RiderDeleteProvider.canDeleteElement(dataContext)) { "Can't delete elements" }
+    RiderDeleteProvider.deleteElement(dataContext)
+    waitForProjectModelReady(project)
 }
 
 fun createDataContextFor2(project: Project, paths: Array<Array<String>>): DataContext {
