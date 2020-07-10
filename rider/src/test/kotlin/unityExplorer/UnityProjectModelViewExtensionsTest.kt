@@ -10,12 +10,12 @@ import java.io.File
 import java.nio.file.Paths
 
 class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
-    override fun getSolutionDirectoryName() = "com.unity.ide.rider"
+    override fun getSolutionDirectoryName() = "UnityProjectModelViewExtensionsTest"
     override val persistCaches: Boolean
         get() = true
 
     @Test
-    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    @TestEnvironment
     fun testAddNewItem() {
         testProjectModel(testGoldFile, project, false) {
             //dump("Init", project, activeSolutionDirectory) {}
@@ -32,7 +32,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
-    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    @TestEnvironment
     fun testRenameFile() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename file", project, activeSolutionDirectory) {
@@ -50,7 +50,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
-    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    @TestEnvironment
     fun testRenameFolder() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -68,7 +68,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
-    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    @TestEnvironment
     fun testRenameFolder2() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -81,7 +81,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test
-    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    @TestEnvironment
     fun testRenameFolder3() {
         testProjectModel(testGoldFile, project, false) {
             dump("Rename folder", project, activeSolutionDirectory) {
@@ -94,12 +94,12 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test(enabled = false)
-    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest")
+    @TestEnvironment
     fun testDeleteFile() {
         val metaFile = Paths.get(project.basePath!!).resolve("Assets").resolve("AsmdefResponse").resolve("NewBehaviourScript.cs.meta").toFile()
         Assert.assertTrue(metaFile.exists(), "We expect meta file exists.")
         testProjectModel(testGoldFile, project, false) {
-            dump("Rename folder", project, activeSolutionDirectory) {
+            dump("Delete element", project, activeSolutionDirectory) {
                 deleteElement(project, arrayOf("Assets", "AsmdefResponse", "NewBehaviourScript.cs"))
             }
         }
@@ -108,7 +108,7 @@ class UnityProjectModelViewExtensionsTest : ProjectModelBaseTest() {
     }
 
     @Test(enabled = false)
-    @TestEnvironment(solution = "UnityProjectModelViewExtensionsTest") // RIDER-41182
+    @TestEnvironment // RIDER-41182
     fun testMoveFile() {
         val originFile = Paths.get(project.basePath!!).resolve("Assets").resolve("Class1.cs").toFile()
         val originMetaFile = File(originFile.absolutePath+".meta")
