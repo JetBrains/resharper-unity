@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
@@ -20,16 +21,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityController : IUnityController
     {
+        private static readonly TimeSpan outUnityConnectionTimeout = TimeSpan.FromMinutes(1);
         private readonly UnityEditorProtocol myUnityEditorProtocol;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private RdUnityModel myRdUnityModel;
+        private readonly IThreading myThreading;
+        private readonly RdUnityModel myRdUnityModel;
 
         private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
-        public UnityController(UnityEditorProtocol unityEditorProtocol, ISolution solution,
-            Lifetime lifetime, UnitySolutionTracker solutionTracker)
+        public UnityController(UnityEditorProtocol unityEditorProtocol, 
+                               ISolution solution,
+                               Lifetime lifetime, 
+                               UnitySolutionTracker solutionTracker,
+                               IThreading threading)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -38,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             mySolution = solution;
             myLifetime = lifetime;
             mySolutionTracker = solutionTracker;
+            myThreading = threading;
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
         }
 
@@ -83,13 +90,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public Task<int> WaitConnectedUnityProcessId()
         {
             var source = new TaskCompletionSource<int>();
-            myUnityEditorProtocol.UnityModel.ViewNotNull(myLifetime, (lt, model) =>
+            var lifetimeDef = new LifetimeDefinition(myLifetime);
+            lifetimeDef.SynchronizeWith(source);
+            
+            myUnityEditorProtocol.UnityModel
+                .ViewNotNull(lifetimeDef.Lifetime, 
+                     (lt, model) => model.UnityProcessId.Advise(lt, id => source.SetResult(id))
+            );
+            
+            myThreading.Tasks.Factory.StartNew(async () =>
             {
-                model.UnityProcessId.Advise(myLifetime, id =>
-                {
-                    source.SetResult(id);
-                });
-            });
+                await Task.Delay(outUnityConnectionTimeout, lifetimeDef.Lifetime);
+                source.SetException(new TimeoutException($"Unity hasn't connected. Timeout {outUnityConnectionTimeout.TotalMilliseconds} ms is over."));
+            }, lifetimeDef.Lifetime);
+            
             return source.Task;
         }
 
