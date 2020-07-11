@@ -28,12 +28,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 solution.Locks.ExecuteOrQueueEx(lifetime, "UseUnityYamlMerge", () =>
                     host.PerformModelAction(rd => rd.UseUnityYamlMerge.Value = args.New));
             });
-            
+
             var mergeParametersSetting = boundStore.Schema.GetScalarEntry((UnitySettings s) => s.MergeParameters);
             boundStore.GetValueProperty<string>(lifetime, mergeParametersSetting, null).Change.Advise_HasNew(lifetime, args =>
             {
                 solution.Locks.ExecuteOrQueueEx(lifetime, "MergeParameters", () =>
                     host.PerformModelAction(rd => rd.MergeParameters.Value = args.New));
+            });
+
+            var debuggerExtensionsEnabledSetting =
+                boundStore.Schema.GetScalarEntry((UnitySettings s) => s.EnableDebuggerExtensions);
+            boundStore.GetValueProperty<bool>(lifetime, debuggerExtensionsEnabledSetting, null).Change.Advise_HasNew(lifetime, args =>
+            {
+                solution.Locks.ExecuteOrQueueEx(lifetime, "DebuggerExtensionsEnabled", () =>
+                    host.PerformModelAction(rd => rd.BackendSettings.EnableDebuggerExtensions.Value = args.New));
             });
         }
     }
