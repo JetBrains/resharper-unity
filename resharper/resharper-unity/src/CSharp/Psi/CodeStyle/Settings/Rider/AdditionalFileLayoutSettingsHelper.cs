@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Host.Features.Dialog;
 using JetBrains.ReSharper.Host.Features.Settings.OptionsPage.CSharpFileLayout;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Settings
 {
     public class AdditionalFileLayoutSettingsHelper
     {
