@@ -118,6 +118,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             return false;
         }
 
+        // TODO: Handle Unity's MinAttribute
+
+
         // Treat Unity's RangeAttribute as ReSharper's ValueRangeAttribute annotation
         private bool GetValueRangeAttribute(IClrDeclaredElement element,
                                             out ICollection<IAttributeInstance> collection)

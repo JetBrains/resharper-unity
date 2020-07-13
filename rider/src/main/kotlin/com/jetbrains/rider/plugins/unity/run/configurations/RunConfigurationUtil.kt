@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.Executor
 import com.intellij.execution.ProgramRunnerUtil
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.configurations.RunProfile
 import com.intellij.execution.configurations.RunProfileState
 import com.intellij.execution.executors.DefaultDebugExecutor
@@ -12,8 +13,10 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.IRiderDebuggable
+import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.run.*
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
@@ -27,6 +30,11 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
         .create(project, DefaultDebugExecutor.getDebugExecutorInstance(), runProfile)
         .build()
     ProgramRunnerUtil.executeConfiguration(environment, false, true)
+}
+
+fun GeneralCommandLine.withUnityExtensionsEnabledEnvironment(project: Project): GeneralCommandLine {
+    val enabled = project.solution.rdUnityModel.backendSettings.enableDebuggerExtensions.valueOrNull ?: false
+    return this.withEnvironment("_RIDER_UNITY_ENABLE_DEBUGGER_EXTENSIONS", if (enabled) "1" else "0")
 }
 
 class UnityProcessRunProfile(private val project: Project, private val process: UnityProcess)
@@ -66,6 +74,12 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
 
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
         return UnityDebuggerOutputListener(executionEnvironment.project, remoteConfiguration.address, targetName, isEditor)
+    }
+
+    override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
+        return super.createWorkerRunCmd(lifetime, helper, port).onSuccess {
+            it.commandLine.withUnityExtensionsEnabledEnvironment(executionEnvironment.project)
+        }
     }
 }
 

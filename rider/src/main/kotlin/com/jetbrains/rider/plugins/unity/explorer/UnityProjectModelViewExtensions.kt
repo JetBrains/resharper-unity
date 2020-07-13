@@ -12,8 +12,7 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     // this is called for rename, we should filter .Player projects and return node itself
     override fun getBestProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
         val host = ProjectModelViewHost.getInstance(project)
-
-        val items = filterOutItemsFromNonPrimaryProjects(host, targetLocation)
+        val items = filterOutItemsFromNonPrimaryProjects(host.getItemsByVirtualFile(targetLocation).toList())
 
         if (items.count() == 1)
             return items.single()
@@ -27,14 +26,14 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun filterProjectModelNodesBeforeOperation(nodes: List<ProjectModelNode>): List<ProjectModelNode> {
-        return nodes.filter { !it.containingProject()!!.name.endsWith(".Player") }
+        return filterOutItemsFromNonPrimaryProjects(nodes)
     }
 
-    private fun recursiveSearch(virtualFile: VirtualFile?, host: ProjectModelViewHost): ProjectModelNode? {
-        if (virtualFile == null) // may happen for packages outside of solution folder
+    private fun recursiveSearch(targetLocation: VirtualFile?, host: ProjectModelViewHost): ProjectModelNode? {
+        if (targetLocation == null) // may happen for packages outside of solution folder
             return null
 
-        val items = filterOutItemsFromNonPrimaryProjects(host, virtualFile)
+        val items = filterOutItemsFromNonPrimaryProjects(host.getItemsByVirtualFile(targetLocation).toList())
 
         // when to stop going up
         if (items.filter { it.isSolutionFolder() }.any()
@@ -66,17 +65,19 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         if (candidates.count() == 1)
             return candidates.single()
 
-        return recursiveSearch(virtualFile.parent, host)
+        return recursiveSearch(targetLocation.parent, host)
     }
 
     // filter out Player projects
     // case with only .Player project is possible
     // todo: case with main project named .Player is also possible
-    private fun filterOutItemsFromNonPrimaryProjects(host: ProjectModelViewHost, virtualFile: VirtualFile): List<ProjectModelNode> {
-        val items = host.getItemsByVirtualFile(virtualFile)
-                .map { Pair(constructNameWithPlayer(it), it) }.groupBy { a -> a.first }
-                .mapValues { it.value.first().second }.values.toList()
-        return items
+    private fun filterOutItemsFromNonPrimaryProjects(items: List<ProjectModelNode>): List<ProjectModelNode> {
+        val mutableList = items.filter { it.containingProject() == null }.toMutableList()
+        val withProject = items.filter { it.containingProject() != null }
+            .map { Pair(constructNameWithPlayer(it), it) }.groupBy { a -> a.first }
+            .mapValues { it.value.first().second }.values.toList()
+        mutableList.addAll(withProject)
+        return mutableList
     }
 
     private fun constructNameWithPlayer(node:ProjectModelNode):String{

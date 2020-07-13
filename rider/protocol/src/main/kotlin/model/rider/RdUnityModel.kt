@@ -32,7 +32,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         +"StopPlayingAndRecompile"
     }
 
-    val UnityApplicationData = structdef {
+    private val UnityApplicationData = structdef {
         field("applicationPath", string)
         field("applicationContentsPath", string)
         field("applicationVersion", string)
@@ -102,5 +102,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("mergeParameters", string)
 
         property("buildLocation", string)
+
+        field("backendSettings", aggregatedef("BackendSettings") {
+            property("enableDebuggerExtensions", bool)
+        })
     }
 }
