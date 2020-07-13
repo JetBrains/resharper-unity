@@ -26,7 +26,6 @@ namespace JetBrains.Rider.Unity.Editor
   [InitializeOnLoad]
   public static class PluginEntryPoint
   {
-    public static bool ourTestModeEnabled = false;
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathProvider ourRiderPathProvider;
     public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
@@ -49,9 +48,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       if (IsLoadedFromAssets()) // old mechanism, when EditorPlugin was copied to Assets folder
       {
-        ourTestModeEnabled = Environment.GetCommandLineArgs().Contains("-riderTests");
-
-        var riderPath = ourRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
+          var riderPath = ourRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
           RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
         if (!string.IsNullOrEmpty(riderPath))
         {
