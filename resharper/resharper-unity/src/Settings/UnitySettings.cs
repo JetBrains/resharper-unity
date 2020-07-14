@@ -30,6 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         [SettingsEntry(false, "Enables syntax error highlighting of CG blocks in ShaderLab files.")]
         public bool EnableCgErrorHighlighting;
 
+        [SettingsEntry(false, "Suppress resolve errors of unqualified names in HLSL.")]
+        public bool SuppressShaderErrorHighlighting;
+        
         [SettingsEntry(GutterIconMode.CodeInsightDisabled, "Unity highlighter scheme for editor.")]
         public GutterIconMode GutterIconMode;
 

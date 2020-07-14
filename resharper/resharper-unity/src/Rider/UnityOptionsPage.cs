@@ -95,9 +95,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
             EndSection();
 
-            Header("ShaderLab");
-            CheckBox((UnitySettings s) => s.EnableShaderLabHippieCompletion,
-                "Enable simple word-based completion in ShaderLab files");
+            Header("Shaders");
+            CheckBox((UnitySettings s) => s.SuppressShaderErrorHighlighting, "Suppress resolve errors of unqualified names in HLSL");
+            
 
             if (productConfigurations.IsInternalMode())
             {
