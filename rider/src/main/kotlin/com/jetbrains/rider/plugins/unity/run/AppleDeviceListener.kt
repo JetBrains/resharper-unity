@@ -7,6 +7,7 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.exists
 import com.intellij.util.io.isDirectory
 import com.jetbrains.rider.AssemblyExecutionContext
@@ -146,8 +147,13 @@ class AppleDeviceListener(project: Project,
         // Get the helper exe from the DotFiles folder. TBH, I suspect the 'DotFiles' name is incorrect, as Rider plugin
         // files (including the 'Extensions' folder) live under 'dotnet'. ReSharper plugins ship in a 'DotFiles' folder,
         // but are installed into the main install folder. No-one actually uses 'DotFiles' now
-        val helperExe = RiderEnvironment.getBundledFile("JetBrains.Rider.Unity.ListIosUsbDevices.exe",
-            pluginClass = javaClass)
+        val assembly = if (SystemInfo.isWindows) {
+            "netfx/JetBrains.Rider.Unity.ListIosUsbDevices.exe"
+        }
+        else {
+            "JetBrains.Rider.Unity.ListIosUsbDevices.dll"
+        }
+        val helperExe = RiderEnvironment.getBundledFile(assembly, pluginClass = javaClass)
 
         val commandLine = AssemblyExecutionContext(helperExe, RiderEnvironment.customExecutionOs, null,
             iosSupportPath.toString(), "$refreshPeriod").fillCommandLine(GeneralCommandLine())
