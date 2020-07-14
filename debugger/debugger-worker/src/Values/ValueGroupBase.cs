@@ -3,7 +3,7 @@ using System.Threading;
 using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
 {
     public abstract class ValueGroupBase : IValueGroup
     {

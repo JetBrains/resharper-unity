@@ -4,8 +4,10 @@ using JetBrains.Annotations;
 using JetBrains.Application.Environment;
 using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.UI.Options;
+using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions;
 using JetBrains.Application.UI.Options.OptionsDialog.SimpleOptions.ViewModel;
+using JetBrains.IDE.UI.Options;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.OptionPages.CodeEditing;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -15,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
 {
     // This is getting very similar to Rider's page
     [OptionsPage(PID, Name, typeof(LogoIcons.Unity), ParentId = CodeEditingPage.PID)]
-    public class ReSharperOptionsPage : OptionsPageBase
+    public class ReSharperOptionsPage : BeSimpleOptionsPage
     {
         // Note that this is the same as Rider's options page
         public const string PID = "UnityPluginSettings";
@@ -26,32 +28,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
         private static readonly Expression<Func<UnitySettings, bool>> ourEnableBurstHighlightingAccessor =
             s => s.EnableBurstCodeHighlighting;
 
-        public ReSharperOptionsPage(Lifetime lifetime, [NotNull] OptionsSettingsSmartContext settingsStore,
+        public ReSharperOptionsPage(Lifetime lifetime, OptionsPageContext pageContext,
+                                    [NotNull] OptionsSettingsSmartContext settingsStore,
                                     RunsProducts.ProductConfigurations productConfigurations)
-            : base(lifetime, settingsStore)
+            : base(lifetime, pageContext, settingsStore)
         {
-            Header("C#");
-            CheckBox((UnitySettings s) => s.EnableBurstCodeHighlighting,
-                "Enable analysis for Burst compiler issues");
-            CheckBox((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting,
+            AddHeader("C#");
+            AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
+            AddBoolOption(ourEnablePerformanceHighlightingAccessor,
                 "Enable performance analysis in frequently called code");
 
-            BeginSection();
+            using (Indent())
             {
-                var option = WithIndent(AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode,
-                    "Highlight performance critical contexts:",
+                var option = AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode,
+                    "Highlight performance critical contexts:", string.Empty, string.Empty,
                     new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
                     new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method only"),
                     new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
-                ));
+                );
                 AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
                     enable => enable);
-                option = WithIndent(CheckBox((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
-                    "Show icons for frequently called methods"));
+                option = AddBoolOption((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
+                    "Show icons for frequently called methods");
                 AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
                     enable => enable);
             }
-            EndSection();
 
             // The default is when code vision is disabled. Let's keep this so that if/when ReSharper ever gets Code
             // Vision, we'll show the items, or if the user installs Rider, the copied settings will still be useful
@@ -59,8 +60,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
                 GutterIconMode.CodeInsightDisabled, GutterIconMode.None,
                 "Show gutter icons for implicit script usages");
 
-            Header("Text based assets");
-            CheckBox((UnitySettings s) => s.IsAssetIndexingEnabled,
+            AddHeader("Text based assets");
+            AddBoolOption((UnitySettings s) => s.IsAssetIndexingEnabled,
                 "Parse text based asset files for implicit script usages (requires re-opening solution)");
 
             
@@ -70,13 +71,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             
             if (productConfigurations.IsInternalMode())
             {
-                Header("Internal");
+                AddHeader("Internal");
 
-                CheckBox((UnitySettings s) => s.EnableCgErrorHighlighting,
+                AddBoolOption((UnitySettings s) => s.EnableCgErrorHighlighting,
                     "Parse Cg files for syntax errors (requires internal mode, and re-opening solution)");
             }
-
-            FinishPage();
         }
     }
 }

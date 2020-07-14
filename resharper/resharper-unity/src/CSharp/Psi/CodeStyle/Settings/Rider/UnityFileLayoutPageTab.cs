@@ -2,34 +2,33 @@ using JetBrains.Application.UI.Options;
 using JetBrains.Application.UI.Options.OptionsDialog;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.IDE.UI.Extensions.Properties;
-using JetBrains.IDE.UI.Options;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Features.Dialog;
 using JetBrains.ReSharper.Host.Features.Settings.OptionsPage.CSharpFileLayout;
-using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.UIAutomation;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle.Settings
 {
-    [OptionsPage(PID, "Additional C# File Layout",
-        typeof(FeaturesEnvironmentOptionsThemedIcons.TypeMembersLayout),
-        ParentId = UnityOptionsPage.PID
-    )]
-    public class AdditionalFileLayoutOptionsPage : BeSimpleOptionsPage
+    [OptionsComponent]
+    public class UnityFileLayoutPageTab : IFileLayoutPageTab
     {
-        private const string PID = "UnityAdditionalFileLayout";
-
+        private readonly RiderDialogHost myDialogHost;
         private readonly RdLanguage myFileLayoutLanguage = new RdLanguage("XML");
+
         private const string DummyFileName = "Dummy.filelayout";
 
-        public AdditionalFileLayoutOptionsPage(Lifetime lifetime, OptionsPageContext optionsPageContext,
-                                               OptionsSettingsSmartContext optionsSettingsSmartContext,
-                                               RiderDialogHost dialogHost)
-            : base(lifetime, optionsPageContext, optionsSettingsSmartContext)
+        public UnityFileLayoutPageTab(RiderDialogHost dialogHost)
         {
-            var fileLayoutSettings = new AdditionalFileLayoutSettingsHelper(lifetime, optionsSettingsSmartContext, dialogHost);
+            myDialogHost = dialogHost;
+        }
+
+        public string Title => "Unity";
+
+        public BeControl Create(Lifetime lifetime, OptionsPageContext optionsPageContext,
+                                OptionsSettingsSmartContext optionsSettingsSmartContext)
+        {
+            var fileLayoutSettings = new AdditionalFileLayoutSettingsHelper(lifetime, optionsSettingsSmartContext, myDialogHost);
             var textControl = BeControls.GetLanguageTextControl(fileLayoutSettings.Text, lifetime, false, myFileLayoutLanguage, DummyFileName, true);
             var toolbar = BeControls.GetToolbar(textControl);
 
@@ -45,9 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeStyle
             grid.AddElement(toolbar, BeSizingType.Fill);
 
             var margin = BeMargins.Create(5, 1, 5, 1);
-            AddControl(grid.WithMargin(margin), true);
-
-            AddKeyword("File Layout");
+            return grid.WithMargin(margin);
         }
     }
 }

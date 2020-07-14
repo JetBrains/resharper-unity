@@ -10,11 +10,17 @@ namespace JetBrains.Rider.Unity.Editor
   public class UnityEventCollector
   {
     public readonly BoundedSynchronizedQueue<RdLogEvent> DelayedLogEvents = new BoundedSynchronizedQueue<RdLogEvent>(1000);
+    private bool myLogEventsCollectorEnabled;
 
     public UnityEventCollector()
     {
       if (!PluginSettings.LogEventsCollectorEnabled)
         return;
+
+      EditorApplication.update += () =>
+      {
+          myLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled; // can be called only from main thread
+      };
 
       // Both of these methods were introduced in 5.0+ but EditorPlugin.csproj still targets 4.7
       var eventInfo = typeof(Application).GetEvent("logMessageReceivedThreaded", BindingFlags.Static | BindingFlags.Public);
@@ -58,7 +64,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      if (!PluginSettings.LogEventsCollectorEnabled) // stop collecting, if setting was disabled
+      if (!myLogEventsCollectorEnabled) // stop collecting, if setting was disabled
         return;
       
       RdLogEventType eventType;
