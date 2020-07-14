@@ -50,54 +50,58 @@ class AppleDeviceListener(project: Project,
     // Finally, we could roll our own. Trickiest part is likely plist handling, and we might be able to reuse something
     // in the platform for that.
     init {
-        val iosSupportPath = UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")
-        if (iosSupportPath != null && iosSupportPath.isDirectory()) {
+        var varProcessHandler: CapturingProcessHandler? = null
+        var varDescriptions = emptyMap<Int, String>()
 
-            descriptions = loadDescriptions(iosSupportPath)
+        try {
+            val iosSupportPath = UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")
+            if (iosSupportPath != null && iosSupportPath.isDirectory()) {
 
-            // Get the helper exe from the DotFiles folder. TBH, I suspect the 'DotFiles' name is incorrect, as Rider plugin
-            // files (including the 'Extensions' folder) live under 'dotnet'. ReSharper plugins ship in a 'DotFiles' folder,
-            // but are installed into the main install folder. No-one actually uses 'DotFiles' now
-            val helperExe = RiderEnvironment.getBundledFile("JetBrains.Rider.Unity.ListIosUsbDevices.exe",
-                pluginClass = javaClass)
+                varDescriptions = loadDescriptions(iosSupportPath)
+                varProcessHandler = startListener(iosSupportPath)
+            } else {
+                logger.warn("Cannot find $iosSupportPath folder")
+            }
+        } catch (e: Throwable) {
+            logger.error(e)
+        }
 
-            val commandLine = AssemblyExecutionContext(helperExe, RiderEnvironment.customExecutionOs, null,
-                iosSupportPath.toString(), "$refreshPeriod").fillCommandLine(GeneralCommandLine())
-            processHandler = CapturingProcessHandler(commandLine)
-            val rawDevices = mutableListOf<String>()
-            processHandler.addProcessListener(object : ProcessAdapter() {
-                var count = 0
+        descriptions = varDescriptions
 
-                override fun onTextAvailable(event: ProcessEvent, key: Key<*>) {
-                    // Text is split by lines and includes the trailing newline
-                    if (!event.text.startsWith("[usbmuxd")) {
-                        if (count == 0) {
-                            countRegex.find(event.text)?.let {
-                                count = it.groups["count"]?.value?.toInt() ?: 0
-
-                                if (count == 0 && devices.isNotEmpty()) {
-                                    processDevices(rawDevices)
-                                }
-                            }
-                        } else {
-                            rawDevices.add(event.text)
-                            if (--count == 0) {
-                                processDevices(rawDevices)
-                                rawDevices.clear()
-                            }
-                        }
-                    }
-                }
-            })
-
-            thread = thread {
+        processHandler = varProcessHandler
+        thread = if (processHandler != null) {
+            thread {
                 processHandler.runProcess()
             }
         } else {
-            logger.warn("Cannot find $iosSupportPath folder")
-            processHandler = null
-            thread = null
-            descriptions = emptyMap()
+            null
+        }
+    }
+
+    fun stop() {
+        if (thread == null || processHandler == null) {
+            return
+        }
+
+        // The process should stop polling and exit when it receives "stop\n"
+
+        logger.trace("Telling ListIosUsbDevices helper exe to stop")
+        processHandler.processInput.let {
+            PrintWriter(it, true).println("stop")
+        }
+
+        // It checks the flag when it polls
+        val threadTimeout = refreshPeriod * 200
+        try {
+            thread.join(threadTimeout)
+        }
+        catch(e: Throwable) {
+            logger.error(e)
+        }
+
+        if (thread.isAlive) {
+            logger.warn("ListIosUsbDevices helper exe didn't return in ${threadTimeout}ms. Killing")
+            processHandler.destroyProcess()
         }
     }
 
@@ -138,31 +142,43 @@ class AppleDeviceListener(project: Project,
         }
     }
 
-    fun stop() {
-        if (thread == null || processHandler == null) {
-            return
-        }
+    private fun startListener(iosSupportPath: Path): CapturingProcessHandler {
+        // Get the helper exe from the DotFiles folder. TBH, I suspect the 'DotFiles' name is incorrect, as Rider plugin
+        // files (including the 'Extensions' folder) live under 'dotnet'. ReSharper plugins ship in a 'DotFiles' folder,
+        // but are installed into the main install folder. No-one actually uses 'DotFiles' now
+        val helperExe = RiderEnvironment.getBundledFile("JetBrains.Rider.Unity.ListIosUsbDevices.exe",
+            pluginClass = javaClass)
 
-        // The process should stop polling and exit when it receives "stop\n"
+        val commandLine = AssemblyExecutionContext(helperExe, RiderEnvironment.customExecutionOs, null,
+            iosSupportPath.toString(), "$refreshPeriod").fillCommandLine(GeneralCommandLine())
+        val processHandler = CapturingProcessHandler(commandLine)
+        val rawDevices = mutableListOf<String>()
+        processHandler.addProcessListener(object : ProcessAdapter() {
+            var count = 0
 
-        logger.trace("Telling ListIosUsbDevices helper exe to stop")
-        processHandler.processInput.let {
-            PrintWriter(it, true).println("stop")
-        }
+            override fun onTextAvailable(event: ProcessEvent, key: Key<*>) {
+                // Text is split by lines and includes the trailing newline
+                if (!event.text.startsWith("[usbmuxd")) {
+                    if (count == 0) {
+                        countRegex.find(event.text)?.let {
+                            count = it.groups["count"]?.value?.toInt() ?: 0
 
-        // It checks the flag when it polls
-        val threadTimeout = refreshPeriod * 200
-        try {
-            thread.join(threadTimeout)
-        }
-        catch(e: Throwable) {
-            logger.error(e)
-        }
+                            if (count == 0 && devices.isNotEmpty()) {
+                                processDevices(rawDevices)
+                            }
+                        }
+                    } else {
+                        rawDevices.add(event.text)
+                        if (--count == 0) {
+                            processDevices(rawDevices)
+                            rawDevices.clear()
+                        }
+                    }
+                }
+            }
+        })
 
-        if (thread.isAlive) {
-            logger.warn("ListIosUsbDevices helper exe didn't return in ${threadTimeout}ms. Killing")
-            processHandler.destroyProcess()
-        }
+        return processHandler
     }
 
     private fun processDevices(rawDevices: List<String>) {
