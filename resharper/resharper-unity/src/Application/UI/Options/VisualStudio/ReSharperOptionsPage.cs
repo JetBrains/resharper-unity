@@ -65,8 +65,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
                 "Parse text based asset files for implicit script usages (requires re-opening solution)");
 
             
-            Header("Shaders");
-            CheckBox((UnitySettings s) => s.SuppressShaderErrorHighlighting,
+            AddHeader("Shaders");
+            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting,
                 "Suppress resolve errors of unqualified names in HLSL");
             
             if (productConfigurations.IsInternalMode())
