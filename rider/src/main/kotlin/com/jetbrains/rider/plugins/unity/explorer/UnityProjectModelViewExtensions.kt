@@ -11,6 +11,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
     // this is called for rename, we should filter .Player projects and return node itself
     override fun getBestProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
+        if (!UnityExplorer.getInstance(project).isInitiallyVisible)
+            return null
+
         val host = ProjectModelViewHost.getInstance(project)
         val items = filterOutItemsFromNonPrimaryProjects(host.getItemsByVirtualFile(targetLocation).toList())
 
@@ -21,11 +24,17 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
+        if (!UnityExplorer.getInstance(project).isInitiallyVisible)
+            return null
+
         val host = ProjectModelViewHost.getInstance(project)
         return recursiveSearch(targetLocation, host) ?: super.getBestParentProjectModelNode(targetLocation)
     }
 
     override fun filterProjectModelNodesBeforeOperation(nodes: List<ProjectModelNode>): List<ProjectModelNode> {
+        if (!UnityExplorer.getInstance(project).isInitiallyVisible)
+            return nodes
+
         return filterOutItemsFromNonPrimaryProjects(nodes)
     }
 
