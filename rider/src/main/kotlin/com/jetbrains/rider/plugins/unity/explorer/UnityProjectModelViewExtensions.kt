@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.explorer
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.jetbrains.rd.util.assert
+import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.projectView.ProjectModelViewExtensions
 import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.nodes.*
@@ -11,6 +12,9 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
 
     // this is called for rename, we should filter .Player projects and return node itself
     override fun getBestProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
+        if (!project.isUnityProject())
+            return null
+
         val host = ProjectModelViewHost.getInstance(project)
         val items = filterOutItemsFromNonPrimaryProjects(host.getItemsByVirtualFile(targetLocation).toList())
 
@@ -21,11 +25,17 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
     }
 
     override fun getBestParentProjectModelNode(targetLocation: VirtualFile): ProjectModelNode? {
+        if (!project.isUnityProject())
+            return null
+
         val host = ProjectModelViewHost.getInstance(project)
         return recursiveSearch(targetLocation, host) ?: super.getBestParentProjectModelNode(targetLocation)
     }
 
     override fun filterProjectModelNodesBeforeOperation(nodes: List<ProjectModelNode>): List<ProjectModelNode> {
+        if (!project.isUnityProject())
+            return nodes
+
         return filterOutItemsFromNonPrimaryProjects(nodes)
     }
 
