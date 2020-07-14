@@ -11,7 +11,6 @@ import java.io.File
 fun initBuildServer(gradle: Gradle): BuildServer {
     val server = when {
         System.getenv("TEAMCITY_VERSION") != null -> TeamCity()
-        System.getenv("TRAVIS") != null -> Travis()
         else -> NullBuildServer()
     }
     gradle.taskGraph.addTaskExecutionListener(BuildServerEventLogger(server))
