@@ -2,6 +2,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Language;
+using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.Psi.Cpp.Util;
 using JetBrains.Util;
 
@@ -27,6 +28,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                 var path = CgIncludeDirectoryTracker.GetCgIncludeFolderPath(myUnityVersion);
                 if (!path.IsEmpty)
                     properties.IncludePaths.Add(path);
+
+                properties.PredefinedMacros.Add(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
+                properties.IncludePaths.Add(globalCache.Solution.SolutionDirectory);
+                properties.IncludePaths.Add(globalCache.Solution.SolutionDirectory.Combine("Library"));
 
                 return properties;
             }

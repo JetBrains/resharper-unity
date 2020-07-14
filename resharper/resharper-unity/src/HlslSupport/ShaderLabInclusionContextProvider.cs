@@ -35,6 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             if (!cgIncludeFolder.IsEmpty)
             {
                 properties.IncludePaths.Add(cgIncludeFolder);
+                properties.IncludePaths.Add(cache.Solution.SolutionDirectory);
+                properties.IncludePaths.Add(cache.Solution.SolutionDirectory.Combine("Library"));
             }
 
             var shaderCache = cache.Solution.GetComponent<ShaderLabCppFileLocationTracker>();
