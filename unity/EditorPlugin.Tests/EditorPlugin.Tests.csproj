@@ -14,6 +14,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />
     <PackageReference Include="xunit" Version="1.9.2" />
+    <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.1" />
   </ItemGroup>
     <Import Project="$(MSBuildProjectDirectory)/../build/generated/PackageReference.JetBrains.RdFramework.net35.Props" />
+    <Import Project="$(MSBuildProjectDirectory)/../EditorPlugin/ILRepack.targets" />
 </Project>

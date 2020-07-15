@@ -39,11 +39,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         // The internal action Dump Rider Highlighters Tree is very helpful, but it doesn't include a lot of the C#
         // highlights and will include e.g. dead code highlights. You'll have to edit manually.
         // When editing, it's useful to inject XML, but be very careful of the angle brackets in `GetComponent<Grid>`!
-        public const string DEMO_TEXT =
+        private const string DEMO_TEXT =
 @"<CSHARP_KEYWORD>public</CSHARP_KEYWORD> <CSHARP_KEYWORD>class</CSHARP_KEYWORD> <CSHARP_CLASS_IDENTIFIER><UNITY_IMPLICITLY_USED_IDENTIFIER>MyMonoBehaviour</UNITY_IMPLICITLY_USED_IDENTIFIER></CSHARP_CLASS_IDENTIFIER> : <CSHARP_CLASS_IDENTIFIER>MonoBehaviour</CSHARP_CLASS_IDENTIFIER>
 <CSHARP_BRACES>{</CSHARP_BRACES>
   <CSHARP_LINE_COMMENT>// This method is called very frequently by Unity</CSHARP_LINE_COMMENT>
-  <CSHARP_LINE_COMMENT>//</CSHARP_LINE_COMMENT> <UNITY_PERFORMANCE_CRITICAL_LINE_MARKER>(line marker highlight)</UNITY_PERFORMANCE_CRITICAL_LINE_MARKER>
   <CSHARP_KEYWORD>public</CSHARP_KEYWORD> <CSHARP_KEYWORD>void</CSHARP_KEYWORD> <CSHARP_METHOD_IDENTIFIER><UNITY_IMPLICITLY_USED_IDENTIFIER>Update</UNITY_IMPLICITLY_USED_IDENTIFIER></CSHARP_METHOD_IDENTIFIER><CSHARP_PARENTHESES>()</CSHARP_PARENTHESES>
   <CSHARP_BRACES>{</CSHARP_BRACES>
     <CSHARP_LINE_COMMENT>// Camera.main is inefficient inside a performance critical context</CSHARP_LINE_COMMENT>
