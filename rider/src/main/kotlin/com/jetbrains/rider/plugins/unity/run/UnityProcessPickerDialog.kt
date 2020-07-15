@@ -80,7 +80,8 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
                 button("Add player address manually...", actionListener = { enterCustomIp() })
             }
             commentRow("Please ensure both the <i>Development Build</i> and <i>Script Debugging</i> options are checked in Unity's <i>Build Settings</i> dialog. " +
-                "Device players must be visible to the current network.")
+                "Device players must be visible to the current network and firewall rules need to allow incoming UDP messages for the current process. " +
+                "Apple USB devices require iTunes or the Apple Mobile Device service to be installed.")
         }.apply { preferredSize = Dimension(650, 450) }
 
         isOKActionEnabled = false

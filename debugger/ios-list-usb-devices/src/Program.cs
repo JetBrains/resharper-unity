@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices
@@ -15,6 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices
                 Console.WriteLine("  Type 'stop' to finish");
                 return -1;
             }
+            
+            InitialiseWinSock();
 
             var thread = new Thread(ThreadFunc);
             thread.Start(args);
@@ -31,6 +34,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.iOS.ListUsbDevices
             thread.Join();
 
             return 0;
+        }
+
+        private static void InitialiseWinSock()
+        {
+            // Small hack to force WinSock to initialise on Windows. If we don't do this, the C based socket APIs in the
+            // native dll will fail, because no-one has bothered to initialise sockets.
+            try
+            {
+                var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+                socket.Dispose();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to create socket (force initialising WinSock on Windows)");
+                Console.WriteLine(e);
+            }
         }
 
         private static void ThreadFunc(object state)
