@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             AddHeader("Shaders");
-            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting, "Suppress resolve errors of unqualified names in HLSL");
+            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting, "Suppress resolve errors of unqualified names");
             
 
             AddHeader("Debugging");

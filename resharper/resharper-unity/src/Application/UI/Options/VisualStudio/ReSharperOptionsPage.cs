@@ -67,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             
             AddHeader("Shaders");
             AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting,
-                "Suppress resolve errors of unqualified names in HLSL");
+                "Suppress resolve errors of unqualified names");
             
             if (productConfigurations.IsInternalMode())
             {
