@@ -33,7 +33,7 @@ Write-Host "gradleArgs=$gradleArgs"
 Push-Location -Path rider
 Try {
 
-    .\gradlew "buildPlugin" $gradleArgs
+    $PSScriptRoot\gradlew "buildPlugin" $gradleArgs
 
     $code = $LastExitCode
     Write-Host "Gradle finished: $code"
