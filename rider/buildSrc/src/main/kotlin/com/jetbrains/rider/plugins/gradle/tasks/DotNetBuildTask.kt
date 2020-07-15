@@ -39,6 +39,7 @@ open class DotNetBuildTask: DefaultTask() {
         project.exec {
             executable = dotNetCliPath
             args = arguments
+            workingDir = file.parentFile
         }
     }
 
