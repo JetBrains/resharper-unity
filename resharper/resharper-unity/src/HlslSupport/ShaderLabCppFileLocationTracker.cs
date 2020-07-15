@@ -20,14 +20,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
     {
         private readonly ISolution mySolution;
         private readonly UnityVersion myUnityVersion;
+        private readonly CppExternalModule myCppExternalModule;
 
         public ShaderLabCppFileLocationTracker(Lifetime lifetime, ISolution solution, UnityVersion unityVersion,
-            IPersistentIndexManager persistentIndexManager)
+            IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule)
             : base(
                 lifetime, solution, persistentIndexManager, CppInjectionInfo.Read, CppInjectionInfo.Write)
         {
             mySolution = solution;
             myUnityVersion = unityVersion;
+            myCppExternalModule = cppExternalModule;
         }
 
         protected override CppFileLocation GetCppFileLocation(CppInjectionInfo t)
@@ -80,18 +82,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             var program = sourceFile.GetDominantPsiFile<ShaderLabLanguage>()?.GetContainingNodeAt<ICgContent>(new TreeOffset(range.StartOffset));
             Assertion.Assert(program != null, "program != null");
             
-            if (program?.Parent?.FirstChild is ICgProgramBlock)
+            if (program?.Parent is ICgProgramBlock)
             {
                 var hlslSupport = cgIncludeFolder.Combine("HLSLSupport.cginc");
                 if (hlslSupport.ExistsFile)
                 {
-                    yield return new CppFileLocation(hlslSupport);
+                    yield return new CppFileLocation(myCppExternalModule, hlslSupport);
                 }
                 
                 var variables = cgIncludeFolder.Combine("UnityShaderVariables.cginc");
                 if (variables.ExistsFile)
                 {
-                    yield return new CppFileLocation(variables);
+                    yield return new CppFileLocation(myCppExternalModule, variables);
                 }
             }
             

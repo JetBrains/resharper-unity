@@ -64,6 +64,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
             AddBoolOption((UnitySettings s) => s.IsAssetIndexingEnabled,
                 "Parse text based asset files for implicit script usages (requires re-opening solution)");
 
+            
+            AddHeader("Shaders");
+            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting,
+                "Suppress resolve errors of unqualified names in HLSL");
+            
             if (productConfigurations.IsInternalMode())
             {
                 AddHeader("Internal");

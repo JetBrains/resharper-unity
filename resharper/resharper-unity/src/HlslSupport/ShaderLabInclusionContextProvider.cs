@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Cpp.Parsing.Preprocessor;
+using JetBrains.ReSharper.Psi.Cpp.Symbols;
 using JetBrains.ReSharper.Psi.Cpp.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
@@ -30,11 +31,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                 LanguageKind = CppLanguageKind.HLSL, ClrSupport = VCXCompileAsManagedOptions.ManagedNotSet,
             };
 
+            properties.PredefinedMacros.Add(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
             var cgIncludeFolder =
                 CgIncludeDirectoryTracker.GetCgIncludeFolderPath(cache.Solution.GetComponent<UnityVersion>());
             if (!cgIncludeFolder.IsEmpty)
             {
                 properties.IncludePaths.Add(cgIncludeFolder);
+                properties.IncludePaths.Add(cache.Solution.SolutionDirectory);
+                properties.IncludePaths.Add(cache.Solution.SolutionDirectory.Combine("Library"));
             }
 
             var shaderCache = cache.Solution.GetComponent<ShaderLabCppFileLocationTracker>();
