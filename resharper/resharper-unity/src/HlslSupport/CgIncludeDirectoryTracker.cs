@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                             var newPath = GetCgIncludeFolderPath(unityVersion);
                             if (!oldPath.Equals(newPath))
                             {
-                                cppGlobalCache.IsInitialUpdateFinished.Change.Advise(lifetime, v =>
+                                cppGlobalCache.IsCacheStarted.Change.Advise(lifetime, v =>
                                 {
                                     if (v.HasNew && v.New)
                                     {

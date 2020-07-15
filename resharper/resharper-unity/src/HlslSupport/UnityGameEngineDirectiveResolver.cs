@@ -59,10 +59,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
 
         private readonly object myLockObject = new object();
         // TODO, add package version tracker
-        private ConcurrentDictionary<string, string> myPackageVersions = null;
+        private ConcurrentDictionary<string, JetSemanticVersion> myPackageVersions = null;
         
         [NotNull]
-        private string GetVersionFor(string packageName)
+        private JetSemanticVersion GetVersionFor(string packageName)
         {
             if (myPackageVersions == null)
             {
@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                 {
                     if (myPackageVersions == null)
                     {
-                        var result = new ConcurrentDictionary<string, string>();
+                        var result = new ConcurrentDictionary<string, JetSemanticVersion>();
                         try
                         {
                             var solDir = mySolution.SolutionDirectory;
@@ -88,17 +88,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                                     var packageAndVersion = folder.RelativePath.Name.Split('@');
                                     if (packageAndVersion.Length != 2)
                                         continue;
-                                    
-                                    if (result.ContainsKey(packageAndVersion[0]))
+
+                                    var version = JetSemanticVersion.Parse(packageAndVersion[1]);
+                                    if (result.TryGetValue(packageAndVersion[0], out var oldVersion) && oldVersion > version)
                                         continue;
 
-                                    result[packageAndVersion[0]] = packageAndVersion[1];
+                                    result[packageAndVersion[0]] = version;
                                 }
                             }
                         }
                         catch (Exception e)
                         {
-                            myPackageVersions = new ConcurrentDictionary<string, string>();
                             myLogger.Error(e, "Exception during calculating unity shader include paths");
                         }
                         finally
