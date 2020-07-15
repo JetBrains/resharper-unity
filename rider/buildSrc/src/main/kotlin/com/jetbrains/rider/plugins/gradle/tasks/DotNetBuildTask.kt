@@ -24,21 +24,21 @@ open class DotNetBuildTask: DefaultTask() {
         val file = buildFile.asFile.get()
         project.buildServer.progress("Building $file ($buildConfiguration)")
 
-        val arguments = listOf(
+        val dotNetCliPath = findDotNetCliPath()
+        val slnDir = file.parentFile
+        val buildArguments = listOf(
                 "build",
-                file.absolutePath,
+                file.canonicalPath,
                 "/p:Configuration=$buildConfiguration",
                 "/p:Version=${project.version}",
                 "/p:TreatWarningsAsErrors=$warningsAsErrors",
                 "/v:$verbosity",
                 "/nologo")
 
-        val dotNetCliPath = findDotNetCliPath()
-        logger.info("dotnet call=$dotNetCliPath $arguments")
-
+        logger.info("dotnet call: '$dotNetCliPath' '$buildArguments' in '$slnDir'")
         project.exec {
             executable = dotNetCliPath
-            args = arguments
+            args = buildArguments
             workingDir = file.parentFile
         }
     }
