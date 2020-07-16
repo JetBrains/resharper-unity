@@ -287,7 +287,11 @@ namespace JetBrains.Rider.Unity.Editor
         var riderProtocolController = new RiderProtocolController(dispatcher, lifetime);
         list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionName));
 
+#if !NET35
+        var serializers = new Serializers(lifetime, null, null);
+#else
         var serializers = new Serializers();
+#endif
         var identities = new Identities(IdKind.Server);
 
         MainThreadDispatcher.AssertThread();
