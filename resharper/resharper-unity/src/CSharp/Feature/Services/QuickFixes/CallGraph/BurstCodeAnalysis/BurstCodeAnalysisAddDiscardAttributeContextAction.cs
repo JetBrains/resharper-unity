@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -37,17 +38,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public override IEnumerable<IntentionAction> CreateBulbItems()
         {
+            var method = MethodDeclaration?.DeclaredElement;
+            // burst discard - always no if it is already discarded.
+            if(BurstCodeAnalysisUtil.IsBurstContextBannedFunction(method))
+                yield break;
             var solution = myDataProvider.Solution;
             var swea = solution.GetComponent<SolutionAnalysisService>();
-            var isCompleted = swea.Configuration?.Completed?.Value == true;
-            if(!isCompleted)
+            if(swea.Configuration?.Enabled?.Value == false)
                 yield break;
+            var isGlobalStage = swea.Configuration?.Completed?.Value == true;
             var callGraphSwaExtensionProvider = solution.GetComponent<CallGraphSwaExtensionProvider>();
-            var method = MethodDeclaration?.DeclaredElement;
             var elementIdProvider = solution.GetComponent<IElementIdProvider>();
             var methodId = elementIdProvider.GetElementId(method);
             var isBurstContext = methodId.HasValue && callGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                CallGraphBurstMarksProvider.ProviderId, isGlobalStage: true, methodId.Value);
+                CallGraphBurstMarksProvider.ProviderId, isGlobalStage, methodId.Value);
             if (isBurstContext)
                 yield return this.ToContextActionIntention();
         }
