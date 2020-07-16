@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Daemon
 {
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabGlobalStructureLanguageCategoriesProvider : IGlobalStructureLanguageCategoriesProvider

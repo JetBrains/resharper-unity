@@ -1,15 +1,16 @@
 using System.Collections.Generic;
+using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
 {
-    public static class ShaderLabCppHelper
+    public static class InjectedHlslLocationHelper
     {
-        public static IEnumerable<(CppFileLocation Location, ShaderProgramType ProgramType)> GetCppFileLocations(
+        public static IEnumerable<(CppFileLocation Location, InjectedHlslProgramType ProgramType)> GetCppFileLocations(
             IPsiSourceFile sourceFile)
         {
             var lexer = new ShaderLabLexerGenerated(sourceFile.Document.Buffer);
@@ -18,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             {
 
                 var type = GetProgramType(lexer.TokenType);
-                if (type != ShaderProgramType.Uknown)
+                if (type != InjectedHlslProgramType.Uknown)
                 {
                     lexer.Advance();
                     if (lexer.TokenType == null)
@@ -30,22 +31,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             }
         }
 
-        private static ShaderProgramType GetProgramType(TokenNodeType lexerTokenType)
+        private static InjectedHlslProgramType GetProgramType(TokenNodeType lexerTokenType)
         {
             if (lexerTokenType == ShaderLabTokenType.CG_INCLUDE)
-                return ShaderProgramType.CGInclude;
+                return InjectedHlslProgramType.CGInclude;
             if (lexerTokenType == ShaderLabTokenType.CG_PROGRAM)
-                return ShaderProgramType.CGProgram;
+                return InjectedHlslProgramType.CGProgram;
             if (lexerTokenType == ShaderLabTokenType.HLSL_INCLUDE)
-                return ShaderProgramType.HLSLInclude;
+                return InjectedHlslProgramType.HLSLInclude;
             if (lexerTokenType == ShaderLabTokenType.HLSL_PROGRAM)
-                return ShaderProgramType.HLSLProgram;
+                return InjectedHlslProgramType.HLSLProgram;
             if (lexerTokenType == ShaderLabTokenType.GLSL_INCLUDE)
-                return ShaderProgramType.GLSLInclude;
+                return InjectedHlslProgramType.GLSLInclude;
             if (lexerTokenType == ShaderLabTokenType.GLSL_PROGRAM)
-                return ShaderProgramType.GLSLProgram;
+                return InjectedHlslProgramType.GLSLProgram;
 
-            return ShaderProgramType.Uknown;
+            return InjectedHlslProgramType.Uknown;
         }
     }
 }

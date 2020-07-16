@@ -1,19 +1,14 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Application;
 using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.Cpp.Parsing.Preprocessor;
 using JetBrains.ReSharper.Psi.Cpp.Util;
 using JetBrains.Util;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 {
     [SolutionComponent]
     public class UnityGameEngineDirectiveResolver : IGameEngineIncludeDirectiveResolver
