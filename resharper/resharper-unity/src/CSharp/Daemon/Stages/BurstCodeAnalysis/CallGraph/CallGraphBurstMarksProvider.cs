@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
@@ -21,6 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public class CallGraphBurstMarksProvider : CallGraphRootMarksProviderBase
     {
         private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
+
+        public static CallGraphRootMarksProviderId ProviderId =
+            new CallGraphRootMarksProviderId(nameof(CallGraphBurstMarksProvider));
 
         public CallGraphBurstMarksProvider(ISolution solution,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
@@ -45,17 +49,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         .Where(declaredType => declaredType.IsInterfaceType())
                         .Select(declaredType => declaredType.GetTypeElement())
                         .WhereNotNull()
-                        .Where(typeElement => typeElement.HasAttributeInstance(KnownTypes.JobProducerAttrubyte, AttributesSource.Self))
+                        .Where(typeElement =>
+                            typeElement.HasAttributeInstance(KnownTypes.JobProducerAttrubyte, AttributesSource.Self))
                         .ToList();
                     var structMethods = @struct.Methods.ToList();
-                    
+
                     foreach (var @interface in interfaces)
                     {
                         var interfaceMethods = @interface.Methods.ToList();
                         var overridenMethods = structMethods
                             .Where(m => interfaceMethods.Any(m.OverridesOrImplements))
                             .ToList();
-                        
+
                         foreach (var overridenMethod in overridenMethods)
                             result.Add(overridenMethod);
                     }
@@ -116,13 +121,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             node.ProcessDescendants(processor);
             return processor.IsBurstProhibited;
         }
-        
+
         private class BurstBannedProcessor : IRecursiveElementProcessor
         {
             public bool IsBurstProhibited;
             private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
             private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
-            
+
             public BurstBannedProcessor(List<IBurstBannedAnalyzer> burstBannedAnalyzers)
             {
                 myBurstBannedAnalyzers = burstBannedAnalyzers;
@@ -144,7 +149,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         return;
                     }
                 }
-
             }
 
             public void ProcessAfterInterior(ITreeNode element)

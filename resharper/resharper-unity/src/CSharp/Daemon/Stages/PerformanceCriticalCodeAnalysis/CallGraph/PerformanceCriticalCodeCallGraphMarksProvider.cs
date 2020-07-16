@@ -3,6 +3,7 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
@@ -19,6 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class PerformanceCriticalCodeCallGraphMarksProvider : CallGraphRootMarksProviderBase
     {
         public static readonly string MarkId = "Unity.PerformanceCriticalContext";
+        public static readonly CallGraphRootMarksProviderId ProviderId = new CallGraphRootMarksProviderId(nameof(PerformanceCriticalCodeCallGraphMarksProvider));
 
         public PerformanceCriticalCodeCallGraphMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker)
@@ -32,20 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
-
-            if (containingFunction == null)
-                return result;
-
-            var declaration = currentNode as IDeclaration;
-            var declaredElement = declaration?.DeclaredElement;
-
-            if (!ReferenceEquals(containingFunction, declaredElement))
-                return result;
-
-            if (containingFunction is IAttributesSet attributesSet &&
-                attributesSet.HasAttributeInstance(CallGraphActionUtil.PerformanceCriticalCodeAnalysisDisableAttribute,
-                    AttributesSource.Self))
-                result.Add(containingFunction);
 
             return result;
         }
@@ -130,14 +118,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
-
-            if (containingFunction is IAttributesSet attributesSet &&
-                attributesSet.HasAttributeInstance(CallGraphActionUtil.PerformanceCriticalCodeAnalysisEnableAttribute,
-                    AttributesSource.Self))
-            {
-                result.Add(containingFunction);
-                return result;
-            }
 
             var processor = new PerformanceCriticalCodeProcessor();
 
