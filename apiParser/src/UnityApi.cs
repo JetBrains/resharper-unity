@@ -91,7 +91,7 @@ namespace ApiParser
         public static UnityApi ImportFrom(FileSystemPath apiXml)
         {
             var doc = XDocument.Load(apiXml.FullPath);
-            var apiNode = doc.FirstNode as XElement;
+            var apiNode = doc.Root;
             if (apiNode?.Name != "api")
                 throw new InvalidDataException("Cannot find root api node");
             var api = new UnityApi();

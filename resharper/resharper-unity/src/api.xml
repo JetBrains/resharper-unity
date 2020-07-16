@@ -21,7 +21,7 @@
       </parameters>
       <returns type="UnityEditor.AssetDeleteResult" array="False" />
     </message>
-    <message name="OnWillMoveAsset" static="True" description="This is called by Unity when it is about to move an asset on disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
+    <message name="OnWillMoveAsset" static="True" description="Unity calls this method when it is about to move an Asset on disk." path="Documentation/en/ScriptReference/AssetModificationProcessor.OnWillMoveAsset.html">
       <parameters>
         <parameter type="System.String" array="False" name="sourcePath" />
         <parameter type="System.String" array="False" name="destinationPath" />
