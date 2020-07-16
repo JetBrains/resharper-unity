@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
         private readonly PerformanceCriticalCodeCallGraphMarksProvider myPerformanceCriticalCodeCallGraphMarksProvider;
         private readonly CallGraphBurstMarksProvider myCallGraphBurstMarksProvider;
-        protected readonly IEnumerable<IUnityDeclarationHighlightingProvider> HiglightingProviders;
+        protected readonly IEnumerable<IUnityDeclarationHighlightingProvider> HighlightingProviders;
         protected readonly IEnumerable<IUnityProblemAnalyzer> PerformanceProblemAnalyzers;
         protected readonly UnityApi API;
         private readonly UnityCommonIconProvider myCommonIconProvider;
@@ -41,14 +41,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         protected UnityHighlightingAbstractStage(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             PerformanceCriticalCodeCallGraphMarksProvider performanceCriticalCodeCallGraphMarksProvider,
             CallGraphBurstMarksProvider callGraphBurstMarksProvider,
-            IEnumerable<IUnityDeclarationHighlightingProvider> higlightingProviders,
+            IEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
             IEnumerable<IUnityProblemAnalyzer> performanceProblemAnalyzers, UnityApi api,
             UnityCommonIconProvider commonIconProvider, IElementIdProvider provider, ILogger logger)
         {
             myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             myPerformanceCriticalCodeCallGraphMarksProvider = performanceCriticalCodeCallGraphMarksProvider;
             myCallGraphBurstMarksProvider = callGraphBurstMarksProvider;
-            HiglightingProviders = higlightingProviders;
+            HighlightingProviders = highlightingProviders;
             PerformanceProblemAnalyzers = performanceProblemAnalyzers;
             API = api;
             myCommonIconProvider = commonIconProvider;
@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             return new UnityHighlightingProcess(process, file, myCallGraphSwaExtensionProvider,
                 myPerformanceCriticalCodeCallGraphMarksProvider, isPerformanceAnalysisEnabled,
                 myCallGraphBurstMarksProvider, isBurstAnalysisEnabled,
-                HiglightingProviders, PerformanceProblemAnalyzers,
+                HighlightingProviders, PerformanceProblemAnalyzers,
                 API, myCommonIconProvider, processKind, myProvider, Logger);
         }
     }
@@ -303,7 +303,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 if (!id.HasValue)
                     return false;
                 return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                    rootMarksProviderId, isGlobalStage, id.Value);
+                    rootMarksProviderId, isGlobalStage: true, id.Value);
             }
 
             return isRooted;

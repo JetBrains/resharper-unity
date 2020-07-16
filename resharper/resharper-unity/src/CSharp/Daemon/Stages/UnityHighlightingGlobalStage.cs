@@ -18,11 +18,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         public UnityHighlightingGlobalStage(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             PerformanceCriticalCodeCallGraphMarksProvider performanceCriticalCodeCallGraphMarksProvider,
             CallGraphBurstMarksProvider callGraphBurstMarksProvider,
-            IEnumerable<IUnityDeclarationHighlightingProvider> higlightingProviders,
+            IEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
             IEnumerable<IUnityProblemAnalyzer> performanceProblemAnalyzers,
             UnityApi api, UnityCommonIconProvider commonIconProvider, IElementIdProvider provider, ILogger logger)
             : base(callGraphSwaExtensionProvider, performanceCriticalCodeCallGraphMarksProvider, callGraphBurstMarksProvider,
-                higlightingProviders, performanceProblemAnalyzers, api, commonIconProvider, provider, logger)
+                highlightingProviders, performanceProblemAnalyzers, api, commonIconProvider, provider, logger)
         {
         }
     }
