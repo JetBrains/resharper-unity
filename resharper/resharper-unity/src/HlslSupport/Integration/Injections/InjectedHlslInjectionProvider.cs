@@ -1,6 +1,5 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;

@@ -4,7 +4,6 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
@@ -15,7 +14,7 @@ using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
 {
     [SolutionComponent]
     public class InjectedHlslFileLocationTracker : CppFileLocationTrackerBase<InjectedHlslLocationInfo>
@@ -83,6 +82,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches
             var type = GetShaderProgramType(buffer, range.StartOffset);
             var includeType = GetIncludeProgramType(type);
 
+            yield return new CppFileLocation(myCppExternalModule, mySolution.SolutionDirectory.Combine(Utils.ShaderConfigFile));
+            
             if (includeType != InjectedHlslProgramType.Uknown)
             {
                 var includes = GetIncludesLocation(sourceFile, includeType);
@@ -91,6 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches
                     yield return include;
                 }
             }
+            
 
             var cgIncludeFolder = CgIncludeDirectoryTracker.GetCgIncludeFolderPath(myUnityVersion);        
             if (!cgIncludeFolder.ExistsDirectory)
