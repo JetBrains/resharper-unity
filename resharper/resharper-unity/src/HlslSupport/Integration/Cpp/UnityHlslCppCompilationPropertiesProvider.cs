@@ -29,6 +29,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                 if (!path.IsEmpty)
                     properties.IncludePaths.Add(path);
 
+                properties.ForcedIncludes.Add(globalCache.Solution.SolutionDirectory.Combine(Utils.ShaderConfigFile).FullPath);
+
                 properties.PredefinedMacros.Add(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
                 properties.IncludePaths.Add(globalCache.Solution.SolutionDirectory);
                 properties.IncludePaths.Add(globalCache.Solution.SolutionDirectory.Combine("Library"));

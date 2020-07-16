@@ -2,7 +2,6 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.VCXProj;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;

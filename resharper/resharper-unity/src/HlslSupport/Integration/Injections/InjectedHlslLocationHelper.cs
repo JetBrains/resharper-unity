@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
