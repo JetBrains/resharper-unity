@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Collections;
-using JetBrains.Metadata.Reader.API;
-using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -19,14 +17,13 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.Util.Literals;
 using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
-    public class AssetUtils
+    public static class AssetUtils
     {
         private static readonly StringSearcher ourMonoBehaviourCheck = new StringSearcher("!u!114 ", true);
         private static readonly StringSearcher ourFileIdCheck = new StringSearcher("fileID:", false);
@@ -55,20 +52,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public static bool IsReferenceValue(IBuffer buffer) =>
             ourFileIdCheck.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
-        
+
         public static bool IsPrefabModification(IBuffer buffer) =>
             ourPrefabModificationSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
-        
+
         public static bool IsTransform(IBuffer buffer) =>
             ourTransformSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0 ||
             ourRectTransformSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
-        
+
         public static bool IsGameObject(IBuffer buffer) =>
             ourGameObjectSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
-        
+
         public static bool IsStripped(IBuffer buffer) =>
             ourStrippedSearcher.Find(buffer, 0, Math.Min(buffer.Length, 150)) >= 0;
-        
+
         public static ulong? GetAnchorFromBuffer(IBuffer buffer)
         {
             var index = 0;
@@ -76,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             {
                 if (index == buffer.Length)
                     return null;
-                
+
                 if (buffer[index] == '&')
                     break;
 
@@ -101,11 +98,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         [CanBeNull]
         public static IHierarchyReference GetGameObjectReference(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourGameObjectFieldSearcher);
-        
+
         [CanBeNull]
         public static IHierarchyReference GetTransformFather(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourFatherSearcher);
-        
+
         [CanBeNull]
         public static IHierarchyReference GetSourcePrefab(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourSourcePrefabSearcher) ??
@@ -124,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 else
                     break;
             }
-            
+
             var result = new StringBuilder();
 
             while (start < assetDocumentBuffer.Length)
@@ -155,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 eol = ourEndLine2Searcher.Find(buffer, start, buffer.Length);
             if (eol < 0)
                 return null;
-            
+
             var nameBuffer = ProjectedBuffer.Create(buffer, new TextRange(start, eol + 1));
             var lexer = new YamlLexer(nameBuffer, false, false);
             var parser = new YamlParser(lexer.ToCachingLexer());
@@ -164,7 +161,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value
                 .GetPlainScalarText();
         }
-        
+
         [CanBeNull]
         public static IHierarchyReference GetPrefabInstance(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourPrefabInstanceSearcher) ??
@@ -174,7 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public static IHierarchyReference GetCorrespondingSourceObject(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer) =>
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourCorrespondingObjectSearcher) ??
             GetReferenceBySearcher(assetSourceFile, assetDocumentBuffer, ourCorrespondingObjectSearcher2017);
-        
+
         [CanBeNull]
         public static IHierarchyReference GetReferenceBySearcher(IPsiSourceFile assetSourceFile, IBuffer assetDocumentBuffer, StringSearcher searcher)
         {
@@ -184,7 +181,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             var end = ourBracketSearcher.Find(assetDocumentBuffer, start, assetDocumentBuffer.Length);
             if (end < 0)
                 return null;
-            
+
             var buffer = ProjectedBuffer.Create(assetDocumentBuffer, new TextRange(start, end + 1));
             var lexer = new YamlLexer(buffer, false, false);
             var parser = new YamlParser(lexer.ToCachingLexer());
@@ -192,7 +189,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             return (document.Body.BlockNode as IBlockMappingNode)?.Entries.FirstOrDefault()?.Content.Value.ToHierarchyReference(assetSourceFile);
         }
-        
+
         [CanBeNull]
         public static IBlockMappingNode GetPrefabModification(IYamlDocument yamlDocument)
         {
@@ -200,12 +197,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             return yamlDocument.GetUnityObjectPropertyValue(UnityYamlConstants.ModificationProperty) as IBlockMappingNode;
         }
 
-        private static readonly IClrTypeName ourFormerlySerializedAsAttribute = new ClrTypeName("UnityEngine.Serialization.FormerlySerializedAsAttribute");
         public static IEnumerable<string> GetAllNamesFor(IField field)
         {
             yield return field.ShortName;
 
-            foreach (var attribute in field.GetAttributeInstances(ourFormerlySerializedAsAttribute, false))
+            foreach (var attribute in field.GetAttributeInstances(KnownTypes.FormerlySerializedAsAttribute, false))
             {
                 var result = attribute.PositionParameters().FirstOrDefault()?.ConstantValue.Value as string;
                 if (result == null)
@@ -233,7 +229,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             return assetDocumentBuffer.GetText(new TextRange(startPos, pos));
         }
-        
+
         public static string GetComponentName(MetaFileGuidCache metaFileGuidCache, IComponentHierarchy componentHierarchy)
         {
             if (componentHierarchy is IScriptComponentHierarchy scriptComponent)
@@ -285,13 +281,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             return null;
         }
-        
+
         public static Guid? GetGuidFor(MetaFileGuidCache metaFileGuidCache, ITypeElement typeElement)
         {
             var sourceFile = typeElement.GetDeclarations().FirstOrDefault()?.GetSourceFile();
             if (sourceFile == null || !sourceFile.IsValid())
                 return null;
-            
+
             if (typeElement.TypeParameters.Count != 0)
                 return null;
 
@@ -307,7 +303,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public static bool HasPossibleDerivedTypesWithMember(Guid ownerGuid, ITypeElement containingType, IEnumerable<string> memberNames, OneToCompactCountingSet<int, Guid> nameHashToGuids)
         {
-            
+
             var count = 0;
             foreach (var possibleName in memberNames)
             {
@@ -319,7 +315,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
             if (count > 1)
             {
-                // TODO: drop daemon dependency and inject compoentns in consructor
+                // TODO: drop daemon dependency and inject components in constructor
                 var configuration = containingType.GetSolution().GetComponent<SolutionAnalysisConfiguration>();
                 if (configuration.Enabled.Value && configuration.CompletedOnceAfterStart.Value &&
                     configuration.Loaded.Value)
