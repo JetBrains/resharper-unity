@@ -816,6 +816,12 @@
     </message>
   </type>
   <type kind="class" name="ScriptedImporter" ns="UnityEditor.Experimental.AssetImporters" minimumVersion="2019.1" path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.html">
+    <message name="GatherDependenciesFromSourceFile" static="True" minimumVersion="2020.1" description="A static callback that you can implement to set up artifact dependencies to other Assets, and optimize the order your assets are imported." path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.GatherDependenciesFromSourceFile.html">
+      <parameters>
+        <parameter type="System.String" array="False" name="assetPath" />
+      </parameters>
+      <returns type="System.String" array="True" />
+    </message>
     <message name="OnValidate" static="False" description="This function is called when the importer is loaded or a value is changed in the Inspector." path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.OnValidate.html">
       <returns type="System.Void" array="False" />
     </message>
