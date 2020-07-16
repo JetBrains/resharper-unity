@@ -1,43 +1,40 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
+using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
-using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Parsing;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches
 {
     [SolutionComponent]
-    public class ShaderLabCppFileLocationTracker : CppFileLocationTrackerBase<ShaderLabInjectLocationInfo>
+    public class InjectedHlslFileLocationTracker : CppFileLocationTrackerBase<InjectedHlslLocationInfo>
     {
         private readonly ISolution mySolution;
         private readonly UnityVersion myUnityVersion;
         private readonly CppExternalModule myCppExternalModule;
 
-        public ShaderLabCppFileLocationTracker(Lifetime lifetime, ISolution solution, UnityVersion unityVersion,
+        public InjectedHlslFileLocationTracker(Lifetime lifetime, ISolution solution, UnityVersion unityVersion,
             IPersistentIndexManager persistentIndexManager, CppExternalModule cppExternalModule)
             : base(
-                lifetime, solution, persistentIndexManager, ShaderLabInjectLocationInfo.Read, ShaderLabInjectLocationInfo.Write)
+                lifetime, solution, persistentIndexManager, InjectedHlslLocationInfo.Read, InjectedHlslLocationInfo.Write)
         {
             mySolution = solution;
             myUnityVersion = unityVersion;
             myCppExternalModule = cppExternalModule;
         }
 
-        protected override CppFileLocation GetCppFileLocation(ShaderLabInjectLocationInfo t)
+        protected override CppFileLocation GetCppFileLocation(InjectedHlslLocationInfo t)
         {
             return t.ToCppFileLocation();
         }
@@ -47,11 +44,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             return sf.PrimaryPsiLanguage.Is<ShaderLabLanguage>();
         }
 
-        protected override HashSet<ShaderLabInjectLocationInfo> BuildData(IPsiSourceFile sourceFile)
+        protected override HashSet<InjectedHlslLocationInfo> BuildData(IPsiSourceFile sourceFile)
         {
-            var injections = ShaderLabCppHelper.GetCppFileLocations(sourceFile).Select(t =>
-                new ShaderLabInjectLocationInfo(t.Location.Location, t.Location.RootRange, t.ProgramType));
-            return new HashSet<ShaderLabInjectLocationInfo>(injections);
+            var injections = InjectedHlslLocationHelper.GetCppFileLocations(sourceFile).Select(t =>
+                new InjectedHlslLocationInfo(t.Location.Location, t.Location.RootRange, t.ProgramType));
+            return new HashSet<InjectedHlslLocationInfo>(injections);
         }
 
         protected override bool Exists(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation)
@@ -63,9 +60,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             return false;
         }
 
-        private IEnumerable<CppFileLocation> GetIncludesLocation(IPsiSourceFile sourceFile, ShaderProgramType type)
+        private IEnumerable<CppFileLocation> GetIncludesLocation(IPsiSourceFile sourceFile, InjectedHlslProgramType type)
         {
-            if (type == ShaderProgramType.Uknown)
+            if (type == InjectedHlslProgramType.Uknown)
                 return EnumerableCollection<CppFileLocation>.Empty;
             
             return Map[sourceFile]
@@ -86,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             var type = GetShaderProgramType(buffer, range.StartOffset);
             var includeType = GetIncludeProgramType(type);
 
-            if (includeType != ShaderProgramType.Uknown)
+            if (includeType != InjectedHlslProgramType.Uknown)
             {
                 var includes = GetIncludesLocation(sourceFile, includeType);
                 foreach (var include in includes)
@@ -99,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             if (!cgIncludeFolder.ExistsDirectory)
                 yield break;
 
-            if (type == ShaderProgramType.CGProgram)
+            if (type == InjectedHlslProgramType.CGProgram)
             {
                 var hlslSupport = cgIncludeFolder.Combine("HLSLSupport.cginc");
                 if (hlslSupport.ExistsFile)
@@ -156,11 +153,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             }
         }
 
-        private ShaderProgramType GetShaderProgramType(IBuffer buffer, int locationStartOffset)
+        private InjectedHlslProgramType GetShaderProgramType(IBuffer buffer, int locationStartOffset)
         {
             Assertion.Assert(locationStartOffset < buffer.Length, "locationStartOffset < buffer.Length");
             if (locationStartOffset >= buffer.Length)
-                return ShaderProgramType.Uknown;
+                return InjectedHlslProgramType.Uknown;
             
             int curPos = locationStartOffset - 1;
             while (curPos > 0)
@@ -187,34 +184,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             switch (text)
             {
                 case "CGPROGRAM":
-                    return ShaderProgramType.CGProgram;
+                    return InjectedHlslProgramType.CGProgram;
                 case "CGINCLUDE":
-                    return ShaderProgramType.CGInclude;
+                    return InjectedHlslProgramType.CGInclude;
                 case "GLSLPROGRAM":
-                    return ShaderProgramType.GLSLProgram;
+                    return InjectedHlslProgramType.GLSLProgram;
                 case "GLSLINCLUDE":
-                    return ShaderProgramType.GLSLInclude;
+                    return InjectedHlslProgramType.GLSLInclude;
                 case "HLSLPROGRAM":
-                    return ShaderProgramType.HLSLProgram;
+                    return InjectedHlslProgramType.HLSLProgram;
                 case "HLSLINCLUDE":
-                    return ShaderProgramType.HLSLInclude;
+                    return InjectedHlslProgramType.HLSLInclude;
                 default:
-                    return ShaderProgramType.Uknown;
+                    return InjectedHlslProgramType.Uknown;
             }
         }
 
-        private ShaderProgramType GetIncludeProgramType(ShaderProgramType shaderProgramType)
+        private InjectedHlslProgramType GetIncludeProgramType(InjectedHlslProgramType injectedHlslProgramType)
         {
-            switch (shaderProgramType)
+            switch (injectedHlslProgramType)
             {
-                case ShaderProgramType.CGProgram:
-                    return ShaderProgramType.CGInclude;
-                case ShaderProgramType.GLSLProgram:
-                    return ShaderProgramType.GLSLInclude;
-                case ShaderProgramType.HLSLProgram:
-                    return ShaderProgramType.HLSLInclude;
+                case InjectedHlslProgramType.CGProgram:
+                    return InjectedHlslProgramType.CGInclude;
+                case InjectedHlslProgramType.GLSLProgram:
+                    return InjectedHlslProgramType.GLSLInclude;
+                case InjectedHlslProgramType.HLSLProgram:
+                    return InjectedHlslProgramType.HLSLInclude;
                 default:
-                    return ShaderProgramType.Uknown;
+                    return InjectedHlslProgramType.Uknown;
             }
         }
     }

@@ -3,25 +3,25 @@ using JetBrains.Serialization;
 using JetBrains.Util;
 using JetBrains.Util.PersistentMap;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches
 {
-    public class ShaderLabInjectLocationInfo
+    public class InjectedHlslLocationInfo
     {
-        public ShaderLabInjectLocationInfo(FileSystemPath path, TextRange range, ShaderProgramType programType)
+        public InjectedHlslLocationInfo(FileSystemPath path, TextRange range, InjectedHlslProgramType programType)
         {
             FileSystemPath = path;
             Range = range;
             ProgramType = programType;
         }
 
-        public static ShaderLabInjectLocationInfo Read(UnsafeReader reader)
+        public static InjectedHlslLocationInfo Read(UnsafeReader reader)
         {
-            return new ShaderLabInjectLocationInfo(UnsafeMarshallers.FileSystemPathMarshaller.Unmarshal(reader), new TextRange(reader.ReadInt(), reader.ReadInt()), 
-                reader.ReadEnum(ShaderProgramType.Uknown));
+            return new InjectedHlslLocationInfo(UnsafeMarshallers.FileSystemPathMarshaller.Unmarshal(reader), new TextRange(reader.ReadInt(), reader.ReadInt()), 
+                reader.ReadEnum(InjectedHlslProgramType.Uknown));
 
         }
 
-        public static void Write(UnsafeWriter writer, ShaderLabInjectLocationInfo value)
+        public static void Write(UnsafeWriter writer, InjectedHlslLocationInfo value)
         {
             UnsafeMarshallers.FileSystemPathMarshaller.Marshal(writer, value.FileSystemPath);
             writer.Write(value.Range.StartOffset);
@@ -36,9 +36,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
 
         public TextRange Range { get; }
         public FileSystemPath FileSystemPath { get; }
-        public ShaderProgramType ProgramType { get; }
+        public InjectedHlslProgramType ProgramType { get; }
 
-        protected bool Equals(ShaderLabInjectLocationInfo other)
+        protected bool Equals(InjectedHlslLocationInfo other)
         {
             return Range.Equals(other.Range) && FileSystemPath.Equals(other.FileSystemPath) && ProgramType == other.ProgramType;
         }
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((ShaderLabInjectLocationInfo) obj);
+            return Equals((InjectedHlslLocationInfo) obj);
         }
 
         public override int GetHashCode()

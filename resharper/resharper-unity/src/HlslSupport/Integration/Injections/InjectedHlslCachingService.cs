@@ -6,10 +6,10 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
 {
     [Language(typeof(ShaderLabLanguage))]
-    public class ShaderLabInjectCachingService : IInjectCachingService
+    public class InjectedHlslCachingService : IInjectCachingService
     {
         public IEnumerable<IFile> GetInjectedFiles(Type injectedLanguageType, IFile dominantFile,
             IReadOnlyCollection<IInjectedPsiProvider> providersToBuild,

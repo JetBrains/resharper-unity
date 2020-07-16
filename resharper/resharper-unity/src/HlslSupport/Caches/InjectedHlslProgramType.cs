@@ -1,6 +1,6 @@
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Caches
 {
-    public enum ShaderProgramType
+    public enum InjectedHlslProgramType
     {
         CGInclude,
         CGProgram,

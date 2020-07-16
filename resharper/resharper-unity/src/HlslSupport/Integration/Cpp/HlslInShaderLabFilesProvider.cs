@@ -2,18 +2,19 @@ using System.Collections.Generic;
 using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Cpp.Caches;
+using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 {
     [SolutionComponent]
-    public class ShaderlabCppInitialFilesProvider : ICppInitialFilesProvider
+    public class InjectedHlslInitialFilesProvider : ICppInitialFilesProvider
     {
         private readonly PsiModules myPsiModules;
 
-        public ShaderlabCppInitialFilesProvider(PsiModules psiModules)
+        public InjectedHlslInitialFilesProvider(PsiModules psiModules)
         {
             myPsiModules = psiModules;
         }
@@ -31,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
 
                     if (f.IsValid() && f.LanguageType.Is<ShaderLabProjectFileType>())
                     {
-                        foreach (var cppFileLocation in ShaderLabCppHelper.GetCppFileLocations(f))
+                        foreach (var cppFileLocation in InjectedHlslLocationHelper.GetCppFileLocations(f))
                         {
                             yield return cppFileLocation.Location;
                         }

@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
     [SolutionComponent]
     public class CgIncludeDirectoryTracker
     {
-        private const string CG_FOLDER_PATH = "CgIncludeFolderPath";
+        private const string CG_INCLUDE_DIRECTORY_PATH = "CgIncludeFolderPath";
 
         public CgIncludeDirectoryTracker(Lifetime lifetime, UnityReferencesTracker unityReferencesTracker,
             SolutionCaches solutionCaches, IShellLocks shellLocks, ISolutionLoadTasksScheduler scheduler,
@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                 {
                     unityReferencesTracker.HasUnityReference.AdviseOnce(lifetime, _ =>
                     {
-                        if (solutionCaches.PersistentProperties.TryGetValue(CG_FOLDER_PATH, out var result))
+                        if (solutionCaches.PersistentProperties.TryGetValue(CG_INCLUDE_DIRECTORY_PATH, out var result))
                         {
                             var oldPath = FileSystemPath.TryParse(result, FileSystemPathInternStrategy.INTERN);
                             var newPath = GetCgIncludeFolderPath(unityVersion);
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                                         {
                                             logger.Verbose("Dropping C++ cache, because Unity version is changed");
                                             cppGlobalCache.ResetCache();
-                                            solutionCaches.PersistentProperties[CG_FOLDER_PATH] = newPath.FullPath;
+                                            solutionCaches.PersistentProperties[CG_INCLUDE_DIRECTORY_PATH] = newPath.FullPath;
                                         });
                                     }
                                 });
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
                         }
                         else
                         {
-                            solutionCaches.PersistentProperties[CG_FOLDER_PATH] = GetCgIncludeFolderPath(unityVersion).FullPath;
+                            solutionCaches.PersistentProperties[CG_INCLUDE_DIRECTORY_PATH] = GetCgIncludeFolderPath(unityVersion).FullPath;
                         }
                     });
                 }));
