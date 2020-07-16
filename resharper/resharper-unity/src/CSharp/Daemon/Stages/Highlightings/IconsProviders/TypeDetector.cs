@@ -37,16 +37,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var typeElement = element.DeclaredElement;
             if (typeElement != null)
             {
-                if (UnityApi.IsDescendantOfMonoBehaviour(typeElement))
+                if (typeElement.DerivesFromMonoBehaviour())
                 {
                     AddMonoBehaviourHiglighting(consumer, element, "Script", "Unity script", kind);
                 }
-                else if (UnityApi.IsDescendantOf(KnownTypes.Editor, typeElement) ||
-                         UnityApi.IsDescendantOf(KnownTypes.EditorWindow, typeElement))
+                else if (typeElement.DerivesFrom(KnownTypes.Editor) || typeElement.DerivesFrom(KnownTypes.EditorWindow))
                 {
                     AddEditorHiglighting(consumer, element, "Editor", "Custom Unity Editor", kind);
                 }
-                else if (UnityApi.IsDescendantOfScriptableObject(typeElement))
+                else if (typeElement.DerivesFromScriptableObject())
                 {
                     AddMonoBehaviourHiglighting(consumer, element, "Scriptable object", "Scriptable Object", kind);
                 }
@@ -110,6 +109,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
             return result;
         }
-
     }
 }

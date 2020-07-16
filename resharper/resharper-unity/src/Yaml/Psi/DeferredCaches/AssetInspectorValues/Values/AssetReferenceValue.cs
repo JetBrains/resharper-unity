@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
     [PolymorphicMarshaller]
     public class AssetReferenceValue : IAssetValue
     {
-        [UsedImplicitly] 
+        [UsedImplicitly]
         public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
 
         private static object Read(UnsafeReader reader) => new AssetReferenceValue( HierarchyReferenceUtil.ReadReferenceFrom(reader));
@@ -30,9 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
         {
             value.Reference.WriteTo(writer);
         }
-        
+
         public IHierarchyReference Reference { get; }
-        
+
         public AssetReferenceValue(IHierarchyReference reference)
         {
             Assertion.Assert(reference != null, "reference != null");
@@ -62,11 +62,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             solution.GetComponent<IShellLocks>().AssertReadAccessAllowed();
             var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
 
-            if (UnityApi.IsDescendantOfScriptableObject((declaredElement as IField)?.Type.GetTypeElement()))
+            if ((declaredElement as IField)?.Type.GetTypeElement().DerivesFromScriptableObject() == true)
             {
                 if (Reference is LocalReference localReference && localReference.LocalDocumentAnchor == 0)
                     return "None";
-                
+
                 var sourceFile = hierarchyContainer.GetSourceFile(Reference, out _);
                 if (sourceFile == null)
                     return "...";
@@ -76,10 +76,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
 
                 return sourceFile.GetLocation().Name + $" (in {sourceFile.DisplayName.Replace('\\', '/').RemoveStart("Assets/").RemoveEnd("/" + sourceFile.GetLocation().Name)})";
             }
-            
+
             if (Reference.LocalDocumentAnchor == 0)
                 return "None";
-                
+
             var processor = solution.GetComponent<AssetHierarchyProcessor>();
             var consumer = new UnityScenePathGameObjectConsumer(true);
             var element = hierarchyContainer.GetHierarchyElement(Reference, prefabImport);

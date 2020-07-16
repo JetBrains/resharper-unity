@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
-using JetBrains.DocumentModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
-using JetBrains.ReSharper.Feature.Services.LiveTemplates.Hotspots;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
-using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
@@ -54,9 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var classLikeDeclaration = ClassLikeDeclarationNavigator.GetByNameIdentifier(identifier);
             if (classLikeDeclaration == null)
                 return false;
-            
+
             var existingAttribute = classLikeDeclaration.GetAttribute(KnownTypes.CreateAssetMenuAttribute);
-            return existingAttribute == null && UnityApi.IsDescendantOfScriptableObject(classLikeDeclaration.DeclaredElement);
+            return existingAttribute == null && classLikeDeclaration.DeclaredElement.DerivesFromScriptableObject();
         }
 
         private class CreateAssetMenuAction : BulbActionBase
@@ -80,10 +76,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
                     new Pair<string, AttributeValue>("fileName", new AttributeValue(new ConstantValue(myClassLikeDeclaration.DeclaredName, myModule))),
                     new Pair<string, AttributeValue>("order", new AttributeValue(new ConstantValue(0, myModule))),
                 };
-                
-                var attribute = AttributeUtil.AddAttributeToSingleDeclaration(myClassLikeDeclaration, KnownTypes.CreateAssetMenuAttribute, EmptyArray<AttributeValue>.Instance, 
+
+                var attribute = AttributeUtil.AddAttributeToSingleDeclaration(myClassLikeDeclaration, KnownTypes.CreateAssetMenuAttribute, EmptyArray<AttributeValue>.Instance,
                     values, myModule, myElementFactory);
-                
+
                 return attribute.CreateHotspotSession();
             }
 

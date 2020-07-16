@@ -52,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                         set.Add(sourceFile);
                     break;
                 case IField field:
-                    if (UnityApi.IsDescendantOfUnityEvent(field.Type.GetTypeElement()))
+                    if (field.Type.GetTypeElement().DerivesFromUnityEvent())
                     {
                         foreach (var sourceFile in myUnityEventsElementContainer.GetPossibleFilesWithUsage(element))
                             set.Add(sourceFile);
@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
                     break;
             }
-            
+
             return new UnityYamlSearchGuruId(set);
         }
 

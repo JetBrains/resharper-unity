@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             if (!myDeferredCacheController.CompletedOnce.Value)
                 return false;
-            
+
             foreach (var element in myElements)
             {
                 if (element is IMethod || element is IProperty)
@@ -60,7 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
                 if (element is IField field)
                 {
-                    if (UnityApi.IsDescendantOfUnityEvent(field.Type.GetTypeElement()))
+                    if (field.Type.GetTypeElement().DerivesFromUnityEvent())
                     {
                         foreach (var findResult in myUnityEventsElementContainer.GetMethodsForUnityEvent(sourceFile, field))
                         {

@@ -27,12 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             var declaredElement = DeclaredElementPointer.FindDeclaredElement();
             if (declaredElement == null)
                 return base.GetDisplayText();
-            
+
             var solution = GetSolution();
             var valuePresentation = InspectorVariableUsage.Value.GetPresentation(solution, declaredElement , true);
             if (SourceFile.GetLocation().IsAsset())
                 return valuePresentation;
-            
+
             var richText = new RichText(valuePresentation);
             var inText = new RichText(" in ", TextStyle.FromForeColor(Color.DarkGray));
             var objectText = base.GetDisplayText();
@@ -40,7 +40,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             return richText.Append(inText).Append(objectText);
         }
 
-        private bool IsRelatedToScriptableObject() => UnityApi.IsDescendantOfScriptableObject((DeclaredElementPointer.FindDeclaredElement() as IField)?.Type.GetTypeElement());
+        private bool IsRelatedToScriptableObject()
+        {
+            var field = DeclaredElementPointer.FindDeclaredElement() as IField;
+            return field?.Type.GetTypeElement().DerivesFromScriptableObject() == true;
+        }
 
         public override string ToString()
         {
@@ -51,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                     var de = DeclaredElementPointer.FindDeclaredElement();
                     if (de == null)
                         return "INVALID";
-                    
+
                     if (IsRelatedToScriptableObject())
                     {
                         var value = InspectorVariableUsage.Value.GetFullPresentation(GetSolution(), DeclaredElementPointer.FindDeclaredElement(), true);

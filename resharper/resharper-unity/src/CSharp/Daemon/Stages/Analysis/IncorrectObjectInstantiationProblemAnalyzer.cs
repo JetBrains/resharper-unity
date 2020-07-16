@@ -1,7 +1,6 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
@@ -22,16 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         protected override void Analyze(IObjectCreationExpression element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            var createdType = element.ExplicitType();
-            var monoBehaviourType = TypeFactory.CreateTypeByCLRName(KnownTypes.MonoBehaviour, element.GetPsiModule());
-            var scriptableObjectType =
-                TypeFactory.CreateTypeByCLRName(KnownTypes.ScriptableObject, element.GetPsiModule());
+            var createdType = element.ExplicitType().GetTypeElement();
 
-            if (createdType.IsSubtypeOf(monoBehaviourType))
+            if (createdType.DerivesFromMonoBehaviour())
             {
                 consumer.AddHighlighting(new IncorrectMonoBehaviourInstantiationWarning(element));
             }
-            else if (createdType.IsSubtypeOf(scriptableObjectType))
+            else if (createdType.DerivesFromScriptableObject())
             {
                 consumer.AddHighlighting(new IncorrectScriptableObjectInstantiationWarning(element));
             }
