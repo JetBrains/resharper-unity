@@ -47,15 +47,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         {  
             var solution = myDataProvider.Solution;
             var swea = solution.GetComponent<SolutionAnalysisService>();
-            var isCompleted = swea.Configuration?.Completed?.Value == true;
-            if(!isCompleted)
+            if(swea.Configuration?.Enabled?.Value == false)
                 yield break;
+            var isGlobalStage = swea.Configuration?.Completed?.Value == true;
             var callGraphSwaExtensionProvider = solution.GetComponent<CallGraphSwaExtensionProvider>();
             var method = MethodDeclaration?.DeclaredElement;
             var elementIdProvider = solution.GetComponent<IElementIdProvider>();
             var methodId = elementIdProvider.GetElementId(method);
             var isExpensiveContext = methodId.HasValue && callGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                ExpensiveCodeCallGraphAnalyzer.ProviderId, isGlobalStage: true, methodId.Value);
+                ExpensiveCodeCallGraphAnalyzer.ProviderId, isGlobalStage, methodId.Value);
             if (isExpensiveContext)
                 yield return this.ToContextActionIntention();
         }
