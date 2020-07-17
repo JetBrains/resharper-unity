@@ -143,13 +143,23 @@ namespace ApiParser
             var newFunctionSig = newFunction.ToString();
             foreach (var eventFunction in myEventFunctions)
             {
-                // If the signature matches, we've already got it, just
-                // make sure it's up to date (newer docs take precedence
-                // for e.g. param names, description, etc)
                 if (eventFunction.ToString() == newFunctionSig)
                 {
-                    eventFunction.Update(newFunction, apiVersion);
-                    return;
+                    // Prefer an existing documented function that covers this version, than an undocumented one. This
+                    // means we will automatically replace our undocumented functions with documented versions without
+                    // having to explicitly add an end version
+                    if (newFunction.IsUndocumented && !eventFunction.IsUndocumented &&
+                        eventFunction.MinimumVersion <= apiVersion && eventFunction.MaximumVersion >= apiVersion)
+                    {
+                        return;
+                    }
+
+                    // If the documented state of both functions is the same, update the function
+                    if (newFunction.IsUndocumented == eventFunction.IsUndocumented)
+                    {
+                        eventFunction.Update(newFunction, apiVersion);
+                        return;
+                    }
                 }
             }
 
@@ -166,7 +176,7 @@ namespace ApiParser
         private void TrimDuplicates()
         {
             var distinctFunctions = new List<UnityApiEventFunction>();
-            var groupedFunctions = myEventFunctions.GroupBy(f => f.ToString());
+            var groupedFunctions = myEventFunctions.GroupBy(f => f.ToString() + f.IsUndocumented);
             foreach (var group in groupedFunctions)
             {
                 var minVersion = new Version(int.MaxValue, int.MaxValue);
@@ -235,7 +245,6 @@ namespace ApiParser
         private bool myIsCoroutine;
         [CanBeNull] private string myDescription;
         [CanBeNull] private readonly string myDocPath;
-        private readonly bool myUndocumented;
         private ApiType myReturnType;
         private readonly IList<UnityApiParameter> myParameters;
 
@@ -249,7 +258,7 @@ namespace ApiParser
             if (myDescription?.StartsWith(":ref::") == true) // Yes, really. MonoBehaviour.OnCollisionStay in 2018.1
                 myDescription = myDescription.Substring(6);
             myDocPath = docPath;
-            myUndocumented = undocumented;
+            IsUndocumented = undocumented;
             myReturnType = returnType;
 
             UpdateSupportedVersion(apiVersion);
@@ -258,7 +267,10 @@ namespace ApiParser
         }
 
         public string Name { get; }
-        public object OrderingString => (myUndocumented ? "zz" : string.Empty) + Name;
+        public bool IsUndocumented { get; }
+
+        // Force undocumented functions to the bottom of the export list. More for consistency than anything else
+        public object OrderingString => (IsUndocumented ? "zz" : string.Empty) + Name;
 
         public UnityApiParameter AddParameter(string name, ApiType type, string description = null)
         {
@@ -330,7 +342,7 @@ namespace ApiParser
             if (myIsCoroutine)
                 xmlWriter.WriteAttributeString("coroutine", "True");
             ExportVersionRange(xmlWriter, defaultVersions);
-            if (myUndocumented)
+            if (IsUndocumented)
                 xmlWriter.WriteAttributeString("undocumented", "True");
             if (!string.IsNullOrEmpty(myDescription))
                 xmlWriter.WriteAttributeString("description", myDescription);

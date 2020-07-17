@@ -214,6 +214,12 @@ namespace ApiParser
             }
         }
 
+        // Note that if we add new undocumented APIs, this won't set the correct min/max version range, and will only
+        // apply the given api versions. That gives us two options:
+        // 1) Recreate the api.xml file from scratch by parsing the documentation of every Unity version since 5.0
+        // 2) Cheat a little. When incrementally updating an existing api.xml for a single version and also adding new
+        //    undocumented APIs, add extra calls to AddUndocumentedApis with the min/max version for those new APIs.
+        //    Don't check these extra calls in!
         private static void AddUndocumentedApis(UnityApi unityApi, Version apiVersion)
         {
             // From AssetPostprocessingInternal
@@ -318,17 +324,142 @@ namespace ApiParser
             // ScriptableObjects. Off the top of my head this includes, Awake, OnEnable, OnDisable, OnDestroy,
             // OnValidate, and Reset, but there could be more.
             type = unityApi.FindType("ScriptableObject");
-            if (type != null)
+            if (type != null && apiVersion < new Version(2020, 2))
             {
+                // Documented in 2020.2
                 var eventFunction = new UnityApiEventFunction("OnValidate", false, false, ApiType.Void, apiVersion,
                     description:
                     "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
                     undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
+                // Documented in 2020.2
                 eventFunction = new UnityApiEventFunction("Reset", false, false, ApiType.Void, apiVersion,
                     description: "Reset to default values.", undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
+            }
+
+            // TODO: Check if these event functions are available in 5.0 - 5.6
+            type = unityApi.FindType("Editor");
+            if (type != null && apiVersion >= new Version(2017, 1))
+            {
+                // Editor.OnPreSceneGUI has been around since at least 2017.1. Still undocumented as of 2020.2
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/SceneView/SceneView.cs#L2436
+                var eventFunction = new UnityApiEventFunction("OnPreSceneGUI", false, false, ApiType.Void, apiVersion,
+                    description: "Called before the Scene view is drawn.",
+                    undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                // Editor.OnSceneDrag has been around since at least 2017.1. Still undocumented as of 2020.2
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/GUI/EditorCache.cs#L63
+                eventFunction = new UnityApiEventFunction("OnSceneDrag", false, false, ApiType.Void, apiVersion,
+                    description: "Called for each object dragged onto the scene view",
+                    undocumented: true);
+                eventFunction.AddParameter("sceneView", new ApiType("UnityEditor.SceneView"), "The current scene view");
+                eventFunction.AddParameter("index", ApiType.Int, "The index into the DragAndDrop.objectReferences array");
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                if (apiVersion < new Version(2020, 2))
+                {
+                    // Editor.HasFrameBounds has been around since at least 2017.1. First documented in 2020.2
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/SceneView/SceneView.cs#L2296
+                    // https://docs.unity3d.com/2020.2/Documentation/ScriptReference/Editor.HasFrameBounds.html
+                    eventFunction = new UnityApiEventFunction("HasFrameBounds", false, false, ApiType.Bool,
+                        apiVersion,
+                        description: "Validates whether custom bounds can be calculated for this editor.",
+                        undocumented: true);
+                    type.MergeEventFunction(eventFunction, apiVersion);
+
+                    // Editor.OnGetFrameBounds has been around since at least 2017.1. First documented in 2020.2
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/SceneView/SceneView.cs#L2303
+                    // https://docs.unity3d.com/2020.2/Documentation/ScriptReference/Editor.OnGetFrameBounds.html
+                    eventFunction = new UnityApiEventFunction("OnGetFrameBounds", false, false,
+                        new ApiType("UnityEngine.Bounds"), apiVersion,
+                        description: "Gets custom bounds for the target of this editor.",
+                        undocumented: true);
+                    type.MergeEventFunction(eventFunction, apiVersion);
+                }
+            }
+
+            // TODO: Check if these event functions are available in 5.0 - 5.6
+            type = unityApi.FindType("EditorWindow");
+            if (type != null && apiVersion >= new Version(2017, 1))
+            {
+                // EditorWindow.ModifierKeysChanged has been around since at least 2017.1. Still undocumented as of 2020.2
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L290
+                // http://www.improck.com/2014/11/editorwindow-modifier-keys/
+                var eventFunction = new UnityApiEventFunction("ModifierKeysChanged", false, false, ApiType.Void, apiVersion,
+                    description: "Called when the modifier keys are changed. Automatically registers and de-registers the EditorApplication.modifierKeysChanged event",
+                    undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                // EditorWindow.ShowButton has been around since at least 2017.1. Still undocumented as of 2020.2
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L356
+                // http://www.improck.com/2014/11/editorwindow-inspector-lock-icon/
+                eventFunction = new UnityApiEventFunction("ShowButton", false, false, ApiType.Void, apiVersion,
+                    description: "Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)",
+                    undocumented: true);
+                eventFunction.AddParameter("rect", new ApiType("UnityEngine.Rect"), "Position to draw the button");
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                // EditorWindow.OnBecameVisible has been around since at least 2017.1. Still undocumented as of 2020.2
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L302
+                eventFunction = new UnityApiEventFunction("OnBecameVisible", false, false, ApiType.Void, apiVersion,
+                    description: "Called when an editor window has been opened",
+                    undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                // EditorWindow.OnBecameInvisible has been around since at least 2017.1. Still undocumented as of 2020.2
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L337
+                eventFunction = new UnityApiEventFunction("OnBecameInvisible", false, false, ApiType.Void, apiVersion,
+                    description: "Called when an editor window has been closed",
+                    undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                // EditorWindow.OnDidOpenScene has been around since at least 2017.1. Still undocumented as of 2020.2
+                // https://github.com/Unity-Technologies/UnityCsReference/blob/2017.1/Editor/Mono/HostView.cs#L163
+                eventFunction = new UnityApiEventFunction("OnDidOpenScene", false, false, ApiType.Void, apiVersion,
+                    description: "Called when a scene has been opened",
+                    undocumented: true);
+                type.MergeEventFunction(eventFunction, apiVersion);
+
+                if (apiVersion >= new Version(2019, 1))
+                {
+                    // EditorWindow.OnAddedAsTab was introduced in 2019.1. Still undocumented as of 2020.2
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.1/Editor/Mono/GUI/DockArea.cs#L188
+                    eventFunction = new UnityApiEventFunction("OnAddedAsTab", false, false, ApiType.Void, apiVersion,
+                        description: "Called when the editor window is added as a tab",
+                        undocumented: true);
+                    type.MergeEventFunction(eventFunction, apiVersion);
+
+                    // EditorWindow.OnBeforeRemovedAsTab was introduced in 2019.1
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.1/Editor/Mono/GUI/DockArea.cs#L195
+                    eventFunction = new UnityApiEventFunction("OnBeforeRemovedAsTab", false, false, ApiType.Void, apiVersion,
+                        description: "Called before an editor window is removed as a tab",
+                        undocumented: true);
+                }
+
+                if (apiVersion >= new Version(2019, 3))
+                {
+                    // EditorWindow.OnTabDetached was introduced in 2019.3
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/2019.3/Editor/Mono/GUI/DockArea.cs#L940
+                    eventFunction = new UnityApiEventFunction("OnTabDetached", false, false, ApiType.Void, apiVersion,
+                        description: "Called during drag and drop, when an editor window tab is detached",
+                        undocumented: true);
+                    type.MergeEventFunction(eventFunction, apiVersion);
+                }
+
+                if (apiVersion >= new Version(2020, 1))
+                {
+                    // EditorWindow.OnMainWindowMove was introduced in 2020.1
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/2020.1/Editor/Mono/HostView.cs#L343
+                    // See comment here
+                    // https://github.com/Unity-Technologies/UnityCsReference/blob/2020.1/Editor/Mono/ExternalPlayModeView/ExternalPlayModeView.cs#L112
+                    eventFunction = new UnityApiEventFunction("OnMainWindowMove", false, false, ApiType.Void, apiVersion,
+                        description: "Called when the main window is moved",
+                        undocumented: true);
+                    type.MergeEventFunction(eventFunction, apiVersion);
+                }
             }
         }
     }

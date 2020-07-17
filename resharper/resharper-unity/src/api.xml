@@ -348,6 +348,22 @@
     <message name="OnSceneGUI" static="False" description="Enables the Editor to handle an event in the Scene view." path="Documentation/en/ScriptReference/Editor.OnSceneGUI.html">
       <returns type="System.Void" array="False" />
     </message>
+    <message name="HasFrameBounds" static="False" minimumVersion="2017.1" maximumVersion="2020.1" undocumented="True" description="Validates whether custom bounds can be calculated for this editor.">
+      <returns type="System.Boolean" array="False" />
+    </message>
+    <message name="OnGetFrameBounds" static="False" minimumVersion="2017.1" maximumVersion="2020.1" undocumented="True" description="Gets custom bounds for the target of this editor.">
+      <returns type="UnityEngine.Bounds" array="False" />
+    </message>
+    <message name="OnPreSceneGUI" static="False" minimumVersion="2017.1" undocumented="True" description="Called before the Scene view is drawn.">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnSceneDrag" static="False" minimumVersion="2017.1" undocumented="True" description="Called for each object dragged onto the scene view">
+      <parameters>
+        <parameter type="UnityEditor.SceneView" array="False" name="sceneView" description="The current scene view" />
+        <parameter type="System.Int32" array="False" name="index" description="The index into the DragAndDrop.objectReferences array" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
   </type>
   <type kind="class" name="EditorWindow" ns="UnityEditor" path="Documentation/en/ScriptReference/EditorWindow.html">
     <message name="Awake" static="False" minimumVersion="5.5" description="Called as the new window is opened." path="Documentation/en/ScriptReference/EditorWindow.Awake.html">
@@ -378,6 +394,33 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="Update" static="False" description="Called multiple times per second on all visible windows." path="Documentation/en/ScriptReference/EditorWindow.Update.html">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="ModifierKeysChanged" static="False" minimumVersion="2017.1" undocumented="True" description="Called when the modifier keys are changed. Automatically registers and de-registers the EditorApplication.modifierKeysChanged event">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnAddedAsTab" static="False" minimumVersion="2019.1" undocumented="True" description="Called when the editor window is added as a tab">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnBecameInvisible" static="False" minimumVersion="2017.1" undocumented="True" description="Called when an editor window has been closed">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnBecameVisible" static="False" minimumVersion="2017.1" undocumented="True" description="Called when an editor window has been opened">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnDidOpenScene" static="False" minimumVersion="2017.1" undocumented="True" description="Called when a scene has been opened">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnMainWindowMove" static="False" minimumVersion="2020.1" undocumented="True" description="Called when the main window is moved">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnTabDetached" static="False" minimumVersion="2019.3" undocumented="True" description="Called during drag and drop, when an editor window tab is detached">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="ShowButton" static="False" minimumVersion="2017.1" undocumented="True" description="Allow Editor panes to show a small button next to the generic menu (e.g. inspector lock icon)">
+      <parameters>
+        <parameter type="UnityEngine.Rect" array="False" name="rect" description="Position to draw the button" />
+      </parameters>
       <returns type="System.Void" array="False" />
     </message>
   </type>
@@ -840,10 +883,16 @@
     <message name="OnEnable" static="False" description="This function is called when the object is loaded." path="Documentation/en/ScriptReference/ScriptableObject.OnEnable.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnValidate" static="False" undocumented="True" description="This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).">
+    <message name="OnValidate" static="False" minimumVersion="2020.2" description="This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only)." path="Documentation/en/ScriptReference/ScriptableObject.OnValidate.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="Reset" static="False" undocumented="True" description="Reset to default values.">
+    <message name="Reset" static="False" minimumVersion="2020.2" description="Reset to default values." path="Documentation/en/ScriptReference/ScriptableObject.Reset.html">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnValidate" static="False" maximumVersion="2020.1" undocumented="True" description="This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="Reset" static="False" maximumVersion="2020.1" undocumented="True" description="Reset to default values.">
       <returns type="System.Void" array="False" />
     </message>
   </type>
