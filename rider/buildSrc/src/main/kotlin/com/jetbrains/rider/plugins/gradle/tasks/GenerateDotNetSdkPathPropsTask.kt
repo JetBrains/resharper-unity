@@ -16,10 +16,12 @@ open class GenerateDotNetSdkPathPropsTask: DefaultTask() {
 
     @TaskAction
     fun generate() {
-        project.buildServer.progress("Generating DotNetSdkPath.generated.props")
+        val dotNetSdkFile= dotNetSdkPath?.let { project.file(it)} ?: error("dotNetSdkLocation not set")
+        assert(dotNetSdkFile.isDirectory)
+        project.buildServer.progress("Generating :${propsFile.canonicalPath}...")
         project.file(propsFile).writeText("""<Project>
           <PropertyGroup>
-            <DotNetSdkPath>${dotNetSdkPath?.let { project.file(it)} }</DotNetSdkPath>
+            <DotNetSdkPath>${dotNetSdkFile.canonicalPath}</DotNetSdkPath>
           </PropertyGroup>
         </Project>""".trimIndent())
     }
