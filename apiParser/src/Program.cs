@@ -179,9 +179,9 @@ namespace ApiParser
                     function.SetIsStatic();
                     function.SetReturnType(ApiType.Bool);
                     var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
-                    function.UpdateParameter("arg1", newParameter);
+                    function.UpdateParameterIfExists("arg1", newParameter);
                     newParameter = new UnityApiParameter("message", ApiType.StringByRef, string.Empty);
-                    function.UpdateParameter("arg2", newParameter);
+                    function.UpdateParameterIfExists("arg2", newParameter);
                 }
 
                 foreach (var function in type.FindEventFunctions("OnWillDeleteAsset"))
@@ -189,9 +189,9 @@ namespace ApiParser
                     function.SetIsStatic();
                     function.SetReturnType(typeResolver.CreateApiType("UnityEditor.AssetDeleteResult"));
                     var newParameter = new UnityApiParameter("assetPath", ApiType.String, string.Empty);
-                    function.UpdateParameter("arg1", newParameter);
+                    function.UpdateParameterIfExists("arg1", newParameter);
                     newParameter = new UnityApiParameter("options", new ApiType("UnityEditor.RemoveAssetOptions"), string.Empty);
-                    function.UpdateParameter("arg2", newParameter);
+                    function.UpdateParameterIfExists("arg2", newParameter);
                 }
 
                 foreach (var function in type.FindEventFunctions("OnWillMoveAsset"))
@@ -199,9 +199,9 @@ namespace ApiParser
                     function.SetIsStatic();
                     function.SetReturnType(typeResolver.CreateApiType("UnityEditor.AssetMoveResult"));
                     var newParameter = new UnityApiParameter("sourcePath", ApiType.String, string.Empty);
-                    function.UpdateParameter("arg1", newParameter);
+                    function.UpdateParameterIfExists("arg1", newParameter);
                     newParameter = new UnityApiParameter("destinationPath", ApiType.String, string.Empty);
-                    function.UpdateParameter("arg2", newParameter);
+                    function.UpdateParameterIfExists("arg2", newParameter);
                 }
             }
 

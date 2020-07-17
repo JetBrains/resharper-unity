@@ -315,14 +315,11 @@ namespace ApiParser
                 myParameters[0].SetOptional(justification);
         }
 
-        public void UpdateParameter(string name, UnityApiParameter newParameter)
+        public void UpdateParameterIfExists(string name, UnityApiParameter newParameter)
         {
-            var parameter = myParameters.SingleOrDefault(p => p.Name == name);
-            if (parameter == null)
-                parameter = myParameters.SingleOrDefault(p => p.Name == newParameter.Name);
-            if (parameter == null)
-                throw new InvalidOperationException($"Cannot update parameter {name}");
-            parameter.Update(newParameter, Name);
+            var parameter = myParameters.SingleOrDefault(p => p.Name == name) ??
+                            myParameters.SingleOrDefault(p => p.Name == newParameter.Name);
+            parameter?.Update(newParameter, Name);
         }
 
         public void ExportTo(XmlTextWriter xmlWriter, HasVersionRange defaultVersions)

@@ -1,10 +1,41 @@
 ﻿<!--This file is auto-generated-->
-<api minimumVersion="5.0" maximumVersion="2020.1">
+<api minimumVersion="5.0" maximumVersion="2020.2">
   <type kind="class" name="AssetModificationProcessor" ns="UnityEditor" path="Documentation/en/ScriptReference/AssetModificationProcessor.html">
-    <message name="IsOpenForEdit" static="True" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
+    <message name="CanOpenForEdit" static="True" minimumVersion="2020.2" description="This is called by Unity when inspecting assets to determine if they can potentially be opened for editing." path="Documentation/en/ScriptReference/AssetModificationProcessor.CanOpenForEdit.html">
+      <parameters>
+        <parameter type="System.String" array="True" name="assetOrMetaFilePaths" description="Paths to Assets or their .meta files, relative to the project folder." />
+        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths" description="Destination list of non-editable Asset paths." />
+        <parameter type="UnityEditor.StatusQueryOptions" array="False" name="statusQueryOptions" description="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." />
+      </parameters>
+      <returns type="System.Boolean" array="False" />
+    </message>
+    <message name="FileModeChanged" static="True" minimumVersion="2020.2" description="Unity calls this method when file mode has been changed for one or more files." path="Documentation/en/ScriptReference/AssetModificationProcessor.FileModeChanged.html">
+      <parameters>
+        <parameter type="System.String" array="True" name="paths" />
+        <parameter type="UnityEditor.VersionControl.FileMode" array="False" name="mode" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="IsOpenForEdit" static="True" maximumVersion="2020.1" description="This is called by Unity when inspecting an asset to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
       <parameters>
         <parameter type="System.String" array="False" name="assetPath" />
         <parameter type="System.String" array="False" byRef="True" name="message" />
+      </parameters>
+      <returns type="System.Boolean" array="False" />
+    </message>
+    <message name="IsOpenForEdit" static="True" minimumVersion="2020.2" description="This is called by Unity when inspecting assets to determine if an editor should be disabled." path="Documentation/en/ScriptReference/AssetModificationProcessor.IsOpenForEdit.html">
+      <parameters>
+        <parameter type="System.String" array="True" name="assetOrMetaFilePaths" description="Paths to Assets or their .meta files, relative to the project folder." />
+        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths" description="Destination list of non-editable Asset paths." />
+        <parameter type="UnityEditor.StatusQueryOptions" array="False" name="statusQueryOptions" description="Specifies how Unity should query the version control system. The default value is StatusQueryOptions.UseCachedIfPossible." />
+      </parameters>
+      <returns type="System.Boolean" array="False" />
+    </message>
+    <message name="MakeEditable" static="True" minimumVersion="2020.2" description="Unity calls this method when one or more files need to be opened for editing." path="Documentation/en/ScriptReference/AssetModificationProcessor.MakeEditable.html">
+      <parameters>
+        <parameter type="System.String" array="True" name="paths" description="Specifies an array of file paths relative to the project root." />
+        <parameter type="System.String" array="False" name="prompt" description="Dialog prompt to show to the user, if a version control operation needs to be done. If null (default), no prompt is shown." />
+        <parameter type="System.Collections.Generic.List`1[[System.String]]" array="False" name="outNotEditablePaths" description="Output list of file paths that could not be made editable." />
       </parameters>
       <returns type="System.Boolean" array="False" />
     </message>
@@ -116,6 +147,12 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnPostprocessModel" static="False" description="Add this function to a subclass to get a notification when a model has completed importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessModel.html">
+      <parameters>
+        <parameter type="UnityEngine.GameObject" array="False" name="g" />
+      </parameters>
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="OnPostprocessPrefab" static="False" minimumVersion="2020.2" description="Gets a notification when a Prefab completes importing." path="Documentation/en/ScriptReference/AssetPostprocessor.OnPostprocessPrefab.html">
       <parameters>
         <parameter type="UnityEngine.GameObject" array="False" name="g" />
       </parameters>
@@ -302,6 +339,12 @@
     </message>
   </type>
   <type kind="class" name="Editor" ns="UnityEditor" path="Documentation/en/ScriptReference/Editor.html">
+    <message name="HasFrameBounds" static="False" minimumVersion="2020.2" description="Validates whether custom bounds can be calculated for this editor." path="Documentation/en/ScriptReference/Editor.HasFrameBounds.html">
+      <returns type="System.Boolean" array="False" />
+    </message>
+    <message name="OnGetFrameBounds" static="False" minimumVersion="2020.2" description="Gets custom bounds for the target of this editor." path="Documentation/en/ScriptReference/Editor.OnGetFrameBounds.html">
+      <returns type="UnityEngine.Bounds" array="False" />
+    </message>
     <message name="OnSceneGUI" static="False" description="Enables the Editor to handle an event in the Scene view." path="Documentation/en/ScriptReference/Editor.OnSceneGUI.html">
       <returns type="System.Void" array="False" />
     </message>
@@ -815,7 +858,7 @@
       <returns type="System.Void" array="False" />
     </message>
   </type>
-  <type kind="class" name="ScriptedImporter" ns="UnityEditor.Experimental.AssetImporters" minimumVersion="2019.1" path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.html">
+  <type kind="class" name="ScriptedImporter" ns="UnityEditor.Experimental.AssetImporters" minimumVersion="2019.1" maximumVersion="2020.1" path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.html">
     <message name="GatherDependenciesFromSourceFile" static="True" minimumVersion="2020.1" description="A static callback that you can implement to set up artifact dependencies to other Assets, and optimize the order your assets are imported." path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.GatherDependenciesFromSourceFile.html">
       <parameters>
         <parameter type="System.String" array="False" name="assetPath" />
@@ -826,6 +869,20 @@
       <returns type="System.Void" array="False" />
     </message>
     <message name="Reset" static="False" description="Reset to default values." path="Documentation/en/ScriptReference/Experimental.AssetImporters.ScriptedImporter.Reset.html">
+      <returns type="System.Void" array="False" />
+    </message>
+  </type>
+  <type kind="class" name="ScriptedImporter" ns="UnityEditor.AssetImporters" minimumVersion="2020.2" path="Documentation/en/ScriptReference/AssetImporters.ScriptedImporter.html">
+    <message name="GatherDependenciesFromSourceFile" static="True" description="A static callback that you can implement to set up artifact dependencies to other Assets, and optimize the order your assets are imported." path="Documentation/en/ScriptReference/AssetImporters.ScriptedImporter.GatherDependenciesFromSourceFile.html">
+      <parameters>
+        <parameter type="System.String" array="False" name="assetPath" />
+      </parameters>
+      <returns type="System.String" array="True" />
+    </message>
+    <message name="OnValidate" static="False" description="This function is called when the importer is loaded or a value is changed in the Inspector." path="Documentation/en/ScriptReference/AssetImporters.ScriptedImporter.OnValidate.html">
+      <returns type="System.Void" array="False" />
+    </message>
+    <message name="Reset" static="False" description="Reset to default values." path="Documentation/en/ScriptReference/AssetImporters.ScriptedImporter.Reset.html">
       <returns type="System.Void" array="False" />
     </message>
   </type>

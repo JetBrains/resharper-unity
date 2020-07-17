@@ -1,6 +1,4 @@
 using JetBrains.Annotations;
-using JetBrains.Metadata.Reader.API;
-using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Modules;
@@ -9,13 +7,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
 {
     public static class MethodSignatureExtensions
     {
-        private static readonly IClrTypeName ourEnumeratorType = new ClrTypeName("System.Collections.IEnumerator");
-
         public static MethodSignature AsMethodSignature(this UnityEventFunction eventFunction, IPsiModule module)
         {
-            IType returnType = TypeFactory.CreateTypeByCLRName(eventFunction.ReturnType, module);
-            if (eventFunction.ReturnTypeIsArray)
-                returnType = TypeFactory.CreateArrayType(returnType, 1);
+            var returnType = eventFunction.ReturnType.AsIType(module);
 
             if (eventFunction.Parameters.Length == 0)
                 return new MethodSignature(returnType, eventFunction.IsStatic);
@@ -25,9 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             for (var i = 0; i < eventFunction.Parameters.Length; i++)
             {
                 var parameter = eventFunction.Parameters[i];
-                IType paramType = TypeFactory.CreateTypeByCLRName(parameter.ClrTypeName, module);
-                if (parameter.IsArray)
-                    paramType = TypeFactory.CreateArrayType(paramType, 1);
+                var paramType = parameter.TypeSpec.AsIType(module);
                 parameterTypes[i] = paramType;
                 parameterNames[i] = parameter.Name;
             }
@@ -91,8 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 matchingParameters = true;
                 for (var i = 0; i < eventFunction.Parameters.Length && matchingParameters; i++)
                 {
-                    if (!DoTypesMatch(method.Parameters[i].Type, eventFunction.Parameters[i].ClrTypeName,
-                        eventFunction.Parameters[i].IsArray))
+                    if (!DoTypesMatch(method.Parameters[i].Type, eventFunction.Parameters[i].TypeSpec))
                     {
                         matchingParameters = false;
                     }
@@ -119,27 +110,19 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         private static bool HasMatchingReturnType(UnityEventFunction eventFunction, IMethod method)
         {
-            return DoTypesMatch(method.ReturnType, eventFunction.ReturnType, eventFunction.ReturnTypeIsArray)
-                   || (eventFunction.CanBeCoroutine && DoTypesMatch(method.ReturnType, ourEnumeratorType, false));
+            return DoTypesMatch(method.ReturnType, eventFunction.ReturnType)
+                   || (eventFunction.CanBeCoroutine && IsEnumerator(method.ReturnType));
         }
 
-        private static bool DoTypesMatch(IType type, IClrTypeName expectedTypeName, bool isArray)
+        private static bool DoTypesMatch(IType type, UnityTypeSpec expectedTypeSpec)
         {
-            IDeclaredType declaredType;
+            var expectedType = expectedTypeSpec.AsIType(type.Module);
+            return Equals(expectedType, type);
+        }
 
-            if (type is IArrayType arrayType)
-            {
-                if (!isArray) return false;
-
-                // TODO: Does this handle multi-dimensional arrays? Do we care?
-                declaredType = arrayType.GetScalarType();
-            }
-            else
-            {
-                declaredType = (IDeclaredType) type;
-            }
-
-            return declaredType != null && Equals(declaredType.GetClrName(), expectedTypeName);
+        private static bool IsEnumerator(IType type)
+        {
+            return type is IDeclaredType declaredType && Equals(declaredType.GetClrName(), PredefinedType.IENUMERATOR_FQN);
         }
 
         private static bool HasMatchingTypeParameters(IMethodDeclaration methodDeclaration)

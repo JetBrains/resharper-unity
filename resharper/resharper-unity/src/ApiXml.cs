@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
@@ -15,8 +17,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
     public class ApiXml
     {
         private readonly IDictionary<string, IClrTypeName> myTypeNames = new Dictionary<string, IClrTypeName>();
+        private readonly IDictionary<string, UnityTypeSpec> myTypeSpecs = new Dictionary<string, UnityTypeSpec>();
         private readonly IDictionary<string, Version> myVersions = new Dictionary<string, Version>();
         private readonly JetHashSet<string> myIdentifiers = new JetHashSet<string>();
+        private readonly UnityTypeSpec myDefaultReturnTypeSpec = new UnityTypeSpec(PredefinedType.INT_FQN);
 
         public UnityTypes LoadTypes()
         {
@@ -56,6 +60,54 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 myTypeNames.Add(typeName, clrTypeName);
             }
             return clrTypeName;
+        }
+
+        private UnityTypeSpec GetInternedTypeSpec(string typeName, bool isArray)
+        {
+            // Note that the typeName might be a closed generic type, which is not a valid IClrTypeName, but is a good key
+            var key = typeName + (isArray ? "[]" : string.Empty);
+
+            if (!myTypeSpecs.TryGetValue(key, out var typeSpec))
+            {
+                // Note that this means the serialised name needs to be a CLR type name, not a C# name. So System.String
+                // instead of `string` and `System.Collections.Generic.List`1[[System.String]]` instead of List<string>.
+                // Also note that IClrTypeName does not handle closed generics, so we need to strip the type parameters.
+                if (typeName.Contains('`'))
+                {
+                    // We don't handle nested generics
+                    var match = Regex.Match(typeName, @"^(?<outer>.*`(?<count>\d+))\[\[(?<parameters>.*)\]\]$");
+                    if (match.Success)
+                    {
+                        var outer = match.Groups["outer"];
+                        var parameters = match.Groups["parameters"];
+
+                        var @params = parameters.Value.Split(',');
+                        var typeNames = new IClrTypeName[@params.Length];
+                        for (var i = 0; i < @params.Length; i++)
+                        {
+                            typeNames[i] = GetInternedClrTypeName(@params[i]);
+                        }
+
+                        var outerTypeName = GetInternedClrTypeName(outer.Value);
+                        typeSpec = new UnityTypeSpec(outerTypeName, isArray, typeNames);
+
+                        myTypeSpecs.Add(key, typeSpec);
+                    }
+                    else
+                    {
+                        // We control the data coming in, so we'll only see this at dev time
+                        throw new InvalidDataException("Unhandled formatting for CLR type name");
+                    }
+                }
+                else
+                {
+                    var clrTypeName = GetInternedClrTypeName(typeName);
+                    typeSpec = new UnityTypeSpec(clrTypeName, isArray);
+                    myTypeSpecs.Add(key, typeSpec);
+                }
+            }
+
+            return typeSpec;
         }
 
         private UnityType CreateUnityType(XmlNode type, string defaultMinimumVersion, string defaultMaximumVersion)
@@ -101,8 +153,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return myIdentifiers.Intern(identifier);
         }
 
-        private UnityEventFunction CreateUnityMessage(XmlNode node, IClrTypeName typeName, string defaultMinimumVersion,
-                                                      string defaultMaximumVersion)
+        private UnityEventFunction CreateUnityMessage(XmlNode node, IClrTypeName containingTypeName,
+                                                      string defaultMinimumVersion, string defaultMaximumVersion)
         {
             var name = node.Attributes?["name"].Value;
 
@@ -124,17 +176,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 parameters = parameterNodes.OfType<XmlNode>().Select(LoadParameter).ToArray();
             }
 
-            var returnsArray = false;
-            var returnType = PredefinedType.VOID_FQN;
+            var returnType = UnityTypeSpec.Void;
             var returns = node.SelectSingleNode("returns");
             if (returns != null)
             {
-                returnsArray = bool.Parse(returns.Attributes?["array"].Value ?? "false");
+                var isArray = bool.Parse(returns.Attributes?["array"].Value ?? "false");
                 var type = returns.Attributes?["type"]?.Value ?? "System.Void";
-                returnType = GetInternedClrTypeName(type);
+                returnType = GetInternedTypeSpec(type, isArray);
             }
 
-            return new UnityEventFunction(GetInternedIdentifier(name), typeName, returnType, returnsArray, isStatic,
+            return new UnityEventFunction(GetInternedIdentifier(name), containingTypeName, returnType, isStatic,
                 canBeCoroutine, description, isUndocumented, minimumVersion, maximumVersion, parameters);
         }
 
@@ -148,11 +199,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             var isOptional = bool.Parse(node.Attributes?["optional"]?.Value ?? "false");
             var justification = node.Attributes?["justification"]?.Value;
 
-            var parameterType = type != null ? GetInternedClrTypeName(type) : PredefinedType.INT_FQN;
+            var parameterType = type != null ? GetInternedTypeSpec(type, isArray) : myDefaultReturnTypeSpec;
             var parameterName = GetInternedIdentifier(name ?? $"arg{i + 1}");
 
-            return new UnityEventFunctionParameter(parameterName, parameterType, description, isArray, isByRef,
-                isOptional, justification);
+            return new UnityEventFunctionParameter(parameterName, parameterType, description, isByRef, isOptional,
+                justification);
         }
     }
 
