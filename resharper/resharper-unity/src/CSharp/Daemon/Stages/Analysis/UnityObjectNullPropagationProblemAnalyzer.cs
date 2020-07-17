@@ -2,7 +2,6 @@
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
@@ -26,8 +25,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             var resolve = qualifier.Reference.Resolve();
             if (resolve.ResolveErrorType != ResolveErrorType.OK)
                 return;
-            var unityObjectType = TypeFactory.CreateTypeByCLRName(KnownTypes.Object, expression.GetPsiModule());
-            if (!qualifier.Type().IsSubtypeOf(unityObjectType))
+
+            if (!qualifier.Type().GetTypeElement().DerivesFrom(KnownTypes.Object))
                 return;
 
             consumer.AddHighlighting(new UnityObjectNullPropagationWarning(expression));

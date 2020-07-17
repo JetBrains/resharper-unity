@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Impl.Reflection2;
@@ -33,15 +34,17 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             if (candidate == null)
                 return false;
-            var baseType = GetTypeElement(baseTypeName, candidate.Module);
+            var knownTypesCache = candidate.GetSolution().GetComponent<KnownTypesCache>();
+            var baseType = GetTypeElement(baseTypeName, knownTypesCache, candidate.Module);
             return candidate.IsDescendantOf(baseType);
         }
 
-        private static ITypeElement GetTypeElement(IClrTypeName typeName, IPsiModule module)
+        private static ITypeElement GetTypeElement(IClrTypeName typeName, KnownTypesCache knownTypesCache,
+                                                   IPsiModule module)
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                var type = TypeFactory.CreateTypeByCLRName(typeName, module);
+                var type = knownTypesCache.GetByClrTypeName(typeName, module);
                 return type.GetTypeElement();
             }
         }

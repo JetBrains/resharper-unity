@@ -45,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         [NotNull]
         public IMethodDeclaration CreateDeclaration([NotNull] CSharpElementFactory factory,
+                                                    [NotNull] KnownTypesCache knownTypesCache,
                                                     [NotNull] IClassLikeDeclaration classDeclaration,
                                                     AccessRights accessRights,
                                                     bool makeVirtual = false,
@@ -70,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 builder.Append(PredefinedType.IENUMERATOR_FQN.FullName);
             else
             {
-                arg = GetTypeObject(ReturnType, module);
+                arg = GetTypeObject(ReturnType, knownTypesCache, module);
                 if (arg is string)
                 {
                     builder.Append(arg);
@@ -97,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 // The only place it's currently being used is an out parameter
                 if (parameter.IsByRef) builder.Append("out ");
 
-                arg = GetTypeObject(parameter.TypeSpec, module);
+                arg = GetTypeObject(parameter.TypeSpec, knownTypesCache, module);
                 if (arg is string)
                 {
                     builder.Append(arg);
@@ -130,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return myMinimumVersion <= unityVersion && unityVersion <= myMaximumVersion;
         }
 
-        private static object GetTypeObject(UnityTypeSpec typeSpec, IPsiModule module)
+        private static object GetTypeObject(UnityTypeSpec typeSpec, KnownTypesCache knownTypesCache, IPsiModule module)
         {
             if (typeSpec.TypeParameters.Length == 0)
             {
@@ -139,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     return keyword;
             }
 
-            return typeSpec.AsIType(module);
+            return typeSpec.AsIType(knownTypesCache, module);
         }
     }
 }

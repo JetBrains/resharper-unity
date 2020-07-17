@@ -31,11 +31,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
         };
 
         private readonly UnityVersion myUnityVersion;
+        private readonly KnownTypesCache myKnownTypesCache;
         private readonly Lazy<UnityTypes> myTypes;
 
-        public UnityApi(UnityVersion unityVersion)
+        public UnityApi(UnityVersion unityVersion, KnownTypesCache knownTypesCache)
         {
             myUnityVersion = unityVersion;
+            myKnownTypesCache = knownTypesCache;
             myTypes = Lazy.Of(() =>
             {
                 var apiXml = new ApiXml();
@@ -286,7 +288,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return types.Types.Where(t =>
             {
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                    return t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(type.Module));
+                    return t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(myKnownTypesCache, type.Module));
             });
         }
 

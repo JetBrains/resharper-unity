@@ -68,6 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             new ClrTypeName("UnityEngine.Serialization.FormerlySerializedAsAttribute");
 
         // UnityEditor
+        public static readonly IClrTypeName BuildTarget = new ClrTypeName("UnityEditor.BuildTarget");
         public static readonly IClrTypeName CanEditMultipleObjects = new ClrTypeName("UnityEditor.CanEditMultipleObjects");
         public static readonly IClrTypeName CustomEditor = new ClrTypeName("UnityEditor.CustomEditor");
         public static readonly IClrTypeName Editor = new ClrTypeName("UnityEditor.Editor");

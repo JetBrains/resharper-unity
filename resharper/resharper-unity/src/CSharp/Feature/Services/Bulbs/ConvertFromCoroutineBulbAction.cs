@@ -24,9 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs
             if (element == null) return null;
 
             var unityApi = solution.GetComponent<UnityApi>();
+            var knownTypesCache = solution.GetComponent<KnownTypesCache>();
             var eventFunction = unityApi.GetUnityEventFunction(element);
 
-            var returnType = eventFunction.ReturnType.AsIType(myMethodDeclaration.GetPsiModule());
+            var returnType = eventFunction.ReturnType.AsIType(knownTypesCache, myMethodDeclaration.GetPsiModule());
 
             var changeTypeHelper = LanguageManager.Instance.GetService<IChangeTypeHelper>(myMethodDeclaration.Language);
             changeTypeHelper.ChangeType(returnType, element);

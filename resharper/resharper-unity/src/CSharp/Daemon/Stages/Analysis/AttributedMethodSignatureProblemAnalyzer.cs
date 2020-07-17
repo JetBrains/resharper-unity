@@ -43,12 +43,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         };
 
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
+        private readonly KnownTypesCache myKnownTypesCache;
         private readonly ConcurrentDictionary<IClrTypeName, MethodSignature[]> myMethodSignatures;
 
-        public AttributedMethodSignatureProblemAnalyzer(UnityApi unityApi, IPredefinedTypeCache predefinedTypeCache)
+        public AttributedMethodSignatureProblemAnalyzer(UnityApi unityApi, IPredefinedTypeCache predefinedTypeCache,
+                                                        KnownTypesCache knownTypesCache)
             : base(unityApi)
         {
             myPredefinedTypeCache = predefinedTypeCache;
+            myKnownTypesCache = knownTypesCache;
             myMethodSignatures = new ConcurrentDictionary<IClrTypeName, MethodSignature[]>();
         }
 
@@ -110,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private static MethodSignature[] GetSignaturesFromRequiredSignatureAttribute(ITypeElement attributeTypeElement)
+        private MethodSignature[] GetSignaturesFromRequiredSignatureAttribute(ITypeElement attributeTypeElement)
         {
             var signatures = new FrugalLocalList<MethodSignature>();
             foreach (var method in attributeTypeElement.Methods)
@@ -134,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private static MethodSignature[] GetSignaturesFromKnownAttributes(IClrTypeName attributeClrName,
+        private MethodSignature[] GetSignaturesFromKnownAttributes(IClrTypeName attributeClrName,
             PredefinedType predefinedType)
         {
             if (ourKnownAttributes.Contains(attributeClrName))
@@ -149,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         [CanBeNull]
-        private static MethodSignature[] GetSpecialCaseSignatures(IClrTypeName attributeClrName, PredefinedType predefinedType)
+        private MethodSignature[] GetSpecialCaseSignatures(IClrTypeName attributeClrName, PredefinedType predefinedType)
         {
             if (Equals(attributeClrName, KnownTypes.OnOpenAssetAttribute))
                 return GetOnOpenAssetMethodSignature(predefinedType);
@@ -178,9 +181,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         }
 
         // This has RequiredSignature
-        private static MethodSignature[] GetPostProcessBuildMethodSignature(PredefinedType predefinedType)
+        private MethodSignature[] GetPostProcessBuildMethodSignature(PredefinedType predefinedType)
         {
-            var buildTargetType = TypeFactory.CreateTypeByCLRName("UnityEditor.BuildTarget", predefinedType.Module);
+            var buildTargetType = myKnownTypesCache.GetByClrTypeName(KnownTypes.BuildTarget, predefinedType.Module);
             return new[]
             {
                 new MethodSignature(predefinedType.Void, true,

@@ -4,7 +4,6 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
@@ -28,8 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
         {
             using (WriteLockCookie.Create())
             {
+                var knownTypesCache = solution.GetComponent<KnownTypesCache>();
                 var scriptableObjectType =
-                    TypeFactory.CreateTypeByCLRName(KnownTypes.ScriptableObject, myWarningCreationExpression.GetPsiModule());
+                    knownTypesCache.GetByClrTypeName(KnownTypes.ScriptableObject, myWarningCreationExpression.GetPsiModule());
 
                 var factory = CSharpElementFactory.GetInstance(myWarningCreationExpression);
                 var newExpression = factory.CreateExpression("$0.CreateInstance<$1>()",
