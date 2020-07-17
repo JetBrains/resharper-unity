@@ -240,7 +240,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var lookupItem = LookupItemFactory.CreateLookupItem(textualInfo)
                 .WithPresentation(item =>
                 {
-                    var displayName = new RichText($"{modifier}{text} {{ … }}");
+                    var displayName = new RichText($"{modifier}{text} {{ ... }}");
 
                     // GenerateMemberPresentation marks everything as bold, and the parameters + block syntax as not important
                     var parameterStartOffset = modifier.Length + parameterOffset;
