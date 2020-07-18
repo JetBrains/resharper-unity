@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             if (!burstHighlighting.IsValid())
                 return;
 
-            var psiFile = burstHighlighting.Node.GetSourceFile()?.GetDominantPsiFile<CSharpLanguage>() as ICSharpFile;
+            var psiFile = burstHighlighting?.Node?.GetSourceFile()?.GetDominantPsiFile<CSharpLanguage>() as ICSharpFile;
             if (psiFile == null) return;
 
             var treeTextRange = psiFile.Translate(burstHighlighting.Node.GetDocumentRange());
