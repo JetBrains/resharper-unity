@@ -24,7 +24,7 @@
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll"><Visible>false</Visible></ILRepackInputAssemblies>
+    <ILRepackInputAssemblies Include="..\lib\JetBrains.Annotations.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="AssetPostprocessors\CsprojAssetPostprocessor.cs" />
@@ -32,5 +32,5 @@
     <Compile Remove="RiderMenu.cs" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
-  <Import Project="$(MSBuildProjectDirectory)/../EditorPlugin/ILRepack.targets" />
+  <Import Project="$(MSBuildProjectDirectory)\..\EditorPlugin\ILRepack.targets" />
 </Project>

@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ios-list-usb-devices", "..\
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "usbmuxd", "..\debugger\usbmuxd\usbmuxd.shproj", "{53672050-AE7E-4ED9-B1A1-5604536DC42C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorPlugin.5.5.0f3", "..\unity\EditorPlugin\EditorPlugin.5.5.0f3.csproj", "{CD880599-D091-4FFB-8028-64471E130B20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{337E452F-B0CF-4A6F-91A0-D373FE0E525F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{337E452F-B0CF-4A6F-91A0-D373FE0E525F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{337E452F-B0CF-4A6F-91A0-D373FE0E525F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD880599-D091-4FFB-8028-64471E130B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD880599-D091-4FFB-8028-64471E130B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD880599-D091-4FFB-8028-64471E130B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD880599-D091-4FFB-8028-64471E130B20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,5 +115,6 @@ Global
 		{039A9131-C1C6-465C-952B-38B278CE458C} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
 		{337E452F-B0CF-4A6F-91A0-D373FE0E525F} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
 		{53672050-AE7E-4ED9-B1A1-5604536DC42C} = {D61F53F1-F209-4313-9FF2-B1DBD286BE11}
+		{CD880599-D091-4FFB-8028-64471E130B20} = {27FAB5DF-2272-44E7-9BCE-41508F24C07B}
 	EndGlobalSection
 EndGlobal
