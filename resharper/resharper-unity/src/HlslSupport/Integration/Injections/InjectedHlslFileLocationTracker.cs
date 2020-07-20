@@ -189,10 +189,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
                     return InjectedHlslProgramType.CGProgram;
                 case "CGINCLUDE":
                     return InjectedHlslProgramType.CGInclude;
-                case "GLSLPROGRAM":
-                    return InjectedHlslProgramType.GLSLProgram;
-                case "GLSLINCLUDE":
-                    return InjectedHlslProgramType.GLSLInclude;
                 case "HLSLPROGRAM":
                     return InjectedHlslProgramType.HLSLProgram;
                 case "HLSLINCLUDE":
@@ -208,8 +204,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
             {
                 case InjectedHlslProgramType.CGProgram:
                     return InjectedHlslProgramType.CGInclude;
-                case InjectedHlslProgramType.GLSLProgram:
-                    return InjectedHlslProgramType.GLSLInclude;
                 case InjectedHlslProgramType.HLSLProgram:
                     return InjectedHlslProgramType.HLSLInclude;
                 default:
