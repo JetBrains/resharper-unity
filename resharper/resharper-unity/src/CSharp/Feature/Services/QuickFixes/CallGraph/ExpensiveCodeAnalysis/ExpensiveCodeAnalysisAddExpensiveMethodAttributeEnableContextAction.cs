@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
@@ -22,12 +21,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class ExpensiveCodeAnalysisEnableContextAction : ExpensiveCodeAnalysisActionBase
+    public sealed class ExpensiveCodeAnalysisAddExpensiveMethodAttributeEnableContextAction : ExpensiveCodeAnalysisAddExpensiveMethodAttributeActionBase
     {
-        private const string MESSAGE = "Disable Expensive code analysis";
         private readonly ICSharpContextActionDataProvider myDataProvider;
 
-        public ExpensiveCodeAnalysisEnableContextAction(ICSharpContextActionDataProvider dataProvider)
+        public ExpensiveCodeAnalysisAddExpensiveMethodAttributeEnableContextAction(ICSharpContextActionDataProvider dataProvider)
         {
             myDataProvider = dataProvider;
             var identifier = dataProvider.GetSelectedTreeNode<ITreeNode>() as ICSharpIdentifier;
@@ -37,12 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         protected override IMethodDeclaration MethodDeclaration { get; }
 
-        protected override IClrTypeName ProtagonistAttribute =>
-            CallGraphActionUtil.ExpensiveCodeAnalysisEnableAttribute;
-
-        protected override IClrTypeName AntagonistAttribute => null;
-
-        public override string Text => MESSAGE;
         public override IEnumerable<IntentionAction> CreateBulbItems()
         {  
             var solution = myDataProvider.Solution;
@@ -55,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var elementIdProvider = solution.GetComponent<IElementIdProvider>();
             var methodId = elementIdProvider.GetElementId(method);
             var isExpensiveContext = methodId.HasValue && callGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                ExpensiveCodeCallGraphAnalyzer.ProviderId, isGlobalStage, methodId.Value);
+                ExpensiveCodeCallGraphMarksProvider.ProviderId, isGlobalStage, methodId.Value);
             if (isExpensiveContext)
                 yield return this.ToContextActionIntention();
         }

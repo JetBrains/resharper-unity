@@ -11,8 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 {
     public static class CallGraphActionUtil
     {
-        public static readonly IClrTypeName ExpensiveCodeAnalysisEnableAttribute =
-            new ClrTypeName("ExpensiveCodeAnalysisEnableAttribute");
+        public static readonly IClrTypeName ExpensiveMethodAttribute =
+            new ClrTypeName("ExpensiveMethodAttribute");
 
         public static void AppendAttributeInTransaction([NotNull] IMethodDeclaration methodDeclaration,
             [NotNull] IClrTypeName protagonistAttributeName, [CanBeNull] IClrTypeName antagonistAttributeName,

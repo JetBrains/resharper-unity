@@ -1,36 +1,46 @@
 using System.Collections.Generic;
 using JetBrains.Application.Settings.Implementation;
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.TextControl;
 using JetBrains.Util;
+using JetBrains.Util.DataStructures.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
     [SolutionComponent]
     public class RiderUnityCommonIconProvider : UnityCommonIconProvider
     {
+        private readonly ISolution mySolution;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
         private readonly IElementIdProvider myProvider;
+        private readonly ITextControlManager myTextControlManager;
 
         public RiderUnityCommonIconProvider(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi api, UnityCodeInsightProvider codeInsightProvider,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker, IconHost iconHost, IElementIdProvider provider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, api, provider)
         {
+            mySolution = solution;
+            myTextControlManager = mySolution.GetComponent<ITextControlManager>();
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
@@ -82,7 +92,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
                 else
                 {
-                    actions = EmptyList<BulbMenuItem>.Instance;
+                    if (declaration is IMethodDeclaration methodDeclaration)
+                    {
+                        var bulbAction = new ExpensiveCodeAnalysisAddExpensiveMethodAttributeBulbAction(methodDeclaration);
+                        var textControl = myTextControlManager.LastFocusedTextControl.Value;
+                        var result = FixedList.Of(new BulbMenuItem(
+                            new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl), bulbAction.Text,
+                            BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems));
+                        actions = result;
+                    }
+                    else
+                    {
+                        actions = EmptyList<BulbMenuItem>.Instance;
+                    }
                 }
                 
                 myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text, tooltip, text,

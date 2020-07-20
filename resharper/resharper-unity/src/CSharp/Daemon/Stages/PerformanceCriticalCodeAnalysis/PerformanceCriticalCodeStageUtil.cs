@@ -134,7 +134,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public static bool HasPerformanceSensitiveAttribute(IAttributesOwner attributesOwner)
         {
-            return HasSpecificAttribute(attributesOwner, "PerformanceCharacteristicsHintAttribute");
+            return HasSpecificAttribute(attributesOwner, "ExpensiveMethodAttribute");
         }
         
         public static bool HasFrequentlyCalledMethodAttribute(IAttributesOwner attributesOwner)

@@ -4,7 +4,6 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -14,12 +13,12 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
     [SolutionComponent]
-    public class ExpensiveCodeCallGraphAnalyzer : CallGraphRootMarksProviderBase
+    public class ExpensiveCodeCallGraphMarksProvider : CallGraphRootMarksProviderBase
     {
         public const string MarkId = "Unity.ExpensiveCode";
         public static readonly CallGraphRootMarksProviderId ProviderId = new CallGraphRootMarksProviderId(MarkId);
 
-        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
+        public ExpensiveCodeCallGraphMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker,
             UnitySolutionTracker unitySolutionTracker)
             : base(MarkId, new CallGraphIncomingPropagator(solution, MarkId))
@@ -41,18 +40,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
-
-            if (containingFunction is IAttributesSet attributesSet &&
-                attributesSet.HasAttributeInstance(CallGraphActionUtil.ExpensiveCodeAnalysisEnableAttribute,
-                    AttributesSource.Self))
-            {
-                result.Add(containingFunction);
-                return result;
-            }
-
+            
             var processor = new ExpensiveCodeProcessor();
             
-            declaration.ProcessDescendants(processor);
+            declaration.ProcessThisAndDescendants(processor);
             
             if (processor.IsExpensiveCodeFound)
                 result.Add(declaredElement);
