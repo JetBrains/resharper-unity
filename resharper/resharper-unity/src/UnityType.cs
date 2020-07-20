@@ -29,11 +29,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [CanBeNull]
-        public ITypeElement GetTypeElement([NotNull] IPsiModule module)
+        public ITypeElement GetTypeElement(KnownTypesCache knownTypesCache, [NotNull] IPsiModule module)
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                var type = TypeFactory.CreateTypeByCLRName(myTypeName, module);
+                var type = knownTypesCache.GetByClrTypeName(myTypeName, module);
                 return type.GetTypeElement();
             }
         }

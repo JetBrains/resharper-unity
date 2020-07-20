@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Impl.Reflection2;
@@ -29,21 +30,38 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return false;
         }
 
-        public static bool DerivesFrom(this IDeclaredElement candidate, IClrTypeName baseTypeName)
+        public static bool DerivesFrom([CanBeNull] this ITypeElement candidate, IClrTypeName baseTypeName)
         {
-            if (!(candidate is ITypeElement element))
+            if (candidate == null)
                 return false;
-            var baseType = GetTypeElement(baseTypeName, element.Module);
-            return element.IsDescendantOf(baseType);
+            var knownTypesCache = candidate.GetSolution().GetComponent<KnownTypesCache>();
+            var baseType = GetTypeElement(baseTypeName, knownTypesCache, candidate.Module);
+            return candidate.IsDescendantOf(baseType);
         }
 
-        private static ITypeElement GetTypeElement(IClrTypeName typeName, IPsiModule module)
+        private static ITypeElement GetTypeElement(IClrTypeName typeName, KnownTypesCache knownTypesCache,
+                                                   IPsiModule module)
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                var type = TypeFactory.CreateTypeByCLRName(typeName, module);
+                var type = knownTypesCache.GetByClrTypeName(typeName, module);
                 return type.GetTypeElement();
             }
+        }
+
+        public static bool DerivesFromMonoBehaviour([CanBeNull] this ITypeElement candidate)
+        {
+            return candidate.DerivesFrom(KnownTypes.MonoBehaviour);
+        }
+
+        public static bool DerivesFromScriptableObject([CanBeNull] this ITypeElement candidate)
+        {
+            return candidate.DerivesFrom(KnownTypes.ScriptableObject);
+        }
+
+        public static bool DerivesFromUnityEvent([CanBeNull] this ITypeElement candidate)
+        {
+            return candidate.DerivesFrom(KnownTypes.UnityEvent);
         }
 
         [CanBeNull]
@@ -62,19 +80,16 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return unityEventFunction.TypeName.GetFullNameFast() + "." + element.ShortName;
         }
-        
-        public static bool IsUnityComponent(this ITypeElement typeElement, out bool IsBuiltin)
+
+        public static bool IsUnityComponent(this ITypeElement typeElement, out bool isBuiltin)
         {
             // User components must derive from MonoBehaviour, but built in components only have to derive from
             // Component. A built in component will be something that isn't an asset, which means it's come from
             // one of the UnityEngine assemblies, or UnityEditor.dll. Another check might be that the referenced
             // module lives in Assets, but packages makes a mess of that (referenced packages are compiled and
             // referenced from Library or local packages can include a dll as an asset, external to the project)
-            IsBuiltin = typeElement.IsBuiltInUnityClass();
-            if (IsBuiltin)
-                return typeElement.DerivesFrom(KnownTypes.Component);
-
-            return typeElement.DerivesFrom(KnownTypes.MonoBehaviour);
+            isBuiltin = typeElement.IsBuiltInUnityClass();
+            return isBuiltin ? typeElement.DerivesFrom(KnownTypes.Component) : typeElement.DerivesFromMonoBehaviour();
         }
     }
 }

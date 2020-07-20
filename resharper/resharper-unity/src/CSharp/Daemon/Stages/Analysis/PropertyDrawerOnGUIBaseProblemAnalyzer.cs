@@ -31,8 +31,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         private static bool IsOnGUIBaseCall(IInvocationExpression expression)
         {
             var reference = expression.Reference;
-            if (reference == null)
-                return false;
 
             if (!IsBaseCallReference(expression))
                 return false;
@@ -52,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
             return true;
         }
-        
+
         private static bool IsBaseCallReference(IInvocationExpression expression)
         {
             var referenceExpression = expression.InvokedExpression as IReferenceExpression;
@@ -81,8 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         private static bool IsInsidePropertyDrawer(IInvocationExpression expression)
         {
             var containingType = expression.GetContainingNode<IClassLikeDeclaration>()?.DeclaredElement;
-            var propertyDrawer = TypeFactory.CreateTypeByCLRName(KnownTypes.PropertyDrawer, expression.PsiModule);
-            return containingType?.IsDescendantOf(propertyDrawer.GetTypeElement()) != false;
+            return containingType.DerivesFrom(KnownTypes.PropertyDrawer);
         }
     }
 }

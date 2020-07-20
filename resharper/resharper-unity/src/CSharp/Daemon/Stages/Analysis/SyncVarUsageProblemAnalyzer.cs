@@ -16,15 +16,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
         protected override void Analyze(IAttribute element, ElementProblemAnalyzerData data, IHighlightingConsumer consumer)
         {
-            var type = element.TypeReference?.Resolve()?.DeclaredElement as ITypeElement;
-            if (type != null && Equals(type.GetClrName(), KnownTypes.SyncVarAttribute))
+            if (element.TypeReference?.Resolve().DeclaredElement is ITypeElement type &&
+                Equals(type.GetClrName(), KnownTypes.SyncVarAttribute))
             {
                 var containingType = element.GetContainingNode<IClassLikeDeclaration>()?.DeclaredElement;
-                var networkBehaviour = TypeFactory.CreateTypeByCLRName(KnownTypes.NetworkBehaviour, element.PsiModule);
-                if (containingType?.IsDescendantOf(networkBehaviour.GetTypeElement()) == false)
-                {
+                if (!containingType.DerivesFrom(KnownTypes.NetworkBehaviour))
                     consumer.AddHighlighting(new SyncVarUsageError(element));
-                }
             }
         }
     }

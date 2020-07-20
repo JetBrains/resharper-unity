@@ -6,13 +6,10 @@ using JetBrains.Application.DataContext;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Actions.ActionManager;
 using JetBrains.Application.UI.ActionsRevised.Handlers;
-using JetBrains.Application.UI.Controls;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.GotoByName;
-using JetBrains.Application.UI.Controls.JetPopupMenu;
 using JetBrains.Application.UI.DataContext;
 using JetBrains.Application.UI.PopupLayout;
-using JetBrains.Application.UI.Tooltips;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.DataContext;
@@ -68,11 +65,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             myActionManager = Shell.Instance.GetComponent<IActionManager>();
             myContexts =  Shell.Instance.GetComponent<DataContexts>();
         }
-        
+
         private static (Guid? guid, string[] propertyNames) GetAssetGuidAndPropertyName(ISolution solution, IField declaredElement)
         {
             Assertion.Assert(solution.Locks.IsReadAccessAllowed(), "ReadLock required");
-            
+
             var containingType = declaredElement.GetContainingType();
             if (containingType == null)
                 return (null, Array.Empty<string>());
@@ -80,31 +77,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             var guid = AssetUtils.GetGuidFor(solution.GetComponent<MetaFileGuidCache>(), containingType);
             return (guid, AssetUtils.GetAllNamesFor(declaredElement).ToArray());
         }
-        
+
         public override void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
         {
             if (!(highlighting is UnityInspectorCodeInsightsHighlighting))
                 return;
-            
+
             var rules = new List<IDataRule>();
-            rules.AddRule("Solution", ProjectModelDataConstants.SOLUTION, solution);      
-      
+            rules.AddRule("Solution", ProjectModelDataConstants.SOLUTION, solution);
+
             var declaredElement = highlighting.DeclaredElement;
             rules.AddRule("DeclaredElement", PsiDataConstants.DECLARED_ELEMENTS_FROM_ALL_CONTEXTS, new[] {  declaredElement });
 
             using (ReadLockCookie.Create())
-            {               
+            {
                 if (!declaredElement.IsValid())
                     return;
-        
+
                 rules.AddRule("DocumentEditorContext", DocumentModelDataConstants.EDITOR_CONTEXT, new DocumentEditorContext(highlighting.Range));
                 rules.AddRule("PopupWindowSourceOverride", UIDataConstants.PopupWindowContextSource,
                     new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlighting.Range.StartOffset.Offset)));
 
                 rules.AddRule("DontNavigateImmediatelyToSingleUsage", NavigationSettings.DONT_NAVIGATE_IMMEDIATELY_TO_SINGLE_USAGE, new object());
-      
+
                 var ctx = myContexts.CreateWithDataRules(Lifetime.Eternal, rules);
-        
+
                 var def = myActionManager.Defs.GetActionDef<GoToUnityUsagesAction>();
                 def.EvaluateAndExecute(myActionManager, ctx);
             }
@@ -127,7 +124,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                 base.AddHighlighting(consumer, element, field, baseDisplayName, baseTooltip, moreText, iconModel, items, extraActions);
                 return;
             }
-            
+
             var (guidN, propertyNames) = GetAssetGuidAndPropertyName(solution, field);
             if (guidN == null || propertyNames.Length == 0)
             {
@@ -169,13 +166,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
                     declaredElement, iconModel, presentationType));
                 return;
             }
-            
+
 
             var initializer = (element as IFieldDeclaration).NotNull("element as IFieldDeclaration != null").Initial;
             var initValue = (initializer as IExpressionInitializer)?.Value?.ConstantValue.Value;
 
             var initValueUnityPresentation = GetUnitySerializedPresentation(presentationType, initValue);
-            
+
             int changesCount;
             bool isEstimated = false;
             bool isUniqueChange = false;
@@ -230,13 +227,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
             if (isUniqueChange)
                 return "Unique change";
-            
+
             if (changesCount == 0 && !isEstimated)
                 return "No changes in assets";
 
             if (changesCount == 0 && isEstimated)
                 return "Possible indirect changes";
-    
+
             if (changesCount == 1 && isEstimated)
                 return "Changed in 1 asset + possible indirect changes";
 
@@ -250,25 +247,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             if (presentationType == UnityPresentationType.ScriptableObject && value == null)
                 return new AssetReferenceValue(new LocalReference(0, 0));
-            
+
             if (presentationType == UnityPresentationType.FileId && value == null)
                 return new AssetReferenceValue(new LocalReference(0, 0));
 
             if ((presentationType == UnityPresentationType.OtherSimple  || presentationType == UnityPresentationType.Bool) && value == null)
                 return new AssetSimpleValue("0");
-            
+
             if (value == null)
                 return new AssetSimpleValue(string.Empty);
 
             return new AssetSimpleValue(value.ToString());
         }
-        
+
         private UnityPresentationType GetUnityPresentationType(IType type)
         {
-            if (UnityApi.IsDescendantOfUnityEvent(type.GetTypeElement()))
+            if (type.GetTypeElement().DerivesFromUnityEvent())
                 return UnityPresentationType.UnityEvent;
 
-            if (UnityApi.IsDescendantOfScriptableObject(type.GetTypeElement()))
+            if (type.GetTypeElement().DerivesFromScriptableObject())
                 return UnityPresentationType.ScriptableObject;
             if (type.IsBool())
                 return UnityPresentationType.Bool;
@@ -279,7 +276,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
             if (type.IsSimplePredefined())
                 return UnityPresentationType.OtherSimple;
-            
+
             if (type.IsValueType())
                 return UnityPresentationType.ValueType;
 
@@ -295,16 +292,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
             if (typeElement == null)
                 return false;
 
-            return UnityApi.IsDescendantOf(KnownTypes.GameObject, typeElement) ||
-                   UnityApi.IsDescendantOf(KnownTypes.Component, typeElement);
+            return typeElement.DerivesFrom(KnownTypes.GameObject)
+                   || typeElement.DerivesFrom(KnownTypes.Component);
         }
-        
+
         private bool ShouldShowUnknownPresentation(UnityPresentationType presentationType)
         {
             return presentationType == UnityPresentationType.Other ||
                    presentationType == UnityPresentationType.ValueType;
         }
-        
+
         public enum UnityPresentationType
         {
             Enum,

@@ -36,6 +36,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Improved method signature validation and usage suppression using Unity's `RequiredSignature` attribute ([#1679](https://github.com/JetBrains/resharper-unity/pull/1679), [#1689](https://github.com/JetBrains/resharper-unity/pull/1689))
 - Fields must have correct type to be considered a serialised field ([#1605](https://github.com/JetBrains/resharper-unity/issues/1605), [#1638](https://github.com/JetBrains/resharper-unity/pull/1638), [#1720](https://github.com/JetBrains/resharper-unity/pull/1720))
 - Update `.meta` file icons to something less distracting ([RIDER-45675](https://youtrack.jetbrains.com/issue/RIDER-45675), [#1698](https://github.com/JetBrains/resharper-unity/pull/1698))
+- Update API information to Unity 2020.2.0a18 ([#1760](https://github.com/JetBrains/resharper-unity/pull/1760))
+- Added undocumented event functions for `Editor` and `EditorWindow` ([#986](https://github.com/JetBrains/resharper-unity/issues/986), [#1453](https://github.com/JetBrains/resharper-unity/issues/1453), [#1760](https://github.com/JetBrains/resharper-unity/pull/1760))
 - Rider: Significant reduction in memory usage while indexing assets ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
 - Rider: Better support for prefab modifications in Find Usages and showing Inspector values ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
 - Rider: Show method handlers for Unity events in the editor ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
@@ -195,6 +196,14 @@ namespace ApiParser
             var argumentNames = EmptyArray<string>.Instance;
             var isStaticFromExample = false;
 
+            // Unity 2020.2.0a18 includes EditorWindow.hasUnsavedChanges and EditorWindow.saveChangesMessage as messages
+            if (className == "EditorWindow" &&
+                (messageName == "hasUnsavedChanges" || messageName == "saveChangesMessage"))
+            {
+                Console.WriteLine($"Skipping {className}.{messageName} - not a message");
+                return null;
+            }
+
             var examples = PickExample(details);
             if (examples.Length > 0)
             {
@@ -298,7 +307,7 @@ namespace ApiParser
             var arguments = argumentStrings.Select((arg, i) =>
             {
                 var argName = total > 1 ? $"arg{i + 1}" : @"arg";
-                var typeName = arg;
+                var typeName = WebUtility.HtmlDecode(arg);    // E.g. for List&lt;string&gt;
                 if (arg.Contains(' '))
                 {
                     var parts = arg.Split(' ');
@@ -415,7 +424,6 @@ namespace ApiParser
 
 #pragma warning disable 649
         [SuppressMessage("ReSharper", "InconsistentNaming")]
-        [SuppressMessage("ReSharper", "NotNullMemberIsNotInitialized")]
         private class Toc
         {
             public string link;

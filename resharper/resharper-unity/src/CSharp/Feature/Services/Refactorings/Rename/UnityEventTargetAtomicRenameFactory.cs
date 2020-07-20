@@ -32,7 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         private static bool IsPossibleEventHandler(IDeclaredElement declaredElement)
         {
-
             var clrDeclaredElement = declaredElement as IClrDeclaredElement;
 
             switch (clrDeclaredElement)
@@ -43,18 +42,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
                     if (containingType == null)
                         return false;
 
-                    var unityObjectType = TypeFactory.CreateTypeByCLRName(KnownTypes.Object, clrDeclaredElement.Module).GetTypeElement();
+                    var solution = clrDeclaredElement.GetSolution();
+
+                    var knownTypesCache = solution.GetComponent<KnownTypesCache>();
+                    var unityObjectType = knownTypesCache.GetByClrTypeName(KnownTypes.Object, clrDeclaredElement.Module).GetTypeElement();
                     var result = containingType.IsDescendantOf(unityObjectType);
                     if (!result)
                         return false;
-                    var solution = clrDeclaredElement.GetSolution();
                     var cacheController = solution.GetComponent<DeferredCacheController>();
 
                     if (cacheController.IsProcessingFiles())
                         return true;
-                    
+
                     var methods = solution.GetComponent<UnityEventsElementContainer>();
                     return methods.GetAssetUsagesCount(clrDeclaredElement, out bool estimatedResult) > 0 || estimatedResult;
+
                 default:
                     return false;
             }
