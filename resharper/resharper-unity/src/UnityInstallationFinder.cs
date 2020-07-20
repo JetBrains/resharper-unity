@@ -132,26 +132,31 @@ namespace JetBrains.ReSharper.Plugins.Unity
                     var unityApps = new List<FileSystemPath>();
                     var homeEnv = Environment.GetEnvironmentVariable("HOME");
                     var homes = new List<FileSystemPath> {FileSystemPath.Parse("/opt")};
+                    if (!string.IsNullOrEmpty(homeEnv))
+                    {
+                        homes.Add(FileSystemPath.Parse(homeEnv));
+                    }
 
+                    // Old style installations
                     unityApps.AddRange(
                         homes.SelectMany(a => a.GetChildDirectories("Unity*"))
                             .Select(unityDir => unityDir.Combine(@"Editor/Unity")));
 
-                    if (homeEnv == null)
-                        return unityApps;
-                    var home = FileSystemPath.Parse(homeEnv);
-                    homes.Add(home);
+                    // Installations with Unity Hub
+                    if (!string.IsNullOrEmpty(homeEnv))
+                    {
+                        var home = FileSystemPath.Parse(homeEnv);
+                        var defaultHubLocation = home.Combine("Unity/Hub/Editor");
+                        var hubLocations = new List<FileSystemPath> {defaultHubLocation};
+                        // Hub custom location
+                        var configPath = home.Combine(".config");
+                        var customHubInstallPath = GetCustomHubInstallPath(configPath);
+                        if (!customHubInstallPath.IsEmpty)
+                            hubLocations.Add(customHubInstallPath);
 
-                    var defaultHubLocation = home.Combine("Unity/Hub/Editor");
-                    var hubLocations = new List<FileSystemPath> {defaultHubLocation};
-                    // Hub custom location
-                    var configPath = home.Combine(".config");
-                    var customHubInstallPath = GetCustomHubInstallPath(configPath);
-                    if (!customHubInstallPath.IsEmpty)
-                        hubLocations.Add(customHubInstallPath);
-
-                    unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
-                        unityDir.Combine(@"Editor/Unity"))));
+                        unityApps.AddRange(hubLocations.SelectMany(l=>l.GetChildDirectories().Select(unityDir =>
+                            unityDir.Combine(@"Editor/Unity"))));
+                    }
 
                     return unityApps.Where(a=>a.ExistsFile).Distinct().OrderBy(b=>b.FullPath).ToList();
                 }
