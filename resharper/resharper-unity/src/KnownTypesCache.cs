@@ -15,8 +15,22 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [NotNull]
         public IDeclaredType GetByClrTypeName(IClrTypeName typeName, IPsiModule module)
         {
-            return module.GetPredefinedType().TryGetType(typeName, NullableAnnotation.Unknown)
-                ?? myTypes.GetOrAdd(typeName, name => TypeFactory.CreateTypeByCLRName(name, module));
+            var type = module.GetPredefinedType().TryGetType(typeName, NullableAnnotation.Unknown);
+            if (type != null)
+                return type;
+
+            // Make sure the type is still valid before handing it out. It might be invalid if the module used to create
+            // it has been changed
+            type = myTypes.AddOrUpdate(typeName, name => TypeFactory.CreateTypeByCLRName(name, module),
+                (name, existingValue) => existingValue.Module.IsValid()
+                    ? existingValue
+                    : TypeFactory.CreateTypeByCLRName(name, module));
+            return type;
+        }
+
+        private IDeclaredType ValueFactory(IClrTypeName arg)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
