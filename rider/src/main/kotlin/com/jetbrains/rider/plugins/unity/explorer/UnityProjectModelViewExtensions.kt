@@ -78,23 +78,28 @@ class UnityProjectModelViewExtensions(project: Project) : ProjectModelViewExtens
         return recursiveSearch(targetLocation.parent, host)
     }
 
-    // filter out Player projects
-    // case with only .Player project is possible
+    // filter out duplicate items in Player projects
     // todo: case with main project named .Player is also possible
     private fun filterOutItemsFromNonPrimaryProjects(items: List<ProjectModelNode>): List<ProjectModelNode> {
-        val mutableList = items.filter { it.containingProject() == null }.toMutableList()
-        val withProject = items.filter { it.containingProject() != null }
-            .map { Pair(constructNameWithPlayer(it), it) }.groupBy { a -> a.first }
-            .mapValues { it.value.first().second }.values.toList()
-        mutableList.addAll(withProject)
-        return mutableList
-    }
+        val elementsWithoutProject = items.filter { it.containingProject() == null }.toList()
+        val elementsWithProject = items.filter { it.containingProject() != null }.toList()
+        val elementsWithNonPlayerProject = elementsWithProject.filter { !it.containingProject()!!.name.endsWith(".Player") }.toList()
+        val elementsWithPlayerProject = elementsWithProject.filter { it.containingProject()!!.name.endsWith(".Player") }.toList()
 
-    private fun constructNameWithPlayer(node:ProjectModelNode):String{
-        val name = node.containingProject()!!.name
-        if (name.endsWith(".Player"))
-            return name
-        else
-            return name+".Player"
+        val res = mutableListOf<ProjectModelNode>()
+        res.addAll(elementsWithoutProject)
+        res.addAll(elementsWithNonPlayerProject)
+
+        // there might be elements only with Player project
+        elementsWithPlayerProject.forEach { player ->
+            if (!elementsWithNonPlayerProject.any { el ->
+                    el.getVirtualFile() == player.getVirtualFile()
+                        && (el.containingProject()!!.name + ".Player" == player.containingProject()!!.name)
+                }) {
+                res.add(player)
+            }
+        }
+
+        return res
     }
 }
