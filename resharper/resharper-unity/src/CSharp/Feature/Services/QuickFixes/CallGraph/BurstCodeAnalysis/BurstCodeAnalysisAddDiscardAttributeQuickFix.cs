@@ -18,7 +18,7 @@ using JetBrains.ReSharper.Psi.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
 {
     [QuickFix]
-    public sealed class BurstCodeAnalysisAddDiscardAttributeQuickFix : BurstCodeAnalysisAddDiscardAttributeAction
+    public sealed class BurstCodeAnalysisAddDiscardAttributeQuickFix : BurstCodeAnalysisAddDiscardAttributeActionBase
     {
         public BurstCodeAnalysisAddDiscardAttributeQuickFix(IBurstHighlighting burstHighlighting)
         {

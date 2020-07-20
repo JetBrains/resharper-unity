@@ -8,7 +8,7 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
 {
-    public abstract class BurstCodeAnalysisAddDiscardAttributeAction : CallGraphActionBase
+    public abstract class BurstCodeAnalysisAddDiscardAttributeActionBase : CallGraphActionBase
     {
         protected const string Message = "Add BurstDiscard attribute";
         protected override IClrTypeName ProtagonistAttribute => KnownTypes.BurstDiscardAttribute;

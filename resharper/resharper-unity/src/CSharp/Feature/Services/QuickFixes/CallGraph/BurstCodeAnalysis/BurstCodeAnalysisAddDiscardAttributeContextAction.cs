@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class BurstCodeAnalysisAddDiscardAttributeContextAction : BurstCodeAnalysisAddDiscardAttributeAction
+    public sealed class BurstCodeAnalysisAddDiscardAttributeContextAction : BurstCodeAnalysisAddDiscardAttributeActionBase
     {
         private readonly ICSharpContextActionDataProvider myDataProvider;
 
