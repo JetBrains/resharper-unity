@@ -40,10 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
                 return InjectedHlslProgramType.HLSLInclude;
             if (lexerTokenType == ShaderLabTokenType.HLSL_PROGRAM)
                 return InjectedHlslProgramType.HLSLProgram;
-            if (lexerTokenType == ShaderLabTokenType.GLSL_INCLUDE)
-                return InjectedHlslProgramType.GLSLInclude;
-            if (lexerTokenType == ShaderLabTokenType.GLSL_PROGRAM)
-                return InjectedHlslProgramType.GLSLProgram;
 
             return InjectedHlslProgramType.Uknown;
         }
