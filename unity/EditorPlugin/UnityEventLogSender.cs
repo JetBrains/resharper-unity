@@ -89,19 +89,6 @@ namespace JetBrains.Rider.Unity.Editor
       var ticks = DateTime.UtcNow.Ticks;
       var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
       DelayedLogEvents.Enqueue(evt);
-      OnAddEvent(new EventArgs());
-    }
-
-    public event EventHandler AddEvent;
-
-    public void ClearEvent()
-    {
-      AddEvent = null;
-    }
-
-    private void OnAddEvent(EventArgs e)
-    {
-      AddEvent?.Invoke(this, e);
     }
   }
 
@@ -109,12 +96,12 @@ namespace JetBrains.Rider.Unity.Editor
   {
     public UnityEventLogSender(UnityEventCollector collector)
     {
-      ProcessQueue(collector);
-
-      collector.ClearEvent();
-      collector.AddEvent += (col, _) =>
+      EditorApplication.update += () =>
       {
-        ProcessQueue((UnityEventCollector)col);
+        if (!PluginSettings.LogEventsCollectorEnabled)
+          return;
+
+        ProcessQueue(collector);
       };
     }
 
@@ -129,16 +116,13 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void SendLogEvent(RdLogEvent logEvent)
     {
-      MainThreadDispatcher.Instance.Queue(() =>
+      foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
       {
-        foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
+        if (modelWithLifetime.Lifetime.IsAlive)
         {
-          if (modelWithLifetime.Lifetime.IsAlive)
-          {
-            modelWithLifetime.Model.Log(logEvent);
-          }
+          modelWithLifetime.Model.Log(logEvent);
         }
-      });
+      }
     }
   }
 }
