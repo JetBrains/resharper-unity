@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Psi.Tree;
@@ -13,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             CheckAndAnalyze(t, consumer);
         }
 
-        protected abstract bool CheckAndAnalyze(T t, IHighlightingConsumer consumer);
+        protected abstract bool CheckAndAnalyze(T t, [CanBeNull] IHighlightingConsumer consumer);
         public bool Check(ITreeNode node)
         {
             if (node is T t)

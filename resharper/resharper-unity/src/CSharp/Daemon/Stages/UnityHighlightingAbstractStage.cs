@@ -236,9 +236,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                         var enumContext = (UnityProblemAnalyzerContext) context;
                         if (possibleContexts.HasFlag(enumContext) && !prohibitedContexts.HasFlag(enumContext))
                         {
-                            foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[enumContext])
+                            foreach (var unityProblemAnalyzer in myProblemAnalyzersByContext[enumContext])
                             {
-                                performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind,
+                                unityProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind,
                                     consumer);
                             }
                         }
