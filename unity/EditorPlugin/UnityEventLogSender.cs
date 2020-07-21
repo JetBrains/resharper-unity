@@ -94,23 +94,23 @@ namespace JetBrains.Rider.Unity.Editor
 
   public class UnityEventLogSender
   {
+    private readonly UnityEventCollector myCollector;
+
     public UnityEventLogSender(UnityEventCollector collector)
     {
-      EditorApplication.update += () =>
-      {
-        if (!collector.LogEventsCollectorEnabled)
-          return;
-
-        ProcessQueue(collector);
-      };
+      myCollector = collector;
+      EditorApplication.update += ProcessQueue;
     }
 
-    private void ProcessQueue(UnityEventCollector collector)
+    private void ProcessQueue()
     {
+      if (!myCollector.LogEventsCollectorEnabled)
+        return;
+      
       if (PluginEntryPoint.UnityModels.Count > 0)
       {
         RdLogEvent element;
-        while ((element  = collector.DelayedLogEvents.Dequeue()) != null)
+        while ((element  = myCollector.DelayedLogEvents.Dequeue()) != null)
         {
           SendLogEvent(element);
         }  
