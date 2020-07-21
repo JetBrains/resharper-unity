@@ -96,7 +96,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void ProcessQueue()
     {
-      if (PluginEntryPoint.UnityModels.Count > 0)
+      if (PluginEntryPoint.UnityModels.Count > 0) // maybe worth checking Any( with .Lifetime.IsAlive ), but shows up more expensive in Profiler
       {
         RdLogEvent element;
         while ((element  = ourDelayedLogEvents.Dequeue()) != null)
