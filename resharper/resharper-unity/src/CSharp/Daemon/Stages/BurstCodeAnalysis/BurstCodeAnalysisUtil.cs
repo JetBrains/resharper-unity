@@ -195,6 +195,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public static bool IsBurstContextBannedFunction(IFunction function)
         {
+            if (function == null)
+                return true;
             if (function.IsStatic || function.GetContainingTypeMember() is IStruct)
                 return function is IMethod method && IsBurstDiscarded(method);
             return true;

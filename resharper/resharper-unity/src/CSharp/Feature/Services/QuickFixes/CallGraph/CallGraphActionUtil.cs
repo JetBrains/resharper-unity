@@ -23,7 +23,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var symbolScope = symbolCache.GetSymbolScope(methodDeclaration.GetPsiModule(), true, true);
 
             var protagonistTypeElement = symbolScope.GetTypeElementByCLRName(protagonistAttributeName);
-            if (protagonistTypeElement == null) return;
+            
+            if (protagonistTypeElement == null)
+            {
+                //CGTD create attribute if it must be created
+                // methodDeclaration.GetPsiModule().ContainingProjectModule.
+                return;
+            }
 
             var protagonistAttribute = factory.CreateAttribute(protagonistTypeElement);
             IAttribute antagonistAttribute = null;
@@ -35,14 +41,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
                     antagonistAttribute = factory.CreateAttribute(antagonistTypeElement);
             }
 
+            var lastAttribute = methodDeclaration.Attributes.LastOrDefault();
+            var sectionList = AttributeSectionListNavigator.GetByAttribute(lastAttribute);
             var transactions = methodDeclaration.GetPsiServices().Transactions;
 
             transactions.Execute(commandName, () =>
             {
                 using (WriteLockCookie.Create())
                 {
-                    var lastAttribute = methodDeclaration.Attributes.LastOrDefault();
-                    var sectionList = AttributeSectionListNavigator.GetByAttribute(lastAttribute);
                     if (sectionList != null)
                     {
                         var fakeClass = factory.CreateTypeMemberDeclaration("[$0]class C{}", protagonistAttribute);

@@ -40,36 +40,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             s => s.EnableBurstCodeHighlighting;
 
         public UnityOptionsPage(Lifetime lifetime, OptionsPageContext pageContext,
-                                OptionsSettingsSmartContext settingsStore,
-                                RunsProducts.ProductConfigurations productConfigurations)
+            OptionsSettingsSmartContext settingsStore,
+            RunsProducts.ProductConfigurations productConfigurations)
             : base(lifetime, pageContext, settingsStore)
         {
             AddHeader("General");
             AddBoolOption((UnitySettings s) => s.InstallUnity3DRiderPlugin,
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             AddBoolOption((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
+            
+            AddPerformanceAnalysisSection(lifetime, settingsStore);
+            AddBurstAnalysisSection(lifetime, settingsStore);
 
             AddHeader("C#");
-            AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
-            AddBoolOption(ourEnablePerformanceHighlightingAccessor,
-                "Enable performance analysis in frequently called code");
-
-            using (Indent())
-            {
-                var option = AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode,
-                    "Highlight performance critical contexts:", string.Empty, string.Empty,
-                    new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
-                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method only"),
-                    new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
-                );
-                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
-                    enable => enable);
-                option = AddBoolOption((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
-                    "Show icons for frequently called methods");
-                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
-                    enable => enable);
-            }
-
             AddComboOption((UnitySettings s) => s.GutterIconMode,
                 "Show gutter icons for implicit script usages:", string.Empty, string.Empty,
                 new RadioOptionPoint(GutterIconMode.Always, "Always"),
@@ -122,6 +105,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 AddBoolOption((UnitySettings s) => s.EnableCgErrorHighlighting,
                     "Parse Cg files for syntax errors (requires internal mode, and re-opening solution)");
+            }
+        }
+
+        private void AddPerformanceAnalysisSection(Lifetime lifetime, IContextBoundSettingsStore settingsStore)
+        {
+            AddHeader("Performance analysis");
+            
+            AddBoolOption(ourEnablePerformanceHighlightingAccessor,
+                "Enable performance analysis in frequently called code");
+
+            using (Indent())
+            {
+                var option = AddComboOption((UnitySettings s) => s.PerformanceHighlightingMode,
+                    "Highlight performance critical contexts:", string.Empty, string.Empty,
+                    new RadioOptionPoint(PerformanceHighlightingMode.Always, "Always"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.CurrentMethod, "Current method only"),
+                    new RadioOptionPoint(PerformanceHighlightingMode.Never, "Never")
+                );
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
+                    enable => enable);
+                option = AddBoolOption((UnitySettings s) => s.EnableIconsForPerformanceCriticalCode,
+                    "Show icons for frequently called methods");
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnablePerformanceHighlightingAccessor,
+                    enable => enable);
+            }
+        }
+
+        private void AddBurstAnalysisSection(Lifetime lifetime, IContextBoundSettingsStore settingsStore)
+        {
+            AddHeader("Burst code analysis");
+
+            AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
+            
+            using (Indent())
+            {
+                var option = AddComboOption((UnitySettings s) => s.BurstCodeHighlightingMode,
+                    "Highlight burst code contexts:", string.Empty, string.Empty,
+                    new RadioOptionPoint(BurstCodeHighlightingMode.Always, "Always"),
+                    new RadioOptionPoint(BurstCodeHighlightingMode.CurrentMethod, "Current method only"),
+                    new RadioOptionPoint(BurstCodeHighlightingMode.Never, "Never")
+                );
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
+                    enable => enable);
+                option = AddBoolOption((UnitySettings s) => s.EnableIconsForBurstCode,
+                    "Show icons for burst compiled methods");
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
+                    enable => enable);
             }
         }
 
@@ -194,7 +224,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         private static ClrUserDefinedNamingRule GetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
-                                                                            SettingsIndexedEntry entry)
+            SettingsIndexedEntry entry)
         {
             var userRule = settingsStore.GetIndexedValue(entry,
                 UnityNamingRuleDefaultSettings.SerializedFieldRuleGuid, null) as ClrUserDefinedNamingRule;
@@ -208,7 +238,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         private static void SetUnitySerializedFieldRule(IContextBoundSettingsStore settingsStore,
-                                                        SettingsIndexedEntry entry, ClrUserDefinedNamingRule userRule)
+            SettingsIndexedEntry entry, ClrUserDefinedNamingRule userRule)
         {
             settingsStore.SetIndexedValue(entry, UnityNamingRuleDefaultSettings.SerializedFieldRuleGuid, null,
                 userRule);

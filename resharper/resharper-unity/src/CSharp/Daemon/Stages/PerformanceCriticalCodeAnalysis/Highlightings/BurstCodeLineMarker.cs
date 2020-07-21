@@ -1,6 +1,7 @@
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.Tree;
@@ -17,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         ToolTipFormatString = MESSAGE)]
     public class UnityBurstCodeLineMarker : IBurstHighlighting, IActiveLineMarkerInfo
     {
-        public const string MESSAGE = "Burst context";
+        public const string MESSAGE = BurstCodeVisionProvider.BURST_DISPLAY_NAME;
 
         private readonly DocumentRange myRange;
 
@@ -28,13 +29,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public bool IsValid() => true;
         public DocumentRange CalculateRange() => myRange;
-        public string ToolTip => "Burst context";
+        public string ToolTip => BurstCodeVisionProvider.BURST_TOOLTIP;
         public string ErrorStripeToolTip => Tooltip;
         public string RendererId => null;
         public int Thickness => 1;
-        public LineMarkerPosition Position =>  LineMarkerPosition.RIGHT;
+        public LineMarkerPosition Position => LineMarkerPosition.RIGHT;
         public ExecutableItem LeftClick() => null;
-        public string Tooltip => "Burst context";
+        public string Tooltip => ToolTip;
         public ITreeNode Node => null;
     }
     
@@ -56,16 +57,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 #if RIDER
     [RegisterHighlighter(BURST_METHOD_HIGHLIGHTER,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
-        BackgroundColor = "#ff7526",
-        DarkBackgroundColor = "#ff7526",
+        BackgroundColor = "#0D89C5",
+        DarkBackgroundColor = "#0D89C5",
         EffectType = EffectType.LINE_MARKER,
-        EffectColor = "#ff7526",
-        Layer = HighlighterLayer.ADDITIONAL_SYNTAX,
+        EffectColor = "#0D89C5",
+        Layer = HighlighterLayer.WARNING + 1,
         TransmitUpdates = true)]
 #else
     [RegisterHighlighter(BURST_METHOD_HIGHLIGHTER,
         GroupId = UnityHighlightingAttributeIds.GROUP_ID,
-        EffectColor = "#ff7526",
+        EffectColor = "#0D89C5",
         EffectType = EffectType.SOLID_UNDERLINE,
         Layer = HighlighterLayer.WARNING + 1)]
 #endif

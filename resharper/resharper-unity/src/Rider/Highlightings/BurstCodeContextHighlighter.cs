@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             var view = psiDocumentRangeView.View<CSharpLanguage>();
             var node = view.GetSelectedTreeNode<IFunctionDeclaration>();
             
-            if (node != null)
+            if (node != null && !BurstCodeAnalysisUtil.IsBurstContextBannedNode(node))
             {
                 var declaredElement = node.DeclaredElement;
                 if  (declaredElement == null)
@@ -54,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 var swa = solution.GetComponent<SolutionAnalysisService>();
                 if (swa?.Configuration?.Enabled?.Value == false)
                     return;
-                var isGlobalStage = swa?.Configuration?.Completed?.Value == true;
+                var isGlobalStage = swa.Configuration?.Completed?.Value == true;
                 var callGraphExtension = solution.GetComponent<CallGraphSwaExtensionProvider>();
                 var callGraphAnalyzer = solution.GetComponent<CallGraphBurstMarksProvider>();
                 var elementIdProvider = solution.GetComponent<IElementIdProvider>();
