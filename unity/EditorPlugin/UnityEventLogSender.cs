@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Reflection;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.Rider.Unity.Editor.NonUnity;
@@ -108,7 +107,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ProcessQueue(UnityEventCollector collector)
     {
-      if (PluginEntryPoint.UnityModels.Any())
+      if (PluginEntryPoint.UnityModels.Count > 0)
       {
         RdLogEvent element;
         while ((element  = collector.DelayedLogEvents.Dequeue()) != null)
