@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Threading;
+using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
@@ -22,11 +25,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
 
-        public CallGraphBurstMarksProvider(ISolution solution,
+        public CallGraphBurstMarksProvider(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
+            UnitySolutionTracker tracker,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
             : base(nameof(CallGraphBurstMarksProvider),
                 new CallGraphBurstPropagator(solution, nameof(CallGraphBurstMarksProvider)))
         {
+            Enabled.Value = tracker.IsUnityProject.HasTrueValue();
+            referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
             myBurstBannedAnalyzers = prohibitedContextAnalyzers.ToList();
         }
 
@@ -92,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 }
             }
 
-            return new LocalList<IDeclaredElement>(result);
+            return new LocalList<IDeclaredElement>(result.WhereNotNull());
         }
 
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
@@ -105,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var function = functionDeclaration?.DeclaredElement;
             if (function == null)
                 return result;
-            if (IsBurstContextBannedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
+            if (IsBurstContextBannedForFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
                 result.Add(function);
             return result;
         }
