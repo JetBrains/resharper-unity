@@ -7,19 +7,22 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public class UnityEventCollector
+  public static class UnityEventLogSender
   {
-    public readonly BoundedSynchronizedQueue<RdLogEvent> DelayedLogEvents = new BoundedSynchronizedQueue<RdLogEvent>(1000);
-    public bool LogEventsCollectorEnabled;
+    private static readonly BoundedSynchronizedQueue<RdLogEvent> ourDelayedLogEvents = new BoundedSynchronizedQueue<RdLogEvent>(1000);
+    private static bool ourLogEventsCollectorEnabled;
 
-    public UnityEventCollector()
+    public static void Start()
     {
       if (!PluginSettings.LogEventsCollectorEnabled)
         return;
 
       EditorApplication.update += () =>
       {
-          LogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled; // can be called only from main thread
+        // can be called only from main thread
+        ourLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled;
+        if (ourLogEventsCollectorEnabled)
+          ProcessQueue();
       };
 
       // Both of these methods were introduced in 5.0+ but EditorPlugin.csproj still targets 4.7
@@ -62,9 +65,9 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
+    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      if (!LogEventsCollectorEnabled) // stop collecting, if setting was disabled
+      if (!ourLogEventsCollectorEnabled) // stop collecting, if setting was disabled
         return;
       
       RdLogEventType eventType;
@@ -88,36 +91,22 @@ namespace JetBrains.Rider.Unity.Editor
 
       var ticks = DateTime.UtcNow.Ticks;
       var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
-      DelayedLogEvents.Enqueue(evt);
-    }
-  }
-
-  public class UnityEventLogSender
-  {
-    private readonly UnityEventCollector myCollector;
-
-    public UnityEventLogSender(UnityEventCollector collector)
-    {
-      myCollector = collector;
-      EditorApplication.update += ProcessQueue;
+      ourDelayedLogEvents.Enqueue(evt);
     }
 
-    private void ProcessQueue()
+    private static void ProcessQueue()
     {
-      if (!myCollector.LogEventsCollectorEnabled)
-        return;
-      
       if (PluginEntryPoint.UnityModels.Count > 0)
       {
         RdLogEvent element;
-        while ((element  = myCollector.DelayedLogEvents.Dequeue()) != null)
+        while ((element  = ourDelayedLogEvents.Dequeue()) != null)
         {
           SendLogEvent(element);
         }  
       }
     }
 
-    private void SendLogEvent(RdLogEvent logEvent)
+    private static void SendLogEvent(RdLogEvent logEvent)
     {
       foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
       {

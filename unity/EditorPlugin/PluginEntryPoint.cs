@@ -29,7 +29,6 @@ namespace JetBrains.Rider.Unity.Editor
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathProvider ourRiderPathProvider;
     public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
-    private static readonly UnityEventCollector ourLogEventCollector;
     private static bool ourInitialized;
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     internal static string SlnFile;
@@ -41,7 +40,7 @@ namespace JetBrains.Rider.Unity.Editor
         return;
 
       PluginSettings.InitLog(); // init log before doing any logging
-      ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap
+      UnityEventLogSender.Start(); // start collecting Unity messages asap
 
       ourPluginSettings = new PluginSettings();
       ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
@@ -326,7 +325,6 @@ namespace JetBrains.Rider.Unity.Editor
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
           UnityModels.Add(pair);
-          new UnityEventLogSender(ourLogEventCollector);
         });
       }
       catch (Exception ex)
