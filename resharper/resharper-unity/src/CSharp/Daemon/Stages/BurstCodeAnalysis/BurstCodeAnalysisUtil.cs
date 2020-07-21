@@ -186,15 +186,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case IInvocationExpression invocationExpression
                     when CallGraphUtil.GetCallee(invocationExpression) is IMethod method && IsBurstDiscarded(method):
                 case IFunctionDeclaration functionDeclaration
-                    when IsBurstContextBannedFunction(functionDeclaration.DeclaredElement):
+                    when IsBurstContextBannedForFunction(functionDeclaration.DeclaredElement):
                     return true;
                 default:
                     return false;
             }
         }
 
-        public static bool IsBurstContextBannedFunction(IFunction function)
+        public static bool IsBurstContextBannedForFunction(IFunction function)
         {
+            if (function == null)
+                return true;
             if (function.IsStatic || function.GetContainingTypeMember() is IStruct)
                 return function is IMethod method && IsBurstDiscarded(method);
             return true;

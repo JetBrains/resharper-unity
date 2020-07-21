@@ -18,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class PerformanceCriticalCodeCallGraphMarksProvider : CallGraphRootMarksProviderBase
     {
-        public static readonly string MarkId = "Unity.PerformanceCriticalContext";
+        public const string MarkId = "Unity.PerformanceCriticalContext";
 
         public PerformanceCriticalCodeCallGraphMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker)
