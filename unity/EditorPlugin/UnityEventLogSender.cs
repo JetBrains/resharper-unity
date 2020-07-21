@@ -11,7 +11,7 @@ namespace JetBrains.Rider.Unity.Editor
   public class UnityEventCollector
   {
     public readonly BoundedSynchronizedQueue<RdLogEvent> DelayedLogEvents = new BoundedSynchronizedQueue<RdLogEvent>(1000);
-    private bool myLogEventsCollectorEnabled;
+    public bool LogEventsCollectorEnabled;
 
     public UnityEventCollector()
     {
@@ -20,7 +20,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       EditorApplication.update += () =>
       {
-          myLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled; // can be called only from main thread
+          LogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled; // can be called only from main thread
       };
 
       // Both of these methods were introduced in 5.0+ but EditorPlugin.csproj still targets 4.7
@@ -65,7 +65,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      if (!myLogEventsCollectorEnabled) // stop collecting, if setting was disabled
+      if (!LogEventsCollectorEnabled) // stop collecting, if setting was disabled
         return;
       
       RdLogEventType eventType;
@@ -99,7 +99,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       EditorApplication.update += () =>
       {
-        if (!PluginSettings.LogEventsCollectorEnabled)
+        if (!collector.LogEventsCollectorEnabled)
           return;
 
         ProcessQueue(collector);
@@ -108,7 +108,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     private void ProcessQueue(UnityEventCollector collector)
     {
-      if (PluginEntryPoint.UnityModels.Any(l => l.Lifetime.IsAlive))
+      if (PluginEntryPoint.UnityModels.Any())
       {
         RdLogEvent element;
         while ((element  = collector.DelayedLogEvents.Dequeue()) != null)
