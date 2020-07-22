@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Properties.VCXProj;
-using JetBrains.ReSharper.Feature.Services.Cpp.Injections;
 using JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Cpp.Language;
 using JetBrains.ReSharper.Psi.Cpp.Parsing.Preprocessor;
@@ -29,10 +30,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 
             var properties = new CppCompilationProperties()
             {
-                LanguageKind = CppLanguageKind.HLSL, ClrSupport = VCXCompileAsManagedOptions.ManagedNotSet,
+                LanguageKind = CppLanguageKind.HLSL,ClrSupport = VCXCompileAsManagedOptions.ManagedNotSet,
             };
 
-            properties.PredefinedMacros.Add(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
             var cgIncludeFolder =
                 CgIncludeDirectoryTracker.GetCgIncludeFolderPath(cache.Solution.GetComponent<UnityVersion>());
             if (!cgIncludeFolder.IsEmpty)
@@ -48,8 +48,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             // TODO 2) what will happen under psi transaction? include in cache could be out-of date. Try use include quickfix when cginclude is after cgprogram where QF is used
             var includeLocation = shaderCache.GetIncludes(rootFile);
 
-            return InjectInclusionContextProviderUtil.CreateInclusionContextResult(cache, rootFile,
+            return CreateInclusionContextResult(cache, rootFile,
                 includeLocation, options, properties, null, cacheVersion, lifetime);
+        }
+        
+        public static CppInclusionContextResult CreateInclusionContextResult(
+            CppGlobalSymbolCache cache,
+            CppFileLocation rootFile,
+            IEnumerable<CppFileLocation> includeLocations,
+            FileProcessingOptions options,
+            CppCompilationProperties compilationProperties,
+            ISymbolScope symbolScope,
+            long cacheVersion,
+            Lifetime lifetime)
+        {
+            var languageDialect = CppProjectConfigurationUtil.GetLanguageDialect(compilationProperties);
+            var randomProjectFile = rootFile.GetRandomProjectFile(cache.Solution);
+            var inclusionContext = CppRootInclusionContext.Create(compilationProperties, randomProjectFile.GetProject(),
+                randomProjectFile, cache, rootFile, options.File, languageDialect, 
+                cacheVersion, options.AllowPendingActions, options.CollectPPUsages, lifetime, symbolScope);
+            var directory = randomProjectFile.Location.Directory;
+            
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
+            inclusionContext.PushInclude(rootFile, directory, false);
+            foreach (CppFileLocation includeLocation in includeLocations)
+            {
+                if (includeLocation.IsValid() && !includeLocation.Equals(rootFile))
+                {
+                        cache.LookupAndProcessTableForFile(rootFile, includeLocation, options, inclusionContext, directory);
+                }
+            }
+            inclusionContext.PopInclude(false);
+            return CppInclusionContextResult.Ok(inclusionContext);
         }
     }
 }
