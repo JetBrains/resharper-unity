@@ -62,6 +62,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix incorrect method signature validation for methods marked with `OnOpenedAsset` ([#1053](https://github.com/JetBrains/resharper-unity/issues/1053), [#1679](https://github.com/JetBrains/resharper-unity/pull/1679))
 - Fix missing information in `.asmdef` schema file ([#1739](https://github.com/JetBrains/resharper-unity/issues/1739), [#1743](https://github.com/JetBrains/resharper-unity/pull/1743))
 - Rider: Fix debugger sometimes treating user code as external code ([#1671](https://github.com/JetBrains/resharper-unity/issues/1671), [RIDER-43846](https://youtrack.jetbrains.com/issue/RIDER-43846), [#1697](https://github.com/JetBrains/resharper-unity/pull/1697))
+- Rider: Fix timeout in debugger due to logging while evaluating properties ([RIDER-37068](https://youtrack.jetbrains.com/issue/RIDER-37068), [#1765](https://github.com/JetBrains/resharper-unity/pull/1765))
 - Rider: Fix grouping assets by directory in Find Usages results ([#1668](https://github.com/JetBrains/resharper-unity/pull/1668))
 - Rider: Fix exception trying to upgrade Unity editor plugin ([RIDER-42475](https://youtrack.jetbrains.com/issue/RIDER-42475), [#1658](https://github.com/JetBrains/resharper-unity/pull/1658))
 - Rider: Fix unit tests not running unless Rider has focus ([RIDER-37990](https://youtrack.jetbrains.com/issue/RIDER-37990), [#1672](https://github.com/JetBrains/resharper-unity/pull/1672))
