@@ -197,6 +197,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             // Make sure the root node is expanded
             tree.expandPath(TreePath(root.path))
 
+            // We have variable height rows, to allow for the "separators". However, the tree's UI class caches row
+            // heights for each cell. This causes problems when an item with a separator no longer needs the separator.
+            // Reloading the model forces a full update. It's not needed for any other reason - we insert/remove nodes
+            // correctly.
+            treeModel.reload()
+
             return newNode
         }
     }
@@ -230,21 +236,31 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val node1 = o1 as? UnityProcessTreeNode ?: return -1
             val node2 = o2 as? UnityProcessTreeNode ?: return 1
 
-            val name1 = node1.process.projectName ?: UNKNOWN_PROJECTS
-            val name2 = node2.process.projectName ?: UNKNOWN_PROJECTS
-            return when {
-                name1 == name2 -> getSortKey(o1.process).compareTo(getSortKey(o2.process))
-                name1 == projectName -> -1
-                name2 == projectName -> 1
-                name1 == USB_DEVICES -> -1
-                name2 == USB_DEVICES -> 1
-                name1 == UNKNOWN_PROJECTS -> -1
-                name2 == UNKNOWN_PROJECTS -> 1
-                else -> name1.compareTo(name2, true)
+            val projectName1 = node1.process.projectName ?: UNKNOWN_PROJECTS
+            val projectName2 = node2.process.projectName ?: UNKNOWN_PROJECTS
+
+            // Sort by project name
+            var x = when {
+                projectName1 == projectName2 -> 0
+                projectName1 == projectName -> -1
+                projectName2 == projectName -> 1
+                projectName1 == USB_DEVICES -> -1
+                projectName2 == USB_DEVICES -> 1
+                projectName1 == UNKNOWN_PROJECTS -> -1
+                projectName2 == UNKNOWN_PROJECTS -> 1
+                else -> projectName1.compareTo(projectName2, true)
             }
+            if (x != 0) return x
+
+            // Then by process kind
+            x = getProcessKindWeight(o1.process).compareTo(getProcessKindWeight(o2.process))
+            if (x != 0) return x
+
+            // Then by display name
+            return o1.process.displayName.compareTo(o2.process.displayName, true)
         }
 
-        private fun getSortKey(process: UnityProcess): Int {
+        private fun getProcessKindWeight(process: UnityProcess): Int {
             return when (process) {
                 is UnityEditor -> 10
                 is UnityEditorHelper -> 20  // This is handled as a child node of UnityEditor
@@ -260,6 +276,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             // Reset the state from the last render. The tree will set background colour on the renderer panel component
             setDeselected(myRendererComponent)
+
             val itemComponent = myComponent as SimpleColoredComponent
             itemComponent.clear()
 
@@ -269,7 +286,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
 
             val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess) USB_DEVICES else UNKNOWN_PROJECTS
-            val hasSeparator = !isChildProcess(node) && getPreviousSiblingProjectName(node) != projectName
+            val hasSeparator = isFirstItem(node) || (!isChildProcess(node) && getPreviousSiblingProjectName(node) != projectName)
             // TODO: Is there anything more useful we could show in the tooltip?
             val component = configureComponent("", "", null, null, selected, hasSeparator, projectName, -1)
 
@@ -316,6 +333,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             }
         }
 
+        private fun isFirstItem(node: UnityProcessTreeNode) = node.previousSibling == null
         private fun isChildProcess(node: UnityProcessTreeNode) = node.parent is UnityProcessTreeNode
         private fun getPreviousSiblingProjectName(node: UnityProcessTreeNode) =
             (node.previousSibling as? UnityProcessTreeNode)?.process?.projectName ?: UNKNOWN_PROJECTS
