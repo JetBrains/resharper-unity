@@ -8,6 +8,7 @@ enum class PackageSource {
     Registry,
     Embedded,
     Local,
+    LocalTarball,
     Git;
 
     fun isEditable(): Boolean {
@@ -16,7 +17,7 @@ enum class PackageSource {
 }
 
 data class PackageData(val name: String, val packageFolder: VirtualFile?, val details: PackageDetails,
-                       val source: PackageSource, val gitDetails: GitDetails? = null) {
+                       val source: PackageSource, val gitDetails: GitDetails? = null, val tarballLocation: String? = null) {
     companion object {
         fun unknown(name: String, version: String, source: PackageSource = PackageSource.Unknown): PackageData {
             return PackageData(name, null, PackageDetails(name, "$name@$version", version,

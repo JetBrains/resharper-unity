@@ -105,6 +105,7 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
             PackageSource.Registry -> UnityIcons.Explorer.ReferencedPackage
             PackageSource.Embedded -> UnityIcons.Explorer.EmbeddedPackage
             PackageSource.Local -> UnityIcons.Explorer.LocalPackage
+            PackageSource.LocalTarball -> UnityIcons.Explorer.LocalTarballPackage
             PackageSource.BuiltIn -> UnityIcons.Explorer.BuiltInPackage
             PackageSource.Git -> UnityIcons.Explorer.GitPackage
             PackageSource.Unknown -> UnityIcons.Explorer.UnknownPackage
@@ -128,6 +129,7 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
         tooltip += when (packageData.source) {
             PackageSource.Embedded -> if (virtualFile.name != name) "<br/><br/>Folder name: ${virtualFile.name}" else ""
             PackageSource.Local -> "<br/><br/>Folder location: ${virtualFile.path}"
+            PackageSource.LocalTarball -> "<br/><br/>Tarball location: ${packageData.tarballLocation}"
             PackageSource.Git -> {
                 var text = "<br/><br/>Git URL: ${packageData.gitDetails?.url}"
                 if (!packageData.gitDetails?.hash.isNullOrEmpty()) {

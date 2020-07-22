@@ -21,6 +21,7 @@ import com.intellij.util.io.isDirectory
 import com.intellij.util.pooledThreadSingleAlarm
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
+import com.jetbrains.rider.debugger.util.isExistingFile
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
@@ -29,8 +30,10 @@ import com.jetbrains.rider.plugins.unity.util.findFile
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
 import java.lang.Integer.min
+import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.security.MessageDigest
 import java.util.*
 
 interface PackageManagerListener : EventListener {
@@ -325,6 +328,7 @@ class PackageManager(private val project: Project) {
                 ?: getRegistryPackage(name, version, registry)
                 ?: getGitPackage(name, version, lockDetails?.hash, lockDetails?.revision)
                 ?: getLocalPackage(packagesFolder, name, version)
+                ?: getLocalTarballPackage(packagesFolder, name, version)
                 ?: getBuiltInPackage(name, version, builtInPackagesFolder)
                 ?: PackageData.unknown(name, version)
         }
@@ -349,7 +353,8 @@ class PackageManager(private val project: Project) {
                 "builtin" -> getBuiltInPackage(name, details.version, builtInPackagesFolder)
                 "git" -> getGitPackage(name, details.version, details.hash)
                 "local" -> getLocalPackage(packagesFolder, name, details.version)
-                else -> PackageData.unknown(name, details.version)
+                "local-tarball" -> getLocalTarballPackage(packagesFolder, name, details.version)
+                else -> null
             } ?: PackageData.unknown(name, details.version)
         } catch (throwable: Throwable) {
             if (throwable !is ControlFlowException) {
@@ -365,23 +370,72 @@ class PackageManager(private val project: Project) {
             return null
         }
 
-        // We know this is a "file:" based package, so always return something. It can be resolved relative to the
-        // Packages folder, or as a fully qualified path
         return try {
             val path = version.substring(5)
             val packagesPath = Paths.get(packagesFolder.path)
             val filePath = packagesPath.resolve(path)
             val packageFolder = VfsUtil.findFile(filePath, false)
-            if (packageFolder != null && packageFolder.isDirectory) {
-                getPackageDataFromFolder(name, packageFolder, PackageSource.Local)
-            } else {
-                // It should be a local package, but it's broken
-                PackageData.unknown(name, version)
+            when (packageFolder?.isDirectory) {
+                true -> getPackageDataFromFolder(name, packageFolder, PackageSource.Local)
+                else -> null
             }
         } catch (throwable: Throwable) {
             logger.error("Error resolving local package", throwable)
-            PackageData.unknown(name, version)
+            null
         }
+    }
+
+    private fun getLocalTarballPackage(packagesFolder: VirtualFile, name: String, version: String): PackageData? {
+        if (!version.startsWith("file:")) {
+            return null
+        }
+
+        // This is a package installed from a package.tgz file. The original file is referenced, but not touched. It is
+        // expanded into Library/PackageCache with a filename of name@{md5-of-path}-{file-creation-in-epoch-ms}
+        return try {
+            val path = version.substring(5)
+            val packagesPath = Paths.get(packagesFolder.path)
+            val tarballPath = packagesPath.resolve(path).normalize()
+            val packageFile = VfsUtil.findFile(tarballPath, true)
+            when {
+                packageFile?.isExistingFile() == true -> {
+
+                    // Note that this is inherently fragile. If the file is touched, but not imported (i.e. Unity isn't
+                    // running), we won't be able to resolve it at all. We also don't have a watch on the file, so we
+                    // have no way of knowing that the package has been updated or imported.
+                    // On the plus side, I have yet to see anyone talk about tarball packages in the wild.
+                    val createdTimestamp = packageFile.timeStamp
+                    val hash = getMd5OfString(tarballPath.toString()).substring(0, 12)
+
+                    val packageCacheFolder = project.findFile("Library/PackageCache")
+                    val packageFolder = packageCacheFolder?.findChild("$name@$hash-$createdTimestamp")
+                    val tarballLocation = if (tarballPath.startsWith(project.projectDir.toNioPath())) {
+                        // If the package lives under the solution root, it looks better to include the solution root name
+                        // E.g. MyUnityProject/package.tgz, rather than just package.tgz
+                        project.projectDir.parent.toNioPath().relativize(tarballPath)
+                    } else {
+                        tarballPath
+                    }
+                    getPackageDataFromFolder(name, packageFolder, PackageSource.LocalTarball, tarballLocation = tarballLocation.toString())
+                }
+                else -> null
+            }
+        }
+        catch (throwable: Throwable) {
+            logger.error("Error resolving local package", throwable)
+            null
+        }
+    }
+
+    private fun getMd5OfString(value: String): String {
+        var result = ""
+        val instance = MessageDigest.getInstance("MD5")
+        if (instance != null) {
+            val digest = instance.digest(value.toByteArray(Charset.forName("UTF-8")))
+            result = digest.joinToString("") { String.format("%02x", it) }
+        }
+
+        return result.padStart(32, '0')
     }
 
     private fun getGitPackage(name: String, version: String, hash: String?, revision: String? = null): PackageData? {
@@ -442,12 +496,12 @@ class PackageManager(private val project: Project) {
     }
 
     private fun getPackageDataFromFolder(name: String, packageFolder: VirtualFile?, source: PackageSource,
-                                         gitDetails: GitDetails? = null): PackageData? {
+                                         gitDetails: GitDetails? = null, tarballLocation: String? = null): PackageData? {
         packageFolder?.let {
             if (packageFolder.isDirectory) {
                 val packageDetails = readPackagesJson(packageFolder)
                 if (packageDetails != null) {
-                    return PackageData(name, packageFolder, packageDetails, source, gitDetails)
+                    return PackageData(name, packageFolder, packageDetails, source, gitDetails, tarballLocation)
                 }
             }
         }
