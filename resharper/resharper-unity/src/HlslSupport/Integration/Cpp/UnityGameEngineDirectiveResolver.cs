@@ -17,19 +17,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly UnityReferencesTracker myReferencesTracker;
         private readonly ILogger myLogger;
+        private readonly object myLockObject = new object();
+        private ConcurrentDictionary<string, string> myCacheSuffixes;
 
-        public UnityGameEngineDirectiveResolver(ISolution solution, UnitySolutionTracker solutionTracker, UnityReferencesTracker referencesTracker, ILogger logger)
+        public UnityGameEngineDirectiveResolver(ISolution solution, UnitySolutionTracker solutionTracker,
+                                                UnityReferencesTracker referencesTracker, ILogger logger)
         {
             mySolution = solution;
             mySolutionTracker = solutionTracker;
             myReferencesTracker = referencesTracker;
             myLogger = logger;
         }
-        
+
         public bool IsApplicable(CppInclusionContext context, string path)
         {
-              return path.StartsWith("Packages/") &&
-                   (mySolutionTracker.IsUnityProject.HasTrueValue() || myReferencesTracker.HasUnityReference.HasTrueValue());
+            return path.StartsWith("Packages/") &&
+                   (mySolutionTracker.IsUnityProject.HasTrueValue() ||
+                    myReferencesTracker.HasUnityReference.HasTrueValue());
         }
 
         public string TransformPath(CppInclusionContext context, string path)
@@ -43,34 +47,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 
             var packageName = path.Substring(pos, endPos - pos);
 
-            var version = GetVersionFor(packageName);
-            var localPackagePath = mySolution.SolutionDirectory.Combine("Packages").Combine(packageName + "@" + version + path.Substring(endPos));
+            var suffix = GetCacheSuffix(packageName);
+            var localPackagePath = mySolution.SolutionDirectory.Combine("Packages")
+                .Combine(packageName + "@" + suffix + path.Substring(endPos));
             if (localPackagePath.Exists == FileSystemPath.Existence.File)
                 return localPackagePath.FullPath;
-            
-            var cachedPackagePath = mySolution.SolutionDirectory.Combine("Library").Combine("PackageCache").Combine(packageName + "@" + version + path.Substring(endPos));
+
+            var cachedPackagePath = mySolution.SolutionDirectory.Combine("Library").Combine("PackageCache")
+                .Combine(packageName + "@" + suffix + path.Substring(endPos));
             return cachedPackagePath.FullPath;
         }
 
-        private readonly object myLockObject = new object();
-        // TODO, add package version tracker
-        private ConcurrentDictionary<string, JetSemanticVersion> myPackageVersions = null;
-        
         [NotNull]
-        private JetSemanticVersion GetVersionFor(string packageName)
+        private string GetCacheSuffix(string packageName)
         {
-            if (myPackageVersions == null)
+            // TODO: This cache should be based on resolved packages, like we have in the frontend for PackageManager
+            // TODO: Invalidate this cache when Packages/manifest.json or Packages/packages-lock.json changes
+            if (myCacheSuffixes == null)
             {
                 lock (myLockObject)
                 {
-                    if (myPackageVersions == null)
+                    if (myCacheSuffixes == null)
                     {
-                        var result = new ConcurrentDictionary<string, JetSemanticVersion>();
+                        var result = new ConcurrentDictionary<string, string>();
                         try
                         {
-                            var solDir = mySolution.SolutionDirectory;
-                            var packagesFolder = solDir.Combine("Packages");
-                            var packagesCacheFolder = solDir.Combine("Library").Combine("PackageCache");
+                            var solutionFolder = mySolution.SolutionDirectory;
+                            var packagesFolder = solutionFolder.Combine("Packages");
+                            var packagesCacheFolder = solutionFolder.Combine("Library").Combine("PackageCache");
 
                             var candidates = new[] {packagesFolder, packagesCacheFolder};
                             foreach (var candidate in candidates)
@@ -79,16 +83,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                                 {
                                     if (!folder.IsDirectory)
                                         continue;
-                                        
-                                    var packageAndVersion = folder.RelativePath.Name.Split('@');
-                                    if (packageAndVersion.Length != 2)
+
+                                    // Cache entries are usually name@version, but git and local tarball packages don't
+                                    // have versions, so are name@hash and name@hash-timestamp, respectively. Packages
+                                    // in the Packages folder don't usually have a version, but can do, and things will
+                                    // still work, so try and find one
+                                    var nameAndSuffix = folder.RelativePath.Name.Split('@');
+                                    if (nameAndSuffix.Length != 2)
                                         continue;
 
-                                    var version = JetSemanticVersion.Parse(packageAndVersion[1]);
-                                    if (result.TryGetValue(packageAndVersion[0], out var oldVersion) && oldVersion > version)
-                                        continue;
+                                    var name = nameAndSuffix[0];
+                                    var suffix = nameAndSuffix[1];
 
-                                    result[packageAndVersion[0]] = version;
+                                    // If the suffix is a version, use it to pick the latest version. If not, pick an
+                                    // arbitrary cache entry. There is no guarantee that either method gets the right
+                                    // cache entry, but it's the best we can do without proper package details
+                                    if (JetSemanticVersion.TryParse(suffix, out var version) &&
+                                        result.TryGetValue(name, out var oldSuffix) &&
+                                        JetSemanticVersion.TryParse(oldSuffix, out var oldVersion) &&
+                                        oldVersion > version)
+                                    {
+                                        continue;
+                                    }
+
+                                    result[name] = suffix;
                                 }
                             }
                         }
@@ -98,13 +116,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                         }
                         finally
                         {
-                            myPackageVersions = result;
+                            myCacheSuffixes = result;
                         }
                     }
                 }
             }
 
-            return myPackageVersions.GetValueSafe(packageName);
+            return myCacheSuffixes.GetValueSafe(packageName);
         }
     }
 }
