@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
 
     public override CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer(ITextControl textControl)
     {
-      var dialect = new CppHLSLDialect(true);
+      var dialect = new CppHLSLDialect(true, false);
       var cachingLexer = new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
       
       return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);
