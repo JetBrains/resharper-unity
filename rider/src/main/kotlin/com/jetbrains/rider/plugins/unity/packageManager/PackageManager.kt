@@ -22,8 +22,6 @@ import com.intellij.util.pooledThreadSingleAlarm
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.plugins.unity.explorer.LockDetails
-import com.jetbrains.rider.plugins.unity.explorer.ManifestJson
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -49,14 +47,17 @@ class PackageManager(private val project: Project) {
         fun getInstance(project: Project) = project.getOrCreateUserData(KEY) { PackageManager(project) }
 
         private const val MILLISECONDS_BEFORE_REFRESH = 1000
+        private const val DEFAULT_REGISTRY_URL = "https://packages.unity.com"
     }
 
     private val gson = Gson()
     private val listeners = EventDispatcher.create(PackageManagerListener::class.java)
     private val alarm = pooledThreadSingleAlarm(MILLISECONDS_BEFORE_REFRESH, project, ::refreshAndNotify)
 
-    private var lastEditorManifestLocation: String? = null
-    private var editorManifestJson: EditorManifestJson? = null
+    // The manifest of packages that ship with the editor. Used during package resolve to ensure that builtin packages
+    // have a known minimum version
+    private var lastReadGlobalManifestPath: String? = null
+    private var globalManifest: EditorManifestJson? = null
 
     private var packagesByCanonicalName: Map<String, PackageData> = mutableMapOf()
     private var packagesByFolderPath: Map<String, PackageData> = mutableMapOf()
@@ -137,44 +138,61 @@ class PackageManager(private val project: Project) {
 
     private fun getPackages(): Packages {
         logger.debug("Refreshing packages manager")
+        return getPackagesFromPackagesLockJson() ?: getPackagesFromManifestJson()
+    }
+
+    // Introduced officially in 2019.4, but available behind a switch in manifest.json in 2019.3
+    // https://forum.unity.com/threads/add-an-option-to-auto-update-packages.730628/#post-4931882
+    private fun getPackagesFromPackagesLockJson(): Packages? {
+        val packagesLockJsonFile = getPackagesLockJsonFile() ?: return null
+
+        logger.debug("Getting packages from packages-lock.json")
+
+        val builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
 
         val byCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
         val byFolderPath: MutableMap<String, PackageData> = mutableMapOf()
 
-        val manifestJson = getManifestJsonFile() ?: return Packages(byCanonicalName, byFolderPath)
+        // This file contains all packages, including transitive dependencies and folders
+        val packagesLock = readPackagesLockFile(packagesLockJsonFile) ?: return null
+
+        for ((name, details) in packagesLock.dependencies) {
+
+            // Note that packages-lock.json doesn't seem to use a version of "exclude" to indicate that a package has
+            // been disabled, unlike older manifest.json versions. It just removes it from the manifest + lock files
+
+            val packageData = getPackageData(packagesFolder, name, details, builtInPackagesFolder)
+            byCanonicalName[name] = packageData
+            if (packageData.packageFolder != null) {
+                byFolderPath[packageData.packageFolder.path] = packageData
+            }
+        }
+
+        return Packages(byCanonicalName, byFolderPath)
+    }
+
+    private fun getPackagesFromManifestJson(): Packages {
+
+        logger.debug("Getting packages from manifest.json")
+
+        val byCanonicalName: MutableMap<String, PackageData> = mutableMapOf()
+        val byFolderPath: MutableMap<String, PackageData> = mutableMapOf()
+
         val builtInPackagesFolder = UnityInstallationFinder.getInstance(project).getBuiltInPackagesRoot()
+        val manifestJsonFile = getManifestJsonFile() ?: return Packages(byCanonicalName, byFolderPath)
 
-        val editorManifestPath = UnityInstallationFinder.getInstance(project).getPackageManagerDefaultManifest()
-        if (editorManifestPath != null && editorManifestPath.toString() != lastEditorManifestLocation) {
-            lastEditorManifestLocation = editorManifestPath.toString()
-            editorManifestJson = try {
-                gson.fromJson(editorManifestPath.inputStream().reader(), EditorManifestJson::class.java)
-            } catch (e: Throwable) {
-                if (e is ControlFlowException) {
-                    // Don't cache an empty manifest if it's a control flow exception
-                    lastEditorManifestLocation = null
-                }
-                else {
-                    logger.error("Error deserializing Resources/PackageManager/Editor/manifest.json")
-                }
-                EditorManifestJson(emptyMap(), emptyMap(), emptyMap())
-            }
+        val globalManifestPath = UnityInstallationFinder.getInstance(project).getPackageManagerDefaultManifest()
+        if (globalManifestPath != null && globalManifestPath.toString() != lastReadGlobalManifestPath) {
+            globalManifest = readGlobalManifestFile(globalManifestPath)
         }
 
-        val manifest = try {
-            gson.fromJson(manifestJson.inputStream.reader(), ManifestJson::class.java)
-        } catch (e: Throwable) {
-            if (e !is ControlFlowException) {
-                logger.error("Error deserializing Packages/manifest.json", e)
-            }
-            ManifestJson(emptyMap(), emptyArray(), null, emptyMap())
-        }
+        val projectManifest = readProjectManifestFile(manifestJsonFile)
 
-        val registry = manifest.registry ?: "https://packages.unity.com"
-        for ((name, version) in manifest.dependencies) {
+        val registry = projectManifest.registry ?: DEFAULT_REGISTRY_URL
+        for ((name, version) in projectManifest.dependencies) {
             if (version.equals("exclude", true)) continue
 
-            val lockDetails = manifest.lock?.get(name)
+            val lockDetails = projectManifest.lock?.get(name)
             val packageData = getPackageData(packagesFolder, name, version, registry, builtInPackagesFolder, lockDetails)
             byCanonicalName[name] = packageData
             if (packageData.packageFolder != null) {
@@ -183,7 +201,7 @@ class PackageManager(private val project: Project) {
         }
 
         // From observation, Unity treats package folders in the Packages folder as actual packages, even if they're not
-        // registered in manifest.json
+        // registered in manifest.json. They must have a */package.json file, in the root of the package itself
         for (child in packagesFolder.children) {
             val packageData = getPackageDataFromFolder(child.name, child, PackageSource.Embedded)
             if (packageData != null) {
@@ -193,14 +211,13 @@ class PackageManager(private val project: Project) {
         }
 
         // Calculate the transitive dependencies. This is all based on observation
-        val resolvedPackages = byCanonicalName
         var packagesToProcess: Collection<PackageData> = byCanonicalName.values
         while (packagesToProcess.isNotEmpty()) {
 
             // This can't get stuck in an infinite loop. We look up each package in resolvedPackages - if it's already
             // there, it doesn't get processed any further, and we update resolvedPackages (well packagesByCanonicalName)
             // after every loop
-            packagesToProcess = getPackagesFromDependencies(packagesFolder, registry, builtInPackagesFolder, resolvedPackages, packagesToProcess)
+            packagesToProcess = getPackagesFromDependencies(packagesFolder, registry, builtInPackagesFolder, byCanonicalName, packagesToProcess)
             for (newPackage in packagesToProcess) {
                 byCanonicalName[newPackage.details.canonicalName] = newPackage
                 newPackage.packageFolder?.let { byFolderPath[it.path] = newPackage }
@@ -208,6 +225,46 @@ class PackageManager(private val project: Project) {
         }
 
         return Packages(byCanonicalName, byFolderPath)
+    }
+
+    private fun readGlobalManifestFile(editorManifestPath: Path): EditorManifestJson {
+        lastReadGlobalManifestPath = editorManifestPath.toString()
+        return try {
+            gson.fromJson(editorManifestPath.inputStream().reader(), EditorManifestJson::class.java)
+        } catch (e: Throwable) {
+            if (e is ControlFlowException) {
+                // Leave this null so we'll try and load again next time
+                lastReadGlobalManifestPath = null
+            } else {
+                logger.error("Error deserializing Resources/PackageManager/Editor/manifest.json")
+            }
+            EditorManifestJson(emptyMap(), emptyMap(), emptyMap())
+        }
+    }
+
+    private fun readProjectManifestFile(manifestFile: VirtualFile): ManifestJson {
+        return try {
+            gson.fromJson(manifestFile.inputStream.reader(), ManifestJson::class.java)
+        } catch (e: Throwable) {
+            if (e !is ControlFlowException) {
+                logger.error("Error deserializing Packages/manifest.json", e)
+            }
+            ManifestJson(emptyMap(), emptyArray(), null, emptyMap())
+        }
+    }
+
+    private fun readPackagesLockFile(packagesLockFile: VirtualFile): PackagesLockJson? = try {
+        gson.fromJson(packagesLockFile.inputStream.reader(), PackagesLockJson::class.java)
+    } catch (e: Throwable) {
+        if (e !is ControlFlowException) {
+            logger.error("Error deserializeing Packages/packages-lock.json", e)
+        }
+        null
+    }
+
+    private fun getPackagesLockJsonFile(): VirtualFile? {
+        // Only exists in Unity 2019.4+
+        return project.findFile("Packages/packages-lock.json")
     }
 
     private fun getManifestJsonFile(): VirtualFile? {
@@ -234,7 +291,7 @@ class PackageManager(private val project: Project) {
                 val thisVersion = SemVer.parse(version)
                 if (thisVersion == null || (lastVersion != null && lastVersion >= thisVersion)) continue
 
-                val minimumVersion = SemVer.parse(editorManifestJson?.packages?.get(name)?.minimumVersion ?: "")
+                val minimumVersion = SemVer.parse(globalManifest?.packages?.get(name)?.minimumVersion ?: "")
                 dependencies[name] = if (minimumVersion != null && minimumVersion > thisVersion) {
                     minimumVersion
                 }
@@ -266,16 +323,39 @@ class PackageManager(private val project: Project) {
         return try {
             getEmbeddedPackage(packagesFolder, name)
                 ?: getRegistryPackage(name, version, registry)
-                ?: getGitPackage(name, version, lockDetails)
+                ?: getGitPackage(name, version, lockDetails?.hash, lockDetails?.revision)
                 ?: getLocalPackage(packagesFolder, name, version)
                 ?: getBuiltInPackage(name, version, builtInPackagesFolder)
                 ?: PackageData.unknown(name, version)
         }
         catch (throwable: Throwable) {
             if (throwable !is ControlFlowException) {
-                logger.error("Error resolving package", throwable)
+                logger.error("Error resolving package $name", throwable)
             }
             PackageData.unknown(name, version)
+        }
+    }
+
+    private fun getPackageData(packagesFolder: VirtualFile,
+                               name: String,
+                               details: PackagesLockDependency,
+                               builtInPackagesFolder: Path?)
+        : PackageData {
+
+        return try {
+            when (details.source) {
+                "embedded" -> getEmbeddedPackage(packagesFolder, name)
+                "registry" -> getRegistryPackage(name, details.version, details.url ?: DEFAULT_REGISTRY_URL)
+                "builtin" -> getBuiltInPackage(name, details.version, builtInPackagesFolder)
+                "git" -> getGitPackage(name, details.version, details.hash)
+                "local" -> getLocalPackage(packagesFolder, name, details.version)
+                else -> PackageData.unknown(name, details.version)
+            } ?: PackageData.unknown(name, details.version)
+        } catch (throwable: Throwable) {
+            if (throwable !is ControlFlowException) {
+                logger.error("Error resolving package $name", throwable)
+            }
+            PackageData.unknown(name, details.version)
         }
     }
 
@@ -304,16 +384,15 @@ class PackageManager(private val project: Project) {
         }
     }
 
-    private fun getGitPackage(name: String, version: String, lockDetails: LockDetails?): PackageData? {
-        if (lockDetails == null) return null
-        if (lockDetails.revision == null || lockDetails.hash == null) return null
+    private fun getGitPackage(name: String, version: String, hash: String?, revision: String? = null): PackageData? {
+        if (hash == null) return null
 
         // If we have lockDetails, we know this is a git based package, so always return something
         return try {
             // 2019.3 changed the format of the cached folder to only use the first 10 characters of the hash
-            val packageFolder = project.findFile("Library/PackageCache/$name@${lockDetails.hash}")
-                ?: project.findFile("Library/PackageCache/$name@${lockDetails.hash.substring(0, min(lockDetails.hash.length, 10))}")
-            getPackageDataFromFolder(name, packageFolder, PackageSource.Git, GitDetails(version, lockDetails.revision, lockDetails.hash))
+            val packageFolder = project.findFile("Library/PackageCache/$name@${hash}")
+                ?: project.findFile("Library/PackageCache/$name@${hash.substring(0, min(hash.length, 10))}")
+            getPackageDataFromFolder(name, packageFolder, PackageSource.Git, GitDetails(version, hash, revision))
         }
         catch (throwable: Throwable) {
             logger.error("Error resolving git package", throwable)
@@ -407,6 +486,7 @@ class PackageManager(private val project: Project) {
                 val path = it.path
                 if (path.endsWith("/Packages/manifest.json", true)
                     || path.endsWith("/package.json", true)
+                    || path.endsWith("/Packages/packages-lock.json", true)
                     || path.endsWith("/Packages", true)) {
 
                     refreshPackages = true

@@ -11,6 +11,7 @@ import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.packageManager.PackageData
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.addNonIndexedMark
@@ -239,8 +240,22 @@ class ReadOnlyPackagesRoot(project: Project, private val packageManager: Package
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
 
-        if (packageManager.hasBuiltInPackages)
+        if (packageManager.hasBuiltInPackages) {
             children.add(BuiltinPackagesRoot(project!!, packageManager))
+
+            // Add the builtin packages root folder to the list of folders we know are under this node. This lets us
+            // correctly handle `contains()` for built in packages, which in turn means we can navigate to a built in
+            // package by folder (e.g. by double clicking a dependency node)
+            try {
+                UnityInstallationFinder.getInstance(myProject).getBuiltInPackagesRoot()?.let {
+                    VfsUtil.findFile(it, true)?.let { vfile ->
+                        addPackageFolder(vfile)
+                    }
+                }
+            } catch (throwable: Throwable) {
+                // Do nothing. It just means navigation to built in packages from dependency nodes won't work
+            }
+        }
 
         for (packageData in packageManager.immutablePackages) {
             if (packageData.source == PackageSource.BuiltIn) continue
@@ -404,9 +419,3 @@ private fun formatDescription(packageData: PackageData): String {
         description
     }
 }
-
-class LockDetails(val hash: String?, val revision: String?)
-
-// TODO: What are "testables"?
-class ManifestJson(val dependencies: Map<String, String>, val testables: Array<String>?, val registry: String?, val lock: Map<String, LockDetails>?)
-
