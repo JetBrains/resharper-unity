@@ -90,6 +90,9 @@ resharper/**/*_lex.depends
 resharper/**/test/data/**/*.tmp
 resharper/**/test/JetTestPackages
 
+# Generated file. Includes the nuget packages from the gradle downloaded SDK
+NuGet.Config
+
 rider/**/testData/**/*.tmp
 
 # Backup & report files from converting an old project file to a newer Visual Studio version

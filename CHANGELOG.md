@@ -38,6 +38,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Update `.meta` file icons to something less distracting ([RIDER-45675](https://youtrack.jetbrains.com/issue/RIDER-45675), [#1698](https://github.com/JetBrains/resharper-unity/pull/1698))
 - Update API information to Unity 2020.2.0a18 ([#1760](https://github.com/JetBrains/resharper-unity/pull/1760))
 - Added undocumented event functions for `Editor` and `EditorWindow` ([#986](https://github.com/JetBrains/resharper-unity/issues/986), [#1453](https://github.com/JetBrains/resharper-unity/issues/1453), [#1760](https://github.com/JetBrains/resharper-unity/pull/1760))
+- Improve searching for Linux Unity installations ([#1763](https://github.com/JetBrains/resharper-unity/pull/1763))
 - Rider: Significant reduction in memory usage while indexing assets ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
 - Rider: Better support for prefab modifications in Find Usages and showing Inspector values ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
 - Rider: Show method handlers for Unity events in the editor ([#1645](https://github.com/JetBrains/resharper-unity/pull/1645))
@@ -51,6 +52,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Disable "Start Unity" action when Unity is running ([RIDER-36108](https://youtrack.jetbrains.com/issue/RIDER-36108), [#1554](https://github.com/JetBrains/resharper-unity/pull/1554))
 - Rider: Unity Log view optionally scrolls to show new items ([RIDER-14377](https://youtrack.jetbrains.com/issue/RIDER-14377), [#1678](https://github.com/JetBrains/resharper-unity/pull/1678))
 - Rider: Play/pause/step buttons no longer disabled while Rider is indexing ([#1678](https://github.com/JetBrains/resharper-unity/pull/1678))
+- Rider: Support local tarball packages in Unity Explorer ([#1589](https://github.com/JetBrains/resharper-unity/issues/1589), [#1769](https://github.com/JetBrains/resharper-unity/pull/1769))
+- Rider: Support `UPM_CACHE_PATH` environment variable for package cache fallback in Unity Explorer ([#1766](https://github.com/JetBrains/resharper-unity/issues/1766), [#1769](https://github.com/JetBrains/resharper-unity/pull/1769))
 
 ### Fixed
 
@@ -59,6 +62,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix incorrect method signature validation for methods marked with `OnOpenedAsset` ([#1053](https://github.com/JetBrains/resharper-unity/issues/1053), [#1679](https://github.com/JetBrains/resharper-unity/pull/1679))
 - Fix missing information in `.asmdef` schema file ([#1739](https://github.com/JetBrains/resharper-unity/issues/1739), [#1743](https://github.com/JetBrains/resharper-unity/pull/1743))
 - Rider: Fix debugger sometimes treating user code as external code ([#1671](https://github.com/JetBrains/resharper-unity/issues/1671), [RIDER-43846](https://youtrack.jetbrains.com/issue/RIDER-43846), [#1697](https://github.com/JetBrains/resharper-unity/pull/1697))
+- Rider: Fix timeout in debugger due to logging while evaluating properties ([RIDER-37068](https://youtrack.jetbrains.com/issue/RIDER-37068), [#1765](https://github.com/JetBrains/resharper-unity/pull/1765))
 - Rider: Fix grouping assets by directory in Find Usages results ([#1668](https://github.com/JetBrains/resharper-unity/pull/1668))
 - Rider: Fix exception trying to upgrade Unity editor plugin ([RIDER-42475](https://youtrack.jetbrains.com/issue/RIDER-42475), [#1658](https://github.com/JetBrains/resharper-unity/pull/1658))
 - Rider: Fix unit tests not running unless Rider has focus ([RIDER-37990](https://youtrack.jetbrains.com/issue/RIDER-37990), [#1672](https://github.com/JetBrains/resharper-unity/pull/1672))
@@ -68,6 +72,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Suppress incorrect refresh behaviour when saving files that are in multiple projects (e.g. Player projects) ([#1669](https://github.com/JetBrains/resharper-unity/pull/1669))
 - Rider: Fix incorrect component name shown in Code Vision ([#1713](https://github.com/JetBrains/resharper-unity/pull/1713))
 - Rider: Fix issues moving files in Unity Explorer when player projects are generated ([RIDER-46467](https://youtrack.jetbrains.com/issue/RIDER-46467), [#1738](https://github.com/JetBrains/resharper-unity/pull/1738))
+- Rider: Fix git packages resolving in Unity Explorer in Unity 2019.4+ ([RIDER-47191](https://youtrack.jetbrains.com/issue/RIDER-47191), [#1769](https://github.com/JetBrains/resharper-unity/pull/1769))
 - Unity editor: Fix reporting of duration of Unity tests (released in Rider package 2.0.4) ([RIDER-44853](https://youtrack.jetbrains.com/issue/RIDER-44853))
 - Unity editor: Delay calling Unity API to workaround potential Unity crash ([RIDER-43951](https://youtrack.jetbrains.com/issue/RIDER-43951), [#1647](https://github.com/JetBrains/resharper-unity/pull/1647))
 - Unity editor: Unchecking sending Console messages to Rider is respected without having to restart ([#1733](https://github.com/JetBrains/resharper-unity/pull/1733))
