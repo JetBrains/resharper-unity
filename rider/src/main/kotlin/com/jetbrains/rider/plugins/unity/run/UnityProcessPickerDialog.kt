@@ -199,9 +199,12 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
 
             // We have variable height rows, to allow for the "separators". However, the tree's UI class caches row
             // heights for each cell. This causes problems when an item with a separator no longer needs the separator.
-            // Reloading the model forces a full update. It's not needed for any other reason - we insert/remove nodes
-            // correctly.
-            treeModel.reload()
+            // There are no public APIs to invalidate the cache. We could reload the model, but that collapses any open
+            // nodes, so we'd have to expand everything again. So, let's change the row height, and then immediately
+            // change it back to 0 (to indicate variable height). This invalidates the height cache, but maintains other
+            // state
+            tree.rowHeight = 1
+            tree.rowHeight = 0
 
             return newNode
         }
@@ -286,7 +289,7 @@ class UnityProcessPickerDialog(private val project: Project) : DialogWrapper(pro
             val attributes = if (!node.debuggerAttached) SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES else SimpleTextAttributes.GRAYED_BOLD_ATTRIBUTES
 
             val projectName = unityProcess.projectName ?: if (unityProcess is UnityIosUsbProcess) USB_DEVICES else UNKNOWN_PROJECTS
-            val hasSeparator = isFirstItem(node) || (!isChildProcess(node) && getPreviousSiblingProjectName(node) != projectName)
+            val hasSeparator = !isChildProcess(node) && (isFirstItem(node) || getPreviousSiblingProjectName(node) != projectName)
             // TODO: Is there anything more useful we could show in the tooltip?
             val component = configureComponent("", "", null, null, selected, hasSeparator, projectName, -1)
 
