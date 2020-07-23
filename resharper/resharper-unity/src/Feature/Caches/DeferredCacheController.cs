@@ -235,10 +235,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             {
                 using (myLogger.StopwatchCookie("DeferredCachesFlushData"))
                 {
-                    // TODO : assert that toProcess == calculatedData.Keys
                     foreach (var sourceFile in toProcess)
                     {
-                        // we process result on background thread, ensure that it is actual
+                        // toProcess is only snapshot and could be not actual, thus we are checking actual state for file
+                        // File could be already removed, because (toProcess, toDelete, calculatedData) was calculated on background thread
                         if (!myDeferredHelperCache.FilesToProcess.Contains(sourceFile))
                         {
                             calculatedData.TryRemove(sourceFile, out _);
@@ -276,7 +276,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                     foreach (var sourceFile in toDelete)
                     {
-                        // toDelete is only snapshot and could be not actual, ensure that we should delete that file
+                        // toDelete is only snapshot and could be not actual, thus we are checking actual state for file
+                        // File could be already added again, we will process it later
                         if (!myDeferredHelperCache.FilesToDrop.Contains(sourceFile))
                         {
                             toDelete.Remove(sourceFile);
