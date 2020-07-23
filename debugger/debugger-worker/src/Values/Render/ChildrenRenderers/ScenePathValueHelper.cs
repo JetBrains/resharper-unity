@@ -46,7 +46,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
                 var targetTransformReference = gameObjectRole.GetInstancePropertyReference("transform");
                 var targetTransformRole = targetTransformReference?.AsObjectSafe(options);
-                var rootTransformReference = targetTransformRole?.GetInstancePropertyReference("root");
+                // Search in bases - transform might be a RectTransform or a Transform, and root is defined on Transform
+                var rootTransformReference = targetTransformRole?.GetInstancePropertyReference("root", true);
 
                 if (targetTransformReference == null || rootTransformReference == null)
                 {
