@@ -123,6 +123,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             bool isApplicable = myCaches.Any(t => t.IsApplicable(sourceFile));
             if (isApplicable)
             {
+                FilesToDrop.Remove(sourceFile);
                 FilesToProcess.Add(sourceFile);
                 AfterAddToProcess.Fire(sourceFile);
             }
