@@ -38,6 +38,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 
         public string TransformPath(CppInclusionContext context, string path)
         {
+            var solutionFolder = mySolution.SolutionDirectory;
+            if (solutionFolder.Combine(path).Exists != FileSystemPath.Existence.Missing)
+                return path;
+            
             var pos = path.IndexOf('/') + 1;
             if (pos == -1)
                 return path;
@@ -53,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             
             var localPackagePath = FileSystemPath.Parse("Packages")
                 .Combine(packageName + "@" + suffix + path.Substring(endPos));
-            if (mySolution.SolutionDirectory.Combine(localPackagePath).Exists == FileSystemPath.Existence.File)
+            if (solutionFolder.Combine(localPackagePath).Exists == FileSystemPath.Existence.File)
                 return localPackagePath.FullPath;
 
             var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
