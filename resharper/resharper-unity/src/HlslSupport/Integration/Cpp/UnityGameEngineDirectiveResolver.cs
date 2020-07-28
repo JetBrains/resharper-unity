@@ -48,17 +48,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             var packageName = path.Substring(pos, endPos - pos);
 
             var suffix = GetCacheSuffix(packageName);
-            var localPackagePath = mySolution.SolutionDirectory.Combine("Packages")
+            if (suffix == null)
+                return path;
+            
+            var localPackagePath = FileSystemPath.Parse("Packages")
                 .Combine(packageName + "@" + suffix + path.Substring(endPos));
-            if (localPackagePath.Exists == FileSystemPath.Existence.File)
+            if (mySolution.SolutionDirectory.Combine(localPackagePath).Exists == FileSystemPath.Existence.File)
                 return localPackagePath.FullPath;
 
-            var cachedPackagePath = mySolution.SolutionDirectory.Combine("Library").Combine("PackageCache")
+            var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
                 .Combine(packageName + "@" + suffix + path.Substring(endPos));
             return cachedPackagePath.FullPath;
         }
 
-        [NotNull]
+        [CanBeNull]
         private string GetCacheSuffix(string packageName)
         {
             // TODO: This cache should be based on resolved packages, like we have in the frontend for PackageManager
