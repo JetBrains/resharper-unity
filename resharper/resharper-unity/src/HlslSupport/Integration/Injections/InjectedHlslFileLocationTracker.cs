@@ -114,7 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
             }
 
             var lexer = CppLexer.Create(ProjectedBuffer.Create(buffer, range));
-            lexer.Advance();
+            lexer.Start();
             while (lexer.TokenType != null)
             {
                 var tokenType = lexer.TokenType;
