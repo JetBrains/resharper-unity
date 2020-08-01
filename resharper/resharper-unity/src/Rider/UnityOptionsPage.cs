@@ -49,8 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 "Automatically install and update Rider's Unity editor plugin (recommended)");
             AddBoolOption((UnitySettings s) => s.AllowAutomaticRefreshInUnity, "Automatically refresh assets in Unity");
             
-            AddPerformanceAnalysisSection(lifetime, settingsStore);
-            AddBurstAnalysisSection(lifetime, settingsStore);
+            AddPerformanceAnalysisSection();
+            AddBurstAnalysisSection();
 
             AddHeader("C#");
             AddComboOption((UnitySettings s) => s.GutterIconMode,
@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        private void AddPerformanceAnalysisSection(Lifetime lifetime, IContextBoundSettingsStore settingsStore)
+        private void AddPerformanceAnalysisSection()
         {
             AddHeader("Performance analysis");
             
@@ -132,7 +132,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
-        private void AddBurstAnalysisSection(Lifetime lifetime, IContextBoundSettingsStore settingsStore)
+        private void AddBurstAnalysisSection()
         {
             AddHeader("Burst code analysis");
 
