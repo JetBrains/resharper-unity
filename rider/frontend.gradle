@@ -8,7 +8,7 @@ targetCompatibility = 1.8
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
-        allWarningsAsErrors = false
+        allWarningsAsErrors = warningsAsErrors.toBoolean()
         freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
     }
 }
@@ -43,7 +43,11 @@ intellij {
     // localPath = '/Users/matt/Library/Application Support/JetBrains/Toolbox/apps/Rider/ch-1/171.4089.265/Rider EAP.app/Contents'
     // localPath = "F:\\RiderSDK"
 
-    localPath = bundledRiderSdkRoot.canonicalPath
+    if (bundledRiderSdkRoot.exists()) {
+        localPath = bundledRiderSdkRoot.canonicalPath
+    } else {
+        version = "${productVersion}-SNAPSHOT"
+    }
 
     intellijRepo = "https://cache-redirector.jetbrains.com/intellij-repository"
 

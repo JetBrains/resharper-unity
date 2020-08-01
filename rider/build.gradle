@@ -15,7 +15,7 @@ plugins {
 
 ext.repoRoot = project.file("..")
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
-ext.bundledRiderSdkRoot = new File("C:\\Users\\artemiy.kononov\\Desktop\\sdk")  // SDK from TC configuration/artifacts
+ext.bundledRiderSdkRoot = new File(projectDir, "dependencies")  // SDK from TC configuration/artifacts
 
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
