@@ -19,11 +19,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
     {
         private readonly UnityApi myUnityApi;
         private readonly UnityVersion myUnityVersion;
+        private readonly KnownTypesCache myKnownTypesCache;
 
-        public GenerateUnityEventFunctionsProvider(UnityApi unityApi, UnityVersion unityVersion)
+        public GenerateUnityEventFunctionsProvider(UnityApi unityApi, UnityVersion unityVersion,
+                                                   KnownTypesCache knownTypesCache)
         {
             myUnityApi = unityApi;
             myUnityVersion = unityVersion;
+            myKnownTypesCache = knownTypesCache;
         }
 
         public override void Populate(CSharpGeneratorContext context)
@@ -54,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
                 // https://youtrack.jetbrains.com/issue/RIDER-25194
                 if (!groupingTypeLookup.TryGetValue(eventFunction.TypeName, out var groupingType))
                 {
-                    groupingType = TypeFactory.CreateTypeByCLRName(eventFunction.TypeName, context.PsiModule)
+                    groupingType = myKnownTypesCache.GetByClrTypeName(eventFunction.TypeName, context.PsiModule)
                         .GetTypeElement();
                     groupingTypeLookup.Add(eventFunction.TypeName, groupingType);
                 }
@@ -80,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
                 }
 
                 var newMethodDeclaration = eventFunction
-                    .CreateDeclaration(factory, context.ClassDeclaration, accessRights, makeVirtual);
+                    .CreateDeclaration(factory, myKnownTypesCache, context.ClassDeclaration, accessRights, makeVirtual);
                 if (makeVirtual)
                 {
                     // Make the parameter names are the same as the overridden method, or the "redundant override"

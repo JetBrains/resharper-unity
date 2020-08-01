@@ -112,8 +112,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         using (mySolution.GetComponent<VfsListener>().PauseChanges())
                         {
-                            await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
-                            await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard);
+                            try
+                            {
+                                await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                            }
+                            finally
+                            {
+                                await myLocks.Tasks.YieldTo(myLifetime, Scheduling.MainGuard); 
+                            }
                         }
                     }
                     else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601

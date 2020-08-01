@@ -18,14 +18,14 @@ using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAssists
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingAssists
 {
   [SolutionComponent]
-  public class ShaderLabTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler
+  public class InjectedHlslTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler
   {
-    [NotNull] private readonly ShaderLabDummyFormatter myDummyFormatter;
+    [NotNull] private readonly HlslInShaderLabDummyFormatter myInShaderLabDummyFormatter;
 
-    public ShaderLabTypingAssist(
+    public InjectedHlslTypingAssist(
       Lifetime lifetime,
       [NotNull] ISolution solution,
       [NotNull] IPsiServices psiServices,
@@ -37,14 +37,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAss
       [NotNull] IExternalIntellisenseHost externalIntellisenseHost,
       [NotNull] SkippingTypingAssist skippingTypingAssist,
       [NotNull] LastTypingAssistAction lastTypingAssistAction,
-      [NotNull] ShaderLabDummyFormatter dummyFormatter)
+      [NotNull] HlslInShaderLabDummyFormatter inShaderLabDummyFormatter)
       : base(solution, settingsStore, cachingLexerService, commandProcessor, psiServices, externalIntellisenseHost,
         skippingTypingAssist, lastTypingAssistAction)
     {
-      myDummyFormatter = dummyFormatter;
-      var braceHandler = new ShaderLabBraceHandler(this, dummyFormatter, false, productConfigurations.IsInternalMode());
+      myInShaderLabDummyFormatter = inShaderLabDummyFormatter;
+      var braceHandler = new InjectedHlslBraceHandler(this, inShaderLabDummyFormatter, false, productConfigurations.IsInternalMode());
       var quoteHandler = new CppQuoteHandler<ShaderLabLanguage>(this);
-      var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, dummyFormatter);
+      var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, inShaderLabDummyFormatter);
 
       typingAssistManager.AddTypingHandler(lifetime, '{', this, c => WrapCppAction(c, braceHandler.HandleLeftBraceTyped),
         IsTypingHandlerAvailable);
@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAss
 
     public override CachingLexer GetCachingLexer(ITextControl textControl)
     {
-      return myDummyFormatter.ComposeKeywordResolvingLexer(textControl);
+      return myInShaderLabDummyFormatter.ComposeKeywordResolvingLexer(textControl);
     }
   }
 }

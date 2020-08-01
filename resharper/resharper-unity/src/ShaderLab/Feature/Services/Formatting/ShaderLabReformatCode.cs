@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
         psiServices.Locks.AssertReadAccessAllowed();
         files = sourceFile.GetPsiFiles<ShaderLabLanguage>().Cast<IShaderLabFile>().ToArray();
       }
-      using (progressIndicator.SafeTotal("Reformat C/C++", files.Length))
+      using (progressIndicator.SafeTotal(Name, files.Length))
       {
         foreach (var file in files)
         {

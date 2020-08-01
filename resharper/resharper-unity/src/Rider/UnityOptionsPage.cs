@@ -80,9 +80,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     enable => enable);
             }
 
-            AddHeader("ShaderLab");
-            AddBoolOption((UnitySettings s) => s.EnableShaderLabHippieCompletion,
-                "Enable simple word-based completion in ShaderLab files");
+            AddHeader("Shaders");
+            AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlighting, "Suppress resolve errors of unqualified names");
+            
 
             AddHeader("Debugging");
             AddBoolOption((UnitySettings s) => s.EnableDebuggerExtensions,

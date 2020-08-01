@@ -52,7 +52,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName TooltipAttribute = new ClrTypeName("UnityEngine.TooltipAttribute");
         public static readonly IClrTypeName Transform = new ClrTypeName("UnityEngine.Transform");
         public static readonly IClrTypeName Vector2 = new ClrTypeName("UnityEngine.Vector2");
+        public static readonly IClrTypeName Vector2Int = new ClrTypeName("UnityEngine.Vector2Int");
         public static readonly IClrTypeName Vector3 = new ClrTypeName("UnityEngine.Vector3");
+        public static readonly IClrTypeName Vector3Int = new ClrTypeName("UnityEngine.Vector3Int");
         public static readonly IClrTypeName Vector4 = new ClrTypeName("UnityEngine.Vector4");
         public static readonly IClrTypeName UnityEvent = new ClrTypeName("UnityEngine.Events.UnityEventBase");
 
@@ -66,6 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             new ClrTypeName("UnityEngine.Serialization.FormerlySerializedAsAttribute");
 
         // UnityEditor
+        public static readonly IClrTypeName BuildTarget = new ClrTypeName("UnityEditor.BuildTarget");
         public static readonly IClrTypeName CanEditMultipleObjects = new ClrTypeName("UnityEditor.CanEditMultipleObjects");
         public static readonly IClrTypeName CustomEditor = new ClrTypeName("UnityEditor.CustomEditor");
         public static readonly IClrTypeName Editor = new ClrTypeName("UnityEditor.Editor");
@@ -92,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName JobComponentSystem = new ClrTypeName("Unity.Entities.JobComponentSystem");
         public static readonly IClrTypeName ComponentSystem = new ClrTypeName("Unity.Entities.ComponentSystem");
         public static readonly IClrTypeName InjectAttribute = new ClrTypeName("Unity.Entities.InjectAttribute");
-        
+
         // Burst
         public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");

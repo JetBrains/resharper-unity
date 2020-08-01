@@ -7,19 +7,22 @@ using UnityEngine;
 
 namespace JetBrains.Rider.Unity.Editor
 {
-  public class UnityEventCollector
+  public static class UnityEventLogSender
   {
-    public readonly BoundedSynchronizedQueue<RdLogEvent> DelayedLogEvents = new BoundedSynchronizedQueue<RdLogEvent>(1000);
-    private bool myLogEventsCollectorEnabled;
+    private static readonly BoundedSynchronizedQueue<RdLogEvent> ourDelayedLogEvents = new BoundedSynchronizedQueue<RdLogEvent>(1000);
+    private static bool ourLogEventsCollectorEnabled;
 
-    public UnityEventCollector()
+    public static void Start()
     {
       if (!PluginSettings.LogEventsCollectorEnabled)
         return;
 
       EditorApplication.update += () =>
       {
-          myLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled; // can be called only from main thread
+        // can be called only from main thread
+        ourLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled;
+        if (ourLogEventsCollectorEnabled)
+          ProcessQueue();
       };
 
       // Both of these methods were introduced in 5.0+ but EditorPlugin.csproj still targets 4.7
@@ -62,9 +65,9 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
+    private static void ApplicationOnLogMessageReceived(string message, string stackTrace, LogType type)
     {
-      if (!myLogEventsCollectorEnabled) // stop collecting, if setting was disabled
+      if (!ourLogEventsCollectorEnabled) // stop collecting, if setting was disabled
         return;
       
       RdLogEventType eventType;
@@ -88,57 +91,30 @@ namespace JetBrains.Rider.Unity.Editor
 
       var ticks = DateTime.UtcNow.Ticks;
       var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
-      DelayedLogEvents.Enqueue(evt);
-      OnAddEvent(new EventArgs());
+      ourDelayedLogEvents.Enqueue(evt);
     }
 
-    public event EventHandler AddEvent;
-
-    public void ClearEvent()
+    private static void ProcessQueue()
     {
-      AddEvent = null;
-    }
-
-    private void OnAddEvent(EventArgs e)
-    {
-      AddEvent?.Invoke(this, e);
-    }
-  }
-
-  public class UnityEventLogSender
-  {
-    public UnityEventLogSender(UnityEventCollector collector)
-    {
-      ProcessQueue(collector);
-
-      collector.ClearEvent();
-      collector.AddEvent += (col, _) =>
+      if (PluginEntryPoint.UnityModels.Count > 0) // maybe worth checking Any( with .Lifetime.IsAlive ), but shows up more expensive in Profiler
       {
-        ProcessQueue((UnityEventCollector)col);
-      };
-    }
-
-    private void ProcessQueue(UnityEventCollector collector)
-    {
-      RdLogEvent element;
-      while ((element  = collector.DelayedLogEvents.Dequeue()) != null)
-      {
-        SendLogEvent(element);
+        RdLogEvent element;
+        while ((element  = ourDelayedLogEvents.Dequeue()) != null)
+        {
+          SendLogEvent(element);
+        }  
       }
     }
 
-    private void SendLogEvent(RdLogEvent logEvent)
+    private static void SendLogEvent(RdLogEvent logEvent)
     {
-      MainThreadDispatcher.Instance.Queue(() =>
+      foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
       {
-        foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
+        if (modelWithLifetime.Lifetime.IsAlive)
         {
-          if (modelWithLifetime.Lifetime.IsAlive)
-          {
-            modelWithLifetime.Model.Log(logEvent);
-          }
+          modelWithLifetime.Model.Log(logEvent);
         }
-      });
+      }
     }
   }
 }

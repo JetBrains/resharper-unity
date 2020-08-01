@@ -5,7 +5,6 @@ using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.DocumentModel;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion.Impl;
@@ -202,13 +201,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // search and modifies the PSI file. This only affects ReSharper, Rider has different code completion
             // mechanism
             var factory = CSharpElementFactory.GetInstance(declaration, false);
-            var methodDeclaration = eventFunction.CreateDeclaration(factory, declaration, accessRights);
+            var knownTypesCache = context.BasicContext.Solution.GetComponent<KnownTypesCache>();
+            var methodDeclaration = eventFunction.CreateDeclaration(factory, knownTypesCache, declaration, accessRights);
             if (methodDeclaration.DeclaredElement == null)
                 return null;
 
             // This is effectively the same as GenerateMemberPresentation, but without the overhead that comes
             // with the flexibility of formatting any time of declared element. We just hard code the format
-            var predefinedType = context.PsiModule.GetPredefinedType();
             var parameters = string.Empty;
             if (eventFunction.Parameters.Length > 0)
             {
@@ -218,11 +217,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     if (i > 0) sb.Append(", ");
 
                     var parameter = eventFunction.Parameters[i];
-                    var type = predefinedType.TryGetType(parameter.ClrTypeName, NullableAnnotation.Unknown);
-                    var typeName = type?.GetPresentableName(CSharpLanguage.Instance) ??
-                                   parameter.ClrTypeName.ShortName;
-                    sb.AppendFormat("{0}{1}{2}", parameter.IsByRef ? "out" : string.Empty,
-                        typeName, parameter.IsArray ? "[]" : string.Empty);
+                    var type = parameter.TypeSpec.AsIType(knownTypesCache, context.PsiModule);
+                    var typeName = type.GetPresentableName(CSharpLanguage.Instance);
+                    sb.AppendFormat("{0}{1}", parameter.IsByRef ? "out" : string.Empty, typeName);
                 }
                 parameters = sb.ToString();
             }

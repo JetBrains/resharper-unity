@@ -12,19 +12,19 @@ using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAssists
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingAssists
 {
   [SolutionComponent]
-  public class ShaderLabDummyFormatter : CppDummyFormatterBase
+  public class HlslInShaderLabDummyFormatter : CppDummyFormatterBase
   {
-    public ShaderLabDummyFormatter(ISolution solution, CachingLexerService cachingLexerService, DocumentToProjectFileMappingStorage projectFileMappingStorage, IGlobalFormatSettingsService formatSettings,
+    public HlslInShaderLabDummyFormatter(ISolution solution, CachingLexerService cachingLexerService, DocumentToProjectFileMappingStorage projectFileMappingStorage, IGlobalFormatSettingsService formatSettings,
       ISettingsStore settingsStore, ISettingsOptimization settingsOptimization) : base(solution, cachingLexerService, projectFileMappingStorage, formatSettings, settingsStore, settingsOptimization)
     {
     }
 
     public override CppCachingKeywordResolvingLexer ComposeKeywordResolvingLexer(ITextControl textControl)
     {
-      var dialect = new CppHLSLDialect(true);
+      var dialect = new CppHLSLDialect(true, false);
       var cachingLexer = new ShaderLabLexerGenerated(textControl.Document.Buffer, CppLexer.Create).ToCachingLexer().TokenBuffer.CreateLexer();
       
       return new CppCachingKeywordResolvingLexer(cachingLexer, dialect);

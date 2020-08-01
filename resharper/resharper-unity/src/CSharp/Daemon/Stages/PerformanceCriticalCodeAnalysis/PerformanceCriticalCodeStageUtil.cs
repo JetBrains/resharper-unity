@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         public static bool IsInvocationExpensive([NotNull] IInvocationExpression invocationExpression)
         {
-            invocationExpression.GetPsiServices().Locks.AssertReadAccessAllowed();;
+            invocationExpression.GetPsiServices().Locks.AssertReadAccessAllowed();
 
             var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
             if (reference == null)
@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             if (clrTypeName.Equals(KnownTypes.Transform))
                 knownCostlyMethods = ourKnownTransformCostlyMethods;
-            
+
             if (clrTypeName.Equals(KnownTypes.Debug))
                 knownCostlyMethods = ourKnownDebugCostlyMethods;
 
@@ -115,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
                 var suffix = equalityExpression.EqualityType == EqualityExpressionType.NE ? "NotNull" : "Null";
 
-                string baseName = null;
+                string baseName;
                 if (expression is IReferenceExpression referenceExpression)
                 {
                     baseName = referenceExpression.NameIdentifier.Name;
@@ -136,12 +136,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             return HasSpecificAttribute(attributesOwner, "ExpensiveMethodAttribute");
         }
-        
+
         public static bool HasFrequentlyCalledMethodAttribute(IAttributesOwner attributesOwner)
         {
             return HasSpecificAttribute(attributesOwner, "FrequentlyCalledMethodAttribute");
         }
-        
+
         public static bool HasSpecificAttribute(IAttributesOwner attributesOwner, string name)
         {
             return attributesOwner.GetAttributeInstances(true)
@@ -153,7 +153,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             if (!(node is ICSharpDeclaration declaration))
                 return false;
-            
+
             // TODO: 20.1, support lambda
             if (declaration.DeclaredElement is IAttributesOwner attributesOwner && HasFrequentlyCalledMethodAttribute(attributesOwner))
                 return true;
@@ -162,19 +162,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 return false;
 
             var typeElement = typeMemberDeclaration.DeclaredElement?.GetContainingType();
-            
+
             if (typeElement == null)
                 return false;
 
-            if (!UnityApi.IsDescendantOfMonoBehaviour(typeElement))
+            if (!typeElement.DerivesFromMonoBehaviour())
                 return false;
-            
+
             if (declaration.DeclaredElement is IClrDeclaredElement clrDeclaredElement)
                 return ourKnownHotMonoBehaviourMethods.Contains(clrDeclaredElement.ShortName);
 
             return false;
         }
-        
+
         #region data
 
         private static readonly ISet<string> ourKnownHotMonoBehaviourMethods = new HashSet<string>()

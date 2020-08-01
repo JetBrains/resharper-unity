@@ -89,7 +89,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                     // Note that the generated code will use the access rights, if specified. However, if they haven't
                     // been specified (NONE) or they are the default for methods (PRIVATE), the generated code will be
                     // whatever the current code style setting is - implicit or explicit
-                    var declaredElement = myEventFunction.CreateDeclaration(factory, classDeclaration, myAccessRights, makeCoroutine: isCoroutine)
+                    var knownTypesCache = solution.GetComponent<KnownTypesCache>();
+                    var declaredElement = myEventFunction.CreateDeclaration(factory, knownTypesCache, classDeclaration,
+                            myAccessRights, makeCoroutine: isCoroutine)
                         .DeclaredElement.NotNull("declaredElement != null");
                     context.InputElements.Clear();
                     context.InputElements.Add(new GeneratorDeclaredElement(declaredElement));

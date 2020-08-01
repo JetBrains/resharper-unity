@@ -4,7 +4,6 @@ using JetBrains.DocumentManagers;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.model2.Assemblies.Interfaces;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -15,9 +14,8 @@ using JetBrains.Util;
 using JetBrains.Util.DataStructures.Collections;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 {
-    // based on UE4BuildAndTargetFilesProgramsModuleContainer
     public class ShaderFilesProperties : IPsiSourceFileProperties
     {
         public ShaderFilesProperties(bool isICacheParticipant)
@@ -231,21 +229,4 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
             }
         }
     }
-
-    // [ShellComponent]
-    // public class UE4BuildClassUsageInspectionsSuppressor : IUsageInspectionsSuppressor
-    // {
-    //     public bool SuppressUsageInspectionsOnElement(IDeclaredElement element, out ImplicitUseKindFlags flags)
-    //     {
-    //         flags = ImplicitUseKindFlags.Default;
-    //         if (!(element is IClass @class))
-    //             return false;
-    //
-    //         if (!(@class.Module is UE4BuildAndTargetFilesModule projectPsiModule))
-    //             return false;
-    //
-    //         flags = ImplicitUseKindFlags.Access | ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-    //         return true;
-    //     }
-    // }
 }

@@ -90,6 +90,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
                    TryCacheDebuggerDisplay(valueRole, instanceType.GetGenericTypeDefinition(), dataHolder);
         }
 
+        // Return null to allow other providers a chance. If we throw EvaluatorException, it will be presented to the
+        // user. OperationCancelledException will be logged and we move on to the next presenter. Any other exception
+        // will leak
         public override IValuePresentation PresentValue(IObjectValueRole<TValue> valueRole,
                                                         IMetadataTypeLite instanceType,
                                                         IPresentationOptions options,
@@ -103,6 +106,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
                 var thisObj = valueReference.GetValue(options);
                 var evaluationOptions =
                     valueReference.OriginatingFrame.DebuggerSession.Options.EvaluationOptions.Apply(options);
+
+                // This can throw if there are members missing, which is entirely possible when debugging on a device,
+                // due to stripping. It will throw EvaluatorException. Anything else is logged and thrown as a new
+                // EvaluatorException. We can also get InvalidOperationException, but only if no other evaluators can
+                // handle the current context, which is unlikely
                 var displayString =
                     ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj,
                         debuggerDisplayString, evaluationOptions, token);
@@ -112,11 +120,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             }
             catch (Exception ex)
             {
-                myLogger.Error(ex,
-                    $"Unable to evaluate debugger display string for type ${instanceType.GetGenericTypeDefinition().FullName}: ${debuggerDisplayString}");
+                // Log as warning, not error - there's nothing the user can do, and we're likely to encounter this with
+                // device builds
+                myLogger.Warn(ex,
+                    comment: $"Unable to evaluate debugger display string for type ${instanceType.GetGenericTypeDefinition().FullName}: ${debuggerDisplayString}. " +
+                             "Expected behaviour on devices due to stripping");
+                return null;
             }
-
-            return SimplePresentation.EmptyPresentation;
         }
 
         private bool TryCacheDebuggerDisplay(IObjectValueRole<TValue> valueRole, IMetadataTypeLite instanceType,

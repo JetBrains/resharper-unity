@@ -14,7 +14,7 @@ Right
     Visible
         Text RdTextRange(startOffset=192, endOffset=198) Changed in 0+ assets
     Hidden
-Block 49 BlockLensListRenderer
+Block 66 BlockLensListRenderer
 Top
     Visible
         Text RdTextRange(startOffset=66, endOffset=73) 4 asset usages
@@ -35,7 +35,7 @@ Right
     Visible
         Text RdTextRange(startOffset=192, endOffset=198) Changed in 0+ assets
     Hidden
-Block 49 BlockLensListRenderer
+Block 66 BlockLensListRenderer
 Top
     Visible
         Text RdTextRange(startOffset=66, endOffset=73) 4 asset usages

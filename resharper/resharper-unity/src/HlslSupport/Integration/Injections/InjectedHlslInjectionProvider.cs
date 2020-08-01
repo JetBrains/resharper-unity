@@ -11,10 +11,10 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Impl.Shared.InjectedPsi;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
+namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
 {
     [SolutionComponent]
-    public class ShaderLabHlslInjectionProvider : CppInjectionProviderBase
+    public class InjectedHlslInjectionProvider : CppInjectionProviderBase
     {
         public override bool IsApplicable(PsiLanguageType originalLanguage)
         {
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport
         protected override CppFileLocation GetFileLocation(IPsiSourceFile sourceFile, ITreeNode originalNode)
         {
             var cppFileLocation = new CppFileLocation(sourceFile, originalNode.GetDocumentRange().TextRange);
-            if (!sourceFile.GetSolution().GetComponent<ShaderLabCppFileLocationTracker>().IsSuitableLocation(sourceFile, cppFileLocation))
+            if (!sourceFile.GetSolution().GetComponent<InjectedHlslFileLocationTracker>().IsSuitableLocation(sourceFile, cppFileLocation))
                 return CppFileLocation.EMPTY;
             
             return cppFileLocation;

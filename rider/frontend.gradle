@@ -89,6 +89,12 @@ def debuggerDllFiles = [
 ]
 
 def helperExeFiles = [
+    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/netcoreapp3.1/JetBrains.Rider.Unity.ListIosUsbDevices.dll",
+    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/netcoreapp3.1/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
+    "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/netcoreapp3.1/JetBrains.Rider.Unity.ListIosUsbDevices.runtimeconfig.json",
+]
+
+def helperExeNetFxFiles = [
     "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.ListIosUsbDevices.exe",
     "../resharper/build/ios-list-usb-devices/bin/$BuildConfiguration/net461/JetBrains.Rider.Unity.ListIosUsbDevices.pdb",
 ]
@@ -141,6 +147,11 @@ tasks.withType(PrepareSandboxTask).configureEach {
             if (!file.exists()) throw new RuntimeException("File $file does not exist")
         })
 
+        helperExeNetFxFiles.forEach({ f ->
+            def file = file("$f")
+            if (!file.exists()) throw new RuntimeException("File $file does not exist")
+        })
+
         unityEditorDllFiles.forEach({ f ->
             def file = file("$f")
             if (!file.exists() && !f.endsWith("pdb")) throw new RuntimeException("File $file does not exist")
@@ -152,7 +163,10 @@ tasks.withType(PrepareSandboxTask).configureEach {
     unityEditorDllFiles.forEach({ f -> from(file(f), { into "$intellij.pluginName/EditorPlugin" }) })
 
     // This folder name allows RiderEnvironment.getBundledFile(file, pluginClass = this.class) to work
+    // Helper apps must be netcoreapp3.1 for Mac/Linux, but we don't yet bundle netcore for Windows, so fall back to
+    // netfx. Get rid of the netfx folder as soon as we can
     helperExeFiles.forEach({f -> from(file(f), { into "$intellij.pluginName/DotFiles" }) })
+    helperExeNetFxFiles.forEach({f -> from(file(f), { into "$intellij.pluginName/DotFiles/netfx" }) })
 
     from('../resharper/resharper-unity/src/annotations', { into "$intellij.pluginName/dotnet/Extensions/com.intellij.resharper.unity/annotations" })
     from('projectTemplates', { into "$intellij.pluginName/projectTemplates" })

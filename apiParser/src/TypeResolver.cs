@@ -22,6 +22,13 @@ namespace ApiParser
             myFullNames.Add("float", typeof(float).FullName);
             myFullNames.Add("double", typeof(double).FullName);
             myFullNames.Add("IEnumerator", typeof(IEnumerator).FullName);
+
+            // TODO: Provide a better way of handling generics?
+            // We only have one use so far, in AssetModificationProcessor.CanOpenForEdit in 2020.2. ApiParser will fail
+            // if we get any others, as the list above are the only non-Unity types we recognise. Note that using
+            // typeof(List<string>).FullName will give an assembly qualified name for the type parameter, including
+            // culture, version and public key token. We need a simple type name.
+            myFullNames.Add("List<string>", "System.Collections.Generic.List`1[[System.String]]");
         }
 
         private string ResolveFullName([NotNull] string name, string namespaceHint)
@@ -60,7 +67,7 @@ namespace ApiParser
             if (candidates.Count > 1)
             {
                 // If we have more than one type with the same name, choose the one in the same namespace as the owning
-                // message. This works for experimental types that move namespaces PlayState and Playable
+                // message. This works for experimental types that move namespaces such as PlayState and Playable
                 foreach (var candidate in candidates)
                 {
                     Console.WriteLine($"Namespace hint: {namespaceHint}");
