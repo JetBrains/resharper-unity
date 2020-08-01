@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         {
             var method = MethodDeclaration?.DeclaredElement;
             // burst discard - always no if it is already discarded.
-            if(BurstCodeAnalysisUtil.IsBurstContextBannedFunction(method))
+            if(BurstCodeAnalysisUtil.IsBurstContextBannedForFunction(method))
                 yield break;
             var solution = myDataProvider.Solution;
             var swea = solution.GetComponent<SolutionAnalysisService>();
