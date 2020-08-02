@@ -128,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 myInterruptChecker.CheckForInterrupt();
                 switch (element)
                 {
-                    case IFunctionDeclaration _:
+                    case ILocalFunctionDeclaration _:
                     case ICSharpClosure _:
                         return false;
                     default:

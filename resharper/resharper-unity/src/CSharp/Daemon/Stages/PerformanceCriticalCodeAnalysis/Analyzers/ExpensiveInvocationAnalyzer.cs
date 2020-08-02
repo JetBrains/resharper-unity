@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 CreateHiglighting(expression, consumer);
             } else if (kind == DaemonProcessKind.GLOBAL_WARNINGS)
             {
-                var declaredElement = expression.Reference.Resolve().DeclaredElement;
+                var declaredElement = CallGraphUtil.GetCallee(expression);
                 if (declaredElement == null)
                     return;
 
