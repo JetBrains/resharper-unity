@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             var processor = new ExpensiveCodeProcessor(declaration is ICSharpClosure);
 
-            declaration.ProcessDescendants(processor);
+            declaration.ProcessThisAndDescendants(processor);
 
             if (processor.IsExpensiveCodeFound)
                 result.Add(declaredElement);
