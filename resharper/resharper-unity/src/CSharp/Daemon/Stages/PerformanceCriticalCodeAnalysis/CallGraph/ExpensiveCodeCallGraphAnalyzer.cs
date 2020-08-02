@@ -17,7 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         public const string MarkId = "Unity.ExpensiveCode";
 
-        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
+        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
+            UnityReferencesTracker referencesTracker,
             UnitySolutionTracker unitySolutionTracker)
             : base(MarkId, new CallGraphIncomingPropagator(solution, MarkId))
         {
@@ -25,41 +26,59 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
-        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
+
             if (containingFunction == null)
                 return result;
 
             var declaration = currentNode as IDeclaration;
             var declaredElement = declaration?.DeclaredElement;
+
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
-            
-            var processor = new ExpensiveCodeProcessor();
+
+            var processor = new ExpensiveCodeProcessor(declaration is ICSharpClosure);
+
             declaration.ProcessDescendants(processor);
+
             if (processor.IsExpensiveCodeFound)
                 result.Add(declaredElement);
-            
+
             return result;
         }
 
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             return new LocalList<IDeclaredElement>();
         }
 
         private class ExpensiveCodeProcessor : IRecursiveElementProcessor
         {
+            private bool myShouldProcessFirst;
             public bool IsExpensiveCodeFound;
             private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
+
+            public ExpensiveCodeProcessor(bool shouldProcessFirst)
+            {
+                myShouldProcessFirst = shouldProcessFirst;
+            }
 
             public bool InteriorShouldBeProcessed(ITreeNode element)
             {
                 myInterruptChecker.CheckForInterrupt();
+
+                if (myShouldProcessFirst)
+                {
+                    myShouldProcessFirst = false;
+                    return true;
+                }
+
                 switch (element)
                 {
-                    case ILocalFunctionDeclaration _:
                     case ICSharpClosure _:
                         return false;
                     default:

@@ -28,7 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             return new LocalList<IDeclaredElement>();
         }
@@ -101,17 +102,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             var result = new LocalList<IDeclaredElement>();
             var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
+
             if (coroutineOrInvoke != null)
                 result.Add(coroutineOrInvoke);
 
             if (containingFunction == null)
                 return result;
+
             var declaration = currentNode as IDeclaration;
             var declaredElement = declaration?.DeclaredElement;
+
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
-            var processor = new PerformanceCriticalCodeProcessor();
+
+            var processor = new PerformanceCriticalCodeProcessor(declaration is ICSharpClosure);
+
             declaration.ProcessThisAndDescendants(processor);
+
             if (processor.IsPerformanceCriticalCodeFound)
                 result.Add(declaredElement);
 
@@ -120,15 +127,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         private class PerformanceCriticalCodeProcessor : IRecursiveElementProcessor
         {
+            private bool myShouldProcessFirst;
             public bool IsPerformanceCriticalCodeFound;
             private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
+
+            public PerformanceCriticalCodeProcessor(bool shouldProcessFirst)
+            {
+                myShouldProcessFirst = shouldProcessFirst;
+            }
 
             public bool InteriorShouldBeProcessed(ITreeNode element)
             {
                 myInterruptChecker.CheckForInterrupt();
+
+                if (myShouldProcessFirst)
+                {
+                    myShouldProcessFirst = false;
+                    return true;
+                }
+                
                 switch (element)
                 {
-                    case ILocalFunctionDeclaration _:
                     case ICSharpClosure _:
                         return false;
                     default:
