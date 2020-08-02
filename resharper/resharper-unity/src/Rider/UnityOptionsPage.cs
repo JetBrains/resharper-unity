@@ -18,6 +18,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.ReSharper.Psi.Naming.Settings;
+using JetBrains.Rider.Model.UIAutomation;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -38,6 +39,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private static readonly Expression<Func<UnitySettings, bool>> ourEnableBurstHighlightingAccessor =
             s => s.EnableBurstCodeHighlighting;
+
+        private static readonly Expression<Func<UnitySettings, bool>> ourEnableBurstVirtualPropagating =
+            s => s.EnableBurstVirtualPropagating;
 
         public UnityOptionsPage(Lifetime lifetime, OptionsPageContext pageContext,
             OptionsSettingsSmartContext settingsStore,
@@ -140,7 +144,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             
             using (Indent())
             {
-                var option = AddComboOption((UnitySettings s) => s.BurstCodeHighlightingMode,
+                BeControl option = AddBoolOption(ourEnableBurstVirtualPropagating,
+                    "Propagate Burst context through virtual calls");
+
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
+                    enable => enable);
+
+                option = AddComboOption((UnitySettings s) => s.BurstCodeHighlightingMode,
                     "Highlight burst code contexts:", string.Empty, string.Empty,
                     new RadioOptionPoint(BurstCodeHighlightingMode.Always, "Always"),
                     new RadioOptionPoint(BurstCodeHighlightingMode.CurrentMethod, "Current method only"),
@@ -149,7 +159,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
                     enable => enable);
                 option = AddBoolOption((UnitySettings s) => s.EnableIconsForBurstCode,
-                    "Show icons for burst compiled methods");
+                    "Show icons for Burst compiled methods");
                 AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
                     enable => enable);
             }
