@@ -126,6 +126,7 @@ class UnityIcons {
             val ReferencedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageReferenced.svg")
             val EmbeddedPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageEmbedded.svg")
             val LocalPackage = IconLoader.getIcon("/Icons/Explorer/FolderPackageLocal.svg")
+            val LocalTarballPackage = LocalPackage
             val GitPackage = IconLoader.getIcon("/Icons/Explorer/FolderGit.svg")
             val UnknownPackage = IconLoader.getIcon("/Icons/Explorer/UnityPackageUnresolved.svg")
             val PackageDependency = IconLoader.getIcon("/Icons/Explorer/UnityPackageDependency.svg")
@@ -158,6 +159,8 @@ class UnityIcons {
             val OpenPlayerLog = FilterPlayModeMessages
 
             @JvmField val AttachToUnity = IconLoader.getIcon("/Icons/actions/attachToUnityProcess.svg")
+
+            @JvmField val RefreshInUnity = IconLoader.getIcon("/Icons/actions/refreshInUnity.svg")
         }
     }
 

@@ -12,8 +12,9 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
     <PackageReference Include="JetBrains.Unity.Libs.Ref.4.7.2f1" Version="2020.6.10" />
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
+    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.1" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
@@ -21,7 +22,6 @@
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)AsyncBridge.Net35.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Annotations.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)System.Threading.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
   <ItemGroup>
@@ -29,5 +29,6 @@
     <None Remove="AfterUnity56\**" />
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
-  <Import Project="$(MSBuildProjectDirectory)/../build/generated/PackageReference.JetBrains.RdFramework.net35.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\EditorPlugin\ILRepack.targets" /> 
 </Project>

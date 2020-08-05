@@ -25,12 +25,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
         })]
     public class UnityEventFunctionAnalyzer : MethodSignatureProblemAnalyzerBase<IMemberOwnerDeclaration>
     {
+        private readonly KnownTypesCache myKnownTypesCache;
         public static readonly Key<ISet<IMethod>> UnityEventFunctionNodeKey = new Key<ISet<IMethod>>("UnityEventFunctionNodeKey");
         private readonly object mySyncObject = new object();
 
-        public UnityEventFunctionAnalyzer(UnityApi unityApi)
+        public UnityEventFunctionAnalyzer(UnityApi unityApi, KnownTypesCache knownTypesCache)
             : base(unityApi)
         {
+            myKnownTypesCache = knownTypesCache;
         }
 
         protected override void Analyze(IMemberOwnerDeclaration element, ElementProblemAnalyzerData data,
@@ -64,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     // Only one function, mark it as a unity function, even if it's not an exact match
                     // We'll let other inspections handle invalid signatures
                     var method = candidates[0].Method;
-                    PutEventToCustomData( method, data);
+                    PutEventToCustomData(method, data);
                     AddMethodSignatureInspections(consumer, method, function, candidates[0].Match);
                 }
                 else
@@ -136,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (match == MethodSignatureMatch.NoMatch || match == MethodSignatureMatch.ExactMatch)
                 return;
 
-            var methodSignature = function.AsMethodSignature(method.Module);
+            var methodSignature = function.AsMethodSignature(myKnownTypesCache, method.Module);
 
             foreach (var declaration in method.GetDeclarations())
             {
@@ -161,7 +163,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             }
         }
 
-        private struct Candidate
+        private readonly struct Candidate
         {
             public readonly IMethod Method;
             public readonly MethodSignatureMatch Match;

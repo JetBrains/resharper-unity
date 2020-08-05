@@ -55,10 +55,13 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
     }
 
     override fun getTooltipText(): String? {
-        return if(host.sessionInitialized.valueOrDefault(false))
-            "Connected to Unity Editor"
-        else
-            "No Unity Editor connection\nLoad the project in the Unity Editor to enable advanced functionality"
+        return when (host.unityState.valueOrDefault(EditorState.Disconnected)) {
+            EditorState.Disconnected -> "No Unity Editor connection\nLoad the project in the Unity Editor to enable advanced functionality"
+            EditorState.ConnectedIdle -> "Connected to Unity Editor"
+            EditorState.ConnectedPlay -> "Connected to Unity Editor"
+            EditorState.ConnectedPause -> "Connected to Unity Editor"
+            EditorState.ConnectedRefresh -> "Refreshing assets in Unity Editor"
+        }
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? = null

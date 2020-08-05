@@ -8,6 +8,7 @@ namespace ApiParser
         public static readonly ApiType String = new ApiType("System.String");
         public static readonly ApiType StringArray = new ApiType("System.String[]");
         public static readonly ApiType Bool = new ApiType("System.Boolean");
+        public static readonly ApiType Int = new ApiType("System.Int32");
         public static readonly ApiType StringByRef = new ApiType("System.String&");
         public static readonly ApiType IEnumerator = new ApiType("System.Collections.IEnumerator");
 

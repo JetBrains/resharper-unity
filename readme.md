@@ -14,7 +14,9 @@ The plugin adds code completion and generation of Unity event functions, inspect
 
 ## Installation 2019.2+ with Rider package
 
-In Unity just setting External Editor to Rider should be enough.
+In Unity choose Rider as External Editor in Unity settings.
+
+For uninstall choose a different External Editor in Unity settings.
 
 ## Installation 2019.1-
 
@@ -35,6 +37,10 @@ The solution can be loaded directly with the _Assets &rarr; Open C# Project_ men
 > Note that Rider will add an _Assets &rarr; Open C# Project in Rider_ menu item for older versions of Unity. This is because prior to 2017.1, the Unity Editor doesn't recognise Rider as an editor that can load C# solutions, and will also launch MonoDevelop. Other than not launching MonoDevelop, these menu items are identical.
 
 Rider will install the Unity Editor plugin in each Unity project it opens. [See below for more details](#unity-editor-plugin).
+
+For uninstall choose a different external Editor in Unity settings, delete [Editor plugin](#unity-editor-plugin) from your project.
+
+## ReSharper plugin installation 
 
 The ReSharper plugin is installed via the _ReSharper &rarr; Extension Manager_. Simply search for "Unity Support".
 
@@ -186,7 +192,7 @@ See the ReSharper help for [more details on External Annotations](https://www.je
 The plugin also adds some functionality just for Rider:
 
 * The `Library` and `Temp` folders are automatically excluded from Rider's full text search, used for the "Find in Path" feature. These folders can become very large, and can take a long time to index if not excluded.
-* Rider will automatically create an "Attach to Unity Editor" run configuration. When the debug button is clicked, Rider will automatically attach to the editor and start debugging. Rider will look for a `Library/EditorInstance.json` file, created by Unity 2017.1, or by [EditorPlugin](https://github.com/JetBrains/resharper-unity/tree/master/unity). If the file doesn't exist and only a single instance of Unity is running, Rider will attach to this instance. If multiple instances are running, Rider will prompt for which instance to attach to.
+* Rider will automatically create an "Attach to Unity Editor" run configuration. When the debug button is clicked, Rider will automatically attach to the editor and start debugging. Rider will look for a `Library/EditorInstance.json` file, created by Unity 2017.1, or by [EditorPlugin](unity/README.md). If the file doesn't exist and only a single instance of Unity is running, Rider will attach to this instance. If multiple instances are running, Rider will prompt for which instance to attach to.
 
   <img src="docs/attach_to_editor_run_config.png" width="514">
 
@@ -206,7 +212,7 @@ This plugin does the following:
 * Ensure the C# solution and project files are up to date, and make minor changes required by Rider:
     * Attempts to set appropriate `TargetFrameworkVersion`. This is customizable in _Preferences_. Note that this affects how Rider resolves references, and does not change how Unity builds a project.
     * Set the `LangVersion` correctly, so that Rider does not suggest C# 6 features when Unity is targeting C# 4, or C# 7 features when Unity is targeting C# 6.
-    * Add references to `UnityEditor.iOS.Extensions.Xcode.dll` and `UnityEditor.iOS.Extensions.Common.dll`, which are referenced when Unity builds, but not included in the generated project files. [See this GitHub issue for more details](https://github.com/JetBrains/Unity3dRider/issues/15).
+    * Add references to `UnityEditor.iOS.Extensions.Xcode.dll` and `UnityEditor.iOS.Extensions.Common.dll`, which are referenced when Unity builds, but not included in the generated project files.
     * Add options defined in `mcs.rsp` or `smcs.rsp` and `gmcs.rsp` files, such as conditional compilation defines, the `unsafe` keyword and [references(https://github.com/JetBrains/resharper-unity/issues/270)]. Adding them to the project file makes the information available to Rider's analysis.
 * Use interprocess communication to speed up opening C# scripts, `.shader` files and text assets in Rider, if it's already running. It will launch Rider and load the solution if it isn't.
 * Add a _Rider_ Preference pane:

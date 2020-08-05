@@ -50,7 +50,8 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Assets\Class1.cs" />
+     <Compile Include="Assets\Class1.cs" />
+     <Compile Include="Assets\Dir1\ClassInDir1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="AsmdefResponse.csproj">

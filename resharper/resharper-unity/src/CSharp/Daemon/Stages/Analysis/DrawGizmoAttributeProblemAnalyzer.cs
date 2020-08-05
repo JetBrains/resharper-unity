@@ -17,15 +17,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
     public class DrawGizmoAttributeProblemAnalyzer : MethodSignatureProblemAnalyzerBase<IAttribute>
     {
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
+        private readonly KnownTypesCache myKnownTypesCache;
 
-        public DrawGizmoAttributeProblemAnalyzer([NotNull] UnityApi unityApi, IPredefinedTypeCache predefinedTypeCache)
+        public DrawGizmoAttributeProblemAnalyzer([NotNull] UnityApi unityApi, IPredefinedTypeCache predefinedTypeCache,
+                                                 KnownTypesCache knownTypesCache)
             : base(unityApi)
         {
             myPredefinedTypeCache = predefinedTypeCache;
+            myKnownTypesCache = knownTypesCache;
         }
 
         protected override void Analyze(IAttribute element, ElementProblemAnalyzerData data,
-            IHighlightingConsumer consumer)
+                                        IHighlightingConsumer consumer)
         {
             if (!(element.TypeReference?.Resolve().DeclaredElement is ITypeElement attributeTypeElement))
                 return;
@@ -47,8 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                 return;
 
             var predefinedType = myPredefinedTypeCache.GetOrCreatePredefinedType(element.GetPsiModule());
-            var gizmoType = TypeFactory.CreateTypeByCLRName(KnownTypes.GizmoType, predefinedType.Module);
-            var componentType = TypeFactory.CreateTypeByCLRName(KnownTypes.Component, predefinedType.Module);
+            var gizmoType = myKnownTypesCache.GetByClrTypeName(KnownTypes.GizmoType, predefinedType.Module);
+            var componentType = myKnownTypesCache.GetByClrTypeName(KnownTypes.Component, predefinedType.Module);
 
             IType derivedType = componentType;
             var derivedName = "component";
@@ -59,8 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             for (var i = 0; i < methodDeclaration.Params.ParameterDeclarations.Count; i++)
             {
                 var param = methodDeclaration.Params.ParameterDeclarations[i];
-                if (param.Type.GetTypeElement()
-                        ?.IsDescendantOf(componentType.GetTypeElement()) == true)
+                if (param.Type.GetTypeElement().DerivesFrom(KnownTypes.Component))
                 {
                     if (i == 0)
                         firstParamCorrect = true;
@@ -69,8 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                     derivedName = param.DeclaredName;
                 }
 
-                if (param.Type.GetTypeElement()
-                        ?.Equals(gizmoType?.GetTypeElement()) == true)
+                if (param.Type.GetTypeElement().DerivesFrom(KnownTypes.GizmoType))
                 {
                     if (i == 1)
                         secondParamCorrect = true;

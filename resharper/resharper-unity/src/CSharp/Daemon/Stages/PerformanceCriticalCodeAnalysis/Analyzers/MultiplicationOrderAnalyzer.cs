@@ -17,26 +17,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         private static readonly HashSet<IClrTypeName> ourKnownTypes = new HashSet<IClrTypeName>()
         {
-            new ClrTypeName("UnityEngine.Vector2"),
-            new ClrTypeName("UnityEngine.Vector3"),
-            new ClrTypeName("UnityEngine.Vector4"),
-            new ClrTypeName("UnityEngine.Vector2Int"),
-            new ClrTypeName("UnityEngine.Vector3Int"),
-            new ClrTypeName("UnityEngine.Quaternion"),
-            new ClrTypeName("UnityEngine.Matrix4x4"),
+            KnownTypes.Vector2,
+            KnownTypes.Vector3,
+            KnownTypes.Vector4,
+            KnownTypes.Vector2Int,
+            KnownTypes.Vector3Int,
+            KnownTypes.Quaternion,
+            KnownTypes.Matrix4x4
         };
-        
+
         protected override void Analyze(IMultiplicativeExpression expression, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
             if (IsStartPoint(expression))
             {
                 var count = 0;
                 bool hasMatrix = false;
-         
+
                 var enumerator = expression.ThisAndDescendants<ICSharpExpression>();
                 var scalars = new List<ICSharpExpression>();
                 var matrices = new List<ICSharpExpression>();
-                
+
                 while (enumerator.MoveNext())
                 {
                     var element = enumerator.Current;
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                             hasMatrix = true;
                             matrices.Add(element);
                         }
-                        
+
                         enumerator.SkipThisNode();
                     }
                     else
@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         }
                     }
                 }
-                
+
                 if (hasMatrix & count > 1)
                     consumer.AddHighlighting(new InefficientMultiplicationOrderWarning(expression, scalars, matrices));
             }
@@ -94,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             return IsMatrixTypeInner(expression) == MatrixTypeState.Matrix;
         }
-        
+
         private static MatrixTypeState IsMatrixTypeInner(ICSharpExpression expression)
         {
             var type = expression?.GetExpressionType().ToIType() as IDeclaredType;
@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             if (ourKnownTypes.Contains(type.GetClrName()))
                 return MatrixTypeState.Matrix;
-            
+
             return MatrixTypeState.Unknown;
         }
 

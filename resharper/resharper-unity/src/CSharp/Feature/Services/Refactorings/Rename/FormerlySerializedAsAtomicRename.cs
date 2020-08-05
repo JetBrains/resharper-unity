@@ -3,10 +3,8 @@ using JetBrains.Annotations;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.Diagnostics;
-using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Refactorings;
 using JetBrains.ReSharper.Feature.Services.Refactorings.Specific.Rename;
-using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
@@ -22,11 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 {
     public class FormerlySerializedAsAtomicRename : AtomicRenameBase
     {
+        private readonly KnownTypesCache myKnownTypesCache;
         private readonly SerializedFieldRenameModel myModel;
         private readonly IDeclaredElementPointer<IDeclaredElement> myPointer;
 
-        public FormerlySerializedAsAtomicRename(IDeclaredElement declaredElement, string newName, ISettingsStore settingsStore)
+        public FormerlySerializedAsAtomicRename(IDeclaredElement declaredElement, string newName,
+                                                ISettingsStore settingsStore, KnownTypesCache knownTypesCache)
         {
+            myKnownTypesCache = knownTypesCache;
             myModel = new SerializedFieldRenameModel(settingsStore);
 
             myPointer = declaredElement.CreateElementPointer();
@@ -151,7 +152,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         private IAttribute CreateFormerlySerializedAsAttribute(IPsiModule module)
         {
             var elementFactory = CSharpElementFactory.GetInstance(module);
-            var attributeType = TypeFactory.CreateTypeByCLRName(KnownTypes.FormerlySerializedAsAttribute, module);
+            var attributeType = myKnownTypesCache.GetByClrTypeName(KnownTypes.FormerlySerializedAsAttribute, module);
             var attributeTypeElement = attributeType.GetTypeElement();
             if (attributeTypeElement == null)
                 return null;

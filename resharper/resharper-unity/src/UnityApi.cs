@@ -31,11 +31,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
         };
 
         private readonly UnityVersion myUnityVersion;
+        private readonly KnownTypesCache myKnownTypesCache;
         private readonly Lazy<UnityTypes> myTypes;
 
-        public UnityApi(UnityVersion unityVersion)
+        public UnityApi(UnityVersion unityVersion, KnownTypesCache knownTypesCache)
         {
             myUnityVersion = unityVersion;
+            myKnownTypesCache = knownTypesCache;
             myTypes = Lazy.Of(() =>
             {
                 var apiXml = new ApiXml();
@@ -67,20 +69,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(type).Any();
         }
 
-        public bool IsUnityECSType([CanBeNull] ITypeElement type)
+        public bool IsUnityECSType([CanBeNull] ITypeElement typeElement)
         {
-            if (type == null)
-                return false;
-
-            var jobComponentSystem = TypeFactory.CreateTypeByCLRName(KnownTypes.JobComponentSystem, type.Module);
-            if (type.IsDescendantOf(jobComponentSystem.GetTypeElement()))
-                return true;
-
-            var componentSystem = TypeFactory.CreateTypeByCLRName(KnownTypes.ComponentSystem, type.Module);
-            if (type.IsDescendantOf(componentSystem.GetTypeElement()))
-                return true;
-
-            return false;
+            return typeElement.DerivesFrom(KnownTypes.JobComponentSystem) ||
+                   typeElement.DerivesFrom(KnownTypes.ComponentSystem);
         }
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
@@ -175,7 +167,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return type != null && (type.IsSimplePredefined()
                                     || type.IsEnumType()
                                     || IsUnityBuiltinType(type as IDeclaredType)
-                                    || IsDescendantOfUnityObject(type.GetTypeElement())
+                                    || type.GetTypeElement().DerivesFrom(KnownTypes.Object)
                                     || IsSerializableType(type.GetTypeElement(), project, true));
         }
 
@@ -286,34 +278,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return null;
         }
 
-        public static bool IsDescendantOf([NotNull] IClrTypeName unityTypeClrName, [CanBeNull] ITypeElement type)
-        {
-            if (type == null)
-                return false;
-            var mb = TypeFactory.CreateTypeByCLRName(unityTypeClrName, type.Module);
-            return type.IsDescendantOf(mb.GetTypeElement());
-        }
-
-        private static bool IsDescendantOfUnityObject([CanBeNull] ITypeElement type)
-        {
-            return IsDescendantOf(KnownTypes.Object, type);
-        }
-
-        public static bool IsDescendantOfMonoBehaviour([CanBeNull] ITypeElement type)
-        {
-            return IsDescendantOf(KnownTypes.MonoBehaviour, type);
-        }
-
-        public static bool IsDescendantOfScriptableObject([CanBeNull] ITypeElement type)
-        {
-            return IsDescendantOf(KnownTypes.ScriptableObject, type);
-        }
-
-        public static bool IsDescendantOfUnityEvent([CanBeNull] ITypeElement type)
-        {
-            return IsDescendantOf(KnownTypes.UnityEvent, type);
-        }
-
         public Version GetNormalisedActualVersion(IProject project)
         {
             return myTypes.Value.NormaliseSupportedVersion(myUnityVersion.GetActualVersion(project));
@@ -324,7 +288,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return types.Types.Where(t =>
             {
                 using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                    return t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(type.Module));
+                    return t.SupportsVersion(normalisedVersion) && type.IsDescendantOf(t.GetTypeElement(myKnownTypesCache, type.Module));
             });
         }
 

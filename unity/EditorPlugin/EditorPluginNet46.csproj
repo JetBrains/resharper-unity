@@ -12,15 +12,18 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Unity.Libs.Ref.2017.3.0f3" Version="2020.6.10" />
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18" />
+    <PackageReference Include="JetBrains.Build.ILRepack" Version="0.0.1" />
     <PackageReference Include="JetBrains.Toolset.RefAsm.Net461.NetStandard" Version="2.0.20190130.182358" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <!-- This one should be the first - it provides version to resulting assembly-->
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.Lifetimes.dll"><Visible>false</Visible></ILRepackInputAssemblies>
     <ILRepackInputAssemblies Include="$(OutputPath)JetBrains.RdFramework.dll"><Visible>false</Visible></ILRepackInputAssemblies>
-    <ILRepackInputAssemblies Include="../lib/JetBrains.Annotations.dll"><Visible>false</Visible></ILRepackInputAssemblies>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="AssetPostprocessors\CsprojAssetPostprocessor.cs" />
@@ -28,4 +31,5 @@
     <Compile Remove="RiderMenu.cs" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
+  <Import Project="$(MSBuildProjectDirectory)\..\EditorPlugin\ILRepack.targets" />
 </Project>

@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.util
 
+import com.intellij.openapi.diagnostic.ControlFlowException
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VfsUtil
@@ -33,16 +34,17 @@ class UnityCachesFinder {
             return findPackagesCache(cache, registryHost) ?: findPackagesCache(cache, defaultRegistry)
         }
 
-        private fun findPackagesCacheRoot() = when {
-            SystemInfo.isWindows -> Paths.get(System.getenv("LOCALAPPDATA")).resolve("Unity/cache/packages")
-            SystemInfo.isMac -> Paths.get(SystemProperties.getUserHome()).resolve("Library/Unity/cache/packages")
-            SystemInfo.isLinux -> {
-                val configRoot = System.getenv("XDG_CONFIG_HOME")?.let { Paths.get(it) }
+        private fun findPackagesCacheRoot() = System.getenv("UPM_CACHE_PATH")?.let { Paths.get(it) }
+            ?: when {
+                SystemInfo.isWindows -> Paths.get(System.getenv("LOCALAPPDATA")).resolve("Unity/cache/packages")
+                SystemInfo.isMac -> Paths.get(SystemProperties.getUserHome()).resolve("Library/Unity/cache/packages")
+                SystemInfo.isLinux -> {
+                    val configRoot = System.getenv("XDG_CONFIG_HOME")?.let { Paths.get(it) }
                         ?: Paths.get(SystemProperties.getUserHome()).resolve(".config")
-                configRoot.resolve("unity3d/cache/packages")
+                    configRoot.resolve("unity3d/cache/packages")
+                }
+                else -> null
             }
-            else -> null
-        }
 
         private fun findPackagesCache(cacheRoot: Path, registry: String): VirtualFile? {
             // Path#resolve can throw if the user entered a weird registry value that isn't a proper path
@@ -50,7 +52,8 @@ class UnityCachesFinder {
                 VfsUtil.findFile(cacheRoot.resolve(registry), true)
             }
             catch(throwable: Throwable) {
-                logger.error("Error looking for registry cache location: $cacheRoot/$registry", throwable)
+                if (throwable !is ControlFlowException)
+                    logger.error("Error looking for registry cache location: $cacheRoot/$registry", throwable)
                 null
             }
         }

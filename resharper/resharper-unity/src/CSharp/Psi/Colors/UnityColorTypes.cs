@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Metadata.Reader.API;
-using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Colors;
 using JetBrains.ReSharper.Psi.Modules;
@@ -13,8 +11,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
     public class UnityColorTypes
     {
         private static readonly Key<UnityColorTypes> ourColorTypesKey = new Key<UnityColorTypes>("UnityColorTypes");
-        private static readonly IClrTypeName UnityColorTypeName = new ClrTypeName("UnityEngine.Color");
-        private static readonly IClrTypeName UnityColor32TypeName = new ClrTypeName("UnityEngine.Color32");
 
         public static UnityColorTypes GetInstance(IPsiModule module)
         {
@@ -32,8 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Colors
         {
             var cache = module.GetPsiServices().Symbols.GetSymbolScope(module, true, true);
 
-            UnityColorType = cache.GetTypeElementByCLRName(UnityColorTypeName);
-            UnityColor32Type = cache.GetTypeElementByCLRName(UnityColor32TypeName);
+            UnityColorType = cache.GetTypeElementByCLRName(KnownTypes.Color);
+            UnityColor32Type = cache.GetTypeElementByCLRName(KnownTypes.Color32);
         }
 
         [CanBeNull] public ITypeElement UnityColorType { get; }

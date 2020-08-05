@@ -26,11 +26,9 @@ namespace JetBrains.Rider.Unity.Editor
   [InitializeOnLoad]
   public static class PluginEntryPoint
   {
-    public static bool ourTestModeEnabled = false;
     private static readonly IPluginSettings ourPluginSettings;
     private static readonly RiderPathProvider ourRiderPathProvider;
     public static readonly List<ModelWithLifetime> UnityModels = new List<ModelWithLifetime>();
-    private static readonly UnityEventCollector ourLogEventCollector;
     private static bool ourInitialized;
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     internal static string SlnFile;
@@ -42,16 +40,14 @@ namespace JetBrains.Rider.Unity.Editor
         return;
 
       PluginSettings.InitLog(); // init log before doing any logging
-      ourLogEventCollector = new UnityEventCollector(); // start collecting Unity messages asap
+      UnityEventLogSender.Start(); // start collecting Unity messages asap
 
       ourPluginSettings = new PluginSettings();
       ourRiderPathProvider = new RiderPathProvider(ourPluginSettings);
 
       if (IsLoadedFromAssets()) // old mechanism, when EditorPlugin was copied to Assets folder
       {
-        ourTestModeEnabled = Environment.GetCommandLineArgs().Contains("-riderTests");
-
-        var riderPath = ourRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
+          var riderPath = ourRiderPathProvider.GetActualRider(EditorPrefsWrapper.ExternalScriptEditor,
           RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
         if (!string.IsNullOrEmpty(riderPath))
         {
@@ -290,7 +286,11 @@ namespace JetBrains.Rider.Unity.Editor
         var riderProtocolController = new RiderProtocolController(dispatcher, lifetime);
         list.Add(new ProtocolInstance(riderProtocolController.Wire.Port, solutionName));
 
+#if !NET35
+        var serializers = new Serializers(lifetime, null, null);
+#else
         var serializers = new Serializers();
+#endif
         var identities = new Identities(IdKind.Server);
 
         MainThreadDispatcher.AssertThread();
@@ -325,7 +325,6 @@ namespace JetBrains.Rider.Unity.Editor
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
           UnityModels.Add(pair);
-          new UnityEventLogSender(ourLogEventCollector);
         });
       }
       catch (Exception ex)

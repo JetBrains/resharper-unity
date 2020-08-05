@@ -235,21 +235,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
             {
                 using (myLogger.StopwatchCookie("DeferredCachesFlushData"))
                 {
-                    // TODO : assert that toProcess == calculatedData.Keys
                     foreach (var sourceFile in toProcess)
                     {
-                        // out toProcess is only snapshot and could be not actual, if file was removed, we could skip merging
-                        if (myDeferredHelperCache.FilesToDrop.Contains(sourceFile))
+                        // toProcess is only snapshot and could be not actual, thus we are checking actual state for file
+                        // File could be already removed, because (toProcess, toDelete, calculatedData) was calculated on background thread
+                        if (!myDeferredHelperCache.FilesToProcess.Contains(sourceFile))
                         {
-                            Assertion.Assert(!myDeferredHelperCache.FilesToProcess.Contains(sourceFile),
-                                "!myDeferredHelperCache.FilesToProcess.Contains(sourceFile)");
                             calculatedData.TryRemove(sourceFile, out _);
                             toProcess.Remove(sourceFile);
                             continue;
                         }
-
-                        Assertion.Assert(myDeferredHelperCache.FilesToProcess.Contains(sourceFile),
-                            "myDeferredHelperCache.FilesToProcess.Contains(sourceFile)");
 
                         var (timeStamp, cacheToData) = calculatedData[sourceFile];
 
@@ -281,18 +276,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Caches
 
                     foreach (var sourceFile in toDelete)
                     {
-                        // toDelete is only snapshot and could be not actual, if file was added again, we could skip dropping for optimization
-                        if (myDeferredHelperCache.FilesToProcess.Contains(sourceFile))
+                        // toDelete is only snapshot and could be not actual, thus we are checking actual state for file
+                        // File could be already added again, we will process it later
+                        if (!myDeferredHelperCache.FilesToDrop.Contains(sourceFile))
                         {
-                            Assertion.Assert(!myDeferredHelperCache.FilesToDrop.Contains(sourceFile),
-                                "!myDeferredHelperCache.FilesToDrop.Contains(sourceFile)");
                             toDelete.Remove(sourceFile);
                             continue;
                         }
-
-                        Assertion.Assert(myDeferredHelperCache.FilesToDrop.Contains(sourceFile),
-                            "myDeferredHelperCache.FilesToDrop.Contains(sourceFile)");
-
 
                         foreach (var cache in myDeferredCaches)
                         {

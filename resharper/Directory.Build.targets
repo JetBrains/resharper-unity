@@ -9,13 +9,4 @@
     <GenerateErrorsGenInputs Remove="$(PsiGenToolsDir)/ErrorsGen.exe" />
     <GenerateErrorsGenInputs Include="$(PsiGenToolsDir)/../ErrorsGen.exe" />
   </ItemGroup>
-
-  <!-- The VSSDK packages used by the ReSharper projects add references to PresentationCore and PresentationFramework
-       which cause harmless compile time warnings when compiled on Windows -->
-  <Target Name="FixWpfReferencesForUnix" BeforeTargets="ResolveAssemblyReferences" Condition=" '$(OS)' == 'Unix' ">
-    <ItemGroup>
-      <Reference Remove="PresentationCore" />
-      <Reference Remove="PresentationFramework" />
-    </ItemGroup>
-  </Target>
 </Project>

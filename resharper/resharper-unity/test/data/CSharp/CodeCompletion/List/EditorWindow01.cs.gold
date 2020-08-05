@@ -1,4 +1,4 @@
-﻿# 1120 ITEMS #
+﻿# 1127 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -12,8 +12,15 @@ private OnLostFocus() { ... }
 private OnProjectChange() { ... }
 private OnSelectionChange() { ... }
 private Update() { ... }
+private ModifierKeysChanged() { ... }
+private OnAddedAsTab() { ... }
+private OnBecameInvisible() { ... }
+private OnBecameVisible() { ... }
+private OnDidOpenScene() { ... }
+private OnTabDetached() { ... }
 private OnValidate() { ... }
 private Reset() { ... }
+private ShowButton(Rect) { ... }
 abstract
 async
 bool
@@ -1121,7 +1128,7 @@ public override GetExtraPaneTypes() { … }    IEnumerable<Type>
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 1120 ITEMS #
+# 1127 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -1135,8 +1142,15 @@ private OnLostFocus() { ... }
 private OnProjectChange() { ... }
 private OnSelectionChange() { ... }
 private Update() { ... }
+private ModifierKeysChanged() { ... }
+private OnAddedAsTab() { ... }
+private OnBecameInvisible() { ... }
+private OnBecameVisible() { ... }
+private OnDidOpenScene() { ... }
+private OnTabDetached() { ... }
 private OnValidate() { ... }
 private Reset() { ... }
+private ShowButton(Rect) { ... }
 abstract
 async
 bool

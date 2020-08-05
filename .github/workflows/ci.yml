@@ -16,7 +16,12 @@ jobs:
     needs: gradleValidation
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+      - name: Setup .NET CLI
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
       - name: Build and Tests
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
@@ -24,7 +29,12 @@ jobs:
     needs: gradleValidation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+      - name: Setup .NET CLI
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace
@@ -32,7 +42,12 @@ jobs:
     needs: gradleValidation
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+      - name: Setup .NET CLI
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
       - name: Build
         shell: bash
         run: ./build.sh --info --stacktrace

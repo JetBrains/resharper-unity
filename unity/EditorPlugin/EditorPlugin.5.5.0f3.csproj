@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <!-- This project only for check compilation for editor 5.5 we don't ship it. -->
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -13,8 +14,9 @@
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.NETFramework.ReferenceAssemblies.net35" Version="1.0.1" PrivateAssets="All" />
     <PackageReference Include="JetBrains.Unity.Libs.Ref.5.5.0f3" Version="2020.6.10" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
-    <Import Project="$(MSBuildProjectDirectory)/../build/generated/PackageReference.JetBrains.RdFramework.net35.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
 </Project>
