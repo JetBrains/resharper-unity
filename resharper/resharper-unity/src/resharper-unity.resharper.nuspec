@@ -40,7 +40,7 @@
     <copyright>Copyright 2020 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[202.0]" />
+      <dependency id="Wave" version="[203.0]" />
     </dependencies>
     <tags>resharper unity unity3d</tags>
   </metadata>

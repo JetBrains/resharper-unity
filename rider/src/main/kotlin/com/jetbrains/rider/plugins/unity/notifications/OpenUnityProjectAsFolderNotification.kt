@@ -57,10 +57,10 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                         content
                     }
                     else if (solutionDescription.projectFilePaths.isEmpty()) {
-                    "This looks like a Unity project. C# and Unity specific features are not available when the project is opened as a folder." +
+                        "This looks like a Unity project. C# and Unity specific features are not available when the project is opened as a folder." +
                             adviceText
-                } else
-                    "This looks like a Unity project. C# and Unity specific features are not available when only a single project is opened." +
+                    } else
+                        "This looks like a Unity project. C# and Unity specific features are not available when only a single project is opened." +
                             adviceText
                 val notification = Notification(notificationGroupId.displayId, title, contentWoSolution, NotificationType.WARNING)
                 notification.setListener { _, hyperlinkEvent ->
@@ -87,7 +87,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                             // and if it's set to false, we get prompted if we want to open in new or same frame. We
                             // don't care - we want to close this project, so new frame or reusing means nothing
                             e.project?.let { ProjectManagerEx.getInstanceEx().closeAndDispose(it) }
-                            val newProject = SolutionManager.openExistingSolution(null, true, solutionFile)
+                            val newProject = SolutionManager.openExistingSolution(null, true, solutionFile) ?: return
 
                             // Opening as folder saves settings to `.idea/.idea.{folder}`. This includes the last selected
                             // solution view pane, which will be file system. A Unity generated solution will use the

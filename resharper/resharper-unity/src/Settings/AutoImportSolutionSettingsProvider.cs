@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.ImportType.BlackList;
+using JetBrains.ReSharper.Feature.Services.ImportType.BlockList;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.Util;
 
