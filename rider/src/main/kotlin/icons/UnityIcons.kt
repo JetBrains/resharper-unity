@@ -159,6 +159,8 @@ class UnityIcons {
             val OpenPlayerLog = FilterPlayModeMessages
 
             @JvmField val AttachToUnity = IconLoader.getIcon("/Icons/actions/attachToUnityProcess.svg")
+
+            @JvmField val RefreshInUnity = IconLoader.getIcon("/Icons/actions/refreshInUnity.svg")
         }
     }
 
