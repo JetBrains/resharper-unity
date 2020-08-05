@@ -211,7 +211,7 @@
               class="com.jetbrains.rider.plugins.unity.actions.RefreshInUnityAction"
               text="Refresh Unity Assets"
               description="Trigger refresh assets in Unity Editor"
-              icon="AllIcons.Actions.Refresh" />
+              icon="UnityIcons.Actions.RefreshInUnity" />
       <action id="TriggerPlayInUnity"
               class="com.jetbrains.rider.plugins.unity.actions.PlayInUnityAction"
               text="Play/Edit"
