@@ -17,7 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     {
         public const string MarkId = "Unity.ExpensiveCode";
 
-        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
+        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
+            UnityReferencesTracker referencesTracker,
             UnitySolutionTracker unitySolutionTracker)
             : base(MarkId, new CallGraphIncomingPropagator(solution, MarkId))
         {
@@ -25,49 +26,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
-        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
+
             if (containingFunction == null)
                 return result;
 
             var declaration = currentNode as IDeclaration;
             var declaredElement = declaration?.DeclaredElement;
+
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
-            
-            var processor = new ExpensiveCodeProcessor();
-            declaration.ProcessDescendants(processor);
-            if (processor.IsExpensiveCodeFound)
-                result.Add(declaredElement);
-            
+
+            using (var processor = new ExpensiveCodeProcessor(declaration))
+            {
+                declaration.ProcessThisAndDescendants(processor);
+
+                if (processor.ProcessingIsFinished)
+                    result.Add(declaredElement);
+            }
+
             return result;
         }
 
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             return new LocalList<IDeclaredElement>();
         }
 
-        private class ExpensiveCodeProcessor : IRecursiveElementProcessor
+        private sealed class ExpensiveCodeProcessor : UnityCallGraphCodeProcessor
         {
-            public bool IsExpensiveCodeFound;
-            private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
-
-            public bool InteriorShouldBeProcessed(ITreeNode element)
+            public ExpensiveCodeProcessor(ITreeNode startTreeNode)
+                : base(startTreeNode)
             {
-                myInterruptChecker.CheckForInterrupt();
-                switch (element)
-                {
-                    case IFunctionDeclaration _:
-                    case ICSharpClosure _:
-                        return false;
-                    default:
-                        return true;
-                }
             }
 
-            public void ProcessBeforeInterior(ITreeNode element)
+            public override void ProcessBeforeInterior(ITreeNode element)
             {
                 switch (element)
                 {
@@ -79,17 +76,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         attributesOwnerDeclaration.DeclaredElement is IAttributesOwner attributesOwner &&
                         PerformanceCriticalCodeStageUtil.HasPerformanceSensitiveAttribute(attributesOwner):
                     {
-                        IsExpensiveCodeFound = true;
+                        ProcessingIsFinished = true;
                         break;
                     }
                 }
             }
-
-            public void ProcessAfterInterior(ITreeNode element)
-            {
-            }
-
-            public bool ProcessingIsFinished => IsExpensiveCodeFound;
         }
     }
 }
