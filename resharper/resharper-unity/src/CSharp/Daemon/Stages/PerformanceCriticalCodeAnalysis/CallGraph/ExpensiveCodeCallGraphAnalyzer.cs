@@ -40,12 +40,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
 
-            var processor = new ExpensiveCodeProcessor(declaration is ICSharpClosure);
+            using (var processor = new ExpensiveCodeProcessor(declaration))
+            {
+                declaration.ProcessThisAndDescendants(processor);
 
-            declaration.ProcessThisAndDescendants(processor);
-
-            if (processor.IsExpensiveCodeFound)
-                result.Add(declaredElement);
+                if (processor.ProcessingIsFinished)
+                    result.Add(declaredElement);
+            }
 
             return result;
         }
@@ -56,37 +57,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return new LocalList<IDeclaredElement>();
         }
 
-        private class ExpensiveCodeProcessor : IRecursiveElementProcessor
+        private sealed class ExpensiveCodeProcessor : UnityCallGraphCodeProcessor
         {
-            private bool myShouldProcessFirst;
-            public bool IsExpensiveCodeFound;
-            private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
-
-            public ExpensiveCodeProcessor(bool shouldProcessFirst)
+            public ExpensiveCodeProcessor(ITreeNode startTreeNode)
+                : base(startTreeNode)
             {
-                myShouldProcessFirst = shouldProcessFirst;
             }
 
-            public bool InteriorShouldBeProcessed(ITreeNode element)
-            {
-                myInterruptChecker.CheckForInterrupt();
-
-                if (myShouldProcessFirst)
-                {
-                    myShouldProcessFirst = false;
-                    return true;
-                }
-
-                switch (element)
-                {
-                    case ICSharpClosure _:
-                        return false;
-                    default:
-                        return true;
-                }
-            }
-
-            public void ProcessBeforeInterior(ITreeNode element)
+            public override void ProcessBeforeInterior(ITreeNode element)
             {
                 switch (element)
                 {
@@ -98,17 +76,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         attributesOwnerDeclaration.DeclaredElement is IAttributesOwner attributesOwner &&
                         PerformanceCriticalCodeStageUtil.HasPerformanceSensitiveAttribute(attributesOwner):
                     {
-                        IsExpensiveCodeFound = true;
+                        ProcessingIsFinished = true;
                         break;
                     }
                 }
             }
-
-            public void ProcessAfterInterior(ITreeNode element)
-            {
-            }
-
-            public bool ProcessingIsFinished => IsExpensiveCodeFound;
         }
     }
 }

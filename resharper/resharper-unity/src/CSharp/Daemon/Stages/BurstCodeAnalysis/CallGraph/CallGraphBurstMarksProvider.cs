@@ -8,6 +8,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -25,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
 
-        public CallGraphBurstMarksProvider(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
+        public CallGraphBurstMarksProvider(Lifetime lifetime, ISolution solution,
+            UnityReferencesTracker referencesTracker,
             UnitySolutionTracker tracker,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
             : base(nameof(CallGraphBurstMarksProvider),
@@ -51,17 +53,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         .Where(declaredType => declaredType.IsInterfaceType())
                         .Select(declaredType => declaredType.GetTypeElement())
                         .WhereNotNull()
-                        .Where(typeElement => typeElement.HasAttributeInstance(KnownTypes.JobProducerAttrubyte, AttributesSource.Self))
+                        .Where(typeElement =>
+                            typeElement.HasAttributeInstance(KnownTypes.JobProducerAttrubyte, AttributesSource.Self))
                         .ToList();
                     var structMethods = @struct.Methods.ToList();
-                    
+
                     foreach (var @interface in interfaces)
                     {
                         var interfaceMethods = @interface.Methods.ToList();
                         var overridenMethods = structMethods
                             .Where(m => interfaceMethods.Any(m.OverridesOrImplements))
                             .ToList();
-                        
+
                         foreach (var overridenMethod in overridenMethods)
                             result.Add(overridenMethod);
                     }
@@ -118,46 +121,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         private bool CheckBurstBannedAnalyzers(IFunctionDeclaration node)
         {
-            var processor = new BurstBannedProcessor(myBurstBannedAnalyzers);
+            var processor = new BurstBannedProcessor(myBurstBannedAnalyzers, node);
             node.ProcessDescendants(processor);
-            return processor.IsBurstProhibited;
+            return processor.ProcessingIsFinished;
         }
-        
-        private class BurstBannedProcessor : IRecursiveElementProcessor
+
+        private sealed class BurstBannedProcessor : UnityCallGraphCodeProcessor
         {
-            public bool IsBurstProhibited;
-            private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
             private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
-            
-            public BurstBannedProcessor(List<IBurstBannedAnalyzer> burstBannedAnalyzers)
+
+            public BurstBannedProcessor(List<IBurstBannedAnalyzer> burstBannedAnalyzers, ITreeNode startNode)
+                : base(startNode)
             {
                 myBurstBannedAnalyzers = burstBannedAnalyzers;
             }
 
-            public bool InteriorShouldBeProcessed(ITreeNode element)
+            public override bool InteriorShouldBeProcessed(ITreeNode element)
             {
-                myInterruptChecker.CheckForInterrupt();
+                SeldomInterruptChecker.CheckForInterrupt();
+
+                if (element == StartTreeNode)
+                    return true;
+
                 return !IsFunctionNode(element) && !IsBurstContextBannedNode(element);
             }
 
-            public void ProcessBeforeInterior(ITreeNode element)
+            public override void ProcessBeforeInterior(ITreeNode element)
             {
                 foreach (var contextAnalyzer in myBurstBannedAnalyzers)
                 {
-                    if (contextAnalyzer.Check(element))
-                    {
-                        IsBurstProhibited = true;
-                        return;
-                    }
+                    if (!contextAnalyzer.Check(element))
+                        continue;
+
+                    ProcessingIsFinished = true;
+
+                    return;
                 }
-
             }
-
-            public void ProcessAfterInterior(ITreeNode element)
-            {
-            }
-
-            public bool ProcessingIsFinished => IsBurstProhibited;
         }
     }
 }

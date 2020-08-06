@@ -115,57 +115,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
 
-            var processor = new PerformanceCriticalCodeProcessor(declaration is ICSharpClosure);
+            using (var processor = new PerformanceCriticalCodeProcessor(declaration))
+            {
+                declaration.ProcessThisAndDescendants(processor);
 
-            declaration.ProcessThisAndDescendants(processor);
-
-            if (processor.IsPerformanceCriticalCodeFound)
-                result.Add(declaredElement);
+                if (processor.ProcessingIsFinished)
+                    result.Add(declaredElement);
+            }
 
             return result;
         }
 
-        private class PerformanceCriticalCodeProcessor : IRecursiveElementProcessor
+        private sealed class PerformanceCriticalCodeProcessor : UnityCallGraphCodeProcessor
         {
-            private bool myShouldProcessFirst;
-            public bool IsPerformanceCriticalCodeFound;
-            private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
-
-            public PerformanceCriticalCodeProcessor(bool shouldProcessFirst)
-            {
-                myShouldProcessFirst = shouldProcessFirst;
-            }
-
-            public bool InteriorShouldBeProcessed(ITreeNode element)
-            {
-                myInterruptChecker.CheckForInterrupt();
-
-                if (myShouldProcessFirst)
-                {
-                    myShouldProcessFirst = false;
-                    return true;
-                }
-                
-                switch (element)
-                {
-                    case ICSharpClosure _:
-                        return false;
-                    default:
-                        return true;
-                }
-            }
-
-            public void ProcessBeforeInterior(ITreeNode element)
-            {
-                IsPerformanceCriticalCodeFound =
-                    PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(element);
-            }
-
-            public void ProcessAfterInterior(ITreeNode element)
+            public PerformanceCriticalCodeProcessor(ITreeNode startTreeNode)
+                : base(startTreeNode)
             {
             }
 
-            public bool ProcessingIsFinished => IsPerformanceCriticalCodeFound;
+            public override void ProcessBeforeInterior(ITreeNode element)
+            {
+                ProcessingIsFinished = PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(element);
+            }
         }
     }
 }
