@@ -9,8 +9,8 @@ namespace DefaultNamespace
 
     private static void AnotherMethodName()
     {
-      var kek = new CommonTest();
-      kek.AnotherMethodNameA();
+      var test = new CommonTest();
+      test.AnotherMethodNameA();
     }
     private void AnotherMethodNameA()
     {
