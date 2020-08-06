@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Application.Threading;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
@@ -23,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             if (element == StartTreeNode)
                 return true;
 
-            return !BurstCodeAnalysisUtil.IsFunctionNode(element);
+            return !UnityCallGraphUtil.IsFunctionNode(element);
         }
 
         public abstract void ProcessBeforeInterior(ITreeNode element);
