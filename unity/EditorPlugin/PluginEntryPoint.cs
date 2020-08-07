@@ -36,7 +36,7 @@ namespace JetBrains.Rider.Unity.Editor
     // This an entry point
     static PluginEntryPoint()
     {
-      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+      if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
 
       PluginSettings.InitLog(); // init log before doing any logging
@@ -107,7 +107,7 @@ namespace JetBrains.Rider.Unity.Editor
         var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
         bool isEnabled = !string.IsNullOrEmpty(defaultApp) &&
                          Path.GetFileName(defaultApp).ToLower().Contains("rider") &&
-                         !UnityEditorInternal.InternalEditorUtility.inBatchMode;
+                         !UnityUtils.IsInBatchModeAndNotInRiderTests;
 
         return isEnabled;
     }
