@@ -7,13 +7,13 @@ namespace DefaultNamespace
   {
     private Action action = AnotherMethodName;
 
-    |private static void AnotherMethodName()
+    private static void |AnotherMethodName|(0)()
     {
       var test = new CommonTest();
       test.|AnotherMethodNameA|(1)();
-    }|(0)
+    }
 
-    |private void AnotherMethodNameA()
+    private void |AnotherMethodNameA|(2)()
     {
       |Test|(3)();
 
@@ -26,12 +26,12 @@ namespace DefaultNamespace
       {
         |F|(5)();
       }
-    }|(2)
+    }
 
-    |private void Update()
+    private void |Update|(6)()
     {
       |action|(7)();
-    }|(6)
+    }
   }
 }
 ---------------------------------------------------------
