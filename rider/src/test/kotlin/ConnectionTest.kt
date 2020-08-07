@@ -1,6 +1,3 @@
-import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
-import com.intellij.util.io.exists
-import com.intellij.util.io.readText
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isAlive
@@ -12,127 +9,84 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.changeFileSystem2
 import com.jetbrains.rider.test.scriptingApi.checkSwea
+import org.testng.annotations.Test
 import java.io.File
-import java.nio.file.Paths
-import java.time.Duration
-import kotlin.test.assertNotNull
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
 class ConnectionTest : UnityIntegrationTestBase() {
-
-
-    override fun preprocessTempDirectory(tempDir: File) {
-        VfsRootAccess.allowRootAccess(getUnityPath())
-    }
-
-    // @Test
+    @Test
     fun installAndCheckConnectionAfterUnityStart() {
-
-        val process = startUnity(false)
-        try {
-            assertNotNull(process)
-
+        withUnityProcess(false) {
             waitFirstScriptCompilation()
             installPlugin()
             waitConnection()
-            killUnity(process)
 
-            val projectVirtualFile = File(project.basePath).combine("Assembly-CSharp.csproj")
-            changeFileSystem2(project) { arrayOf(projectVirtualFile) }
-
+            changeFileSystem2(project) { arrayOf(File(project.basePath, "Assembly-CSharp.csproj")) }
             checkSwea(project)
-        } finally {
-            if (process?.isAlive == true)
-                process.destroy()
         }
     }
 
-    // @Test
+    @Test
     fun installAndCheckConnectionBeforeUnityStart() {
         installPlugin()
-        val process = startUnity(false)
-        try {
-            assertNotNull(process)
-
+        withUnityProcess(false) {
             waitFirstScriptCompilation()
             waitConnection()
-            killUnity(process)
 
-            val projectVirtualFile = File(project.basePath).combine("Assembly-CSharp.csproj")
-            changeFileSystem2(project) { arrayOf(projectVirtualFile) }
-
+            changeFileSystem2(project) { arrayOf(File(project.basePath, "Assembly-CSharp.csproj")) }
             checkSwea(project)
-        } finally {
-            if (process?.isAlive == true)
-                process.destroy()
         }
     }
 
-    // @Test
+    @Test
     fun checkExternalEditor() {
         installPlugin()
-        val process = startUnity(true)
-        try {
-            assertNotNull(process)
-
+        withUnityProcess(resetEditorPrefs = true, useRiderTestPath = true) {
             waitFirstScriptCompilation()
             waitConnection()
 
-            val externalEditorPath = Paths.get(project.basePath).resolve("Assets/ExternalEditor.txt")
+            val externalEditorPath = File(project.basePath, "Assets/ExternalEditor.txt")
 
             executeScript("DumpExternalEditor.cs")
-            waitAndPump(project.lifetime, { externalEditorPath.exists() }, Duration.ofSeconds(100), { "ExternalEditor.txt is not created" })
+            waitAndPump(project.lifetime, { externalEditorPath.exists() && externalEditorPath.readText().isNotEmpty() },
+                defaultTimeout) { "ExternalEditor.txt is not created" }
 
             executeWithGold(testGoldFile) {
                 it.print(externalEditorPath.readText())
             }
 
-            killUnity(process)
             checkSwea(project)
-        } finally {
-            if (process?.isAlive == true)
-                process.destroy()
         }
     }
 
-    // @Test
+    @Test
     fun checkLog() {
         installPlugin()
-        val process = startUnity(true)
-        try {
-            assertNotNull(process)
-
+        withUnityProcess(true) {
             waitFirstScriptCompilation()
             waitConnection()
 
-            executeScript("WriteToLog.cs")
-
             executeWithGold(testGoldFile) {
-                val model = project.solution.rdUnityModel
                 val definition = LifetimeDefinition()
-                model.onUnityLogEvent.adviseNotNull(definition.lifetime) {entry ->
+                project.solution.rdUnityModel.onUnityLogEvent.adviseNotNull(definition.lifetime) { entry ->
                     val type = RdLogEventType.values()[entry.type]
                     val mode = RdLogEventMode.values()[entry.mode]
                     if (type == RdLogEventType.Message) {
-                        it.print("$type, $mode, ${entry.message}, ${entry.stackTrace}")
+                        it.print("$type, $mode, ${entry.message}\n\n${entry.stackTrace.replace(Regex(" \\(at .+\\)"), "")}")
 
                         if (entry.message == "#Test#")
                             definition.terminate()
                     }
                 }
 
-                waitAndPump(project.lifetime, { !definition.isAlive }, Duration.ofSeconds(100), { "Test message is not received" })
+                executeScript("WriteToLog.cs")
+                waitAndPump(project.lifetime, { !definition.isAlive }, defaultTimeout) { "Test message is not received" }
 
-                killUnity(process)
                 checkSwea(project)
             }
-        } finally {
-            if (process?.isAlive == true)
-                process.destroy()
         }
     }
 }

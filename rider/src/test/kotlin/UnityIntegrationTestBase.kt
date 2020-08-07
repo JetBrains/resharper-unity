@@ -1,98 +1,135 @@
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.io.exists
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
-import java.nio.file.Path
+import com.jetbrains.rider.test.framework.frameworkLogger
+import java.io.File
 import java.nio.file.Paths
 import java.time.Duration
 import kotlin.test.assertNotNull
 
 open class UnityIntegrationTestBase : BaseTestWithSolution() {
+
+    companion object {
+        val defaultTimeout: Duration = Duration.ofSeconds(120)
+    }
+
     override fun getSolutionDirectoryName(): String = "SimpleUnityProjectWithoutPlugin"
     override val waitForCaches = true
-    protected fun getUnityPath() : String = "C:/Program Files/Unity"
 
-    var unityPackedUrl = when{
+    override fun preprocessTempDirectory(tempDir: File) {
+        VfsRootAccess.allowRootAccess(unityPath)
+    }
+
+    private val unityPath = when {
+        SystemInfo.isWindows -> "C:/Program Files/Unity"
+        SystemInfo.isMac -> "/Applications/Unity"
+        else -> throw Exception("Not implemented")
+    }
+
+    private val unityPackedUrl = when {
         SystemInfo.isWindows -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped_v4.zip"
         SystemInfo.isMac -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1.tar.gz"
         else -> throw Exception("Not implemented")
     }
 
-    fun startUnity(resetEditorPrefs : Boolean) : Process? {
-        val logPath = Paths.get(project.basePath).resolve("Editor.log")
+    private fun startUnity(resetEditorPrefs: Boolean, useRiderTestPath: Boolean): Process {
+        val logPath = testMethod.logDirectory.resolve("UnityEditor.log")
 
-        val appPath: Path
         val isRunningInTeamCity = TeamCityHelper.isUnderTeamCity
-        if (isRunningInTeamCity) // on teamcity download Unity
-        {
-            val folder = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
-            appPath = when {
-                SystemInfo.isWindows -> folder.combine("Unity.exe").toPath()
-                SystemInfo.isMac -> folder.toPath()
-                else -> throw Exception("Not implemented")
-            }
-        }
-        else
-        {
-            val localAppPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
-            assertNotNull(localAppPath, "Unity installation was not found.")
-            appPath = localAppPath
+
+        if (isRunningInTeamCity) { // on teamcity download Unity
+            frameworkLogger.info("Downloading unity from $unityPackedUrl")
+            downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
+            frameworkLogger.info("Unity was downloaded")
         }
 
-        val args = mutableListOf("-logfile", logPath.toString(), "-batchMode", "-silent-crashes",
-            "-riderTests")
+        val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "-batchMode")
+        args.add("-executeMethod")
         if (resetEditorPrefs) {
-            args.add("-executeMethod")
             args.add("Editor.IntegrationTestHelper.ResetAndStart")
         } else {
-            args.add("-executeMethod")
             args.add("Editor.IntegrationTestHelper.Start")
         }
 
-        if (isRunningInTeamCity)
-        {
+        if (useRiderTestPath) {
+            args.add("-riderTestPath")
+        }
+
+        if (isRunningInTeamCity) {
             val login = System.getenv("login")
             val password = System.getenv("password")
             assertNotNull(login, "System.getenv(\"login\") is null.")
             assertNotNull(password, "System.getenv(\"password\") is null.")
             args.addAll(arrayOf("-username", login, "-password", password))
         }
-        return StartUnityAction.startUnity(project, *args.toTypedArray())
+
+        frameworkLogger.info("Starting unity process")
+        val process = StartUnityAction.startUnity(project, *args.toTypedArray())
+        assertNotNull(process, "Unity process wasn't started")
+        frameworkLogger.info("Unity process started: $process")
+
+        return process
     }
 
-    fun waitFirstScriptCompilation() {
-        val unityStartFile = Paths.get(project.basePath).resolve(".start")
-        waitAndPump(project.lifetime, { unityStartFile.exists() }, Duration.ofSeconds(120), { "Unity was not started." })
+    private fun killUnity(process: Process) {
+        frameworkLogger.info("Trying to kill unity process")
+        if (!process.isAlive) {
+            frameworkLogger.info("Unity process isn't alive")
+            return
+        }
+        process.destroy()
+        waitAndPump(project.lifetime, { !process.isAlive }, defaultTimeout) { "Process should have existed." }
+        frameworkLogger.info("Unity killed")
+    }
+
+    fun withUnityProcess(resetEditorPrefs: Boolean, useRiderTestPath: Boolean = false, block: () -> Unit) {
+        val process = startUnity(resetEditorPrefs, useRiderTestPath)
+        try {
+            block()
+        } finally {
+            killUnity(process)
+        }
     }
 
     fun installPlugin() {
+        frameworkLogger.info("Trying to install editor plugin")
         project.solution.rdUnityModel.installEditorPlugin.fire(Unit)
 
-        val editorPluginPath = Paths.get(project.basePath).resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
-        waitAndPump(project.lifetime, { editorPluginPath.exists() }, Duration.ofSeconds(10), { "EditorPlugin was not installed." })
+        val editorPluginPath = Paths.get(project.basePath!!)
+            .resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
+        waitAndPump(project.lifetime, { editorPluginPath.exists() }, Duration.ofSeconds(10)) { "EditorPlugin was not installed." }
+        frameworkLogger.info("Editor plugin was installed")
+    }
+
+    fun executeScript(file: String) {
+        val script = solutionSourceRootDirectory.combine("scripts", file)
+        script.copyTo(activeSolutionDirectory.combine("Assets", file))
+
+        frameworkLogger.info("Executing script $file")
+        project.solution.rdUnityModel.refresh.fire(true)
+    }
+
+    fun waitFirstScriptCompilation() {
+        frameworkLogger.info("Waiting for .start file exist")
+        val unityStartFile = Paths.get(project.basePath!!).resolve(".start")
+        waitAndPump(project.lifetime, { unityStartFile.exists() }, defaultTimeout) { "Unity was not started." }
+        frameworkLogger.info("Unity started (.start file exist)")
     }
 
     fun waitConnection() {
-        waitAndPump(project.lifetime, { project.solution.rdUnityModel.sessionInitialized.hasTrueValue }, Duration.ofSeconds(100), { "unityHost is not initialized." })
-    }
-
-    fun killUnity(process : Process) {
-        process.destroy()
-        waitAndPump(project.lifetime, { !process.isAlive }, Duration.ofSeconds(100), { "Process should have existed." })
-    }
-
-    fun executeScript(file : String) {
-        val script = solutionSourceRootDirectory.combine("scripts", file)
-        script.copyTo(activeSolutionDirectory.combine("Assets", file))
-        project.solution.rdUnityModel.refresh.fire(true)
+        frameworkLogger.info("Waiting for connection between Unity editor and Rider")
+        waitAndPump(project.lifetime, { project.solution.rdUnityModel.sessionInitialized.hasTrueValue },
+            defaultTimeout) { "unityHost is not initialized." }
+        frameworkLogger.info("unityHost is initialized.")
     }
 }
