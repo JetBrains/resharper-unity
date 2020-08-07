@@ -39,13 +39,13 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("requiresRiderPackage", bool)
     }
 
-    val MethodData = structdef{
+    val RunMethodData = structdef{
         field("assemblyName", string)
         field("typeName", string)
         field("methodName", string)
     }
 
-    val MethodRunResult =  classdef{
+    val RunMethodResult =  classdef{
         field("success", bool)
         field("message", string)
         field("stackTrace", string)
@@ -62,7 +62,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         property("unityApplicationData", UnityApplicationData)
 
-        call("runMethodInUnity", MethodData, MethodRunResult)
+        call("runMethodInUnity", RunMethodData, RunMethodResult)
 
         property("editorLogPath", string)
         property("playerLogPath", string)

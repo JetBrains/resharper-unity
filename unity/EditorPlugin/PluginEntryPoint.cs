@@ -338,7 +338,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
         model.RunMethodInUnity.Set((lifetime, data) => 
         {
-            var task = new RdTask<MethodRunResult>();
+            var task = new RdTask<RunMethodResult>();
             MainThreadDispatcher.Instance.Queue(() =>
             {
                 if (!lifetime.IsAlive)
@@ -367,12 +367,12 @@ namespace JetBrains.Rider.Unity.Editor
 
                     method.Invoke(null, null);
                     
-                    task.Set(new MethodRunResult(true, string.Empty, string.Empty));
+                    task.Set(new RunMethodResult(true, string.Empty, string.Empty));
                 }
                 catch (Exception e)
                 {
                     ourLogger.Log(LoggingLevel.WARN, $"Execute {data.MethodName} failed.", e);
-                    task.Set(new MethodRunResult(false, e.Message, e.StackTrace));
+                    task.Set(new RunMethodResult(false, e.Message, e.StackTrace));
                 }
             });
             return task;
