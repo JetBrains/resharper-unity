@@ -29,7 +29,7 @@ using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
 using Newtonsoft.Json;
-using MethodData = JetBrains.Platform.Unity.EditorPluginModel.MethodData;
+using RunMethodData = JetBrains.Platform.Unity.EditorPluginModel.RunMethodData;
 using UnityApplicationData = JetBrains.Rider.Model.UnityApplicationData;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -244,12 +244,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         rd.RunMethodInUnity.Set((l, data) =>
                         {
-                            var editorRdTask = editor.RunMethodInUnity.Start(l, new MethodData(data.AssemblyName, data.TypeName, data.MethodName)).ToRdTask(l);
-                            var frontendRes = new RdTask<JetBrains.Rider.Model.MethodRunResult>();
+                            var editorRdTask = editor.RunMethodInUnity.Start(l, new RunMethodData(data.AssemblyName, data.TypeName, data.MethodName)).ToRdTask(l);
+                            var frontendRes = new RdTask<JetBrains.Rider.Model.RunMethodResult>();
                             
                             editorRdTask.Result.Advise(l, r =>
                             {
-                                frontendRes.Set(new JetBrains.Rider.Model.MethodRunResult(r.Result.Success, r.Result.Message, r.Result.StackTrace));
+                                frontendRes.Set(new JetBrains.Rider.Model.RunMethodResult(r.Result.Success, r.Result.Message, r.Result.StackTrace));
                             });
                             return frontendRes;
                         });
