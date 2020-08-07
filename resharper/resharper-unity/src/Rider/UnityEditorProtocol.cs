@@ -29,6 +29,7 @@ using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
 using Newtonsoft.Json;
+using MethodData = JetBrains.Platform.Unity.EditorPluginModel.MethodData;
 using UnityApplicationData = JetBrains.Rider.Model.UnityApplicationData;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -238,6 +239,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     });
                     
                     editor.BuildLocation.Advise(lf, b => myHost.PerformModelAction(rd => rd.BuildLocation.SetValue(b)));
+                    
+                    myHost.PerformModelAction(rd =>
+                    {
+                        rd.RunMethodInUnity.Set((l, data) =>
+                        {
+                            var editorRdTask = editor.RunMethodInUnity.Start(l, new MethodData(data.AssemblyName, data.TypeName, data.MethodName)).ToRdTask(l);
+                            var frontendRes = new RdTask<JetBrains.Rider.Model.MethodRunResult>();
+                            
+                            editorRdTask.Result.Advise(l, r =>
+                            {
+                                frontendRes.Set(new JetBrains.Rider.Model.MethodRunResult(r.Result.Success, r.Result.Message, r.Result.StackTrace));
+                            });
+                            return frontendRes;
+                        });
+                    });
 
                     TrackActivity(editor, lf);
 
