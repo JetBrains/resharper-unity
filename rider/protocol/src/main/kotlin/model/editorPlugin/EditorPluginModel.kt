@@ -132,9 +132,9 @@ object EditorPluginModel: Root() {
     }
 
     val MethodRunResult =  classdef{
-        sink("result", bool)
-        sink("message", string)
-        sink("stackTrace", string)
+        field("success", bool)
+        field("message", string)
+        field("stackTrace", string)
     }
 
     init {

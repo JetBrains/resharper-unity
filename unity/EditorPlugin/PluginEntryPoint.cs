@@ -346,8 +346,7 @@ namespace JetBrains.Rider.Unity.Editor
                     task.SetCancelled();
                     return;
                 }
-                
-                var res = new MethodRunResult();
+
                 try
                 {
                     ourLogger.Verbose($"Attempt to execute {data.MethodName}");
@@ -368,16 +367,12 @@ namespace JetBrains.Rider.Unity.Editor
 
                     method.Invoke(null, null);
                     
-                    res.Result(true);
-                    task.Set(res);
+                    task.Set(new MethodRunResult(true, string.Empty, string.Empty));
                 }
                 catch (Exception e)
                 {
                     ourLogger.Log(LoggingLevel.WARN, $"Execute {data.MethodName} failed.", e);
-                    res.Result(false);
-                    res.Message( e.Message);
-                    res.StackTrace(e.StackTrace);
-                    task.Set(res);
+                    task.Set(new MethodRunResult(false, e.Message, e.StackTrace));
                 }
             });
             return task;
