@@ -320,6 +320,7 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseGenerateUISchema(model);
           AdviseExitUnity(model);
           GetBuildLocation(model);
+          AdviseRunMethod(model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -331,6 +332,56 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
+    }
+
+    private static void AdviseRunMethod(EditorPluginModel model)
+    {
+        model.RunMethodInUnity.Set((lifetime, data) => 
+        {
+            var task = new RdTask<MethodRunResult>();
+            MainThreadDispatcher.Instance.Queue(() =>
+            {
+                if (!lifetime.IsAlive)
+                {
+                    task.SetCancelled();
+                    return;
+                }
+                
+                var res = new MethodRunResult();
+                try
+                {
+                    ourLogger.Verbose($"Attempt to execute {data.MethodName}");
+                    var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    var assembly = assemblies
+                        .FirstOrDefault(a => a.GetName().Name.Equals(data.AssemblyName));
+                    if (assembly == null)
+                        throw new Exception($"Could not find {data.AssemblyName} assembly in current AppDomain");
+
+                    var type = assembly.GetType(data.TypeName);
+                    if (type == null) 
+                        throw new Exception($"Could not find {data.TypeName} in assembly {data.AssemblyName}.");
+
+                    var method = type.GetMethod(data.MethodName);
+                    
+                    if (method == null)
+                        throw new Exception($"Could not find {data.MethodName} in type {data.TypeName}");
+
+                    method.Invoke(null, null);
+                    
+                    res.Result(true);
+                    task.Set(res);
+                }
+                catch (Exception e)
+                {
+                    ourLogger.Log(LoggingLevel.WARN, $"Execute {data.MethodName} failed.", e);
+                    res.Result(false);
+                    res.Message( e.Message);
+                    res.StackTrace(e.StackTrace);
+                    task.Set(res);
+                }
+            });
+            return task;
+        });
     }
 
     private static void GetBuildLocation(EditorPluginModel model)
