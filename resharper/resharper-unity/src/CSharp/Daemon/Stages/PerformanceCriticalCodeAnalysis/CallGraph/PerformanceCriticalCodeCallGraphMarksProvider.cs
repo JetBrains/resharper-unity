@@ -28,7 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
         }
 
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)
+        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
+            IDeclaredElement containingFunction)
         {
             return new LocalList<IDeclaredElement>();
         }
@@ -101,52 +102,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             var result = new LocalList<IDeclaredElement>();
             var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
+
             if (coroutineOrInvoke != null)
                 result.Add(coroutineOrInvoke);
 
             if (containingFunction == null)
                 return result;
+
             var declaration = currentNode as IDeclaration;
             var declaredElement = declaration?.DeclaredElement;
+
             if (!ReferenceEquals(containingFunction, declaredElement))
                 return result;
-            var processor = new PerformanceCriticalCodeProcessor();
-            declaration.ProcessThisAndDescendants(processor);
-            if (processor.IsPerformanceCriticalCodeFound)
-                result.Add(declaredElement);
+
+            using (var processor = new PerformanceCriticalCodeProcessor(declaration))
+            {
+                declaration.ProcessThisAndDescendants(processor);
+
+                if (processor.ProcessingIsFinished)
+                    result.Add(declaredElement);
+            }
 
             return result;
         }
 
-        private class PerformanceCriticalCodeProcessor : IRecursiveElementProcessor
+        private sealed class PerformanceCriticalCodeProcessor : UnityCallGraphCodeProcessor
         {
-            public bool IsPerformanceCriticalCodeFound;
-            private readonly SeldomInterruptChecker myInterruptChecker = new SeldomInterruptChecker();
-
-            public bool InteriorShouldBeProcessed(ITreeNode element)
-            {
-                myInterruptChecker.CheckForInterrupt();
-                switch (element)
-                {
-                    case IFunctionDeclaration _:
-                    case ICSharpClosure _:
-                        return false;
-                    default:
-                        return true;
-                }
-            }
-
-            public void ProcessBeforeInterior(ITreeNode element)
-            {
-                IsPerformanceCriticalCodeFound =
-                    PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(element);
-            }
-
-            public void ProcessAfterInterior(ITreeNode element)
+            public PerformanceCriticalCodeProcessor(ITreeNode startTreeNode)
+                : base(startTreeNode)
             {
             }
 
-            public bool ProcessingIsFinished => IsPerformanceCriticalCodeFound;
+            public override void ProcessBeforeInterior(ITreeNode element)
+            {
+                ProcessingIsFinished = PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(element);
+            }
         }
     }
 }

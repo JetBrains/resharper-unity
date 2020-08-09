@@ -165,18 +165,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return false;
         }
 
-        public static bool IsFunctionNode(ITreeNode node)
-        {
-            switch (node)
-            {
-                case IFunctionDeclaration _:
-                case ICSharpClosure _:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public static bool IsBurstContextBannedNode(ITreeNode node)
         {
             switch (node)
