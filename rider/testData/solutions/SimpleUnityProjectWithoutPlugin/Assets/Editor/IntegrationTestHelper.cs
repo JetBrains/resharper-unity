@@ -40,6 +40,25 @@ namespace Editor
             Start();
         }
 
+        private static bool isReported = false;
+        public static void WriteToLog()
+        {
+            EditorApplication.update += () =>
+            {
+                if (!isReported)
+                {
+                    Debug.Log("#Test#");
+                    isReported = true;
+                }
+            };
+        }
+
+        public static void DumpExternalEditor()
+        {
+            var path = Path.Combine(Application.dataPath, "ExternalEditor.txt");
+            File.WriteAllText(path, EditorPrefs.GetString("kScriptsDefaultApp", null) ?? "Unknown");
+        }
+
         private static void Update()
         {
             var localChange = myChanged;

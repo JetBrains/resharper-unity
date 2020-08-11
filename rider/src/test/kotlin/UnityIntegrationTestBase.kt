@@ -1,34 +1,47 @@
+import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.io.exists
 import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.reactive.hasTrueValue
+import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.model.RdUnityModel
+import com.jetbrains.rider.model.RunMethodData
+import com.jetbrains.rider.model.RunMethodResult
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.protocol.protocol
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
 import com.jetbrains.rider.test.framework.frameworkLogger
+import org.testng.annotations.AfterClass
 import java.io.File
 import java.nio.file.Paths
 import java.time.Duration
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
-open class UnityIntegrationTestBase : BaseTestWithSolution() {
+abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
 
     companion object {
         val defaultTimeout: Duration = Duration.ofSeconds(120)
     }
 
-    override fun getSolutionDirectoryName(): String = "SimpleUnityProjectWithoutPlugin"
-    override val waitForCaches = true
+    private val lifetimeDefinition = LifetimeDefinition()
+    val lifetime = lifetimeDefinition.lifetime
 
+    override val waitForCaches = true
     override fun preprocessTempDirectory(tempDir: File) {
-        VfsRootAccess.allowRootAccess(unityPath)
+        VfsRootAccess.allowRootAccess(lifetimeDefinition.createNestedDisposable(), unityPath)
     }
+
+    protected val rdUnityModel: RdUnityModel
+        get() = project.solution.rdUnityModel
 
     private val unityPath = when {
         SystemInfo.isWindows -> "C:/Program Files/Unity"
@@ -103,7 +116,7 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
 
     fun installPlugin() {
         frameworkLogger.info("Trying to install editor plugin")
-        project.solution.rdUnityModel.installEditorPlugin.fire(Unit)
+        rdUnityModel.installEditorPlugin.fire(Unit)
 
         val editorPluginPath = Paths.get(project.basePath!!)
             .resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
@@ -115,8 +128,21 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
         val script = solutionSourceRootDirectory.combine("scripts", file)
         script.copyTo(activeSolutionDirectory.combine("Assets", file))
 
-        frameworkLogger.info("Executing script $file")
+        frameworkLogger.info("Executing script '$file'")
+        refreshUnityModel()
+    }
+
+    fun refreshUnityModel() {
+        frameworkLogger.info("Refreshing unity model")
         project.solution.rdUnityModel.refresh.fire(true)
+    }
+
+    fun executeMethod(runMethodData: RunMethodData): RunMethodResult {
+        frameworkLogger.info("Executing method ${runMethodData.methodName} from ${runMethodData.typeName} (assembly: ${runMethodData.assemblyName})")
+        val runMethodResult = rdUnityModel.runMethodInUnity.callSynchronously(runMethodData, project.protocol)!!
+        assertTrue(runMethodResult.success, "runMethodResult.success is false \n${runMethodResult.message} \n${runMethodResult.stackTrace}")
+        frameworkLogger.info("Method was executed")
+        return runMethodResult
     }
 
     fun waitFirstScriptCompilation() {
@@ -128,8 +154,13 @@ open class UnityIntegrationTestBase : BaseTestWithSolution() {
 
     fun waitConnection() {
         frameworkLogger.info("Waiting for connection between Unity editor and Rider")
-        waitAndPump(project.lifetime, { project.solution.rdUnityModel.sessionInitialized.hasTrueValue },
+        waitAndPump(project.lifetime, { rdUnityModel.sessionInitialized.hasTrueValue },
             defaultTimeout) { "unityHost is not initialized." }
         frameworkLogger.info("unityHost is initialized.")
+    }
+
+    @AfterClass
+    fun terminateLifetime() {
+        lifetimeDefinition.terminate()
     }
 }
