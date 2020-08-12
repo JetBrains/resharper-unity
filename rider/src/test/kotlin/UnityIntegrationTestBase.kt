@@ -78,13 +78,13 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
             args.add("-riderTestPath")
         }
 
-        if (isRunningInTeamCity) {
-            val login = System.getenv("login")
-            val password = System.getenv("password")
-            assertNotNull(login, "System.getenv(\"login\") is null.")
-            assertNotNull(password, "System.getenv(\"password\") is null.")
-            args.addAll(arrayOf("-username", login, "-password", password))
-        }
+//        if (isRunningInTeamCity) {
+//            val login = System.getenv("login")
+//            val password = System.getenv("password")
+//            assertNotNull(login, "System.getenv(\"login\") is null.")
+//            assertNotNull(password, "System.getenv(\"password\") is null.")
+//            args.addAll(arrayOf("-username", login, "-password", password))
+//        }
 
         frameworkLogger.info("Starting unity process")
         val process = StartUnityAction.startUnity(project, *args.toTypedArray())
