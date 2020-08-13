@@ -214,6 +214,9 @@ processResources {
 
 test {
     useTestNG() {}
+    filter {
+        includeTestsMatching "ConnectionTest.installAndCheckConnectionBeforeUnityStart"
+    }
     testLogging {
         showStandardStreams = true
         exceptionFormat "full"
