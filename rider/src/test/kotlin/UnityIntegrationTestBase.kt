@@ -53,7 +53,7 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
     }
 
     private val unityPackedUrl = when {
-        SystemInfo.isWindows -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped_v4.zip"
+        SystemInfo.isWindows -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped.zip"
         SystemInfo.isMac -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1.tar.gz"
         else -> throw Exception("Not implemented")
     }
@@ -62,13 +62,11 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
         val logPath = testMethod.logDirectory.resolve("UnityEditor.log")
 
         val isRunningInTeamCity = TeamCityHelper.isUnderTeamCity
-        var appPath: Path
-
-        if (isRunningInTeamCity) { // on teamcity download Unity
+        val appPath = if (isRunningInTeamCity) { // on teamcity download Unity
             frameworkLogger.info("Downloading unity from $unityPackedUrl")
             val unityFolder = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
             frameworkLogger.info("Unity was downloaded, path: $unityFolder")
-            appPath = when {
+            when {
                 SystemInfo.isWindows -> unityFolder.combine("Unity.exe").toPath()
                 SystemInfo.isMac -> unityFolder.toPath()
                 else -> throw Exception("Not implemented")
@@ -76,7 +74,7 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
         } else {
             val localAppPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
             assertNotNull(localAppPath, "Unity installation was not found.")
-            appPath = localAppPath
+            localAppPath
         }
 
         val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "-batchMode")
