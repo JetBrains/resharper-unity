@@ -62,20 +62,20 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
         val logPath = testMethod.logDirectory.resolve("UnityEditor.log")
 
         val isRunningInTeamCity = TeamCityHelper.isUnderTeamCity
-        val appPath = if (isRunningInTeamCity) { // on teamcity download Unity
-            frameworkLogger.info("Downloading unity from $unityPackedUrl")
-            val unityFolder = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
-            frameworkLogger.info("Unity was downloaded, path: $unityFolder")
-            when {
-                SystemInfo.isWindows -> unityFolder.combine("Unity.exe").toPath()
-                SystemInfo.isMac -> unityFolder.toPath()
-                else -> throw Exception("Not implemented")
-            }
-        } else {
+//        val appPath = if (isRunningInTeamCity) { // on teamcity download Unity
+//            frameworkLogger.info("Downloading unity from $unityPackedUrl")
+//            val unityFolder = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
+//            frameworkLogger.info("Unity was downloaded, path: $unityFolder")
+//            when {
+//                SystemInfo.isWindows -> unityFolder.combine("Unity.exe").toPath()
+//                SystemInfo.isMac -> unityFolder.toPath()
+//                else -> throw Exception("Not implemented")
+//            }
+//        } else {
             val localAppPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
             assertNotNull(localAppPath, "Unity installation was not found.")
-            localAppPath
-        }
+      //      localAppPath
+     //   }
 
         val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "-batchMode")
         args.add("-executeMethod")
