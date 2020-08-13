@@ -53,7 +53,7 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
     }
 
     private val unityPackedUrl = when {
-        SystemInfo.isWindows -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped.zip"
+        SystemInfo.isWindows -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped_v4.zip"
         SystemInfo.isMac -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1.tar.gz"
         else -> throw Exception("Not implemented")
     }
