@@ -97,7 +97,7 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
 //            args.addAll(arrayOf("-username", login, "-password", password))
 //        }
         val processArgs = getUnityWithProjectArgs(project).apply {
-            set(0, appPath.toString())
+            set(0, localAppPath.toString())
             addAll(args)
         }
 
