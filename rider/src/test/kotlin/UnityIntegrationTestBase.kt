@@ -12,6 +12,8 @@ import com.jetbrains.rider.model.RunMethodData
 import com.jetbrains.rider.model.RunMethodResult
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.protocol.protocol
 import com.jetbrains.rider.test.base.BaseTestWithSolution
@@ -21,6 +23,7 @@ import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoP
 import com.jetbrains.rider.test.framework.frameworkLogger
 import org.testng.annotations.AfterClass
 import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
 import kotlin.test.assertNotNull
@@ -59,11 +62,21 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
         val logPath = testMethod.logDirectory.resolve("UnityEditor.log")
 
         val isRunningInTeamCity = TeamCityHelper.isUnderTeamCity
+        var appPath: Path
 
         if (isRunningInTeamCity) { // on teamcity download Unity
             frameworkLogger.info("Downloading unity from $unityPackedUrl")
-            downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
-            frameworkLogger.info("Unity was downloaded")
+            val unityFolder = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
+            frameworkLogger.info("Unity was downloaded, path: $unityFolder")
+            appPath = when {
+                SystemInfo.isWindows -> unityFolder.combine("Unity.exe").toPath()
+                SystemInfo.isMac -> unityFolder.toPath()
+                else -> throw Exception("Not implemented")
+            }
+        } else {
+            val localAppPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
+            assertNotNull(localAppPath, "Unity installation was not found.")
+            appPath = localAppPath
         }
 
         val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "-batchMode")
@@ -85,9 +98,13 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
 //            assertNotNull(password, "System.getenv(\"password\") is null.")
 //            args.addAll(arrayOf("-username", login, "-password", password))
 //        }
+        val processArgs = getUnityWithProjectArgs(project).apply {
+            set(0, appPath.toString())
+            addAll(args)
+        }
 
         frameworkLogger.info("Starting unity process")
-        val process = StartUnityAction.startUnity(project, *args.toTypedArray())
+        val process = StartUnityAction.startUnity(processArgs)
         assertNotNull(process, "Unity process wasn't started")
         frameworkLogger.info("Unity process started: $process")
 
