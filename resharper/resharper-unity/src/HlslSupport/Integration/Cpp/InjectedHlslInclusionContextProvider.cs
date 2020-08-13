@@ -69,6 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             var directory = randomProjectFile.Location.Directory;
             
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("__RESHARPER__"));
             inclusionContext.PushInclude(rootFile, directory, false);
             foreach (CppFileLocation includeLocation in includeLocations)
             {
