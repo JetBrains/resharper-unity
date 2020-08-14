@@ -9,11 +9,6 @@ import org.testng.annotations.Test
 @TestEnvironment(platform = [PlatformType.ALL])
 open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
 
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
-
     override fun getSolutionDirectoryName(): String {
         return "FindUsages_event_handlers_2017"
     }

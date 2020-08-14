@@ -9,11 +9,6 @@ import org.testng.annotations.Test
 @TestEnvironment(platform = [PlatformType.ALL])
 class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
-
     override fun getSolutionDirectoryName(): String {
         return "PrefabModificationTestSolution"
     }

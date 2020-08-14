@@ -12,8 +12,8 @@ import org.testng.annotations.DataProvider
 import java.io.File
 import java.time.Duration
 
-open abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
-    lateinit var unityDll : File
+abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
+    private var unityDll : File? = null
 
     @DataProvider(name = "findUsagesGrouping")
     fun test1() = arrayOf(
@@ -22,7 +22,9 @@ open abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
 
     override fun preprocessTempDirectory(tempDir: File) {
         super.preprocessTempDirectory(tempDir)
-        copyUnityDll(unityDll, activeSolutionDirectory)
+        if (unityDll == null)
+            unityDll = downloadUnityDll()
+        copyUnityDll(unityDll!!, activeSolutionDirectory)
     }
 
     protected fun doTest(line : Int, column : Int, groups: Array<String>?) {
