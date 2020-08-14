@@ -1,3 +1,4 @@
+import com.intellij.util.io.exists
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rdclient.util.idea.waitAndPump
@@ -12,10 +13,23 @@ import com.jetbrains.rider.test.scriptingApi.changeFileSystem2
 import com.jetbrains.rider.test.scriptingApi.checkSwea
 import org.testng.annotations.Test
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
 class ConnectionTest : UnityIntegrationTestBase() {
     override fun getSolutionDirectoryName(): String = "SimpleUnityProjectWithoutPlugin"
+
+    override fun preprocessTempDirectory(tempDir: File) {
+        // Needed, because com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher
+        //  isn't initialized without correct unity file structure
+        val libraryFolder = Paths.get(tempDir.toString(), "Library")
+        if (!libraryFolder.exists()) {
+            Files.createDirectory(libraryFolder)
+        }
+
+        super.preprocessTempDirectory(tempDir)
+    }
 
     @Test
     fun installAndCheckConnectionAfterUnityStart() {
