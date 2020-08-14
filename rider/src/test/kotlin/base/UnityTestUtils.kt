@@ -1,6 +1,6 @@
+package base
+
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rider.test.base.BaseTestWithShell
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
 import com.jetbrains.rider.test.scriptingApi.refreshFileSystem

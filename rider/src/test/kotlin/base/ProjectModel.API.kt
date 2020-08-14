@@ -1,4 +1,4 @@
-package unityExplorer
+package base
 
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.DataContext

@@ -1,3 +1,5 @@
+package base
+
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
@@ -19,11 +21,9 @@ import com.jetbrains.rider.protocol.protocol
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
-import com.jetbrains.rider.test.framework.downloadAndExtractArchiveArtifactIntoPersistentCache
 import com.jetbrains.rider.test.framework.frameworkLogger
 import org.testng.annotations.AfterClass
 import java.io.File
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
 import kotlin.test.assertNotNull

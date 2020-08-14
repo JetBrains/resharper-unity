@@ -1,3 +1,6 @@
+package integrationTests
+
+import base.UnityIntegrationTestBase
 import com.intellij.util.io.exists
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -54,7 +57,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
     @Test(enabled = false)
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor { executeIntegrationTestMethod("DumpExternalEditor") }
 
-    @Test
+    @Test(enabled = false)
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor { executeScript("DumpExternalEditor.cs") }
 
     private fun checkExternalEditor(execute: () -> Unit) {
@@ -83,7 +86,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
     @Test
     fun checkLogWithExecutingMethod() = checkLog { executeIntegrationTestMethod("WriteToLog") }
 
-    @Test
+    @Test(enabled = false)
     fun checkLogWithUnityModelRefresh() = checkLog { executeScript("WriteToLog.cs") }
 
     private fun checkLog(execute: () -> Unit) {

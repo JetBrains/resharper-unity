@@ -1,3 +1,5 @@
+import base.FindUsagesAssetTestBase
+import base.downloadUnityDll
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled

@@ -214,6 +214,14 @@ processResources {
 
 test {
     useTestNG() {}
+    if (project.hasProperty("integrationTests")) {
+        String testsType = (String) project.property("integrationTests")
+        if (testsType == "include") {
+            include "integrationTests/**"
+        } else if (testsType == "exclude") {
+            exclude "integrationTests/**"
+        }
+    }
     testLogging {
         showStandardStreams = true
         exceptionFormat "full"
