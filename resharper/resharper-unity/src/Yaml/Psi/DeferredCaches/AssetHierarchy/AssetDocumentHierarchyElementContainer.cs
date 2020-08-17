@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using JetBrains.Application.Threading;
+using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
@@ -58,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
             var anchor = anchorRaw.Value;
             var isStripped = AssetUtils.IsStripped(assetDocument.Buffer);
-            var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex, anchor);
+            var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), anchor);
 
             if (isStripped)
             {

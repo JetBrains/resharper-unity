@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 return new UnityEventsBuildResult(modifications, new LocalList<UnityEventData>());
 
 
-            var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex, anchor);
+            var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), anchor);
             var scriptReference = GetScriptReference(currentAssetSourceFile, entries.Value);
             if (scriptReference == null)
                 return new UnityEventsBuildResult(modifications, new LocalList<UnityEventData>());
@@ -171,7 +171,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 var range = new TextRange(assetDocument.StartOffset + methodNameRange.StartOffset.Offset,
                     assetDocument.StartOffset + methodNameRange.EndOffset.Offset);
 
-                result.Add(new AssetMethodUsages( name, methodName, range, currentAssetSourceFile.PsiStorage.PersistentIndex, argMode, type, target));
+                result.Add(new AssetMethodUsages( name, methodName, range, currentAssetSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), argMode, type, target));
             }
 
             return result;

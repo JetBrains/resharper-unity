@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                 if (dictionary.TryGetValue(UnityYamlConstants.ScriptProperty, out var scriptValue) && scriptValue is AssetReferenceValue referenceValue
                                                                                                    && referenceValue.Reference is ExternalReference script)
                 {
-                    var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex, anchor.Value);
+                    var location = new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), anchor.Value);
                     var result = new LocalList<InspectorVariableUsage>();
 
                     foreach (var (key, value) in dictionary)
@@ -138,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
                     if (modification.PropertyPath.Contains("."))
                         continue;
                     
-                    var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex, PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
+                    var location = new LocalReference(currentSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                     result.Modifications[new ImportedValueReference(location, modification.PropertyPath)] = (modification.Value, new AssetReferenceValue(modification.ObjectReference));
                 }
             }
