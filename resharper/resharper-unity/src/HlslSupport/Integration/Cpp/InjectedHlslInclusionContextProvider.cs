@@ -70,6 +70,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("__RESHARPER__"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("INTERNAL_DATA= "));
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("WorldReflectionVector(data,normal)=data.worldRefl"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("WorldNormalVector(data,normal)=normal"));
             inclusionContext.PushInclude(rootFile, directory, false);
             foreach (CppFileLocation includeLocation in includeLocations)
             {
