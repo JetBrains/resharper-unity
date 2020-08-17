@@ -8,9 +8,9 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
+using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
 {
@@ -36,6 +36,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
 
         public override void VisitNode(ITreeNode node, IHighlightingConsumer consumer)
         {
+            var sourceFile = node.GetSourceFile();
+            if (sourceFile == null)
+                return;
+            
             if (!myInternalMode && myProcessKind != DaemonProcessKind.VISIBLE_DOCUMENT)
                 return;
 
@@ -59,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
             // plus look for simple syntax validation errors, e.g. enums must have at
             // least one value defined, correct value for `syntax "proto3"`, etc.
             // And then a separate identifier
-            if (node is IErrorElement errorElement)
+            if (!sourceFile.PsiModule.IsMiscFilesProjectModule() && node is IErrorElement errorElement)
             {
                 DocumentRange range;
                 if (node.Children().Any(t => t.Children<ICgContent>().Any()))
