@@ -59,7 +59,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly PackageValidator myPackageValidator;
 
         private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
-        private readonly WeakToWeakDictionary<UnitTestElementId, IUnitTestElement> myElements;
 
         private readonly object myCurrentLaunchesTaskAccess = new object();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
@@ -92,7 +91,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
-            myElements = new WeakToWeakDictionary<UnitTestElementId, IUnitTestElement>();
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
 
@@ -370,7 +368,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
         {
             var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
-            var filters = InitElementsMap(firstRun);
+            var filters = GetFilters(firstRun);
 
             var mode = TestMode.Edit;
             if (rdUnityModel.UnitTestPreference.HasValue())
@@ -398,11 +396,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             launch.TestResult.AdviseNotNull(connectionLifetime, result =>
             {
-                var unitTestElement = GetElementById(result.ProjectName, result.TestId);
+                var unitTestElement = GetElementById(firstRun, result.ProjectName, result.TestId);
                 if (unitTestElement == null)
                 {
                     // add dynamic tests
-                    if (!(GetElementById(result.ProjectName, result.ParentId) is NUnitTestElement parent))
+                    if (!(GetElementById(firstRun, result.ProjectName, result.ParentId) is NUnitTestElement parent))
                         return;
 
                     var project = parent.Id.Project;
@@ -411,7 +409,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
                     unitTestElement = new NUnitRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
                     firstRun.AddDynamicElement(unitTestElement);
-                    myElements.Add(myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId), unitTestElement);
                 }
 
                 switch (result.Status)
@@ -478,7 +475,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return JetTaskEx.While(() => waitingLifetime.IsAlive);
         }
 
-        private List<TestFilter> InitElementsMap(IUnitTestRun firstRun)
+        private List<TestFilter> GetFilters(IUnitTestRun firstRun)
         {
             var filters = new List<TestFilter>();
 
@@ -493,10 +490,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 var elements = unitTestElements
                     .Where(unitTestElement => unitTestElement is NUnitTestElement ||
                                               unitTestElement is NUnitRowTestElement).ToArray();
-                foreach (var unitTestElement in elements)
-                {
-                    myElements[unitTestElement.Id] = unitTestElement;
-                }
 
                 var testNames = elements.Select(p => p.Id.Id).ToList();
                 
@@ -522,10 +515,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         }
 
         [CanBeNull]
-        private IUnitTestElement GetElementById(string projectName, string resultTestId)
+        private IUnitTestElement GetElementById(IUnitTestRun run, string projectName, string resultTestId)
         {
-            var unitTestElement = myElements.Where(a=>a.Key.Id == resultTestId && a.Key.Project.Name == projectName).Select(b=>b.Value).SingleOrDefault();
-            return unitTestElement;
+            return run.Elements.SingleOrDefault(a => a.Id.Id == resultTestId && a.Id.Project.Name == projectName);
         }
 
         public void Cancel(IUnitTestRun run)
