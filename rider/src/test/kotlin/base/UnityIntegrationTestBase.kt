@@ -52,30 +52,8 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
         else -> throw Exception("Not implemented")
     }
 
-    private val unityPackedUrl = when {
-        SystemInfo.isWindows -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1_stripped_v4.zip"
-        SystemInfo.isMac -> "https://repo.labs.intellij.net/dotnet-rider-test-data/Unity_2018.3.4f1.tar.gz"
-        else -> throw Exception("Not implemented")
-    }
-
     private fun startUnity(resetEditorPrefs: Boolean, useRiderTestPath: Boolean): Process {
         val logPath = testMethod.logDirectory.resolve("UnityEditor.log")
-
-        val isRunningInTeamCity = TeamCityHelper.isUnderTeamCity
-//        val appPath = if (isRunningInTeamCity) { // on teamcity download Unity
-//            frameworkLogger.info("Downloading unity from $unityPackedUrl")
-//            val unityFolder = downloadAndExtractArchiveArtifactIntoPersistentCache(unityPackedUrl)
-//            frameworkLogger.info("Unity was downloaded, path: $unityFolder")
-//            when {
-//                SystemInfo.isWindows -> unityFolder.combine("Unity.exe").toPath()
-//                SystemInfo.isMac -> unityFolder.toPath()
-//                else -> throw Exception("Not implemented")
-//            }
-//        } else {
-            val localAppPath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath()
-            assertNotNull(localAppPath, "Unity installation was not found.")
-      //      localAppPath
-     //   }
 
         val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "-batchMode")
         args.add("-executeMethod")
@@ -89,7 +67,7 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
             args.add("-riderTestPath")
         }
 
-        if (isRunningInTeamCity) {
+        if (TeamCityHelper.isUnderTeamCity) {
             val login = System.getenv("unity.login")
             val password = System.getenv("unity.password")
             assertNotNull(login, "System.getenv(\"unity.login\") is null.")
@@ -97,13 +75,8 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
             args.addAll(arrayOf("-username", login, "-password", password))
         }
 
-        val processArgs = getUnityWithProjectArgs(project).apply {
-            set(0, localAppPath.toString())
-            addAll(args)
-        }
-
         frameworkLogger.info("Starting unity process")
-        val process = StartUnityAction.startUnity(processArgs)
+        val process = StartUnityAction.startUnity(project, *args.toTypedArray())
         assertNotNull(process, "Unity process wasn't started")
         frameworkLogger.info("Unity process started: $process")
 
@@ -118,7 +91,7 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
         }
         process.destroy()
         waitAndPump(project.lifetime, { !process.isAlive }, defaultTimeout) { "Process should have existed." }
-        frameworkLogger.info("Unity killed")
+        frameworkLogger.info("Unity process killed")
     }
 
     fun withUnityProcess(resetEditorPrefs: Boolean, useRiderTestPath: Boolean = false, block: () -> Unit) {
@@ -141,14 +114,14 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
     }
 
     fun executeScript(file: String) {
-        val script = solutionSourceRootDirectory.combine("scripts", file)
+        val script = testCaseSourceDirectory.combine(file)
         script.copyTo(activeSolutionDirectory.combine("Assets", file))
 
         frameworkLogger.info("Executing script '$file'")
         refreshUnityModel()
     }
 
-    fun refreshUnityModel() {
+    private fun refreshUnityModel() {
         frameworkLogger.info("Refreshing unity model")
         project.solution.rdUnityModel.refresh.fire(true)
     }
