@@ -54,15 +54,15 @@ class ConnectionTest : UnityIntegrationTestBase() {
         }
     }
 
-    @Test(enabled = false)
-    fun checkExternalEditorWithExecutingMethod() = checkExternalEditor { executeIntegrationTestMethod("DumpExternalEditor") }
+    @Test
+    fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) { executeIntegrationTestMethod("DumpExternalEditor") }
 
     @Test(enabled = false)
-    fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor { executeScript("DumpExternalEditor.cs") }
+    fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
 
-    private fun checkExternalEditor(execute: () -> Unit) {
+    private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {
         installPlugin()
-        withUnityProcess(resetEditorPrefs = true, useRiderTestPath = true) {
+        withUnityProcess(resetEditorPrefs, true) {
             waitFirstScriptCompilation()
             waitConnection()
 
@@ -91,7 +91,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
 
     private fun checkLog(execute: () -> Unit) {
         installPlugin()
-        withUnityProcess(true) {
+        withUnityProcess(false) {
             waitFirstScriptCompilation()
             waitConnection()
 
