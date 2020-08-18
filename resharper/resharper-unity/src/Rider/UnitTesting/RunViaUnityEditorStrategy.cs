@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -23,6 +24,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Packages;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
+using JetBrains.ReSharper.UnitTestFramework.Criteria;
 using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
@@ -140,7 +142,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             IUnitTestElement element)
         {
             var targetPlatform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
-            return new UnityRuntimeEnvironment(targetPlatform);
+            return new UnityRuntimeEnvironment(targetPlatform, project);
         }
 
         Task IUnitTestRunStrategy.Run(IUnitTestRun run)
@@ -368,10 +370,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
         {
             var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
-
-            var unitTestElements = CollectElementsToRunInUnityEditor(firstRun);
-            var tests = InitElementsMap(unitTestElements);
-            var emptyList = new List<string>();
+            var filters = InitElementsMap(firstRun);
 
             var mode = TestMode.Edit;
             if (rdUnityModel.UnitTestPreference.HasValue())
@@ -389,7 +388,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                                                                    clientControllerInfo.ExtraDependencies?.ToList(),
                                                                                    clientControllerInfo.TypeName);
 
-            var launch = new UnitTestLaunch(firstRun.Launch.Session.Id, tests, emptyList, emptyList, mode, unityClientControllerInfo);
+            var launch = new UnitTestLaunch(firstRun.Launch.Session.Id, filters, mode, unityClientControllerInfo);
             return launch;
         }
 
@@ -403,8 +402,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 if (unitTestElement == null)
                 {
                     // add dynamic tests
-                    var parent = GetElementById(result.ProjectName, result.ParentId) as NUnitTestElement;
-                    if (parent == null)
+                    if (!(GetElementById(result.ProjectName, result.ParentId) is NUnitTestElement parent))
                         return;
 
                     var project = parent.Id.Project;
@@ -419,8 +417,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 switch (result.Status)
                 {
                     case Status.Pending:
-                        myUnitTestResultManager.MarkPending(unitTestElement,
-                            firstRun.Launch.Session);
+                        myUnitTestResultManager.MarkPending(unitTestElement, firstRun.Launch.Session);
                         break;
                     case Status.Running:
                         myUnitTestResultManager.TestStarting(unitTestElement, firstRun.Launch.Session);
@@ -481,36 +478,47 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return JetTaskEx.While(() => waitingLifetime.IsAlive);
         }
 
-        private IEnumerable<IUnitTestElement> CollectElementsToRunInUnityEditor(IUnitTestRun firstRun)
+        private List<TestFilter> InitElementsMap(IUnitTestRun firstRun)
         {
-            var result = new JetHashSet<IUnitTestElement>();
-            foreach (var unitTestRun in firstRun.Launch.Runs)
+            var filters = new List<TestFilter>();
+
+            var runs = firstRun.Launch.Runs;
+            foreach (var run in runs)
             {
-                if (unitTestRun.RunStrategy.Equals(this))
+                if (!run.RunStrategy.Equals(this))
+                    continue;
+                
+                var unitTestElements = new JetHashSet<IUnitTestElement>();
+                unitTestElements.AddRange(run.Elements);
+                var elements = unitTestElements
+                    .Where(unitTestElement => unitTestElement is NUnitTestElement ||
+                                              unitTestElement is NUnitRowTestElement).ToArray();
+                foreach (var unitTestElement in elements)
                 {
-                    result.AddRange(unitTestRun.Elements);
+                    myElements[unitTestElement.Id] = unitTestElement;
                 }
+
+                var testNames = elements.Select(p => p.Id.Id).ToList();
+                
+                var groups = new List<string>();
+                var categories = new List<string>();
+                var criterion = run.Launch.Criterion.Criterion;
+                if (criterion is ConjunctiveCriterion conjunctiveCriterion)
+                {
+                    groups.AddRange( conjunctiveCriterion.Criteria.Where(a => a is TestAncestorCriterion).SelectMany(b =>
+                        ((TestAncestorCriterion)b).AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$")));
+                    categories.AddRange(conjunctiveCriterion.Criteria.Where(a=>a is CategoryCriterion).Select(b=>
+                        ((CategoryCriterion)b).Category.Name));
+                }
+                else if (criterion is TestAncestorCriterion ancestorCriterion) 
+                    groups.AddRange(ancestorCriterion.AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$"));
+                else if (criterion is CategoryCriterion categoryCriterion)
+                    categories.Add(categoryCriterion.Category.Name);
+                
+                filters.Add(new TestFilter(((UnityRuntimeEnvironment)run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
             }
-
-            return result.ToList();
-        }
-
-        private List<TestFilter> InitElementsMap(IEnumerable<IUnitTestElement> unitTestElements)
-        {
-            var elements = unitTestElements
-                .Where(unitTestElement => unitTestElement is NUnitTestElement ||
-                                          unitTestElement is NUnitRowTestElement).ToArray();
-            foreach (var unitTestElement in elements)
-            {
-                myElements[unitTestElement.Id] = unitTestElement;
-            }
-            var filters = elements
-                .GroupBy(
-                p => p.Id.Project.Name,
-                p => p.Id.Id,
-                (key, g) => new TestFilter(key, g.ToList()));
-
-            return filters.ToList();
+            
+            return filters;
         }
 
         [CanBeNull]
@@ -541,16 +549,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private class UnityRuntimeEnvironment : IRuntimeEnvironment
         {
-            public UnityRuntimeEnvironment(TargetPlatform targetPlatform)
+            public UnityRuntimeEnvironment(TargetPlatform targetPlatform, IProject project)
             {
                 TargetPlatform = targetPlatform;
+                Project = project;
             }
 
             public TargetPlatform TargetPlatform { get; }
+            public IProject Project { get; }
 
             private bool Equals(UnityRuntimeEnvironment other)
             {
-                return TargetPlatform == other.TargetPlatform;
+                return TargetPlatform == other.TargetPlatform && Equals(Project, other.Project);
             }
 
             public override bool Equals(object obj)
