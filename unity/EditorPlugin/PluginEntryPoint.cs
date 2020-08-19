@@ -51,7 +51,6 @@ namespace JetBrains.Rider.Unity.Editor
           RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
         if (!string.IsNullOrEmpty(riderPath))
         {
-            File.AppendAllText("C:\\1.txt", $"2. {riderPath}, {IsRiderDefaultEditor()}, {PluginSettings.UseLatestRiderFromToolbox}\r\n");
           AddRiderToRecentlyUsedScriptApp(riderPath);
           if (IsRiderDefaultEditor() && PluginSettings.UseLatestRiderFromToolbox)
           {
@@ -104,12 +103,14 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool IsRiderDefaultEditor()
     {
+        if (UnityUtils.IsInRiderTests)
+            return true;
+            
         // Regular check
         var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
         bool isEnabled = !string.IsNullOrEmpty(defaultApp) &&
                          Path.GetFileName(defaultApp).ToLower().Contains("rider") &&
                          !UnityUtils.IsInBatchModeAndNotInRiderTests;
-
         return isEnabled;
     }
 

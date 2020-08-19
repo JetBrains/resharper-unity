@@ -32,8 +32,11 @@ namespace JetBrains.Rider.Unity.Editor
     }
 
     public static bool IsInBatchModeAndNotInRiderTests =>
-        UnityEditorInternal.InternalEditorUtility.inBatchMode && !Environment.GetCommandLineArgs().Contains("-riderIntegrationTests");
+        UnityEditorInternal.InternalEditorUtility.inBatchMode && !IsInRiderTests;
 
+    public static bool IsInRiderTests =>
+        Environment.GetCommandLineArgs().Contains("-riderIntegrationTests");
+    
     private static int ourScriptingRuntimeCached = -1;
     
     internal static int ScriptingRuntime
