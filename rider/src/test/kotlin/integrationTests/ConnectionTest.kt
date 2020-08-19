@@ -55,14 +55,14 @@ class ConnectionTest : UnityIntegrationTestBase() {
     }
 
     @Test
-    fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(true) { executeIntegrationTestMethod("DumpExternalEditor") }
+    fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) { executeIntegrationTestMethod("DumpExternalEditor") }
 
     @Test(enabled = false)
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
 
     private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {
         installPlugin()
-        withUnityProcess(resetEditorPrefs, true) {
+        withUnityProcess(resetEditorPrefs, true, batchMode = false) {
             waitFirstScriptCompilation()
             waitConnection()
 

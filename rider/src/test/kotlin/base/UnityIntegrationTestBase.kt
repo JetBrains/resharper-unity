@@ -52,10 +52,14 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
         else -> throw Exception("Not implemented")
     }
 
-    private fun startUnity(resetEditorPrefs: Boolean, useRiderTestPath: Boolean): Process {
+    private fun startUnity(resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): Process {
         val logPath = testMethod.logDirectory.resolve("UnityEditor.log")
 
-        val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests", "-batchMode")
+        val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests")
+        if (batchMode) {
+            args.add("-batchMode")
+        }
+
         args.add("-executeMethod")
         if (resetEditorPrefs) {
             args.add("Editor.IntegrationTestHelper.ResetAndStart")
@@ -94,8 +98,14 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
         frameworkLogger.info("Unity process killed")
     }
 
-    fun withUnityProcess(resetEditorPrefs: Boolean, useRiderTestPath: Boolean = false, block: () -> Unit) {
-        val process = startUnity(resetEditorPrefs, useRiderTestPath)
+    fun withUnityProcess(
+        resetEditorPrefs: Boolean,
+        useRiderTestPath: Boolean = false,
+        batchMode: Boolean = true,
+        block: () -> Unit
+    ) {
+        val process =
+            startUnity(resetEditorPrefs, useRiderTestPath, batchMode)
         try {
             block()
         } finally {
