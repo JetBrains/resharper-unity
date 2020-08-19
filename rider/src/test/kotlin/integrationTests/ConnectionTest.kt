@@ -62,7 +62,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
 
     private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {
         installPlugin()
-        withUnityProcess(resetEditorPrefs, true, batchMode = false) {
+        withUnityProcess(resetEditorPrefs, true) {
             waitFirstScriptCompilation()
             waitConnection()
 

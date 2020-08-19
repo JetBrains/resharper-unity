@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
 {
@@ -7,7 +8,11 @@ namespace JetBrains.Rider.Unity.Editor
     public static string ExternalScriptEditor
     {
       get { return EditorPrefs.GetString("kScriptsDefaultApp"); }
-      set { EditorPrefs.SetString("kScriptsDefaultApp", value); }
+      set
+      {
+          File.AppendAllText("C:\\1.txt", $"{value}\r\n");
+          EditorPrefs.SetString("kScriptsDefaultApp", value);
+      }
     }
 
     public static bool AutoRefresh
