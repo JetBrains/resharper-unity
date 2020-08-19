@@ -69,11 +69,10 @@ class ConnectionTest : UnityIntegrationTestBase() {
             val externalEditorPath = File(project.basePath, "Assets/ExternalEditor.txt")
 
             execute()
-            waitAndPump(
-                project.lifetime,
-                { externalEditorPath.exists() && externalEditorPath.readText().isNotEmpty() },
-                defaultTimeout
-            ) { "ExternalEditor.txt is not created or it's empty" }
+            waitAndPump(project.lifetime, { externalEditorPath.exists() }, defaultTimeout)
+            { "ExternalEditor.txt is not created" }
+            waitAndPump(project.lifetime, { externalEditorPath.readText().isNotEmpty() }, defaultTimeout)
+            { "ExternalEditor.txt is empty" }
 
             executeWithGold(testGoldFile) {
                 it.print(externalEditorPath.readText())
