@@ -6,7 +6,6 @@ import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.io.exists
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
-import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.model.RdUnityModel
@@ -14,8 +13,7 @@ import com.jetbrains.rider.model.RunMethodData
 import com.jetbrains.rider.model.RunMethodResult
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
+import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.protocol.protocol
 import com.jetbrains.rider.test.base.BaseTestWithSolution
@@ -78,6 +76,8 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
             assertNotNull(password, "System.getenv(\"unity.password\") is null.")
             args.addAll(arrayOf("-username", login, "-password", password))
         }
+
+        rdUnityModel.startUnity
 
         frameworkLogger.info("Starting unity process")
         val process = StartUnityAction.startUnity(project, *args.toTypedArray())
@@ -153,7 +153,7 @@ abstract class UnityIntegrationTestBase : BaseTestWithSolution() {
 
     fun waitConnection() {
         frameworkLogger.info("Waiting for connection between Unity editor and Rider")
-        waitAndPump(project.lifetime, { rdUnityModel.sessionInitialized.hasTrueValue },
+        waitAndPump(project.lifetime, { project.isConnectedToEditor() },
             defaultTimeout) { "unityHost is not initialized." }
         frameworkLogger.info("unityHost is initialized.")
     }
