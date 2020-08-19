@@ -36,6 +36,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool IsInRiderTests =>
         Environment.GetCommandLineArgs().Contains("-riderIntegrationTests");
+
+    public static bool UseRiderTestPath =>
+        Environment.GetCommandLineArgs().Contains("-riderTestPath");
     
     private static int ourScriptingRuntimeCached = -1;
     

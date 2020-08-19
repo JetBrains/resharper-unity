@@ -103,7 +103,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool IsRiderDefaultEditor()
     {
-        if (UnityUtils.IsInRiderTests)
+        if (UnityUtils.UseRiderTestPath)
             return true;
             
         // Regular check
