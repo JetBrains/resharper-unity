@@ -55,7 +55,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
     }
 
     @Test
-    fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) { executeIntegrationTestMethod("DumpExternalEditor") }
+    fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(true) { executeIntegrationTestMethod("DumpExternalEditor") }
 
     @Test(enabled = false)
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
