@@ -51,6 +51,7 @@ namespace JetBrains.Rider.Unity.Editor
           RiderPathLocator.GetAllFoundPaths(ourPluginSettings.OperatingSystemFamilyRider));
         if (!string.IsNullOrEmpty(riderPath))
         {
+            File.AppendAllText("C:\\1.txt", $"2. {riderPath}, {IsRiderDefaultEditor()}, {PluginSettings.UseLatestRiderFromToolbox}\r\n");
           AddRiderToRecentlyUsedScriptApp(riderPath);
           if (IsRiderDefaultEditor() && PluginSettings.UseLatestRiderFromToolbox)
           {
