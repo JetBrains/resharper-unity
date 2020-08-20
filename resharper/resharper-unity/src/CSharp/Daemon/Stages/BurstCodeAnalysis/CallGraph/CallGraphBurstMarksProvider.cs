@@ -45,59 +45,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var result = new HashSet<IDeclaredElement>();
             switch (currentNode)
             {
-                case IStructDeclaration structDeclaration
-                    when structDeclaration.DeclaredElement is IStruct @struct &&
-                         @struct.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self):
+                case IClassLikeDeclaration classLikeDeclaration
+                    when classLikeDeclaration.DeclaredElement is ITypeElement typeElement &&
+                         typeElement.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self):
                 {
-                    var superTypes = @struct.GetAllSuperTypes();
-                    var interfaces = superTypes
-                        .Where(declaredType => declaredType.IsInterfaceType())
-                        .Select(declaredType => declaredType.GetTypeElement())
-                        .WhereNotNull()
-                        .Where(typeElement =>
-                            typeElement.HasAttributeInstance(KnownTypes.JobProducerAttrubyte, AttributesSource.Self))
-                        .ToList();
-                    var structMethods = @struct.Methods.ToList();
-
-                    foreach (var @interface in interfaces)
+                    if (typeElement is IStruct @struct)
                     {
-                        var interfaceMethods = @interface.Methods.ToList();
-                        var overridenMethods = structMethods
-                            .Where(m => interfaceMethods.Any(m.OverridesOrImplements))
+                        var superTypes = @struct.GetAllSuperTypes();
+                        var interfaces = superTypes
+                            .Where(declaredType => declaredType.IsInterfaceType())
+                            .Select(declaredType => declaredType.GetTypeElement())
+                            .WhereNotNull()
+                            .Where(currentTypeElement =>
+                                currentTypeElement.HasAttributeInstance(KnownTypes.JobProducerAttrubyte,
+                                    AttributesSource.Self))
                             .ToList();
+                        var structMethods = @struct.Methods.ToList();
 
-                        foreach (var overridenMethod in overridenMethods)
-                            result.Add(overridenMethod);
-                    }
-
-                    break;
-                }
-                case IInvocationExpression invocationExpression:
-                {
-                    if (!(CallGraphUtil.GetCallee(invocationExpression) is IMethod method))
-                        break;
-                    var containingType = method.GetContainingType();
-                    if (containingType == null)
-                        break;
-                    if (method.Parameters.Count == 1 &&
-                        method.TypeParameters.Count == 1 &&
-                        method.ShortName == "CompileFunctionPointer" &&
-                        containingType.GetClrName().Equals(KnownTypes.BurstCompiler))
-                    {
-                        var argumentList = invocationExpression.ArgumentList.Arguments;
-                        if (argumentList.Count != 1)
-                            break;
-                        var argument = argumentList[0].Value;
-                        if (argument == null)
-                            break;
-                        var possibleDeclaredElements = CallGraphUtil.ExtractCallGraphDeclaredElements(argument);
-                        foreach (var declaredElement in possibleDeclaredElements)
+                        foreach (var @interface in interfaces)
                         {
-                            if (declaredElement != null)
-                                result.Add(declaredElement);
+                            var interfaceMethods = @interface.Methods.ToList();
+                            var overridenMethods = structMethods
+                                .Where(m => interfaceMethods.Any(m.OverridesOrImplements))
+                                .ToList();
+
+                            foreach (var overridenMethod in overridenMethods)
+                                result.Add(overridenMethod);
                         }
                     }
 
+                    var staticMethods = typeElement.Methods.Where(method => method.IsStatic).ToList();
+                    var staticMethodsWithAttribute = staticMethods.Where(method => method.HasAttributeInstance(
+                        KnownTypes.BurstCompileAttribute, AttributesSource.Self)).ToList();
+                    
+                    foreach (var burstMethod in staticMethodsWithAttribute)
+                        result.Add(burstMethod);
                     break;
                 }
             }
