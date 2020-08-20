@@ -400,15 +400,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 if (unitTestElement == null)
                 {
                     // add dynamic tests
-                    if (!(GetElementById(firstRun, result.ProjectName, result.ParentId) is NUnitTestElement parent))
-                        return;
+                    var parent = GetElementById(firstRun, result.ProjectName, result.ParentId);
+                    if (parent is NUnitTestElement elementParent)
+                    {
+                        var project = elementParent.Id.Project;
+                        var targetFrameworkId = elementParent.Id.TargetFrameworkId;
 
-                    var project = parent.Id.Project;
-                    var targetFrameworkId = parent.Id.TargetFrameworkId;
-
-                    var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
-                    unitTestElement = new NUnitRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, parent, parent.TypeName.GetPersistent());
-                    firstRun.AddDynamicElement(unitTestElement);
+                        var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
+                        unitTestElement = new NUnitRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, elementParent, elementParent.TypeName.GetPersistent());
+                        firstRun.AddDynamicElement(unitTestElement);
+                    }
+                    else if (parent is NUnitTestFixtureElement fixtureParent)
+                    {
+                        var project = fixtureParent.Id.Project;
+                        var targetFrameworkId = fixtureParent.Id.TargetFrameworkId;
+                        var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
+                        var methodName = result.TestId;
+                        if (result.TestId.LastIndexOf(".") > 0)
+                            methodName = result.TestId.Substring(result.TestId.LastIndexOf(".") + 1);
+                        unitTestElement = new NUnitTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, fixtureParent, fixtureParent.TypeName.GetPersistent(), methodName);
+                        firstRun.AddDynamicElement(unitTestElement);
+                    }
                 }
 
                 switch (result.Status)
@@ -475,42 +487,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return JetTaskEx.While(() => waitingLifetime.IsAlive);
         }
 
-        private List<TestFilter> GetFilters(IUnitTestRun firstRun)
+        private List<TestFilter> GetFilters(IUnitTestRun run)
         {
             var filters = new List<TestFilter>();
 
-            var runs = firstRun.Launch.Runs;
-            foreach (var run in runs)
-            {
-                if (!run.RunStrategy.Equals(this))
-                    continue;
-                
-                var unitTestElements = new JetHashSet<IUnitTestElement>();
-                unitTestElements.AddRange(run.Elements);
-                var elements = unitTestElements
-                    .Where(unitTestElement => unitTestElement is NUnitTestElement ||
-                                              unitTestElement is NUnitRowTestElement).ToArray();
+            var unitTestElements = new JetHashSet<IUnitTestElement>();
+            unitTestElements.AddRange(run.Elements);
+            var elements = unitTestElements
+                .Where(unitTestElement => unitTestElement is NUnitTestElement ||
+                                          unitTestElement is NUnitRowTestElement).ToArray();
 
-                var testNames = elements.Select(p => p.Id.Id).ToList();
-                
-                var groups = new List<string>();
-                var categories = new List<string>();
-                var criterion = run.Launch.Criterion.Criterion;
-                if (criterion is ConjunctiveCriterion conjunctiveCriterion)
-                {
-                    groups.AddRange( conjunctiveCriterion.Criteria.Where(a => a is TestAncestorCriterion).SelectMany(b =>
-                        ((TestAncestorCriterion)b).AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$")));
-                    categories.AddRange(conjunctiveCriterion.Criteria.Where(a=>a is CategoryCriterion).Select(b=>
-                        ((CategoryCriterion)b).Category.Name));
-                }
-                else if (criterion is TestAncestorCriterion ancestorCriterion) 
-                    groups.AddRange(ancestorCriterion.AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$"));
-                else if (criterion is CategoryCriterion categoryCriterion)
-                    categories.Add(categoryCriterion.Category.Name);
-                
-                filters.Add(new TestFilter(((UnityRuntimeEnvironment)run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
+            var testNames = elements.Select(p => p.Id.Id).ToList();
+
+            var groups = new List<string>();
+            var categories = new List<string>();
+            var criterion = run.Launch.Criterion.Criterion;
+            if (criterion is ConjunctiveCriterion conjunctiveCriterion)
+            {
+                groups.AddRange(conjunctiveCriterion.Criteria.Where(a => a is TestAncestorCriterion).SelectMany(b =>
+                    ((TestAncestorCriterion) b).AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$")));
+                categories.AddRange(conjunctiveCriterion.Criteria.Where(a => a is CategoryCriterion).Select(b =>
+                    ((CategoryCriterion) b).Category.Name));
             }
-            
+            else if (criterion is TestAncestorCriterion ancestorCriterion)
+                groups.AddRange(ancestorCriterion.AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$"));
+            else if (criterion is CategoryCriterion categoryCriterion)
+                categories.Add(categoryCriterion.Category.Name);
+
+            filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
             return filters;
         }
 
