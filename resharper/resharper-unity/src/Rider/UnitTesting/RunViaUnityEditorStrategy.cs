@@ -416,8 +416,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         var targetFrameworkId = fixtureParent.Id.TargetFrameworkId;
                         var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
                         var methodName = result.TestId;
-                        if (result.TestId.LastIndexOf(".") > 0)
-                            methodName = result.TestId.Substring(result.TestId.LastIndexOf(".") + 1);
                         unitTestElement = new NUnitTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, fixtureParent, fixtureParent.TypeName.GetPersistent(), methodName);
                         firstRun.AddDynamicElement(unitTestElement);
                     }
@@ -521,7 +519,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         [CanBeNull]
         private IUnitTestElement GetElementById(IUnitTestRun run, string projectName, string resultTestId)
         {
-            return run.Elements.SingleOrDefault(a => a.Id.Id == resultTestId && a.Id.Project.Name == projectName);
+            // For Rider package 2.0.8+ both TestId and ParentId are formatted as [UniqueName]-[TestId]
+            // For previous versions, it is just TestId
+            var firstChoice = run.Elements.SingleOrDefault(a => a.Id.Id == resultTestId && a.Id.Project.Name == projectName);
+            if (firstChoice != null)
+                return firstChoice;
+            return  run.Elements.SingleOrDefault(a => resultTestId.EndsWith($"-[{a.Id.Id}]") && a.Id.Project.Name == projectName);
         }
 
         public void Cancel(IUnitTestRun run)
