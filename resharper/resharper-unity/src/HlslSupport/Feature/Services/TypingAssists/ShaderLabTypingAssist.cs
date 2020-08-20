@@ -133,13 +133,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
                                 //<caret>{
                                 
                                 //<caret>    {
+                                string indent;
+                                if (cachingLexer.TokenType == ShaderLabTokenType.WHITESPACE)
+                                    indent = new string(' ', cachingLexer.TokenEnd - cachingLexer.TokenStart + formatSettingsService.INDENT_SIZE);
+                                else
+                                    indent = new string(' ', formatSettingsService.INDENT_SIZE);
                                 
-                                if (cachingLexer.TokenType == ShaderLabTokenType.WHITESPACE || cachingLexer.TokenType == ShaderLabTokenType.LBRACE)
-                                {
-                                    var indent = new string(' ', cachingLexer.TokenEnd - cachingLexer.TokenStart + formatSettingsService.INDENT_SIZE);
-                                    textControl.Document.InsertText(caret, "\n" + indent);
-                                    return true; 
-                                }
+                                textControl.Document.InsertText(caret, "\n" + indent);
+                                return true; 
                             }
                         }
                         closedCount--;
