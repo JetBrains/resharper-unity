@@ -9,23 +9,28 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
+using JetBrains.ReSharper.Feature.Services.Options;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting;
+using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CachingLexers;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingAssists
 {
   [SolutionComponent]
-  public class InjectedHlslTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler
+  public class ShaderLabTypingAssist : TypingAssistLanguageBase<ShaderLabLanguage>, ITypingHandler
   {
-    [NotNull] private readonly HlslInShaderLabDummyFormatter myInShaderLabDummyFormatter;
+      [NotNull] private readonly CachingLexerService myCachingLexerService;
+      [NotNull] private readonly HlslInShaderLabDummyFormatter myShaderLabDummyFormatter;
 
-    public InjectedHlslTypingAssist(
+    public ShaderLabTypingAssist(
       Lifetime lifetime,
       [NotNull] ISolution solution,
       [NotNull] IPsiServices psiServices,
@@ -37,14 +42,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
       [NotNull] IExternalIntellisenseHost externalIntellisenseHost,
       [NotNull] SkippingTypingAssist skippingTypingAssist,
       [NotNull] LastTypingAssistAction lastTypingAssistAction,
-      [NotNull] HlslInShaderLabDummyFormatter inShaderLabDummyFormatter)
+      [NotNull] HlslInShaderLabDummyFormatter shaderLabDummyFormatter)
       : base(solution, settingsStore, cachingLexerService, commandProcessor, psiServices, externalIntellisenseHost,
         skippingTypingAssist, lastTypingAssistAction)
     {
-      myInShaderLabDummyFormatter = inShaderLabDummyFormatter;
-      var braceHandler = new InjectedHlslBraceHandler(this, inShaderLabDummyFormatter, false, productConfigurations.IsInternalMode());
+        myCachingLexerService = cachingLexerService;
+        myShaderLabDummyFormatter = shaderLabDummyFormatter;
+      var braceHandler = new InjectedHlslBraceHandler(this, shaderLabDummyFormatter, false, productConfigurations.IsInternalMode());
       var quoteHandler = new CppQuoteHandler<ShaderLabLanguage>(this);
-      var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, inShaderLabDummyFormatter);
+      var deleteHandler = new CppDeleteHandler<ShaderLabLanguage>(this, shaderLabDummyFormatter);
 
       typingAssistManager.AddTypingHandler(lifetime, '{', this, c => WrapCppAction(c, braceHandler.HandleLeftBraceTyped),
         IsTypingHandlerAvailable);
@@ -80,13 +86,72 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
       typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.Backspace, this,
         c => WrapAction(c, deleteHandler.HandleBackspacePressed), IsActionHandlerAvailable);
       typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.Enter, this,
-        c => WrapAction(c, braceHandler.HandleEnterTyped), IsActionHandlerAvailable);
+        c => WrapAction(c, braceHandler.HandleEnterTyped, WrapEnterAction), IsActionHandlerAvailable);
       typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.Tab, this, HandleTabPressed,
         IsActionHandlerAvailable);
       typingAssistManager.AddActionHandler(lifetime, TextControlActions.ActionIds.TabLeft, this, HandleTabLeftPressed,
         IsActionHandlerAvailable);
       typingAssistManager.AddActionHandler(lifetime, EditorStartNewLineBeforeAction.ACTION_ID, this,
         c => WrapAction(c, braceHandler.HandleStartNewLineBeforePressed), IsActionHandlerAvailable);
+    }
+
+    private bool WrapEnterAction(IActionContext arg, CachingLexer cachingLexer)
+    {
+        var textControl = arg.TextControl;
+        if (GetTypingAssistOption(textControl, TypingAssistOptions.SmartIndentOnEnterExpression))
+        {
+            using (CommandProcessor.UsingCommand("Smart Enter"))
+            {
+                if (textControl.Selection.OneDocRangeWithCaret().Length > 0)
+                    return false;
+
+                var caret = textControl.Caret.Offset();
+                if (caret == 0)
+                    return false;
+                
+                var closedCount = 0;
+                cachingLexer.FindTokenAt(caret - 1);
+                var tt = cachingLexer.TokenType;
+                while (tt != null)
+                {
+                    if (tt == ShaderLabTokenType.RBRACE)
+                        closedCount++;
+                    if (tt == ShaderLabTokenType.LBRACE)
+                    {
+                        if (closedCount == 0)
+                        {
+                            var formatSettingsService = myShaderLabDummyFormatter.GetFormatSettingsService(textControl);
+                            var line = textControl.Document.GetCoordsByOffset(cachingLexer.TokenStart).Line;
+                            var lineOffset = textControl.Document.GetLineStartOffset(line);
+
+                            if (cachingLexer.FindTokenAt(lineOffset))
+                            {
+                                // e.g  
+                                //Shader "Custom/Test2_hlsl" {
+                                //<caret>    Properties {
+                                
+                                //<caret>{
+                                
+                                //<caret>    {
+                                
+                                if (cachingLexer.TokenType == ShaderLabTokenType.WHITESPACE || cachingLexer.TokenType == ShaderLabTokenType.LBRACE)
+                                {
+                                    var indent = new string(' ', cachingLexer.TokenEnd - cachingLexer.TokenStart + formatSettingsService.INDENT_SIZE);
+                                    textControl.Document.InsertText(caret, "\n" + indent);
+                                    return true; 
+                                }
+                            }
+                        }
+                        closedCount--;
+                    }
+                    
+                    cachingLexer.Advance(-1);
+                    tt = cachingLexer.TokenType;
+                }
+            }
+        }
+
+        return false;
     }
 
     private bool WrapCppAction(ITypingContext typingContext, Func<ITypingContext, bool> handleLeftBraceTyped)
@@ -111,14 +176,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
     }
 
 
-    private bool WrapAction(IActionContext actionContext, Func<IActionContext, bool> cppAction)
-    {
-      if (!FindCgContent(actionContext.TextControl, out var lexer)) return false;
+    private bool WrapAction(IActionContext actionContext, Func<IActionContext, bool> cppAction, Func<IActionContext, CachingLexer, bool> shaderLabAction = null)
+    { 
+      if (actionContext.EnsureWritable() != EnsureWritableResult.SUCCESS)
+        return false;
       
+      if (!FindCgContent(actionContext.TextControl, out var lexer)) return false;
+
       if (lexer.TokenType is CppTokenNodeType)
         return cppAction(actionContext);
-      
-      // TODO, execute SL action here
+
+      if (shaderLabAction != null)
+          return shaderLabAction(actionContext, lexer);
       
       return false;
     }
@@ -137,7 +206,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
 
     public override CachingLexer GetCachingLexer(ITextControl textControl)
     {
-      return myInShaderLabDummyFormatter.ComposeKeywordResolvingLexer(textControl);
+      return myShaderLabDummyFormatter.ComposeKeywordResolvingLexer(textControl);
     }
   }
 }
