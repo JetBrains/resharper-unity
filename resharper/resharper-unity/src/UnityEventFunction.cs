@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
@@ -128,7 +129,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool SupportsVersion(Version unityVersion)
         {
-            return myMinimumVersion <= unityVersion && unityVersion <= myMaximumVersion;
+            // Allow 2020.1 to also match 2020.1.4 for maximum version
+            // CompareToIgnoringUndefinedComponents will also allow myMinimumVersion and myMaximumVersion to contain a
+            // build and revision, e.g. an event function can be 2020.1.4 and correctly match a Unity version of
+            // 2020.1.4 or even 2020.1.4.2000
+            return myMinimumVersion.CompareToLenient(unityVersion) <= 0
+                   && unityVersion.CompareToLenient(myMaximumVersion) <= 0;
         }
 
         private static object GetTypeObject(UnityTypeSpec typeSpec, KnownTypesCache knownTypesCache, IPsiModule module)
