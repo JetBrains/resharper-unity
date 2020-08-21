@@ -373,7 +373,7 @@ class PackageManager(private val project: Project) {
         return try {
             val path = version.substring(5)
             val packagesPath = Paths.get(packagesFolder.path)
-            val filePath = packagesPath.resolve(path)
+            val filePath = packagesPath.resolve(path).normalize()
             val packageFolder = VfsUtil.findFile(filePath, false)
             when (packageFolder?.isDirectory) {
                 true -> getPackageDataFromFolder(name, packageFolder, PackageSource.Local)
