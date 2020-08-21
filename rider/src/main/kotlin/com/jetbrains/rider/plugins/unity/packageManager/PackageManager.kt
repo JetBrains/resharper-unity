@@ -320,11 +320,13 @@ class PackageManager(private val project: Project) {
                                lockDetails: LockDetails?)
             : PackageData {
 
-        // Order is important here. Embedded packages in the Packages folder take precedence over everything. Registry
-        // packages are the most likely, and can't clash with other packages, so put them high up. The file: protocol is
-        // used by local and can also be a protocol for git (although I can't get it to work), so check git first
+        // Order is important here. A package can be listed in manifest.json, but if it also exists in Packages, that
+        // embedded copy takes precedence. We look for an embedded folder with the same name, but it can be under any
+        // name - we'll find it again and override it when we look at the other embedded packages.
+        // Registry packages are the most likely to match, and can't clash with other packages, so check them early. The
+        // file: protocol is used by local but it can also be a protocol for git, so check git before local.
         return try {
-            getEmbeddedPackage(packagesFolder, name)
+            getEmbeddedPackage(packagesFolder, name, name)
                 ?: getRegistryPackage(name, version, registry)
                 ?: getGitPackage(name, version, lockDetails?.hash, lockDetails?.revision)
                 ?: getLocalPackage(packagesFolder, name, version)
@@ -346,9 +348,11 @@ class PackageManager(private val project: Project) {
                                builtInPackagesFolder: Path?)
         : PackageData {
 
+        // Embedded packages are listed in packages-lock.json with the name of the package, and the version is a file:
+        // spec pointing to the embedded folder in Packages
         return try {
             when (details.source) {
-                "embedded" -> getEmbeddedPackage(packagesFolder, name)
+                "embedded" -> getEmbeddedPackage(packagesFolder, name, details.version)
                 "registry" -> getRegistryPackage(name, details.version, details.url ?: DEFAULT_REGISTRY_URL)
                 "builtin" -> getBuiltInPackage(name, details.version, builtInPackagesFolder)
                 "git" -> getGitPackage(name, details.version, details.hash)
@@ -454,8 +458,9 @@ class PackageManager(private val project: Project) {
         }
     }
 
-    private fun getEmbeddedPackage(packagesFolder: VirtualFile, name: String): PackageData? {
-        val packageFolder = packagesFolder.findChild(name)
+    private fun getEmbeddedPackage(packagesFolder: VirtualFile, name: String, filePath: String): PackageData? {
+        // filePath will have a file: prefix for packages-lock.json, but will be a simple package name for manifest.json
+        val packageFolder = packagesFolder.findChild(filePath.removePrefix("file:"))
         return getPackageDataFromFolder(name, packageFolder, PackageSource.Embedded)
     }
 
