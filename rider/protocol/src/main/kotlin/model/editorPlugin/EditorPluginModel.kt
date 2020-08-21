@@ -163,5 +163,6 @@ object EditorPluginModel: Root() {
         call("exitUnity", void, bool)
 
         property("buildLocation", string)
+        property("riderPackageVersion", string)
     }
 }

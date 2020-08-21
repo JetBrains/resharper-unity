@@ -57,11 +57,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
-
         private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
 
         private readonly object myCurrentLaunchesTaskAccess = new object();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
+
+        private Version myRiderPackageVersion;
 
         private readonly IProperty<int?> myUnityProcessId;
 
@@ -118,6 +119,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     myUnityProcessId.Value = model.UnityProcessId.Value;
 
                 model.UnityProcessId.FlowInto(lt, myUnityProcessId, id => id);
+
+                if (model.RiderPackageVersion.HasValue()) 
+                    myRiderPackageVersion = new Version(model.RiderPackageVersion.Value);
             });
         }
 
@@ -405,7 +409,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     {
                         var project = elementParent.Id.Project;
                         var targetFrameworkId = elementParent.Id.TargetFrameworkId;
-
                         var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
                         unitTestElement = new NUnitRowTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, elementParent, elementParent.TypeName.GetPersistent());
                         firstRun.AddDynamicElement(unitTestElement);
@@ -415,7 +418,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         var project = fixtureParent.Id.Project;
                         var targetFrameworkId = fixtureParent.Id.TargetFrameworkId;
                         var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
-                        var methodName = result.TestId;
+                        var methodName = GetMethodName(result.TestId);
                         unitTestElement = new NUnitTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid, fixtureParent, fixtureParent.TypeName.GetPersistent(), methodName);
                         firstRun.AddDynamicElement(unitTestElement);
                     }
@@ -455,6 +458,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             {
                 tcs.SetResult(result.Passed);
             });
+        }
+
+        private string GetMethodName(string input)
+        {
+            if (myRiderPackageVersion >= new Version(2, 0, 8))
+            {
+                var index = input.LastIndexOf("[");
+                return input.Substring(index + 1, input.Length - index - 2);
+            }
+
+            return input;
         }
 
         private Task WaitForUnityEditorConnectedAndIdle(Lifetime lifetime)
@@ -521,10 +535,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             // For Rider package 2.0.8+ both TestId and ParentId are formatted as [UniqueName]-[TestId]
             // For previous versions, it is just TestId
-            var firstChoice = run.Elements.SingleOrDefault(a => a.Id.Id == resultTestId && a.Id.Project.Name == projectName);
-            if (firstChoice != null)
-                return firstChoice;
-            return  run.Elements.SingleOrDefault(a => resultTestId.EndsWith($"-[{a.Id.Id}]") && a.Id.Project.Name == projectName);
+            // So, dynamically added element would have that longer id, so checking both
+            return run.Elements
+                .SingleOrDefault(a => a.Id.Project.Name == projectName && (resultTestId == a.Id.Id || resultTestId.EndsWith($"-[{a.Id.Id}]")));
         }
 
         public void Cancel(IUnitTestRun run)

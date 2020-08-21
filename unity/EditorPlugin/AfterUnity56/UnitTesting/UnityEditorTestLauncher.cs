@@ -279,7 +279,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
             ourLogger.Verbose("TestStarted : {0}", test.FullName);
 
             var testId = TestEventsSender.GetIdFromNUnitTest(test);
-            var tResult = new TestResult(testId, test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
+            var parentId = TestEventsSender.GetIdFromNUnitTest(test.Parent);
+            var tResult = new TestResult(testId, test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running, parentId);
           
             clientController?.OnTestStarted(testId);
             TestEventsSender.TestStarted(myLaunch, tResult);
