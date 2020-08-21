@@ -17,9 +17,11 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.JavaScript.Util.Literals;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.Serialization;
 using JetBrains.Text;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
+using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 {
@@ -350,6 +352,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             }
 
             return source;
+        }
+
+        public static void WriteOWORD(OWORD oword, UnsafeWriter unsafeWriter)
+        {
+            unsafeWriter.Write(oword.loqword);
+            unsafeWriter.Write(oword.hiqword);
+        }
+
+        public static OWORD ReadOWORD(UnsafeReader unsafeReader)
+        {
+            return new OWORD(unsafeReader.ReadULong(), unsafeReader.ReadULong());
         }
     }
 }

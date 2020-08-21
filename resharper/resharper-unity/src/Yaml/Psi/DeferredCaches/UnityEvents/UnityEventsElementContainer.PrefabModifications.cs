@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                     if (!modification.PropertyPath.Contains("m_PersistentCalls"))
                         continue;
                     
-                    var location = new LocalReference(currentFile.PsiStorage.PersistentIndex, PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
+                    var location = new LocalReference(currentFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, externalReference.LocalDocumentAnchor));
                     var parts = modification.PropertyPath.Split('.');
                     var unityEventName = parts[0];
                     

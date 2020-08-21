@@ -86,7 +86,10 @@ class ContentModelUpdater : ProjectManagerListener {
                 includedFolders.addAll(newIncludedFolders)
             }
 
-            contentModel.update()
+            application.invokeLater {
+                contentModel.update()
+            }
+
         }
     }
 
