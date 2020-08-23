@@ -175,6 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     when CallGraphUtil.GetCallee(invocationExpression) is IMethod method && IsBurstDiscarded(method):
                 case IFunctionDeclaration functionDeclaration
                     when IsBurstContextBannedForFunction(functionDeclaration.DeclaredElement):
+                case IAttributeSectionList _:
                     return true;
                 default:
                     return false;
