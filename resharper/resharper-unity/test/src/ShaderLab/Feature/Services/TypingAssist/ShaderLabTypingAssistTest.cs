@@ -21,9 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.ShaderLab.Feature.Services.Typ
         [Test] public void SmartEnter05() { DoNamedTest(); }
         [Test] public void SmartEnter06() { DoNamedTest(); }
         [Test] public void SmartEnter07() { DoNamedTest(); }
-        [Test] public void SmartEnterCpp01() { DoNamedTest(); }
-        [Test] public void SmartEnterCpp02() { DoNamedTest(); }
-        [Test] public void SmartEnterCpp03() { DoNamedTest(); }
+        [Test] public void SmartEnterHlsl01() { DoNamedTest(); }
+        [Test] public void SmartEnterHlsl02() { DoNamedTest(); }
+        [Test] public void SmartEnterHlsl03() { DoNamedTest(); }
 
         protected override void DoTest(Lifetime lifetime)
         {

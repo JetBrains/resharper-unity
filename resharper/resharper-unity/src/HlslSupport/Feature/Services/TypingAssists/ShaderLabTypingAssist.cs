@@ -17,6 +17,7 @@ using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CachingLexers;
+using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.TextControl;
@@ -120,7 +121,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
                     {
                         if (closedCount == 0)
                         {
-                            var formatSettingsService = myShaderLabDummyFormatter.GetFormatSettingsService(textControl);
                             var line = textControl.Document.GetCoordsByOffset(cachingLexer.TokenStart).Line;
                             var lineOffset = textControl.Document.GetLineStartOffset(line);
 
@@ -133,11 +133,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
                                 //<caret>{
                                 
                                 //<caret>    {
+                                var baseIndent = myShaderLabDummyFormatter.GetFormatSettingsService(textControl).GetIndentStr();
                                 string indent;
                                 if (cachingLexer.TokenType == ShaderLabTokenType.WHITESPACE)
-                                    indent = new string(' ', cachingLexer.TokenEnd - cachingLexer.TokenStart + formatSettingsService.INDENT_SIZE);
+                                    indent = cachingLexer.GetTokenText() + baseIndent;
                                 else
-                                    indent = new string(' ', formatSettingsService.INDENT_SIZE);
+                                    indent = baseIndent;
                                 
                                 textControl.Document.InsertText(caret, "\n" + indent);
                                 return true; 
