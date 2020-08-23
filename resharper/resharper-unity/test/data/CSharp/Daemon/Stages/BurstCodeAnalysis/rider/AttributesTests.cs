@@ -91,6 +91,9 @@ namespace Burst.AttributesTests
             {
                 var obj = new Object();
             }
+            
+            [Conditional("this also should not be highlighted")]
+            public void F(){}
         }
     }
 }
