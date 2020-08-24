@@ -1,38 +1,19 @@
 package integrationTests
 
-import base.UnityIntegrationTestBase
-import com.intellij.util.io.exists
+import base.integrationTests.*
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.model.EditorLogEntry
-import com.jetbrains.rider.model.RunMethodData
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
-import com.jetbrains.rider.test.scriptingApi.changeFileSystem2
-import com.jetbrains.rider.test.scriptingApi.checkSwea
 import org.testng.annotations.Test
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
-class ConnectionTest : UnityIntegrationTestBase() {
+class ConnectionTest : IntegrationTestBase() {
     override fun getSolutionDirectoryName(): String = "SimpleUnityProjectWithoutPlugin"
-
-    override fun preprocessTempDirectory(tempDir: File) {
-        // Needed, because com.jetbrains.rider.plugins.unity.ProtocolInstanceWatcher
-        //  isn't initialized without correct unity file structure
-        val libraryFolder = Paths.get(tempDir.toString(), "Library")
-        if (!libraryFolder.exists()) {
-            Files.createDirectory(libraryFolder)
-        }
-
-        super.preprocessTempDirectory(tempDir)
-    }
 
     @Test
     fun installAndCheckConnectionAfterUnityStart() {
@@ -95,7 +76,7 @@ class ConnectionTest : UnityIntegrationTestBase() {
             waitConnection()
 
             var editorLogEntry: EditorLogEntry? = null
-            rdUnityModel.onUnityLogEvent.adviseNotNull(lifetime) { entry ->
+            rdUnityModel.onUnityLogEvent.adviseNotNullOnce(lifetime.createNested()) { entry ->
                 editorLogEntry = entry
             }
 
@@ -103,23 +84,10 @@ class ConnectionTest : UnityIntegrationTestBase() {
             waitAndPump(project.lifetime, { editorLogEntry != null }, defaultTimeout) { "Test message is not received" }
 
             executeWithGold(testGoldFile) {
-                val type = RdLogEventType.values()[editorLogEntry!!.type]
-                val mode = RdLogEventMode.values()[editorLogEntry!!.mode]
-                if (type == RdLogEventType.Message) {
-                    it.print("$type, $mode, ${editorLogEntry!!.message}\n\n" +
-                        editorLogEntry!!.stackTrace.replace(Regex(" \\(at .+\\)"), ""))
-                }
+                printEditorLogEntry(it, editorLogEntry!!)
             }
 
             checkSweaInSolution()
         }
     }
-
-    private fun checkSweaInSolution() {
-        changeFileSystem2(project) { arrayOf(File(project.basePath, "Assembly-CSharp.csproj")) }
-        checkSwea(project)
-    }
-
-    private fun executeIntegrationTestMethod(methodName: String) =
-        executeMethod(RunMethodData("Assembly-CSharp-Editor", "Editor.IntegrationTestHelper", methodName))
 }
