@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using JetBrains.Annotations;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Editor
 {
@@ -32,6 +34,7 @@ namespace Editor
             }
             
             File.WriteAllText(".start", string.Empty);
+            EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity", OpenSceneMode.Single);
         }
 
         public static void ResetAndStart()
