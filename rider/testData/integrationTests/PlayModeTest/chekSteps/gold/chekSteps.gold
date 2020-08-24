@@ -1,0 +1,26 @@
+Message, Play, 2000000
+ UnityEngine.Debug:Log(Object)
+NewBehaviourScript:Update()
+UnityEditor.EditorApplication:Step()
+JetBrains.Rider.Unity.Editor.MainThreadDispatcher:Queue(Action)
+JetBrains.Rider.Unity.Editor.<>c:<AdviseUnityActions>b__30_3(Unit)
+JetBrains.Collections.Viewable.Signal`1:Fire(Unit)
+JetBrains.Rd.Impl.RdSignal`1:OnWireReceived(UnsafeReader)
+JetBrains.Rd.Impl.MessageBroker:Execute(IRdWireable, Byte[])
+JetBrains.Rd.Impl.<>c__DisplayClass8_0:<Invoke>b__0()
+JetBrains.Rider.Unity.Editor.MainThreadDispatcher:DispatchTasks()
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions()
+
+Message, Play, 2000000
+ UnityEngine.Debug:Log(Object)
+NewBehaviourScript:Update()
+UnityEditor.EditorApplication:Step()
+JetBrains.Rider.Unity.Editor.MainThreadDispatcher:Queue(Action)
+JetBrains.Rider.Unity.Editor.<>c:<AdviseUnityActions>b__30_3(Unit)
+JetBrains.Collections.Viewable.Signal`1:Fire(Unit)
+JetBrains.Rd.Impl.RdSignal`1:OnWireReceived(UnsafeReader)
+JetBrains.Rd.Impl.MessageBroker:Execute(IRdWireable, Byte[])
+JetBrains.Rd.Impl.<>c__DisplayClass8_0:<Invoke>b__0()
+JetBrains.Rider.Unity.Editor.MainThreadDispatcher:DispatchTasks()
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions()
+
