@@ -883,16 +883,16 @@
     <message name="OnEnable" static="False" description="This function is called when the object is loaded." path="Documentation/en/ScriptReference/ScriptableObject.OnEnable.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnValidate" static="False" minimumVersion="2020.2" description="This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only)." path="Documentation/en/ScriptReference/ScriptableObject.OnValidate.html">
+    <message name="OnValidate" static="False" minimumVersion="2020.1" description="This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only)." path="Documentation/en/ScriptReference/ScriptableObject.OnValidate.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="Reset" static="False" minimumVersion="2020.2" description="Reset to default values." path="Documentation/en/ScriptReference/ScriptableObject.Reset.html">
+    <message name="Reset" static="False" minimumVersion="2020.1" description="Reset to default values." path="Documentation/en/ScriptReference/ScriptableObject.Reset.html">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnValidate" static="False" maximumVersion="2020.1" undocumented="True" description="This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).">
+    <message name="OnValidate" static="False" maximumVersion="2019.4" undocumented="True" description="This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).">
       <returns type="System.Void" array="False" />
     </message>
-    <message name="Reset" static="False" maximumVersion="2020.1" undocumented="True" description="Reset to default values.">
+    <message name="Reset" static="False" maximumVersion="2019.4" undocumented="True" description="Reset to default values.">
       <returns type="System.Void" array="False" />
     </message>
   </type>

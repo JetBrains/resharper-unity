@@ -324,16 +324,16 @@ namespace ApiParser
             // ScriptableObjects. Off the top of my head this includes, Awake, OnEnable, OnDisable, OnDestroy,
             // OnValidate, and Reset, but there could be more.
             type = unityApi.FindType("ScriptableObject");
-            if (type != null && apiVersion < new Version(2020, 2))
+            if (type != null && apiVersion < new Version(2020, 1))
             {
-                // Documented in 2020.2
+                // Documented in 2020.1
                 var eventFunction = new UnityApiEventFunction("OnValidate", false, false, ApiType.Void, apiVersion,
                     description:
                     "This function is called when the script is loaded or a value is changed in the inspector (Called in the editor only).",
                     undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
 
-                // Documented in 2020.2
+                // Documented in 2020.1
                 eventFunction = new UnityApiEventFunction("Reset", false, false, ApiType.Void, apiVersion,
                     description: "Reset to default values.", undocumented: true);
                 type.MergeEventFunction(eventFunction, apiVersion);
