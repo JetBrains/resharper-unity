@@ -38,8 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             if (!cgIncludeFolder.IsEmpty)
             {
                 properties.IncludePaths.Add(cgIncludeFolder);
-                properties.IncludePaths.Add(cache.Solution.SolutionDirectory);
             }
+            properties.IncludePaths.Add(cache.Solution.SolutionDirectory);
 
             var shaderCache = cache.Solution.GetComponent<InjectedHlslFileLocationTracker>();
 
