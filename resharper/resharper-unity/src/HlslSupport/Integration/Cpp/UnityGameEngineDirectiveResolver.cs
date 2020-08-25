@@ -83,13 +83,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                             if (source == null || version == null)
                                 continue;
 
-                            if (source.Equals("embedded"))
+                            if (source.Equals("embedded") || source.Equals("local"))
                             {
                                 var packagePath = FileSystemPath.TryParse(version.RemoveStart("file:"));
                                 if (packagePath.IsEmpty)
                                     continue;
 
-                                if (packagePath.IsAbsolute)
+                                if (packagePath.IsAbsolute) // should be true for local only
                                 {
                                     myPackageLockPaths[packageName] = packagePath.FullPath;
                                 }
@@ -103,6 +103,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                             {
                                 var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
                                     .Combine(packageName + "@" + version);
+                                myPackageLockPaths[packageName] = cachedPackagePath.FullPath;
+                            } else if (source.Equals("git"))
+                            {
+                                var hash = (jProperty.Value["hash"] as JValue)?.Value as string;
+                                if (hash == null)
+                                    continue;
+                                
+                                var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
+                                    .Combine(packageName + "@" + hash);
                                 myPackageLockPaths[packageName] = cachedPackagePath.FullPath;
                             }
                         }
