@@ -7,6 +7,8 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.Cpp.Parsing.Preprocessor;
 using JetBrains.ReSharper.Psi.Cpp.Util;
 using JetBrains.Util;
+using JetBrains.Util.Extension;
+using Newtonsoft.Json.Linq;
 
 namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 {
@@ -18,7 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
         private readonly UnityReferencesTracker myReferencesTracker;
         private readonly ILogger myLogger;
         private readonly object myLockObject = new object();
-        private ConcurrentDictionary<string, string> myCacheSuffixes;
+        private readonly ConcurrentDictionary<string, string> myVersionsFromDirectories = new ConcurrentDictionary<string, string>();
+        private readonly ConcurrentDictionary<string, string> myPackageLockPaths = new ConcurrentDictionary<string, string>();
+        private bool myCacheInitialized = false;
 
         public UnityGameEngineDirectiveResolver(ISolution solution, UnitySolutionTracker solutionTracker,
                                                 UnityReferencesTracker referencesTracker, ILogger logger)
@@ -51,85 +55,154 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
 
             var packageName = path.Substring(pos, endPos - pos);
 
-            var suffix = GetCacheSuffix(packageName);
-            if (suffix == null)
+            var packagePath = GetPackagePath(packageName);
+            if (packagePath == null)
                 return path;
-            
-            var localPackagePath = FileSystemPath.Parse("Packages")
-                .Combine(packageName + "@" + suffix + path.Substring(endPos));
-            if (solutionFolder.Combine(localPackagePath).Exists == FileSystemPath.Existence.File)
-                return localPackagePath.FullPath;
 
-            var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
-                .Combine(packageName + "@" + suffix + path.Substring(endPos));
-            return cachedPackagePath.FullPath;
+            return packagePath + path.Substring(endPos);
+        }
+        
+        private void ParsePackageLock()
+        {
+            try
+            {
+                var packagesLockPath = mySolution.SolutionDirectory.Combine("Packages").Combine("packages-lock.json");
+                if (packagesLockPath.Exists == FileSystemPath.Existence.File)
+                {
+                    var json = JObject.Parse(packagesLockPath.ReadAllText2().Text);
+                    var dependencies = json["dependencies"]?.AsArray();
+                    if (dependencies != null)
+                    {
+                        foreach (var dependency in dependencies)
+                        {
+                            if (!(dependency is JProperty jProperty))
+                                continue;
+                            var packageName = jProperty.Name;
+                            var source = (jProperty.Value["source"] as JValue)?.Value as string;
+                            var version = (jProperty.Value["version"] as JValue)?.Value as string;
+                            if (source == null || version == null)
+                                continue;
+
+                            if (source.Equals("embedded"))
+                            {
+                                var packagePath = FileSystemPath.TryParse(version.RemoveStart("file:"));
+                                if (packagePath.IsEmpty)
+                                    continue;
+
+                                if (packagePath.IsAbsolute)
+                                {
+                                    myPackageLockPaths[packageName] = packagePath.FullPath;
+                                }
+                                else
+                                {
+                                    var relativePackagePath = FileSystemPath.Parse("Packages").Combine(packagePath);
+                                    myPackageLockPaths[packageName] = relativePackagePath.FullPath;
+                                }
+                            }
+                            else if (source.Equals("registry"))
+                            {
+                                var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
+                                    .Combine(packageName + "@" + version);
+                                myPackageLockPaths[packageName] = cachedPackagePath.FullPath;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                myLogger.Error(e, "An error occurred while parsing package-lock.json");
+            }
         }
 
         [CanBeNull]
-        private string GetCacheSuffix(string packageName)
+        private string GetPackagePath(string packageName)
         {
             // TODO: This cache should be based on resolved packages, like we have in the frontend for PackageManager
             // TODO: Invalidate this cache when Packages/manifest.json or Packages/packages-lock.json changes
-            if (myCacheSuffixes == null)
+            if (!myCacheInitialized)
             {
                 lock (myLockObject)
                 {
-                    if (myCacheSuffixes == null)
+                    if (!myCacheInitialized)
                     {
-                        var result = new ConcurrentDictionary<string, string>();
+
                         try
                         {
-                            var solutionFolder = mySolution.SolutionDirectory;
-                            var packagesFolder = solutionFolder.Combine("Packages");
-                            var packagesCacheFolder = solutionFolder.Combine("Library").Combine("PackageCache");
-
-                            var candidates = new[] {packagesFolder, packagesCacheFolder};
-                            foreach (var candidate in candidates)
-                            {
-                                foreach (var folder in candidate.GetDirectoryEntries())
-                                {
-                                    if (!folder.IsDirectory)
-                                        continue;
-
-                                    // Cache entries are usually name@version, but git and local tarball packages don't
-                                    // have versions, so are name@hash and name@hash-timestamp, respectively. Packages
-                                    // in the Packages folder don't usually have a version, but can do, and things will
-                                    // still work, so try and find one
-                                    var nameAndSuffix = folder.RelativePath.Name.Split('@');
-                                    if (nameAndSuffix.Length != 2)
-                                        continue;
-
-                                    var name = nameAndSuffix[0];
-                                    var suffix = nameAndSuffix[1];
-
-                                    // If the suffix is a version, use it to pick the latest version. If not, pick an
-                                    // arbitrary cache entry. There is no guarantee that either method gets the right
-                                    // cache entry, but it's the best we can do without proper package details
-                                    if (JetSemanticVersion.TryParse(suffix, out var version) &&
-                                        result.TryGetValue(name, out var oldSuffix) &&
-                                        JetSemanticVersion.TryParse(oldSuffix, out var oldVersion) &&
-                                        oldVersion > version)
-                                    {
-                                        continue;
-                                    }
-
-                                    result[name] = suffix;
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            myLogger.Error(e, "Exception during calculating unity shader include paths");
+                            ParsePackageLock();
+                            ProcessPackagesDirectories();
                         }
                         finally
                         {
-                            myCacheSuffixes = result;
+                            myCacheInitialized = true;
                         }
                     }
                 }
             }
 
-            return myCacheSuffixes.GetValueSafe(packageName);
+            if (myPackageLockPaths.TryGetValue(packageName, out var path))
+                return path;
+            
+            if (!myVersionsFromDirectories.TryGetValue(packageName, out var version))
+                return null;
+            
+            var solutionFolder = mySolution.SolutionDirectory;
+            var localPackagePath = FileSystemPath.Parse("Packages")
+                .Combine(packageName + "@" + version);
+            if (solutionFolder.Combine(localPackagePath).Exists == FileSystemPath.Existence.File)
+                return localPackagePath.FullPath;
+
+            var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
+                .Combine(packageName + "@" + version);
+            return cachedPackagePath.FullPath;
+        }
+
+        private void ProcessPackagesDirectories()
+        {
+            try
+            {
+                var solutionFolder = mySolution.SolutionDirectory;
+                var packagesFolder = solutionFolder.Combine("Packages");
+                var packagesCacheFolder = solutionFolder.Combine("Library").Combine("PackageCache");
+
+                var candidates = new[] {packagesFolder, packagesCacheFolder};
+                foreach (var candidate in candidates)
+                {
+                    foreach (var folder in candidate.GetDirectoryEntries())
+                    {
+                        if (!folder.IsDirectory)
+                            continue;
+
+                        // Cache entries are usually name@version, but git and local tarball packages don't
+                        // have versions, so are name@hash and name@hash-timestamp, respectively. Packages
+                        // in the Packages folder don't usually have a version, but can do, and things will
+                        // still work, so try and find one
+                        var nameAndSuffix = folder.RelativePath.Name.Split('@');
+                        if (nameAndSuffix.Length != 2)
+                            continue;
+
+                        var name = nameAndSuffix[0];
+                        var suffix = nameAndSuffix[1];
+
+                        // If the suffix is a version, use it to pick the latest version. If not, pick an
+                        // arbitrary cache entry. There is no guarantee that either method gets the right
+                        // cache entry, but it's the best we can do without proper package details
+                        if (JetSemanticVersion.TryParse(suffix, out var version) &&
+                            myVersionsFromDirectories.TryGetValue(name, out var oldSuffix) &&
+                            JetSemanticVersion.TryParse(oldSuffix, out var oldVersion) &&
+                            oldVersion > version)
+                        {
+                            continue;
+                        }
+
+                        myVersionsFromDirectories[name] = suffix;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                myLogger.Error(e, "Exception during calculating unity shader include paths");
+            }
         }
     }
 }
