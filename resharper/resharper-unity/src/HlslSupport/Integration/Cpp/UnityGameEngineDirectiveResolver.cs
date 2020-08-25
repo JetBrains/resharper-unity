@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                                     continue;
                                 
                                 var cachedPackagePath = FileSystemPath.Parse("Library").Combine("PackageCache")
-                                    .Combine(packageName + "@" + hash);
+                                    .Combine(packageName + "@" + hash.Substring(0, Math.Min(hash.Length, 10)));
                                 myPackageLockPaths[packageName] = cachedPackagePath.FullPath;
                             }
                         }
