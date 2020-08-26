@@ -33,8 +33,6 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         var testLauncher = new UnityEditorTestLauncher(model.UnitTestLaunch.Value, connectionLifetime);
         return testLauncher.TryLaunchUnitTests();
       });
-      
-      model.RiderPackageVersion.Value = RiderPackageInterop.GetAssembly().GetName().Version.ToString();
     }
   }
 }
