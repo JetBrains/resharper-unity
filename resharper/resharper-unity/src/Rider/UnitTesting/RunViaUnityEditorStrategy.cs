@@ -188,8 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             return;
                         }
 
-                        var task = myUnityHost.GetValue(model =>
-                            model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
+                        var task = myUnityHost.GetValue(model => model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
                         task.Result.AdviseNotNull(myLifetime, result =>
                         {
                             if (!run.Lifetime.IsAlive)
@@ -414,12 +413,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         var project = fixtureParent.Id.Project;
                         var targetFrameworkId = fixtureParent.Id.TargetFrameworkId;
                         var uid = myIDFactory.Create(myUnitTestProvider, project, targetFrameworkId, result.TestId);
-                        var element = new NUnitTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid,
+                        unitTestElement = new NUnitTestElement(mySolution.GetComponent<NUnitServiceProvider>(), uid,
                             fixtureParent, fixtureParent.TypeName.GetPersistent(), result.TestId);
 
-                        firstRun.AddDynamicElement(element);
+                        firstRun.AddDynamicElement(unitTestElement);
                     }
                 }
+                
+                if (unitTestElement == null)
+                    return;
 
                 switch (result.Status)
                 {
@@ -518,10 +520,9 @@ else if (criterion is CategoryCriterion categoryCriterion)
         }
 
         [CanBeNull]
-        private IUnitTestElement GetElementById(IUnitTestRun run, string projectName, string fullName)
+        private IUnitTestElement GetElementById(IUnitTestRun run, string projectName, string resultTestId)
         {
-            return run.Elements
-                .SingleOrDefault(a => a.Id.Project.Name == projectName && fullName == a.Id.Id);
+            return run.Elements.SingleOrDefault(a => a.Id.Project.Name == projectName && resultTestId == a.Id.Id);
         }
 
         public void Cancel(IUnitTestRun run)
