@@ -40,10 +40,10 @@ task packReSharperPlugin(type: nugetPack.class) {
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
-    def changelogNotes = changelog.get(productVersion).withFilter({ line ->
+    def changelogNotes = changelog.get(pluginVersion).withFilter({ line ->
         !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")
     }).toPlainText().trim()
-    def ReleaseNotes = """New in $productVersion
+    def ReleaseNotes = """New in $pluginVersion
 
 ${changelogNotes}
 

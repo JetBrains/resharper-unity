@@ -16,6 +16,7 @@ plugins {
 ext.repoRoot = project.file("..")
 ext.isWindows = Os.isFamily(Os.FAMILY_WINDOWS)
 ext.bundledRiderSdkRoot = new File(projectDir, "dependencies")  // SDK from TC configuration/artifacts
+ext.pluginVersion = ext.productVersion + "." + ext.maintenanceVersion
 
 repositories {
     maven { url "https://cache-redirector.jetbrains.com/intellij-repository/snapshots" }
@@ -36,7 +37,7 @@ wrapper {
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
-version "${productVersion}.0.$BuildCounter"
+version "${pluginVersion}.$BuildCounter"
 
 ext.buildServer = BuildServerKt.initBuildServer(gradle)
 if (buildServer.automatedBuild) {
