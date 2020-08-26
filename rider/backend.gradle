@@ -43,6 +43,14 @@ task packReSharperPlugin(type: nugetPack.class) {
     def changelogNotes = changelog.get(pluginVersion).withFilter({ line ->
         !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")
     }).toPlainText().trim()
+
+    // There's a bug in the changelog plugin that adds extra newlines on Windows, possibly
+    // due to Unix/Windows line ending mismatch.
+    // Remove this hack once JetBrains/gradle-changelog-plugin#8 is fixed
+    if (isWindows) {
+      changelogNotes = changelogNotes.replaceAll("\n\n", "\r\n")
+    }
+
     def ReleaseNotes = """New in $pluginVersion
 
 ${changelogNotes}
