@@ -52,7 +52,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         var launcherType = riderPackageAssembly?.GetType("Packages.Rider.Editor.UnitTesting.RiderTestRunner");
         if (launcherType == null) return false;
         var assemblyNames = myLaunch.TestFilters.Select(a => a.AssemblyName).ToArray();
-        var testNames = new string[] {}; //myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
+        var testNames = myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
         var groupNames = myLaunch.TestFilters.SelectMany(a => a.GroupNames).ToArray();
         var categoryNames = myLaunch.TestFilters.SelectMany(a => a.TestCategories).ToArray();
         var mode = (int) myLaunch.TestMode; // 0 for Both, 1 for Edit, 2 for Play

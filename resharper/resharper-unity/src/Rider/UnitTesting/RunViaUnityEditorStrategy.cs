@@ -493,11 +493,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 .Where(unitTestElement => unitTestElement is NUnitTestElement ||
                                           unitTestElement is NUnitRowTestElement).ToArray();
 
-            var testNames = elements.Select(p => p.Id.Id).ToList();
+            var testNames = elements.Where(a=>!a.Explicit)
+                .Union(run.Launch.Criterion.Explicit)
+                .Select(p => p.Id.Id).ToList();
 
             var groups = new List<string>();
             var categories = new List<string>();
-            var criterion = run.Launch.Criterion.Criterion;
+            // https://github.com/JetBrains/resharper-unity/pull/1801#discussion_r472383244
+            /*var criterion = run.Launch.Criterion.Criterion;
             if (criterion is ConjunctiveCriterion conjunctiveCriterion)
             {
                 groups.AddRange(conjunctiveCriterion.Criteria.Where(a => a is TestAncestorCriterion).SelectMany(b =>
@@ -508,7 +511,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             else if (criterion is TestAncestorCriterion ancestorCriterion)
                 groups.AddRange(ancestorCriterion.AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$"));
             else if (criterion is CategoryCriterion categoryCriterion)
-                categories.Add(categoryCriterion.Category.Name);
+                categories.Add(categoryCriterion.Category.Name);*/
 
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
             return filters;
