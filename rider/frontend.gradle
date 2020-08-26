@@ -71,9 +71,9 @@ intellij {
 patchPluginXml {
     changeNotes """
         <body>
-        <p><b>New in $productVersion</b></p>
+        <p><b>New in $pluginVersion</b></p>
         <p>
-        ${changelog.get(productVersion).toHTML()}
+        ${changelog.get(pluginVersion).toHTML()}
         </p>
         <p>See the <a href="https://github.com/JetBrains/resharper-unity/blob/net202/CHANGELOG.md">CHANGELOG</a> for more details and history.</p>
         </body>
