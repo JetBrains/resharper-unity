@@ -40,10 +40,18 @@ task packReSharperPlugin(type: nugetPack.class) {
     group = backendGroup
     description = 'Packs resulting DLLs into a NuGet package which is an R# extension.'
 
-    def changelogNotes = changelog.get(productVersion).withFilter({ line ->
+    def changelogNotes = changelog.get(pluginVersion).withFilter({ line ->
         !line.startsWith("- Rider:") && !line.startsWith("- Unity editor:")
     }).toPlainText().trim()
-    def ReleaseNotes = """New in $productVersion
+
+    // There's a bug in the changelog plugin that adds extra newlines on Windows, possibly
+    // due to Unix/Windows line ending mismatch.
+    // Remove this hack once JetBrains/gradle-changelog-plugin#8 is fixed
+    if (isWindows) {
+      changelogNotes = changelogNotes.replaceAll("\n\n", "\r\n")
+    }
+
+    def ReleaseNotes = """New in $pluginVersion
 
 ${changelogNotes}
 

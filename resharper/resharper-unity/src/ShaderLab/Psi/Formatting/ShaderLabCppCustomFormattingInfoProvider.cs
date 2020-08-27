@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting
       cppCodeFormatter.RemoveTrailingSpaces( cppFile);
       
       var lineEnding = cppFile.DetectLineEnding(cppFile.GetPsiServices());
-      LowLevelModificationUtil.AddChildBefore(cppFile.firstChild, cppCodeFormatter.CreateNewLine(lineEnding));
+      LowLevelModificationUtil.AddChildBefore(cppFile.firstChild, cppCodeFormatter.CreateNewLine(lineEnding), cppCodeFormatter.CreateSpace(s, null));
       LowLevelModificationUtil.AddChildAfter(cppFile.lastChild, cppCodeFormatter.CreateNewLine(lineEnding), cppCodeFormatter.CreateSpace(s, null));
     }
   }
