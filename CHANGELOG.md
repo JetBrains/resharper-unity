@@ -20,9 +20,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Correctly handle lambdas, actions and local functions in performance critical and Burst contexts ([#1787](https://github.com/JetBrains/resharper-unity/pull/1787))
 - Recognise `OnValidate` as a valid message for `ScriptableObject` in Unity 2020.1.x projects ([RIDER-49130](https://youtrack.jetbrains.com/issue/RIDER-49130), [#1807](https://github.com/JetBrains/resharper-unity/pull/1807))
+- Exclude string literal attribute arguments as part of Burst context analysis ([#1814](https://github.com/JetBrains/resharper-unity/issues/1814), [#1815](https://github.com/JetBrains/resharper-unity/pull/1815))
 - Find shader includes in `file:` based packages ([#1817](https://github.com/JetBrains/resharper-unity/pull/1817))
-- Rider: Correctly resolve local packages with too many parent segments in path ([#1796](https://github.com/JetBrains/resharper-unity/issues/1796), [#1811](https://github.com/JetBrains/resharper-unity/pull/1811))
-- Rider: Correctly resolve embedded package where folder name does not match package name ([#1778](https://github.com/JetBrains/resharper-unity/issues/1778), [#1811](https://github.com/JetBrains/resharper-unity/pull/1811))
+- Rider: Correctly resolve local packages in Unity Explorer with too many parent segments in path ([#1796](https://github.com/JetBrains/resharper-unity/issues/1796), [#1811](https://github.com/JetBrains/resharper-unity/pull/1811))
+- Rider: Correctly resolve embedded package in Unity Explorer where folder name does not match package name ([#1778](https://github.com/JetBrains/resharper-unity/issues/1778), [#1811](https://github.com/JetBrains/resharper-unity/pull/1811))
+- Rider: Avoid Unity test discovery when Standalone NUnit is selected ([RIDER-49891](https://youtrack.jetbrains.com/issue/RIDER-49891), [#1823](https://github.com/JetBrains/resharper-unity/pull/1823))
 
 
 
