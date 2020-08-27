@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public override IUnitTestRunStrategy GetRunStrategy(IUnitTestElement element)
         {
-            return IsUnityUnitTestStrategy(myUnitySolutionTracker, myRdUnityModel, myEditorProtocol) ? myUnityEditorStrategy : base.GetRunStrategy(element);
+            return IsUnityUnitTestStrategy() ? myUnityEditorStrategy : base.GetRunStrategy(element);
         }
 
         public static bool IsUnityUnitTestStrategy(UnitySolutionTracker unitySolutionTracker, RdUnityModel rdUnityModel, UnityEditorProtocol editorProtocol)
@@ -62,6 +62,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605
             return !rdUnityModel.UnitTestPreference.HasValue() && editorProtocol.UnityModel.Value != null ||
                    (rdUnityModel.UnitTestPreference.HasValue() && rdUnityModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit);
+        }
+
+        public bool IsUnityUnitTestStrategy()
+        {
+            return IsUnityUnitTestStrategy(myUnitySolutionTracker, myRdUnityModel, myEditorProtocol);
         }
     }
 }
