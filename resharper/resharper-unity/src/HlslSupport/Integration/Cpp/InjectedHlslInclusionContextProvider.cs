@@ -41,20 +41,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             }
             properties.IncludePaths.Add(cache.Solution.SolutionDirectory);
 
-            var shaderCache = cache.Solution.GetComponent<InjectedHlslFileLocationTracker>();
-
-            // TODO 1) is cache ready? what will happen under document transaction? check for bad moment?
-            // TODO 2) what will happen under psi transaction? include in cache could be out-of date. Try use include quickfix when cginclude is after cgprogram where QF is used
-            var includeLocation = shaderCache.GetIncludes(rootFile);
-
-            return CreateInclusionContextResult(cache, rootFile,
-                includeLocation, options, properties, null, cacheVersion, lifetime);
+            return CreateInclusionContextResult(cache, rootFile, options, properties, null, cacheVersion, lifetime);
         }
+        
+        
+        
         
         public static CppInclusionContextResult CreateInclusionContextResult(
             CppGlobalSymbolCache cache,
             CppFileLocation rootFile,
-            IEnumerable<CppFileLocation> includeLocations,
             FileProcessingOptions options,
             CppCompilationProperties compilationProperties,
             ISymbolScope symbolScope,
@@ -67,14 +62,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
                 randomProjectFile, cache, rootFile, options.File, languageDialect, 
                 cacheVersion, options.AllowPendingActions, options.CollectPPUsages, lifetime, symbolScope);
             var directory = randomProjectFile.Location.Directory;
-            
+
+            var shaderCache = cache.Solution.GetComponent<InjectedHlslFileLocationTracker>();
+            var (includes, defines) = shaderCache.GetProgramInfo(rootFile);
+
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("__RESHARPER__"));
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("INTERNAL_DATA= "));
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("WorldReflectionVector(data,normal)=data.worldRefl"));
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("WorldNormalVector(data,normal)=normal"));
+
+            foreach (var define in defines)
+            {
+                inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro($"{define.Key}={define.Value}"));
+            }
+            
+            // TODO 1) is cache ready? what will happen under document transaction? check for bad moment?
+            // TODO 2) what will happen under psi transaction? include in cache could be out-of date. Try use include quickfix when cginclude is after cgprogram where QF is used
+
+            
             inclusionContext.PushInclude(rootFile, directory, false);
-            foreach (CppFileLocation includeLocation in includeLocations)
+            foreach (CppFileLocation includeLocation in includes)
             {
                 if (includeLocation.IsValid() && !includeLocation.Equals(rootFile))
                 {
