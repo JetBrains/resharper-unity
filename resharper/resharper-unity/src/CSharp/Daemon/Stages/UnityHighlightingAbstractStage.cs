@@ -142,11 +142,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         {
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
                 DaemonProcess.ContextBoundSettingsStore);
+
             File.ProcessThisAndDescendants(this, highlightingConsumer);
 
             foreach (var declaration in File.Descendants<ICSharpFunctionDeclaration>())
             {
                 var declaredElement = declaration.DeclaredElement;
+
                 if (declaredElement == null)
                     continue;
 
@@ -154,6 +156,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 {
                     var method = (declaredElement as IMethod).NotNull("method != null");
                     var eventFunction = myAPI.GetUnityEventFunction(method);
+
                     if (eventFunction == null) // happens after event function refactoring 
                         continue;
 
@@ -177,18 +180,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         private UnityProblemAnalyzerContext GetProblemAnalyzerContext(ITreeNode element)
         {
             var res = new UnityProblemAnalyzerContext();
+
             if (myIsPerformanceAnalysisEnabled && IsPerformanceCriticalScope(element))
                 res |= UnityProblemAnalyzerContext.PERFORMANCE_CONTEXT;
-            if (myIsBurstAnalysisEnabled && IsBurstScope(element))
+
+            if (!myIsBurstAnalysisEnabled) return res;
+
+            if (IsBurstScope(element))
                 res |= UnityProblemAnalyzerContext.BURST_CONTEXT;
+            
             return res;
         }
 
         private UnityProblemAnalyzerContext GetProhibitedContexts(ITreeNode node)
         {
             var context = UnityProblemAnalyzerContext.NONE;
+
             if (IsBurstContextBannedNode(node))
                 context |= UnityProblemAnalyzerContext.BURST_CONTEXT;
+
             return context;
         }
 
@@ -196,7 +206,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         {
             if (!myIsBurstAnalysisEnabled)
                 return;
+
             var roots = myCallGraphBurstMarksProvider.GetRootMarksFromNode(node, null);
+
             foreach (var element in roots)
                 myCollectedBurstRootElements.Add(element);
         }
@@ -204,19 +216,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
             CollectRootElements(element);
+
             // prohibiting context always has higher priority than creating, and they does not affect each other
             if (IsFunctionNode(element))
                 myProblemAnalyzerContexts.Push(GetProblemAnalyzerContext(element));
+
             if (IsBurstContextBannedNode(element))
                 myProhibitedContexts.Push(GetProhibitedContexts(element));
 
             if (element is ICSharpDeclaration declaration)
             {
-                foreach (var unityDeclarationHiglightingProvider in myDeclarationHighlightingProviders)
+                foreach (var unityDeclarationHighlightingProvider in myDeclarationHighlightingProviders)
                 {
                     var result =
-                        unityDeclarationHiglightingProvider.AddDeclarationHighlighting(declaration, consumer,
+                        unityDeclarationHighlightingProvider.AddDeclarationHighlighting(declaration, consumer,
                             myProcessKind);
+
                     if (result)
                         myMarkedDeclarations.Add(
                             declaration.DeclaredElement.NotNull("declaration.DeclaredElement != null"));
@@ -225,24 +240,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
             try
             {
-                if (myProblemAnalyzerContexts.Count > 0)
+                if (myProblemAnalyzerContexts.Count <= 0) return;
+
+                const byte end = UnityProblemAnalyzerContextUtil.UnityProblemAnalyzerContextSize;
+                var possibleContexts = myProblemAnalyzerContexts.Peek();
+                var prohibitedContexts = UnityProblemAnalyzerContext.NONE;
+
+                if (myProhibitedContexts.Count > 0)
+                    prohibitedContexts = myProhibitedContexts.Peek();
+
+                for (byte context = 1, index = 0; index < end; index++, context <<= 1)
                 {
-                    const byte end = UnityProblemAnalyzerContextUtil.UnityProblemAnalyzerContextSize;
-                    var possibleContexts = myProblemAnalyzerContexts.Peek();
-                    var prohibitedContexts = UnityProblemAnalyzerContext.NONE;
-                    if (myProhibitedContexts.Count > 0)
-                        prohibitedContexts = myProhibitedContexts.Peek();
-                    for (byte context = 1, index = 0; index < end; index++, context <<= 1)
+                    var enumContext = (UnityProblemAnalyzerContext) context;
+
+                    if (!possibleContexts.HasFlag(enumContext) || prohibitedContexts.HasFlag(enumContext)) continue;
+
+                    foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[enumContext])
                     {
-                        var enumContext = (UnityProblemAnalyzerContext) context;
-                        if (possibleContexts.HasFlag(enumContext) && !prohibitedContexts.HasFlag(enumContext))
-                        {
-                            foreach (var performanceProblemAnalyzer in myProblemAnalyzersByContext[enumContext])
-                            {
-                                performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind,
-                                    consumer);
-                            }
-                        }
+                        performanceProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind,
+                            consumer);
                     }
                 }
             }
@@ -259,6 +275,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         public override void ProcessAfterInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
             base.ProcessAfterInterior(element, consumer);
+
             if (IsFunctionNode(element))
             {
                 Assertion.Assert(myProblemAnalyzerContexts.Count > 0, "myProblemAnalyzerContexts.Count > 0");
@@ -286,25 +303,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 myCallGraphBurstMarksProvider.Id);
         }
 
-        private bool IsRootDeclaration(ITreeNode node, 
-            Func<ICSharpDeclaration, bool> isRootedPredicate, 
+        private bool IsRootDeclaration(ITreeNode node,
+            Func<ICSharpDeclaration, bool> isRootedPredicate,
             CallGraphRootMarksProviderId rootMarksProviderId)
         {
             if (!(node is ICSharpDeclaration declaration))
                 return false;
+
             var declaredElement = declaration.DeclaredElement;
+
             if (declaredElement == null)
                 return false;
+
             var isRooted = isRootedPredicate(declaration);
             var isGlobalStage = myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS;
-            
+
             if (!isRooted && isGlobalStage)
             {
                 var id = myProvider.GetElementId(declaredElement);
+
                 if (!id.HasValue)
                     return false;
+
                 return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                    rootMarksProviderId, isGlobalStage, id.Value);
+                    rootMarksProviderId, isGlobalStage: true, id.Value);
             }
 
             return isRooted;
