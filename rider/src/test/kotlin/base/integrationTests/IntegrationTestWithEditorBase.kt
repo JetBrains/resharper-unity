@@ -37,7 +37,7 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
     }
 
     @BeforeMethod(alwaysRun = true, dependsOnMethods = ["startUnityProcessAndWait"])
-    fun buildSolutionAndWaitRunConfigurations() {
+    fun buildSolution() {
         buildSolutionWithReSharperBuild()
     }
 }
