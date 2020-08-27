@@ -12,25 +12,25 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
     {
       ourLogger.Verbose("AdviseUnitTestLaunch");
-      var modelValue = modelAndLifetime.Model;
+      var model = modelAndLifetime.Model;
       var connectionLifetime = modelAndLifetime.Lifetime;
       
-      modelValue.GetCompilationResult.Set(_ => !EditorUtility.scriptCompilationFailed);
+      model.GetCompilationResult.Set(_ => !EditorUtility.scriptCompilationFailed);
 
 #if !UNITY_5_6 // before 5.6 this file is not included at all
       CompiledAssembliesTracker.Init(modelAndLifetime);
 #endif
 
-      modelValue.UnitTestLaunch.Advise(connectionLifetime, launch =>
+      model.UnitTestLaunch.Advise(connectionLifetime, launch =>
       {
         new TestEventsSender(launch);
         UnityEditorTestLauncher.SupportAbortNew(launch); // TestFramework 1.2.x
       });
       
-      modelValue.RunUnitTestLaunch.Set(rdVoid =>
+      model.RunUnitTestLaunch.Set(rdVoid =>
       {
-        if (!modelValue.UnitTestLaunch.HasValue()) return false;
-        var testLauncher = new UnityEditorTestLauncher(modelValue.UnitTestLaunch.Value, connectionLifetime);
+        if (!model.UnitTestLaunch.HasValue()) return false;
+        var testLauncher = new UnityEditorTestLauncher(model.UnitTestLaunch.Value, connectionLifetime);
         return testLauncher.TryLaunchUnitTests();
       });
     }
