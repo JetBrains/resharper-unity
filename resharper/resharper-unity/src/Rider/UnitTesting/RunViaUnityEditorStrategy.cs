@@ -387,8 +387,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return launch;
         }
 
-        private void SubscribeResults(IUnitTestRun firstRun, Lifetime connectionLifetime,
-            TaskCompletionSource<bool> tcs, UnitTestLaunch launch)
+        private void SubscribeResults(IUnitTestRun firstRun, Lifetime connectionLifetime, TaskCompletionSource<bool> tcs, UnitTestLaunch launch)
         {
             mySolution.Locks.AssertMainThread();
 
@@ -514,8 +513,7 @@ else if (criterion is TestAncestorCriterion ancestorCriterion)
 else if (criterion is CategoryCriterion categoryCriterion)
    categories.Add(categoryCriterion.Category.Name);*/
 
-            filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames,
-                groups, categories));
+            filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
             return filters;
         }
 
