@@ -25,6 +25,21 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         }
     }
 
+    @Test
+    fun checkRunAllTestsFromProject() {
+        buildSolutionWithReSharperBuild()
+        withUtFacade(project) {
+            it.waitForDiscovering(5)
+            val session = it.runAllTestsInProject(
+                "Tests",
+                5,
+                RiderUnitTestScriptingFacade.defaultTimeout,
+                5
+            )
+            it.compareSessionTreeWithGold(session, testGoldFile)
+        }
+    }
+
     @Test(description = "RIDER-46658")
     fun checkTestFixtureAndValueSourceTests() {
         replaceFileContent(project, "NewTestScript.cs")
