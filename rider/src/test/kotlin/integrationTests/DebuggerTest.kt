@@ -49,4 +49,17 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
             resumeSession()
         }
     }
+
+    @Test(description = "RIDER-24651")
+    fun checkExceptionBreakpointWithJustMyCode() {
+        debugUnityProgramWithGold(testGoldFile,
+            {
+                toggleExceptionBreakpoint("System.Exception").justMyCode = true
+            }
+        ) {
+            waitForPause()
+            dumpFullCurrentData()
+            resumeSession()
+        }
+    }
 }
