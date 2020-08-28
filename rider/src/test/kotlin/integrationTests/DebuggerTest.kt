@@ -39,8 +39,6 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
 
     @Test
     fun checkBreakpoint() {
-        selectAttachDebuggerToUnityEditorAndPlayConfiguration()
-
         debugUnityProgramWithGold(testGoldFile,
             {
                 toggleBreakpoint("NewBehaviourScript.cs", 18)
