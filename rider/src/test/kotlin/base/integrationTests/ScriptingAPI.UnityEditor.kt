@@ -188,6 +188,11 @@ fun IntegrationTestBase.unpause() {
     rdUnityModel.pause.set(false)
 }
 
+fun IntegrationTestBase.restart() {
+    stopPlaying()
+    play()
+}
+
 fun IntegrationTestBase.waitForUnityEditorPlaying() {
     frameworkLogger.info("Waiting for playing in unity editor")
     waitAndPump(IntegrationTestBase.defaultTimeout, { rdUnityModel.play.valueOrNull == true })
