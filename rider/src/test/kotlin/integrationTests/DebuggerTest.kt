@@ -62,4 +62,25 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
             resumeSession()
         }
     }
+
+    @Test(description = "RIDER-23087")
+    fun checkEvaluationAfterRestartGame() {
+        debugUnityProgramWithGold(testGoldFile,
+            {
+                toggleBreakpoint(project, "NewBehaviourScript.cs", 18)
+            }
+        ) {
+            val toEvaluate = "binaryNotation / 25"
+            fun action() {
+                waitForPause()
+                printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
+                dumpFullCurrentData()
+                resumeSession()
+            }
+
+            action()
+            restart()
+            action()
+        }
+    }
 }
