@@ -5,7 +5,10 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.util.io.exists
 import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.lifetime.isNotAlive
+import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rdclient.util.idea.callSynchronously
+import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.model.EditorLogEntry
 import com.jetbrains.rider.model.RunMethodData
@@ -115,7 +118,7 @@ fun IntegrationTestBase.executeScript(file: String) {
     refreshUnityModel()
 }
 
-private fun IntegrationTestBase.refreshUnityModel() {
+fun IntegrationTestBase.refreshUnityModel() {
     frameworkLogger.info("Refreshing unity model")
     project.solution.rdUnityModel.refresh.fire(true)
 }
@@ -163,29 +166,39 @@ fun printEditorLogEntry(stream: PrintStream, editorLogEntry: EditorLogEntry) {
 
 //region Playing
 
-fun IntegrationTestBase.play() {
-    frameworkLogger.info("Enter playing mode in Unity editor")
-    rdUnityModel.play.set(true)
-}
 
-fun IntegrationTestBase.pause() {
-    frameworkLogger.info("Enter pause mode in Unity editor")
-    rdUnityModel.pause.set(true)
-}
+fun IntegrationTestBase.play() = waitForPlayModeAfterAction { rdUnityModel.play.set(true) }
 
-fun IntegrationTestBase.step() {
-    frameworkLogger.info("Making step in Unity editor")
-    rdUnityModel.step.fire(Unit)
-}
+fun IntegrationTestBase.pause() = waitForPauseModeAfterAction { rdUnityModel.pause.set(true) }
 
-fun IntegrationTestBase.stopPlaying() {
-    frameworkLogger.info("Leave playing mode in Unity editor")
-    rdUnityModel.play.set(false)
-}
+fun IntegrationTestBase.step() = waitForStepAfterAction { rdUnityModel.step.fire(Unit) }
 
-fun IntegrationTestBase.unpause() {
-    frameworkLogger.info("Leave pause mode in Unity editor")
-    rdUnityModel.pause.set(false)
+fun IntegrationTestBase.stopPlaying() = waitForIdleModeAfterAction { rdUnityModel.play.set(false) }
+
+fun IntegrationTestBase.unpause() = waitForPlayModeAfterAction { rdUnityModel.pause.set(false) }
+
+fun IntegrationTestBase.waitForPlayModeAfterAction(action: () -> Unit) =
+    waitForEditorLogAfterAction("Play", "Unity editor isn't in 'Play' mode", action)
+
+fun IntegrationTestBase.waitForIdleModeAfterAction(action: () -> Unit) =
+    waitForEditorLogAfterAction("Idle", "Unity editor isn't in 'Idle' mode", action)
+
+fun IntegrationTestBase.waitForPauseModeAfterAction(action: () -> Unit) =
+    waitForEditorLogAfterAction("Pause", "Unity editor isn't in 'Pause' mode", action)
+
+fun IntegrationTestBase.waitForStepAfterAction(action: () -> Unit) =
+    waitForEditorLogAfterAction("Step", "Unity editor didn't make step", action)
+
+private fun IntegrationTestBase.waitForEditorLogAfterAction(logMessage: String, failMessage: String, action: () -> Unit) {
+    val logLifetime = lifetime.createNested()
+    rdUnityModel.onUnityLogEvent.adviseNotNull(logLifetime) {
+        if (it.message == logMessage) {
+            logLifetime.terminate()
+        }
+    }
+    action()
+    if (logMessage != "Step") pumpMessages(Duration.ofSeconds(5)) // TODO: remove after fix logs
+    else waitAndPump(Duration.ofSeconds(15), { logLifetime.isNotAlive }) { failMessage }
 }
 
 fun IntegrationTestBase.restart() {
@@ -193,29 +206,11 @@ fun IntegrationTestBase.restart() {
     play()
 }
 
-fun IntegrationTestBase.waitForUnityEditorPlaying() {
-    frameworkLogger.info("Waiting for playing in unity editor")
-    waitAndPump(IntegrationTestBase.defaultTimeout, { rdUnityModel.play.valueOrNull == true })
-    { "Current state: ${if (rdUnityModel.pause.valueOrNull == true) "Paused" else "Idle"}" }
-}
-
-fun IntegrationTestBase.waitForUnityEditorPaused() {
-    frameworkLogger.info("Waiting for paused in unity editor")
-    waitAndPump(IntegrationTestBase.defaultTimeout, { rdUnityModel.pause.valueOrNull == true })
-    { "Current state: ${if (rdUnityModel.play.valueOrNull == true) "Playing" else "Idle"}" }
-}
-
 //endregion
 
 //region Debug
 
-fun IntegrationDebuggerTestBase.selectAttachDebuggerToUnityEditorConfiguration() =
-    selectRunConfiguration(DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME)
-
-fun IntegrationDebuggerTestBase.selectAttachDebuggerToUnityEditorAndPlayConfiguration() =
-    selectRunConfiguration(DefaultRunConfigurationGenerator.ATTACH_AND_PLAY_CONFIGURATION_NAME)
-
-private fun IntegrationDebuggerTestBase.selectRunConfiguration(name: String) {
+private fun IntegrationTestBase.selectRunConfiguration(name: String) {
     val runManager = RunManager.getInstance(project)
     val runConfigurationToSelect = runManager.allConfigurationsList.firstOrNull {
         it.name == name
@@ -226,10 +221,53 @@ private fun IntegrationDebuggerTestBase.selectRunConfiguration(name: String) {
     runManager.selectedConfiguration = runManager.findSettings(runConfigurationToSelect)
 }
 
-fun IntegrationDebuggerTestBase.debugUnityProgramWithGold(goldFile: File, beforeRun: ExecutionEnvironment.() -> Unit = {}, test: DebugTestExecutionContext.() -> Unit) =
+fun IntegrationTestBase.attachDebuggerToUnityEditorAndPlay(
+    beforeRun: ExecutionEnvironment.() -> Unit = {},
+    test: DebugTestExecutionContext.() -> Unit,
+    goldFile: File? = null
+) = attachDebuggerToUnityEditor(true, beforeRun, test, goldFile)
+
+fun IntegrationTestBase.attachDebuggerToUnityEditor(
+    beforeRun: ExecutionEnvironment.() -> Unit = {},
+    test: DebugTestExecutionContext.() -> Unit,
+    goldFile: File? = null
+) = attachDebuggerToUnityEditor(false, beforeRun, test, goldFile)
+
+private fun IntegrationTestBase.attachDebuggerToUnityEditor(
+    andPlay: Boolean,
+    beforeRun: ExecutionEnvironment.() -> Unit = {},
+    test: DebugTestExecutionContext.() -> Unit,
+    goldFile: File? = null
+) {
+    selectRunConfiguration(
+        if (andPlay) DefaultRunConfigurationGenerator.ATTACH_AND_PLAY_CONFIGURATION_NAME
+        else DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME
+    )
+
+    val lifetimeDef = lifetime.createNested()
+    val subscribeAndBeforeRun = if (andPlay) ({
+        rdUnityModel.play.adviseNotNull(lifetimeDef) {
+            if (it) lifetimeDef.terminate()
+        }
+        beforeRun()
+    }) else beforeRun
+    val waitAndTest = if (andPlay) ({
+        waitAndPump(Duration.ofSeconds(20), { lifetimeDef.isNotAlive })
+        { "Unity editor not in 'Play' mode after run configuration" }
+        test()
+    }) else test
+
+    if (goldFile != null) {
+        debugUnityProgramWithGold(goldFile, subscribeAndBeforeRun, waitAndTest)
+    } else {
+        debugUnityProgramWithoutGold(subscribeAndBeforeRun, waitAndTest)
+    }
+}
+
+private fun IntegrationTestBase.debugUnityProgramWithGold(goldFile: File, beforeRun: ExecutionEnvironment.() -> Unit = {}, test: DebugTestExecutionContext.() -> Unit) =
     testDebugProgram(goldFile, beforeRun, test, {}, true)
 
-fun IntegrationDebuggerTestBase.debugUnityProgramWithoutGold(beforeRun: ExecutionEnvironment.() -> Unit = {}, test: DebugTestExecutionContext.() -> Unit) =
+private fun IntegrationTestBase.debugUnityProgramWithoutGold(beforeRun: ExecutionEnvironment.() -> Unit = {}, test: DebugTestExecutionContext.() -> Unit) =
     debugProgram(PrintStream(PrintStream.nullOutputStream()), beforeRun, test, {}, true)
 
 //endregion
