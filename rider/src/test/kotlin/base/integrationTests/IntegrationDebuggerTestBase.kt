@@ -1,6 +1,5 @@
 package base.integrationTests
 
-import com.intellij.execution.RunManager
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
@@ -13,20 +12,9 @@ import com.jetbrains.rider.test.framework.frameworkLogger
 import com.jetbrains.rider.test.scriptingApi.removeAllBreakpoints
 import com.jetbrains.rider.test.scriptingApi.toggleBreakpoint
 import org.testng.annotations.AfterMethod
-import org.testng.annotations.BeforeMethod
-import java.time.Duration
 
 abstract class IntegrationDebuggerTestBase : IntegrationTestWithEditorBase() {
     private val pausepoits: MutableList<XLineBreakpoint<DotNetLineBreakpointProperties>> = mutableListOf()
-
-    @BeforeMethod(alwaysRun = true)
-    fun waitForUnityRunConfigurations() {
-        val runManager = RunManager.getInstance(project)
-        waitAndPump(Duration.ofSeconds(10), { runManager.allConfigurationsList.size >= 2 }) {
-            "Unity run configurations didn't appeared, " +
-                "current: ${runManager.allConfigurationsList.joinToString(", ", "[", "]")}"
-        }
-    }
 
     @AfterMethod(alwaysRun = true)
     fun removeAllUnityPausepoints() {
