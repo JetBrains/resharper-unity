@@ -1,14 +1,25 @@
 package integrationTests
 
 import base.integrationTests.IntegrationTestWithEditorBase
-import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
-import com.jetbrains.rider.test.scriptingApi.replaceFileContent
-import com.jetbrains.rider.test.scriptingApi.withUtFacade
+import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.enums.PlatformType
+import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
+import java.io.File
 
+@TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
 class UnitTestingTest : IntegrationTestWithEditorBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityUnitTestingProject"
+
+    override fun preprocessTempDirectory(tempDir: File) {
+        super.preprocessTempDirectory(tempDir)
+
+        val newTestScript = "NewTestScript.cs"
+        val sourceScript = testCaseSourceDirectory.resolve(newTestScript)
+        if (sourceScript.exists()) {
+            sourceScript.copyTo(tempDir.resolve("Assets").resolve("Tests").resolve(newTestScript), true)
+        }
+    }
 
     @Test
     fun checkRunAllTestsFromSolution() {
@@ -43,7 +54,8 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     @Test(description = "RIDER-46658")
     fun checkTestFixtureAndValueSourceTests() {
         replaceFileContent(project, "NewTestScript.cs")
-        buildSolutionWithReSharperBuild()
+        rebuildSolutionWithReSharperBuild()
+
         withUtFacade(project) {
             it.waitForDiscovering(14)
             val session = it.runAllTestsInSolution(
