@@ -1,86 +1,84 @@
 package integrationTests
 
 import base.integrationTests.*
+import com.jetbrains.rider.test.annotations.TestEnvironment
+import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
-import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
+import java.io.File
 
+@TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
 class DebuggerTest : IntegrationDebuggerTestBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithoutPlugin"
 
-    @BeforeMethod(alwaysRun = true)
-    fun replaceNewBehaviourScriptContentIfNeeded() {
+    override fun preprocessTempDirectory(tempDir: File) {
+        super.preprocessTempDirectory(tempDir)
+
         val newBehaviourScript = "NewBehaviourScript.cs"
-
-        if (testCaseSourceDirectory.resolve(newBehaviourScript).exists()) {
-            replaceFileContent(project, newBehaviourScript)
-            rebuildSolutionWithReSharperBuild()
+        val sourceScript = testCaseSourceDirectory.resolve(newBehaviourScript)
+        if (sourceScript.exists()) {
+            sourceScript.copyTo(tempDir.resolve("Assets").resolve(newBehaviourScript), true)
         }
-
-        selectAttachDebuggerToUnityEditorAndPlayConfiguration()
     }
 
     @Test
     fun checkUnityPausePoint() {
-        val pauseFile = activeSolutionDirectory.combine("Assets", "pause").absoluteFile
-        debugUnityProgramWithoutGold(
+        val pauseFile = activeSolutionDirectory.combine("Assets", ".pause").absoluteFile
+        attachDebuggerToUnityEditorAndPlay(
             {
-                toggleUnityPausepoint("NewBehaviourScript.cs", 17, "System.IO.File.Exists(\"${pauseFile.path}\")")
-            }
-        ) {
-            waitForUnityEditorPlaying()
-            pauseFile.createNewFile()
-            waitForUnityEditorPaused()
-            unpause()
-            waitForUnityEditorPlaying()
-        }
+                toggleUnityPausepoint("NewBehaviourScript.cs", 16, "System.IO.File.Exists(\"${pauseFile.path}\")")
+            },
+            {
+                waitForPauseModeAfterAction { pauseFile.createNewFile() }
+                unpause()
+            })
     }
 
     @Test
     fun checkBreakpoint() {
-        debugUnityProgramWithGold(testGoldFile,
+        attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint("NewBehaviourScript.cs", 18)
-            }
-        ) {
-            waitForPause()
-            dumpFullCurrentData()
-            resumeSession()
-        }
+                toggleBreakpoint("NewBehaviourScript.cs", 17)
+            },
+            {
+                waitForPause()
+                dumpFullCurrentData()
+                resumeSession()
+            }, testGoldFile)
     }
 
     @Test(description = "RIDER-24651")
     fun checkExceptionBreakpointWithJustMyCode() {
-        debugUnityProgramWithGold(testGoldFile,
+        attachDebuggerToUnityEditorAndPlay(
             {
                 toggleExceptionBreakpoint("System.Exception").justMyCode = true
-            }
-        ) {
-            waitForPause()
-            dumpFullCurrentData()
-            resumeSession()
-        }
+            },
+            {
+                waitForPause()
+                dumpFullCurrentData()
+                resumeSession()
+            }, testGoldFile)
     }
 
     @Test(description = "RIDER-23087")
     fun checkEvaluationAfterRestartGame() {
-        debugUnityProgramWithGold(testGoldFile,
+        attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint(project, "NewBehaviourScript.cs", 18)
-            }
-        ) {
-            val toEvaluate = "binaryNotation / 25"
-            fun action() {
-                waitForPause()
-                printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
-                dumpFullCurrentData()
-                resumeSession()
-            }
+                toggleBreakpoint(project, "NewBehaviourScript.cs", 17)
+            },
+            {
+                val toEvaluate = "binaryNotation / 25"
+                fun action() {
+                    waitForPause()
+                    printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
+                    dumpFullCurrentData()
+                    resumeSession()
+                }
 
-            action()
-            restart()
-            action()
-        }
+                action()
+                restart()
+                action()
+            }, testGoldFile)
     }
 }

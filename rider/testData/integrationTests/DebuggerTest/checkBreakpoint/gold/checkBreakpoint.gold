@@ -1,4 +1,4 @@
---> NewBehaviourScript.cs:18(434,460) // Debug.Log(binaryNotation);
+--> NewBehaviourScript.cs:17(530,548) // Debug.Log("Step");
 NewBehaviourScript.Update() in , Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity): null
     +this.gameObject = Main Camera (active: true, layer: 0): null
