@@ -1,7 +1,6 @@
-﻿using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 
-namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Dispatcher
+namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon
 {
     public abstract class ShaderLabElementProblemAnalyzer<T> : ElementProblemAnalyzer<T>
     {

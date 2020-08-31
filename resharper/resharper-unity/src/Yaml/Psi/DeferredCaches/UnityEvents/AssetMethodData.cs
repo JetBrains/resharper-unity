@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorVa
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Resolve;
 using JetBrains.Serialization;
 using JetBrains.Util;
+using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
 {
@@ -18,9 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         public IHierarchyReference TargetScriptReference { get; }
         public TextRange TextRangeOwnerPsiPersistentIndex { get; }
         
-        public long TextRangeOwner { get; }
+        public OWORD TextRangeOwner { get; }
         
-        public AssetMethodUsages(string ownerName, string methodName, TextRange textRangeOwnerPsiPersistentIndex, long textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
+        public AssetMethodUsages(string ownerName, string methodName, TextRange textRangeOwnerPsiPersistentIndex, OWORD textRangeOwner, EventHandlerArgumentMode mode, string type, IHierarchyReference targetReference)
         {
             Assertion.Assert(targetReference != null, "targetReference != null");
             Assertion.Assert(methodName != null, "methodName != null");
@@ -39,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             writer.Write(MethodName);
             writer.Write(TextRangeOwnerPsiPersistentIndex.StartOffset);
             writer.Write(TextRangeOwnerPsiPersistentIndex.EndOffset);
-            writer.Write(TextRangeOwner);
+            AssetUtils.WriteOWORD(TextRangeOwner, writer);
             writer.Write((int)Mode);
             writer.Write(Type);
             TargetScriptReference.WriteTo(writer);
@@ -48,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         public static AssetMethodUsages ReadFrom(UnsafeReader reader)
         {
             return new AssetMethodUsages(reader.ReadString(),reader.ReadString(),
-                new TextRange(reader.ReadInt32(), reader.ReadInt32()), reader.ReadLong(),
+                new TextRange(reader.ReadInt32(), reader.ReadInt32()), AssetUtils.ReadOWORD(reader),
                 (EventHandlerArgumentMode)reader.ReadInt32(), reader.ReadString(), HierarchyReferenceUtil.ReadReferenceFrom(reader));
         }
 
@@ -88,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         {
             string name;
             TextRange textRange;
-            long textRangeOwner;
+            OWORD textRangeOwner;
             if (!modifications.TryGetValue("m_MethodName", out var nameValue))
             {
                 if (source == null)

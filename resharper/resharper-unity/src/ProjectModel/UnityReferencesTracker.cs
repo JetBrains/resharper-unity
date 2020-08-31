@@ -147,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                 return null;
 
             var changes = ReferencedAssembliesService.TryGetAssemblyReferenceChanges(projectModelChange,
-                ourUnityReferenceNameInfos, myLogger.Trace());
+                ourUnityReferenceNameInfos, myLogger);
 
             var newUnityProjects = new List<KeyValuePair<IProject, Lifetime>>();
             foreach (var change in changes)

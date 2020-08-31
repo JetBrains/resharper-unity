@@ -120,8 +120,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 AddHeader("Internal");
 
+                AddBoolOption((UnitySettings s) => s.SuppressShaderErrorHighlightingInRenderPipelinePackages, 
+                    "Suppress resolve errors in render-pipeline packages");
+                
                 AddBoolOption((UnitySettings s) => s.EnableCgErrorHighlighting,
-                    "Parse Cg files for syntax errors (requires internal mode, and re-opening solution)");
+                    "[Deprecated] Parse GLSL files for syntax errors (requires internal mode, and re-opening solution)");
             }
         }
 

@@ -2,6 +2,7 @@ using System;
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
 using JetBrains.Serialization;
+using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References
 {
@@ -22,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         public static void WriteTo(this LocalReference localReference, UnsafeWriter writer)
         {
             writer.Write(0);
-            writer.Write(localReference.OwningPsiPersistentIndex);      
+            AssetUtils.WriteOWORD(localReference.OwningPsiPersistentIndex, writer);    
             writer.Write(localReference.LocalDocumentAnchor);
         }
         
@@ -47,14 +48,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             var id = reader.ReadInt();
             if (id != 0)
                 throw new InvalidOperationException($"Expected local reference, found {id}");
-            return new LocalReference(reader.ReadLong(), reader.ReadULong());
+            return new LocalReference(AssetUtils.ReadOWORD(reader), reader.ReadULong());
         }
 
         public static IHierarchyReference ReadReferenceFrom(UnsafeReader reader)
         {
             var id = reader.ReadInt();
             if (id == 0)
-                return new LocalReference(reader.ReadLong(), reader.ReadULong());
+                return new LocalReference(AssetUtils.ReadOWORD(reader), reader.ReadULong());
             if (id == 1)
                 return new ExternalReference(reader.ReadGuid(), reader.ReadULong());
             

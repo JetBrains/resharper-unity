@@ -7,10 +7,58 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
+## 2020.3.0
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202...net203)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/41?closed=1)
+
+
+
+## 2020.2.2
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202-rtm-2020.2.0-rtm-2020.2.1...net202)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/40?closed=1)
+
+### Changed
+
+- Rider: Updated "refresh in Unity" icon ([RIDER-44531](https://youtrack.jetbrains.com/issue/RIDER-44531), [#1792](https://github.com/JetBrains/resharper-unity/pull/1792))
+
+### Fixed
+
+- Correctly handle lambdas, actions and local functions in performance critical and Burst contexts ([#1787](https://github.com/JetBrains/resharper-unity/pull/1787))
+- Recognise `OnValidate` as a valid message for `ScriptableObject` in Unity 2020.1.x projects ([RIDER-49130](https://youtrack.jetbrains.com/issue/RIDER-49130), [#1807](https://github.com/JetBrains/resharper-unity/pull/1807))
+- Find shader includes in `file:` based packages ([#1817](https://github.com/JetBrains/resharper-unity/pull/1817))
+- Rider: Correctly resolve local packages with too many parent segments in path ([#1796](https://github.com/JetBrains/resharper-unity/issues/1796), [#1811](https://github.com/JetBrains/resharper-unity/pull/1811))
+- Rider: Correctly resolve embedded package where folder name does not match package name ([#1778](https://github.com/JetBrains/resharper-unity/issues/1778), [#1811](https://github.com/JetBrains/resharper-unity/pull/1811))
+
+
+
+## 2020.2.1
+* Released: [2020-08-21](https://blog.jetbrains.com/dotnet/2020/08/21/the-rider-2020-2-1-and-resharper-2020-2-1-hotfixes-are-here/)
+* Build: 2020.2.0.281
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202-rtm-2020.2.0...net202-rtm-2020.2.0-rtm-2020.2.1)
+* No milestone
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net202-rtm-2020.2.0-rtm-2020.2.1)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.2.0.281)
+
+### Changed
+
+- Add `__RESHARPER__` conditional symbol to shader files to help code insight features ([RIDER-45361](https://youtrack.jetbrains.com/issue/RIDER-45361))
+- Add implicitly defined symbols for shaders such as `INTERNAL_DATA` ([RIDER-48368](https://youtrack.jetbrains.com/issue/RIDER-48368), [#1798](https://github.com/JetBrains/resharper-unity/pull/1798))
+- Remove shader files from Solution Wide Error Analysis
+- Improve suppression of unresolved error highlighting for shader files ([RIDER-49123](https://youtrack.jetbrains.com/issue/RIDER-49123))
+
+### Fixed
+
+- Fixed errors when showing compiled shader output ([RIDER-49218](https://youtrack.jetbrains.com/issue/RIDER-49218), [#1798](https://github.com/JetBrains/resharper-unity/pull/1798))
+
+
 
 ## 2020.2
+* Released: [2020-08-13](https://blog.jetbrains.com/dotnet/2020/08/13/rider-2020-2-released/)
+* Build: 2020.2.0.261
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net201...net202-rtm-2020.2.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/36?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net202-rtm-2020.2.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.2.0.261)
 
 ### Added
 
@@ -78,9 +126,20 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
+## 2020.1.4
+* Released: [2020-07-09](https://blog.jetbrains.com/dotnet/2020/07/09/rider-2020-1-4-and-resharper-ultimate-2020-1-4-bugfixes-are-ready/)
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.3...net201-rtm-2020.1.4)
+* [GitHub tag](https://github.com/JetBrains/resharper-unity/releases/tag/net201-rtm-2020.1.4)
+
+
+
 ## 2020.1.3
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.2...net201)
+* Released: [2020-05-19](https://blog.jetbrains.com/dotnet/2020/05/19/rider-resharper-ultimate-2020-1-3/)
+* Build: 2020.1.0.182
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.2...net201-rtm-2020.1.3)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/39?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net201-rtm-2020.1.3)
+* No ReSharper release required.
 
 ### Fixed
 - Rider: Fix unit test discovery in non-Unity solutions inside a Unity folder ([RIDER-44139](https://youtrack.jetbrains.com/issue/RIDER-44139), [#1657](https://github.com/JetBrains/resharper-unity/pull/1657))
@@ -88,9 +147,12 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 ## 2020.1.2
+* Released: [2020-05-07](https://blog.jetbrains.com/dotnet/2020/05/07/rider-resharper-ultimate-2020-1-2/)
+* Build: 2020.1.0.179
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.0-rtm-2020.1.1...net201-rtm-2020.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/37?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net201-rtm-2020.1.2)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.1.0.179)
 
 ### Changed
 
@@ -114,19 +176,21 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2020.1.1 - 2020-04-29
+## 2020.1.1
+* Released: 2020-04-29
+* Build: 2020.1.0.162
 * [No code changes](https://github.com/JetBrains/resharper-unity/compare/net201-rtm-2020.1.0...net201-rtm-2020.1.0-rtm-2020.1.1)
 * [GitHub tag](https://github.com/JetBrains/resharper-unity/releases/tag/net201-rtm-2020.1.0-rtm-2020.1.1)
-* Build 2020.1.0.162
 
 
 
-## 2020.1 - 2020-04-16
+## 2020.1
+* Released: [2020-04-16](https://blog.jetbrains.com/dotnet/2020/04/16/rider-2020-1-released/)
+* Build: 2020.1.0.161
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net193...net201-rtm-2020.1.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/32?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net201-rtm-2020.1.0)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.1.0.161)
-* Build 2020.1.0.161
 
 ### Added
 
@@ -183,19 +247,21 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.3.4 - 2020-02-28
+## 2019.3.4
+* Released: 2020-02-28
+* Build: 2019.3.0.234
 * [No code changes](https://github.com/JetBrains/resharper-unity/compare/net193-eap-rtm-2019.3.3...net193-eap-rtm-2019.3.3-rtm-2019.3.4)
 * [GitHub tag](https://github.com/JetBrains/resharper-unity/releases/tag/net193-eap-rtm-2019.3.3-rtm-2019.3.4)
-* Build 2019.3.0.234
 
 
 
-## 2019.3.3 - 2020-02-21
+## 2019.3.3
+* Released: [2020-02-21](https://blog.jetbrains.com/dotnet/2020/02/21/rider-2019-3-3/)
+* Build: 2019.3.0.226
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap8-rtm-2019.3.2...net193-eap-rtm-2019.3.3)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/35?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net193-eap-rtm-2019.3.3)
 * No ReSharper release required.
-* Build 2019.3.0.226
 
 ### Fixed
 
@@ -203,11 +269,12 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.3.2 - 2020-02-12
+## 2019.3.2
+* Released: [2020-02-12](https://blog.jetbrains.com/dotnet/2020/02/12/rider-2019-3-2/)
+* Build: 2019.3.0.208
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap7-rtm-2019.3.0-rtm-2019.3.1...net193-eap8-rtm-2019.3.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/34?closed=1)
 * [ReSharper release (2020-02-16)](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2019.3.0.208)
-* Build 2019.3.0.208
 
 ### Changed
 
@@ -219,12 +286,13 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.3.1 - 2019-12-20
+## 2019.3.1
+* Released: [2019-12-20](https://blog.jetbrains.com/dotnet/2019/12/20/rider-2019-3-1/)
+* Build: 2019.3.0.162
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net193-eap7-rtm-2019.3.0...net193-eap7-rtm-2019.3.0-rtm-2019.3.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/33?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net193-eap7-rtm-2019.3.0-rtm-2019.3.1)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2019.3.0.162)
-* Build: 2019.3.0.162
 
 ### Added
 
@@ -248,12 +316,13 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.3 - 2019-12-11
+## 2019.3
+* Released: [2019-12-11](https://blog.jetbrains.com/dotnet/2019/12/11/rider-2019-3/)
+* Build: 2019.3.0.124
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/192...net193-eap7-rtm-2019.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/29?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net193-eap7-rtm-2019.3.0)
 * ReSharper release delayed until 2019.3.1
-* Build: 2019.3.0.124
 
 ### Added
 
@@ -307,7 +376,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.2.4 - 2019-08-20
+## 2019.2.4
+* Released: [2020-02-14](https://blog.jetbrains.com/dotnet/2020/01/14/resharper-ultimate-rider-2019-2-4/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap10-rtm-2019.2.3...192-eap11-rtm-2019.2.4)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/192-eap11-rtm-2019.2.4)
 * Not released for ReSharper (by mistake).
@@ -318,7 +388,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.2.3 - 2019-10-18
+## 2019.2.3
+* Released: [2019-10-18](https://blog.jetbrains.com/dotnet/2019/10/18/rider-2019-2-3-bugfix/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap9-rtm-2019.2.2...192-eap10-rtm-2019.2.3)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/31?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/192-eap10-rtm-2019.2.3)
@@ -334,7 +405,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.2.2 - 2019-08-29
+## 2019.2.2
+* Released: [2019-08-29](https://blog.jetbrains.com/dotnet/2019/08/29/rider-2019-2-2/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/192-eap8-rtm-2019.2.1...192-eap9-rtm-2019.2.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/30?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/192-eap9-rtm-2019.2.2)
@@ -357,18 +429,20 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.2.1 - 2019-08-20
+## 2019.2.1
+* Released: 2019-08-20
 * [No code changes](https://github.com/JetBrains/resharper-unity/compare/192-eap7-rtm-2019.2.0...192-eap8-rtm-2019.2.1)
 * [GitHub tag](https://github.com/JetBrains/resharper-unity/releases/tag/192-eap8-rtm-2019.2.1)
 
 
 
-## 2019.2 - 2019-08-08
+## 2019.2
+* Released: [2019-08-08](https://blog.jetbrains.com/dotnet/2019/08/08/rider-2019-2-released/)
+* Build: 2019.2.0.72
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap11-rtm-2019.1.3...192-eap7-rtm-2019.2.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/22?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/192-eap7-rtm-2019.2.0)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2019.2.0.72)
-* Build: 2019.2.0.72
 
 ### Added
 - Add completion and inspections for scenes, tags, layers and inputs ([#1158](https://github.com/JetBrains/resharper-unity/pull/1158))
@@ -408,7 +482,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.1.3 - 2019-07-10
+## 2019.1.3
+* Released: 2019-07-10
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap10-rtm-2019.1.2...191-eap11-rtm-2019.1.3)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/191-eap11-rtm-2019.1.3)
 * No ReSharper release required.
@@ -418,7 +493,8 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.1.2 - 2019-06-06
+## 2019.1.2
+* Released: [2019-06-06](https://blog.jetbrains.com/dotnet/2019/06/06/rider-2019-1-2/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/191-eap9-rtm-2019.1.1...191-eap10-rtm-2019.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/28?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/191-eap10-rtm-2019.1.2)
@@ -438,13 +514,15 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2019.1.1 - 2019-05-02
+## 2019.1.1
+* Released: 2019-05-02
 * [No code changes](https://github.com/JetBrains/resharper-unity/compare/191-eap8-rtm-2019.1.0...191-eap9-rtm-2019.1.1)
 * [GitHub tag](https://github.com/JetBrains/resharper-unity/releases/tag/191-eap9-rtm-2019.1.1)
 
 
 
-## 2019.1 - 2019-04-30
+## 2019.1
+* Released: [2019-04-30](https://blog.jetbrains.com/dotnet/2019/04/30/rider-2019-1-arrived/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap13-rtm...191-eap8-rtm-2019.1.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/22?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/191-eap8-rtm-2019.1.0)
@@ -526,8 +604,9 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 
-## 2018.3.3 - 2019-01-11
-For Rider 2018.3.3. No release necessary for ReShaprer
+## 2018.3.3
+For Rider 2018.3.3. No release necessary for ReSharper
+* Released: 2019-01-11
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap12-rtm...183-eap13-rtm)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap13-rtm)
 
@@ -536,7 +615,8 @@ For Rider 2018.3.3. No release necessary for ReShaprer
 
 
 
-## 2018.3.2 - 2019-01-30
+## 2018.3.2
+* Released: [2019-01-30](https://blog.jetbrains.com/dotnet/2019/01/30/rider-2018-3-2-bug-fix-update-release/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap11-rtm...183-eap12-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/26?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap12-rtm)
@@ -559,9 +639,10 @@ For Rider 2018.3.3. No release necessary for ReShaprer
 
 
 
-## 2018.3 for ReSharper - 2013-01-17
+## 2018.3 for ReSharper
 For ReSharper 2018.3 (Based on work in progress 2018.3.2 for Rider)
 
+* Released: 2019-01-17
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap12-2018.2.3...183-eap11-rtm-resharper)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/26?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap11-rtm-resharper)
@@ -615,7 +696,8 @@ For ReSharper 2018.3 (Based on work in progress 2018.3.2 for Rider)
 
 
 
-## 2018.3.1 - 2018-12-26
+## 2018.3.1
+* Released: [2018-12-26](https://blog.jetbrains.com/dotnet/2018/12/27/rider-2018-3-1-bug-fix-update/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/183-eap10-rtm...183-eap11-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/23?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap11-rtm)
@@ -631,7 +713,8 @@ For ReSharper 2018.3 (Based on work in progress 2018.3.2 for Rider)
 
 
 
-## 2018.3 - 2018-12-17
+## 2018.3
+* Released: [2018-12-17](https://blog.jetbrains.com/dotnet/2018/12/18/rider-2018-3-released/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap12-2018.2.3...183-eap10-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/19?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/183-eap10-rtm)
@@ -712,7 +795,8 @@ For ReSharper 2018.3 (Based on work in progress 2018.3.2 for Rider)
 
 
 
-## 2018.2.3 - 2018-09-13
+## 2018.2.3
+* Released: [2018-09-13](https://blog.jetbrains.com/dotnet/2018/09/13/resharper-ultimate-2018-2-3-rider-2018-2-3-released/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap11-2018.2.2...182-eap12-2018.2.3)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/24?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap12-2018.2.3)
@@ -723,7 +807,8 @@ For ReSharper 2018.3 (Based on work in progress 2018.3.2 for Rider)
 
 
 
-## 2018.2.2 - 2018-09-11
+## 2018.2.2
+* Released: [2018-09-11](https://blog.jetbrains.com/dotnet/2018/09/11/rider-2018-2-2-released/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap10-2018.2.1...182-eap11-2018.2.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/21?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap11-2018.2.2)
@@ -748,9 +833,10 @@ For ReSharper 2018.3 (Based on work in progress 2018.3.2 for Rider)
 
 
 
-## 2018.2 for ReSharper - 2018-09-02
+## 2018.2 for ReSharper
 For ReSharper 2018.2 (Based on Rider 2018.2.1. Release notes include everything in Rider 2018.2 and Rider 2018.2.1)
 
+* Released: 2018-09-02
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap9-rtm…182-eap9-rtm-resharper)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/16?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap9-rtm-resharper)
@@ -788,7 +874,8 @@ For ReSharper 2018.2 (Based on Rider 2018.2.1. Release notes include everything 
 
 
 
-## 2018.2.1 - 2018-08-30
+## 2018.2.1
+* Released: [2018-08-30](https://blog.jetbrains.com/dotnet/2018/08/30/rider-2018-2-1-released/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/182-eap9-rtm...182-eap10-2018.2.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/20?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap10-2018.2.1)
@@ -800,7 +887,8 @@ For ReSharper 2018.2 (Based on Rider 2018.2.1. Release notes include everything 
 
 
 
-## 2018.2 - 2018-08-23
+## 2018.2
+* Released: [2018-08-23](https://blog.jetbrains.com/dotnet/2018/08/23/rider-2018-2-released/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-eap15-2018.1.4-rtm...182-eap9-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/16?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap9-rtm)
@@ -858,19 +946,22 @@ For ReSharper 2018.2 (Based on Rider 2018.2.1. Release notes include everything 
 
 
 
-## 2018.1.4 - 2018-08-02
+## 2018.1.4
+* Released: 2018-08-02
 * [No code changes](https://github.com/JetBrains/resharper-unity/compare/wave12-eap14-2018.1.3-rtm...wave12-eap15-2018.1.4-rtm)
 * [GitHub tag](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap15-2018.1.4-rtm)
 
 
 
-## 2018.1.3 - 2018-07-05
+## 2018.1.3
+* Released: 2018-07-05
 * [No code changes](https://github.com/JetBrains/resharper-unity/compare/wave12-2018.1.2-rtm...wave12-eap14-2018.1.3-rtm)
 * [GitHub tag](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap14-2018.1.3-rtm)
 
 
 
-## 2018.1.2 - 2018-05-28
+## 2018.1.2
+* Released: 2018-05-28
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-2018.1.1-rtm…wave12-2018.1.2-rtm)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap13-2018.1.2-rtm)
 * No ReSharper release required.
@@ -882,7 +973,8 @@ For ReSharper 2018.2 (Based on Rider 2018.2.1. Release notes include everything 
 
 
 
-## 2018.1.1 - 2018-05-25
+## 2018.1.1
+* Released: [2018-05-25](https://blog.jetbrains.com/dotnet/2018/05/25/rider-2018-1-1-released/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-eap9-rtm...wave12-2018.1.1-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/17?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap12-2018.1.1-rtm)
@@ -926,9 +1018,10 @@ For ReSharper 2018.2 (Based on Rider 2018.2.1. Release notes include everything 
 
 
 
-## 2018.1.0.380 for ReSharper - 2018-06-16
+## 2018.1.0.380 for ReSharper
 Compatibility fix due to breaking change in ReSharper 2018.1.2. Release is compatible with 2018.1 and 2018.1.2.
 
+* Released: 2018-06-16
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave12-eap9-rtm...wave12-2018.1-api-fix)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-2018.1-api-fix)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2018.1.0.380)
@@ -938,9 +1031,10 @@ Compatibility fix due to breaking change in ReSharper 2018.1.2. Release is compa
 
 
 
-## 2018.1 - 2018-04-18
+## 2018.1
 Rider and ReSharper version numbers are synced with this release.
 
+* Released: [2018-04-18](https://blog.jetbrains.com/dotnet/2018/04/19/rider-2018-1-released/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/wave11-rider-2017.3.2...wave12-eap9-rtm)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/14?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave12-eap9-rtm)
@@ -983,7 +1077,8 @@ Rider and ReSharper version numbers are synced with this release.
 
 
 
-## 2017.3.1 - 2018-02-06
+## 2017.3.1
+* Released: [2018-02-06](https://blog.jetbrains.com/dotnet/2018/02/06/rider-2017-3-1-released/)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.3-rider...wave11-rider-2017.3.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/15?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/wave11-rider-2017.3.1)
@@ -1007,9 +1102,10 @@ Rider and ReSharper version numbers are synced with this release.
 
 
 
-## 2017.3 - 2017-12-22
+## 2017.3
 Bundled with Rider 2017.3. Released as 2.1.3 for ReSharper.
 
+* Released: 2017-12-22
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/a14a3d50fa72b6c37a05184af56c6fefcb772f98...v2.1.3-resharper) (SHA is equivalent to `2.1.2.1739` on `master`)
 * [Commits (rider changes)](https://github.com/JetBrains/resharper-unity/compare/v2.1.3-resharper...v2.1.3-rider)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/13?closed=1)
@@ -1043,9 +1139,10 @@ Bundled with Rider 2017.3. Released as 2.1.3 for ReSharper.
 
 
 
-## 2.1.2.1739 - 2017-11-15
+## 2.1.2.1739
 For Rider 2017.2.1
 
+* Released: 2017-11-15
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.2...2.1.2.1739)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/2.1.2.1739)
 * No ReSharper release required
@@ -1058,12 +1155,13 @@ For Rider 2017.2.1
 
 
 
-## 2.1.2 for ReSharper 2017.2 - 2017-10-09
+## 2.1.2 for ReSharper 2017.2
+* Released: 2017-10-09
+* Build: 2.1.2.1505
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.1...v2.1.2-resharper)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/12?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.2-resharper)
 * [ReSharper release (2019-10-17)](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2.1.2.1505)
-* Build: 2.1.2.1505
 
 ### Added
 - Support Unity API up to 2017.3.0b3 (#218)
@@ -1086,7 +1184,8 @@ For Rider 2017.2.1
 
 
 
-## 2.1.2 for Rider 2017.2 - 2017-10-09
+## 2.1.2 for Rider 2017.2
+* Released: 2017-10-09
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.1...v2.1.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/12?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.2)
@@ -1107,9 +1206,10 @@ For Rider 2017.2.1
 
 
 
-## 2.1.1 - 2017-09-16
+## 2.1.1
 For Rider 2017.2 EAP2. Not released for ReSharper
 
+* Released: 2017-09-16
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.1.0...v2.1.1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.1)
 * No ReSharper release
@@ -1123,9 +1223,10 @@ For Rider 2017.2 EAP2. Not released for ReSharper
 
 
 
-## 2.1.0 - 2017-09-04 (approximately)
+## 2.1.0
 For Rider 2017.2 EAP1. Not released for ReSharper
 
+* Released: 2017-09-04 (approximately)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.4...v2.1.0) (Due to branching strategy, this list contains commits from previous releases)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.1.0)
 * No ReSharper release
@@ -1135,13 +1236,14 @@ For Rider 2017.2 EAP1. Not released for ReSharper
 
 
 
-## 2.0.4 - 2017-09-04
+## 2.0.4
 For Rider 2017.1.2 (RD-171.4456.3568). Not released for ReSharper
 
+* Released: 2017-09-04
+* Build: 2.0.4.2575
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.3...v2.0.4)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.4)
 * No ReSharper release
-* Build: 2.0.4.2575
 
 ### Changed
 * Rider: Change completion in shader files to be semi-focussed
@@ -1151,13 +1253,14 @@ For Rider 2017.1.2 (RD-171.4456.3568). Not released for ReSharper
 
 
 
-## 2.0.3-resharper - 2017-08-31
+## 2.0.3-resharper
 For ReSharper 2017.2
 
+* Released: 2017-08-31
+* Build: 2.0.3.314
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.0-resharper...v2.0.3-resharper)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.3-resharper)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2.0.3.314)
-* Build: 2.0.3.314
 
 ### Changed
 - Updated to ReSharper 2017.2 (#193)
@@ -1173,9 +1276,10 @@ For ReSharper 2017.2
 ## 2.0.3 - 2017-08-31
 For Rider 2017.1.1 (RD-171.4456.2813)
 
+* Released: 2017-08-31
+* Build: 2.0.3.2540
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.2...a89dce7c8ba66cd8d6d86bb3dd1c7a82544fe21f) (SHA is equivalent to `v2.0.3`. Possibly tagged wrong branch?)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.3)
-* Build: 2.0.3.2540
 
 ### Fixed
 - Parse pre-processor directives in ShaderLab (#186)
@@ -1185,9 +1289,10 @@ For Rider 2017.1.1 (RD-171.4456.2813)
 
 
 
-## 2.0.0 for ReSharper - 2017-08-29
+## 2.0.0 for ReSharper
 For ReSharper 2017.1 (Based on work in progress 2.0.3 for Rider 2017.1)
 
+* Released: 2017-08-29
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.0...v2.0.2-resharper)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.0-resharper)
 * [ReSharper release (2017-08-31)](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2.0.0)
@@ -1206,12 +1311,12 @@ For ReSharper 2017.1 (Based on work in progress 2.0.3 for Rider 2017.1)
 
 
 
-## 2.0.2 - 2017-08-03
+## 2.0.2
 For Rider 2017.1 RTM. Not released for ReSharper
 
+* Released: 2017-08-03 (ReSharper release delayed until 2017-08-29)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v2.0.0...v2.0.2)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.2)
-* ReSharper release delayed until 2017-08-29
 
 ### Added
 - Add ability to disable advanced ShaderLab syntax (#183)
@@ -1220,13 +1325,13 @@ For Rider 2017.1 RTM. Not released for ReSharper
 
 
 
-## 2.0.0 - 2017-07-14
+## 2.0.0
 For Rider 2017.1 RC. Not released for ReSharper
 
+* Released: 2017-07-14 (ReSharper release delayed until 2017-08-29)
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.9.1...v2.0.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/5?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v2.0.0)
-* ReSharper release delayed until 2017-08-29
 
 ### Added
 - Support for ShaderLab files. Syntax highlighting, error highlighting, commenting, bracket matching, folding
@@ -1241,9 +1346,10 @@ For Rider 2017.1 RC. Not released for ReSharper
 
 
 
-## 1.9.2 - 2017-08-15
+## 1.9.2
 For Rider 2017.1 EAP23. Not released for ReSharper
 
+* Released: 2017-08-15
 * Not tagged. Don't know commit, so might not even have been released. This is based on Milestone. Might actually be merged in to 2.0.0
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/10?closed=1)
 * ReSharper release not required
@@ -1254,9 +1360,10 @@ For Rider 2017.1 EAP23. Not released for ReSharper
 
 
 
-## 1.9.1 - 2017-06-29
+## 1.9.1
 For ReSharper 2017.1 and Rider 2017.1 EAP23
 
+* Released: 2017-06-29
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.9.0...v1.9.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/9?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.9.1)
@@ -1273,9 +1380,10 @@ For ReSharper 2017.1 and Rider 2017.1 EAP23
 
 
 
-## 1.9.0 - 2017-06-15
+## 1.9.0
 For ReSharper 2017.1 and Rider 2017.1 EAP22
 
+* Released: 2017-06-15
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.8.0...v1.9.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/11?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.9.0)
@@ -1295,9 +1403,10 @@ For ReSharper 2017.1 and Rider 2017.1 EAP22
 
 
 
-## 1.8.0 - 2017-05-18
+## 1.8.0
 For ReSharper 2017.1 and Rider 2017.1 EAP22
 
+* Released: 2017-05-18
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.7.0...v1.8.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/8?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.8.0)
@@ -1322,9 +1431,10 @@ For ReSharper 2017.1 and Rider 2017.1 EAP22
 
 
 
-## 1.7.0 - 2017-04-05
+## 1.7.0
 For ReSharper 2017.1 (and Rider EAP 20 or 21)
 
+* Released: 2017-04-05
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.6.2...v1.7.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/7?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.7.0)
@@ -1341,9 +1451,10 @@ For ReSharper 2017.1 (and Rider EAP 20 or 21)
 
 
 
-## 1.6.2 - 2017-03-22
+## 1.6.2
 For ReSharper 2016.3 and Rider EAP19
 
+* Released: 2017-03-22
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.6.1...v1.6.2)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.6.2)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.6.2)
@@ -1354,9 +1465,10 @@ For ReSharper 2016.3 and Rider EAP19
 
 
 
-## 1.6.1 - 2017-03-08
+## 1.6.1
 For ReSharper 2016.3 and Rider EAP18
 
+* Released: 2017-03-08
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.6.0...v1.6.1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.6.1)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.6.1)
@@ -1366,9 +1478,10 @@ For ReSharper 2016.3 and Rider EAP18
 
 
 
-## 1.6.0 - 2017-03-01
+## 1.6.0
 For ReSharper 2016.3 and Rider EAP18
 
+* Released: 2017-03-01
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.5.1-rider...v1.6.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/6?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.6.0)
@@ -1389,9 +1502,10 @@ For ReSharper 2016.3 and Rider EAP18
 
 
 
-## 1.5.1-rider - 2017-02-17
+## 1.5.1-rider
 For Rider EAP17
 
+* Released: 2017-02-17
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.5.0-rider...v1.5.1-rider)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.5.1-rider)
 
@@ -1400,9 +1514,10 @@ For Rider EAP17
 
 
 
-## 1.5.0-rider - 2017-01-02
+## 1.5.0-rider
 Initial release for Rider
 
+* Released: 2017-01-02
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.5.0...v1.5.0-rider)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.5.0-rider)
 
@@ -1411,9 +1526,10 @@ Initial release for Rider
 
 
 
-## 1.5.0 - 2016-12-30
+## 1.5.0
 For ReSharper 2016.3
 
+* Released: 2016-12-30
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.4.0...v1.5.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/4?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.5.0)
@@ -1438,9 +1554,10 @@ For ReSharper 2016.3
 
 
 
-## 1.4.0 - 2016-11-18
+## 1.4.0
 For ReSharper 2016.2
 
+* Released: 2016-11-18
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.3.0...v1.4.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/3?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.4.0)
@@ -1465,9 +1582,10 @@ For ReSharper 2016.2
 
 
 
-## 1.3.0 - 2016-09-26
+## 1.3.0
 For ReSharper 2016.2
 
+* Released: 2016-06-26
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.2.1...v1.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/2?closed=1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.3.0)
@@ -1486,9 +1604,10 @@ For ReSharper 2016.2
 
 
 
-## 1.2.1 - 2016-04-16
+## 1.2.1
 For ReSharper 2016.1
 
+* Released: 2016-04-16
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.2.0...v1.2.1)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.2.1)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.2.1)
@@ -1498,9 +1617,10 @@ For ReSharper 2016.1
 
 
 
-## 1.2.0 - 2015-11-16
+## 1.2.0
 For ReSharper 10
 
+* Released: 2015-11-16
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.1.2...v1.2.0)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.2.0)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.2.0)
@@ -1513,9 +1633,10 @@ For ReSharper 10
 
 
 
-## 1.1.2 - 2015-11-06
+## 1.1.2
 For ReSharper 10
 
+* Released: 2015-11-06
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/v1.0.0...v1.1.2)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.1.2)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.1.2)
@@ -1525,9 +1646,10 @@ For ReSharper 10
 
 
 
-## 1.0.0 - 2015-10-16
+## 1.0.0
 For ReSharper 9.2. Initial release
 
+* Released: 2015-10-16
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/81b6bc5...v1.0.0)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/v1.0.0)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/1.0.0)

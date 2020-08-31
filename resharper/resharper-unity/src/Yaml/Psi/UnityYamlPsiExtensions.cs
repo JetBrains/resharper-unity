@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
                     if (result == 0)
                         return new LocalReference(0, 0);
                 
-                    return new LocalReference(assetSourceFile.PsiStorage.PersistentIndex, result);
+                    return new LocalReference(assetSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), result);
                 }
 
                 if (Guid.TryParse(externalAssetGuid, out var guid))
