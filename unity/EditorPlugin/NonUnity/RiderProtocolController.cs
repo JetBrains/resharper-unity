@@ -15,13 +15,13 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
     public readonly SocketWire.Server Wire;
     private static readonly ILog ourLogger = Log.GetLog<RiderProtocolController>();
 
-    public RiderProtocolController(IScheduler mainThreadScheduler, Lifetime lifetime)
+    public RiderProtocolController(IScheduler scheduler, Lifetime lifetime)
     {
       try
       {
         ourLogger.Verbose("Start ControllerTask...");
 
-        Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer");
+        Wire = new SocketWire.Server(lifetime, scheduler, null, "UnityServer");
         Wire.BackwardsCompatibleWireFormat = true;
         
         ourLogger.Verbose($"Created SocketWire with port = {Wire.Port}");

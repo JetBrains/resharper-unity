@@ -24,6 +24,14 @@ namespace JetBrains.Rider.Unity.Editor
 
   public class PluginSettings : IPluginSettings
   {
+    static PluginSettings()
+    {
+      SystemInfoRiderPlugin.Init();
+    }
+
+    public static readonly string ProductName = PlayerSettings.productName;
+    public static readonly string CompanyName = PlayerSettings.companyName;
+    
     private static readonly ILog ourLogger = Log.GetLog<PluginSettings>();
     
     public static LoggingLevel SelectedLoggingLevel
@@ -38,6 +46,7 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static void InitLog()
     {
+      
       if (SelectedLoggingLevel > LoggingLevel.OFF) 
         Log.DefaultFactory = Log.CreateFileLogFactory(Lifetime.Eternal, PluginEntryPoint.LogPath, true, SelectedLoggingLevel);
       else
@@ -352,6 +361,10 @@ namespace JetBrains.Rider.Unity.Editor
 
     internal static class SystemInfoRiderPlugin
     {
+      public static void Init()
+      {
+        
+      }
       // This call on Linux is extremely slow, so cache it
       private static readonly string ourOperatingSystem = SystemInfo.operatingSystem;
 
