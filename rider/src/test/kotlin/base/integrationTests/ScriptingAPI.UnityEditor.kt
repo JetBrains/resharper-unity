@@ -21,6 +21,7 @@ import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.protocol.protocol
+import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
 import com.jetbrains.rider.test.framework.TeamCityHelper
 import com.jetbrains.rider.test.framework.combine
@@ -268,6 +269,6 @@ private fun IntegrationTestBase.debugUnityProgramWithGold(goldFile: File, before
     testDebugProgram(goldFile, beforeRun, test, {}, true)
 
 private fun IntegrationTestBase.debugUnityProgramWithoutGold(beforeRun: ExecutionEnvironment.() -> Unit = {}, test: DebugTestExecutionContext.() -> Unit) =
-    debugProgram(PrintStream(PrintStream.nullOutputStream()), beforeRun, test, {}, true)
+    debugProgram(NullPrintStream, beforeRun, test, {}, true)
 
 //endregion
