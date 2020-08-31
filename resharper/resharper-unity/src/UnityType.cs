@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Modules;
 
@@ -50,7 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public bool SupportsVersion(Version unityVersion)
         {
-            return myMinimumVersion <= unityVersion && unityVersion <= myMaximumVersion;
+            return myMinimumVersion.CompareToLenient(unityVersion) <= 0
+                   && unityVersion.CompareToLenient(myMaximumVersion) <= 0;
         }
     }
 }

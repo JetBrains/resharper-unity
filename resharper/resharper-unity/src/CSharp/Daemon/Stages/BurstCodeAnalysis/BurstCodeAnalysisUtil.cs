@@ -165,18 +165,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return false;
         }
 
-        public static bool IsFunctionNode(ITreeNode node)
-        {
-            switch (node)
-            {
-                case IFunctionDeclaration _:
-                case ICSharpClosure _:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         public static bool IsBurstContextBannedNode(ITreeNode node)
         {
             switch (node)
@@ -187,6 +175,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     when CallGraphUtil.GetCallee(invocationExpression) is IMethod method && IsBurstDiscarded(method):
                 case IFunctionDeclaration functionDeclaration
                     when IsBurstContextBannedForFunction(functionDeclaration.DeclaredElement):
+                case IAttributeSectionList _:
                     return true;
                 default:
                     return false;

@@ -1,0 +1,45 @@
+﻿using System;
+using UnityEngine;
+
+namespace DefaultNamespace
+{
+  public class CommonTest : MonoBehaviour
+  {
+    private Action action = AnotherMethodName;
+
+    private static void |AnotherMethodName|(0)()
+    {
+      var test = new CommonTest();
+      test.|AnotherMethodNameA|(1)();
+    }
+
+    private void |AnotherMethodNameA|(2)()
+    {
+      |Test|(3)();
+
+      void F()
+      {
+        |GetComponent|(4)<CommonTest>();
+      }
+
+      void Test()
+      {
+        |F|(5)();
+      }
+    }
+
+    private void |Update|(6)()
+    {
+      |action|(7)();
+    }
+  }
+}
+---------------------------------------------------------
+(0): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(2): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(3): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(4): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(5): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(6): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(7): ReSharper Unity Expensive Method Invocation: Expensive method invocation

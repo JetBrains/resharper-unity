@@ -2,12 +2,13 @@ using System;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Serialization;
+using JetBrains.Util.Maths;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References
 {
     public readonly struct LocalReference : IHierarchyReference
     {
-        public LocalReference(long owningPsiPersistentIndex, ulong localDocumentAnchor)
+        public LocalReference(OWORD owningPsiPersistentIndex, ulong localDocumentAnchor)
         {
             OwningPsiPersistentIndex = owningPsiPersistentIndex;
             LocalDocumentAnchor = localDocumentAnchor;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public ulong LocalDocumentAnchor { get; }
         
-        public long OwningPsiPersistentIndex { get;}
+        public OWORD OwningPsiPersistentIndex { get;}
         public static LocalReference Null { get; set; } = new LocalReference(0, 0);
 
         public bool Equals(LocalReference other)

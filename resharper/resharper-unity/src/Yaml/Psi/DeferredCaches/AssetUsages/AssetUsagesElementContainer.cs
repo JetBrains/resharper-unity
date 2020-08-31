@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 
                     var deps = entry.Content.Value.ToHierarchyReference(currentAssetSourceFile);
                     if (deps is ExternalReference externalReference)
-                        result.Add(new AssetScriptUsages(new LocalReference(currentAssetSourceFile.PsiStorage.PersistentIndex, anchor), externalReference));
+                        result.Add(new AssetScriptUsages(new LocalReference(currentAssetSourceFile.Ptr().Id, anchor), externalReference));
                 }
 
                 return result;

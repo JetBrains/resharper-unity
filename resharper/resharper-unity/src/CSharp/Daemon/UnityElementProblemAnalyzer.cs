@@ -1,10 +1,9 @@
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Dispatcher
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon
 {
     public abstract class UnityElementProblemAnalyzer<T> : ElementProblemAnalyzer<T>
         where T : ITreeNode

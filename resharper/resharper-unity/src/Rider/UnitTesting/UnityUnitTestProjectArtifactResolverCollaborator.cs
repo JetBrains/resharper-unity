@@ -10,15 +10,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     public class UnityUnitTestProjectArtifactResolverCollaborator : IUnitTestProjectArtifactResolverCollaborator
     {
         private readonly UnitySolutionTracker myUnitySolutionTracker;
+        private readonly UnityNUnitServiceProvider myServiceProvider;
 
-        public UnityUnitTestProjectArtifactResolverCollaborator(UnitySolutionTracker unitySolutionTracker)
+        public UnityUnitTestProjectArtifactResolverCollaborator(UnitySolutionTracker unitySolutionTracker, UnityNUnitServiceProvider serviceProvider)
         {
             myUnitySolutionTracker = unitySolutionTracker;
+            myServiceProvider = serviceProvider;
         }
         
         public bool CanResolveArtifact(IProject project, TargetFrameworkId targetFrameworkId)
         {
-            return myUnitySolutionTracker.IsUnityGeneratedProject.Maybe.Value;
+            return myUnitySolutionTracker.IsUnityGeneratedProject.Maybe.Value && myServiceProvider.IsUnityUnitTestStrategy();
         }
 
         public FileSystemPath ResolveArtifact(IProject project, TargetFrameworkId targetFrameworkId)

@@ -188,7 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                     {
                         var fakeAnchor = PrefabsUtil.GetImportedDocumentAnchor(prefabInstanceHierarchy.Location.LocalDocumentAnchor, correspondingSourceObject.LocalDocumentAnchor);
                         myOtherFakeStrippedElements.Add(new StrippedHierarchyElement(
-                            new LocalReference(sourceFile.PsiStorage.PersistentIndex, fakeAnchor),
+                            new LocalReference(sourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), fakeAnchor),
                             prefabInstanceHierarchy.Location, correspondingSourceObject));
                     }
                 }

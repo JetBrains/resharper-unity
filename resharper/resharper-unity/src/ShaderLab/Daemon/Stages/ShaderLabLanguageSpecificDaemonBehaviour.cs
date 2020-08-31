@@ -5,14 +5,18 @@ using JetBrains.ReSharper.Psi;
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages
 {
     [Language(typeof(ShaderLabLanguage))]
-    public class ShaderLabLanguageSpecificDaemonBehaviour : LanguageSpecificDaemonBehavior
+    public class ShaderLabLanguageSpecificDaemonBehaviour : ILanguageSpecificDaemonBehavior
     {
-        public override ErrorStripeRequest InitialErrorStripe(IPsiSourceFile sourceFile)
+        public ErrorStripeRequest InitialErrorStripe(IPsiSourceFile sourceFile)
         {
             return !sourceFile.Properties.ShouldBuildPsi || !sourceFile.Properties.ProvidesCodeModel ||
                    !sourceFile.PrimaryPsiLanguage.Is<ShaderLabLanguage>()
                 ? ErrorStripeRequest.NONE
                 : ErrorStripeRequest.STRIPE_AND_ERRORS;
         }
+
+        public bool CanShowErrorBox => true;
+        public bool RunInSolutionAnalysis => false;
+        public bool RunInFindCodeIssues => true;
     }
 }

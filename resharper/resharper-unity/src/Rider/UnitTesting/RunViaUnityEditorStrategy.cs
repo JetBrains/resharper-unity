@@ -347,19 +347,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             mySolution.Locks.ExecuteOrQueueEx(waitingLifetime, "myRiderSolutionSaver.Save", () =>
             {
-                myRiderSolutionSaver.Save(waitingLifetime, mySolution, () =>
+                myRiderSolutionSaver.Save(waitingLifetime).ContinueWith( _ =>
                 {
-                    myLogger.Trace("onSavedCallback.");
+                    myLogger.Trace("After myRiderSolutionSaver.Save");
                     if (waitingLifetime.IsAlive)
                     {
                         myUnityRefresher.Refresh(waitingLifetime, RefreshType.Force)
-                            .ContinueWith(_ =>
+                            .ContinueWith(__ =>
                             {
-                                myLogger.Trace("After onSavedCallback and myUnityRefresher.Refresh");
+                                myLogger.Trace("After myUnityRefresher.Refresh");
                                 waitingLifetimeDefinition.Terminate();
                             }, waitingLifetime);
                     }
-                });
+                }, waitingLifetime);
             });
 
             return JetTaskEx.While(() => waitingLifetime.IsAlive);

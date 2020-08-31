@@ -38,8 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             if (!cgIncludeFolder.IsEmpty)
             {
                 properties.IncludePaths.Add(cgIncludeFolder);
-                properties.IncludePaths.Add(cache.Solution.SolutionDirectory);
             }
+            properties.IncludePaths.Add(cache.Solution.SolutionDirectory);
 
             var shaderCache = cache.Solution.GetComponent<InjectedHlslFileLocationTracker>();
 
@@ -69,6 +69,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Cpp
             var directory = randomProjectFile.Location.Directory;
             
             inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("SHADER_API_D3D11"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("__RESHARPER__"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("INTERNAL_DATA= "));
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("WorldReflectionVector(data,normal)=data.worldRefl"));
+            inclusionContext.ProcessDefine(CppPPDefineSymbol.ParsePredefinedMacro("WorldNormalVector(data,normal)=normal"));
             inclusionContext.PushInclude(rootFile, directory, false);
             foreach (CppFileLocation includeLocation in includeLocations)
             {
