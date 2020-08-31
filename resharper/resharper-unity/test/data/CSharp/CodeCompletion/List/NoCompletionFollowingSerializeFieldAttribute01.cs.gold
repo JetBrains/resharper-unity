@@ -1,4 +1,4 @@
-﻿# 749 ITEMS #
+﻿# 751 ITEMS #
 
 + abstract
 async
@@ -22,6 +22,8 @@ interface
 internal
 long
 new
+nint
+nuint
 object
 override
 partial
@@ -750,7 +752,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 749 ITEMS #
+# 751 ITEMS #
 
 + abstract
 async
@@ -774,6 +776,8 @@ interface
 internal
 long
 new
+nint
+nuint
 object
 override
 partial

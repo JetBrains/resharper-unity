@@ -1,4 +1,4 @@
-﻿# 1127 ITEMS #
+﻿# 1129 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -43,6 +43,8 @@ interface
 internal
 long
 new
+nint
+nuint
 object
 override
 partial
@@ -1128,7 +1130,7 @@ public override GetExtraPaneTypes() { … }    IEnumerable<Type>
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 1127 ITEMS #
+# 1129 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -1173,6 +1175,8 @@ interface
 internal
 long
 new
+nint
+nuint
 object
 override
 partial
