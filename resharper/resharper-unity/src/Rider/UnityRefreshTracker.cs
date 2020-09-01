@@ -32,11 +32,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
+        private readonly ConnectionTracker myConnectionTracker;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
             UnityEditorProtocol editorProtocol, ISettingsStore settingsStore,
-            ILogger logger, UnityVersion unityVersion)
+            ILogger logger, UnityVersion unityVersion, ConnectionTracker connectionTracker)
         {
             myLocks = locks;
             myLifetime = lifetime;
@@ -44,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myEditorProtocol = editorProtocol;
             myLogger = logger;
             myUnityVersion = unityVersion;
+            myConnectionTracker = connectionTracker;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -94,16 +96,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private async Task RefreshInternal(Lifetime lifetime, RefreshType refreshType)
         {
             myLocks.ReentrancyGuard.AssertGuarded();
-            var lifetimeDef = Lifetime.Define(lifetime);
+            
+            if (myEditorProtocol.UnityModel.Value == null)
+                return;
+            
+            if (!myConnectionTracker.IsConnectionEstablished())
+                return;
 
-            myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
-            mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime,
-                RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...")
-                    .AsIndeterminate().AsNonCancelable());
+            var lifetimeDef = Lifetime.Define(lifetime);
             try
             {
-                if (myEditorProtocol.UnityModel.Value == null)
-                    return;
+                myLogger.Verbose($"myPluginProtocolController.UnityModel.Value.Refresh.StartAsTask, force = {refreshType} Started");
+                mySolution.GetComponent<RiderBackgroundTaskHost>().AddNewTask(lifetimeDef.Lifetime,
+                    RiderBackgroundTaskBuilder.Create().WithHeader("Refreshing solution in Unity Editor...")
+                        .AsIndeterminate().AsNonCancelable());
                     
                 var version = myUnityVersion.ActualVersionForSolution.Value;
                 try
