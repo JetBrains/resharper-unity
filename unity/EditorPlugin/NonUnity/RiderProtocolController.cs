@@ -36,11 +36,13 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 //  [Serializable]
   class ProtocolInstance
   {
+    public Version Version;
     public int Port;
     public string SolutionName;
 
-    public ProtocolInstance(int port, string solutionName)
+    public ProtocolInstance(int port, string solutionName, Version version)
     {
+      Version = version;
       Port = port;
       SolutionName = solutionName;
     }
@@ -51,7 +53,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       var sb = new StringBuilder("[");
 
       sb.Append(connections
-        .Select(connection=> "{" + $"\"Port\":{connection.Port},\"SolutionName\":\"{connection.SolutionName}\"" + "}")
+        .Select(connection=> "{" + $"\"Port\":{connection.Port},\"SolutionName\":\"{connection.SolutionName}\",\"Version\":\"{connection.Version}\"" + "}")
         .Aggregate((a, b) => a + "," + b));
 
       sb.Append("]");
