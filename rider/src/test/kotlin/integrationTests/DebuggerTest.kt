@@ -1,6 +1,8 @@
 package integrationTests
 
 import base.integrationTests.*
+import com.intellij.xdebugger.breakpoints.XBreakpointProperties
+import com.intellij.xdebugger.breakpoints.XLineBreakpoint
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
@@ -27,10 +29,13 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
         val pauseFile = activeSolutionDirectory.combine("Assets", ".pause").absoluteFile
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleUnityPausepoint("NewBehaviourScript.cs", 16, "System.IO.File.Exists(\"${pauseFile.path}\")")
+                toggleUnityPausepoint("NewBehaviourScript.cs", 9, "System.IO.File.Exists(\"${pauseFile.path}\")")
             },
             {
-                waitForPauseModeAfterAction { pauseFile.createNewFile() }
+                waitForUnityEditorPlayMode()
+                pauseFile.createNewFile()
+                waitForUnityEditorPauseMode()
+                removeAllUnityPausepoints()
                 unpause()
             })
     }
@@ -39,7 +44,7 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint("NewBehaviourScript.cs", 17)
+                toggleBreakpoint("NewBehaviourScript.cs", 9)
             },
             {
                 waitForPause()
@@ -63,22 +68,27 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
 
     @Test(description = "RIDER-23087")
     fun checkEvaluationAfterRestartGame() {
+        var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleBreakpoint(project, "NewBehaviourScript.cs", 17)
+                breakpoint = toggleBreakpoint(project, "NewBehaviourScript.cs", 9)
             },
             {
                 val toEvaluate = "binaryNotation / 25"
-                fun action() {
-                    waitForPause()
-                    printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
-                    dumpFullCurrentData()
-                    resumeSession()
-                }
 
-                action()
+                waitForPause()
+                printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
+                dumpFullCurrentData()
+
+                breakpoint?.isEnabled = false
+                resumeSession()
+                waitForUnityEditorPlayMode()
                 restart()
-                action()
+                breakpoint?.isEnabled = true
+
+                waitForPause()
+                printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
+                dumpFullCurrentData()
             }, testGoldFile)
     }
 }

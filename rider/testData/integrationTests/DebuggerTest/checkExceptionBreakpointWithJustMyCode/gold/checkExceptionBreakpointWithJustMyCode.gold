@@ -1,4 +1,4 @@
---> NewBehaviourScript.cs:15(390,427) // throw new System.ArgumentException();
+--> NewBehaviourScript.cs:7(103,140) // throw new System.ArgumentException();
 NewBehaviourScript.Update() in , Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity): null
     +this.gameObject = Main Camera (active: true, layer: 0): null

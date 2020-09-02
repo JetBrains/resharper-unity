@@ -7,13 +7,10 @@ import com.intellij.util.io.exists
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
-import com.jetbrains.rdclient.util.idea.pumpMessages
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.model.EditorLogEntry
-import com.jetbrains.rider.model.RunMethodData
-import com.jetbrains.rider.model.RunMethodResult
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.*
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
@@ -141,7 +138,7 @@ fun IntegrationTestBase.waitFirstScriptCompilation() {
 
 fun IntegrationTestBase.waitConnection() {
     frameworkLogger.info("Waiting for connection between Unity editor and Rider")
-    waitAndPump(project.lifetime, { project.isConnectedToEditor() },
+    waitAndPump(project.lifetime, { project.isConnectedToEditor() && rdUnityModel.editorState.valueOrNull != EditorState.Disconnected },
         IntegrationTestBase.defaultTimeout) { "unityHost is not initialized." }
     frameworkLogger.info("unityHost is initialized.")
 }
@@ -167,39 +164,55 @@ fun printEditorLogEntry(stream: PrintStream, editorLogEntry: EditorLogEntry) {
 
 //region Playing
 
+fun IntegrationTestBase.play(waitForPlay: Boolean = true) {
+    rdUnityModel.play.set(true)
+    if (waitForPlay) waitForUnityEditorPlayMode()
+}
 
-fun IntegrationTestBase.play() = waitForPlayModeAfterAction { rdUnityModel.play.set(true) }
+fun IntegrationTestBase.pause(waitForPause: Boolean = true) {
+    rdUnityModel.pause.set(true)
+    if (waitForPause) waitForUnityEditorPauseMode()
+}
 
-fun IntegrationTestBase.pause() = waitForPauseModeAfterAction { rdUnityModel.pause.set(true) }
+// "2000000" is default log message in NewBehaviourScript.Update() in test solutions
+fun IntegrationTestBase.step(logMessageAfterStep: String = "2000000") =
+    waitForEditorLogAfterAction(logMessageAfterStep) { rdUnityModel.step.fire(Unit) }
 
-fun IntegrationTestBase.step() = waitForStepAfterAction { rdUnityModel.step.fire(Unit) }
+fun IntegrationTestBase.stopPlaying(waitForIdle: Boolean = true) {
+    rdUnityModel.play.set(false)
+    if (waitForIdle) waitForUnityEditorIdleMode()
+}
 
-fun IntegrationTestBase.stopPlaying() = waitForIdleModeAfterAction { rdUnityModel.play.set(false) }
+fun IntegrationTestBase.unpause(waitForPlay: Boolean = true) {
+    rdUnityModel.pause.set(false)
+    if (waitForPlay) waitForUnityEditorPlayMode()
+}
 
-fun IntegrationTestBase.unpause() = waitForPlayModeAfterAction { rdUnityModel.pause.set(false) }
+fun IntegrationTestBase.waitForUnityEditorPlayMode() = waitForUnityEditorState(EditorState.ConnectedPlay)
 
-fun IntegrationTestBase.waitForPlayModeAfterAction(action: () -> Unit) =
-    waitForEditorLogAfterAction("Play", "Unity editor isn't in 'Play' mode", action)
+fun IntegrationTestBase.waitForUnityEditorPauseMode() = waitForUnityEditorState(EditorState.ConnectedPause)
 
-fun IntegrationTestBase.waitForIdleModeAfterAction(action: () -> Unit) =
-    waitForEditorLogAfterAction("Idle", "Unity editor isn't in 'Idle' mode", action)
+fun IntegrationTestBase.waitForUnityEditorIdleMode() = waitForUnityEditorState(EditorState.ConnectedIdle)
 
-fun IntegrationTestBase.waitForPauseModeAfterAction(action: () -> Unit) =
-    waitForEditorLogAfterAction("Pause", "Unity editor isn't in 'Pause' mode", action)
-
-fun IntegrationTestBase.waitForStepAfterAction(action: () -> Unit) =
-    waitForEditorLogAfterAction("Step", "Unity editor didn't make step", action)
-
-private fun IntegrationTestBase.waitForEditorLogAfterAction(logMessage: String, failMessage: String, action: () -> Unit) {
+fun IntegrationTestBase.waitForEditorLogAfterAction(logMessage: String, action: () -> Unit): EditorLogEntry {
     val logLifetime = lifetime.createNested()
+    var editorLogEntry: EditorLogEntry? = null
     rdUnityModel.onUnityLogEvent.adviseNotNull(logLifetime) {
         if (it.message == logMessage) {
+            editorLogEntry = it
             logLifetime.terminate()
         }
     }
     action()
-    if (logMessage != "Step") pumpMessages(Duration.ofSeconds(5)) // TODO: remove after fix logs
-    else waitAndPump(Duration.ofSeconds(15), { logLifetime.isNotAlive }) { failMessage }
+    waitAndPump(Duration.ofSeconds(10), { logLifetime.isNotAlive })
+    { "There are no log entry with message: $logMessage" }
+    return editorLogEntry!!
+}
+
+private fun IntegrationTestBase.waitForUnityEditorState(editorState: EditorState) {
+    frameworkLogger.info("Waiting for unity editor in state '$editorState'")
+    waitAndPump(Duration.ofSeconds(20), { rdUnityModel.editorState.valueOrNull == editorState })
+    { "Unity editor isn't in state '$editorState', actual state '${rdUnityModel.editorState.valueOrDefault(EditorState.Disconnected)}'" }
 }
 
 fun IntegrationTestBase.restart() {
@@ -209,7 +222,7 @@ fun IntegrationTestBase.restart() {
 
 //endregion
 
-//region Debug
+//region RunDebug
 
 private fun IntegrationTestBase.selectRunConfiguration(name: String) {
     val runManager = RunManager.getInstance(project)
@@ -245,23 +258,15 @@ private fun IntegrationTestBase.attachDebuggerToUnityEditor(
         else DefaultRunConfigurationGenerator.ATTACH_CONFIGURATION_NAME
     )
 
-    val lifetimeDef = lifetime.createNested()
-    val subscribeAndBeforeRun = if (andPlay) ({
-        rdUnityModel.play.adviseNotNull(lifetimeDef) {
-            if (it) lifetimeDef.terminate()
-        }
-        beforeRun()
-    }) else beforeRun
-    val waitAndTest = if (andPlay) ({
-        waitAndPump(Duration.ofSeconds(20), { lifetimeDef.isNotAlive })
-        { "Unity editor not in 'Play' mode after run configuration" }
+    val waitAndTest: DebugTestExecutionContext.() -> Unit = {
+        waitForDotNetDebuggerInitializedOrCanceled()
         test()
-    }) else test
+    }
 
     if (goldFile != null) {
-        debugUnityProgramWithGold(goldFile, subscribeAndBeforeRun, waitAndTest)
+        debugUnityProgramWithGold(goldFile, beforeRun, waitAndTest)
     } else {
-        debugUnityProgramWithoutGold(subscribeAndBeforeRun, waitAndTest)
+        debugUnityProgramWithoutGold(beforeRun, waitAndTest)
     }
 }
 

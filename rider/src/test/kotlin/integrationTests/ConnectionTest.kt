@@ -2,9 +2,7 @@ package integrationTests
 
 import base.integrationTests.*
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.model.EditorLogEntry
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -75,16 +73,9 @@ class ConnectionTest : IntegrationTestBase() {
             waitFirstScriptCompilation()
             waitConnection()
 
-            var editorLogEntry: EditorLogEntry? = null
-            rdUnityModel.onUnityLogEvent.adviseNotNullOnce(lifetime.createNested()) { entry ->
-                editorLogEntry = entry
-            }
-
-            execute()
-            waitAndPump(project.lifetime, { editorLogEntry != null }, defaultTimeout) { "Test message is not received" }
-
+            val editorLogEntry = waitForEditorLogAfterAction("#Test#") { execute() }
             executeWithGold(testGoldFile) {
-                printEditorLogEntry(it, editorLogEntry!!)
+                printEditorLogEntry(it, editorLogEntry)
             }
 
             checkSweaInSolution()

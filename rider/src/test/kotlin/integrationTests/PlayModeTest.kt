@@ -34,6 +34,7 @@ class PlayModeTest : IntegrationTestWithEditorBase() {
     fun checkAttachDebuggerToUnityEditorAndPlay() {
         attachDebuggerToUnityEditorAndPlay({},
             {
+                waitForUnityEditorPlayMode()
                 pause()
                 step()
                 unpause()
