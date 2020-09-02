@@ -1,4 +1,4 @@
-﻿# 811 ITEMS #
+﻿# 813 ITEMS #
 
 A
 ADBannerView
@@ -787,6 +787,8 @@ internal
 jvalue
 long
 new
+nint
+nuint
 object
 override
 partial
@@ -813,7 +815,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 811 ITEMS #
+# 813 ITEMS #
 
 A
 ADBannerView
@@ -1602,6 +1604,8 @@ internal
 jvalue
 long
 new
+nint
+nuint
 object
 override
 partial

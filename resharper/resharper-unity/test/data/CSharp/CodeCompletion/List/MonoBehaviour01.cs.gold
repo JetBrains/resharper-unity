@@ -1,4 +1,4 @@
-﻿# 811 ITEMS #
+﻿# 813 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -84,6 +84,8 @@ interface
 internal
 long
 new
+nint
+nuint
 object
 override
 partial
@@ -812,7 +814,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 811 ITEMS #
+# 813 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -898,6 +900,8 @@ interface
 internal
 long
 new
+nint
+nuint
 object
 override
 partial
