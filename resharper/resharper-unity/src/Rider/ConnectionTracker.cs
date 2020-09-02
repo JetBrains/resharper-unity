@@ -9,6 +9,7 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
@@ -28,6 +29,51 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
                 return;
 
+            //using JetBrains.ReSharper.Resources.Shell.ShellLifetimes.StartMainUnguardedAsync instead of JetBrains.Application.Threading.IThreadingEx.QueueRecurring
+            //to check connection between backend and unity editor, when rdUnityModel.RiderFrontendTests is True
+            var nestedLifetimeDefinition = lifetime.CreateNested();
+            host.GetValue(rdUnityModel => rdUnityModel.RiderFrontendTests).Advise(nestedLifetimeDefinition.Lifetime,
+                riderFrontendTests =>
+                {
+                    if (!riderFrontendTests) return;
+                    
+                    lifetime.StartMainUnguardedAsync(async () =>
+                    {
+                        while (lifetime.IsAlive)
+                        {
+                            var model = editorProtocol.UnityModel.Value;
+                            if (model == null)
+                            {
+                                State.SetValue(UnityEditorState.Disconnected);
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
+                                    rdTask?.Result.Advise(lifetime, result =>
+                                    {
+                                        State.SetValue(result.Result);
+                                        logger.Info(
+                                            $"myIsConnected = {State.Value}");
+                                    });
+                                }
+                                catch (Exception e)
+                                {
+                                    e.Data.Add("UnityModel", editorProtocol.UnityModel.Value);
+                                    throw;
+                                }
+                            }
+
+                            logger.Info($"Sending connection state. State: {State.Value}");
+                            host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
+                            await Task.Delay(1000, lifetime);
+                        }
+                    });
+
+                    nestedLifetimeDefinition.Terminate();
+                });
+            
             unitySolutionTracker.IsUnityProject.AdviseOnce(lifetime, args =>
             {
                 if (!args)

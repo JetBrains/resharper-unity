@@ -5,11 +5,13 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.io.exists
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.model.RdUnityModel
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import org.testng.annotations.AfterClass
+import org.testng.annotations.BeforeMethod
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -42,6 +44,13 @@ abstract class IntegrationTestBase : BaseTestWithSolution() {
         val libraryFolder = Paths.get(tempDir.toString(), "Library")
         if (!libraryFolder.exists()) {
             Files.createDirectory(libraryFolder)
+        }
+    }
+
+    @BeforeMethod
+    fun setUpRdUnityModelSettings() {
+        if (!rdUnityModel.riderFrontendTests.valueOrDefault(false)) {
+            rdUnityModel.riderFrontendTests.set(true)
         }
     }
 

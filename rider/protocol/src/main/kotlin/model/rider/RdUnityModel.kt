@@ -120,5 +120,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("backendSettings", aggregatedef("BackendSettings") {
             property("enableDebuggerExtensions", bool)
         })
+
+        property("riderFrontendTests", bool)
     }
 }
