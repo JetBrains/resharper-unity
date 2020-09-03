@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     [UnitTestHostProvider]
     public class UnityRunHostProvider : RunHostProvider
     {
-        public new ITaskRunnerHostController CreateHostController(IUnitTestLaunch launch)
+        public override ITaskRunnerHostController CreateHostController(IUnitTestLaunch launch)
         {
             var innerHostController = base.CreateHostController(launch);
             return new UnityTaskRunnerHostController(innerHostController, 
