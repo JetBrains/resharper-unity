@@ -102,7 +102,7 @@ fun installPlugin(project: Project) {
 
     val editorPluginPath = Paths.get(project.basePath!!)
         .resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
-    waitAndPump(project.lifetime, { editorPluginPath.exists() }, Duration.ofSeconds(10)) { "EditorPlugin was not installed." }
+    waitAndPump(project.lifetime, { editorPluginPath.exists() }, IntegrationTestBase.actionsTimeout) { "EditorPlugin was not installed." }
     frameworkLogger.info("Editor plugin was installed")
 }
 
@@ -208,14 +208,14 @@ fun IntegrationTestBase.waitForEditorLogAfterAction(logMessage: String, action: 
         }
     }
     action()
-    waitAndPump(Duration.ofSeconds(10), { logLifetime.isNotAlive })
+    waitAndPump(IntegrationTestBase.actionsTimeout, { logLifetime.isNotAlive })
     { "There are no log entry with message: $logMessage" }
     return editorLogEntry!!
 }
 
 private fun IntegrationTestBase.waitForUnityEditorState(editorState: EditorState) {
     frameworkLogger.info("Waiting for unity editor in state '$editorState'")
-    waitAndPump(Duration.ofSeconds(20), { rdUnityModel.editorState.valueOrNull == editorState })
+    waitAndPump(IntegrationTestBase.actionsTimeout, { rdUnityModel.editorState.valueOrNull == editorState })
     { "Unity editor isn't in state '$editorState', actual state '${rdUnityModel.editorState.valueOrDefault(EditorState.Disconnected)}'" }
 }
 

@@ -48,7 +48,7 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
     @BeforeMethod(alwaysRun = true, dependsOnMethods = ["buildSolution"])
     fun waitForUnityRunConfigurations() {
         val runManager = RunManager.getInstance(project)
-        waitAndPump(Duration.ofSeconds(10), { runManager.allConfigurationsList.size >= 2 }) {
+        waitAndPump(actionsTimeout, { runManager.allConfigurationsList.size >= 2 }) {
             "Unity run configurations didn't appeared, " +
                 "current: ${runManager.allConfigurationsList.joinToString(", ", "[", "]")}"
         }

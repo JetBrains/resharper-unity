@@ -21,6 +21,7 @@ abstract class IntegrationTestBase : BaseTestWithSolution() {
 
     companion object {
         val defaultTimeout: Duration = Duration.ofSeconds(120)
+        val actionsTimeout: Duration = Duration.ofSeconds(20)
     }
 
     private val lifetimeDefinition = LifetimeDefinition()
