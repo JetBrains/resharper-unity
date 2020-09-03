@@ -65,7 +65,7 @@ intellij {
     downloadSources = false
     instrumentCode = false
 
-    plugins = [ 'rider-plugins-appender', 'CSS', 'yaml' ]
+    plugins = [ 'rider-plugins-appender', 'CSS', 'yaml', 'dotCover' ]
 }
 
 patchPluginXml {
