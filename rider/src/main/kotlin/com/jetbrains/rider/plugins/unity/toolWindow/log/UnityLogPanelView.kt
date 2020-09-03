@@ -56,7 +56,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         .console as ConsoleViewImpl
 
     private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
-    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelView->ensureIndexIsVisible", 250, true, MergingUpdateQueue.ANY_COMPONENT, project, null, true).setRestartTimerOnAdd(false)
+    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelView->ensureIndexIsVisible", 250, true, toolWindow.component).setRestartTimerOnAdd(false)
     private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->ensureIndexIsVisible") {
         override fun run() = eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
     }
@@ -205,11 +205,10 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     private fun addToList(newEvent: RdLogEvent) {
         if (logModel.mergeSimilarItems.value) {
-            val existing = eventList.riderModel.elements().toList()
-                .filter {
-                    it.message == newEvent.message && it.stackTrace == newEvent.stackTrace &&
-                        it.mode == newEvent.mode && it.type == newEvent.type
-                }.singleOrNull()
+            val existing = eventList.riderModel.elements().toList().singleOrNull {
+                it.message == newEvent.message && it.stackTrace == newEvent.stackTrace &&
+                    it.mode == newEvent.mode && it.type == newEvent.type
+            }
             if (existing == null)
                 eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
             else {
@@ -228,7 +227,6 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         }
     }
 
-    // TODO: optimize
     private fun refreshList(newEvents: List<LogPanelItem>) {
         eventList.riderModel.clear()
         for (event in newEvents) {
@@ -241,7 +239,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     }
 
     init {
-        Disposer.register(project, console)
+        Disposer.register(toolWindow.disposable, console)
 
         mainSplitterOrientation.advise(lifetime) { value ->
             mainSplitter.orientation = value
@@ -275,10 +273,9 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 add(ActionManager.getInstance().getAction(UnityPluginShowSettingsAction.actionId))
 
                 add(mainSplitterToggleAction)
-                addAll(console.createConsoleActions().filter { it is ToggleUseSoftWrapsToolbarAction }.toList())
+                addAll(console.createConsoleActions().filterIsInstance<ToggleUseSoftWrapsToolbarAction>().toList())
             })
         }
-
 
         logModel.onCleared.advise(lifetime) { console.clear() }
         logModel.fire()
