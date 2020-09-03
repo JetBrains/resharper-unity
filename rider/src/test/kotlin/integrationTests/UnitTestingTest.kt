@@ -1,9 +1,12 @@
 package integrationTests
 
 import base.integrationTests.IntegrationTestWithEditorBase
+import base.integrationTests.preferStandaloneNUnitLauncherInTests
+import com.jetbrains.rider.model.UnitTestLaunchPreference
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
+import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 import java.io.File
 
@@ -22,18 +25,15 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     }
 
     @Test
-    fun checkRunAllTestsFromSolution() {
-        buildSolutionWithReSharperBuild()
-        withUtFacade(project) {
-            it.waitForDiscovering(5)
-            val session = it.runAllTestsInSolution(
-                5,
-                RiderUnitTestScriptingFacade.defaultTimeout,
-                5,
-                testGoldFile
-            )
-            it.compareSessionTreeWithGold(session, testGoldFile)
-        }
+    fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
+
+    @Test(description = "RIDER-46658")
+    fun checkTestFixtureAndValueSourceTests() = testWithAllTestsInSolution(14, 16)
+
+    @Test(description = "RIDER-49891")
+    fun checkStandaloneNUnitLauncher() {
+        preferStandaloneNUnitLauncherInTests()
+        testWithAllTestsInSolution(5)
     }
 
     @Test
@@ -51,17 +51,14 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(description = "RIDER-46658")
-    fun checkTestFixtureAndValueSourceTests() {
-        replaceFileContent(project, "NewTestScript.cs")
-        rebuildSolutionWithReSharperBuild()
-
+    private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTest: Int = sessionElements) {
+        buildSolutionWithReSharperBuild(project)
         withUtFacade(project) {
-            it.waitForDiscovering(14)
+            it.waitForDiscovering(sessionElements)
             val session = it.runAllTestsInSolution(
-                16,
+                sessionElements,
                 RiderUnitTestScriptingFacade.defaultTimeout,
-                16,
+                sessionElements,
                 testGoldFile
             )
             it.compareSessionTreeWithGold(session, testGoldFile)
