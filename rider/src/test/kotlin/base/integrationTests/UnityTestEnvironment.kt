@@ -4,12 +4,14 @@ import com.jetbrains.rider.test.framework.TestMethod
 
 @Target(AnnotationTarget.FUNCTION)
 annotation class UnityTestEnvironment(
+    val withCoverage: Boolean = false,
     val resetEditorPrefs: Boolean = false,
     val useRiderTestPath: Boolean = false,
     val batchMode: Boolean = true
 )
 
 class UnityTestEnvironmentInstance(
+    val withCoverage: Boolean = false,
     val resetEditorPrefs: Boolean = false,
     val useRiderTestPath: Boolean = false,
     val batchMode: Boolean = true
@@ -21,6 +23,7 @@ class UnityTestEnvironmentInstance(
             }
 
             return UnityTestEnvironmentInstance(
+                unityTestEnvironment.withCoverage,
                 unityTestEnvironment.resetEditorPrefs,
                 unityTestEnvironment.useRiderTestPath,
                 unityTestEnvironment.batchMode
