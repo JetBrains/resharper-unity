@@ -281,3 +281,21 @@ private fun IntegrationTestBase.debugUnityProgramWithoutGold(beforeRun: Executio
     debugProgram(NullPrintStream, beforeRun, test, {}, true)
 
 //endregion
+
+//region UnitTesting
+
+fun IntegrationTestBase.preferStandaloneNUnitLauncherInTests() =
+    selectUnitTestLaunchPreference(UnitTestLaunchPreference.NUnit)
+
+fun IntegrationTestBase.preferEditModeInTests() =
+    selectUnitTestLaunchPreference(UnitTestLaunchPreference.EditMode)
+
+fun IntegrationTestBase.preferPlayModeInTests() =
+    selectUnitTestLaunchPreference(UnitTestLaunchPreference.PlayMode)
+
+private fun IntegrationTestBase.selectUnitTestLaunchPreference(preference: UnitTestLaunchPreference) {
+    frameworkLogger.info("Selecting unit test launch preference '$preference'")
+    rdUnityModel.unitTestPreference.set(preference)
+}
+
+//endregion
