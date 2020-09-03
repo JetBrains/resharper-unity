@@ -13,11 +13,11 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
     [SolutionComponent]
-    public class ExpensiveCodeCallGraphAnalyzer : CallGraphRootMarksProviderBase
+    public class ExpensiveCodeMarksProvider : CallGraphRootMarksProviderBase
     {
         public const string MarkId = "Unity.ExpensiveCode";
 
-        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
+        public ExpensiveCodeMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker,
             UnitySolutionTracker unitySolutionTracker)
             : base(MarkId, new CallGraphIncomingPropagator(solution, MarkId))

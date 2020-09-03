@@ -1,13 +1,13 @@
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 {
-    public interface IUnityProblemAnalyzer
+    public interface IUnityProblemAnalyzer : IUnityProblemAnalyzerContextClassification
     {
-        UnityProblemAnalyzerContext Context { get; }
+        UnityProblemAnalyzerContextElement ProhibitedContext { get; }
         void RunInspection(ITreeNode node, IDaemonProcess daemonProcess, DaemonProcessKind kind, [NotNull] IHighlightingConsumer consumer);
     }
 }

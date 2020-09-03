@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly IElementIdProvider myProvider;
 
         public RiderUnityCommonIconProvider(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi api, UnityCodeInsightProvider codeInsightProvider,
+            SettingsStore settingsStore, PerformanceCriticalCodeMarksProvider marksProvider, UnityApi api, UnityCodeInsightProvider codeInsightProvider,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker, IconHost iconHost, IElementIdProvider provider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, api, provider)
         {

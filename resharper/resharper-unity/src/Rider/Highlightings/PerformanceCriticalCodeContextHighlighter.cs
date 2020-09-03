@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 var solution = psiDocumentRangeView.Solution;
                 var swa = solution.GetComponent<SolutionAnalysisService>();
                 var callGraphExtension = solution.GetComponent<CallGraphSwaExtensionProvider>();
-                var callGraphAnalyzer = solution.GetComponent<PerformanceCriticalCodeCallGraphMarksProvider>();
+                var callGraphAnalyzer = solution.GetComponent<PerformanceCriticalCodeMarksProvider>();
                 var elementIdProvider = solution.GetComponent<IElementIdProvider>();
                 var usageChecker = swa.UsageChecker;
                 if (usageChecker == null)

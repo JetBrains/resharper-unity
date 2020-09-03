@@ -5,7 +5,7 @@ using JetBrains.Serialization;
 namespace JetBrains.ReSharper.Plugins.Unity
 {
     // Cache version
-    [PolymorphicMarshaller(20)]
+    [PolymorphicMarshaller(21)]
     public class CacheVersion
     {
         [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = r => new CacheVersion();

@@ -7,9 +7,9 @@ using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph
 {
-    public class CallGraphBurstPropagator : CallGraphOutcomingPropagator
+    public class BurstPropagator : CallGraphOutcomingPropagator
     {
-        public CallGraphBurstPropagator(ISolution solution, string markName)
+        public BurstPropagator(ISolution solution, string markName)
             : base(solution, markName)
         {
         }

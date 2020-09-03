@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         private readonly UnityApi myUnityApi;
 
-        public FieldDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi unityApi, IElementIdProvider provider)
+        public FieldDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, PerformanceCriticalCodeMarksProvider marksProvider, UnityApi unityApi, IElementIdProvider provider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, provider)
         {
             myUnityApi = unityApi;

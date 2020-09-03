@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class InitialiseOnLoadCctorDetector : UnityDeclarationHighlightingProviderBase
     {
         public InitialiseOnLoadCctorDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, 
-            PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
+            PerformanceCriticalCodeMarksProvider marksProvider, IElementIdProvider provider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, provider)
         {
         }

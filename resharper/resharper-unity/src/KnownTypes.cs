@@ -97,12 +97,20 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName InjectAttribute = new ClrTypeName("Unity.Entities.InjectAttribute");
 
         // Burst
-        public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");
         public static readonly IClrTypeName BurstCompileAttribute = new ClrTypeName("Unity.Burst.BurstCompileAttribute");
         public static readonly IClrTypeName BurstDiscardAttribute = new ClrTypeName("Unity.Burst.BurstDiscardAttribute");
-        public static readonly IClrTypeName JobProducerAttrubyte = new ClrTypeName("Unity.Jobs.LowLevel.Unsafe.JobProducerTypeAttribute");
+        public static readonly IClrTypeName JobProducerAttribute = new ClrTypeName("Unity.Jobs.LowLevel.Unsafe.JobProducerTypeAttribute");
         public static readonly IClrTypeName NativeSetClassTypeToNullOnScheduleAttribute = new ClrTypeName("Unity.Collections.LowLevel.Unsafe.NativeSetClassTypeToNullOnScheduleAttribute");
 
+        // Jobs
+        public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");
+        public static readonly IClrTypeName JobFor = new ClrTypeName("Unity.Jobs.IJobFor");
+        public static readonly IClrTypeName JobParallelFor = new ClrTypeName("Unity.Jobs.IJobParallelFor");
+        public static readonly IClrTypeName AnimationJob = new ClrTypeName("UnityEngine.Animations.IAnimationJob");
+        public static readonly IClrTypeName JobParallelForTransform = new ClrTypeName("UnityEngine.Jobs.IJobParallelForTransform");
+        public static readonly IClrTypeName JobParticleSystem = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystem");
+        public static readonly IClrTypeName JobParticleSystemParallelFor = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelFor");
+        public static readonly IClrTypeName JobParticleSystemParallelForBatch = new ClrTypeName("UnityEngine.ParticleSystemJobs.IJobParticleSystemParallelForBatch");
     }
 }

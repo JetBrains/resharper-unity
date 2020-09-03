@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         private readonly UnityApi myUnityApi;
 
         public TypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, UnityApi unityApi,
-            PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
+            PerformanceCriticalCodeMarksProvider marksProvider, IElementIdProvider provider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, provider)
         {
             myUnityApi = unityApi;

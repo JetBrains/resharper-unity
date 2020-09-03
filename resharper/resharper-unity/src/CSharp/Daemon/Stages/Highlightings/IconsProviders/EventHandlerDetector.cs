@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
 
         public EventHandlerDetector(ISolution solution, SettingsStore settingsStore,
-            CallGraphSwaExtensionProvider callGraphSwaExtension, UnityEventsElementContainer unityEventsElementContainer, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
+            CallGraphSwaExtensionProvider callGraphSwaExtension, UnityEventsElementContainer unityEventsElementContainer, PerformanceCriticalCodeMarksProvider marksProvider, IElementIdProvider provider)
             : base(solution, callGraphSwaExtension, settingsStore, marksProvider, provider)
         {
             myCallGraphSwaExtension = callGraphSwaExtension;

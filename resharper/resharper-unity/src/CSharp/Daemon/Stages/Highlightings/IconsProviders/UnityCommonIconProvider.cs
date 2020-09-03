@@ -30,14 +30,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         protected readonly ISolution Solution;
         protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtensionProvider;
-        protected readonly PerformanceCriticalCodeCallGraphMarksProvider MarksProvider;
+        protected readonly PerformanceCriticalCodeMarksProvider MarksProvider;
         protected readonly UnityApi UnityApi;
         protected readonly IContextBoundSettingsStore Settings;
         private readonly IElementIdProvider myProvider;
 
         public UnityCommonIconProvider(ISolution solution,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi unityApi,
+            SettingsStore settingsStore, PerformanceCriticalCodeMarksProvider marksProvider, UnityApi unityApi,
             IElementIdProvider provider)
         {
             Solution = solution;
