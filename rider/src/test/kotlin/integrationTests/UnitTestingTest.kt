@@ -24,19 +24,19 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test
+    @Test(enabled = false)
     fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
 
-    @Test(description = "RIDER-46658")
+    @Test(description = "RIDER-46658", enabled = false)
     fun checkTestFixtureAndValueSourceTests() = testWithAllTestsInSolution(14, 16)
 
-    @Test(description = "RIDER-49891")
+    @Test(description = "RIDER-49891", enabled = false)
     fun checkStandaloneNUnitLauncher() {
         preferStandaloneNUnitLauncherInTests()
         testWithAllTestsInSolution(5)
     }
 
-    @Test
+    @Test(enabled = false)
     fun checkRunAllTestsFromProject() {
         buildSolutionWithReSharperBuild()
         withUtFacade(project) {
