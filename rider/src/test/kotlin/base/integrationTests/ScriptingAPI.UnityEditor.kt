@@ -165,11 +165,13 @@ fun printEditorLogEntry(stream: PrintStream, editorLogEntry: EditorLogEntry) {
 //region Playing
 
 fun IntegrationTestBase.play(waitForPlay: Boolean = true) {
+    frameworkLogger.info("Start playing in unity editor")
     rdUnityModel.play.set(true)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
 fun IntegrationTestBase.pause(waitForPause: Boolean = true) {
+    frameworkLogger.info("Pause unity editor")
     rdUnityModel.pause.set(true)
     if (waitForPause) waitForUnityEditorPauseMode()
 }
@@ -179,11 +181,13 @@ fun IntegrationTestBase.step(logMessageAfterStep: String = "2000000") =
     waitForEditorLogAfterAction(logMessageAfterStep) { rdUnityModel.step.fire(Unit) }
 
 fun IntegrationTestBase.stopPlaying(waitForIdle: Boolean = true) {
+    frameworkLogger.info("Stop playing in unity editor")
     rdUnityModel.play.set(false)
     if (waitForIdle) waitForUnityEditorIdleMode()
 }
 
 fun IntegrationTestBase.unpause(waitForPlay: Boolean = true) {
+    frameworkLogger.info("Unpause unity editor")
     rdUnityModel.pause.set(false)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
