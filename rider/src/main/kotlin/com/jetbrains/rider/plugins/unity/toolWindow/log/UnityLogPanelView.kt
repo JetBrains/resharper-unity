@@ -4,13 +4,17 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
@@ -23,6 +27,9 @@ import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
+import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
+import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
@@ -42,7 +49,7 @@ import java.util.*
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 
-class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel) {
+class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel, toolWindow: ToolWindow) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(AnalyzeStacktraceUtil.EP_NAME.getExtensions(project))
@@ -185,15 +192,14 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
     }
 
-    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
-        .filter { it is ToggleUseSoftWrapsToolbarAction }.toList())
-
-    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
-
     fun getMainSplitterIcon(invert: Boolean = false): Icon? = when (mainSplitterOrientation.value xor invert) {
         true -> AllIcons.Actions.SplitHorizontally
         false -> AllIcons.Actions.SplitVertically
     }
+
+    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel)
+
+    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
@@ -261,6 +267,18 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 refreshList(list)
             }
         }
+
+        if (toolWindow is ToolWindowEx) {
+            toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
+                add(ActionManager.getInstance().getAction(RiderUnityOpenEditorLogAction.actionId))
+                add(ActionManager.getInstance().getAction(RiderUnityOpenPlayerLogAction.actionId))
+                add(ActionManager.getInstance().getAction(UnityPluginShowSettingsAction.actionId))
+
+                add(mainSplitterToggleAction)
+                addAll(console.createConsoleActions().filter { it is ToggleUseSoftWrapsToolbarAction }.toList())
+            })
+        }
+
 
         logModel.onCleared.advise(lifetime) { console.clear() }
         logModel.fire()

@@ -1,19 +1,13 @@
 package com.jetbrains.rider.plugins.unity.toolWindow
 
 import com.intellij.ide.impl.ContentManagerWatcher
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.openapi.wm.impl.status.StatusBarUtil
 import com.intellij.ui.content.ContentManagerEvent
 import com.intellij.ui.content.ContentManagerListener
 import com.jetbrains.rdclient.util.idea.LifetimedProjectComponent
-import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
-import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
-import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelModel
 import com.jetbrains.rider.plugins.unity.toolWindow.log.UnityLogPanelView
 import icons.UnityIcons
@@ -47,14 +41,6 @@ class UnityToolWindowFactory(project: Project) : LifetimedProjectComponent(proje
     private fun create(): UnityToolWindowContext {
         val toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, project, true, false)
 
-        if (toolWindow is ToolWindowEx) {
-            toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
-                add(RiderUnityOpenEditorLogAction())
-                add(RiderUnityOpenPlayerLogAction())
-                add(ActionManager.getInstance().getAction(UnityPluginShowSettingsAction.actionId))
-            })
-        }
-
         val contentManager = toolWindow.contentManager
         contentManager.addContentManagerListener(object : ContentManagerListener {
             override fun selectionChanged(p0: ContentManagerEvent) {
@@ -77,7 +63,7 @@ class UnityToolWindowFactory(project: Project) : LifetimedProjectComponent(proje
         ContentManagerWatcher(toolWindow, contentManager)
 
         val logModel = UnityLogPanelModel(componentLifetime, project)
-        val logView = UnityLogPanelView(componentLifetime, project, logModel)
+        val logView = UnityLogPanelView(componentLifetime, project, logModel, toolWindow)
         val toolWindowContent = contentManager.factory.createContent(null, "Log", true).apply {
             StatusBarUtil.setStatusBarInfo(project, "")
             component = logView.panel

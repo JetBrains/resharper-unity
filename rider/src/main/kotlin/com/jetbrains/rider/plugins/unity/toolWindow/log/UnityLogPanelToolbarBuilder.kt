@@ -2,7 +2,6 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
@@ -23,7 +22,7 @@ object UnityLogPanelToolbarBuilder {
         return create(ActionGroup.EMPTY_GROUP, BorderLayout.NORTH, true)
     }
 
-    fun createLeftToolbar(model: UnityLogPanelModel, mainSplitterToggleAction: DumbAwareAction, consoleActionsList : List<AnAction>): JPanel {
+    fun createLeftToolbar(model: UnityLogPanelModel): JPanel {
         fun createType(type: RdLogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
@@ -61,8 +60,6 @@ object UnityLogPanelToolbarBuilder {
             add(collapseall())
             add(autoscroll())
             add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
-            addAll(consoleActionsList)
-            add(mainSplitterToggleAction)
         }
 
         return create(actionGroup, BorderLayout.WEST, false)
