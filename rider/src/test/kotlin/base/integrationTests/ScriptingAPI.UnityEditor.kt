@@ -166,7 +166,11 @@ fun IntegrationTestBase.waitFirstScriptCompilation() {
 
 fun IntegrationTestBase.waitConnection() {
     frameworkLogger.info("Waiting for connection between Unity editor and Rider")
-    waitAndPump(project.lifetime, { project.isConnectedToEditor() && rdUnityModel.editorState.valueOrNull != EditorState.Disconnected },
+    waitAndPump(project.lifetime,
+        {
+            project.isConnectedToEditor()
+                && rdUnityModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected
+        },
         IntegrationTestBase.defaultTimeout) { "unityHost is not initialized." }
     frameworkLogger.info("unityHost is initialized.")
 }
@@ -244,7 +248,7 @@ fun IntegrationTestBase.waitForEditorLogAfterAction(logMessage: String, action: 
 private fun IntegrationTestBase.waitForUnityEditorState(editorState: EditorState) {
     frameworkLogger.info("Waiting for unity editor in state '$editorState'")
     waitAndPump(IntegrationTestBase.actionsTimeout, { rdUnityModel.editorState.valueOrNull == editorState })
-    { "Unity editor isn't in state '$editorState', actual state '${rdUnityModel.editorState.valueOrDefault(EditorState.Disconnected)}'" }
+    { "Unity editor isn't in state '$editorState', actual state '${rdUnityModel.editorState.valueOrNull}'" }
 }
 
 fun IntegrationTestBase.restart() {
