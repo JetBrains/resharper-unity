@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 
         public UnityProblemAnalyzerContext CreateContext(UnityProblemAnalyzerContext context, ITreeNode node, DaemonProcessKind processKind)
         {
-            if (!UnityCallGraphUtil.IsFunctionNode(node))
+            if (!UnityCallGraphUtil.IsContextChangingNode(node))
                 return context;
             
             var newContext = UnityProblemAnalyzerContextElement.NONE;

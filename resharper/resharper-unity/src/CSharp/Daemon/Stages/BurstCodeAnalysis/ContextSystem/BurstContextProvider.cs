@@ -35,8 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         public override UnityProblemAnalyzerContextElement Context => UnityProblemAnalyzerContextElement.BURST_CONTEXT;
-
-        
         
         /// <summary>
         /// This is fast and incomplete version of <see cref="BurstMarksProvider"/>

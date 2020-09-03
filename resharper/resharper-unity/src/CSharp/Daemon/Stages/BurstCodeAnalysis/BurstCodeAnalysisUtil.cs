@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -32,10 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public static bool IsFixedString([CanBeNull] IType type)
         {
             var declaredType = type as IDeclaredType;
+            
             if (declaredType == null)
                 return false;
 
             var clrTypeName = declaredType.GetClrName();
+            
             foreach (var fixedString in FixedStrings)
             {
                 if (clrTypeName.Equals(fixedString))
@@ -84,6 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var clrTypeName = method.GetContainingType()?.GetClrName();
+            
             if (clrTypeName == null)
                 return false;
 
@@ -91,6 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var parameter = method.Parameters[0];
+            
             if (!parameter.Type.IsObject())
                 return false;
 
@@ -106,6 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var clrTypeName = method.GetContainingType()?.GetClrName();
+            
             if (clrTypeName == null)
                 return false;
 
@@ -113,6 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var parameters = method.Parameters;
+            
             if (parameters.Count < 2)
                 return false;
 
@@ -126,16 +133,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var function =
                 invocation?.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
+            
             if (function == null)
                 return false;
+            
             var containingType = function.GetContainingType();
+            
             // GetHashCode permitted in burst only if no boxing happens i.e. calling base.GetHashCode
             // Equals is prohibited because it works through System.Object and require boxing, which 
             // Burst does not support
             if (containingType is IStruct && function is IMethod method && method.IsOverridesObjectGetHashCode())
                 return false;
+            
             var isValueTypeOrObject = containingType is IClass @class &&
                                       (@class.IsSystemValueTypeClass() || @class.IsObjectClass());
+            
             return isValueTypeOrObject || containingType is IStruct && function.IsOverride;
         }
 
@@ -158,6 +170,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             foreach (var argument in argumentList.Arguments)
             {
                 var matchingParameterType = argument.MatchingParameter?.Type;
+                
                 if (matchingParameterType != null && !IsBurstPermittedType(argument.MatchingParameter?.Type))
                     return true;
             }
@@ -165,6 +178,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return false;
         }
 
+        /// <summary>
+        /// See also <seealso cref="UnityCallGraphUtil.IsContextChangingNode"/>
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public static bool IsBurstContextBannedNode(ITreeNode node)
         {
             switch (node)
@@ -186,8 +204,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             if (function == null)
                 return true;
+            
             if (function.IsStatic || function.GetContainingTypeMember() is IStruct)
                 return function is IMethod method && IsBurstDiscarded(method);
+            
             return true;
         }
 
