@@ -61,12 +61,36 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
         args.addAll(arrayOf("-username", login, "-password", password))
     }
 
-    frameworkLogger.info("Starting unity process")
-    val process = StartUnityAction.startUnity(project, *args.toTypedArray())
-    assertNotNull(process, "Unity process wasn't started")
-    frameworkLogger.info("Unity process started: $process")
+    frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
+    val processHandle = when {
+        withCoverage -> {
+            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
+                .drop(1)
+                .toMutableList()
+                .apply { addAll(args) }
+                .let {
+                    when {
+                        SystemInfo.isWindows -> it.joinToString(" ")
+                        else -> ParametersList.join(it)
+                    }
+                }
+            val unityInstallationFinder = UnityInstallationFinder.getInstance(project)
+            val unityConfigurationParameters = RdDotCoverUnityConfigurationParameters(
+                unityInstallationFinder.getApplicationExecutablePath().toString(),
+                unityProjectDefaultArgsString,
+                unityInstallationFinder.getApplicationVersion()
+            )
+            project.solution.dotCoverModel.unityCoverageRequested.fire(unityConfigurationParameters)
+            val unityProcessId = project.solution.rdUnityModel.unityProcessId
+            waitAndPump(IntegrationTestBase.defaultTimeout, { unityProcessId.valueOrNull != null }) { "Can't get unity process id" }
+            ProcessHandle.of(unityProcessId.valueOrNull!!.toLong()).get()
+        }
+        else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
+    }
+    assertNotNull(processHandle, "Unity process wasn't started")
+    frameworkLogger.info("Unity process started: $processHandle")
 
-    return process
+    return processHandle
 }
 
 fun IntegrationTestBase.startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
