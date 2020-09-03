@@ -347,7 +347,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             mySolution.Locks.ExecuteOrQueueEx(waitingLifetime, "myRiderSolutionSaver.Save", () =>
             {
-                myRiderSolutionSaver.Save(waitingLifetime).ContinueWith( _ =>
+                myRiderSolutionSaver.Save(waitingLifetime).ContinueWith(_ =>
                 {
                     myLogger.Trace("After myRiderSolutionSaver.Save");
                     if (waitingLifetime.IsAlive)
@@ -359,7 +359,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                 waitingLifetimeDefinition.Terminate();
                             }, waitingLifetime);
                     }
-                }, waitingLifetime);
+                }, waitingLifetime, TaskContinuationOptions.None, mySolution.Locks.Tasks.UnguardedMainThreadScheduler);
             });
 
             return JetTaskEx.While(() => waitingLifetime.IsAlive);

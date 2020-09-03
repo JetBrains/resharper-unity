@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             if (unityEditorProcessId.HasValue)
                 return;
             
-            var needStart = MessageBox.ShowYesNo("Unity hasn't started yet. Run it?", "Unity plugin");
+            var needStart = MessageBox.ShowYesNo("Unity Editor has not started yet. Run it?", "Unity plugin");
             if (!needStart)
                 throw new Exception(NotAvailableUnityEditorMessage);
 

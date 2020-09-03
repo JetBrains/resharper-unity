@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Debugger.Common.ManagedSymbols;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
+using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
@@ -12,9 +14,12 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.Unity;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting;
+using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.Rider.Model;
+using JetBrains.Threading;
 using JetBrains.Util;
+using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -22,6 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityController : IUnityController
     {
         private static readonly TimeSpan outUnityConnectionTimeout = TimeSpan.FromMinutes(1);
+        private static readonly string outUnityTimeoutMessage = $"Unity hasn't connected. Timeout {outUnityConnectionTimeout.TotalMilliseconds} ms is over.";
         private readonly UnityEditorProtocol myUnityEditorProtocol;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
@@ -67,9 +73,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 lifetimeDef.Terminate();
                 if (protocolTask.Status != TaskStatus.RanToCompletion && force)
-                    return KillProcess();
-                return new ExitUnityResult(false, "Attempt to close Unity Editor failed.", null);
-            }, TaskContinuationOptions.AttachedToParent);
+                    return WaitModelUpdate();
+
+                return Task.FromResult(new ExitUnityResult(false, "Attempt to close Unity Editor failed.", null));
+            }, TaskContinuationOptions.AttachedToParent).Unwrap();
+        }
+
+        private Task<ExitUnityResult> WaitModelUpdate()
+        {
+            var successExitResult = new ExitUnityResult(true, null, null);
+            if (!myUnityEditorProtocol.UnityModel.HasValue()) 
+                return Task.FromResult(successExitResult);
+            
+            var taskSource = new TaskCompletionSource<ExitUnityResult>();
+            var waitLifetimeDef = myLifetime.CreateNested();
+            waitLifetimeDef.SynchronizeWith(taskSource);
+                        
+            // Wait RdModel Update
+            myUnityEditorProtocol.UnityModel.ViewNull(waitLifetimeDef.Lifetime, _ => taskSource.SetResult(successExitResult));
+            return taskSource.Task;
         }
 
         public int? TryGetUnityProcessId()
@@ -90,18 +112,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public Task<int> WaitConnectedUnityProcessId()
         {
             var source = new TaskCompletionSource<int>();
-            var lifetimeDef = new LifetimeDefinition(myLifetime);
+            var lifetimeDef = myLifetime.CreateNested();
             lifetimeDef.SynchronizeWith(source);
-            
-            myUnityEditorProtocol.UnityModel
-                .ViewNotNull(lifetimeDef.Lifetime, 
-                     (lt, model) => model.UnityProcessId.Advise(lt, id => source.SetResult(id))
-            );
-            
-            myThreading.Tasks.Factory.StartNew(async () =>
+
+            myUnityEditorProtocol.UnityModel.ViewNotNull(
+                lifetimeDef.Lifetime,
+                (lt, model) => model.UnityProcessId.Advise(lt, id => source.TrySetResult(id)));
+
+            Task.Delay(outUnityConnectionTimeout, lifetimeDef.Lifetime).ContinueWith(_ =>
             {
-                await Task.Delay(outUnityConnectionTimeout, lifetimeDef.Lifetime);
-                source.SetException(new TimeoutException($"Unity hasn't connected. Timeout {outUnityConnectionTimeout.TotalMilliseconds} ms is over."));
+                if (source.Task.Status != TaskStatus.RanToCompletion)
+                    source.TrySetException(new TimeoutException(outUnityTimeoutMessage));
             }, lifetimeDef.Lifetime);
             
             return source.Task;
