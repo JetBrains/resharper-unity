@@ -15,7 +15,7 @@ class ConnectionTest : IntegrationTestBase() {
 
     @Test
     fun installAndCheckConnectionAfterUnityStart() {
-        withUnityProcess(false) {
+        withUnityProcess {
             waitFirstScriptCompilation()
             installPlugin()
             waitConnection()
@@ -26,7 +26,7 @@ class ConnectionTest : IntegrationTestBase() {
     @Test
     fun installAndCheckConnectionBeforeUnityStart() {
         installPlugin()
-        withUnityProcess(false) {
+        withUnityProcess {
             waitFirstScriptCompilation()
             waitConnection()
             checkSweaInSolution()
@@ -41,7 +41,7 @@ class ConnectionTest : IntegrationTestBase() {
 
     private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {
         installPlugin()
-        withUnityProcess(resetEditorPrefs, true) {
+        withUnityProcess(resetEditorPrefs = resetEditorPrefs, useRiderTestPath = true) {
             waitFirstScriptCompilation()
             waitConnection()
 
@@ -69,7 +69,7 @@ class ConnectionTest : IntegrationTestBase() {
 
     private fun checkLog(execute: () -> Unit) {
         installPlugin()
-        withUnityProcess(false) {
+        withUnityProcess {
             waitFirstScriptCompilation()
             waitConnection()
 
