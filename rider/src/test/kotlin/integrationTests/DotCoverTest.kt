@@ -22,7 +22,7 @@ class DotCoverTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     fun checkCoverAllTestsFromSolution() {
         buildSolutionWithReSharperBuild()
         withDcFacade(project) { ut, dc ->
