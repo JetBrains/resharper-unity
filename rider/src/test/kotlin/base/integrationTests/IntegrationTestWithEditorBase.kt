@@ -29,11 +29,12 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
     fun startUnityProcessAndWait() {
         installPlugin()
         val unityTestEnvironment = testMethod.unityEnvironment
-        unityProcess =
-            if (unityTestEnvironment != null)
-                startUnity(unityTestEnvironment.resetEditorPrefs, unityTestEnvironment.useRiderTestPath, unityTestEnvironment.batchMode)
-            else
-                startUnity(resetEditorPrefs, useRiderTestPath, batchMode)
+        unityProcess = when {
+                unityTestEnvironment != null ->
+                    startUnity(unityTestEnvironment.resetEditorPrefs, unityTestEnvironment.useRiderTestPath, unityTestEnvironment.batchMode)
+                else ->
+                    startUnity(resetEditorPrefs, useRiderTestPath, batchMode)
+            }
 
         waitFirstScriptCompilation()
         waitConnection()
