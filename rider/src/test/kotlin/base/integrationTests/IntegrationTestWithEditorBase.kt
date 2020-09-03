@@ -5,9 +5,11 @@ import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
-import java.time.Duration
 
 abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
+    protected open val withCoverage: Boolean
+        get() = false
+
     protected open val resetEditorPrefs: Boolean
         get() = false
 
@@ -17,27 +19,12 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
     protected open val batchMode: Boolean
         get() = true
 
-    private lateinit var unityProcess: Process
+    private lateinit var unityProcessHandle: ProcessHandle
 
     @AfterMethod(alwaysRun = true)
     fun killUnityAndCheckSwea() {
-        killUnity(unityProcess)
+        killUnity(unityProcessHandle)
         checkSweaInSolution()
-    }
-
-    @BeforeMethod(alwaysRun = true)
-    fun startUnityProcessAndWait() {
-        installPlugin()
-        val unityTestEnvironment = testMethod.unityEnvironment
-        unityProcess = when {
-                unityTestEnvironment != null ->
-                    startUnity(unityTestEnvironment.resetEditorPrefs, unityTestEnvironment.useRiderTestPath, unityTestEnvironment.batchMode)
-                else ->
-                    startUnity(resetEditorPrefs, useRiderTestPath, batchMode)
-            }
-
-        waitFirstScriptCompilation()
-        waitConnection()
     }
 
     @BeforeMethod(alwaysRun = true, dependsOnMethods = ["startUnityProcessAndWait"])
@@ -52,5 +39,25 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
             "Unity run configurations didn't appeared, " +
                 "current: ${runManager.allConfigurationsList.joinToString(", ", "[", "]")}"
         }
+    }
+
+    @BeforeMethod(alwaysRun = true)
+    fun startUnityProcessAndWait() {
+        installPlugin()
+        val unityTestEnvironment = testMethod.unityEnvironment
+        unityProcessHandle = when {
+            unityTestEnvironment != null ->
+                startUnity(
+                    unityTestEnvironment.withCoverage,
+                    unityTestEnvironment.resetEditorPrefs,
+                    unityTestEnvironment.useRiderTestPath,
+                    unityTestEnvironment.batchMode
+                )
+            else ->
+                startUnity(withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
+        }
+
+        waitFirstScriptCompilation()
+        waitConnection()
     }
 }

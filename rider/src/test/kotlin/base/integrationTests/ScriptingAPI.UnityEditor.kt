@@ -1,8 +1,10 @@
 package base.integrationTests
 
 import com.intellij.execution.RunManager
+import com.intellij.execution.configurations.ParametersList
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.exists
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.isNotAlive
@@ -16,6 +18,8 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.protocol.protocol
 import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
@@ -27,13 +31,12 @@ import com.jetbrains.rider.test.scriptingApi.*
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Paths
-import java.time.Duration
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 //region Connection
 
-fun startUnity(project: Project, logPath: File, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): Process {
+fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): ProcessHandle {
     val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests")
     if (batchMode) {
         args.add("-batchMode")
@@ -66,33 +69,34 @@ fun startUnity(project: Project, logPath: File, resetEditorPrefs: Boolean, useRi
     return process
 }
 
-fun IntegrationTestBase.startUnity(resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
-    startUnity(project, testMethod.logDirectory.resolve("UnityEditor.log"), resetEditorPrefs, useRiderTestPath, batchMode)
+fun IntegrationTestBase.startUnity(withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
+    startUnity(project, testMethod.logDirectory.resolve("UnityEditor.log"), withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
 
-fun killUnity(project: Project, process: Process) {
+fun killUnity(project: Project, processHandle: ProcessHandle) {
     frameworkLogger.info("Trying to kill unity process")
-    if (!process.isAlive) {
+    if (!processHandle.isAlive) {
         frameworkLogger.info("Unity process isn't alive")
         return
     }
-    process.destroy()
-    waitAndPump(project.lifetime, { !process.isAlive }, IntegrationTestBase.defaultTimeout) { "Process should have existed." }
+    processHandle.destroy()
+    waitAndPump(project.lifetime, { !processHandle.isAlive }, IntegrationTestBase.defaultTimeout) { "Process should have existed." }
     frameworkLogger.info("Unity process killed")
 }
 
-fun IntegrationTestBase.killUnity(process: Process) = killUnity(project, process)
+fun IntegrationTestBase.killUnity(processHandle: ProcessHandle) = killUnity(project, processHandle)
 
 fun IntegrationTestBase.withUnityProcess(
-    resetEditorPrefs: Boolean,
+    withCoverage: Boolean = false,
+    resetEditorPrefs: Boolean = false,
     useRiderTestPath: Boolean = false,
     batchMode: Boolean = true,
-    block: Process.() -> Unit
+    block: ProcessHandle.() -> Unit
 ) {
-    val process = this.startUnity(resetEditorPrefs, useRiderTestPath, batchMode)
+    val processHandle = this.startUnity(withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
     try {
-        process.block()
+        processHandle.block()
     } finally {
-        this.killUnity(process)
+        this.killUnity(processHandle)
     }
 }
 
