@@ -27,7 +27,7 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     @Test
     fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
 
-    @Test(description = "RIDER-46658")
+    @Test(description = "RIDER-46658", enabled = false)
     fun checkTestFixtureAndValueSourceTests() = testWithAllTestsInSolution(14, 16)
 
     @Test(description = "RIDER-49891", enabled = false)
