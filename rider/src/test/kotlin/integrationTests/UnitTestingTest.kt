@@ -24,10 +24,10 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = true)
+    @Test
     fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
 
-    @Test(description = "RIDER-46658", enabled = false)
+    @Test(description = "RIDER-46658")
     fun checkTestFixtureAndValueSourceTests() = testWithAllTestsInSolution(14, 16)
 
     @Test(description = "RIDER-49891", enabled = false)
@@ -36,9 +36,8 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         testWithAllTestsInSolution(5)
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkRunAllTestsFromProject() {
-        buildSolutionWithReSharperBuild()
         withUtFacade(project) {
             it.waitForDiscovering(5)
             val session = it.runAllTestsInProject(
@@ -51,14 +50,13 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTest: Int = sessionElements) {
-        buildSolutionWithReSharperBuild(project)
+    private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTests: Int = sessionElements) {
         withUtFacade(project) {
-            it.waitForDiscovering(sessionElements)
+            it.waitForDiscovering(discoveringElements)
             val session = it.runAllTestsInSolution(
                 sessionElements,
                 RiderUnitTestScriptingFacade.defaultTimeout,
-                sessionElements,
+                successfulTests,
                 testGoldFile
             )
             it.compareSessionTreeWithGold(session, testGoldFile)

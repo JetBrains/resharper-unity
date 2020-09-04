@@ -22,9 +22,8 @@ class DotCoverTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkCoverAllTestsFromSolution() {
-        buildSolutionWithReSharperBuild()
         withDcFacade(project) { ut, dc ->
             ut.waitForDiscovering(5)
             ut.coverAllTestsInSolution(5)
