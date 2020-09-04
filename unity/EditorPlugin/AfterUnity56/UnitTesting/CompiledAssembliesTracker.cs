@@ -31,19 +31,22 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     private static void UpdateAssemblies()
     {
-      ourCompiledAssemblyPaths.Clear();
-      
-      var projectPath = Directory.GetParent(Application.dataPath).FullName;
-      var compiledAssemblies = CompilationPipeline.GetAssemblies().Select(a =>
+      MainThreadDispatcher.Instance.Queue(() =>
       {
-        ourCompiledAssemblyPaths.Add(a.outputPath);
+        ourCompiledAssemblyPaths.Clear();
+      
+        var projectPath = Directory.GetParent(Application.dataPath).FullName;
+        var compiledAssemblies = CompilationPipeline.GetAssemblies().Select(a =>
+          {
+            ourCompiledAssemblyPaths.Add(a.outputPath);
 
-        var fullOutputPath = Path.Combine(projectPath, a.outputPath);
-        return new CompiledAssembly(a.name, fullOutputPath);
-      })
-      .ToList();
+            var fullOutputPath = Path.Combine(projectPath, a.outputPath);
+            return new CompiledAssembly(a.name, fullOutputPath);
+          })
+          .ToList();
 
-      ourModel.CompiledAssemblies(compiledAssemblies);
+        ourModel.CompiledAssemblies(compiledAssemblies);
+      });
     }
   }
 }
