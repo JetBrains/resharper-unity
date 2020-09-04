@@ -1,10 +1,9 @@
 Search target
     DefaultNamespace.MethodsContainer3.VoidHandler2():void
 Found usages  (2 usages found)
-    Assets  (2 usages found)
-        Ex3  (2 usages found)
-            VariantPrefab.prefab  (2 usages found)
-                VariantPrefab  (2 usages found)
-                    Script3  (2 usages found)
-                        m_MethodName: VoidHandler2
-                        m_MethodName: VoidHandler2
+    Assets\Ex3  (2 usages found)
+        VariantPrefab.prefab  (2 usages found)
+            VariantPrefab  (2 usages found)
+                Script3  (2 usages found)
+                    m_MethodName: VoidHandler2
+                    m_MethodName: VoidHandler2

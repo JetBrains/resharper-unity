@@ -79,6 +79,8 @@ object EditorPluginModel: Root() {
     val TestFilter = structdef {
         field("assemblyName", string)
         field("testNames", immutableList(string))
+        field("groupNames", immutableList(string))
+        field("testCategories", immutableList(string))
     }
 
     val UnitTestLaunchClientControllerInfo = structdef {
@@ -90,8 +92,6 @@ object EditorPluginModel: Root() {
     val UnitTestLaunch = classdef {
         field("sessionId", string)
         field("testFilters", immutableList(TestFilter))
-        field("testGroups", immutableList(string))
-        field("testCategories", immutableList(string))
         field("testMode", TestMode)
         field("clientControllerInfo", UnitTestLaunchClientControllerInfo.nullable)
         property("runStarted", bool)

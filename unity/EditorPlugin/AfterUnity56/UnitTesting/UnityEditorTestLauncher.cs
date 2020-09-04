@@ -53,6 +53,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         if (launcherType == null) return false;
         var assemblyNames = myLaunch.TestFilters.Select(a => a.AssemblyName).ToArray();
         var testNames = myLaunch.TestFilters.SelectMany(a => a.TestNames).ToArray();
+        var groupNames = myLaunch.TestFilters.SelectMany(a => a.GroupNames).ToArray();
+        var categoryNames = myLaunch.TestFilters.SelectMany(a => a.TestCategories).ToArray();
         var mode = (int) myLaunch.TestMode; // 0 for Both, 1 for Edit, 2 for Play
 
         MethodInfo runTestsMethod;
@@ -69,7 +71,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
             return false;
           }
 
-          args = new object[] {myLaunch.SessionId, mode, assemblyNames, testNames, null, null, null, 
+          args = new object[] {myLaunch.SessionId, mode, assemblyNames, testNames, categoryNames, groupNames, null, 
             myLaunch.ClientControllerInfo.CodeBase, myLaunch.ClientControllerInfo.TypeName, 
             myLaunch.ClientControllerInfo.CodeBaseDependencies?.ToArray() };
         }
@@ -82,7 +84,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
             return false;
           }
 
-          args = new object[] {mode, assemblyNames, testNames, null, null, null};
+          args = new object[] {mode, assemblyNames, testNames, categoryNames, groupNames, null};
         }
 
         runTestsMethod.Invoke(null, args);
@@ -277,7 +279,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
             ourLogger.Verbose("TestStarted : {0}", test.FullName);
 
             var testId = TestEventsSender.GetIdFromNUnitTest(test);
-            var tResult = new TestResult(testId, test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running, TestEventsSender.GetIdFromNUnitTest(test.Parent));
+            var parentId = TestEventsSender.GetIdFromNUnitTest(test.Parent);
+            var tResult = new TestResult(testId, test.Method.TypeInfo.Assembly.GetName().Name,string.Empty, 0, Status.Running, parentId);
           
             clientController?.OnTestStarted(testId);
             TestEventsSender.TestStarted(myLaunch, tResult);
