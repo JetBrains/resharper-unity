@@ -24,7 +24,7 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
 
     @Test(description = "RIDER-46658", enabled = false)

@@ -24,7 +24,7 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
         }
     }
 
-    @Test
+    @Test(enabled = false)
     fun checkUnityPausePoint() {
         val pauseFile = activeSolutionDirectory.combine("Assets", ".pause").absoluteFile
         attachDebuggerToUnityEditorAndPlay(
@@ -66,7 +66,7 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
             }, testGoldFile)
     }
 
-    @Test(description = "RIDER-23087")
+    @Test(description = "RIDER-23087", enabled = false)
     fun checkEvaluationAfterRestartGame() {
         var breakpoint: XLineBreakpoint<out XBreakpointProperties<*>>? = null
         attachDebuggerToUnityEditorAndPlay(
