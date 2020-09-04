@@ -2,6 +2,7 @@ package base.integrationTests
 
 import com.intellij.execution.RunManager
 import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.test.scriptingApi.buildSolutionWithConsoleBuild
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
@@ -27,20 +28,6 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
         checkSweaInSolution()
     }
 
-    @BeforeMethod(alwaysRun = true, dependsOnMethods = ["startUnityProcessAndWait"])
-    fun buildSolution() {
-        buildSolutionWithReSharperBuild()
-    }
-
-    @BeforeMethod(alwaysRun = true, dependsOnMethods = ["buildSolution"])
-    fun waitForUnityRunConfigurations() {
-        val runManager = RunManager.getInstance(project)
-        waitAndPump(actionsTimeout, { runManager.allConfigurationsList.size >= 2 }) {
-            "Unity run configurations didn't appeared, " +
-                "current: ${runManager.allConfigurationsList.joinToString(", ", "[", "]")}"
-        }
-    }
-
     @BeforeMethod(alwaysRun = true)
     fun startUnityProcessAndWait() {
         installPlugin()
@@ -59,5 +46,21 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
 
         waitFirstScriptCompilation()
         waitConnection()
+    }
+
+    @BeforeMethod(alwaysRun = true, dependsOnMethods = ["startUnityProcessAndWait"])
+    fun buildSolutionAfterUnityStarts() {
+        buildSolutionWithConsoleBuild()
+        // TODO: fix this, I don't know why we need this, but it doesn't work without 2nd build
+        buildSolutionWithReSharperBuild()
+    }
+
+    @BeforeMethod(alwaysRun = true, dependsOnMethods = ["buildSolutionAfterUnityStarts"])
+    fun waitForUnityRunConfigurations() {
+        val runManager = RunManager.getInstance(project)
+        waitAndPump(actionsTimeout, { runManager.allConfigurationsList.size >= 2 }) {
+            "Unity run configurations didn't appeared, " +
+                "current: ${runManager.allConfigurationsList.joinToString(", ", "[", "]")}"
+        }
     }
 }
