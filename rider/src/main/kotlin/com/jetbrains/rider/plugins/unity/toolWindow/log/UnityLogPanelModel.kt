@@ -1,5 +1,6 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
+import com.intellij.openapi.project.Project
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
@@ -7,8 +8,11 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
+import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.projectView.solution
 
-class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.project.Project) {
+class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
     private val lock = Object()
     private val maxItemsCount = 10000
 
@@ -79,6 +83,33 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
         val onChanged = Signal.Void()
     }
 
+    inner class TimeFilters {
+        private var showBeforePlay = true
+        private var showBeforeBuild = true
+
+        fun getShouldBeShown(time: Long):Boolean {
+            return (showBeforeBuild || time > project.solution.rdUnityModel.lastBuildTime.valueOrDefault(0))
+                && (showBeforePlay || time > project.solution.rdUnityModel.lastPlayTime.valueOrDefault(0))
+        }
+        fun getShouldBeShownBeforeBuild():Boolean {
+            return showBeforeBuild
+        }
+        fun getShouldBeShownBeforePlay():Boolean {
+            return showBeforePlay
+        }
+
+        fun setShowBeforePlay(value: Boolean) {
+            synchronized(lock) { showBeforePlay = value }
+            onChanged.fire()
+        }
+        fun setShowBeforeLastBuild(value: Boolean) {
+            synchronized(lock) { showBeforeBuild = value }
+            onChanged.fire()
+        }
+
+        val onChanged = Signal.Void()
+    }
+
     inner class Events {
         val allEvents = ArrayList<RdLogEvent>()
 
@@ -87,23 +118,6 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
             selectedItem = null
             onChanged.fire()
             onCleared.fire()
-        }
-
-        fun clearBefore(time:Long) {
-            var changed = false
-            synchronized(lock) {
-                changed = allEvents.removeIf { t -> t.time < time }
-            }
-
-            if (changed)
-            {
-                if (selectedItem != null)
-                if (selectedItem!!.time < time) {
-                    selectedItem = null
-                    onCleared.fire()
-                }
-                onChanged.fire()
-            }
         }
 
         fun addEvent(event: RdLogEvent) {
@@ -126,7 +140,8 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
 
     private fun isVisibleEvent(event: RdLogEvent):Boolean
     {
-        return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode) && textFilter.getShouldBeShown(event.message)
+        return typeFilters.getShouldBeShown(event.type) && modeFilters.getShouldBeShown(event.mode)
+            && textFilter.getShouldBeShown(event.message) && timeFilters.getShouldBeShown(event.time)
     }
 
     private fun getVisibleEvents(): List<RdLogEvent> {
@@ -142,6 +157,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
     val events = Events()
     val mergeSimilarItems = Property(false)
     val autoscroll = Property(false)
+    var timeFilters = TimeFilters()
 
     val onAdded = Signal<RdLogEvent>()
     val onChanged = Signal<List<RdLogEvent>>()
@@ -155,6 +171,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: com.intellij.openapi.p
         typeFilters.onChanged.advise(lifetime) { fire() }
         modeFilters.onChanged.advise(lifetime) { fire() }
         textFilter.onChanged.advise(lifetime) { fire() }
+        timeFilters.onChanged.advise(lifetime) { fire() }
         events.onChanged.advise(lifetime) { fire() }
         mergeSimilarItems.advise(lifetime) { fire() }
     }

@@ -510,7 +510,7 @@ namespace JetBrains.Rider.Unity.Editor
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
             model.Play.SetValue(isPlaying);
             if (isPlaying)
-              model.ClearOnPlay(DateTime.UtcNow.Ticks);
+              model.LastPlayTime.SetValue(DateTime.UtcNow.Ticks);
           }
 
           var isPaused = EditorApplication.isPaused;
