@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rd.Base;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!PluginSettings.LogEventsCollectorEnabled)
         return;
-
+      
       EditorApplication.update += () =>
       {
         // can be called only from main thread
@@ -85,7 +86,7 @@ namespace JetBrains.Rider.Unity.Editor
           break;
       }
 
-      RdLogEventMode mode = RdLogEventMode.Play;
+      var mode = RdLogEventMode.Play;
       if (PluginEntryPoint.PlayModeSavedState == PluginEntryPoint.PlayModeState.Stopped)
         mode = RdLogEventMode.Edit;
 

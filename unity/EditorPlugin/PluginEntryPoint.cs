@@ -32,6 +32,7 @@ namespace JetBrains.Rider.Unity.Editor
     private static bool ourInitialized;
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     internal static string SlnFile;
+    private static long ourInitTime = DateTime.UtcNow.Ticks;
 
     // This an entry point
     static PluginEntryPoint()
@@ -320,6 +321,8 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseGenerateUISchema(model);
           AdviseExitUnity(model);
           GetBuildLocation(model);
+          
+          GetInitTime(model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -331,6 +334,13 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
+    }
+
+    private static void GetInitTime(EditorPluginModel model)
+    {
+      model.LastInitTime.SetValue(ourInitTime);
+      if (EditorApplication.isPaused || EditorApplication.isPlaying)
+        model.LastPlayTime.SetValue(ourInitTime);
     }
 
     private static void GetBuildLocation(EditorPluginModel model)
@@ -509,8 +519,6 @@ namespace JetBrains.Rider.Unity.Editor
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
             model.Play.SetValue(isPlaying);
-            if (isPlaying)
-              model.LastPlayTime.SetValue(DateTime.UtcNow.Ticks);
           }
 
           var isPaused = EditorApplication.isPaused;

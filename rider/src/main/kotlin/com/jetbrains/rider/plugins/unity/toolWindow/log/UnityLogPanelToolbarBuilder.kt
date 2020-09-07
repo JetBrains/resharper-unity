@@ -26,11 +26,27 @@ object UnityLogPanelToolbarBuilder {
         fun createType(type: RdLogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
+
+            override fun update(e: AnActionEvent) {
+                if (isSelected(e))
+                    e.presentation.text = "Hide ${type}s"
+                else
+                    e.presentation.text = "Show ${type}s"
+                super.update(e)
+            }
         }
 
         fun createMode(mode: RdLogEventMode) = object : ToggleAction("Show/Hide '$mode' mode", "", mode.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.modeFilters.getShouldBeShown(mode)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
+
+            override fun update(e: AnActionEvent) {
+                if (isSelected(e))
+                    e.presentation.text = "Hide '$mode' mode"
+                else
+                    e.presentation.text = "Show '$mode' mode"
+                super.update(e)
+            }
         }
 
         fun collapseAll() = object : ToggleAction("Collapse similar items", "", AllIcons.Actions.Collapseall) {
@@ -48,17 +64,33 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createBeforePlay() = object : ToggleAction("Show/Hide messages before Play", "", null) {
+        fun createBeforePlay() = object : ToggleAction("Show/Hide messages before last Play", "", null) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforePlay()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforePlay(value)
             }
+
+            override fun update(e: AnActionEvent) {
+                if (isSelected(e))
+                    e.presentation.text = "Hide messages before last Play"
+                else
+                    e.presentation.text = "Show messages before last Play"
+                super.update(e)
+            }
         }
 
-        fun createBeforeBuild() = object : ToggleAction("Show/Hide messages before Build", "", null) {
-            override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforeBuild()
+        fun createBeforeInit() = object : ToggleAction("Show/Hide messages before last [InitializeOnLoad] execution", "", null) {
+            override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforeInit()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforeLastBuild(value)
+            }
+
+            override fun update(e: AnActionEvent) {
+                if (isSelected(e))
+                    e.presentation.text = "Hide messages before last [InitializeOnLoad] execution"
+                else
+                    e.presentation.text = "Show messages before last [InitializeOnLoad] execution"
+                super.update(e)
             }
         }
 
@@ -70,11 +102,12 @@ object UnityLogPanelToolbarBuilder {
             add(createType(RdLogEventType.Error))
             add(createType(RdLogEventType.Warning))
             add(createType(RdLogEventType.Message))
+            addSeparator("Time filters")
+            add(createBeforePlay())
+            add(createBeforeInit())
             addSeparator("Other")
             add(collapseAll())
             add(autoscroll())
-            add(createBeforePlay())
-            add(createBeforeBuild())
             add(RiderAction("Clear", AllIcons.Actions.GC) { model.events.clear() })
         }
 

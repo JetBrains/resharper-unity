@@ -60,7 +60,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         source("showPreferences", void)
 
         property("lastPlayTime", long)
-        property("lastBuildTime", long)
+        property("lastInitTime", long)
 
         property("sessionInitialized", bool)
 

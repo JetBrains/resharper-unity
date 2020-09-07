@@ -85,14 +85,14 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
 
     inner class TimeFilters {
         private var showBeforePlay = true
-        private var showBeforeBuild = true
+        private var showBeforeInit = true
 
         fun getShouldBeShown(time: Long):Boolean {
-            return (showBeforeBuild || time > project.solution.rdUnityModel.lastBuildTime.valueOrDefault(0))
+            return (showBeforeInit || time > project.solution.rdUnityModel.lastInitTime.valueOrDefault(0))
                 && (showBeforePlay || time > project.solution.rdUnityModel.lastPlayTime.valueOrDefault(0))
         }
-        fun getShouldBeShownBeforeBuild():Boolean {
-            return showBeforeBuild
+        fun getShouldBeShownBeforeInit():Boolean {
+            return showBeforeInit
         }
         fun getShouldBeShownBeforePlay():Boolean {
             return showBeforePlay
@@ -103,7 +103,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
             onChanged.fire()
         }
         fun setShowBeforeLastBuild(value: Boolean) {
-            synchronized(lock) { showBeforeBuild = value }
+            synchronized(lock) { showBeforeInit = value }
             onChanged.fire()
         }
 

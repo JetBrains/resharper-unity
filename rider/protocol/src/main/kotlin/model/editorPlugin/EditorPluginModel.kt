@@ -158,7 +158,7 @@ object EditorPluginModel: Root() {
 
         property("ScriptCompilationDuringPlay", int)
         property("lastPlayTime", long)
-        property("lastBuildTime", long)
+        property("lastInitTime", long)
 
         call("generateUIElementsSchema", void, bool)
         call("exitUnity", void, bool)
