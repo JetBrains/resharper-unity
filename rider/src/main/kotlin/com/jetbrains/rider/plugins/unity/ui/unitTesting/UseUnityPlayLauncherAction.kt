@@ -18,8 +18,6 @@ class UseUnityPlayLauncherAction : DumbAwareAction(PlayModeDescription, "Run wit
     }
 
     override fun update(e: AnActionEvent) {
-        val project = e.project ?: return
-        e.presentation.isEnabled = project.isConnectedToEditor()
         e.presentation.isVisible = true
     }
 }

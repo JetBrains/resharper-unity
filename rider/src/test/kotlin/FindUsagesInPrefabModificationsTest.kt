@@ -12,6 +12,9 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
         unityDll = downloadUnityDll()
     }
 
+    override val traceCategories: List<String>
+        get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"
+
     override fun getSolutionDirectoryName(): String {
         return "PrefabModificationTestSolution"
     }

@@ -36,13 +36,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         private readonly IShellLocks myShellLocks;
         private readonly MetaFileGuidCache myGuidCache;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
+        private readonly ILogger myLogger;
 
-        public UnityEventsElementContainer(ISolution solution, IShellLocks shellLocks, MetaFileGuidCache guidCache, AssetDocumentHierarchyElementContainer elementContainer)
+        public UnityEventsElementContainer(ISolution solution, IShellLocks shellLocks, MetaFileGuidCache guidCache, 
+            AssetDocumentHierarchyElementContainer elementContainer, ILogger logger)
         {
             mySolution = solution;
             myShellLocks = shellLocks;
             myGuidCache = guidCache;
             myAssetDocumentHierarchyElementContainer = elementContainer;
+            myLogger = logger;
         }
         
         private static readonly StringSearcher ourMethodNameSearcher = new StringSearcher("m_MethodName", false);
@@ -364,7 +367,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
         public IEnumerable<UnityEventHandlerFindResult> GetAssetUsagesFor(IPsiSourceFile psiSourceFile, IDeclaredElement declaredElement)
         {
             myShellLocks.AssertReadAccessAllowed();
-            
             var result = new List<UnityEventHandlerFindResult>();
             foreach (var (owningScriptLocation, methodData, isPrefab) in GetAssetMethodDataFor(psiSourceFile))
             {
@@ -376,6 +378,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
                 }
             }
             
+            myLogger.Trace($"{psiSourceFile.Name} --> {result.Count} usage(s)");
             return result;
         }
 

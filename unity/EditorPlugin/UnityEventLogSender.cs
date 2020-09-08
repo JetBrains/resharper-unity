@@ -14,7 +14,8 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static void Start()
     {
-      if (!PluginSettings.LogEventsCollectorEnabled)
+      ourLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled;
+      if (!ourLogEventsCollectorEnabled)
         return;
       
       EditorApplication.update += () =>
