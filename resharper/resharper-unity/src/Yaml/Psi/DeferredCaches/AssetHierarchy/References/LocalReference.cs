@@ -8,13 +8,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public readonly struct LocalReference : IHierarchyReference
     {
-        public LocalReference(OWORD owningPsiPersistentIndex, ulong localDocumentAnchor)
+        public LocalReference(OWORD owningPsiPersistentIndex, long localDocumentAnchor)
         {
             OwningPsiPersistentIndex = owningPsiPersistentIndex;
             LocalDocumentAnchor = localDocumentAnchor;
         }
 
-        public ulong LocalDocumentAnchor { get; }
+        public long LocalDocumentAnchor { get; }
         
         public OWORD OwningPsiPersistentIndex { get;}
         public static LocalReference Null { get; set; } = new LocalReference(0, 0);
