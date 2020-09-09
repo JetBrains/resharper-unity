@@ -1,5 +1,5 @@
-import base.copyUnityDll
-import base.downloadUnityDll
+import base.integrationTests.copyUnityDll
+import base.integrationTests.downloadUnityDll
 import com.intellij.openapi.editor.impl.EditorImpl
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault

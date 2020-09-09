@@ -1,5 +1,7 @@
 package base
 
+import base.integrationTests.copyUnityDll
+import base.integrationTests.downloadUnityDll
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump

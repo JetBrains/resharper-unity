@@ -1,5 +1,5 @@
-import base.copyUnityDll
-import base.downloadUnityDll
+import base.integrationTests.copyUnityDll
+import base.integrationTests.downloadUnityDll
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.CompletionAutoPopupHandler
 import com.intellij.testFramework.TestModeFlags
