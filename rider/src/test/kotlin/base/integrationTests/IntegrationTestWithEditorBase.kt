@@ -7,7 +7,7 @@ import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 
-abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
+abstract class IntegrationTestWithEditorBase : IntegrationTestWithSolutionBase() {
     protected open val withCoverage: Boolean
         get() = false
 
@@ -44,8 +44,8 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
                 startUnity(withCoverage, resetEditorPrefs, useRiderTestPath, batchMode)
         }
 
-        waitFirstScriptCompilation()
-        waitConnection()
+        waitFirstScriptCompilation(project)
+        waitConnectionToUnityEditor(project)
     }
 
     @BeforeMethod(alwaysRun = true, dependsOnMethods = ["startUnityProcessAndWait"])
@@ -57,10 +57,6 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestBase() {
 
     @BeforeMethod(alwaysRun = true, dependsOnMethods = ["buildSolutionAfterUnityStarts"])
     fun waitForUnityRunConfigurations() {
-        val runManager = RunManager.getInstance(project)
-        waitAndPump(actionsTimeout, { runManager.allConfigurationsList.size >= 2 }) {
-            "Unity run configurations didn't appeared, " +
-                "current: ${runManager.allConfigurationsList.joinToString(", ", "[", "]")}"
-        }
+        waitForUnityRunConfigurations(project)
     }
 }
