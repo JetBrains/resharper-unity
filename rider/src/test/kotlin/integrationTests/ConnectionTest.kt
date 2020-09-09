@@ -3,6 +3,7 @@ package integrationTests
 import base.integrationTests.*
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.waitAndPump
+import com.jetbrains.rider.model.RdUnityModel
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -10,15 +11,15 @@ import org.testng.annotations.Test
 import java.io.File
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS]) // todo: allow Linux
-class ConnectionTest : IntegrationTestBase() {
+class ConnectionTest : IntegrationTestWithSolutionBase() {
     override fun getSolutionDirectoryName(): String = "SimpleUnityProjectWithoutPlugin"
 
     @Test
     fun installAndCheckConnectionAfterUnityStart() {
         withUnityProcess {
-            waitFirstScriptCompilation()
+            waitFirstScriptCompilation(project)
             installPlugin()
-            waitConnection()
+            waitConnectionToUnityEditor(project)
             checkSweaInSolution()
         }
     }
@@ -27,14 +28,15 @@ class ConnectionTest : IntegrationTestBase() {
     fun installAndCheckConnectionBeforeUnityStart() {
         installPlugin()
         withUnityProcess {
-            waitFirstScriptCompilation()
-            waitConnection()
+            waitFirstScriptCompilation(project)
+            waitConnectionToUnityEditor(project)
             checkSweaInSolution()
         }
     }
 
     @Test
-    fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) { executeIntegrationTestMethod("DumpExternalEditor") }
+    fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
+        executeIntegrationTestMethod("DumpExternalEditor") }
 
     @Test(enabled = false)
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
@@ -42,15 +44,15 @@ class ConnectionTest : IntegrationTestBase() {
     private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {
         installPlugin()
         withUnityProcess(resetEditorPrefs = resetEditorPrefs, useRiderTestPath = true) {
-            waitFirstScriptCompilation()
-            waitConnection()
+            waitFirstScriptCompilation(project)
+            waitConnectionToUnityEditor(project)
 
             val externalEditorPath = File(project.basePath, "Assets/ExternalEditor.txt")
 
             execute()
-            waitAndPump(project.lifetime, { externalEditorPath.exists() }, defaultTimeout)
+            waitAndPump(project.lifetime, { externalEditorPath.exists() }, unityDefaultTimeout)
             { "ExternalEditor.txt is not created" }
-            waitAndPump(project.lifetime, { externalEditorPath.readText().isNotEmpty() }, defaultTimeout)
+            waitAndPump(project.lifetime, { externalEditorPath.readText().isNotEmpty() }, unityDefaultTimeout)
             { "ExternalEditor.txt is empty" }
 
             executeWithGold(testGoldFile) {
@@ -70,8 +72,8 @@ class ConnectionTest : IntegrationTestBase() {
     private fun checkLog(execute: () -> Unit) {
         installPlugin()
         withUnityProcess {
-            waitFirstScriptCompilation()
-            waitConnection()
+            waitFirstScriptCompilation(project)
+            waitConnectionToUnityEditor(project)
 
             val editorLogEntry = waitForEditorLogAfterAction("#Test#") { execute() }
             executeWithGold(testGoldFile) {
