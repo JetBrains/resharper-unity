@@ -447,9 +447,9 @@ namespace JetBrains.Rider.Unity.Editor
       internal static void Warn(string message, Exception e = null)
       {
 #if RIDER_EDITOR_PLUGIN // can't be used in com.unity.ide.rider
-        Log.GetLog(typeof(RiderPathLocator).Name).Warn(message);
+        Log.GetLog(nameof(RiderPathLocator)).Warn(message);
         if (e != null) 
-          Log.GetLog(typeof(RiderPathLocator).Name).Warn(e);
+          Log.GetLog(nameof(RiderPathLocator)).Warn(e);
 #else
         Debug.LogError(message);
         if (e != null)

@@ -157,7 +157,8 @@ object EditorPluginModel: Root() {
         property("playerLogPath", string)
 
         property("ScriptCompilationDuringPlay", int)
-        sink("clearOnPlay", long)
+        property("lastPlayTime", long)
+        property("lastInitTime", long)
 
         call("generateUIElementsSchema", void, bool)
         call("exitUnity", void, bool)
