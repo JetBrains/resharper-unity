@@ -1,7 +1,5 @@
 package base.integrationTests
 
-import com.intellij.execution.RunManager
-import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithConsoleBuild
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterMethod

@@ -1,8 +1,6 @@
 package base.integrationTests
 
-import com.intellij.execution.RunManager
 import com.intellij.openapi.project.Project
-import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.model.RdUnityModel
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
@@ -11,7 +9,6 @@ import com.jetbrains.rider.test.scriptingApi.buildSolutionWithConsoleBuild
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeMethod
-import org.testng.annotations.Test
 import java.time.Duration
 
 abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase(), IntegrationTestWithRdUnityModel {

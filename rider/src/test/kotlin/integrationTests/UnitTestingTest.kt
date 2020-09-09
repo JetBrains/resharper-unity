@@ -5,7 +5,6 @@ import base.integrationTests.preferStandaloneNUnitLauncherInTests
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import org.testng.annotations.Test
 import java.io.File

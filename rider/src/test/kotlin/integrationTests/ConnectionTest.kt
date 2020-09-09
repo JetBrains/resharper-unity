@@ -3,7 +3,6 @@ package integrationTests
 import base.integrationTests.*
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.model.RdUnityModel
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.executeWithGold

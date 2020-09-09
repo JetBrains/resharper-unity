@@ -1,7 +1,6 @@
 package integrationTests
 
 import base.integrationTests.IntegrationTestWithEditorBase
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.withDcFacade
 import org.testng.annotations.Test
 import java.io.File

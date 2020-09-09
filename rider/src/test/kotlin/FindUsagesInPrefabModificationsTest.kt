@@ -1,9 +1,7 @@
 import base.FindUsagesAssetTestBase
-import base.integrationTests.downloadUnityDll
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
-import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.ALL])
