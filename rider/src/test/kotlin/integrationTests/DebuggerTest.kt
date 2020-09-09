@@ -1,17 +1,22 @@
 package integrationTests
 
 import base.integrationTests.*
+import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
+import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
+import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToLineBreakpoint
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.framework.combine
 import com.jetbrains.rider.test.scriptingApi.*
+import org.testng.annotations.AfterMethod
 import org.testng.annotations.Test
 import java.io.File
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
-class DebuggerTest : IntegrationDebuggerTestBase() {
+class DebuggerTest : IntegrationTestWithEditorBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithoutPlugin"
 
     override fun preprocessTempDirectory(tempDir: File) {
@@ -29,7 +34,7 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
         val pauseFile = activeSolutionDirectory.combine("Assets", ".pause").absoluteFile
         attachDebuggerToUnityEditorAndPlay(
             {
-                toggleUnityPausepoint("NewBehaviourScript.cs", 9, "System.IO.File.Exists(\"${pauseFile.path}\")")
+                toggleUnityPausepoint(project, "NewBehaviourScript.cs", 9, "System.IO.File.Exists(\"${pauseFile.path}\")")
             },
             {
                 waitForUnityEditorPlayMode()
@@ -90,5 +95,16 @@ class DebuggerTest : IntegrationDebuggerTestBase() {
                 printlnIndented("$toEvaluate = ${evaluateExpression(toEvaluate).result}")
                 dumpFullCurrentData()
             }, testGoldFile)
+    }
+
+    @AfterMethod(alwaysRun = true)
+    fun removeAllUnityPausepoints() {
+        XDebuggerManager.getInstance(project).breakpointManager.allBreakpoints.filter {
+            it.type is UnityPausepointBreakpointType
+        }.forEach {
+            @Suppress("UNCHECKED_CAST")
+            convertToLineBreakpoint(project, it as XLineBreakpoint<DotNetLineBreakpointProperties>)
+        }
+        removeAllBreakpoints()
     }
 }
