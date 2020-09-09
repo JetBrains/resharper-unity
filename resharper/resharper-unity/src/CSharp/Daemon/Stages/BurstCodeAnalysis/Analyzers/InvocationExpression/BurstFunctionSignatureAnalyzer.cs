@@ -7,25 +7,27 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.InvocationExpression
 {
     [SolutionComponent]
-    public class BurstFunctionSignatureAnalyzer : BurstProblemAnalyzerBase<IInvocationExpression>
+    public class BurstFunctionSignatureAnalyzer : IBurstProblemSubAnalyzer<IInvocationExpression>
     {
-        protected override bool CheckAndAnalyze(IInvocationExpression invocationExpression,
+        public BurstProblemSubAnalyzerStatus CheckAndAnalyze(IInvocationExpression invocationExpression,
             IHighlightingConsumer consumer)
         {
             var invokedMethod = CallGraphUtil.GetCallee(invocationExpression) as IMethod;
 
             if (invokedMethod == null)
-                return false;
+                return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
 
             if (!IsReturnValueBurstProhibited(invokedMethod) && !HasBurstProhibitedArguments(invocationExpression.ArgumentList))
-                return false;
+                return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
             
             consumer?.AddHighlighting(new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression.GetDocumentRange(), invokedMethod.ShortName));
 
-            return true;
+            return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
         }
+
+        public int Priority => 4000;
     }
 }

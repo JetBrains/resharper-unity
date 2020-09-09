@@ -6,12 +6,12 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.ReferenceExpression
 {
     [SolutionComponent]
-    public class BurstReadAccessAnalyzer : BurstProblemAnalyzerBase<IReferenceExpression>
+    public class BurstReadAccessAnalyzer : IBurstProblemSubAnalyzer<IReferenceExpression>
     {
-        protected override bool CheckAndAnalyze(IReferenceExpression referenceExpression,
+        public BurstProblemSubAnalyzerStatus CheckAndAnalyze(IReferenceExpression referenceExpression,
             IHighlightingConsumer consumer)
         {
             var element = referenceExpression.Reference.Resolve().DeclaredElement;
@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             //non auto property are not interested cuz they are not prohibited,
             //and any backing field will be handled inside accessor 
             if ((!(element is IProperty property) || !property.IsAuto) && !(element is IField))
-                return false;
+                return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
 
             var typeMember = (ITypeMember) element;
 
@@ -29,12 +29,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 typeMember.IsConstant() ||
                 typeMember.IsEnumMember() ||
                 typeMember is IProperty prop && !prop.IsWritable && prop.IsReadable) 
-                return false;
+                return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
             
             consumer?.AddHighlighting(new BurstLoadingStaticNotReadonlyWarning(referenceExpression.GetDocumentRange(),
                 typeMember.GetContainingType()?.ShortName + "." + element.ShortName));
             
-            return true;
+            return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
         }
+
+        public int Priority => 3000;
     }
 }
