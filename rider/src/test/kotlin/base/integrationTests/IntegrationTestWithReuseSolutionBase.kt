@@ -1,6 +1,7 @@
 package base.integrationTests
 
 import com.intellij.openapi.project.Project
+import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rider.model.RdUnityModel
 import com.jetbrains.rider.model.rdUnityModel
 import com.jetbrains.rider.projectView.solution
@@ -30,7 +31,7 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
         get() = OpenSolutionParams().apply {
             waitForCaches = true
             preprocessTempDirectory = {
-                allowUnityPathVfsRootAccess()
+                allowUnityPathVfsRootAccess(LifetimeDefinition())
                 createLibraryFolderIfNotExist(it)
             }
             backendLoadedTimeout = Duration.ofSeconds(60)

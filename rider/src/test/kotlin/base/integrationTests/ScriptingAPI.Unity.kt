@@ -91,13 +91,13 @@ fun IntegrationTestWithRdUnityModel.activateRiderFrontendTest() {
     }
 }
 
-fun allowUnityPathVfsRootAccess() {
+fun allowUnityPathVfsRootAccess(lifetimeDefinition: LifetimeDefinition) {
     val unityPath = when {
         SystemInfo.isWindows -> "C:/Program Files/Unity"
         SystemInfo.isMac -> "/Applications/Unity"
         else -> throw Exception("Not implemented")
     }
-    VfsRootAccess.allowRootAccess(LifetimeDefinition().createNestedDisposable("Unity path disposable"), unityPath)
+    VfsRootAccess.allowRootAccess(lifetimeDefinition.createNestedDisposable("Unity path disposable"), unityPath)
 }
 
 fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): ProcessHandle {
