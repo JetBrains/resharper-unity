@@ -7,6 +7,14 @@ import org.testng.annotations.Test
 @TestEnvironment(platform = [PlatformType.ALL])
 class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
 
+    @BeforeSuite(alwaysRun = true)
+    fun getUnityDll() {
+        unityDll = downloadUnityDll()
+    }
+
+    override val traceCategories: List<String>
+        get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"
+
     override fun getSolutionDirectoryName(): String {
         return "PrefabModificationTestSolution"
     }

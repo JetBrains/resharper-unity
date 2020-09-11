@@ -7,13 +7,13 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.vfs.VfsUtil
 import com.jetbrains.rider.model.rdUnityModel
-import icons.UnityIcons
 import com.jetbrains.rider.projectView.solution
 import java.io.File
 
-class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction("Open Unity Editor Log", "", UnityIcons.Actions.OpenEditorLog) {
+class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
 
     companion object {
+        const val actionId = "RiderUnityOpenEditorLogAction"
         private val logger = Logger.getInstance(RiderUnityOpenEditorLogAction::class.java)
     }
 
@@ -44,9 +44,10 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction("Open Unity Editor
     }
 }
 
-class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction("Open Unity Player Log", "", UnityIcons.Actions.OpenPlayerLog) {
+class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
 
     companion object {
+        const val actionId = "RiderUnityOpenPlayerLogAction"
         private val logger = Logger.getInstance(RiderUnityOpenPlayerLogAction::class.java)
     }
 

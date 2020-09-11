@@ -55,6 +55,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             await myInnerHostController.PrepareForRun(run).ConfigureAwait(false);
 
+            if (!myUnityController.IsUnityEditorUnitTestRunStrategy(run.RunStrategy))
+                return;
+                
             var unityEditorProcessId = myUnityController.TryGetUnityProcessId();
             if (unityEditorProcessId.HasValue)
                 return;

@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             if (owner == null)
                 return;
             
-            ProcessHierarchy(owner, hierarchyElement, consumer, forcePrefabImport, new HashSet<ulong>());
+            ProcessHierarchy(owner, hierarchyElement, consumer, forcePrefabImport, new HashSet<long>());
         }
 
         public void ProcessSceneHierarchyFromComponentToRoot(LocalReference location, IGameObjectConsumer consumer, bool forcePrefabImportForStartPoint, bool forcePrefabImport)
@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         private void ProcessHierarchy(AssetDocumentHierarchyElement owner, IHierarchyElement element,
-            IGameObjectConsumer consumer, bool prefabImport, HashSet<ulong> visited)
+            IGameObjectConsumer consumer, bool prefabImport, HashSet<long> visited)
         {
             if (element == null)
                 return;
@@ -83,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         private void ProcessGameObject(AssetDocumentHierarchyElement owner, IGameObjectHierarchy gameObject,
-            IGameObjectConsumer consumer, bool prefabImport, HashSet<ulong> visited)
+            IGameObjectConsumer consumer, bool prefabImport, HashSet<long> visited)
         {
             var transform = gameObject?.GetTransformHierarchy(owner);
             if (transform == null)

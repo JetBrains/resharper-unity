@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             var id = reader.ReadInt();
             if (id != 1)
                 throw new InvalidOperationException($"Expected external reference, found {id}");
-            return new ExternalReference(reader.ReadGuid(), reader.ReadULong());
+            return new ExternalReference(reader.ReadGuid(), reader.ReadLong());
         }
 
         public static LocalReference ReadLocalReferenceFrom(UnsafeReader reader)
@@ -48,16 +48,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             var id = reader.ReadInt();
             if (id != 0)
                 throw new InvalidOperationException($"Expected local reference, found {id}");
-            return new LocalReference(AssetUtils.ReadOWORD(reader), reader.ReadULong());
+            return new LocalReference(AssetUtils.ReadOWORD(reader), reader.ReadLong());
         }
 
         public static IHierarchyReference ReadReferenceFrom(UnsafeReader reader)
         {
             var id = reader.ReadInt();
             if (id == 0)
-                return new LocalReference(AssetUtils.ReadOWORD(reader), reader.ReadULong());
+                return new LocalReference(AssetUtils.ReadOWORD(reader), reader.ReadLong());
             if (id == 1)
-                return new ExternalReference(reader.ReadGuid(), reader.ReadULong());
+                return new ExternalReference(reader.ReadGuid(), reader.ReadLong());
             
             throw new InvalidOperationException($"Unknown reference type, {id}");
         }

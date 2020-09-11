@@ -68,12 +68,13 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("playerLogPath", string)
 
         property("play", bool)
-        sink("clearOnPlay", long)
         property("pause", bool)
-
         source("step", void)
         source("refresh", bool)
         source("showPreferences", void)
+
+        property("lastPlayTime", long)
+        property("lastInitTime", long)
 
         property("sessionInitialized", bool)
 

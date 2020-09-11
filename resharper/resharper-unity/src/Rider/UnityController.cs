@@ -1,9 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Debugger.Common.ManagedSymbols;
 using JetBrains.Annotations;
-using JetBrains.Application.Threading;
+using JetBrains.Application.Components;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
@@ -14,34 +13,27 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.Unity;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting;
-using JetBrains.ReSharper.Psi.Impl.CodeStyle;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.Rider.Model;
-using JetBrains.Threading;
 using JetBrains.Util;
-using JetBrains.Util.Special;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
-    public class UnityController : IUnityController
+    public class UnityController : IUnityController, IHideImplementation<DefaultUnityController>
     {
-        private static readonly TimeSpan outUnityConnectionTimeout = TimeSpan.FromMinutes(1);
-        private static readonly string outUnityTimeoutMessage = $"Unity hasn't connected. Timeout {outUnityConnectionTimeout.TotalMilliseconds} ms is over.";
+        private static readonly TimeSpan ourUnityConnectionTimeout = TimeSpan.FromMinutes(10);
+        private static readonly string ourUnityTimeoutMessage = $"Unity hasn't connected. Timeout {ourUnityConnectionTimeout.TotalMilliseconds} ms is over.";
         private readonly UnityEditorProtocol myUnityEditorProtocol;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
-        private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly IThreading myThreading;
         private readonly RdUnityModel myRdUnityModel;
 
         private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
         public UnityController(UnityEditorProtocol unityEditorProtocol, 
                                ISolution solution,
-                               Lifetime lifetime, 
-                               UnitySolutionTracker solutionTracker,
-                               IThreading threading)
+                               Lifetime lifetime)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -49,8 +41,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnityEditorProtocol = unityEditorProtocol;
             mySolution = solution;
             myLifetime = lifetime;
-            mySolutionTracker = solutionTracker;
-            myThreading = threading;
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
         }
 
@@ -66,8 +56,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 return Task.FromResult(new ExitUnityResult(false, "No connection to Unity Editor.", null));
             }
-
-            var protocolTask = myUnityEditorProtocol.UnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance).AsTask();
+            
+            var protocolTaskSource = new TaskCompletionSource<bool>();
+            mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myUnityEditorProtocol.UnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
+                .AsTask());
+            var protocolTask = protocolTaskSource.Task;
+            
             var waitTask = Task.WhenAny(protocolTask, Task.Delay(TimeSpan.FromSeconds(0.5), lifetimeDef.Lifetime)); // continue on timeout
             return waitTask.ContinueWith(t =>
             {
@@ -119,10 +113,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 lifetimeDef.Lifetime,
                 (lt, model) => model.UnityProcessId.Advise(lt, id => source.TrySetResult(id)));
 
-            Task.Delay(outUnityConnectionTimeout, lifetimeDef.Lifetime).ContinueWith(_ =>
+            // ToDo Replace timeout with CancellationToken
+            Task.Delay(ourUnityConnectionTimeout, lifetimeDef.Lifetime).ContinueWith(_ =>
             {
                 if (source.Task.Status != TaskStatus.RanToCompletion)
-                    source.TrySetException(new TimeoutException(outUnityTimeoutMessage));
+                    source.TrySetException(new TimeoutException(ourUnityTimeoutMessage));
             }, lifetimeDef.Lifetime);
             
             return source.Task;
@@ -145,10 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return project.IsUnityGeneratedProject();
         }
 
-        public bool IsUnityEditorUnitTestRunStrategy(IUnitTestRunStrategy strategy)
-        {
-            return UnityNUnitServiceProvider.IsUnityUnitTestStrategy(mySolutionTracker, myRdUnityModel, myUnityEditorProtocol);
-        }
+        public bool IsUnityEditorUnitTestRunStrategy(IUnitTestRunStrategy strategy) => strategy is RunViaUnityEditorStrategy;
 
         private ExitUnityResult KillProcess()
         {
