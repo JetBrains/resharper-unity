@@ -15,7 +15,7 @@ import java.io.File
 import java.time.Duration
 
 abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
-    private var unityDll : File? = null
+    protected var unityDll : File? = null
 
     @DataProvider(name = "findUsagesGrouping")
     fun test1() = arrayOf(

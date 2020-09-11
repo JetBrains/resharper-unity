@@ -324,7 +324,6 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseExitUnity(model);
           GetBuildLocation(model);
           AdviseRunMethod(model);
-          
           GetInitTime(model);
 
           ourLogger.Verbose("UnityModel initialized.");
