@@ -50,7 +50,6 @@ class PlayModeTest : IntegrationTestWithEditorBase() {
         rebuildSolutionWithReSharperBuild()
         refreshUnityModel()
 
-        play()
         waitForEditorLogAfterAction("Start") { play() }
         pause()
         step("Update")
