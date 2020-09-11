@@ -37,7 +37,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
         executeIntegrationTestMethod("DumpExternalEditor") }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
 
     private fun checkExternalEditor(resetEditorPrefs: Boolean, execute: () -> Unit) {
@@ -65,7 +65,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
     @Test
     fun checkLogWithExecutingMethod() = checkLog { executeIntegrationTestMethod("WriteToLog") }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     fun checkLogWithUnityModelRefresh() = checkLog { executeScript("WriteToLog.cs") }
 
     private fun checkLog(execute: () -> Unit) {
