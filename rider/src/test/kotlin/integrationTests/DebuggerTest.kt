@@ -29,7 +29,7 @@ class DebuggerTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     fun checkUnityPausePoint() {
         val pauseFile = activeSolutionDirectory.combine("Assets", ".pause").absoluteFile
         attachDebuggerToUnityEditorAndPlay(
