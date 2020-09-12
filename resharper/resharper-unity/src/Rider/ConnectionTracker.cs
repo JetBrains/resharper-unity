@@ -32,11 +32,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             //using JetBrains.ReSharper.Resources.Shell.ShellLifetimes.StartMainUnguardedAsync instead of JetBrains.Application.Threading.IThreadingEx.QueueRecurring
             //to check connection between backend and unity editor, when rdUnityModel.RiderFrontendTests is True
             var nestedLifetimeDefinition = lifetime.CreateNested();
-            host.GetValue(rdUnityModel => rdUnityModel.RiderFrontendTests).Advise(nestedLifetimeDefinition.Lifetime,
-                riderFrontendTests =>
+            host.GetValue(rdUnityModel => rdUnityModel.RiderFrontendTests).WhenTrue(nestedLifetimeDefinition.Lifetime,
+                _ =>
                 {
-                    if (!riderFrontendTests) return;
-                    
                     lifetime.StartMainUnguardedAsync(async () =>
                     {
                         while (lifetime.IsAlive)
