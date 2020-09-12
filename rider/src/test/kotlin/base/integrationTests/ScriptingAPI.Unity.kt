@@ -280,7 +280,7 @@ fun IntegrationTestWithRdUnityModel.pause(waitForPause: Boolean = true) {
 }
 
 // "2000000" is default log message in NewBehaviourScript.Update() in test solutions
-fun IntegrationTestWithRdUnityModel.step(logMessageAfterStep: String = "2000000") =
+fun IntegrationTestWithRdUnityModel.step(logMessageAfterStep: String = "2000000") {
     frameworkLogger.info("Make step in unity editor")
     waitForEditorLogsAfterAction(logMessageAfterStep) { rdUnityModel.step.fire(Unit) }
 }
@@ -303,20 +303,24 @@ fun IntegrationTestWithRdUnityModel.waitForUnityEditorPauseMode() = waitForUnity
 
 fun IntegrationTestWithRdUnityModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(EditorState.ConnectedIdle)
 
-fun IntegrationTestWithRdUnityModel.waitForEditorLogAfterAction(logMessage: String, action: () -> Unit): EditorLogEntry {
+fun IntegrationTestWithRdUnityModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<EditorLogEntry> {
     val logLifetime = Lifetime.Eternal.createNested()
-    var editorLogEntry: EditorLogEntry? = null
+    var setOfMessages = expectedMessages.toHashSet()
+    val editorLogEntries = mutableListOf<EditorLogEntry>()
     rdUnityModel.onUnityLogEvent.adviseNotNull(logLifetime) {
-        if (it.message == logMessage) {
-            editorLogEntry = it
+        if (setOfMessages.remove(it.message)) {
+            editorLogEntries.add(it)
+        }
+        if (setOfMessages.isEmpty()) {
             logLifetime.terminate()
         }
     }
+    val messagesString = setOfMessages.joinToString(", ", "[", "]")
     action()
-    frameworkLogger.info("Waiting for log entry with message: $logMessage")
+    frameworkLogger.info("Waiting for log entries with messages: $messagesString")
     waitAndPump(unityActionsTimeout, { logLifetime.isNotAlive })
-    { "There are no log entry with message: $logMessage" }
-    return editorLogEntry!!
+    { "Missed logs: ${setOfMessages.joinToString(", ", "[", "]")}" }
+    return editorLogEntries
 }
 
 private fun IntegrationTestWithRdUnityModel.waitForUnityEditorState(editorState: EditorState) {

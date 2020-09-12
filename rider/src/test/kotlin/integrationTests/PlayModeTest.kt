@@ -50,10 +50,10 @@ class PlayModeTest : IntegrationTestWithEditorBase() {
         rebuildSolutionWithReSharperBuild()
         refreshUnityModel()
 
-        waitForEditorLogAfterAction("Start") { play() }
+        waitForEditorLogsAfterAction("Start", "StartFromBackgroundThread") { play() }
         pause()
-        step("Update")
+        waitForEditorLogsAfterAction("UpdateFromBackgroundThread") { step("Update") }
         unpause()
-        waitForEditorLogAfterAction("Quit") { stopPlaying() }
+        waitForEditorLogsAfterAction("Quit", "QuitFromBackgroundThread") { stopPlaying() }
     }
 }

@@ -74,7 +74,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
             waitFirstScriptCompilation(project)
             waitConnectionToUnityEditor(project)
 
-            val editorLogEntry = waitForEditorLogAfterAction("#Test#") { execute() }
+            val editorLogEntry = waitForEditorLogsAfterAction("#Test#") { execute() }.first()
             executeWithGold(testGoldFile) {
                 printEditorLogEntry(it, editorLogEntry)
             }
