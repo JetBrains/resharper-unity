@@ -13,7 +13,7 @@ import java.io.File
 class ConnectionTest : IntegrationTestWithSolutionBase() {
     override fun getSolutionDirectoryName(): String = "SimpleUnityProjectWithoutPlugin"
 
-    @Test(enabled = false)
+    @Test
     fun installAndCheckConnectionAfterUnityStart() {
         withUnityProcess {
             waitFirstScriptCompilation(project)
@@ -23,7 +23,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun installAndCheckConnectionBeforeUnityStart() {
         installPlugin()
         withUnityProcess {
@@ -33,7 +33,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
         executeIntegrationTestMethod("DumpExternalEditor") }
 
@@ -62,10 +62,10 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkLogWithExecutingMethod() = checkLog { executeIntegrationTestMethod("WriteToLog") }
 
-    @Test(enabled = false)
+    @Test
     fun checkLogWithUnityModelRefresh() = checkLog { executeScript("WriteToLog.cs") }
 
     private fun checkLog(execute: () -> Unit) {

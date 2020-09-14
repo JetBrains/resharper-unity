@@ -44,7 +44,7 @@ class PlayModeTest : IntegrationTestWithEditorBase() {
             })
     }
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     fun checkPlayModeLogs() {
         replaceFileContent(project, "NewBehaviourScript.cs")
         rebuildSolutionWithReSharperBuild()

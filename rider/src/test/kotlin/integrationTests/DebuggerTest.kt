@@ -45,7 +45,7 @@ class DebuggerTest : IntegrationTestWithEditorBase() {
             })
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkBreakpoint() {
         attachDebuggerToUnityEditorAndPlay(
             {
@@ -58,7 +58,7 @@ class DebuggerTest : IntegrationTestWithEditorBase() {
             }, testGoldFile)
     }
 
-    @Test(description = "RIDER-24651", enabled = false)
+    @Test(description = "RIDER-24651")
     fun checkExceptionBreakpointWithJustMyCode() {
         attachDebuggerToUnityEditorAndPlay(
             {

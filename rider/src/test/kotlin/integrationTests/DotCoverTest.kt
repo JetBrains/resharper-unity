@@ -21,12 +21,12 @@ class DotCoverTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkCoverAllTestsFromSolution() {
         withDcFacade(project) { ut, dc ->
             ut.waitForDiscovering(5)
             ut.coverAllTestsInSolution(5)
-            dc.compareCoverageTreeWithGold(testGoldFile)
+            dc.waitForTotal(22, goldFile = testGoldFile)
         }
     }
 }

@@ -23,7 +23,7 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
 
     @Test(description = "RIDER-46658", enabled = false)
@@ -35,7 +35,7 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
         testWithAllTestsInSolution(5)
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
             it.waitForDiscovering(5)
