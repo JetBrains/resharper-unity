@@ -10,6 +10,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CodeCompletion;
 using JetBrains.ReSharper.Feature.Services.Cpp.TypingAssist;
 using JetBrains.ReSharper.Feature.Services.Options;
+using JetBrains.ReSharper.Feature.Services.StructuralRemove;
 using JetBrains.ReSharper.Feature.Services.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
@@ -42,10 +43,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingA
       [NotNull] ITypingAssistManager typingAssistManager,
       [NotNull] IExternalIntellisenseHost externalIntellisenseHost,
       [NotNull] SkippingTypingAssist skippingTypingAssist,
-      [NotNull] LastTypingAssistAction lastTypingAssistAction,
-      [NotNull] HlslInShaderLabDummyFormatter shaderLabDummyFormatter)
+      [NotNull] LastTypingAction lastTypingAssistAction,
+      [NotNull] HlslInShaderLabDummyFormatter shaderLabDummyFormatter,
+      [NotNull] StructuralRemoveManager structuralRemoveManager)
       : base(solution, settingsStore, cachingLexerService, commandProcessor, psiServices, externalIntellisenseHost,
-        skippingTypingAssist, lastTypingAssistAction)
+        skippingTypingAssist, lastTypingAssistAction, structuralRemoveManager)
     {
         myCachingLexerService = cachingLexerService;
         myShaderLabDummyFormatter = shaderLabDummyFormatter;
