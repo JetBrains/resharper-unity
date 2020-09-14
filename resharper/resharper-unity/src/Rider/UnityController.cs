@@ -25,20 +25,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private static readonly TimeSpan ourUnityConnectionTimeout = TimeSpan.FromMinutes(10);
         private static readonly string ourUnityTimeoutMessage = $"Unity hasn't connected. Timeout {ourUnityConnectionTimeout.TotalMilliseconds} ms is over.";
         private readonly UnityEditorProtocol myUnityEditorProtocol;
+        private readonly UnityVersion myUnityVersion;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
         private readonly RdUnityModel myRdUnityModel;
 
         private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
-        public UnityController(UnityEditorProtocol unityEditorProtocol, 
-                               ISolution solution,
-                               Lifetime lifetime)
+        public UnityController(Lifetime lifetime, ISolution solution, UnityEditorProtocol unityEditorProtocol,
+                               UnityVersion unityVersion)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
-            
+
             myUnityEditorProtocol = unityEditorProtocol;
+            myUnityVersion = unityVersion;
             mySolution = solution;
             myLifetime = lifetime;
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
@@ -56,12 +57,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 return Task.FromResult(new ExitUnityResult(false, "No connection to Unity Editor.", null));
             }
-            
+
             var protocolTaskSource = new TaskCompletionSource<bool>();
             mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myUnityEditorProtocol.UnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
                 .AsTask());
             var protocolTask = protocolTaskSource.Task;
-            
+
             var waitTask = Task.WhenAny(protocolTask, Task.Delay(TimeSpan.FromSeconds(0.5), lifetimeDef.Lifetime)); // continue on timeout
             return waitTask.ContinueWith(t =>
             {
@@ -76,13 +77,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private Task<ExitUnityResult> WaitModelUpdate()
         {
             var successExitResult = new ExitUnityResult(true, null, null);
-            if (!myUnityEditorProtocol.UnityModel.HasValue()) 
+            if (!myUnityEditorProtocol.UnityModel.HasValue())
                 return Task.FromResult(successExitResult);
-            
+
             var taskSource = new TaskCompletionSource<ExitUnityResult>();
             var waitLifetimeDef = myLifetime.CreateNested();
             waitLifetimeDef.SynchronizeWith(taskSource);
-                        
+
             // Wait RdModel Update
             myUnityEditorProtocol.UnityModel.ViewNull(waitLifetimeDef.Lifetime, _ => taskSource.SetResult(successExitResult));
             return taskSource.Task;
@@ -95,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (model.UnityProcessId.HasValue())
                 {
-                    return model.UnityProcessId.Value;    
+                    return model.UnityProcessId.Value;
                 }
             }
             // no protocol connection - try to fallback to EditorInstance.json
@@ -119,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (source.Task.Status != TaskStatus.RanToCompletion)
                     source.TrySetException(new TimeoutException(ourUnityTimeoutMessage));
             }, lifetimeDef.Lifetime);
-            
+
             return source.Task;
         }
 
@@ -127,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public string[] GetUnityCommandline()
         {
             var unityPathData = myRdUnityModel.UnityApplicationData;
-            if (!unityPathData.HasValue()) 
+            if (!unityPathData.HasValue())
                 return null;
             var unityPath = unityPathData.Value?.ApplicationPath;
             if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
@@ -141,6 +142,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         }
 
         public bool IsUnityEditorUnitTestRunStrategy(IUnitTestRunStrategy strategy) => strategy is RunViaUnityEditorStrategy;
+
+        public Version GetUnityVersion()
+        {
+            return myUnityVersion.ActualVersionForSolution.Value;
+        }
 
         private ExitUnityResult KillProcess()
         {
