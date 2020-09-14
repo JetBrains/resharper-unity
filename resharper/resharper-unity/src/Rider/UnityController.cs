@@ -46,7 +46,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnityVersion = unityVersion;
             mySolution = solution;
             myLifetime = lifetime;
-            myUnityApi = unityApi;
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
         }
 
