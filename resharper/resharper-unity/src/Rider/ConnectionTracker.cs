@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         rdTask?.Result.Advise(lifetime, result =>
                         {
                             State.SetValue(result.Result);
-                            logger.Trace($"Inside Result. Sending connection state. State: {State.Value}");
+                            logger.Info($"Inside Result. Sending connection state. State: {State.Value}");
                             host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
                         });
 
@@ -59,13 +59,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         {
                             if (rdTask != null && !rdTask.AsTask().IsCompleted)
                             {
-                                logger.Trace($"There were no response from Unity in one second. Set connection state to Disconnected.");
+                                logger.Info($"There were no response from Unity in two seconds. Set connection state to Disconnected.");
                                 State.SetValue(UnityEditorState.Disconnected);
                             }
                         }, locks.Tasks.GuardedMainThreadScheduler);
                     }
 
-                    logger.Trace($"Sending connection state. State: {State.Value}");
+                    logger.Info($"Sending connection state. State: {State.Value}");
                     host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
                 });
 
