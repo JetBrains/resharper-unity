@@ -28,12 +28,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityVersion myUnityVersion;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
+        private readonly UnityApi myUnityApi;
         private readonly RdUnityModel myRdUnityModel;
 
         private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
-        public UnityController(Lifetime lifetime, ISolution solution, UnityEditorProtocol unityEditorProtocol,
+        public UnityController(Lifetime lifetime, 
+                               ISolution solution,
+                               UnityEditorProtocol unityEditorProtocol,
                                UnityVersion unityVersion)
+
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -133,7 +137,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var unityPath = unityPathData.Value?.ApplicationPath;
             if (unityPath != null && PlatformUtil.RuntimePlatform == PlatformUtil.Platform.MacOsX)
                 unityPath = FileSystemPath.Parse(unityPath).Combine("Contents/MacOS/Unity").FullPath;
-            return unityPath != null ? new[] {unityPath, "-projectPath", mySolution.SolutionDirectory.FullPath} : null;
+
+            return unityPath == null
+                ? null 
+                : new[] { CommandLineUtil.QuoteIfNeeded(unityPath), "-projectPath", CommandLineUtil.QuoteIfNeeded(mySolution.SolutionDirectory.FullPath) };
         }
 
         public bool IsUnityGeneratedProject(IProject project)
