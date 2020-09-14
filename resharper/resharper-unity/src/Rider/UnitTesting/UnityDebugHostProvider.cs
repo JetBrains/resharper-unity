@@ -1,3 +1,4 @@
+using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DotNetCore;
 using JetBrains.ReSharper.Feature.Services.DebuggerFacade;
@@ -23,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             var innerHostController = base.CreateHostController(launch);
             return new UnityTaskRunnerHostController(innerHostController, 
+                                                     launch.Solution.GetComponent<IShellLocks>(),
                                                      launch.Solution.GetComponent<IUnityController>());
         }
     }
