@@ -280,9 +280,13 @@ fun IntegrationTestWithRdUnityModel.pause(waitForPause: Boolean = true) {
 }
 
 // "2000000" is default log message in NewBehaviourScript.Update() in test solutions
-fun IntegrationTestWithRdUnityModel.step(logMessageAfterStep: String = "2000000") {
+fun IntegrationTestWithRdUnityModel.step(waitForStep: Boolean = true, logMessageAfterStep: String = "2000000") {
     frameworkLogger.info("Make step in unity editor")
-    waitForEditorLogsAfterAction(logMessageAfterStep) { rdUnityModel.step.fire(Unit) }
+    if (waitForStep) {
+        waitForEditorLogsAfterAction(logMessageAfterStep) { rdUnityModel.step.fire(Unit) }
+    } else {
+        rdUnityModel.step.fire(Unit)
+    }
 }
 
 fun IntegrationTestWithRdUnityModel.stopPlaying(waitForIdle: Boolean = true) {
