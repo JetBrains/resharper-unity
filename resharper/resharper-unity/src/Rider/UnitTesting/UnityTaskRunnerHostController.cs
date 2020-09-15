@@ -16,7 +16,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
     public class UnityTaskRunnerHostController : ITaskRunnerHostController
     {
-        private const string NotAvailableUnityEditorMessage = "Unity Editor is not available";
+        private const string PluginName = "Unity plugin";
+        private const string NotAvailableUnityEditorMessage = "Unable to {0} tests: Unity Editor is not running";
+        private const string StartUnityEditorQuestionMessage = "To {0} unit tests, you should first run Unity Editor. Do you want to Start Unity {1} now?";
 
         private readonly IUnityController myUnityController;
         private readonly IShellLocks myShellLocks;
@@ -26,14 +28,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public UnityTaskRunnerHostController(ITaskRunnerHostController innerHostController,
                                              IShellLocks shellLocks,
-                                             IUnityController unityController)
+                                             IUnityController unityController,
+                                             string taskRunnerName)
         {
-            myShellLocks = shellLocks;
-            myInnerHostController = innerHostController;
-            myUnityController = unityController;
+            myShellLocks = shellLocks ?? throw  new ArgumentNullException(nameof(shellLocks));
+            myInnerHostController = innerHostController ?? throw  new ArgumentNullException(nameof(innerHostController));
+            myUnityController = unityController ?? throw  new ArgumentNullException(nameof(unityController));
             myStartUnityTask = Task.CompletedTask;
+            TaskRunnerName = taskRunnerName ?? throw new ArgumentNullException(nameof(taskRunnerName));
         }
 
+        public string TaskRunnerName { get; }
+        
         public void Dispose() => myInnerHostController.Dispose();
 
         public string HostId => myInnerHostController.HostId;
@@ -86,9 +92,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         
         private Task StartUnityIfNeed()
         {
-            var needStart = MessageBox.ShowYesNo("Unity Editor has not started yet. Run it?", "Unity plugin");
+            var message = string.Format(StartUnityEditorQuestionMessage, 
+                                              TaskRunnerName, 
+                                              myUnityController.GetUnityVersion());
+            var needStart = MessageBox.ShowYesNo(message, PluginName);
             if (!needStart)
-                throw new Exception(NotAvailableUnityEditorMessage);
+                throw new Exception(string.Format(NotAvailableUnityEditorMessage, TaskRunnerName));
 
             var commandLines = myUnityController.GetUnityCommandline();
             var unityPath = commandLines.First();
