@@ -1,33 +1,35 @@
 Search target
     DefaultNamespace.Script5.GameObject:GameObject
 Found usages  (9 usages found)
-    Assets\Ex5  (9 usages found)
-        Ex5.unity  (4 usages found)
-            GameObject  (2 usages found)
-                Script5  (2 usages found)
-                    GameObject = Directional Light
-                    GameObject = Root Variant
-            Root  (2 usages found)
+    Assets  (9 usages found)
+        Ex5  (9 usages found)
+            Ex5.unity  (4 usages found)
+                GameObject  (2 usages found)
+                    Script5  (2 usages found)
+                        GameObject = Directional Light
+                        GameObject = Root Variant
+                Root  (2 usages found)
+                    Left  (1 usage found)
+                        Script5  (1 usage found)
+                            GameObject = Right
+                    Right  (1 usage found)
+                        Script5  (1 usage found)
+                            GameObject = Left
+            GameObject.prefab  (2 usages found)
+                GameObject  (2 usages found)
+                    Script5  (2 usages found)
+                        GameObject = None
+                        GameObject = None
+            Left.prefab  (1 usage found)
                 Left  (1 usage found)
                     Script5  (1 usage found)
-                        GameObject = Right
+                        GameObject = None
+            Right.prefab  (1 usage found)
                 Right  (1 usage found)
                     Script5  (1 usage found)
-                        GameObject = Left
-        GameObject.prefab  (2 usages found)
-            GameObject  (2 usages found)
-                Script5  (2 usages found)
-                    GameObject = None
-                    GameObject = None
-        Left.prefab  (1 usage found)
-            Left  (1 usage found)
-                Script5  (1 usage found)
-                    GameObject = None
-        Right.prefab  (1 usage found)
-            Right  (1 usage found)
-                Script5  (1 usage found)
-                    GameObject = None
-        Root Variant.prefab  (1 usage found)
-            Root Variant\Left  (1 usage found)
-                Script5  (1 usage found)
-                    GameObject = Right
+                        GameObject = None
+            Root Variant.prefab  (1 usage found)
+                Root Variant  (1 usage found)
+                    Left  (1 usage found)
+                        Script5  (1 usage found)
+                            GameObject = Right
