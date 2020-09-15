@@ -309,7 +309,7 @@ fun IntegrationTestWithRdUnityModel.waitForUnityEditorIdleMode() = waitForUnityE
 
 fun IntegrationTestWithRdUnityModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<EditorLogEntry> {
     val logLifetime = Lifetime.Eternal.createNested()
-    var setOfMessages = expectedMessages.toHashSet()
+    val setOfMessages = expectedMessages.toHashSet()
     val editorLogEntries = mutableListOf<EditorLogEntry>()
     rdUnityModel.onUnityLogEvent.adviseNotNull(logLifetime) {
         if (setOfMessages.remove(it.message)) {
