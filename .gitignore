@@ -106,3 +106,5 @@ Desktop.ini
 
 build/
 resharper/_ReSharper.Caches/*
+
+**/*.binlog
