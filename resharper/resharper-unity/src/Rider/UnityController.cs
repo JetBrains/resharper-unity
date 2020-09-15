@@ -149,10 +149,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public bool IsUnityEditorUnitTestRunStrategy(IUnitTestRunStrategy strategy) => strategy is RunViaUnityEditorStrategy;
 
-        public Version GetUnityVersion()
-        {
-            return myUnityVersion.ActualVersionForSolution.Value;
-        }
+        public Version GetUnityVersion() => myUnityVersion.ActualVersionForSolution.Value;
+
+        public string GetPresentableUnityVersion() => myRdUnityModel.UnityApplicationData.Value.ApplicationVersion;
 
         private ExitUnityResult KillProcess()
         {
