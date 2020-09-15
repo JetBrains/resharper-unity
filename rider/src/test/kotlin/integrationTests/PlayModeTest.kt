@@ -44,16 +44,16 @@ class PlayModeTest : IntegrationTestWithEditorBase() {
             })
     }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     fun checkPlayModeLogs() {
         replaceFileContent(project, "NewBehaviourScript.cs")
         rebuildSolutionWithReSharperBuild()
         refreshUnityModel()
 
-        waitForEditorLogsAfterAction("Start", "StartFromBackgroundThread") { play() }
-        pause()
-        waitForEditorLogsAfterAction("UpdateFromBackgroundThread") { step("Update") }
-        unpause()
-        waitForEditorLogsAfterAction("Quit", "QuitFromBackgroundThread") { stopPlaying() }
+        waitForEditorLogsAfterAction("Start", "StartFromBackgroundThread") { play(false) }
+        pause(false)
+        waitForEditorLogsAfterAction("Update", "UpdateFromBackgroundThread") { step(false) }
+        unpause(false)
+        waitForEditorLogsAfterAction("Quit", "QuitFromBackgroundThread") { stopPlaying(false) }
     }
 }
