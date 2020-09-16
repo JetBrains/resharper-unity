@@ -49,8 +49,6 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestWithSolutionBase()
     @BeforeMethod(alwaysRun = true, dependsOnMethods = ["startUnityProcessAndWait"])
     fun buildSolutionAfterUnityStarts() {
         buildSolutionWithConsoleBuild()
-        // TODO: fix this, I don't know why we need this, but it doesn't work without 2nd build
-        buildSolutionWithReSharperBuild()
     }
 
     @BeforeMethod(alwaysRun = true, dependsOnMethods = ["buildSolutionAfterUnityStarts"])

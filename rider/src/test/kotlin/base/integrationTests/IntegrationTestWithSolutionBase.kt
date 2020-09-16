@@ -23,7 +23,7 @@ abstract class IntegrationTestWithSolutionBase : BaseTestWithSolution(), Integra
         createLibraryFolderIfNotExist(tempDir)
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     fun terminateLifetimeDefinition() {
         lifetimeDefinition.terminate()
     }
