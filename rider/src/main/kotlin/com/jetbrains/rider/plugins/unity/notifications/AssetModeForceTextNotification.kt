@@ -14,7 +14,6 @@ class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjec
 
     companion object {
         private const val settingName = "do_not_show_unity_asset_mode_notification"
-        private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity Asset Mode");
     }
 
     init {
@@ -33,6 +32,7 @@ class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjec
               <li><a href="doNotShow">Do not show</a> this notification for this solution.</li>
             </ul>
             """
+        val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity Asset Mode");
         val assetModeNotification = Notification(notificationGroupId.displayId, "Recommend switching to text asset serialisation mode", message, NotificationType.WARNING)
         assetModeNotification.setListener { notification, hyperlinkEvent ->
             if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED)
