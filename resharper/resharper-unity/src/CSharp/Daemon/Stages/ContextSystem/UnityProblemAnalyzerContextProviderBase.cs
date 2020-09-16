@@ -3,6 +3,7 @@ using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
@@ -24,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 
         public abstract UnityProblemAnalyzerContextElement Context { get; }
 
-        public UnityProblemAnalyzerContextElement GetContext(ITreeNode node, DaemonProcessKind processKind)
+        public UnityProblemAnalyzerContextElement GetContext(ITreeNode node, DaemonProcessKind processKind, bool getCallee)
         {
             if (node == null)
                 return UnityProblemAnalyzerContextElement.NONE;
@@ -39,6 +40,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 
             if (node is IDeclaration declaration)
                 declaredElement = declaration.DeclaredElement;
+
+            if (getCallee && node is ICSharpExpression icSharpExpression)
+                declaredElement = CallGraphUtil.GetCallee(icSharpExpression);
 
             return IsMarkedInternal(declaredElement, processKind)
                 ? Context

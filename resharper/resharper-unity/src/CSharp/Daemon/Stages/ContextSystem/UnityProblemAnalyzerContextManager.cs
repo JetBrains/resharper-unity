@@ -74,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 
             foreach (var provider in myProviders)
             {
-                var providedContext = provider.GetContext(node, processKind);
+                var providedContext = provider.GetContext(node, processKind, false);
 
                 if (providedContext == UnityProblemAnalyzerContextElement.NONE)
                     continue;

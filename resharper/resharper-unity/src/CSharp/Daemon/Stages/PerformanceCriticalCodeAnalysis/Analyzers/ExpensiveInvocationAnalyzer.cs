@@ -1,7 +1,7 @@
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -20,7 +20,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         protected override void Analyze(IInvocationExpression expression, IDaemonProcess daemonProcess,
             DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
-            if (myContextProvider.HasContext(expression, kind))
+            var callee = CallGraphUtil.GetCallee(expression);
+            
+            if (myContextProvider.IsMarked(callee, kind))
                 CreateHighlighting(expression, consumer);
         }
 
