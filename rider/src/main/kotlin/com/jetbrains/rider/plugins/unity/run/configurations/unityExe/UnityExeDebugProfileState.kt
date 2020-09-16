@@ -28,7 +28,7 @@ import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.createEmptyConsoleCommandLine
 import com.jetbrains.rider.run.withRawParameters
 import com.jetbrains.rider.util.NetUtils
-import com.jetbrains.rider.util.idea.createNestedAsyncPromise
+import com.jetbrains.rd.platform.util.createNestedAsyncPromise
 import org.jetbrains.concurrency.Promise
 
 class UnityExeDebugProfileState(private val exeConfiguration : UnityExeConfiguration, private val remoteConfiguration: RemoteConfiguration,

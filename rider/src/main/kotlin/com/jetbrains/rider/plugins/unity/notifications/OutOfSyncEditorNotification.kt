@@ -1,9 +1,6 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationGroup
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
+import com.intellij.notification.*
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNull
@@ -13,7 +10,7 @@ import com.jetbrains.rider.projectView.solution
 
 class OutOfSyncEditorNotification(project: Project): ProtocolSubscribedProjectComponent(project) {
     companion object {
-        private val notificationGroupId = NotificationGroup.balloonGroup("Unity connection is out of sync")
+        private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity connection is out of sync");
     }
 
     init {

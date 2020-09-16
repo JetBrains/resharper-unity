@@ -1,6 +1,9 @@
 package com.jetbrains.rider.plugins.unity.actions
 
-import com.intellij.notification.*
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationGroupManager
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -30,7 +33,7 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
             }
             else
             {
-                val groupId = NotificationGroup("Unity log open", NotificationDisplayType.BALLOON, true)
+                val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity log open");
                 val title = "Could not open Unity Editor Log"
                 val message = "$f is not present."
                 val notification = Notification(groupId.displayId, title, message, NotificationType.INFORMATION)
@@ -64,7 +67,7 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
             }
             else
             {
-                val groupId = NotificationGroup("Unity log open", NotificationDisplayType.BALLOON, true)
+                val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity log open");
                 val title = "Could not open Unity Player Log"
                 val message = "$f is not present."
                 val notification = Notification(groupId.displayId, title, message, NotificationType.INFORMATION)

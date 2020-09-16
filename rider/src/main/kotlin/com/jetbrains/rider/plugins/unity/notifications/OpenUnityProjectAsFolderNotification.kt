@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
-import com.intellij.ide.impl.ProjectUtil
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -29,7 +28,7 @@ import javax.swing.event.HyperlinkEvent
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
     companion object {
-        private val notificationGroupId = NotificationGroup("Unity project open", NotificationDisplayType.STICKY_BALLOON, true)
+        private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")
     }
 
     init {

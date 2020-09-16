@@ -21,7 +21,6 @@ import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import org.jetbrains.concurrency.Promise
 import javax.swing.Icon
 
 fun attachToUnityProcess(project: Project, process: UnityProcess) {
@@ -76,10 +75,10 @@ open class UnityAttachProfileState(private val remoteConfiguration: RemoteConfig
         return UnityDebuggerOutputListener(executionEnvironment.project, remoteConfiguration.address, targetName, isEditor)
     }
 
-    override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
-        return super.createWorkerRunCmd(lifetime, helper, port).onSuccess {
-            it.commandLine.withUnityExtensionsEnabledEnvironment(executionEnvironment.project)
-        }
+    override suspend fun createWorkerRunCmdAsync(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
+        val runCmd = super.createWorkerRunCmdAsync(lifetime, helper, port)
+        runCmd.commandLine.withUnityExtensionsEnabledEnvironment(executionEnvironment.project)
+        return runCmd
     }
 }
 
@@ -88,15 +87,15 @@ class UnityAttachIosUsbProfileState(private val project: Project, private val re
                                     private val deviceId: String)
     : UnityAttachProfileState(remoteConfiguration, executionEnvironment, targetName, false) {
 
-    override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
-        return super.createWorkerRunCmd(lifetime, helper, port).onSuccess {
-            // TODO: Can we do this over protocol?
-            // We could avoid hard coding port 12000 (Unity use this port in their debugger plugins)
-            UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")?.let { proxyFolderPath ->
-                it.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_PROXY_PATH", proxyFolderPath.toString())
-                it.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_DEVICE_ID", deviceId)
-                it.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_LOCAL_PORT", "${remoteConfiguration.port}")
-            }
+    override suspend fun createWorkerRunCmdAsync(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
+        val cmd = super.createWorkerRunCmdAsync(lifetime, helper, port)
+        // TODO: Can we do this over protocol?
+        // We could avoid hard coding port 12000 (Unity use this port in their debugger plugins)
+        UnityInstallationFinder.getInstance(project).getAdditionalPlaybackEnginesRoot()?.resolve("iOSSupport")?.let { proxyFolderPath ->
+            cmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_PROXY_PATH", proxyFolderPath.toString())
+            cmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_DEVICE_ID", deviceId)
+            cmd.commandLine.withEnvironment("_RIDER_UNITY_IOS_USB_LOCAL_PORT", "${remoteConfiguration.port}")
         }
+        return cmd
     }
 }

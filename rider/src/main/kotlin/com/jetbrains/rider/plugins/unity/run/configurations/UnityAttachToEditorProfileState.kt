@@ -59,6 +59,51 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
         return super.execute(executor, runner, workerProcessHandler)
     }
 
+/*
+    override suspend fun createWorkerRunCmdAsync(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
+        // alternative approach
+        // it is better because mono waits for attach, so rider would not miss any frames,
+        // but if you disconnect and try to attach again it fails, because updatePidAndPort would try different port
+        // val actualPort = com.jetbrains.rider.util.NetUtils.findFreePort(500013, setOf(port))
+        // val processBuilder = ProcessBuilder(args)
+        // processBuilder.environment().set("MONO_ARGUMENTS", "--debugger-agent=transport=dt_socket,address=${remoteConfiguration.address}:$actualPort,embedding=1,server=y,suspend=y")
+        // val process = processBuilder.start()
+        // val actualPid = OSProcessUtil.getProcessID(process)
+        // remoteConfiguration.pid = actualPid
+        // remoteConfiguration.port = actualPort
+
+        lifetime.startLongBackgroundAsync {
+            if (!remoteConfiguration.updatePidAndPort()) {
+                logger.trace("Do not found Unity, starting new Unity Editor")
+
+                val model = project.solution.rdUnityModel
+                if (UnityInstallationFinder.getInstance(project).getApplicationExecutablePath() == null ||
+                    model.hasUnityReference.hasTrueValue && !project.isUnityProject()) {
+                    throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")
+                }
+
+                val args = getUnityWithProjectArgs(project)
+                if (remoteConfiguration.play) {
+                    addPlayModeArguments(args)
+                }
+
+                val process = ProcessBuilder(args).start()
+                val actualPid = OSProcessUtil.getProcessID(process)
+                remoteConfiguration.pid = actualPid
+                remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
+
+                delay(2000)
+            }
+        }.await()
+
+        logger.trace("DebuggerWorker port: $port")
+        logger.trace("Connecting to Unity Editor with port: ${remoteConfiguration.port}")
+        val cmd = super.createWorkerRunCmdAsync(lifetime, helper, port)
+        cmd.commandLine.withUnityExtensionsEnabledEnvironment(project)
+        return cmd
+    }
+*/
+
     override fun createWorkerRunCmd(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): Promise<WorkerRunInfo> {
 
         val result = AsyncPromise<WorkerRunInfo>()
@@ -112,6 +157,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
         }
         return result
     }
+
 
     override fun getDebuggerOutputEventsListener(): IDebuggerOutputListener {
         return UnityDebuggerOutputListener(project, remoteConfiguration.address, "Unity Editor", true)
