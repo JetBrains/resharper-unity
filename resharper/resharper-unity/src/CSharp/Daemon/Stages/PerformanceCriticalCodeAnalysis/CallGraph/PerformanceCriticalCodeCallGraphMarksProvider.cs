@@ -1,9 +1,8 @@
 using JetBrains.Annotations;
-using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -19,6 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class PerformanceCriticalCodeCallGraphMarksProvider : CallGraphRootMarksProviderBase
     {
         public const string MarkId = "Unity.PerformanceCriticalContext";
+        public static readonly CallGraphRootMarksProviderId ProviderId = new CallGraphRootMarksProviderId(nameof(PerformanceCriticalCodeCallGraphMarksProvider));
 
         public PerformanceCriticalCodeCallGraphMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker, UnitySolutionTracker tracker)

@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             if (!IsBurstPermittedType(objectCreationExpression.Type()))
             {
-                consumer?.AddHighlighting(new BurstCreatingManagedTypeWarning(objectCreationExpression.GetDocumentRange(), (objectCreationExpression.ConstructorReference.Resolve().DeclaredElement as IConstructor)?.GetContainingType()?.ShortName));
+                consumer?.AddHighlighting(new BurstCreatingManagedTypeWarning(objectCreationExpression, (objectCreationExpression.ConstructorReference.Resolve().DeclaredElement as IConstructor)?.GetContainingType()?.ShortName));
                 return true;
             }
 

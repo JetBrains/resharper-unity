@@ -60,10 +60,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Enable analysis for Burst compiler issues")]
         public bool EnableBurstCodeHighlighting;
+        
+        [SettingsEntry(true, "Enable propagating Burst context through virtual calls")]
+        public bool EnableBurstVirtualPropagating;
 
         // UX for performance critical analysis
         [SettingsEntry(PerformanceHighlightingMode.CurrentMethod, "Highlighting mode for performance critical code")]
         public PerformanceHighlightingMode PerformanceHighlightingMode;
+        
+        // UX for burst code analysis
+        [SettingsEntry(BurstCodeHighlightingMode.CurrentMethod, "Highlighting mode for burst code")]
+        public BurstCodeHighlightingMode BurstCodeHighlightingMode;
+
+        [SettingsEntry(true, "Enables showing unity icon for burst code")]
+        public bool EnableIconsForBurstCode;
 
         [SettingsEntry(true, "Enables showing hot icon for frequently called code")]
         public bool EnableIconsForPerformanceCriticalCode;

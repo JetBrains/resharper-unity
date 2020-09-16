@@ -1,23 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.CSharp.Util;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
-using JetBrains.Util.DataStructures.Collections;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph
@@ -27,8 +22,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
 
-        public CallGraphBurstMarksProvider(Lifetime lifetime, ISolution solution,
-            UnityReferencesTracker referencesTracker,
+        public static CallGraphRootMarksProviderId ProviderId =
+            new CallGraphRootMarksProviderId(nameof(CallGraphBurstMarksProvider));
+
+        public CallGraphBurstMarksProvider(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
             UnitySolutionTracker tracker,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
             : base(nameof(CallGraphBurstMarksProvider),

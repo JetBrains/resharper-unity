@@ -1,8 +1,7 @@
-using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -13,11 +12,12 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
     [SolutionComponent]
-    public class ExpensiveCodeCallGraphAnalyzer : CallGraphRootMarksProviderBase
+    public class ExpensiveCodeCallGraphMarksProvider : CallGraphRootMarksProviderBase
     {
         public const string MarkId = "Unity.ExpensiveCode";
+        public static readonly CallGraphRootMarksProviderId ProviderId = new CallGraphRootMarksProviderId(MarkId);
 
-        public ExpensiveCodeCallGraphAnalyzer(Lifetime lifetime, ISolution solution,
+        public ExpensiveCodeCallGraphMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker,
             UnitySolutionTracker unitySolutionTracker)
             : base(MarkId, new CallGraphIncomingPropagator(solution, MarkId))
@@ -54,7 +54,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            return new LocalList<IDeclaredElement>();
+            var result = new LocalList<IDeclaredElement>();
+
+            return result;
         }
 
         private sealed class ExpensiveCodeProcessor : UnityCallGraphCodeProcessor

@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Burst
         [Test] public void AttributesTests() { DoNamedTest(); }
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file, IContextBoundSettingsStore settingsStore)
         {
-            return highlighting is BurstHighlighting;
+            return highlighting is IBurstHighlighting;
         }
     }    
 }    
