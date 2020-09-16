@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JetBrains.Application.Threading;
+using JetBrains.Application.UI.Components;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.DataFlow;
@@ -22,10 +23,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public readonly IProperty<UnityEditorState> State;
 
         public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol,
-            IThreading locks, UnitySolutionTracker unitySolutionTracker)
+            IThreading locks, UnitySolutionTracker unitySolutionTracker,
+            IIsApplicationActiveState isApplicationActiveState)
         {
-            State = new Property<UnityEditorState>(lifetime, "UnityEditorPlugin::ConnectionState", UnityEditorState.Disconnected);
-            
+            State = new Property<UnityEditorState>(lifetime, "UnityEditorPlugin::ConnectionState",
+                UnityEditorState.Disconnected);
+
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
                 return;
 
@@ -33,8 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 if (!args)
                     return;
-                
-                var action = new Action(() =>
+
+                var updateConnectionAction = new Action(() =>
                 {
                     var model = editorProtocol.UnityModel.Value;
                     if (model == null)
@@ -45,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         if (!model.IsBound)
                             State.SetValue(UnityEditorState.Disconnected);
-                        
+
                         var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
                         rdTask?.Result.Advise(lifetime, result =>
                         {
@@ -59,7 +62,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         {
                             if (rdTask != null && !rdTask.AsTask().IsCompleted)
                             {
-                                logger.Trace("There were no response from Unity in two seconds. Set connection state to Disconnected.");
+                                logger.Trace(
+                                    "There were no response from Unity in two seconds. Set connection state to Disconnected.");
                                 State.SetValue(UnityEditorState.Disconnected);
                             }
                         }, locks.Tasks.GuardedMainThreadScheduler);
@@ -69,28 +73,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
                 });
 
-                //using JetBrains.ReSharper.Resources.Shell.ShellLifetimes.StartMainUnguardedAsync instead of JetBrains.Application.Threading.IThreadingEx.QueueRecurring
-                //to check connection between backend and unity editor, when rdUnityModel.RiderFrontendTests is True
-                var nestedLifetimeDefinition = lifetime.CreateNested();
-                host.GetValue(rdUnityModel => rdUnityModel.RiderFrontendTests).WhenTrue(
-                    nestedLifetimeDefinition.Lifetime,
-                    _ =>
+                lifetime.StartMainUnguardedAsync(async () =>
+                {
+                    while (lifetime.IsAlive)
                     {
-                        lifetime.StartMainUnguardedAsync(async () =>
+                        if (isApplicationActiveState.IsApplicationActive.Value ||
+                            host.GetValue(rdUnityModel => rdUnityModel.RiderFrontendTests).HasTrueValue())
                         {
-                            while (lifetime.IsAlive)
-                            {
-                                action();
-                                await Task.Delay(1000, lifetime);
-                            }
-                        });
+                            updateConnectionAction();
+                        }
 
-                        nestedLifetimeDefinition.Terminate();
-                    });
-
-                //check connection between backend and unity editor
-                locks.QueueRecurring(lifetime, "PeriodicallyCheck",
-                    TimeSpan.FromSeconds(1), action);
+                        await Task.Delay(1000, lifetime);
+                    }
+                });
             });
         }
 
