@@ -3,7 +3,7 @@ import com.jetbrains.rider.plugins.gradle.buildServer.BuildServerKt
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
     id 'org.jetbrains.intellij' // Version comes from buildSrc
     id 'org.jetbrains.changelog' version '0.3.2'
     id 'com.jetbrains.rdgen' version '0.203.154'
