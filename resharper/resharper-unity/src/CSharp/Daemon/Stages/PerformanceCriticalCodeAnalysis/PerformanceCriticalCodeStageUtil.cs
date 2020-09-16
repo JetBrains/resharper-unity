@@ -12,22 +12,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 {
     internal static class PerformanceCriticalCodeStageUtil
     {
-        public static bool IsInvocationExpensive([NotNull] IInvocationExpression invocationExpression)
+        public static bool IsInvokedElementExpensive([CanBeNull] IMethod method)
         {
-            invocationExpression.GetPsiServices().Locks.AssertReadAccessAllowed();
-
-            var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
-            if (reference == null)
-                return false;
-
-            var declaredElement = reference.Resolve().DeclaredElement as IMethod;
-
-            var containingType = declaredElement?.GetContainingType();
+            var containingType = method?.GetContainingType();
+            
             if (containingType == null)
                 return false;
 
             ISet<string> knownCostlyMethods = null;
             var clrTypeName = containingType.GetClrName();
+            
             if (clrTypeName.Equals(KnownTypes.Component))
                 knownCostlyMethods = ourKnownComponentCostlyMethods;
 
@@ -49,12 +43,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (clrTypeName.Equals(KnownTypes.Debug))
                 knownCostlyMethods = ourKnownDebugCostlyMethods;
 
-            var shortName = declaredElement.ShortName;
+            var shortName = method.ShortName;
 
             if (knownCostlyMethods != null && knownCostlyMethods.Contains(shortName))
                 return true;
 
             return clrTypeName.Equals(KnownTypes.GameObject) && shortName.Equals("AddComponent");
+        }
+        public static bool IsInvocationExpensive([NotNull] IInvocationExpression invocationExpression)
+        {
+            invocationExpression.GetPsiServices().Locks.AssertReadAccessAllowed();
+
+            var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
+            
+            if (reference == null)
+                return false;
+
+            var declaredElement = reference.Resolve().DeclaredElement as IMethod;
+
+            return IsInvokedElementExpensive(declaredElement);
         }
 
         public static bool IsCameraMainUsage(IReferenceExpression referenceExpression)
@@ -150,7 +157,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public static bool IsPerformanceCriticalRootMethod(ITreeNode node)
         {
-
             if (!(node is ICSharpDeclaration declaration))
                 return false;
 

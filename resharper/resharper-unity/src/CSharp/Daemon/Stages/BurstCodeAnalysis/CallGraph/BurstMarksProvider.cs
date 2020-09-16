@@ -21,12 +21,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
 
+        public const string MarkId = "Unity.BurstContext";
+
         public BurstMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker,
             UnitySolutionTracker tracker,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
-            : base(nameof(BurstMarksProvider),
-                new BurstPropagator(solution, nameof(BurstMarksProvider)))
+            : base(MarkId, new BurstPropagator(solution, MarkId))
         {
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
@@ -71,10 +72,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     var staticMethods = typeElement.Methods.Where(method => method.IsStatic).ToList();
                     var staticMethodsWithAttribute = staticMethods.Where(method => method.HasAttributeInstance(
                         KnownTypes.BurstCompileAttribute, AttributesSource.Self)).ToList();
-                    
+
                     foreach (var burstMethod in staticMethodsWithAttribute)
                         result.Add(burstMethod);
-                    
+
                     break;
                 }
             }
@@ -86,28 +87,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
-            
+
             if (containingFunction == null)
                 return result;
-            
+
             var functionDeclaration = currentNode as IFunctionDeclaration;
             var function = functionDeclaration?.DeclaredElement;
-            
+
             if (function == null)
                 return result;
-            
+
             if (IsBurstContextBannedForFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
                 result.Add(function);
-            
+
             return result;
         }
 
         private bool CheckBurstBannedAnalyzers(IFunctionDeclaration node)
         {
             var processor = new BurstBannedProcessor(myBurstBannedAnalyzers, node);
-            
+
             node.ProcessDescendants(processor);
-            
+
             return processor.ProcessingIsFinished;
         }
 

@@ -23,5 +23,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             
             return settingManagerInstance;
         }
+
+        public IUnityProblemAnalyzerContextProvider GetContextProvider(IContextBoundSettingsStore settingsStore, UnityProblemAnalyzerContextElement contextElement)
+        {
+            var setting = mySettingsManager.GetSettingForContext(settingsStore, contextElement);
+            var contextProvider = myContextManager.GetContextProvider(setting);
+            
+            return contextProvider;
+        }
     }
 }

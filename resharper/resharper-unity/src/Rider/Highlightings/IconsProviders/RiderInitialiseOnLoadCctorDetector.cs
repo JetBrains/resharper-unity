@@ -1,11 +1,10 @@
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -21,25 +20,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
-        private readonly IElementIdProvider myProvider;
 
-        public RiderInitialiseOnLoadCctorDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeMarksProvider marksProvider, UnityCodeInsightFieldUsageProvider fieldUsageProvider,
+        public RiderInitialiseOnLoadCctorDetector(ISolution solution,  
+            SettingsStore settingsStore, UnityCodeInsightFieldUsageProvider fieldUsageProvider,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost, IElementIdProvider provider)
-            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, provider)
+            IconHost iconHost, UnityProblemAnalyzerContextSystem contextSystem)
+            : base(solution, settingsStore, contextSystem)
         {
             myFieldUsageProvider = fieldUsageProvider;
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
-            myProvider = provider;
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
             DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(CallGraphSwaExtensionProvider, Settings, MarksProvider, kind, myProvider)
+            var iconId = element.HasHotIcon(ContextSystem, Settings, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
             

@@ -211,8 +211,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return true;
         }
 
-        private static bool IsBurstDiscarded(IMethod method)
+        public static bool IsBurstDiscarded([CanBeNull] IMethod method)
         {
+            if (method == null)
+                return true;
+
             var attributes = method.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self);
 
             return attributes.Count != 0;

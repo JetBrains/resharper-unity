@@ -1,7 +1,8 @@
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
@@ -12,61 +13,77 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
         private readonly CallGraphRootMarksProviderBase myMarksProviderBase;
 
-        protected UnityProblemAnalyzerContextProviderBase(IElementIdProvider elementIdProvider, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+        protected UnityProblemAnalyzerContextProviderBase(IElementIdProvider elementIdProvider,
+            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             CallGraphRootMarksProviderBase marksProviderBase)
         {
             myElementIdProvider = elementIdProvider;
             myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             myMarksProviderBase = marksProviderBase;
         }
+
         public abstract UnityProblemAnalyzerContextElement Context { get; }
 
-        public UnityProblemAnalyzerContextElement CheckContext(ITreeNode node, DaemonProcessKind processKind)
+        public UnityProblemAnalyzerContextElement GetContext(ITreeNode node, DaemonProcessKind processKind)
         {
-            var declaration = node as ICSharpDeclaration;
-            
-            if (declaration == null)
+            if (node == null)
                 return UnityProblemAnalyzerContextElement.NONE;
 
-            var declaredElement = declaration.DeclaredElement;
-
-            if (declaredElement == null)
+            if (IsContextProhibitedFast(node))
                 return UnityProblemAnalyzerContextElement.NONE;
 
-            if (IsProhibitedFast(declaration))
-                return UnityProblemAnalyzerContextElement.NONE;
+            if (HasContextFast(node))
+                return Context;
 
-            var isRooted = IsRootFast(declaration);
-            var isGlobalStage = processKind == DaemonProcessKind.GLOBAL_WARNINGS;
+            IDeclaredElement declaredElement = null;
 
-            if (!isRooted && isGlobalStage)
-            {
-                var id = myElementIdProvider.GetElementId(declaredElement);
+            if (node is IDeclaration declaration)
+                declaredElement = declaration.DeclaredElement;
 
-                if (!id.HasValue)
-                    return UnityProblemAnalyzerContextElement.NONE;
-
-                isRooted = myCallGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                    myMarksProviderBase.Id, isGlobalStage: true, id.Value);
-            }
-
-            return isRooted ? Context : UnityProblemAnalyzerContextElement.NONE;
+            return IsMarkedInternal(declaredElement, processKind)
+                ? Context
+                : UnityProblemAnalyzerContextElement.NONE;
         }
 
-        /// <summary>
-        /// Make this method as fast as possible.
-        /// It is used at local stage to check if declaration is root mark.
-        /// </summary>
-        /// <param name="declaration"></param>
-        /// <returns></returns>
-        protected abstract bool IsRootFast(ICSharpDeclaration declaration);
-        
-        /// <summary>
-        /// Make this method as fast as possible.
-        /// It is used at local stage to check if declaration should not be analyzed at all.
-        /// </summary>
-        /// <param name="declaration"></param>
-        /// <returns></returns>
-        protected abstract bool IsProhibitedFast(ICSharpDeclaration declaration);
+        public bool IsMarked(IDeclaredElement declaredElement,
+            DaemonProcessKind processKind)
+        {
+            if (declaredElement == null)
+                return false;
+
+            if (IsMarkedFast(declaredElement))
+                return true;
+
+            if (IsBannedFast(declaredElement))
+                return false;
+            
+            return IsMarkedInternal(declaredElement, processKind);
+        }
+
+        private bool IsMarkedInternal(IDeclaredElement declaredElement, DaemonProcessKind processKind)
+        {
+            var isGlobalStage = processKind == DaemonProcessKind.GLOBAL_WARNINGS;
+
+            if (!isGlobalStage)
+                return false;
+
+            var id = myElementIdProvider.GetElementId(declaredElement);
+
+            if (!id.HasValue)
+                return false;
+
+            return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
+                myMarksProviderBase.Id, isGlobalStage: true, id.Value);
+        }
+
+        public virtual bool IsEnabled => true;
+
+        protected abstract bool HasContextFast([NotNull] ITreeNode treeNode);
+
+        protected abstract bool IsMarkedFast([NotNull] IDeclaredElement declaredElement);
+
+        protected abstract bool IsBannedFast([NotNull] IDeclaredElement declaredElement);
+
+        protected abstract bool IsContextProhibitedFast([NotNull] ITreeNode treeNode);
     }
 }

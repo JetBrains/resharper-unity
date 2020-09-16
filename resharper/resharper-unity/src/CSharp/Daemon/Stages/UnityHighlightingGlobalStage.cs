@@ -16,12 +16,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
     [DaemonStage(GlobalAnalysisStage = true, OverridenStages = new Type[] {typeof(UnityHighlightingStage)})]
     public class UnityHighlightingGlobalStage : UnityHighlightingAbstractStage
     {
-        public UnityHighlightingGlobalStage(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            PerformanceCriticalCodeMarksProvider performanceCriticalCodeMarksProvider,
+        public UnityHighlightingGlobalStage(PerformanceCriticalCodeMarksProvider performanceCriticalCodeMarksProvider,
             BurstMarksProvider burstMarksProvider,
             IEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
             IEnumerable<IUnityProblemAnalyzer> problemAnalyzers,
-            UnityApi api, UnityCommonIconProvider commonIconProvider, IElementIdProvider provider, ILogger logger, UnityProblemAnalyzerContextSystem contextSystem)
+            UnityApi api, UnityCommonIconProvider commonIconProvider, ILogger logger, UnityProblemAnalyzerContextSystem contextSystem)
             : base(highlightingProviders, problemAnalyzers, api, commonIconProvider, logger, contextSystem)
         {
         }

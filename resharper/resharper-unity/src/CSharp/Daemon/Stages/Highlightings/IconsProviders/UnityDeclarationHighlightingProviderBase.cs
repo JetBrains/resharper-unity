@@ -4,10 +4,8 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
@@ -16,19 +14,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public abstract class UnityDeclarationHighlightingProviderBase : IUnityDeclarationHighlightingProvider
     {
         protected readonly ISolution Solution;
-        protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtensionProvider;
-        protected readonly PerformanceCriticalCodeMarksProvider MarksProvider;
+        protected readonly UnityProblemAnalyzerContextSystem ContextSystem;
         protected readonly IContextBoundSettingsStore Settings;
-        private readonly IElementIdProvider myProvider;
-
-        public UnityDeclarationHighlightingProviderBase(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeMarksProvider marksProvider, IElementIdProvider provider)
+       
+        protected UnityDeclarationHighlightingProviderBase(ISolution solution, SettingsStore settingsStore, UnityProblemAnalyzerContextSystem contextSystem)
         {
             Solution = solution;
-            CallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
-            MarksProvider = marksProvider;
+            ContextSystem = contextSystem;
             Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
-            myProvider = provider;
         }
         
         public abstract bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
@@ -38,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             string tooltip, DaemonProcessKind kind)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
-            consumer.AddHotHighlighting(CallGraphSwaExtensionProvider, element, MarksProvider, Settings, text, tooltip, kind, GetActions(element), myProvider);
+            consumer.AddHotHighlighting(ContextSystem, Settings, element, text, tooltip, kind, GetActions(element));
         }
 
 

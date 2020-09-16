@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         protected readonly UnityApi API;
         private readonly UnityCommonIconProvider myCommonIconProvider;
         protected readonly ILogger Logger;
-        protected readonly UnityProblemAnalyzerContextSystem myContextSystem;
+        protected readonly UnityProblemAnalyzerContextSystem ContextSystem;
 
         protected UnityHighlightingAbstractStage(
             IEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
@@ -38,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             API = api;
             myCommonIconProvider = commonIconProvider;
             Logger = logger;
-            myContextSystem = contextSystem;
+            ContextSystem = contextSystem;
         }
 
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process,
@@ -50,14 +50,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
             return new UnityHighlightingProcess(process, file,
                 HighlightingProviders, ProblemAnalyzers,
-                API, myCommonIconProvider, myContextSystem.GetManagerInstance(settings), processKind, Logger);
+                API, myCommonIconProvider, ContextSystem.GetManagerInstance(settings), processKind, Logger);
         }
     }
 
     public class UnityHighlightingProcess : CSharpDaemonStageProcessBase
     {
-        private readonly IReadOnlyList<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
-        private readonly IReadOnlyList<IUnityProblemAnalyzer> myProblemAnalyzers;
+        private readonly List<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
+        private readonly List<IUnityProblemAnalyzer> myProblemAnalyzers;
         private readonly UnityApi myAPI;
         private readonly UnityCommonIconProvider myCommonIconProvider;
         private readonly UnityProblemAnalyzerContextManagerInstance myManagerInstance;

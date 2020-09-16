@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             foreach (var (key, value) in elementToList)
                 Assertion.Assert(value.Count == 1, $"{key} must have only 1 settings provider");
             
-            // Assertion.Assert(elementToList.Count == UnityProblemAnalyzerContextElementUtil.UnityProblemAnalyzerContextSize, "number of classifications must be equal to number of contexts");
+            Assertion.Assert(elementToList.Count == UnityProblemAnalyzerContextElementUtil.CONTEXTS_COUNT, "number of classifications must be equal to number of contexts");
             
         }
     }

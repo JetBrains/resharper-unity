@@ -1,13 +1,11 @@
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -28,12 +26,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly IconHost myIconHost;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public RiderFieldDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeMarksProvider marksProvider, UnityApi unityApi,
+        public RiderFieldDetector(ISolution solution, 
+            SettingsStore settingsStore, UnityApi unityApi,
             UnityCodeInsightFieldUsageProvider fieldUsageProvider, DeferredCacheController deferredCacheController,
             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost, AssetSerializationMode assetSerializationMode, IElementIdProvider provider)
-            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, unityApi, provider)
+            IconHost iconHost, AssetSerializationMode assetSerializationMode, UnityProblemAnalyzerContextSystem contextSystem)
+            : base(solution, settingsStore, contextSystem, unityApi)
         {
             myFieldUsageProvider = fieldUsageProvider;
             myDeferredCacheController = deferredCacheController;
