@@ -6,16 +6,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
     public sealed class UnityProblemAnalyzerContext
     {
-        private readonly UnityProblemAnalyzerContextElement myContext;
-        private readonly UnityProblemAnalyzerContext myPreviousContext;
-        private readonly ITreeNode myTreeNode;
+        public readonly UnityProblemAnalyzerContextElement Context;
+        public readonly UnityProblemAnalyzerContext PreviousContext;
+        public readonly ITreeNode ContextTreeNode;
 
         private UnityProblemAnalyzerContext(UnityProblemAnalyzerContextElement context,
             UnityProblemAnalyzerContext previousContext, ITreeNode node)
         {
-            myContext = context;
-            myPreviousContext = previousContext;
-            myTreeNode = node;
+            Context = context;
+            PreviousContext = previousContext;
+            ContextTreeNode = node;
         }
         public UnityProblemAnalyzerContext Chain(UnityProblemAnalyzerContextElement context, ITreeNode node)
         {
@@ -25,18 +25,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
         public UnityProblemAnalyzerContext Rollback([NotNull] ITreeNode node)
         {
             Assertion.AssertNotNull(node, "node != null");
-            return node == myTreeNode ? myPreviousContext : this;
+            return node == ContextTreeNode ? PreviousContext : this;
         }
 
         public bool IsSuperSetOf(UnityProblemAnalyzerContextElement subContext)
         {
             // this byte trick check if subContext is subset of myContext
-            return ((subContext & myContext) ^ subContext) == UnityProblemAnalyzerContextElement.NONE;
+            return ((subContext & Context) ^ subContext) == UnityProblemAnalyzerContextElement.NONE;
         }
         
         public bool ContainAny(UnityProblemAnalyzerContextElement prohibitedContext)
         {
-            return (myContext & prohibitedContext) != UnityProblemAnalyzerContextElement.NONE;
+            return (Context & prohibitedContext) != UnityProblemAnalyzerContextElement.NONE;
         }
 
         public static UnityProblemAnalyzerContext EMPTY_INSTANCE = new UnityProblemAnalyzerContext(UnityProblemAnalyzerContextElement.NONE, null, null);

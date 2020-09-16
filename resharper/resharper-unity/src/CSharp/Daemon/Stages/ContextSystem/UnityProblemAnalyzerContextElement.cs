@@ -14,5 +14,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
     public static class UnityProblemAnalyzerContextElementUtil
     {
         public const int CONTEXTS_COUNT = 2;
+
+        public const UnityProblemAnalyzerContextElement ALL = UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT |
+                                                              UnityProblemAnalyzerContextElement.BURST_CONTEXT;
     }
 }
