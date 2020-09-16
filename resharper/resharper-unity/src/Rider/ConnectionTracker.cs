@@ -62,8 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         {
                             if (rdTask != null && !rdTask.AsTask().IsCompleted)
                             {
-                                logger.Trace(
-                                    "There were no response from Unity in two seconds. Set connection state to Disconnected.");
+                                logger.Trace("There were no response from Unity in two seconds. Set connection state to Disconnected.");
                                 State.SetValue(UnityEditorState.Disconnected);
                             }
                         }, locks.Tasks.GuardedMainThreadScheduler);
