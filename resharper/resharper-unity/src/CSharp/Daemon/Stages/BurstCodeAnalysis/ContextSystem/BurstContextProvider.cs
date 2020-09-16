@@ -101,7 +101,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         protected override bool IsBannedFast(IDeclaredElement declaredElement) =>
-            IsBurstContextBannedForFunction(declaredElement as IFunction) ||
+            IsBurstContextBannedFunction(declaredElement as IFunction) ||
             IsBurstDiscarded(declaredElement as IMethod);
 
         protected override bool IsContextProhibitedFast(ITreeNode treeNode) => IsBurstContextBannedNode(treeNode);

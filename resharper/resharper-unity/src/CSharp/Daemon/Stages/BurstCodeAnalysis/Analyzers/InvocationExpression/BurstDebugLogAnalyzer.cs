@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             var argument = argumentList[0];
 
-            if (IsBurstPermittedString(argument.Expression?.Type()))
+            if (IsBurstPossibleArgumentString(argument.Expression?.Type()))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
 
             consumer?.AddHighlighting(new BurstDebugLogInvalidArgumentWarning(argument.Expression.GetDocumentRange()));

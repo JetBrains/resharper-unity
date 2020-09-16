@@ -97,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (function == null)
                 return result;
 
-            if (IsBurstContextBannedForFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
+            if (IsBurstContextBannedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
                 result.Add(function);
 
             return result;

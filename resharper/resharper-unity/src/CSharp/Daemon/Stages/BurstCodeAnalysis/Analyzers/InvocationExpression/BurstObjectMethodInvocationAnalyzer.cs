@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (invokedMethod == null)
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
 
-            if (!IsObjectMethodInvocation(invocationExpression))
+            if (!IsBurstProhibitedObjectMethodInvocation(invocationExpression))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
             
             consumer?.AddHighlighting(new BurstAccessingManagedMethodWarning(invocationExpression.GetDocumentRange(),

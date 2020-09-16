@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         {
                             var callee = CallGraphUtil.GetCallee(invocationExpression) as IMethod;
 
-                            if (BurstCodeAnalysisUtil.IsBurstPermittedString(cSharpArgument.GetExpressionType()
+                            if (BurstCodeAnalysisUtil.IsBurstPossibleArgumentString(cSharpArgument.GetExpressionType()
                                     .ToIType())
                                 && callee != null
                                 && (BurstCodeAnalysisUtil.IsDebugLog(callee) ||
