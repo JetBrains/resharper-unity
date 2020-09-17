@@ -9,7 +9,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56
   {
     static EntryPoint()
     {
-      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+      if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
       
       PluginEntryPoint.OnModelInitialization += UnitTesting.Initialization.OnModelInitializationHandler;

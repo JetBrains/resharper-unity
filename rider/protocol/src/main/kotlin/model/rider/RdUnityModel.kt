@@ -39,6 +39,18 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("requiresRiderPackage", bool)
     }
 
+    val RunMethodData = structdef{
+        field("assemblyName", string)
+        field("typeName", string)
+        field("methodName", string)
+    }
+
+    val RunMethodResult =  classdef{
+        field("success", bool)
+        field("message", string)
+        field("stackTrace", string)
+    }
+
     init {
         sink("activateRider", void)
         sink("activateUnityLogView", void)
@@ -49,6 +61,8 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         property("hideSolutionConfiguration", bool)
 
         property("unityApplicationData", UnityApplicationData)
+
+        call("runMethodInUnity", RunMethodData, RunMethodResult)
 
         property("editorLogPath", string)
         property("playerLogPath", string)
@@ -107,5 +121,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("backendSettings", aggregatedef("BackendSettings") {
             property("enableDebuggerExtensions", bool)
         })
+
+        property("riderFrontendTests", bool)
     }
 }

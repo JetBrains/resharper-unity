@@ -1,0 +1,24 @@
+-rootNode
+ -Total 22% 49/63
+  -Tests 100% 0/7
+   -Tests 100% 0/7
+    -NewTestScript 100% 0/7
+     NewTestScriptSimplePasses() 100% 0/3
+     -NewTestScriptWithEnumeratorPasses() 100% 0/4
+      MoveNext() 100% 0/4
+  -Editor 13% 45/52
+   -Editor 13% 45/52
+    -IntegrationTestHelper 13% 45/52
+     DumpExternalEditor() 100% 0/4
+     -WriteToLog() 30% 7/10
+      own coverage 100% 0/3
+      () 0% 7/7
+     -Start() 0% 18/18
+      (object,FileSystemEventArgs) 0% 7/7
+      own coverage 0% 11/11
+     ResetAndStart() 0% 4/4
+     Update() 0% 12/12
+     IntegrationTestHelper() 0% 4/4
+  -Assembly-CSharp 0% 4/4
+   -NewBehaviourScript 0% 4/4
+    Update() 0% 4/4
