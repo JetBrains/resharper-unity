@@ -1,5 +1,6 @@
 package unityExplorer
 
+import base.*
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.ProjectModelBaseTest
 import com.jetbrains.rider.test.scriptingApi.TemplateType

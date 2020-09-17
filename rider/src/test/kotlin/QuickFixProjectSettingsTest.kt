@@ -1,3 +1,5 @@
+import base.integrationTests.copyUnityDll
+import base.integrationTests.downloadUnityDll
 import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.base.RefactoringsTestBase
 import com.jetbrains.rider.test.framework.combine

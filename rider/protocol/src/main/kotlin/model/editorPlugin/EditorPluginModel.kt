@@ -125,6 +125,18 @@ object EditorPluginModel: Root() {
         field("applicationVersion", string)
     }
 
+    val RunMethodData = structdef{
+        field("assemblyName", string)
+        field("typeName", string)
+        field("methodName", string)
+    }
+
+    val RunMethodResult =  classdef{
+        field("success", bool)
+        field("message", string)
+        field("stackTrace", string)
+    }
+
     init {
         property("play", bool)
         property("pause", bool)
@@ -152,6 +164,8 @@ object EditorPluginModel: Root() {
 
         property("unitTestLaunch", UnitTestLaunch)
         call("runUnitTestLaunch", void, bool)
+
+        call("runMethodInUnity", RunMethodData, RunMethodResult)
 
         property("editorLogPath", string)
         property("playerLogPath", string)
