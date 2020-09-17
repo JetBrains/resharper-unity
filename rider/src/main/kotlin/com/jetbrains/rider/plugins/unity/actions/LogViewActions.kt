@@ -30,7 +30,7 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
             }
             else
             {
-                val groupId = NotificationGroup("Unity log open", NotificationDisplayType.BALLOON, true)
+                val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")
                 val title = "Could not open Unity Editor Log"
                 val message = "$f is not present."
                 val notification = Notification(groupId.displayId, title, message, NotificationType.INFORMATION)
@@ -64,7 +64,7 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
             }
             else
             {
-                val groupId = NotificationGroup("Unity log open", NotificationDisplayType.BALLOON, true)
+                val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity log open")
                 val title = "Could not open Unity Player Log"
                 val message = "$f is not present."
                 val notification = Notification(groupId.displayId, title, message, NotificationType.INFORMATION)

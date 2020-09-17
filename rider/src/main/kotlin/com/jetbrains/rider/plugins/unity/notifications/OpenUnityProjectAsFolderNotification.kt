@@ -29,7 +29,7 @@ import javax.swing.event.HyperlinkEvent
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
 
     companion object {
-        private val notificationGroupId = NotificationGroup("Unity project open", NotificationDisplayType.STICKY_BALLOON, true)
+        private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")
     }
 
     init {
