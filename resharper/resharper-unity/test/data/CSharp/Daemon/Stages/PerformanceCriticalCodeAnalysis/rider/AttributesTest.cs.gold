@@ -11,14 +11,14 @@ namespace DefaultNamespace
             |SecondMethod|(1)();
         }|(0)
 
-        |[PerformanceCharacteristicsHint]
+        |[ExpensiveMethod]
         private void SecondMethod()
         {
         }|(2)
     }
 }
 
-internal class PerformanceCharacteristicsHintAttribute : Attribute
+internal class ExpensiveMethodAttribute : Attribute
 {
 }
 
