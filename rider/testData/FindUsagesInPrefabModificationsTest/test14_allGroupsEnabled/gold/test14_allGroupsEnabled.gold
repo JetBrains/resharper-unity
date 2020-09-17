@@ -8,8 +8,10 @@ Found usages  (2 usages found)
                     MethodsContainer4  (1 usage found)
                         Test()  (1 usage found)
                             [504, Assets/MethodsContainer4.cs] (21: 13)  VoidHandler4_b_5();
-    Assets\Ex4  (1 usage found)
-        Ex4.unity  (1 usage found)
-            VariantRoot\VariantBranchA  (1 usage found)
-                Script4  (1 usage found)
-                    m_MethodName: VoidHandler4_b_5
+    Assets  (1 usage found)
+        Ex4  (1 usage found)
+            Ex4.unity  (1 usage found)
+                VariantRoot  (1 usage found)
+                    VariantBranchA  (1 usage found)
+                        Script4  (1 usage found)
+                            m_MethodName: VoidHandler4_b_5

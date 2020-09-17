@@ -9,6 +9,9 @@ Found usages  (2 usages found)
                         [244, Assets/NewBehaviourScript.cs] (10: 27)  gameObject.AddComponent<NewBehaviourScript>();
     Assets  (1 usage found)
         SampleScene.unity  (1 usage found)
-            Cube22\Sphere (2)\Sphere24\ABC  (1 usage found)
-                NewBehaviourScript  (1 usage found)
-                    Guid: 124b872fdaaf6434abe7e9e164195850
+            Cube22  (1 usage found)
+                Sphere (2)  (1 usage found)
+                    Sphere24  (1 usage found)
+                        ABC  (1 usage found)
+                            NewBehaviourScript  (1 usage found)
+                                Guid: 124b872fdaaf6434abe7e9e164195850
