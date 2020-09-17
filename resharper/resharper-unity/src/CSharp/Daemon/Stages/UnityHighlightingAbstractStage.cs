@@ -3,58 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
+using JetBrains.Collections;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Daemon.CallGraph;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
-using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
-using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph.UnityCallGraphUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 {
     public abstract class UnityHighlightingAbstractStage : CSharpDaemonStageBase
     {
-        private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
-        private readonly PerformanceCriticalCodeCallGraphMarksProvider myPerformanceCriticalCodeCallGraphMarksProvider;
-        private readonly CallGraphBurstMarksProvider myCallGraphBurstMarksProvider;
         protected readonly IEnumerable<IUnityDeclarationHighlightingProvider> HighlightingProviders;
-        protected readonly IEnumerable<IUnityProblemAnalyzer> PerformanceProblemAnalyzers;
+        protected readonly IEnumerable<IUnityProblemAnalyzer> ProblemAnalyzers;
         protected readonly UnityApi API;
         private readonly UnityCommonIconProvider myCommonIconProvider;
-        private readonly IElementIdProvider myProvider;
         protected readonly ILogger Logger;
+        protected readonly UnityProblemAnalyzerContextSystem ContextSystem;
 
-        protected UnityHighlightingAbstractStage(CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            PerformanceCriticalCodeCallGraphMarksProvider performanceCriticalCodeCallGraphMarksProvider,
-            CallGraphBurstMarksProvider callGraphBurstMarksProvider,
+        protected UnityHighlightingAbstractStage(
             IEnumerable<IUnityDeclarationHighlightingProvider> highlightingProviders,
-            IEnumerable<IUnityProblemAnalyzer> performanceProblemAnalyzers, UnityApi api,
-            UnityCommonIconProvider commonIconProvider, IElementIdProvider provider, ILogger logger)
+            IEnumerable<IUnityProblemAnalyzer> problemAnalyzers, UnityApi api,
+            UnityCommonIconProvider commonIconProvider, ILogger logger, UnityProblemAnalyzerContextSystem contextSystem)
         {
-            myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
-            myPerformanceCriticalCodeCallGraphMarksProvider = performanceCriticalCodeCallGraphMarksProvider;
-            myCallGraphBurstMarksProvider = callGraphBurstMarksProvider;
             HighlightingProviders = highlightingProviders;
-            PerformanceProblemAnalyzers = performanceProblemAnalyzers;
+            ProblemAnalyzers = problemAnalyzers;
             API = api;
             myCommonIconProvider = commonIconProvider;
-            myProvider = provider;
             Logger = logger;
+            ContextSystem = contextSystem;
         }
 
         protected override IDaemonStageProcess CreateProcess(IDaemonProcess process,
@@ -64,69 +48,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             if (!file.GetProject().IsUnityProject())
                 return null;
 
-            var isPerformanceAnalysisEnabled =
-                settings.GetValue((UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
-            var isBurstAnalysisEnabled = settings.GetValue((UnitySettings s) => s.EnableBurstCodeHighlighting);
-
-
-            return new UnityHighlightingProcess(process, file, myCallGraphSwaExtensionProvider,
-                myPerformanceCriticalCodeCallGraphMarksProvider, isPerformanceAnalysisEnabled,
-                myCallGraphBurstMarksProvider, isBurstAnalysisEnabled,
-                HighlightingProviders, PerformanceProblemAnalyzers,
-                API, myCommonIconProvider, processKind, myProvider, Logger);
+            return new UnityHighlightingProcess(process, file,
+                HighlightingProviders, ProblemAnalyzers,
+                API, myCommonIconProvider, ContextSystem.GetManagerInstance(settings), processKind, Logger);
         }
     }
 
     public class UnityHighlightingProcess : CSharpDaemonStageProcessBase
     {
-        private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
-        private readonly PerformanceCriticalCodeCallGraphMarksProvider myPerformanceCriticalCodeCallGraphMarksProvider;
-        private readonly bool myIsPerformanceAnalysisEnabled;
-        private readonly CallGraphBurstMarksProvider myCallGraphBurstMarksProvider;
-        private readonly bool myIsBurstAnalysisEnabled;
-        private readonly IEnumerable<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
-        private readonly IEnumerable<IUnityProblemAnalyzer> myPerformanceProblemAnalyzers;
+        private readonly List<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
+        private readonly List<IUnityProblemAnalyzer> myProblemAnalyzers;
         private readonly UnityApi myAPI;
         private readonly UnityCommonIconProvider myCommonIconProvider;
+        private readonly UnityProblemAnalyzerContextManagerInstance myManagerInstance;
         private readonly DaemonProcessKind myProcessKind;
-        private readonly IElementIdProvider myProvider;
         private readonly ILogger myLogger;
         private readonly ISet<IDeclaredElement> myMarkedDeclarations = new HashSet<IDeclaredElement>();
         private readonly JetHashSet<IMethod> myEventFunctions;
-        private readonly HashSet<IDeclaredElement> myCollectedBurstRootElements = new HashSet<IDeclaredElement>();
 
-        private readonly Dictionary<UnityProblemAnalyzerContext, List<IUnityProblemAnalyzer>>
+        private readonly Dictionary<UnityProblemAnalyzerContextElement, List<IUnityProblemAnalyzer>>
             myProblemAnalyzersByContext;
 
-        private readonly Stack<UnityProblemAnalyzerContext> myProblemAnalyzerContexts =
-            new Stack<UnityProblemAnalyzerContext>();
-
-        private readonly Stack<UnityProblemAnalyzerContext> myProhibitedContexts =
-            new Stack<UnityProblemAnalyzerContext>();
+        private UnityProblemAnalyzerContext myContext;
 
         public UnityHighlightingProcess([NotNull] IDaemonProcess process, [NotNull] ICSharpFile file,
-            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            PerformanceCriticalCodeCallGraphMarksProvider performanceCriticalCodeCallGraphMarksProvider,
-            bool isPerformanceAnalysisEnabled,
-            CallGraphBurstMarksProvider callGraphBurstMarksProvider, bool isBurstAnalysisEnabled,
             IEnumerable<IUnityDeclarationHighlightingProvider> declarationHighlightingProviders,
-            IEnumerable<IUnityProblemAnalyzer> performanceProblemAnalyzers, UnityApi api,
-            UnityCommonIconProvider commonIconProvider,
-            DaemonProcessKind processKind, IElementIdProvider provider,
-            ILogger logger)
+            IEnumerable<IUnityProblemAnalyzer> problemAnalyzers, UnityApi api,
+            UnityCommonIconProvider commonIconProvider, UnityProblemAnalyzerContextManagerInstance managerInstance,
+            DaemonProcessKind processKind, ILogger logger)
             : base(process, file)
         {
-            myCallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
-            myPerformanceCriticalCodeCallGraphMarksProvider = performanceCriticalCodeCallGraphMarksProvider;
-            myIsPerformanceAnalysisEnabled = isPerformanceAnalysisEnabled;
-            myCallGraphBurstMarksProvider = callGraphBurstMarksProvider;
-            myIsBurstAnalysisEnabled = isBurstAnalysisEnabled;
-            myDeclarationHighlightingProviders = declarationHighlightingProviders;
-            myPerformanceProblemAnalyzers = performanceProblemAnalyzers;
+            myDeclarationHighlightingProviders = declarationHighlightingProviders.ToList();
+            myProblemAnalyzers = problemAnalyzers.ToList();
             myAPI = api;
+            myContext = UnityProblemAnalyzerContext.EMPTY_INSTANCE;
             myCommonIconProvider = commonIconProvider;
+            myManagerInstance = managerInstance;
             myProcessKind = processKind;
-            myProvider = provider;
             myLogger = logger;
 
             myEventFunctions = DaemonProcess.CustomData.GetData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey)
@@ -134,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
             DaemonProcess.CustomData.PutData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey, myEventFunctions);
 
-            myProblemAnalyzersByContext = myPerformanceProblemAnalyzers.GroupBy(t => t.Context)
+            myProblemAnalyzersByContext = myProblemAnalyzers.GroupBy(t => t.Context)
                 .ToDictionary(t => t.Key, t => t.ToList());
         }
 
@@ -142,11 +100,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
         {
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
                 DaemonProcess.ContextBoundSettingsStore);
+
             File.ProcessThisAndDescendants(this, highlightingConsumer);
 
             foreach (var declaration in File.Descendants<ICSharpFunctionDeclaration>())
             {
                 var declaredElement = declaration.DeclaredElement;
+
                 if (declaredElement == null)
                     continue;
 
@@ -154,6 +114,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
                 {
                     var method = (declaredElement as IMethod).NotNull("method != null");
                     var eventFunction = myAPI.GetUnityEventFunction(method);
+
                     if (eventFunction == null) // happens after event function refactoring 
                         continue;
 
@@ -174,49 +135,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
-        private UnityProblemAnalyzerContext GetProblemAnalyzerContext(ITreeNode element)
-        {
-            var res = new UnityProblemAnalyzerContext();
-            if (myIsPerformanceAnalysisEnabled && IsPerformanceCriticalScope(element))
-                res |= UnityProblemAnalyzerContext.PERFORMANCE_CONTEXT;
-            if (myIsBurstAnalysisEnabled && IsBurstScope(element))
-                res |= UnityProblemAnalyzerContext.BURST_CONTEXT;
-            return res;
-        }
-
-        private UnityProblemAnalyzerContext GetProhibitedContexts(ITreeNode node)
-        {
-            var context = UnityProblemAnalyzerContext.NONE;
-            if (IsBurstContextBannedNode(node))
-                context |= UnityProblemAnalyzerContext.BURST_CONTEXT;
-            return context;
-        }
-
-        private void CollectRootElements(ITreeNode node)
-        {
-            if (!myIsBurstAnalysisEnabled)
-                return;
-            var roots = myCallGraphBurstMarksProvider.GetRootMarksFromNode(node, null);
-            foreach (var element in roots)
-                myCollectedBurstRootElements.Add(element);
-        }
-
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
-            CollectRootElements(element);
-            // prohibiting context always has higher priority than creating, and they does not affect each other
-            if (IsFunctionNode(element))
-                myProblemAnalyzerContexts.Push(GetProblemAnalyzerContext(element));
-            if (IsBurstContextBannedNode(element))
-                myProhibitedContexts.Push(GetProhibitedContexts(element));
+            myContext = myManagerInstance.CreateContext(myContext, element, myProcessKind);
 
             if (element is ICSharpDeclaration declaration)
             {
-                foreach (var unityDeclarationHiglightingProvider in myDeclarationHighlightingProviders)
+                foreach (var unityDeclarationHighlightingProvider in myDeclarationHighlightingProviders)
                 {
                     var result =
-                        unityDeclarationHiglightingProvider.AddDeclarationHighlighting(declaration, consumer,
+                        unityDeclarationHighlightingProvider.AddDeclarationHighlighting(declaration, consumer,
                             myProcessKind);
+
                     if (result)
                         myMarkedDeclarations.Add(
                             declaration.DeclaredElement.NotNull("declaration.DeclaredElement != null"));
@@ -225,24 +155,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
 
             try
             {
-                if (myProblemAnalyzerContexts.Count > 0)
+                foreach (var (problemAnalyzerContext, problemAnalyzers) in myProblemAnalyzersByContext)
                 {
-                    const byte end = UnityProblemAnalyzerContextUtil.UnityProblemAnalyzerContextSize;
-                    var possibleContexts = myProblemAnalyzerContexts.Peek();
-                    var prohibitedContexts = UnityProblemAnalyzerContext.NONE;
-                    if (myProhibitedContexts.Count > 0)
-                        prohibitedContexts = myProhibitedContexts.Peek();
-                    for (byte context = 1, index = 0; index < end; index++, context <<= 1)
+                    if (!myContext.IsSuperSetOf(problemAnalyzerContext))
+                        continue;
+
+                    foreach (var problemAnalyzer in problemAnalyzers)
                     {
-                        var enumContext = (UnityProblemAnalyzerContext) context;
-                        if (possibleContexts.HasFlag(enumContext) && !prohibitedContexts.HasFlag(enumContext))
-                        {
-                            foreach (var unityProblemAnalyzer in myProblemAnalyzersByContext[enumContext])
-                            {
-                                unityProblemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind,
-                                    consumer);
-                            }
-                        }
+                        if(myContext.ContainAny(problemAnalyzer.ProhibitedContext))
+                            continue;
+                        
+                        problemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer);
                     }
                 }
             }
@@ -252,62 +175,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages
             }
             catch (Exception exception)
             {
-                myLogger.Error(exception, "An exception occured during performance problem analyzer execution");
+                myLogger.Error(exception, "An exception occured during call graph problem analyzer execution");
             }
         }
 
         public override void ProcessAfterInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
             base.ProcessAfterInterior(element, consumer);
-            if (IsFunctionNode(element))
-            {
-                Assertion.Assert(myProblemAnalyzerContexts.Count > 0, "myProblemAnalyzerContexts.Count > 0");
-                myProblemAnalyzerContexts.Pop();
-            }
 
-            if (IsBurstContextBannedNode(element))
-            {
-                Assertion.Assert(myProhibitedContexts.Count > 0, "myProhibitedContexts.Count > 0");
-                myProhibitedContexts.Pop();
-            }
-        }
-
-        private bool IsPerformanceCriticalScope(ITreeNode element)
-        {
-            return IsRootDeclaration(element,
-                PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod,
-                myPerformanceCriticalCodeCallGraphMarksProvider.Id);
-        }
-
-        private bool IsBurstScope(ITreeNode element)
-        {
-            return IsRootDeclaration(element,
-                declaration => myCollectedBurstRootElements.Contains(declaration.DeclaredElement),
-                myCallGraphBurstMarksProvider.Id);
-        }
-
-        private bool IsRootDeclaration(ITreeNode node, 
-            Func<ICSharpDeclaration, bool> isRootedPredicate, 
-            CallGraphRootMarksProviderId rootMarksProviderId)
-        {
-            if (!(node is ICSharpDeclaration declaration))
-                return false;
-            var declaredElement = declaration.DeclaredElement;
-            if (declaredElement == null)
-                return false;
-            var isRooted = isRootedPredicate(declaration);
-            var isGlobalStage = myProcessKind == DaemonProcessKind.GLOBAL_WARNINGS;
-            
-            if (!isRooted && isGlobalStage)
-            {
-                var id = myProvider.GetElementId(declaredElement);
-                if (!id.HasValue)
-                    return false;
-                return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                    rootMarksProviderId, isGlobalStage: true, id.Value);
-            }
-
-            return isRooted;
+            myContext = myContext.Rollback(element);
         }
     }
 }

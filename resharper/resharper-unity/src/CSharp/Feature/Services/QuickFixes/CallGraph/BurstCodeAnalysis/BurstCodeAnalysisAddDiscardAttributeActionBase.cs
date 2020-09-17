@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var declaredElement = MethodDeclaration?.DeclaredElement;
 
             return MethodDeclaration != null && MethodDeclaration.IsValid() &&
-                   declaredElement != null && !BurstCodeAnalysisUtil.IsBurstContextBannedForFunction(declaredElement) &&
+                   declaredElement != null && !BurstCodeAnalysisUtil.IsBurstContextBannedFunction(declaredElement) &&
                    !declaredElement.HasAttributeInstance(ProtagonistAttribute, AttributesSource.Self);
         }
     }

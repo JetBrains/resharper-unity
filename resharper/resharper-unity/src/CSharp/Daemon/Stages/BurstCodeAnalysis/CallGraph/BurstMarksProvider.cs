@@ -18,18 +18,18 @@ using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAna
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph
 {
     [SolutionComponent]
-    public class CallGraphBurstMarksProvider : CallGraphRootMarksProviderBase
+    public class BurstMarksProvider : CallGraphRootMarksProviderBase
     {
         private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
 
-        public static CallGraphRootMarksProviderId ProviderId =
-            new CallGraphRootMarksProviderId(nameof(CallGraphBurstMarksProvider));
+        public const string MarkId = "Unity.BurstContext";
+        public static CallGraphRootMarksProviderId ProviderId = new CallGraphRootMarksProviderId(MarkId);
 
-        public CallGraphBurstMarksProvider(Lifetime lifetime, ISolution solution, UnityReferencesTracker referencesTracker,
+        public BurstMarksProvider(Lifetime lifetime, ISolution solution,
+            UnityReferencesTracker referencesTracker,
             UnitySolutionTracker tracker,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
-            : base(nameof(CallGraphBurstMarksProvider),
-                new CallGraphBurstPropagator(solution, nameof(CallGraphBurstMarksProvider)))
+            : base(MarkId, new BurstPropagator(solution, MarkId))
         {
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
@@ -42,58 +42,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var result = new HashSet<IDeclaredElement>();
             switch (currentNode)
             {
-                case IStructDeclaration structDeclaration
-                    when structDeclaration.DeclaredElement is IStruct @struct &&
-                         @struct.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self):
+                case IClassLikeDeclaration classLikeDeclaration
+                    when classLikeDeclaration.DeclaredElement is ITypeElement typeElement &&
+                         typeElement.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self):
                 {
-                    var superTypes = @struct.GetAllSuperTypes();
-                    var interfaces = superTypes
-                        .Where(declaredType => declaredType.IsInterfaceType())
-                        .Select(declaredType => declaredType.GetTypeElement())
-                        .WhereNotNull()
-                        .Where(typeElement =>
-                            typeElement.HasAttributeInstance(KnownTypes.JobProducerAttrubyte, AttributesSource.Self))
-                        .ToList();
-                    var structMethods = @struct.Methods.ToList();
-
-                    foreach (var @interface in interfaces)
+                    if (typeElement is IStruct @struct)
                     {
-                        var interfaceMethods = @interface.Methods.ToList();
-                        var overridenMethods = structMethods
-                            .Where(m => interfaceMethods.Any(m.OverridesOrImplements))
+                        var superTypes = @struct.GetAllSuperTypes();
+                        var interfaces = superTypes
+                            .Where(declaredType => declaredType.IsInterfaceType())
+                            .Select(declaredType => declaredType.GetTypeElement())
+                            .WhereNotNull()
+                            .Where(currentTypeElement =>
+                                currentTypeElement.HasAttributeInstance(KnownTypes.JobProducerAttribute,
+                                    AttributesSource.Self))
                             .ToList();
+                        var structMethods = @struct.Methods.ToList();
 
-                        foreach (var overridenMethod in overridenMethods)
-                            result.Add(overridenMethod);
-                    }
-
-                    break;
-                }
-                case IInvocationExpression invocationExpression:
-                {
-                    if (!(CallGraphUtil.GetCallee(invocationExpression) is IMethod method))
-                        break;
-                    var containingType = method.GetContainingType();
-                    if (containingType == null)
-                        break;
-                    if (method.Parameters.Count == 1 &&
-                        method.TypeParameters.Count == 1 &&
-                        method.ShortName == "CompileFunctionPointer" &&
-                        containingType.GetClrName().Equals(KnownTypes.BurstCompiler))
-                    {
-                        var argumentList = invocationExpression.ArgumentList.Arguments;
-                        if (argumentList.Count != 1)
-                            break;
-                        var argument = argumentList[0].Value;
-                        if (argument == null)
-                            break;
-                        var possibleDeclaredElements = CallGraphUtil.ExtractCallGraphDeclaredElements(argument);
-                        foreach (var declaredElement in possibleDeclaredElements)
+                        foreach (var @interface in interfaces)
                         {
-                            if (declaredElement != null)
-                                result.Add(declaredElement);
+                            var interfaceMethods = @interface.Methods.ToList();
+                            var overridenMethods = structMethods
+                                .Where(m => interfaceMethods.Any(m.OverridesOrImplements))
+                                .ToList();
+
+                            foreach (var overridenMethod in overridenMethods)
+                                result.Add(overridenMethod);
                         }
                     }
+
+                    var staticMethods = typeElement.Methods.Where(method => method.IsStatic).ToList();
+                    var staticMethodsWithAttribute = staticMethods.Where(method => method.HasAttributeInstance(
+                        KnownTypes.BurstCompileAttribute, AttributesSource.Self)).ToList();
+
+                    foreach (var burstMethod in staticMethodsWithAttribute)
+                        result.Add(burstMethod);
 
                     break;
                 }
@@ -106,21 +89,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             IDeclaredElement containingFunction)
         {
             var result = new LocalList<IDeclaredElement>();
+
             if (containingFunction == null)
                 return result;
+
             var functionDeclaration = currentNode as IFunctionDeclaration;
             var function = functionDeclaration?.DeclaredElement;
+
             if (function == null)
                 return result;
-            if (IsBurstContextBannedForFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
+
+            if (IsBurstContextBannedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
                 result.Add(function);
+
             return result;
         }
 
         private bool CheckBurstBannedAnalyzers(IFunctionDeclaration node)
         {
             var processor = new BurstBannedProcessor(myBurstBannedAnalyzers, node);
+
             node.ProcessDescendants(processor);
+
             return processor.ProcessingIsFinished;
         }
 

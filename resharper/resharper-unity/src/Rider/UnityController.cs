@@ -28,7 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityVersion myUnityVersion;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
-        private readonly UnityApi myUnityApi;
         private readonly RdUnityModel myRdUnityModel;
 
         private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");

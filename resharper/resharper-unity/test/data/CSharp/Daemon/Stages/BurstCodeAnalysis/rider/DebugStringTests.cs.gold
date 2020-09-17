@@ -206,7 +206,7 @@ namespace DebugStringTests
 (4): ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
 (5): ReSharper Warning: Burst: Loading a managed string is not supported
 (6): ReSharper Warning: Burst: Loading a managed string is not supported
-(7): ReSharper Warning: Burst: Loading from a non-readonly static field 'DebugStringTests.toFormat' is not supported
+(7): ReSharper Warning: Burst: Loading managed type 'String' is not supported
 (8): ReSharper Warning: Burst: Debug logging functions accepts only strings
 (9): ReSharper Warning: Burst: Loading a managed string is not supported
 (10): ReSharper Warning: Burst: Loading a managed string is not supported

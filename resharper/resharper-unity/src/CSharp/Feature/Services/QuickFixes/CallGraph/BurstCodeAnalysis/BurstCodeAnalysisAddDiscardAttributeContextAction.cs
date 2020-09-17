@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         {
             var method = MethodDeclaration?.DeclaredElement;
             // burst discard - always no if it is already discarded.
-            if(BurstCodeAnalysisUtil.IsBurstContextBannedForFunction(method))
+            if(BurstCodeAnalysisUtil.IsBurstContextBannedFunction(method))
                 yield break;
             var solution = myDataProvider.Solution;
             var swea = solution.GetComponent<SolutionAnalysisService>();
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var elementIdProvider = solution.GetComponent<IElementIdProvider>();
             var methodId = elementIdProvider.GetElementId(method);
             var isBurstContext = methodId.HasValue && callGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                CallGraphBurstMarksProvider.ProviderId, isGlobalStage, methodId.Value);
+                BurstMarksProvider.ProviderId, isGlobalStage, methodId.Value);
             if (isBurstContext)
                 yield return this.ToContextActionIntention();
         }

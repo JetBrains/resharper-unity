@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                     return;
                 var isGlobalStage = swa.Configuration?.Completed?.Value == true;
                 var callGraphExtension = solution.GetComponent<CallGraphSwaExtensionProvider>();
-                var callGraphAnalyzer = solution.GetComponent<CallGraphBurstMarksProvider>();
+                var callGraphAnalyzer = solution.GetComponent<BurstMarksProvider>();
                 var elementIdProvider = solution.GetComponent<IElementIdProvider>();
                 var usageChecker = swa.UsageChecker;
                 if (usageChecker == null)

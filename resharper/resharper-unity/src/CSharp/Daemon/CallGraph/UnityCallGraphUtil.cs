@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
 {
-    public class UnityCallGraphUtil
+    public static class UnityCallGraphUtil
     {
         public static bool IsFunctionNode(ITreeNode node)
         {

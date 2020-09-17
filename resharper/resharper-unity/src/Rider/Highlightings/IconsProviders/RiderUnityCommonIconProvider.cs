@@ -3,14 +3,12 @@ using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -31,13 +29,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
-        private readonly IElementIdProvider myProvider;
         private readonly ITextControlManager myTextControlManager;
 
-        public RiderUnityCommonIconProvider(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi api, UnityCodeInsightProvider codeInsightProvider,
-            UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker, IconHost iconHost, IElementIdProvider provider)
-            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, api, provider)
+        public RiderUnityCommonIconProvider(ISolution solution, SettingsStore settingsStore, UnityApi api, UnityCodeInsightProvider codeInsightProvider,
+            UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker, IconHost iconHost, UnityProblemAnalyzerContextSystem contextSystem)
+            : base(solution, settingsStore, api, contextSystem)
         {
             mySolution = solution;
             myTextControlManager = mySolution.GetComponent<ITextControlManager>();
@@ -45,13 +41,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
-            myProvider = provider;
         }
 
         public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method, UnityEventFunction eventFunction,
             string text,DaemonProcessKind kind)
         {
-            var iconId = method.HasHotIcon(CallGraphSwaExtensionProvider, Settings, MarksProvider, kind, myProvider)
+            var iconId = method.HasHotIcon(ContextSystem, Settings, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
             
@@ -77,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         public override void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, string text,
             string tooltip, DaemonProcessKind kind)
         {
-            var isHot = declaration.HasHotIcon(CallGraphSwaExtensionProvider, Settings, MarksProvider, kind, myProvider);
+            var isHot = declaration.HasHotIcon(ContextSystem, Settings, kind);
             if (!isHot)
                 return;
             

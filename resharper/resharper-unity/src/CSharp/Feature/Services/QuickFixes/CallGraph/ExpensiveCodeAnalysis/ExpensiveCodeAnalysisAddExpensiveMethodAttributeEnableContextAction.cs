@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var elementIdProvider = solution.GetComponent<IElementIdProvider>();
             var methodId = elementIdProvider.GetElementId(method);
             var isExpensiveContext = methodId.HasValue && callGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                ExpensiveCodeCallGraphMarksProvider.ProviderId, isGlobalStage, methodId.Value);
+                ExpensiveCodeMarksProvider.ProviderId, isGlobalStage, methodId.Value);
             if (isExpensiveContext)
                 yield return this.ToContextActionIntention();
         }
