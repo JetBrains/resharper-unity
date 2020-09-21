@@ -1,4 +1,4 @@
-﻿# 813 ITEMS #
+﻿# 814 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -93,6 +93,7 @@ private
 protected
 public
 readonly
+record
 ref
 sbyte
 sealed
@@ -814,7 +815,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 813 ITEMS #
+# 814 ITEMS #
 
 + private Awake() { ... }
 private FixedUpdate() { ... }
@@ -909,6 +910,7 @@ private
 protected
 public
 readonly
+record
 ref
 sbyte
 sealed
