@@ -7,6 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         // System
         public static readonly IClrTypeName SystemVersion = new ClrTypeName("System.Version");
+        public static readonly IClrTypeName PublicApiAttribute = new ClrTypeName("JetBrains.Annotations.PublicAPIAttribute");
 
         // UnityEngine
         public static readonly IClrTypeName AddComponentMenu = new ClrTypeName("UnityEngine.AddComponentMenu");

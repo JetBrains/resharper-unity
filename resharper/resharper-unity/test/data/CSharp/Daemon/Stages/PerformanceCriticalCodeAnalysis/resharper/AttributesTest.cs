@@ -1,27 +1,33 @@
 using System;
 using UnityEngine;
+using JetBrains.Annotations;
 
 namespace DefaultNamespace
 {
-    public class AttributesNames : MonoBehaviour
+    public class AttributesNamesTest : MonoBehaviour
     {
-        [FrequentlyCalledMethod]
-        private void FirstMethod()
+        private void LateUpdate()
         {
             SecondMethod();
         }
 
-        [ExpensiveMethod]
+        [PublicAPI("Expensive method")]
         private void SecondMethod()
         {
         }
     }
 }
 
-internal class ExpensiveMethodAttribute : Attribute
+namespace JetBrains.Annotations
 {
-}
+  public sealed class PublicAPIAttribute : Attribute
+  {
+    public PublicAPIAttribute()
+    {
+    }
 
-internal class FrequentlyCalledMethodAttribute : Attribute
-{
+    public PublicAPIAttribute(string comment) => this.Comment = comment;
+
+    public string Comment { get; }
+  }
 }

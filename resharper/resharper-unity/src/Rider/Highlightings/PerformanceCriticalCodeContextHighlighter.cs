@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             var contextProvider =
                 contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT);
 
-            if (!contextProvider.IsEnabled) 
+            if (!contextProvider.IsProblemContextBound) 
                 return;
 
             if (settingsStore.GetValue((UnitySettings key) => key.PerformanceHighlightingMode) !=

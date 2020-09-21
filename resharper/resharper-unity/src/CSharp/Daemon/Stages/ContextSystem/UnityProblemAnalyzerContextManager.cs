@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
         {
             myEmptyUnityProblemAnalyzerContextProvider = emptyUnityProblemAnalyzerContextProvider;
             myContextChangers = contextChangers.ToList();
-            myProviders = providers.Where(provider => provider.IsEnabled).ToList();
+            myProviders = providers.Where(provider => provider.IsProblemContextBound).ToList();
 
             myProviders.AssertClassifications();
         }

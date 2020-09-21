@@ -18,11 +18,11 @@ using JetBrains.ReSharper.Psi.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
 {
     [QuickFix]
-    public sealed class BurstCodeAnalysisAddDiscardAttributeQuickFix : BurstCodeAnalysisAddDiscardAttributeActionBase
+    public sealed class AddDiscardAttributeQuickFix : AddDiscardAttributeActionBase
     {
-        public BurstCodeAnalysisAddDiscardAttributeQuickFix(IBurstHighlighting burstHighlighting)
+        public AddDiscardAttributeQuickFix(IBurstHighlighting burstHighlighting)
         {
-            //CGTD copy from DisableBySuppress
+            //copied from DisableBySuppress
             if (burstHighlighting == null)
                 return;
 
@@ -65,6 +65,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         }
 
         protected override IMethodDeclaration MethodDeclaration { get; }
-        public override IEnumerable<IntentionAction> CreateBulbItems() => this.ToContextActionIntentions(IntentionsAnchors.ContextActionsAnchor, BulbThemedIcons.YellowBulb.Id);
+
+        public override IEnumerable<IntentionAction> CreateBulbItems() =>
+            this.ToContextActionIntentions(IntentionsAnchors.ContextActionsAnchor, BulbThemedIcons.YellowBulb.Id);
     }
 }

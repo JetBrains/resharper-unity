@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
         }
 
-        public override bool IsEnabled => false;
+        public override bool IsProblemContextBound => false;
 
         public override UnityProblemAnalyzerContextElement Context =>
             UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT;

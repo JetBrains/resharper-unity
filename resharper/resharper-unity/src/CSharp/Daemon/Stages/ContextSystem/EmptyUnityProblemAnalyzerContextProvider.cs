@@ -11,6 +11,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
         public UnityProblemAnalyzerContextElement Context => UnityProblemAnalyzerContextElement.NONE;
         public UnityProblemAnalyzerContextElement GetContext(ITreeNode node, DaemonProcessKind processKind, bool getCallee) => Context;
         public bool IsMarked(IDeclaredElement node, DaemonProcessKind processKind) => false;
-        public bool IsEnabled => false;
+        public bool IsProblemContextBound => false;
     }
 }

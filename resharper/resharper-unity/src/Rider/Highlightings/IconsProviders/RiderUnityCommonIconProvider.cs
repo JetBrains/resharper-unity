@@ -89,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     if (declaration is IMethodDeclaration methodDeclaration)
                     {
-                        var bulbAction = new ExpensiveCodeAnalysisAddExpensiveMethodAttributeBulbAction(methodDeclaration);
+                        var bulbAction = new AddExpensiveMethodAttributeBulbAction(methodDeclaration);
                         var textControl = myTextControlManager.LastFocusedTextControl.Value;
                         var result = FixedList.Of(new BulbMenuItem(
                             new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl), bulbAction.Text,

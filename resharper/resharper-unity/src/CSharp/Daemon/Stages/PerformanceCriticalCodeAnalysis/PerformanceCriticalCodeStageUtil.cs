@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -15,13 +16,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public static bool IsInvokedElementExpensive([CanBeNull] IMethod method)
         {
             var containingType = method?.GetContainingType();
-            
+
             if (containingType == null)
                 return false;
 
             ISet<string> knownCostlyMethods = null;
             var clrTypeName = containingType.GetClrName();
-            
+
             if (clrTypeName.Equals(KnownTypes.Component))
                 knownCostlyMethods = ourKnownComponentCostlyMethods;
 
@@ -50,12 +51,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             return clrTypeName.Equals(KnownTypes.GameObject) && shortName.Equals("AddComponent");
         }
+
         public static bool IsInvocationExpensive([NotNull] IInvocationExpression invocationExpression)
         {
             invocationExpression.GetPsiServices().Locks.AssertReadAccessAllowed();
 
             var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
-            
+
             if (reference == null)
                 return false;
 
@@ -141,41 +143,41 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public static bool HasPerformanceSensitiveAttribute(IAttributesOwner attributesOwner)
         {
-            return HasSpecificAttribute(attributesOwner, "ExpensiveMethodAttribute");
+            var instance = attributesOwner.GetAttributeInstances(KnownTypes.PublicApiAttribute, AttributesSource.Self)
+                .FirstOrDefault();
+
+            if (instance == null || instance.PositionParameterCount != 1)
+                return false;
+
+            var positionParameter = instance.PositionParameter(0);
+
+            return IsExpensiveMethod(positionParameter);
         }
 
-        public static bool HasFrequentlyCalledMethodAttribute(IAttributesOwner attributesOwner)
+        private static bool IsExpensiveMethod(AttributeValue positionParameter)
         {
-            return HasSpecificAttribute(attributesOwner, "FrequentlyCalledMethodAttribute");
+            return positionParameter.IsConstant && positionParameter.ConstantValue.IsString() &&
+                   (string) positionParameter.ConstantValue.Value == "Expensive method";
         }
 
-        public static bool HasSpecificAttribute(IAttributesOwner attributesOwner, string name)
+        public static bool IsPerformanceCriticalRootMethod([CanBeNull] ITreeNode node)
         {
-            return attributesOwner.GetAttributeInstances(true)
-                .Any(t => t.GetClrName().ShortName.Equals(name));
+            if (node == null)
+                return false;
+            
+            var typeMemberDeclaration = node as ITypeMemberDeclaration;
+            return IsPerformanceCriticalRootMethod(typeMemberDeclaration?.DeclaredElement);
         }
 
-        public static bool IsPerformanceCriticalRootMethod(ITreeNode node)
+        public static bool IsPerformanceCriticalRootMethod([CanBeNull] IDeclaredElement declaredElement)
         {
-            if (!(node is ICSharpDeclaration declaration))
+            var typeMember = declaredElement as ITypeMember;
+            var typeElement = typeMember?.GetContainingType();
+
+            if (typeElement?.DerivesFromMonoBehaviour() == false)
                 return false;
 
-            // TODO: 20.1, support lambda
-            if (declaration.DeclaredElement is IAttributesOwner attributesOwner && HasFrequentlyCalledMethodAttribute(attributesOwner))
-                return true;
-
-            if (!(declaration is ITypeMemberDeclaration typeMemberDeclaration))
-                return false;
-
-            var typeElement = typeMemberDeclaration.DeclaredElement?.GetContainingType();
-
-            if (typeElement == null)
-                return false;
-
-            if (!typeElement.DerivesFromMonoBehaviour())
-                return false;
-
-            if (declaration.DeclaredElement is IClrDeclaredElement clrDeclaredElement)
+            if (typeMember is IClrDeclaredElement clrDeclaredElement)
                 return ourKnownHotMonoBehaviourMethods.Contains(clrDeclaredElement.ShortName);
 
             return false;

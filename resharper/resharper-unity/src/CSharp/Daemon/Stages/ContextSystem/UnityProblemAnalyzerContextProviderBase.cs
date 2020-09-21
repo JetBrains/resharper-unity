@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
                 myMarksProviderBase.Id, isGlobalStage: true, id.Value);
         }
 
-        public virtual bool IsEnabled => true;
+        public virtual bool IsProblemContextBound => true;
 
         protected abstract bool HasContextFast([NotNull] ITreeNode treeNode);
 

@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Collections;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -18,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         [NotNull] protected abstract IClrTypeName ProtagonistAttribute { get; }
 
-        [CanBeNull] protected abstract IClrTypeName AntagonistAttribute { get; }
+        protected abstract CompactList<AttributeValue> FixedArguments { get; }
 
         public void Execute(ISolution solution, ITextControl textControl)
         {
@@ -27,15 +29,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
             CallGraphActionUtil.AppendAttributeInTransaction(
                 MethodDeclaration,
+                FixedArguments,
                 ProtagonistAttribute,
-                AntagonistAttribute,
                 GetType().Name);
         }
 
         public abstract string Text { get; }
 
+        /// <summary>
+        /// invokes on backend!
+        /// </summary>
+        /// <returns></returns>
         public abstract IEnumerable<IntentionAction> CreateBulbItems();
 
+        /// <summary>
+        /// invokes on frontend!
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <returns></returns>
         public abstract bool IsAvailable(IUserDataHolder cache);
     }
 }

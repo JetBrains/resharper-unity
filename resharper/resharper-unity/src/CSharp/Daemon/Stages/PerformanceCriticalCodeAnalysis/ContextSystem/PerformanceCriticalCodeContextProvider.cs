@@ -21,8 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         protected override bool IsMarkedFast(IDeclaredElement declaredElement)
         {
-            return declaredElement is IAttributesOwner attributesOwner &&
-                   PerformanceCriticalCodeStageUtil.HasFrequentlyCalledMethodAttribute(attributesOwner);
+            return PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(declaredElement);
         }
 
         protected override bool IsBannedFast(IDeclaredElement declaredElement) => false;

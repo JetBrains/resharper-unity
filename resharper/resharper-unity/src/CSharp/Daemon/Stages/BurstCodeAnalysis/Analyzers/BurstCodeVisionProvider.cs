@@ -64,9 +64,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var result = new List<BulbMenuItem>();
             var textControl = myTextControlManager.LastFocusedTextControl.Value;
-            var bulbAction = new BurstCodeAnalysisAddDiscardAttributeBulbAction(methodDeclaration);
+            var bulbAction = new AddDiscardAttributeBulbAction(methodDeclaration);
+            
             result.Add(new BulbMenuItem(new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl),
                 bulbAction.Text, BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems));
+            
             return result;
         }
     }
