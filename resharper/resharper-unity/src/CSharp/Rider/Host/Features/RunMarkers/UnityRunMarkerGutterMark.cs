@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.RunMarkers;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Rider.Model.Notifications;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;
@@ -41,6 +44,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
         private IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
         {
             var editorProtocol = solution.GetComponent<UnityEditorProtocol>();
+            var notificationsModel = solution.GetComponent<NotificationsModel>();
+
             var methodFqn = DeclaredElementPresenter.Format(runMarker.Method.PresentationLanguage,
                 DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, runMarker.Method).Text;
 
@@ -48,7 +53,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
             yield return new BulbMenuItem(new ExecutableItem(() =>
                 {
                     var model = editorProtocol.UnityModel.Value;
-                    if (model == null) return;
+                    if (model == null)
+                    {
+                        var notification = new NotificationModel("No connection to Unity", "Make sure Unity is running.",
+                            true, RdNotificationEntryType.WARN);
+                        notificationsModel.Notification(notification);
+                        return;
+                    }
+
                     var data = new RunMethodData(
                         runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).NameWithoutExtension,
                         runMarker.Method.GetContainingType().GetClrName().FullName,
