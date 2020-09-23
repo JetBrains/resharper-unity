@@ -10,8 +10,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
     public static bool IsSuitableStaticMethod([NotNull] IMethod method)
     {
       if (!method.IsStatic || method.TypeParameters.Count != 0) return false;
-      if (method.GetAccessRights() != AccessRights.PUBLIC) return false;
       if (!method.Parameters.IsEmpty()) return false;
+      if (method.GetAttributeInstances(false).IsEmpty()) return false;
       if (!method.ReturnType.IsVoid()) return false;
       var parentClass = method.GetContainingType();
       if (parentClass == null ) return false;
