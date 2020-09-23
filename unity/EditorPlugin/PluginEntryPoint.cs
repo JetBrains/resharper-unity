@@ -376,8 +376,15 @@ namespace JetBrains.Rider.Unity.Editor
                     if (method == null)
                         throw new Exception($"Could not find {data.MethodName} in type {data.TypeName}");
 
-                    method.Invoke(null, null);
-                    
+                    try
+                    {
+                        method.Invoke(null, null);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
+
                     task.Set(new RunMethodResult(true, string.Empty, string.Empty));
                 }
                 catch (Exception e)
