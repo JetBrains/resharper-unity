@@ -13,53 +13,51 @@ using JetBrains.UI.ThemedIcons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
 {
-  public class UnityStaticMethodRunMarkerGutterMark : RunMarkerGutterMark
-  {
-    public UnityStaticMethodRunMarkerGutterMark() : base(RunMarkersThemedIcons.RunActions.Id)
+    public class UnityStaticMethodRunMarkerGutterMark : RunMarkerGutterMark
     {
-    }
+        public UnityStaticMethodRunMarkerGutterMark()
+            : base(RunMarkersThemedIcons.RunActions.Id)
+        {
+        }
 
-    public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
-    {
-      if (!(highlighter.UserData is UnityRunMarkerHighlighting runMarker)) yield break;
+        public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
+        {
+            if (!(highlighter.UserData is UnityRunMarkerHighlighting runMarker)) yield break;
 
-      var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
-      if (solution == null) yield break;
+            var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
+            if (solution == null) yield break;
 
-      switch (runMarker.AttributeId)
-      {
-        case UnityRunMarkerAttributeIds.RUN_METHOD_MARKER_ID:
-          foreach (var item in GetRunMethodItems(solution, runMarker))
-          {
-            yield return item;
-          }
-          yield break;
-        
-        default:
-          yield break;
-      }
-    }
-
-    private IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
-    {
-        var editorProtocol = solution.GetComponent<UnityEditorProtocol>();
-        var methodFqn = DeclaredElementPresenter.Format(runMarker.Method.PresentationLanguage,
-            DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, runMarker.Method).Text;
-
-        var iconId = RunMarkersThemedIcons.RunThis.Id;
-        yield return new BulbMenuItem(new ExecutableItem(() =>
+            switch (runMarker.AttributeId)
             {
-                var model = editorProtocol.UnityModel.Value;
-                if (model == null) return;
-                var data = new RunMethodData(
-                    runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).NameWithoutExtension,
-                    runMarker.Method.GetContainingType().GetClrName().FullName,
-                    runMarker.Method.ShortName);
-                model.RunMethodInUnity.Start(data);
-            }),
-            new RichText($"Run '{methodFqn}'"),
-            iconId,
-            BulbMenuAnchors.PermanentBackgroundItems);
+                case UnityRunMarkerAttributeIds.RUN_METHOD_MARKER_ID:
+                    foreach (var item in GetRunMethodItems(solution, runMarker)) yield return item;
+                    yield break;
+
+                default:
+                    yield break;
+            }
+        }
+
+        private IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
+        {
+            var editorProtocol = solution.GetComponent<UnityEditorProtocol>();
+            var methodFqn = DeclaredElementPresenter.Format(runMarker.Method.PresentationLanguage,
+                DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, runMarker.Method).Text;
+
+            var iconId = RunMarkersThemedIcons.RunThis.Id;
+            yield return new BulbMenuItem(new ExecutableItem(() =>
+                {
+                    var model = editorProtocol.UnityModel.Value;
+                    if (model == null) return;
+                    var data = new RunMethodData(
+                        runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).NameWithoutExtension,
+                        runMarker.Method.GetContainingType().GetClrName().FullName,
+                        runMarker.Method.ShortName);
+                    model.RunMethodInUnity.Start(data);
+                }),
+                new RichText($"Run '{methodFqn}'"),
+                iconId,
+                BulbMenuAnchors.PermanentBackgroundItems);
+        }
     }
-  }
 }

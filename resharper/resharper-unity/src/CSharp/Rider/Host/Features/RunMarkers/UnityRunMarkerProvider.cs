@@ -9,27 +9,28 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
 {
-  [Language(typeof(CSharpLanguage))]
-  public class UnityRunMarkerProvider : IRunMarkerProvider
-  {
-    public void CollectRunMarkers(IFile file, IContextBoundSettingsStore settings, IHighlightingConsumer consumer)
+    [Language(typeof(CSharpLanguage))]
+    public class UnityRunMarkerProvider : IRunMarkerProvider
     {
-      if (!(file is ICSharpFile csharpFile)) return;
-      
-      foreach (var declaration in CachedDeclarationsCollector.Run<IMethodDeclaration>(csharpFile))
-      {
-        if (!(declaration.DeclaredElement is IMethod method)) continue;
-
-        if (UnityRunMarkerUtil.IsSuitableStaticMethod(method))
+        public void CollectRunMarkers(IFile file, IContextBoundSettingsStore settings, IHighlightingConsumer consumer)
         {
-          var range = declaration.GetNameDocumentRange();
-          var highlighting = new UnityRunMarkerHighlighting(
-            declaration, UnityRunMarkerAttributeIds.RUN_METHOD_MARKER_ID, range, file.GetPsiModule().TargetFrameworkId);
-          consumer.AddHighlighting(highlighting, range);
-        }
-      }
-    }
+            if (!(file is ICSharpFile csharpFile)) return;
 
-    public double Priority => RunMarkerProviderPriority.DEFAULT;
-  }
+            foreach (var declaration in CachedDeclarationsCollector.Run<IMethodDeclaration>(csharpFile))
+            {
+                if (!(declaration.DeclaredElement is IMethod method)) continue;
+
+                if (UnityRunMarkerUtil.IsSuitableStaticMethod(method))
+                {
+                    var range = declaration.GetNameDocumentRange();
+                    var highlighting = new UnityRunMarkerHighlighting(
+                        declaration, UnityRunMarkerAttributeIds.RUN_METHOD_MARKER_ID, range,
+                        file.GetPsiModule().TargetFrameworkId);
+                    consumer.AddHighlighting(highlighting, range);
+                }
+            }
+        }
+
+        public double Priority => RunMarkerProviderPriority.DEFAULT;
+    }
 }
