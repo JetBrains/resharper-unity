@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Lifetimes;
@@ -10,20 +9,17 @@ using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl.DocumentMarkup;
-using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
 {
-  public class UnityRunMarkerGutterMark:RunMarkerGutterMark
+  public class UnityStaticMethodRunMarkerGutterMark : RunMarkerGutterMark
   {
-    public UnityRunMarkerGutterMark([NotNull] IconId iconId)
-      : base(iconId)
+    public UnityStaticMethodRunMarkerGutterMark() : base(RunMarkersThemedIcons.RunActions.Id)
     {
     }
 
-    
     public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
     {
       if (!(highlighter.UserData is UnityRunMarkerHighlighting runMarker)) yield break;
@@ -61,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
             Lifetime.Using(l =>
             {
               model.RunMethodInUnity.Start(new RunMethodData(
-                runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).Name,
+                runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).NameWithoutExtension,
                 runMarker.Method.GetContainingType().GetClrName().FullName,
                 runMarker.Method.ShortName
               )).ToRdTask(l);
