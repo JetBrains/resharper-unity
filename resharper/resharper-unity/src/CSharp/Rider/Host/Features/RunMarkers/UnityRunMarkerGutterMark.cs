@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
 {
@@ -43,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
 
     private IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
     {
+      var logger = solution.GetComponent<ILogger>();
       var editorProtocol = solution.GetComponent<UnityEditorProtocol>();
       var methodFqn = DeclaredElementPresenter.Format(runMarker.Method.PresentationLanguage,
         DeclaredElementPresenter.QUALIFIED_NAME_PRESENTER, runMarker.Method).Text;
@@ -52,17 +54,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
         new ExecutableItem(() => { 
           
           var model = editorProtocol.UnityModel.Value;
-          if (model != null)
+          if (model == null) return;
+          var data = new RunMethodData(
+            runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).NameWithoutExtension,
+            runMarker.Method.GetContainingType().GetClrName().FullName,
+            runMarker.Method.ShortName);
+          Lifetime.Using(lifetime =>
           {
-            Lifetime.Using(l =>
+            var rdTask = model.RunMethodInUnity.Start(data);
+            rdTask?.Result.Advise(lifetime, result =>
             {
-              model.RunMethodInUnity.Start(new RunMethodData(
-                runMarker.Project.GetOutputFilePath(runMarker.TargetFrameworkId).NameWithoutExtension,
-                runMarker.Method.GetContainingType().GetClrName().FullName,
-                runMarker.Method.ShortName
-              )).ToRdTask(l);
+              if (!result.Result.Success)
+                logger.Warn($"Executing {methodFqn} failed {result.Error.ReasonMessage} {result.Error.ReasonText} {result.Error.StackTrace}.");
             });
-          } 
+          });
         }),
         new RichText($"Run '{methodFqn}'"),
         iconId,

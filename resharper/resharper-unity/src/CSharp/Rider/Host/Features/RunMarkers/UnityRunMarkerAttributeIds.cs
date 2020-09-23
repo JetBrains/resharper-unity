@@ -4,7 +4,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
 {
   [
     RegisterHighlighter(
-      UnityRunMarkerAttributeIds.RUN_METHOD_MARKER_ID,
+      RUN_METHOD_MARKER_ID,
       Layer = HighlighterLayer.SYNTAX + 1,
       EffectType = EffectType.GUTTER_MARK,
       GutterMarkType = typeof(UnityStaticMethodRunMarkerGutterMark)

@@ -5,7 +5,6 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches.SymbolCache;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.EntryPoints;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarkers
@@ -27,7 +26,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
           var highlighting = new UnityRunMarkerHighlighting(
             declaration, UnityRunMarkerAttributeIds.RUN_METHOD_MARKER_ID, range, file.GetPsiModule().TargetFrameworkId);
           consumer.AddHighlighting(highlighting, range);
-          continue;
         }
       }
     }
