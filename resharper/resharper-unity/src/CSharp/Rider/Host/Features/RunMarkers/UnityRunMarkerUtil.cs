@@ -1,3 +1,4 @@
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
@@ -11,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
     {
       if (!method.IsStatic || method.TypeParameters.Count != 0) return false;
       if (!method.Parameters.IsEmpty()) return false;
-      if (method.GetAttributeInstances(false).IsEmpty()) return false;
+      if (method.GetAttributeInstances(false).All(a => a.GetClrName().FullName != "UnityEditor.MenuItem")) return false;
       if (!method.ReturnType.IsVoid()) return false;
       var parentClass = method.GetContainingType();
       if (parentClass == null ) return false;
