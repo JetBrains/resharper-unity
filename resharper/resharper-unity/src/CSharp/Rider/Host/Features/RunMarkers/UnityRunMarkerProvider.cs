@@ -1,6 +1,9 @@
 using JetBrains.Application.Settings;
+using JetBrains.Collections.Viewable;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.RunMarkers;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches.SymbolCache;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -14,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
     {
         public void CollectRunMarkers(IFile file, IContextBoundSettingsStore settings, IHighlightingConsumer consumer)
         {
+            if (!file.GetSolution().GetComponent<UnitySolutionTracker>().IsUnityProjectFolder.HasTrueValue()) return;
             if (!(file is ICSharpFile csharpFile)) return;
 
             foreach (var declaration in CachedDeclarationsCollector.Run<IMethodDeclaration>(csharpFile))
