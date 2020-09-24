@@ -371,13 +371,20 @@ namespace JetBrains.Rider.Unity.Editor
                     if (type == null) 
                         throw new Exception($"Could not find {data.TypeName} in assembly {data.AssemblyName}.");
 
-                    var method = type.GetMethod(data.MethodName);
+                    var method = type.GetMethod(data.MethodName,BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
                     
                     if (method == null)
                         throw new Exception($"Could not find {data.MethodName} in type {data.TypeName}");
 
-                    method.Invoke(null, null);
-                    
+                    try
+                    {
+                        method.Invoke(null, null);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
+
                     task.Set(new RunMethodResult(true, string.Empty, string.Empty));
                 }
                 catch (Exception e)
