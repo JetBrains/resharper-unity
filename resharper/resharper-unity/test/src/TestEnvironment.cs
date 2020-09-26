@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
 
     {
     }
-    
+
     [ZoneActivator]
     class CppTestZoneActivator : IActivate<ILanguageCppZone>, IActivate<PsiFeatureTestZone>
 #if RIDER
@@ -60,6 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
                 SetJetTestPackagesDir();
                 HackTaskRunnerFramework.Install();
                 HackTestDataInNugets.ApplyPatches();
+
+                // Temp workaround for GacCacheController, which adds all Mono GAC paths into a dictionary without
+                // checking for duplicates
+                if (PlatformUtil.IsRunningOnMono)
+                    Environment.SetEnvironmentVariable("MONO_GAC_PREFIX", "/foo");
             }
             catch (Exception e)
             {
