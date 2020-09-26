@@ -1,5 +1,6 @@
 using JetBrains.Metadata.Reader.API;
-using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Intentions.CSharp.DisableWarning;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis
@@ -7,15 +8,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
     public abstract class AddExpensiveMethodAttributeActionBase : CallGraphActionBase
     {
         protected const string MESSAGE = "Add Expensive method attribute";
-        protected override IClrTypeName ProtagonistAttribute => KnownTypes.PublicApiAttribute;
+        protected override IClrTypeName ProtagonistAttribute => DisableBySuppressMessageHelper.SuppressMessageAttributeFqn;
         public override string Text => MESSAGE;
 
         public override bool IsAvailable(IUserDataHolder cache)
         {
-            var declaredElement = MethodDeclaration?.DeclaredElement;
+            var method = MethodDeclaration?.DeclaredElement;
 
-            return declaredElement != null && MethodDeclaration.IsValid() &&
-                   !declaredElement.HasAttributeInstance(ProtagonistAttribute, AttributesSource.Self);
+            return method != null &&
+                   MethodDeclaration.IsValid() &&
+                   method.IsValid() && 
+                   !PerformanceCriticalCodeStageUtil.HasPerformanceSensitiveAttribute(method);
         }
     }
 }

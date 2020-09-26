@@ -2,6 +2,8 @@ using JetBrains.Annotations;
 using JetBrains.Collections;
 using JetBrains.Diagnostics;
 using JetBrains.Metadata.Reader.API;
+using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -13,7 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 {
     public static class CallGraphActionUtil
     {
-        public static void AppendAttributeInTransaction([NotNull] IMethodDeclaration methodDeclaration, CompactList<AttributeValue> compactList,
+        public static void AppendAttributeInTransaction([NotNull] IMethodDeclaration methodDeclaration,
+            CompactList<AttributeValue> compactList,
             [NotNull] IClrTypeName protagonistAttributeName, string commandName)
         {
             var factory = CSharpElementFactory.GetInstance(methodDeclaration);
@@ -26,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
                 Assertion.Fail($"{protagonistTypeElement} does not exist");
                 return;
             }
-            
+
             var protagonistAttribute = factory.CreateAttribute(protagonistTypeElement, compactList.ToArray(),
                 EmptyArray<Pair<string, AttributeValue>>.Instance);
             var lastAttribute = methodDeclaration.Attributes.LastOrDefault();
@@ -52,6 +55,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
                     }
                 }
             });
+        }
+
+        public static DaemonProcessKind GetProcessKind([NotNull] SolutionAnalysisService solutionAnalysisService)
+        {
+            return solutionAnalysisService.Configuration?.Completed?.Value == true
+                ? DaemonProcessKind.GLOBAL_WARNINGS
+                : DaemonProcessKind.VISIBLE_DOCUMENT;
         }
     }
 }

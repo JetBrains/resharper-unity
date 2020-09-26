@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
+using JetBrains.ReSharper.Intentions.CSharp.DisableWarning;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -141,25 +142,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             return false;
         }
 
-        public static bool HasPerformanceSensitiveAttribute(IAttributesOwner attributesOwner)
+        public const string RESHARPER = "ReSharper";
+        public const string CHEAP_METHOD = "Cheap.Method";
+
+        public static bool HasPerformanceSensitiveAttribute(IAttributesSet method)
         {
-            var instance = attributesOwner.GetAttributeInstances(KnownTypes.PublicApiAttribute, AttributesSource.Self)
-                .FirstOrDefault();
+            var attributes = method.GetAttributeInstances(DisableBySuppressMessageHelper.SuppressMessageAttributeFqn, AttributesSource.Self);
 
-            if (instance == null || instance.PositionParameterCount != 1)
-                return false;
+            foreach (var attribute in attributes)
+            {
+                if (attribute.PositionParameterCount != 2)
+                    continue;
+                
+                var firstValue = attribute.PositionParameter(0);
+                
+                if (!firstValue.ConstantValue.IsString())
+                    continue;
 
-            var positionParameter = instance.PositionParameter(0);
+                var secondValue = attribute.PositionParameter(1);
+                
+                if (!secondValue.ConstantValue.IsString())
+                    continue;
 
-            return IsExpensiveMethod(positionParameter);
+                var firstParameter = (string) firstValue.ConstantValue.Value;
+                
+                if (firstParameter != RESHARPER)
+                    continue;
+
+                var secondParameter = (string) secondValue.ConstantValue.Value;
+                
+                if (secondParameter != CHEAP_METHOD)
+                    continue;
+
+                return true;
+            }
+
+            return false;
         }
-
-        private static bool IsExpensiveMethod(AttributeValue positionParameter)
-        {
-            return positionParameter.IsConstant && positionParameter.ConstantValue.IsString() &&
-                   (string) positionParameter.ConstantValue.Value == "Expensive method";
-        }
-
+        
         public static bool IsPerformanceCriticalRootMethod([CanBeNull] ITreeNode node)
         {
             if (node == null)

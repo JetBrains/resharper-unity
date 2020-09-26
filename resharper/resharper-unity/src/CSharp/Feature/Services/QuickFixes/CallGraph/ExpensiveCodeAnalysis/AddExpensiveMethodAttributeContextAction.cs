@@ -6,10 +6,10 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -30,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         private readonly SolutionAnalysisService mySwa;
         private readonly UnityProblemAnalyzerContextSystem myUnityProblemAnalyzerContextSystem;
         private readonly IContextBoundSettingsStore mySettingsStore;
+        private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
 
         public AddExpensiveMethodAttributeContextAction(ICSharpContextActionDataProvider dataProvider)
         {
@@ -41,6 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             myUnityProblemAnalyzerContextSystem =
                 dataProvider.Solution.GetComponent<UnityProblemAnalyzerContextSystem>();
             mySettingsStore = dataProvider.Solution.GetSettingsStore();
+            myExpensiveContextProvider = dataProvider.Solution.GetComponent<ExpensiveInvocationContextProvider>();
         }
 
         protected override IMethodDeclaration MethodDeclaration { get; }
@@ -51,14 +53,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             if (mySwa.Configuration?.Enabled?.Value == false)
                 yield break;
 
+            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(MethodDeclaration))
+                yield break;
+            
+            var processKind = CallGraphActionUtil.GetProcessKind(mySwa);
+            
+            if (myExpensiveContextProvider.IsMarked(MethodDeclaration, processKind, false))
+                yield break;
+
             var performanceContextProvider = myUnityProblemAnalyzerContextSystem.GetContextProvider(mySettingsStore,
                 UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT);
 
-            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(MethodDeclaration))
-                yield break;
-
             var isPerformanceContext =
-                performanceContextProvider.IsMarked(MethodDeclaration, DaemonProcessKind.GLOBAL_WARNINGS, false);
+                performanceContextProvider.IsMarked(MethodDeclaration, processKind, false);
 
             if (isPerformanceContext)
                 yield return this.ToContextActionIntention();

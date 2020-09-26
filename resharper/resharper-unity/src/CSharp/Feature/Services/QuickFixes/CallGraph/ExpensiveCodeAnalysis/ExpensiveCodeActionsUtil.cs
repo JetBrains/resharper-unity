@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Collections;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
@@ -16,7 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var predefinedType = psiModule.GetPredefinedType();
             var fixedArguments = new CompactList<AttributeValue>
             {
-                new AttributeValue(new ConstantValue("Expensive method", predefinedType.String))
+                new AttributeValue(new ConstantValue(PerformanceCriticalCodeStageUtil.RESHARPER, predefinedType.String)),
+                new AttributeValue(new ConstantValue(PerformanceCriticalCodeStageUtil.CHEAP_METHOD, predefinedType.String))
             };
 
             return fixedArguments;

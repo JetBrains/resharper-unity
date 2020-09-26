@@ -46,10 +46,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         {
             if (mySwa.Configuration?.Enabled?.Value == false)
                 yield break;
-
+            
             var burstContextProvider = myUnityProblemAnalyzerContextSystem.GetContextProvider(mySettingsStore,
                 UnityProblemAnalyzerContextElement.BURST_CONTEXT);
-            var isBurstContext = burstContextProvider.IsMarked(MethodDeclaration, DaemonProcessKind.GLOBAL_WARNINGS, false);
+            var processKind = CallGraphActionUtil.GetProcessKind(mySwa);
+            var isBurstContext = burstContextProvider.IsMarked(MethodDeclaration, processKind, false);
 
             if (isBurstContext)
                 yield return this.ToContextActionIntention();

@@ -36,17 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public abstract string Text { get; }
 
-        /// <summary>
-        /// invokes on backend!
-        /// </summary>
-        /// <returns></returns>
         public abstract IEnumerable<IntentionAction> CreateBulbItems();
 
-        /// <summary>
-        /// invokes on frontend!
-        /// </summary>
-        /// <param name="cache"></param>
-        /// <returns></returns>
         public abstract bool IsAvailable(IUserDataHolder cache);
     }
 }
