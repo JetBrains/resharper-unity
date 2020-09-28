@@ -41,7 +41,16 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
     }
 
     private val shaderInternScope = internScope()
-    private val ShaderContextData = classdef {
+
+    private val shaderContextDataBase = baseclass {
+
+    }
+
+    private val autoShaderContextData = classdef extends shaderContextDataBase {
+
+    }
+
+    private val shaderContextData = classdef extends shaderContextDataBase {
         field("path", string.interned(shaderInternScope))
         field("name", string.interned(shaderInternScope))
         field("folder", string.interned(shaderInternScope))
@@ -118,7 +127,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
             property("enableDebuggerExtensions", bool)
         })
 
-        call("requestShaderContexts", EditableEntityId, immutableList(ShaderContextData))
+
+        call("requestShaderContexts", EditableEntityId, immutableList(shaderContextDataBase))
+        call("requestCurrentContext", EditableEntityId, shaderContextDataBase)
         source("changeContext", structdef ("contextInfo"){
             field("target", EditableEntityId)
             field("path", string.interned(shaderInternScope))
