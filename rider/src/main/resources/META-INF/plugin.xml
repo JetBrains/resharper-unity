@@ -177,6 +177,15 @@
             description="Show Unity settings"
             icon="AllIcons.General.Settings" />
 
+    <action id="RiderUnityOpenEditorLogAction"
+            class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction"
+            text="Open Unity Editor Log"
+            icon="UnityIcons.Actions.OpenEditorLog" />
+    <action id="RiderUnityOpenPlayerLogAction"
+            class="com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction"
+            text="Open Unity Player Log"
+            icon="UnityIcons.Actions.OpenPlayerLog" />
+
     <group id="UnityToolbarActions">
       <add-to-group group-id="ActiveRuntimeGroup" relative-to-action="BuildButton" anchor="after" />
 
@@ -264,6 +273,12 @@
     <!-- IDEA default schemes -->
     <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
     <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+
+    <notificationGroup id="Unity log open" displayType="BALLOON"/>
+    <notificationGroup id="Unity Asset Mode" displayType="BALLOON"/>
+    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
+    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
+    <notificationGroup id="Unity Enable Yaml" displayType="BALLOON"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">

@@ -1,6 +1,5 @@
 ﻿using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Dispatcher;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Daemon.Stages.Analysis

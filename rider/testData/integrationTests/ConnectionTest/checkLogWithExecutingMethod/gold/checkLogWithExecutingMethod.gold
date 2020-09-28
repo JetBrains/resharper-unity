@@ -1,0 +1,5 @@
+Message, Edit, #Test#
+ UnityEngine.Debug:Log(Object)
+Editor.<>c:<WriteToLog>b__7_0()
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions()
+

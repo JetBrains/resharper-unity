@@ -13,6 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         // formula for calculating id for component/gameobject after importing to prefab/scene
-        public static ulong GetImportedDocumentAnchor(ulong prefabInstance, ulong id) => (prefabInstance ^ id) & 0x7fffffffffffffff;
+        public static long GetImportedDocumentAnchor(long prefabInstance, long id) => (prefabInstance ^ id) & 0x7fffffffffffffff;
     }
 }

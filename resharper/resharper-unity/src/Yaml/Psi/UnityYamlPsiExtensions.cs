@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
             if (node is IFlowMappingNode flowMappingNode)
             {
                 var localDocumentAnchor = flowMappingNode.FindMapEntryBySimpleKey("fileID")?.Value.AsString();
-                if (localDocumentAnchor == null || !ulong.TryParse(localDocumentAnchor, out var result))
+                if (localDocumentAnchor == null || !long.TryParse(localDocumentAnchor, out var result))
                     return new LocalReference(0, 0);
 
                 if (result == 0)

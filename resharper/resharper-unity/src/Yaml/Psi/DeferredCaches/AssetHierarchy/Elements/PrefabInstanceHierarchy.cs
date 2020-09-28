@@ -8,25 +8,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public readonly struct PrefabInstanceHierarchy : IPrefabInstanceHierarchy
     {
-        private readonly Dictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> myModifications;
+        private readonly Dictionary<string, IReadOnlyDictionary<long, PrefabModification>> myModifications;
         public PrefabInstanceHierarchy(LocalReference location, LocalReference parentTransform, List<PrefabModification> prefabModifications, Guid sourcePrefabGuid)
         {
             Location = location;
             ParentTransform = parentTransform;
             PrefabModifications = prefabModifications;
             SourcePrefabGuid = sourcePrefabGuid;
-            myModifications  = new Dictionary<string, IReadOnlyDictionary<ulong, PrefabModification>> ();
+            myModifications  = new Dictionary<string, IReadOnlyDictionary<long, PrefabModification>> ();
 
             foreach (var modification in prefabModifications)
             {
-                Dictionary<ulong, PrefabModification> dictionary;
+                Dictionary<long, PrefabModification> dictionary;
                 if (myModifications.TryGetValue(modification.PropertyPath, out var rDictionary))
                 {
-                    dictionary = (Dictionary<ulong, PrefabModification>) rDictionary;
+                    dictionary = (Dictionary<long, PrefabModification>) rDictionary;
                 }
                 else
                 {
-                    dictionary = new Dictionary<ulong, PrefabModification>();
+                    dictionary = new Dictionary<long, PrefabModification>();
                     myModifications[modification.PropertyPath] = dictionary;
                 }
                 
@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         public LocalReference Location { get; }
         public LocalReference ParentTransform { get; }
-        public PrefabModification GetModificationFor(ulong owningObject, string fieldName)
+        public PrefabModification GetModificationFor(long owningObject, string fieldName)
         {
             if (myModifications.TryGetValue(fieldName, out var result) &&
                 result.TryGetValue(owningObject, out var modification))

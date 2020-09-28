@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor
 {

@@ -79,6 +79,8 @@ object EditorPluginModel: Root() {
     val TestFilter = structdef {
         field("assemblyName", string)
         field("testNames", immutableList(string))
+        field("groupNames", immutableList(string))
+        field("testCategories", immutableList(string))
     }
 
     val UnitTestLaunchClientControllerInfo = structdef {
@@ -90,8 +92,6 @@ object EditorPluginModel: Root() {
     val UnitTestLaunch = classdef {
         field("sessionId", string)
         field("testFilters", immutableList(TestFilter))
-        field("testGroups", immutableList(string))
-        field("testCategories", immutableList(string))
         field("testMode", TestMode)
         field("clientControllerInfo", UnitTestLaunchClientControllerInfo.nullable)
         property("runStarted", bool)
@@ -125,6 +125,18 @@ object EditorPluginModel: Root() {
         field("applicationVersion", string)
     }
 
+    val RunMethodData = structdef{
+        field("assemblyName", string)
+        field("typeName", string)
+        field("methodName", string)
+    }
+
+    val RunMethodResult =  classdef{
+        field("success", bool)
+        field("message", string)
+        field("stackTrace", string)
+    }
+
     init {
         property("play", bool)
         property("pause", bool)
@@ -153,11 +165,14 @@ object EditorPluginModel: Root() {
         property("unitTestLaunch", UnitTestLaunch)
         call("runUnitTestLaunch", void, bool)
 
+        call("runMethodInUnity", RunMethodData, RunMethodResult)
+
         property("editorLogPath", string)
         property("playerLogPath", string)
 
         property("ScriptCompilationDuringPlay", int)
-        sink("clearOnPlay", long)
+        property("lastPlayTime", long)
+        property("lastInitTime", long)
 
         call("generateUIElementsSchema", void, bool)
         call("exitUnity", void, bool)

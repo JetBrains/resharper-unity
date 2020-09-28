@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         private readonly List<ComponentHierarchy> myComponentElements;
         private readonly List<GameObjectHierarchy> myGameObjectHierarchies;
 
-        private readonly Dictionary<ulong, int> myGameObjectLocationToTransform; 
+        private readonly Dictionary<long, int> myGameObjectLocationToTransform; 
 
         private readonly List<int> myPrefabInstanceHierarchies = new List<int>();
 
@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             myComponentElements = new List<ComponentHierarchy>(componentsCount);
             myGameObjectHierarchies = new List<GameObjectHierarchy>(gameObjectsCount);
             myScriptComponentElements = new List<ScriptComponentHierarchy>(scriptCount);
-            myGameObjectLocationToTransform = new Dictionary<ulong, int>(transformCount);
+            myGameObjectLocationToTransform = new Dictionary<long, int>(transformCount);
             myOtherFakeStrippedElements = new List<IHierarchyElement>();
         }
 
@@ -69,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
                 myOtherBoxedElements.Add(data as IHierarchyElement);
         }
 
-        public IHierarchyElement GetHierarchyElement(Guid? ownerGuid, ulong anchor, PrefabImportCache prefabImportCache)
+        public IHierarchyElement GetHierarchyElement(Guid? ownerGuid, long anchor, PrefabImportCache prefabImportCache)
         {
             var result = SearchForAnchor(anchor);
             if (result != null)
@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
         // boxing is not problem here
-        private IHierarchyElement SearchForAnchor(ulong anchor)
+        private IHierarchyElement SearchForAnchor(long anchor)
         {
             return
                 SearchForAnchor(myGameObjectHierarchies, anchor) ??
@@ -117,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
         }
 
 
-        private IHierarchyElement SearchForAnchor<T>(List<T> elements, ulong anchor) where T : IHierarchyElement
+        private IHierarchyElement SearchForAnchor<T>(List<T> elements, long anchor) where T : IHierarchyElement
         {
             var searchResult = elements.BinarySearchEx(a => a.Location.LocalDocumentAnchor.CompareTo(anchor));
             if (searchResult.IsHit)

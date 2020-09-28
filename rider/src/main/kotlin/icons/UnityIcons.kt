@@ -155,8 +155,8 @@ class UnityIcons {
             val FilterEditModeMessages = Common.UnityEditMode
             val FilterPlayModeMessages = Common.UnityPlayMode
 
-            val OpenEditorLog = FilterEditModeMessages
-            val OpenPlayerLog = FilterPlayModeMessages
+            @JvmField val OpenEditorLog = FilterEditModeMessages
+            @JvmField val OpenPlayerLog = FilterPlayModeMessages
 
             @JvmField val AttachToUnity = IconLoader.getIcon("/Icons/actions/attachToUnityProcess.svg")
 

@@ -2,10 +2,7 @@ package com.jetbrains.rider.plugins.unity.notifications
 
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationGroup
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
+import com.intellij.notification.*
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
@@ -17,7 +14,7 @@ class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjec
 
     companion object {
         private const val settingName = "do_not_show_unity_asset_mode_notification"
-        private val notificationGroupId = NotificationGroup.balloonGroup("Unity Asset Mode")
+        private val notificationGroupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity Asset Mode")
     }
 
     init {
