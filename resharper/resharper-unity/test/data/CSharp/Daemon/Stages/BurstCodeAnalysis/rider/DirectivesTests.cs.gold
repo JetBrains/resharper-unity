@@ -125,13 +125,13 @@ namespace DirectivesTests
                 Count = 0;
             }
 
-            public void Increment()
+            |public void Increment()
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
 #endif
                 (*m_Counter)++;
-            }
+            }|(0)
 
             public int Count
             {
@@ -177,24 +177,27 @@ namespace DirectivesTests
                 Kek = new NativeCounter(type);
             }
 
-            public void Execute()
+            |public void Execute()
             {
                 for (var i = 0; i < 10; i++)
                     Kek.Increment();
-            }
+            }|(1)
         }
 
         [BurstCompile]
         struct DirectivesTest2 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                var obj = |new object()|(0);
+                var obj = |new object()|(3);
 #endif
-            }
+            }|(2)
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
+(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(1): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(2): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(3): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported

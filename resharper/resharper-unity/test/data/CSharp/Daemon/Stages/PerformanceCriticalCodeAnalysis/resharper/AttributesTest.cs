@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using JetBrains.Annotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DefaultNamespace
 {
@@ -11,23 +11,9 @@ namespace DefaultNamespace
             SecondMethod();
         }
 
-        [PublicAPI("Expensive method")]
+        [SuppressMessage("ReSharper", "Cheap.Method")]
         private void SecondMethod()
         {
         }
     }
-}
-
-namespace JetBrains.Annotations
-{
-  public sealed class PublicAPIAttribute : Attribute
-  {
-    public PublicAPIAttribute()
-    {
-    }
-
-    public PublicAPIAttribute(string comment) => this.Comment = comment;
-
-    public string Comment { get; }
-  }
 }

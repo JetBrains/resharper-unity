@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using JetBrains.Annotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DefaultNamespace
 {
@@ -11,25 +11,11 @@ namespace DefaultNamespace
             |SecondMethod|(1)();
         }
 
-        [PublicAPI("Expensive method")]
+        [SuppressMessage("ReSharper", "Cheap.Method")]
         private void |SecondMethod|(2)()
         {
         }
     }
-}
-
-namespace JetBrains.Annotations
-{
-  public sealed class PublicAPIAttribute : Attribute
-  {
-    public PublicAPIAttribute()
-    {
-    }
-
-    public PublicAPIAttribute(string comment) => this.Comment = comment;
-
-    public string Comment { get; }
-  }
 }
 ---------------------------------------------------------
 (0): ReSharper Unity Performance Critical Line Marker: Performance critical context

@@ -13,16 +13,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [StaticSeverityHighlighting(Severity.INFO,
         typeof(UnityBurstHighlighting),
         Languages = CSharpLanguage.Name,
-        AttributeId = BurstCodeAnalysisHighlightingsAttributesIds.BURST_METHOD_HIGHLIGHTER,
+        AttributeId = BurstHighlightingsAttributesIds.BURST_METHOD_HIGHLIGHTER,
         ShowToolTipInStatusBar = false,
         ToolTipFormatString = MESSAGE)]
-    public class UnityBurstCodeLineMarker : IBurstHighlighting, IActiveLineMarkerInfo
+    public class BurstCodeLineMarker : IBurstHighlighting, IActiveLineMarkerInfo
     {
         public const string MESSAGE = BurstCodeVisionProvider.BURST_DISPLAY_NAME;
 
         private readonly DocumentRange myRange;
 
-        public UnityBurstCodeLineMarker(DocumentRange range)
+        public BurstCodeLineMarker(DocumentRange range)
         {
             myRange = range;
         }
@@ -40,17 +40,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
     
 
-    public class UnityBurstContextHighlightInfo : HighlightInfo
+    public class BurstContextHighlightInfo : HighlightInfo
     {
-        public UnityBurstContextHighlightInfo(DocumentRange documentRange)
-            : base(BurstCodeAnalysisHighlightingsAttributesIds.BURST_METHOD_HIGHLIGHTER, documentRange, AreaType.EXACT_RANGE, HighlighterLayer.SYNTAX + 1)
+        public BurstContextHighlightInfo(DocumentRange documentRange)
+            : base(BurstHighlightingsAttributesIds.BURST_METHOD_HIGHLIGHTER, documentRange, AreaType.EXACT_RANGE, HighlighterLayer.SYNTAX + 1)
         {        
         }
 
         public override IHighlighter CreateHighlighter(IDocumentMarkup markup)
         {
             var highlighter = base.CreateHighlighter(markup);
-            highlighter.UserData = new UnityBurstCodeLineMarker(DocumentRange);
+            highlighter.UserData = new BurstCodeLineMarker(DocumentRange);
             return highlighter;
         }
     }
@@ -70,7 +70,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         EffectType = EffectType.SOLID_UNDERLINE,
         Layer = HighlighterLayer.WARNING + 1)]
 #endif
-    public static class BurstCodeAnalysisHighlightingsAttributesIds
+    public static class BurstHighlightingsAttributesIds
     {
         public const string BURST_METHOD_HIGHLIGHTER = "ReSharper Unity Burst Code Line Marker";
     }

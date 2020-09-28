@@ -147,22 +147,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             
             using (Indent())
             {
-                BeControl option = AddBoolOption(ourEnableBurstVirtualPropagating,
-                    "Propagate Burst context through virtual calls");
-
-                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
-                    enable => enable);
-
-                option = AddComboOption((UnitySettings s) => s.BurstCodeHighlightingMode,
+                var option = AddComboOption((UnitySettings s) => s.BurstCodeHighlightingMode,
                     "Highlight burst code contexts:", string.Empty, string.Empty,
                     new RadioOptionPoint(BurstCodeHighlightingMode.Always, "Always"),
                     new RadioOptionPoint(BurstCodeHighlightingMode.CurrentMethod, "Current method only"),
                     new RadioOptionPoint(BurstCodeHighlightingMode.Never, "Never")
                 );
+                
                 AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
                     enable => enable);
+                
                 option = AddBoolOption((UnitySettings s) => s.EnableIconsForBurstCode,
                     "Show icons for Burst compiled methods");
+                
                 AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
                     enable => enable);
             }

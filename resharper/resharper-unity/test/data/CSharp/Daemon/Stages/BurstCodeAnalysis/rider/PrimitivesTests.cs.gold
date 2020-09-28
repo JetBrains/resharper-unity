@@ -11,9 +11,9 @@ namespace UnityEngine
 {
     public class Debug
     {
-        public static void Log(object message)
+        |public static void Log(object message)
         {
-        }
+        }|(0)
     }
 }
 
@@ -85,12 +85,12 @@ namespace PrimitivesTests
         [BurstCompile]
         private struct PrimitivesTest1 : IJob
         {
-            public void ContainsWarning()
+            |public void ContainsWarning()
             {
-                string str2 = |"asdasd"|(0);
-            }
+                string str2 = |"asdasd"|(2);
+            }|(1)
 
-            void NoWarnings()
+            |void NoWarnings()
             {
                 var bool1 = new bool();
 
@@ -119,59 +119,67 @@ namespace PrimitivesTests
                 var double1 = new double();
                 double1 = float1;
                 Debug.Log($"{double1}");
-            }
+            }|(3)
 
-            public void Execute()
+            |public void Execute()
             {
                 NoWarnings();
                 ContainsWarning();
-            }
+            }|(4)
         }
 
         [BurstCompile]
         private struct PrimitivesTest2 : IJob
         {
-            public void ContainsWarning()
+            |public void ContainsWarning()
             {
                 string str2 = null;
                 string str1 = null;
-                |str1|(1) = |str2|(2);
-                if (|str1|(3) != null)
+                |str1|(6) = |str2|(7);
+                if (|str1|(8) != null)
                 {
-                    char c = |str2|(4)[0]; 
+                    char c = |str2|(9)[0]; 
                 }
-            }
+            }|(5)
 
-            public void Execute()
+            |public void Execute()
             {
                 ContainsWarning();
-            }
+            }|(10)
         }
 
         [BurstCompile]
         private struct PrimitivesTest3 : IJob
         {
             public int res;
-            public void NoWarnings()
+            |public void NoWarnings()
             {
                 // burst compiler is able to create decimals cuz they are struct
                 // but cannot operate with them because decimal uses internal calls
                 // which is not supported by burst. 
                 var decel = new decimal();
                 res = decimal.ToInt32(decel);
-            }
+            }|(11)
 
-            public void Execute()
+            |public void Execute()
             {
                 NoWarnings();
                 Debug.Log($"{res}");
-            }
+            }|(12)
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Loading a managed string is not supported
-(1): ReSharper Warning: Burst: Loading managed type 'String' is not supported
-(2): ReSharper Warning: Burst: Loading managed type 'String' is not supported
-(3): ReSharper Warning: Burst: Loading managed type 'String' is not supported
-(4): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(1): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(2): ReSharper Warning: Burst: Loading a managed string is not supported
+(3): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(5): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(6): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(7): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(8): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(9): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(10): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(11): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(12): ReSharper Unity Burst Code Line Marker: Burst compiled code

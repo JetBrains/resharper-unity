@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly IconHost myIconHost;
         private readonly ITextControlManager myTextControlManager;
-        public const string BURST_DISPLAY_NAME = "Burst compiled";
+        public const string BURST_DISPLAY_NAME = BURST_TOOLTIP;
         public const string BURST_TOOLTIP = "Burst compiled code";
 
         public BurstCodeVisionProvider(ISolution solution,

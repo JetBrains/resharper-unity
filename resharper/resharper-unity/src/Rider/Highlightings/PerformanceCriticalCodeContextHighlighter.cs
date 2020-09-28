@@ -26,9 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))]
             IPsiDocumentRangeView psiDocumentRangeView)
         {
-            var isEnabled = GetSettingValue(psiDocumentRangeView,
-                HighlightingSettingsAccessor.ContextExitsHighlightingEnabled);
-            if (!isEnabled) return null;
+            var isEnabled = GetSettingValue(psiDocumentRangeView, HighlightingSettingsAccessor.ContextExitsHighlightingEnabled);
+            
+            if (!isEnabled) 
+                return null;
 
             var highlighter = new PerformanceCriticalCodeContextHighlighter();
 
@@ -43,7 +44,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             if (node == null)
                 return;
             
-            var settingsStore = psiDocumentRangeView.GetSettingsStore();
             var solution = psiDocumentRangeView.Solution;
             var swa = solution.GetComponent<SolutionAnalysisService>();
             
@@ -51,8 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 return;
             
             var contextSystem = solution.GetComponent<UnityProblemAnalyzerContextSystem>();
-            var contextProvider =
-                contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT);
+            var settingsStore = psiDocumentRangeView.GetSettingsStore();
+            var contextProvider = contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT);
 
             if (contextProvider.IsProblemContextBound == false) 
                 return;

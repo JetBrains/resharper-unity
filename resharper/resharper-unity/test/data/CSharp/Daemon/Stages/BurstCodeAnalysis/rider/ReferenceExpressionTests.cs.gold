@@ -86,12 +86,12 @@ namespace ReferenceExpressionTests
         {
             private MyEnum ourEnum;
 
-            public void Execute()
+            |public void Execute()
             {
                 ourEnum = ourEnum;
                 ourEnum = MyEnum.enumElem1;
-                var myClass = |new SimpleClass()|(0);
-            }
+                var myClass = |new SimpleClass()|(1);
+            }|(0)
         }
 
         [BurstCompile]
@@ -100,11 +100,11 @@ namespace ReferenceExpressionTests
             private static int getSetProp { get; set; }
             private static int getProp { get; }
 
-            public void Execute()
+            |public void Execute()
             {
                 var vari1 = getProp;
-                |getSetProp|(1) = 2;
-            }
+                |getSetProp|(3) = 2;
+            }|(2)
         }
 
         [BurstCompile]
@@ -114,12 +114,12 @@ namespace ReferenceExpressionTests
             private readonly static int field2 = 2;
             private const int field3 = 2;
 
-            public void Execute()
+            |public void Execute()
             {
                 var var1 = field2;
                 var var2 = field3;
-                |field1|(2) = 2; 
-            }
+                |field1|(5) = 2; 
+            }|(4)
         }
 
         [BurstCompile]
@@ -127,15 +127,19 @@ namespace ReferenceExpressionTests
         {
             private static int field1 = 2;
 
-            public void Execute()
+            |public void Execute()
             {
-                var var1 = |field1|(3);
-            }
+                var var1 = |field1|(7);
+            }|(6)
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Creating a managed type 'SimpleClass' is not supported
-(1): ReSharper Warning: Burst: Writing to a static field 'getSetProp' is not supported
-(2): ReSharper Warning: Burst: Writing to a static field 'field1' is not supported
-(3): ReSharper Warning: Burst: Loading from a non-readonly static field 'ReferenceExpressionTest4.field1' is not supported
+(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(1): ReSharper Warning: Burst: Creating a managed type 'SimpleClass' is not supported
+(2): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(3): ReSharper Warning: Burst: Writing to a static field 'getSetProp' is not supported
+(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(5): ReSharper Warning: Burst: Writing to a static field 'field1' is not supported
+(6): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(7): ReSharper Warning: Burst: Loading from a non-readonly static field 'ReferenceExpressionTest4.field1' is not supported

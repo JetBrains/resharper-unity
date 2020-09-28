@@ -112,7 +112,7 @@ namespace DebugStringTests
         [BurstCompile]
         private struct DebugStringTests1 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
                 Debug.Log("Plain log");
                 Debug.LogWarning("Warning log");
@@ -128,85 +128,93 @@ namespace DebugStringTests
                 int var1 = 2;
                 FixedString128 variable = "string";
 
-                |string.Format("{0} asdasd", variable)|(0);
-            }
+                |string.Format("{0} asdasd", variable)|(1);
+            }|(0)
         }
 
         [BurstCompile]
         private struct DebugStringTests2 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
-                string kopa1 = |$"as{2}d{3}asd"|(1);
-            }
+                string kopa1 = |$"as{2}d{3}asd"|(3);
+            }|(2)
         }
 
         [BurstCompile]
         private struct DebugStringTests3 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
-                var fixasdfed = new FixedString128(|"variable"|(2));
-            }
+                var fixasdfed = new FixedString128(|"variable"|(5));
+            }|(4)
         }
 
         [BurstCompile]
         private struct DebugStringTests4 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
-                |string.Format(|new CultureInfo(1)|(4), |""|(5), null)|(3);
-            }
+                |string.Format(|new CultureInfo(1)|(8), |""|(9), null)|(7);
+            }|(6)
         }
 
         [BurstCompile]
         private struct DebugStringTests5 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
-                |string.Format(|toFormat|(7), 12)|(6);
-            }
+                |string.Format(|toFormat|(12), 12)|(11);
+            }|(10)
         }
 
         [BurstCompile]
         private struct DebugStringTests6 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
-                Debug.Log(|12|(8));
-            }
+                Debug.Log(|12|(14));
+            }|(13)
         }
 
         [BurstCompile]
         private struct DebugStringTests7 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
                 FixedString128 variable = "string";
 
-                var lola = |string.Format("{0} asdasd", variable)|(9);
-            }
+                var lola = |string.Format("{0} asdasd", variable)|(16);
+            }|(15)
         }
 
         [BurstCompile]
         private struct DebugStringTests8 : IJob
         {
-            public void Execute()
+            |public void Execute()
             {
-                string kopa = |"asdasd"|(10);
-            }
+                string kopa = |"asdasd"|(18);
+            }|(17)
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: Burst: Loading a managed string is not supported
+(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
 (1): ReSharper Warning: Burst: Loading a managed string is not supported
-(2): ReSharper Warning: Burst: Loading a managed string is not supported
-(3): ReSharper Warning: Burst: 'Format' signature contains managed types
-(4): ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
+(2): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(3): ReSharper Warning: Burst: Loading a managed string is not supported
+(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
 (5): ReSharper Warning: Burst: Loading a managed string is not supported
-(6): ReSharper Warning: Burst: Loading a managed string is not supported
-(7): ReSharper Warning: Burst: Loading managed type 'String' is not supported
-(8): ReSharper Warning: Burst: Debug logging functions accepts only strings
+(6): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(7): ReSharper Warning: Burst: 'Format' signature contains managed types
+(8): ReSharper Warning: Burst: Creating a managed type 'CultureInfo' is not supported
 (9): ReSharper Warning: Burst: Loading a managed string is not supported
-(10): ReSharper Warning: Burst: Loading a managed string is not supported
+(10): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(11): ReSharper Warning: Burst: Loading a managed string is not supported
+(12): ReSharper Warning: Burst: Loading managed type 'String' is not supported
+(13): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(14): ReSharper Warning: Burst: Debug logging functions accepts only strings
+(15): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(16): ReSharper Warning: Burst: Loading a managed string is not supported
+(17): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(18): ReSharper Warning: Burst: Loading a managed string is not supported

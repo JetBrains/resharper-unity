@@ -45,6 +45,7 @@
     </Compile>
     <Compile Remove="CSharp\Daemon\Stages\BurstCodeAnalysis\Analyzers\BurstCodeVisionProvider.cs" />
     <Compile Remove="CSharp\Daemon\Stages\PerformanceCriticalCodeAnalysis\Highlightings\BurstCodeLineMarker.cs" />
+    <Compile Remove="CSharp\Daemon\Stages\BurstCodeAnalysis\Analyzers\BurstLineMarkerAnalyzer.cs" />
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="Cg">

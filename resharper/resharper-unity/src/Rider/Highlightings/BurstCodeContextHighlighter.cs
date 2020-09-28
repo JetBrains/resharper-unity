@@ -31,7 +31,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView)
         {
             var isEnabled = GetSettingValue(psiDocumentRangeView, HighlightingSettingsAccessor.ContextExitsHighlightingEnabled);
-            if (!isEnabled) return null;
+            
+            if (!isEnabled) 
+                return null;
 
             var highlighter = new BurstCodeContextHighlighter();
 
@@ -54,15 +56,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
 
             var contextSystem = solution.GetComponent<UnityProblemAnalyzerContextSystem>();
             var settingsStore = psiDocumentRangeView.GetSettingsStore();
-            var burstContextProvider = contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.BURST_CONTEXT);
+            var contextProvider = contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.BURST_CONTEXT);
  
-            if (burstContextProvider.IsProblemContextBound == false)
+            if (contextProvider.IsProblemContextBound == false)
+                return;
+
+            if (settingsStore.GetValue((UnitySettings key) => key.BurstCodeHighlightingMode) !=
+                BurstCodeHighlightingMode.CurrentMethod)
                 return;
             
             var processKind = UnityCallGraphUtil.GetProcessKindForGraph(swa);
 
-            if (burstContextProvider.IsMarked(node, processKind, false))
-                consumer.ConsumeHighlighting(new UnityBurstContextHighlightInfo(node.GetDocumentRange()));
+            if (contextProvider.IsMarked(node, processKind, false))
+                consumer.ConsumeHighlighting(new BurstContextHighlightInfo(node.GetDocumentRange()));
         }
     }
 }
