@@ -76,6 +76,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Formatting
           var file = formatTask.FirstElement.GetContainingFile();
           if (file != null)
           {
+            if (ShaderLabDoNotFormatInjectionsCookie.IsInjectionFormatterSuppressed)
+              return;
+              
             using (new SuspendInjectRegenerationCookie())
             {
               FormatterImplHelper.RunFormatterForGeneratedLanguages(file, formatTask.FirstElement, lastNode, profile,

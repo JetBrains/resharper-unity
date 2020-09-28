@@ -15,9 +15,9 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Feature.Services.TypingAssists
 {
   [SolutionComponent]
-  public class HlslInShaderLabDummyFormatter : CppDummyFormatterBase
+  public class InjectedHlslDummyFormatter : CppDummyFormatterBase
   {
-    public HlslInShaderLabDummyFormatter(ISolution solution, CachingLexerService cachingLexerService, DocumentToProjectFileMappingStorage projectFileMappingStorage, IGlobalFormatSettingsService formatSettings,
+    public InjectedHlslDummyFormatter(ISolution solution, CachingLexerService cachingLexerService, DocumentToProjectFileMappingStorage projectFileMappingStorage, IGlobalFormatSettingsService formatSettings,
       ISettingsStore settingsStore, ISettingsOptimization settingsOptimization) : base(solution, cachingLexerService, projectFileMappingStorage, formatSettings, settingsStore, settingsOptimization)
     {
     }
