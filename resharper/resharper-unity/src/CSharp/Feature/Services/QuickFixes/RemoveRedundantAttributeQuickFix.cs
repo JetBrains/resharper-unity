@@ -49,6 +49,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
             var attributeList = AttributeListNavigator.GetByAttribute(myAttribute);
             attributeList?.RemoveAttribute(myAttribute);
         }
-
     }
 }
