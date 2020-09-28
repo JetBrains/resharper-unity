@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
@@ -25,13 +26,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             myProviders.AssertClassifications();
         }
 
+        [NotNull]
         public UnityProblemAnalyzerContextManagerInstance GetInstance(
-            List<UnityProblemAnalyzerContextSetting> settings)
+            [NotNull] List<UnityProblemAnalyzerContextSetting> settings)
         {
             return new UnityProblemAnalyzerContextManagerInstance(myProviders, settings, myContextChangers);
         }
 
-        public IUnityProblemAnalyzerContextProvider GetContextProvider(UnityProblemAnalyzerContextSetting setting)
+        [NotNull]
+        public IUnityProblemAnalyzerContextProvider GetContextProvider([NotNull] UnityProblemAnalyzerContextSetting setting)
         {
             if (setting.IsAvailable == false)
                 return myEmptyUnityProblemAnalyzerContextProvider;
@@ -48,8 +51,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 
     public class UnityProblemAnalyzerContextManagerInstance
     {
-        private readonly List<IUnityProblemAnalyzerContextChanger> myContextChangers;
-        private readonly List<IUnityProblemAnalyzerContextProvider> myProviders;
+        [NotNull] private readonly List<IUnityProblemAnalyzerContextChanger> myContextChangers;
+        [NotNull] private readonly List<IUnityProblemAnalyzerContextProvider> myProviders;
 
         public UnityProblemAnalyzerContextManagerInstance(
             List<IUnityProblemAnalyzerContextProvider> contextProviders,
@@ -73,7 +76,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
                 .ToList();
         }
 
-        public UnityProblemAnalyzerContext CreateContext(UnityProblemAnalyzerContext context, ITreeNode node,
+        [NotNull]
+        public UnityProblemAnalyzerContext CreateContext([NotNull] UnityProblemAnalyzerContext context, [NotNull] ITreeNode node,
             DaemonProcessKind processKind)
         {
             var contextsToChange = UnityProblemAnalyzerContextElement.NONE;

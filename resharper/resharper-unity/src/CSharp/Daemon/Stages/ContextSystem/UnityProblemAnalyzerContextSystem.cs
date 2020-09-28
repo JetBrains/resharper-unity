@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
 
@@ -16,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             mySettingsManager = settingsManager;
         }
 
+        [NotNull]
         public UnityProblemAnalyzerContextManagerInstance GetManagerInstance(IContextBoundSettingsStore settingsStore)
         {
             var settings = mySettingsManager.GetSettings(settingsStore);
@@ -24,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             return settingManagerInstance;
         }
 
-        public IUnityProblemAnalyzerContextProvider GetContextProvider(IContextBoundSettingsStore settingsStore, UnityProblemAnalyzerContextElement contextElement)
+        [NotNull]
+        public IUnityProblemAnalyzerContextProvider GetContextProvider([NotNull] IContextBoundSettingsStore settingsStore, UnityProblemAnalyzerContextElement contextElement)
         {
             var setting = mySettingsManager.GetSettingForContext(settingsStore, contextElement);
             var contextProvider = myContextManager.GetContextProvider(setting);

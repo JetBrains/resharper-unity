@@ -9,8 +9,11 @@ using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -37,40 +40,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
         
         protected override void CollectHighlightings(IPsiDocumentRangeView psiDocumentRangeView, HighlightingsConsumer consumer)
         {
-            var settingsStore = psiDocumentRangeView.GetSettingsStore();
-            
-            if (!settingsStore.GetValue((UnitySettings key) => key.EnableBurstCodeHighlighting))
-                return;
-
             var view = psiDocumentRangeView.View<CSharpLanguage>();
             var node = view.GetSelectedTreeNode<IFunctionDeclaration>();
-            
-            if (node != null && !BurstCodeAnalysisUtil.IsBurstContextBannedNode(node))
-            {
-                var declaredElement = node.DeclaredElement;
-                if  (declaredElement == null)
-                    return;
-                
-                var solution = psiDocumentRangeView.Solution;
-                var swa = solution.GetComponent<SolutionAnalysisService>();
-                if (swa?.Configuration?.Enabled?.Value == false)
-                    return;
-                var isGlobalStage = swa.Configuration?.Completed?.Value == true;
-                var callGraphExtension = solution.GetComponent<CallGraphSwaExtensionProvider>();
-                var callGraphAnalyzer = solution.GetComponent<BurstMarksProvider>();
-                var elementIdProvider = solution.GetComponent<IElementIdProvider>();
-                var usageChecker = swa.UsageChecker;
-                if (usageChecker == null)
-                    return;
-                var elementId = elementIdProvider.GetElementId(declaredElement);
-                if (!elementId.HasValue)
-                    return;
 
-                if (callGraphExtension.IsMarkedByCallGraphRootMarksProvider(callGraphAnalyzer.Id, isGlobalStage, elementId.Value))
-                {
-                    consumer.ConsumeHighlighting(new UnityBurstContextHighlightInfo(node.GetDocumentRange()));
-                }
-            }
+            if (node == null)
+                return;
+            
+            var solution = psiDocumentRangeView.Solution;
+            var swa = solution.GetComponent<SolutionAnalysisService>();
+                
+            if (!UnityCallGraphUtil.IsSweaCompleted(swa))
+                return;
+
+            var contextSystem = solution.GetComponent<UnityProblemAnalyzerContextSystem>();
+            var settingsStore = psiDocumentRangeView.GetSettingsStore();
+            var burstContextProvider = contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.BURST_CONTEXT);
+ 
+            if (burstContextProvider.IsProblemContextBound == false)
+                return;
+            
+            var processKind = UnityCallGraphUtil.GetProcessKindForGraph(swa);
+
+            if (burstContextProvider.IsMarked(node, processKind, false))
+                consumer.ConsumeHighlighting(new UnityBurstContextHighlightInfo(node.GetDocumentRange()));
         }
     }
 }

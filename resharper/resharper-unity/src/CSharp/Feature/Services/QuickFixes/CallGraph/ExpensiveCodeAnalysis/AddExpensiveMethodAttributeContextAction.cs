@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
@@ -50,13 +51,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public override IEnumerable<IntentionAction> CreateBulbItems()
         {
-            if (mySwa.Configuration?.Enabled?.Value == false)
+            if (!UnityCallGraphUtil.IsSweaCompleted(mySwa))
                 yield break;
 
             if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(MethodDeclaration))
                 yield break;
             
-            var processKind = CallGraphActionUtil.GetProcessKind(mySwa);
+            var processKind = UnityCallGraphUtil.GetProcessKindForGraph(mySwa);
             
             if (myExpensiveContextProvider.IsMarked(MethodDeclaration, processKind, false))
                 yield break;

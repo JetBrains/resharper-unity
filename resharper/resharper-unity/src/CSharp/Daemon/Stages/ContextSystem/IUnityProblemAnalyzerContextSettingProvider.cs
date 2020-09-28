@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
@@ -8,6 +9,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
     /// </summary>
     public interface IUnityProblemAnalyzerContextSettingProvider : IUnityProblemAnalyzerContextClassification
     {
-        UnityProblemAnalyzerContextSetting CheckSettings(IContextBoundSettingsStore settingsStore);
+        [NotNull]
+        UnityProblemAnalyzerContextSetting CheckSettings([NotNull] IContextBoundSettingsStore settingsStore);
     }
 }

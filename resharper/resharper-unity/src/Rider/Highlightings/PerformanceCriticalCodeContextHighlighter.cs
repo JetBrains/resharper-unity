@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
@@ -34,39 +35,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             return highlighter.GetDataProcessAction(prolongedLifetime, psiDocumentRangeView);
         }
 
-        protected override void CollectHighlightings(IPsiDocumentRangeView psiDocumentRangeView,
-            HighlightingsConsumer consumer)
+        protected override void CollectHighlightings(IPsiDocumentRangeView psiDocumentRangeView, HighlightingsConsumer consumer)
         {
+            var view = psiDocumentRangeView.View<CSharpLanguage>();
+            var node = view.GetSelectedTreeNode<IFunctionDeclaration>();
+
+            if (node == null)
+                return;
+            
             var settingsStore = psiDocumentRangeView.GetSettingsStore();
             var solution = psiDocumentRangeView.Solution;
             var swa = solution.GetComponent<SolutionAnalysisService>();
             
-            if (swa.Configuration?.Enabled?.Value == false)
+            if (!UnityCallGraphUtil.IsSweaCompleted(swa))
                 return;
             
-            var isGlobalStage = swa.Configuration?.Completed?.Value == true;
             var contextSystem = solution.GetComponent<UnityProblemAnalyzerContextSystem>();
             var contextProvider =
                 contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT);
 
-            if (!contextProvider.IsProblemContextBound) 
+            if (contextProvider.IsProblemContextBound == false) 
                 return;
 
             if (settingsStore.GetValue((UnitySettings key) => key.PerformanceHighlightingMode) !=
                 PerformanceHighlightingMode.CurrentMethod)
                 return;
+            
+            var kind = UnityCallGraphUtil.GetProcessKindForGraph(swa);
 
-            var view = psiDocumentRangeView.View<CSharpLanguage>();
-            var node = view.GetSelectedTreeNode<IFunctionDeclaration>();
-
-            var declaredElement = node?.DeclaredElement;
-
-            if (declaredElement == null)
-                return;
-
-            var kind = isGlobalStage ? DaemonProcessKind.OTHER : DaemonProcessKind.GLOBAL_WARNINGS;
-
-            if (contextProvider.IsMarked(declaredElement, kind))
+            if (contextProvider.IsMarked(node, kind, false))
                 consumer.ConsumeHighlighting(new UnityPerformanceContextHighlightInfo(node.GetDocumentRange()));
         }
     }
