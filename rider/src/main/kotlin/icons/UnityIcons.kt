@@ -54,44 +54,29 @@ class UnityIcons {
             val UnityStatusPlay = IconLoader.getIcon("/Icons/status/unityStatusPlay.svg")
             val UnityStatusPause = IconLoader.getIcon("/Icons/status/unityStatusPause.svg")
 
-            val UnityStatusProgress1 = IconLoader.getIcon("/Icons/status/unityStatusProgress1.svg")
-            val UnityStatusProgress2 = IconLoader.getIcon("/Icons/status/unityStatusProgress2.svg")
-            val UnityStatusProgress3 = IconLoader.getIcon("/Icons/status/unityStatusProgress3.svg")
-            val UnityStatusProgress4 = IconLoader.getIcon("/Icons/status/unityStatusProgress4.svg")
-            val UnityStatusProgress5 = IconLoader.getIcon("/Icons/status/unityStatusProgress5.svg")
-
             val UnityStatusProgress = AnimatedIcon(150,
-                UnityStatusProgress5,
-                UnityStatusProgress4,
-                UnityStatusProgress3,
-                UnityStatusProgress2,
-                UnityStatusProgress1)
-
-            val UnityStatusPlayProgress1 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress1.svg")
-            val UnityStatusPlayProgress2 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress2.svg")
-            val UnityStatusPlayProgress3 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress3.svg")
-            val UnityStatusPlayProgress4 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress4.svg")
-            val UnityStatusPlayProgress5 = IconLoader.getIcon("/Icons/status/unityStatusPlayProgress5.svg")
+                IconLoader.getIcon("/Icons/status/unityStatusProgress6.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusProgress5.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusProgress4.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusProgress3.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusProgress2.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusProgress1.svg"))
 
             val UnityStatusPlayProgress = AnimatedIcon(150,
-                UnityStatusPlayProgress5,
-                UnityStatusPlayProgress4,
-                UnityStatusPlayProgress3,
-                UnityStatusPlayProgress2,
-                UnityStatusPlayProgress1)
-
-            val UnityStatusPauseProgress1 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress1.svg")
-            val UnityStatusPauseProgress2 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress2.svg")
-            val UnityStatusPauseProgress3 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress3.svg")
-            val UnityStatusPauseProgress4 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress4.svg")
-            val UnityStatusPauseProgress5 = IconLoader.getIcon("/Icons/status/unityStatusPauseProgress5.svg")
+                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress6.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress5.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress4.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress3.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress2.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPlayProgress1.svg"))
 
             val UnityStatusPauseProgress = AnimatedIcon(150,
-                UnityStatusPauseProgress5,
-                UnityStatusPauseProgress4,
-                UnityStatusPauseProgress3,
-                UnityStatusPauseProgress2,
-                UnityStatusPauseProgress1)
+                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress6.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress5.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress4.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress3.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress2.svg"),
+                IconLoader.getIcon("/Icons/status/unityStatusPauseProgress1.svg"))
         }
     }
 
