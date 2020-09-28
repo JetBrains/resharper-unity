@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -96,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
             lexer.Start();
 
             var definedMacroses = new Dictionary<string, string>();
-            var shaderTarget = "25";
+            var shaderTarget = HlslConstants.SHADER_TARGET_25;
             while (lexer.TokenType != null)
             {
                 var tokenType = lexer.TokenType;
@@ -119,13 +120,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
                     }
 
                     if (pragmaType.Equals("target"))
-                        shaderTarget = firstValue.Replace(".", "");
+                    {
+                        var versionFromTarget = int.TryParse(firstValue.Replace(".", ""), out var result) ? result : HlslConstants.SHADER_TARGET_35;
+                        shaderTarget = Math.Max(shaderTarget, versionFromTarget);
+                    }
 
                     if (pragmaType.Equals("geometry"))
-                        shaderTarget = "40";
+                        shaderTarget = Math.Max(shaderTarget, HlslConstants.SHADER_TARGET_40);
                     
                     if (pragmaType.Equals("hull") || pragmaType.Equals("domain"))
-                        shaderTarget = "50";
+                        shaderTarget = Math.Max(shaderTarget, HlslConstants.SHADER_TARGET_46);
 
                     // https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Cookies
                     if (pragmaType.Equals("multi_compile_lightpass"))
@@ -142,7 +146,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
                 lexer.Advance();
             }
 
-            definedMacroses["SHADER_TARGET"] = shaderTarget;
+            definedMacroses["SHADER_TARGET"] = shaderTarget.ToString();
             return definedMacroses;
         }
         
