@@ -15,6 +15,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
+- Add smart backspace for shader files ([#1863](https://github.com/JetBrains/resharper-unity/pull/1863))
 - Rider: Run Unity menu item handlers via gutter icon ([RIDER-35911](https://youtrack.jetbrains.com/issue/RIDER-35911), [#1857](https://github.com/JetBrains/resharper-unity/pull/1857))
 
 ### Changed
@@ -30,6 +31,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix ignoring `[Explicit]` attribute on unit tests ([#1731](https://github.com/JetBrains/resharper-unity/issues/1731), [RIDER-48686](https://youtrack.jetbrains.com/issue/RIDER-48686), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
 - Rider: Handle parameterized test fixtures with parameterized tests ([RIDER-46658](https://youtrack.jetbrains.com/issue/RIDER-46658), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
 - Rider: Fix infinite "refreshing solution" when no connection to Unity editor plugin ([#1601](https://github.com/JetBrains/resharper-unity/issues/1601), [RIDER-48690](https://youtrack.jetbrains.com/issue/RIDER-48690), [#1828](https://github.com/JetBrains/resharper-unity/pull/1828))
+- Rider: Fix missing animation frame from busy status icon ([#1862](https://github.com/JetBrains/resharper-unity/issues/1862), [#1865](https://github.com/JetBrains/resharper-unity/pull/1865))
 - Unity editor: Fix losing Console messages before first `EditorApplication.update` ([#1837](https://github.com/JetBrains/resharper-unity/pull/1837))
 
 
