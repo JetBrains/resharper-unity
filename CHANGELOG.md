@@ -26,7 +26,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
-- Fix missing "remove redundant event function" quick fix ([#1860](https://github.com/JetBrains/resharper-unity/issues/1860), [#1864](https://github.com/JetBrains/resharper-unity/pull/1864))
+- Fix missing remove redundant event function quick fix ([#1860](https://github.com/JetBrains/resharper-unity/issues/1860), [#1864](https://github.com/JetBrains/resharper-unity/pull/1864))
 - Rider: Fix ignoring `[Explicit]` attribute on unit tests ([#1731](https://github.com/JetBrains/resharper-unity/issues/1731), [RIDER-48686](https://youtrack.jetbrains.com/issue/RIDER-48686), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
 - Rider: Handle parameterized test fixtures with parameterized tests ([RIDER-46658](https://youtrack.jetbrains.com/issue/RIDER-46658), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
 - Rider: Fix infinite "refreshing solution" when no connection to Unity editor plugin ([#1601](https://github.com/JetBrains/resharper-unity/issues/1601), [RIDER-48690](https://youtrack.jetbrains.com/issue/RIDER-48690), [#1828](https://github.com/JetBrains/resharper-unity/pull/1828))

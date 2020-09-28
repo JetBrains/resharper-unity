@@ -57,6 +57,10 @@ ${changelogNotes}
 
 See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details and history."""
 
+    // The command line to call nuget pack passes properties as a semi-colon delimited string
+    // We can't have HTML encoded entities (e.g. &quot;)
+    assert ReleaseNotes.contains(";") == false
+
     nuspecFile = new File(backend.backendRoot, 'resharper-unity/src/resharper-unity.resharper.nuspec')
     destinationDir = new File(backend.backendRoot, "build/distributions/$BuildConfiguration")
     packageAnalysis = false
@@ -72,6 +76,7 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
     doFirst {
         buildServer.progress("Packing: $nuspecFile.name")
     }
+    outputs.upToDateWhen { false }
 }
 
 task nunitReSharperYaml(type: nunit.class) {
