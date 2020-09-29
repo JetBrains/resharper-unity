@@ -56,6 +56,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("folder", string.interned(shaderInternScope))
         field("start", int)
         field("end", int)
+        field("startLine", int)
     }
 
 
@@ -135,7 +136,6 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
             field("path", string.interned(shaderInternScope))
             field("start", int)
             field("end", int)
-
         })
     }
 }

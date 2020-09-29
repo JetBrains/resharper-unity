@@ -3,45 +3,31 @@ package com.jetbrains.rider.plugins.unity.ui.shaders
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.impl.EditorImpl
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.CustomStatusBarWidget
-import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidget.Multiframe
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget
-import com.intellij.ui.ErrorLabel
-import com.intellij.ui.JBColor
-import com.intellij.ui.components.panels.OpaquePanel
-import com.intellij.ui.popup.PopupFactoryImpl
-import com.intellij.ui.popup.list.PopupListElementRenderer
-import com.intellij.util.FontUtil
-import com.intellij.util.ui.JBUI
-import com.intellij.util.ui.UIUtil
-import com.intellij.util.ui.UIUtil.DEFAULT_HGAP
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rdclient.document.getFirstEditableEntityId
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.cpp.fileType.CppFileType
-import com.jetbrains.rider.model.ContextInfo
 import com.jetbrains.rider.model.EditableEntityId
 import com.jetbrains.rider.model.ShaderContextData
 import com.jetbrains.rider.model.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.UnityHost
-import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.shaderLab.ShaderLabFileType
 import icons.UnityIcons
 import java.awt.BorderLayout
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import javax.swing.JComponent
 import javax.swing.JLabel
-import javax.swing.JList
 import javax.swing.JPanel
 
 
@@ -50,6 +36,10 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
     private val statusBarComponent = JPanel(BorderLayout())
     private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
     private val requestLifetime = SequentialLifetimes(project.lifetime)
+
+    companion object {
+        fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}";
+    }
 
     init {
         label.text = "..."
@@ -111,7 +101,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
             val result = it.unwrap()
             statusBarComponent.isVisible = true
             if (result is ShaderContextData)
-                label.text = "${result.name} (${result.start}-${result.end})"
+                label.text = getContextPresentation(result)
             else
                 label.text = "Auto"
         }

@@ -7,12 +7,15 @@ import com.jetbrains.rider.model.ContextInfo
 import com.jetbrains.rider.model.EditableEntityId
 import com.jetbrains.rider.model.ShaderContextData
 import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidget.Companion.getContextPresentation
 import javax.swing.JLabel
 
 class ShaderContextSwitchAction(val project: Project, val id: EditableEntityId, val host: UnityHost,
-                                val data: ShaderContextData, val uiLabel: JLabel) : AnAction("${data.name} (${data.start}-${data.end})") {
+                                val data: ShaderContextData, val uiLabel: JLabel) : AnAction(data.name) {
+
     override fun actionPerformed(p0: AnActionEvent) {
-        uiLabel.text = "${data.name} (${data.start}-${data.end})"
+        uiLabel.text = getContextPresentation(data)
         host.model.changeContext.fire(ContextInfo(id, data.path, data.start, data.end))
     }
+
 }

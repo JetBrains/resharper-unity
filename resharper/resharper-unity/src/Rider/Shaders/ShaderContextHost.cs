@@ -21,49 +21,60 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly CppGlobalSymbolCache myCppGlobalSymbolCache;
         private readonly DocumentHost myDocumentHost;
         private readonly ShaderContextCache myShaderContextCache;
+        private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
         public ShaderContextHost(Lifetime lifetime, ISolution solution,UnityHost unityHost, IPsiFiles psiFiles, CppGlobalSymbolCache cppGlobalSymbolCache,
-            DocumentHost documentHost, ShaderContextCache shaderContextCache)
+            DocumentHost documentHost, ShaderContextCache shaderContextCache, ShaderContextDataPresentationCache shaderContextDataPresentationCache)
         {
             mySolution = solution;
             myPsiFiles = psiFiles;
             myCppGlobalSymbolCache = cppGlobalSymbolCache;
             myDocumentHost = documentHost;
             myShaderContextCache = shaderContextCache;
+            myShaderContextDataPresentationCache = shaderContextDataPresentationCache;
 
             unityHost.PerformModelAction(t =>
             {
                 t.RequestShaderContexts.Set((lt, id) =>
                 {
-                    var sourceFile = GetSourceFile(id);
-                    if (sourceFile == null)
-                        return Rd.Tasks.RdTask<List<ShaderContextDataBase>>.Successful(new List<ShaderContextDataBase>());
-                    var task = new Rd.Tasks.RdTask<List<ShaderContextDataBase>>();
-                    RequestShaderContexts(lt, sourceFile, task);
+                    using (ReadLockCookie.Create())
+                    {
+                        var sourceFile = GetSourceFile(id);
+                        if (sourceFile == null)
+                            return Rd.Tasks.RdTask<List<ShaderContextDataBase>>.Successful(new List<ShaderContextDataBase>());
+                        var task = new Rd.Tasks.RdTask<List<ShaderContextDataBase>>();
+                        RequestShaderContexts(lt, sourceFile, task);
 
-                    return task;
+                        return task;
+                    }
                 });
 
                 t.ChangeContext.Advise(lifetime, c =>
                 {
-                    IPsiSourceFile sourceFile = GetSourceFile(c.Target);
-                    if (sourceFile == null)
-                        return;
-                    
-                    var cppFileLocation = new CppFileLocation(new FileSystemPathWithRange(FileSystemPath.Parse(c.Path), new TextRange(c.Start, c.End)));
-                    shaderContextCache.SetContext(sourceFile, cppFileLocation);
+                    using (ReadLockCookie.Create())
+                    {
+                        IPsiSourceFile sourceFile = GetSourceFile(c.Target);
+                        if (sourceFile == null)
+                            return;
+
+                        var cppFileLocation = new CppFileLocation(
+                            new FileSystemPathWithRange(FileSystemPath.Parse(c.Path), new TextRange(c.Start, c.End)));
+                        shaderContextCache.SetContext(sourceFile, cppFileLocation);
+                    }
                 });
                 
                 t.RequestCurrentContext.Set((lt, id) =>
                 {
-                    var sourceFile = GetSourceFile(id);
-                    if (sourceFile == null)
-                        return Rd.Tasks.RdTask<ShaderContextDataBase>.Successful(new AutoShaderContextData());
+                    using (ReadLockCookie.Create())
+                    {
+                        var sourceFile = GetSourceFile(id);
+                        if (sourceFile == null)
+                            return Rd.Tasks.RdTask<ShaderContextDataBase>.Successful(new AutoShaderContextData());
                     
-                    var task = new Rd.Tasks.RdTask<ShaderContextDataBase>();
-                    RequestCurrentContext(lt, sourceFile, task);
-                    return task;
-
+                        var task = new Rd.Tasks.RdTask<ShaderContextDataBase>();
+                        RequestCurrentContext(lt, sourceFile, task);
+                        return task;
+                    }
                 });
             });
         }
@@ -71,12 +82,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
 
         private IPsiSourceFile GetSourceFile(EditableEntityId id)
         {
-            using (ReadLockCookie.Create())
-            {
-                var document = myDocumentHost.TryGetHostDocument(id);
-                return document?.GetPsiSourceFile(mySolution);
-            }
+            var document = myDocumentHost.TryGetHostDocument(id);
+            return document?.GetPsiSourceFile(mySolution);
         }
+        
         private void RequestCurrentContext(Lifetime lt, IPsiSourceFile sourceFile, Rd.Tasks.RdTask<ShaderContextDataBase> task)
         {
             var currentRoot = myShaderContextCache.GetPreferredRootFile(new CppFileLocation(sourceFile));
@@ -93,7 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                     var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRoots(new CppFileLocation(sourceFile));
                     if (possibleRoots.Contains(currentRoot))
                     {
-                        mySolution.Locks.ExecuteOrQueueEx(lt, "SetCurrentContext", () =>
+                        mySolution.Locks.ExecuteOrQueueReadLockEx(lt, "SetCurrentContext", () =>
                         {
                             task.Set(GetContextDataFor(currentRoot));
                         });
@@ -115,32 +124,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             {
                 task.SetCancelled();
                 return;
-                
             }
 
-            using (ReadLockCookie.Create())
+            myPsiFiles.CommitAllDocumentsAsync(() =>
             {
-                myPsiFiles.CommitAllDocumentsAsync(() =>
+                var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRoots(new CppFileLocation(sourceFile));
+                var result = new List<ShaderContextDataBase>();
+                foreach (var root in possibleRoots)
                 {
-                    var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRoots(new CppFileLocation(sourceFile));
-                    var result = new List<ShaderContextDataBase>();
-                    foreach (var root in possibleRoots)
+                    if (root.IsInjected())
                     {
-                        if (root.IsInjected())
-                            result.Add(GetContextDataFor(root));
+                        var item = GetContextDataFor(root);
+                        if (item != null)
+                            result.Add(item);
                     }
-                    task.Set(result);
-                }, () => RequestShaderContexts(lt, sourceFile, task));
-            }
+                }
+                task.Set(result);
+            }, () => RequestShaderContexts(lt, sourceFile, task));
         }
 
         private ShaderContextData GetContextDataFor(CppFileLocation root)
         {
+            var range = myShaderContextDataPresentationCache.GetRangeForShaderProgram(root.GetRandomSourceFile(mySolution), root.RootRange);
+            if (!range.HasValue)
+                return null;
+        
             var folderFullPath = root.Location.Parent;
             var folderPath = folderFullPath.TryMakeRelativeTo(mySolution.SolutionDirectory);
 
             var folderHint = folderPath.FullPath.ShortenTextWithEllipsis(40);
-            return new ShaderContextData(root.Location.FullPath, root.Location.Name, folderHint, root.RootRange.StartOffset, root.RootRange.EndOffset);
+            return new ShaderContextData(root.Location.FullPath, root.Location.Name, folderHint, root.RootRange.StartOffset, root.RootRange.EndOffset, range.Value.startLine + 1);
         }
     }
 }
