@@ -1,13 +1,13 @@
 import org.jetbrains.intellij.tasks.PrepareSandboxTask
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
 
 // Set -PwarningsAsErrors to disable warnings as errors. Useful in TeamCity where the build of the bundled plugin
 // shouldn't cause the rest of the build to fail for warnings (e.g. some APIs are deprecated)
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = javaVersion
         allWarningsAsErrors = warningsAsErrors.toBoolean()
         freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
     }
@@ -15,7 +15,7 @@ compileKotlin {
 
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = javaVersion
         allWarningsAsErrors = false
     }
 }
