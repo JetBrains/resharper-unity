@@ -27,6 +27,7 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
 
     override fun getListElementRenderer() = object : PopupListElementRenderer<PopupFactoryImpl.ActionItem>(this) {
         private var myInfoLabel: JLabel? = null
+        private var myPosLabel: JLabel? = null
 
         override fun createItemComponent(): JComponent {
             myTextLabel = ErrorLabel()
@@ -37,10 +38,16 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
             myInfoLabel!!.foreground = UIUtil.getLabelDisabledForeground()
             myInfoLabel!!.setOpaque(true)
             myInfoLabel!!.setBorder(JBUI.Borders.empty(1, UIUtil.DEFAULT_HGAP, 1, 1))
-            myInfoLabel!!.setFont(FontUtil.minusOne(myInfoLabel!!.getFont()))
+
+            myPosLabel = JLabel()
+            myPosLabel!!.foreground = UIUtil.getLabelDisabledForeground()
+            myPosLabel!!.setOpaque(true)
+            myPosLabel!!.setBorder(JBUI.Borders.empty(1, 0, 1, 1))
+
 
             val textPanel: JPanel = OpaquePanel(BorderLayout(), JBColor.WHITE)
             textPanel.add(myTextLabel, BorderLayout.WEST)
+            textPanel.add(myPosLabel, BorderLayout.CENTER)
             textPanel.add(myInfoLabel, BorderLayout.EAST)
 
             return layoutComponent(textPanel)
@@ -53,6 +60,7 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
             val action = value?.action ?: return
             if (action is ShaderContextSwitchAction) {
                 myInfoLabel!!.setText(action.data.folder);
+                myPosLabel!!.text = ":" + action.data.startLine
             }
         }
     }
