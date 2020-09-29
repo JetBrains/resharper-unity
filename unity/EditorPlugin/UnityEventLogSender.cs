@@ -17,7 +17,7 @@ namespace JetBrains.Rider.Unity.Editor
       ourLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled;
       if (!ourLogEventsCollectorEnabled)
         return;
-
+      
       EditorApplication.update += () =>
       {
         // can be called only from main thread
@@ -86,7 +86,7 @@ namespace JetBrains.Rider.Unity.Editor
           break;
       }
 
-      RdLogEventMode mode = RdLogEventMode.Play;
+      var mode = RdLogEventMode.Play;
       if (PluginEntryPoint.PlayModeSavedState == PluginEntryPoint.PlayModeState.Stopped)
         mode = RdLogEventMode.Edit;
 

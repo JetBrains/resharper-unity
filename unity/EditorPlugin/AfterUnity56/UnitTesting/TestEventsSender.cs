@@ -11,7 +11,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public class TestEventsSender
   {
-    private static readonly ILog ourLogger = Log.GetLog(typeof(TestEventsSender).Name);
+    private static readonly ILog ourLogger = Log.GetLog(nameof(TestEventsSender));
     
     internal TestEventsSender(UnitTestLaunch unitTestLaunch)
     { 

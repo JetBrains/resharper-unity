@@ -65,7 +65,7 @@ intellij {
     downloadSources = false
     instrumentCode = false
 
-    plugins = [ 'rider-plugins-appender', 'CSS', 'yaml' ]
+    plugins = [ 'rider-plugins-appender', 'CSS', 'yaml', 'dotCover' ]
 }
 
 patchPluginXml {
@@ -214,6 +214,14 @@ processResources {
 
 test {
     useTestNG() {}
+    if (project.hasProperty("integrationTests")) {
+        String testsType = (String) project.property("integrationTests")
+        if (testsType == "include") {
+            include "integrationTests/**"
+        } else if (testsType == "exclude") {
+            exclude "integrationTests/**"
+        }
+    }
     testLogging {
         showStandardStreams = true
         exceptionFormat "full"

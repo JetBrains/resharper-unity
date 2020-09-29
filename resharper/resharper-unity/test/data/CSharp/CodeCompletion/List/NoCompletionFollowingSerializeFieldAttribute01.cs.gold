@@ -1,4 +1,4 @@
-﻿# 751 ITEMS #
+﻿# 752 ITEMS #
 
 + abstract
 async
@@ -31,6 +31,7 @@ private
 protected
 public
 readonly
+record
 ref
 sbyte
 sealed
@@ -752,7 +753,7 @@ public override Equals(object) { … }    bool
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 751 ITEMS #
+# 752 ITEMS #
 
 + abstract
 async
@@ -785,6 +786,7 @@ private
 protected
 public
 readonly
+record
 ref
 sbyte
 sealed

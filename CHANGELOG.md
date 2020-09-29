@@ -7,15 +7,49 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0). 
 This plugin has functionality that is common to both ReSharper and Rider. It also contains a plugin for the Unity editor that is used to communicate with Rider. Changes marked with a "Rider:" prefix are specific to Rider, while changes for the Unity editor plugin are marked with a "Unity editor:" prefix. No prefix means that the change is common to both Rider and ReSharper.
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
+
+
 ## 2020.3.0
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net202...net203)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/41?closed=1)
 
+### Added
+
+- Add smart backspace for shader files ([#1863](https://github.com/JetBrains/resharper-unity/pull/1863))
+- Rider: Run Unity menu item handlers via gutter icon ([RIDER-35911](https://youtrack.jetbrains.com/issue/RIDER-35911), [#1857](https://github.com/JetBrains/resharper-unity/pull/1857))
+
+### Changed
+
+- Rider: Add define symbols based on pragmas in shader files, such as `multi_compile`, `shader_feature`, `target`, `geometry`, etc. ([RIDER-49527](https://youtrack.jetbrains.com/issue/RIDER-49527), [#1826](https://github.com/JetBrains/resharper-unity/pull/1826))
+- Rider: Launch Unity if not already running when trying to run, debug or cover unit tests ([#1831](https://github.com/JetBrains/resharper-unity/pull/1831))
+- Rider: Replace Clear on Play option in Unity log view with filters for last play mode and last AppDomain reload ([RIDER-49887](https://youtrack.jetbrains.com/issue/RIDER-49887), [RIDER-15476](https://youtrack.jetbrains.com/issue/RIDER-15476) [#1833](https://github.com/JetBrains/resharper-unity/pull/1831))
+- Rider: Move Open Editor Log and Open Player Log actions to Unity log view main toolbar ([#1833](https://github.com/JetBrains/resharper-unity/pull/1831))
+
+### Fixed
+
+- Fix missing remove redundant event function quick fix ([#1860](https://github.com/JetBrains/resharper-unity/issues/1860), [#1864](https://github.com/JetBrains/resharper-unity/pull/1864))
+- Rider: Fix ignoring `[Explicit]` attribute on unit tests ([#1731](https://github.com/JetBrains/resharper-unity/issues/1731), [RIDER-48686](https://youtrack.jetbrains.com/issue/RIDER-48686), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
+- Rider: Handle parameterized test fixtures with parameterized tests ([RIDER-46658](https://youtrack.jetbrains.com/issue/RIDER-46658), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
+- Rider: Fix infinite "refreshing solution" when no connection to Unity editor plugin ([#1601](https://github.com/JetBrains/resharper-unity/issues/1601), [RIDER-48690](https://youtrack.jetbrains.com/issue/RIDER-48690), [#1828](https://github.com/JetBrains/resharper-unity/pull/1828))
+- Rider: Fix missing animation frame from busy status icon ([#1862](https://github.com/JetBrains/resharper-unity/issues/1862), [#1865](https://github.com/JetBrains/resharper-unity/pull/1865))
+- Unity editor: Fix losing Console messages before first `EditorApplication.update` ([#1837](https://github.com/JetBrains/resharper-unity/pull/1837))
+
+
+
+## 2020.2.3
+* Released: [2020-09-18](https://blog.jetbrains.com/dotnet/2020/09/18/resharper-rider-2020-2-3/)
+* Build: 2020.2.2.314
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net202-rtm-2020.2.2...net202-rtm-2020.2.3)
+
 
 
 ## 2020.2.2
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202-rtm-2020.2.0-rtm-2020.2.1...net202)
+* Released: [2020-09-10](https://blog.jetbrains.com/dotnet/2020/09/10/resharper-rider-2020-2-2/)
+* Build: 2020.2.2.311
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202-rtm-2020.2.0-rtm-2020.2.1...net202-rtm-2020.2.2)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/40?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net202-rtm-2020.2.2)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.2.2.311)
 
 ### Changed
 

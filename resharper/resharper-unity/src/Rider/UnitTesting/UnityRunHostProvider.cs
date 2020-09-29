@@ -1,3 +1,4 @@
+using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.Unity;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -11,7 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public override ITaskRunnerHostController CreateHostController(IUnitTestLaunch launch)
         {
             var innerHostController = base.CreateHostController(launch);
-            return new UnityTaskRunnerHostController(innerHostController, 
+            return new UnityTaskRunnerHostController(innerHostController,
+                                                     launch.Solution.GetComponent<IShellLocks>(),
                                                      launch.Solution.GetComponent<IUnityController>());
         }
     }

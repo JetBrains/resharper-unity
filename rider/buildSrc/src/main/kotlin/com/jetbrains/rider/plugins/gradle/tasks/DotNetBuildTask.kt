@@ -33,6 +33,7 @@ open class DotNetBuildTask: DefaultTask() {
                 "/p:Version=${project.version}",
                 "/p:TreatWarningsAsErrors=$warningsAsErrors",
                 "/v:$verbosity",
+                "/bl:${file.name+".binlog"}",
                 "/nologo")
 
         logger.info("dotnet call: '$dotNetCliPath' '$buildArguments' in '$slnDir'")

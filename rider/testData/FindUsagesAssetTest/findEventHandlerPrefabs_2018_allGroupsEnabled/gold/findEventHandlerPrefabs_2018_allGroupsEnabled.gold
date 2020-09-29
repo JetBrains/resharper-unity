@@ -7,6 +7,7 @@ Found usages  (2 usages found)
                 MonoBehaviour  (1 usage found)
                     m_MethodName: Test
         SampleScene.unity  (1 usage found)
-            Canvas\Button  (1 usage found)
-                MonoBehaviour  (1 usage found)
-                    m_MethodName: Test
+            Canvas  (1 usage found)
+                Button  (1 usage found)
+                    MonoBehaviour  (1 usage found)
+                        m_MethodName: Test

@@ -4,13 +4,18 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory
 import com.intellij.execution.impl.ConsoleViewImpl
 import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.editor.actions.ToggleUseSoftWrapsToolbarAction
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.IdeFocusManager
+import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.ui.DocumentAdapter
 import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
@@ -21,12 +26,12 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
+import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
+import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
-import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -42,14 +47,14 @@ import java.util.*
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 
-class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel) {
+class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logModel: UnityLogPanelModel, toolWindow: ToolWindow) {
     private val console = TextConsoleBuilderFactory.getInstance()
         .createBuilder(project)
         .filters(AnalyzeStacktraceUtil.EP_NAME.getExtensions(project))
         .console as ConsoleViewImpl
 
     private val tokenizer: UnityLogTokenizer = UnityLogTokenizer()
-    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelView->ensureIndexIsVisible", 250, true, MergingUpdateQueue.ANY_COMPONENT, project, null, true).setRestartTimerOnAdd(false)
+    private val mergingUpdateQueue = MergingUpdateQueue("UnityLogPanelView->ensureIndexIsVisible", 250, true, toolWindow.component).setRestartTimerOnAdd(false)
     private val mergingUpdateQueueAction: Update = object : Update("UnityLogPanelView->ensureIndexIsVisible") {
         override fun run() = eventList.ensureIndexIsVisible(eventList.itemsCount - 1)
     }
@@ -107,13 +112,9 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         }.installOn(this)
 
-        project.solution.rdUnityModel.clearOnPlay.adviseNotNull(lifetime) {
-            logModel.events.clearBefore(it)
-        }
-
         logModel.events.onAutoscrollChanged.advise(lifetime){
             if (it)
-                eventList1.ensureIndexIsVisible(eventList1.itemsCount-1)
+                eventList1.ensureIndexIsVisible(eventList1.itemsCount - 1)
         }
     }
 
@@ -185,25 +186,23 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
     }
 
-    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel, mainSplitterToggleAction, console.createConsoleActions()
-        .filter { it is ToggleUseSoftWrapsToolbarAction }.toList())
-
-    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
-
     fun getMainSplitterIcon(invert: Boolean = false): Icon? = when (mainSplitterOrientation.value xor invert) {
         true -> AllIcons.Actions.SplitHorizontally
         false -> AllIcons.Actions.SplitVertically
     }
 
+    private val leftToolbar = UnityLogPanelToolbarBuilder.createLeftToolbar(logModel)
+
+    private val topToolbar = UnityLogPanelToolbarBuilder.createTopToolbar()
+
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
     private fun addToList(newEvent: RdLogEvent) {
         if (logModel.mergeSimilarItems.value) {
-            val existing = eventList.riderModel.elements().toList()
-                .filter {
-                    it.message == newEvent.message && it.stackTrace == newEvent.stackTrace &&
-                        it.mode == newEvent.mode && it.type == newEvent.type
-                }.singleOrNull()
+            val existing = eventList.riderModel.elements().toList().singleOrNull {
+                it.message == newEvent.message && it.stackTrace == newEvent.stackTrace &&
+                    it.mode == newEvent.mode && it.type == newEvent.type
+            }
             if (existing == null)
                 eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
             else {
@@ -222,7 +221,6 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         }
     }
 
-    // TODO: optimize
     private fun refreshList(newEvents: List<LogPanelItem>) {
         eventList.riderModel.clear()
         for (event in newEvents) {
@@ -235,7 +233,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     }
 
     init {
-        Disposer.register(project, console)
+        Disposer.register(toolWindow.disposable, console)
 
         mainSplitterOrientation.advise(lifetime) { value ->
             mainSplitter.orientation = value
@@ -260,6 +258,18 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
                 val list = item.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace, 1) }
                 refreshList(list)
             }
+        }
+
+        if (toolWindow is ToolWindowEx) {
+            toolWindow.setAdditionalGearActions(DefaultActionGroup().apply {
+                add(ActionManager.getInstance().getAction(RiderUnityOpenEditorLogAction.actionId))
+                add(ActionManager.getInstance().getAction(RiderUnityOpenPlayerLogAction.actionId))
+                add(ActionManager.getInstance().getAction(UnityPluginShowSettingsAction.actionId))
+
+                add(Separator.getInstance())
+                add(mainSplitterToggleAction)
+                addAll(console.createConsoleActions().filterIsInstance<ToggleUseSoftWrapsToolbarAction>().toList())
+            })
         }
 
         logModel.onCleared.advise(lifetime) { console.clear() }

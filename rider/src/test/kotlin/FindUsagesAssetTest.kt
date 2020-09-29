@@ -1,16 +1,11 @@
+import base.FindUsagesAssetTestBase
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.scriptingApi.*
-import org.testng.annotations.BeforeSuite
+import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
 import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.ALL])
 open class FindUsagesAssetTest : FindUsagesAssetTestBase() {
-
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
 
     override fun getSolutionDirectoryName(): String {
         return "FindUsages_event_handlers_2017"

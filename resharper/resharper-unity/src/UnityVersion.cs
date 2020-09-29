@@ -30,11 +30,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private readonly ISolution mySolution;
         private Version myVersionFromProjectVersionTxt;
         private Version myVersionFromEditorInstanceJson;
-        public readonly ViewableProperty<Version> ActualVersionForSolution = new ViewableProperty<Version>();
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
+        public readonly ViewableProperty<Version> ActualVersionForSolution = new ViewableProperty<Version>();
+
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
-            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, 
+            ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
             UnitySolutionTracker unitySolutionTracker)
         {
             myUnityProjectFileCache = unityProjectFileCache;
@@ -200,7 +201,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return version;
         }
-        
+
         public static string VersionToString([NotNull] Version version)
         {
             var type = string.Empty;
@@ -222,7 +223,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             return $"{version.Major}.{version.Minor}.{version.Build}{type}{rev}";
         }
-        
+
         internal static bool RequiresRiderPackage(Version version)
         {
             return version >= new Version(2019,2);

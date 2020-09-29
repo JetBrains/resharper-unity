@@ -37,9 +37,14 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Tests
         {
             try
             {
-                // SetupLogging();
+                SetupLogging();
                 SetJetTestPackagesDir();
                 HackTestDataInNugets.ApplyPatches();
+
+                // Temp workaround for GacCacheController, which adds all Mono GAC paths into a dictionary without
+                // checking for duplicates
+                if (PlatformUtil.IsRunningOnMono)
+                    Environment.SetEnvironmentVariable("MONO_GAC_PREFIX", "/foo");
             }
             catch (Exception e)
             {
