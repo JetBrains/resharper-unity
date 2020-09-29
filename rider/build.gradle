@@ -37,7 +37,7 @@ dependencies {
 }
 
 wrapper {
-    gradleVersion = '5.6.2'
+    gradleVersion = '6.6.1'
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
