@@ -5,10 +5,6 @@ import com.jetbrains.rider.plugins.gradle.tasks.*
 
 ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
 
-nuget {
-    version = "4.9.4"
-}
-
 task prepareRiderBuildProps(type: GenerateDotNetSdkPathPropsTask) {
     dotNetSdkPath { backend.getDotNetSdkPath() }
 }
