@@ -8,7 +8,7 @@ plugins {
     id 'org.jetbrains.changelog' version '0.3.2'
     id 'com.jetbrains.rdgen' version '0.201.57'
     id 'com.ullink.nuget' version '2.22'
-    id 'com.ullink.nunit' version '2.0'
+    id 'com.ullink.nunit' version '2.1'
     id 'me.filippov.gradle.jvm.wrapper' version '0.9.3'
 }
 
