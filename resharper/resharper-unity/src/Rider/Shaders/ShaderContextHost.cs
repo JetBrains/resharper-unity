@@ -126,7 +126,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                     var result = new List<ShaderContextDataBase>();
                     foreach (var root in possibleRoots)
                     {
-                        result.Add(GetContextDataFor(root));
+                        if (root.IsInjected())
+                            result.Add(GetContextDataFor(root));
                     }
                     task.Set(result);
                 }, () => RequestShaderContexts(lt, sourceFile, task));
