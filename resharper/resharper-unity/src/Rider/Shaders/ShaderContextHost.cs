@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
@@ -99,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             {
                 using (ReadLockCookie.Create())
                 {
-                    var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRoots(new CppFileLocation(sourceFile));
+                    var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRootsForFile(new CppFileLocation(sourceFile)).ToList();
                     if (possibleRoots.Contains(currentRoot))
                     {
                         mySolution.Locks.ExecuteOrQueueReadLockEx(lt, "SetCurrentContext", () =>
@@ -128,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
 
             myPsiFiles.CommitAllDocumentsAsync(() =>
             {
-                var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRoots(new CppFileLocation(sourceFile));
+                var possibleRoots = myCppGlobalSymbolCache.IncludesGraphCache.CollectPossibleRootsForFile(new CppFileLocation(sourceFile)).ToList();
                 var result = new List<ShaderContextDataBase>();
                 foreach (var root in possibleRoots)
                 {
