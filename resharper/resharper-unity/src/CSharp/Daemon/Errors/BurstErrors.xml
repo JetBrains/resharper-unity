@@ -89,13 +89,6 @@
           Debug logging functions accepts only strings
         </Description>
       </Tag>
-
-      <Tag externalName="BurstSharedStaticCreateMethodWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>One of SharedStatic overloads only usable only usable from C#, but not from HPC#</Title>
-        <Description>
-          One of SharedStatic overloads only usable only usable from C#, but not from HPC#
-        </Description>
-      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -197,13 +190,6 @@
   <Warning name="BurstDebugLogInvalidArgument" configurableSeverity="Unity.BurstDebugLogInvalidArgument">
     <Parameter type="ITreeNode" name="node" />
     <Message value="Burst: Debug logging functions accepts only strings"/>
-    <Range>Node.GetDocumentRange()</Range>
-    <Behavour overlapResolvePolicy="NONE" />
-  </Warning>
-
-  <Warning name="BurstSharedStaticCreateMethod" configurableSeverity="Unity.BurstSharedStaticCreateMethod">
-    <Parameter type="ITreeNode" name="node" />
-    <Message value="Burst: this overload only usable from C#, but not from HPC#"/>
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>
