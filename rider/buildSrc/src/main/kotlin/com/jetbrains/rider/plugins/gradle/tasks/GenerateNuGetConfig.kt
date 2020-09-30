@@ -17,7 +17,7 @@ open class GenerateNuGetConfig: DefaultTask() {
     @TaskAction
     fun generate() {
         val dotNetSdkFile = dotNetSdkPath?.let { project.file(it)} ?: error("dotNetSdkLocation not set")
-        project.buildServer.progress("dotNetSdk location: '$dotNetSdkFile'")
+        logger.info("dotNetSdk location: '$dotNetSdkFile'")
         assert(dotNetSdkFile.isDirectory)
 
         project.buildServer.progress("Generating :${nuGetConfigFile.canonicalPath}...")

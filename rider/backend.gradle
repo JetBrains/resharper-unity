@@ -66,13 +66,9 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
             'ReleaseNotes': ReleaseNotes
     ]
 
-    def nuPkgFile = file(new File(destinationDir as String, "JetBrains.Unity.${version}.nupkg"))
-    outputs.files(nuPkgFile)
-
     doFirst {
         buildServer.progress("Packing: $nuspecFile.name")
     }
-    outputs.upToDateWhen { false }
 }
 
 task nunitReSharperYaml(type: nunit.class) {
@@ -122,6 +118,6 @@ task publishCiBackendArtifacts {
     inputs.files(packReSharperPlugin.outputs)
 
     doLast {
-        buildServer.publishArtifact(packReSharperPlugin.outputs.files.singleFile)
+        buildServer.publishArtifact(packReSharperPlugin.packageFile)
     }
 }
