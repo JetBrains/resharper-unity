@@ -31,11 +31,13 @@ open class GenerateNuGetConfig: DefaultTask() {
             |</configuration>
             """.trimMargin()
         nuGetConfigFile.writeText(nugetConfigText)
-        project.buildServer.progress("Write content:\n$nugetConfigText")
+
+        logger.info("Generated content:\n$nugetConfigText")
+
         val sb = StringBuilder("Dump dotNetSdkFile content:\n")
         for(file in dotNetSdkFile.listFiles()) {
             sb.append("${file.canonicalPath}\n")
         }
-        project.buildServer.progress(sb.toString())
+        logger.info(sb.toString())
     }
 }
