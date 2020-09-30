@@ -102,6 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName BurstDiscardAttribute = new ClrTypeName("Unity.Burst.BurstDiscardAttribute");
         public static readonly IClrTypeName JobProducerAttribute = new ClrTypeName("Unity.Jobs.LowLevel.Unsafe.JobProducerTypeAttribute");
         public static readonly IClrTypeName NativeSetClassTypeToNullOnScheduleAttribute = new ClrTypeName("Unity.Collections.LowLevel.Unsafe.NativeSetClassTypeToNullOnScheduleAttribute");
+        public static readonly IClrTypeName SharedStatic = new ClrTypeName("Unity.Burst.SharedStatic`1");
 
         // Jobs
         public static readonly IClrTypeName Job = new ClrTypeName("Unity.Jobs.IJob");

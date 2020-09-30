@@ -5,10 +5,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 {
     public interface IBurstProblemSubAnalyzer<in T> where T : ITreeNode
     {
-        BurstProblemSubAnalyzerStatus CheckAndAnalyze(T referenceExpression, IHighlightingConsumer consumer);
+        BurstProblemSubAnalyzerStatus CheckAndAnalyze(T t, IHighlightingConsumer consumer);
 
         /// <summary>
-        /// Analyzer priority.
+        /// Analyzer execution priority.
         /// </summary>
         int Priority { get; }
     }
