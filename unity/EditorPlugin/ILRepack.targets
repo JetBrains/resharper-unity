@@ -4,6 +4,7 @@
     <LibDirectory>$(OutputPath)/$(TargetFramework)</LibDirectory>
   </PropertyGroup>
   <Target Name="RiderILRepack" AfterTargets="Build" Inputs="@(ILRepackInputAssemblies)" Outputs="$(ILRepackOutputAssembly)">
-      <Exec Command="&quot;$(DOTNET_HOST_PATH)&quot; $(ILRepackNetCore) /internalize /lib:&quot;$(LibDirectory)&quot; /out:&quot;$(ILRepackOutputAssembly)&quot; @(ILRepackInputAssemblies -> '&quot;%(FullPath)&quot;', ' ')"/>
+      <Exec Command="&quot;$(DOTNET_HOST_PATH)&quot; $(ILRepackNetCore) /internalize /lib:&quot;$(LibDirectory)&quot; /out:&quot;$(ILRepackOutputAssembly)&quot; @(ILRepackInputAssemblies -> '&quot;%(FullPath)&quot;', ' ')"
+            StandardOutputImportance="Normal"/>
   </Target>
 </Project>
