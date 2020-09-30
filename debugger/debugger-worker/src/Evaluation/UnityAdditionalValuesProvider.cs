@@ -4,12 +4,14 @@ using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values;
 using JetBrains.Util;
+using Mono.Debugger.Soft;
 using Mono.Debugging.Autofac;
 using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client;
 using Mono.Debugging.Client.CallStacks;
+using Mono.Debugging.Client.Values;
 using Mono.Debugging.Client.Values.Render;
 using Mono.Debugging.Evaluation;
 using Mono.Debugging.Soft;
@@ -17,7 +19,16 @@ using Mono.Debugging.Soft;
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
 {
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
-    public class UnityAdditionalValuesProvider<TValue> : IAdditionalValuesProvider<TValue>
+    public class UnityAdditionalValuesProvider : UnityAdditionalValuesProvider<Value>
+    {
+        public UnityAdditionalValuesProvider(IDebuggerSession session, IValueServicesFacade<Value> valueServices,
+                                             IUnityOptions unityOptions, ILogger logger)
+            : base(session, valueServices, unityOptions, logger)
+        {
+        }
+    }
+
+    public class UnityAdditionalValuesProvider<TValue> : IAdditionalValuesProvider
         where TValue : class
     {
         private readonly IDebuggerSession mySession;
@@ -25,8 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
         private readonly IUnityOptions myUnityOptions;
         private readonly ILogger myLogger;
 
-        public UnityAdditionalValuesProvider(IDebuggerSession session, IValueServicesFacade<TValue> valueServices,
-                                             IUnityOptions unityOptions, ILogger logger)
+        protected UnityAdditionalValuesProvider(IDebuggerSession session, IValueServicesFacade<TValue> valueServices,
+                                                IUnityOptions unityOptions, ILogger logger)
         {
             // We can't use EvaluationOptions here, it hasn't been set yet
             mySession = session;
@@ -35,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
             myLogger = logger;
         }
 
-        public IEnumerable<IValueReference<TValue>> GetAdditionalLocals(IStackFrame frame)
+        public IEnumerable<IValueEntity> GetAdditionalLocals(IStackFrame frame)
         {
             if (!myUnityOptions.ExtensionsEnabled)
                 yield break;
@@ -43,13 +54,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Evaluation
             // Add "Active Scene" as a top level item to mimic the Hierarchy window in Unity
             var activeScene = GetActiveScene(frame);
             if (activeScene != null)
-                yield return activeScene;
+                yield return activeScene.ToValue(myValueServices);
 
             // If `this` is a MonoBehaviour, promote `this.gameObject` to top level to make it easier to find,
             // especially if inherited properties are hidden
             var thisGameObject = GetThisGameObjectForMonoBehaviour(frame);
             if (thisGameObject != null)
-                yield return thisGameObject;
+                yield return thisGameObject.ToValue(myValueServices);
         }
 
         [CanBeNull]
