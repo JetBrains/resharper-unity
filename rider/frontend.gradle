@@ -9,7 +9,6 @@ compileKotlin {
     kotlinOptions {
         jvmTarget = javaVersion
         allWarningsAsErrors = warningsAsErrors.toBoolean()
-        freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
     }
 }
 
