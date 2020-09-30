@@ -24,14 +24,6 @@ repositories {
     maven { url "https://cache-redirector.jetbrains.com/dl.bintray.com/kotlin/kotlin-eap" }
 }
 
-configurations {
-    resharper
-}
-
-dependencies {
-    resharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "${productVersion}-SNAPSHOT", ext: "zip"
-}
-
 wrapper {
     gradleVersion = '6.6.1'
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
