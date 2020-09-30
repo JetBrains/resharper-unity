@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
@@ -24,8 +25,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly ShaderContextCache myShaderContextCache;
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
-        public ShaderContextHost(Lifetime lifetime, ISolution solution,UnityHost unityHost, IPsiFiles psiFiles, CppGlobalSymbolCache cppGlobalSymbolCache,
-            DocumentHost documentHost, ShaderContextCache shaderContextCache, ShaderContextDataPresentationCache shaderContextDataPresentationCache)
+        public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles, CppGlobalSymbolCache cppGlobalSymbolCache,
+            ShaderContextCache shaderContextCache, ShaderContextDataPresentationCache shaderContextDataPresentationCache,
+            [CanBeNull] UnityHost unityHost = null, [CanBeNull] DocumentHost documentHost = null)
         {
             mySolution = solution;
             myPsiFiles = psiFiles;
@@ -34,6 +36,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             myShaderContextCache = shaderContextCache;
             myShaderContextDataPresentationCache = shaderContextDataPresentationCache;
 
+            if (unityHost == null || documentHost == null)
+                return;
+            
             unityHost.PerformModelAction(t =>
             {
                 t.RequestShaderContexts.Set((lt, id) =>
