@@ -17,6 +17,9 @@
     <DefineConstants>TRACE;RIDER;$(CommandLineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Label="C#">
+    <Compile Include="..\..\..\unity\EditorPlugin\NonUnity\ProtocolCompatibility.cs">
+      <Link>Rider\Protocol\ProtocolCompatibility.cs</Link>
+    </Compile>
     <ErrorsGen Include="CSharp\Daemon\Errors\CSharpErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
       <OutputFile>CSharp\Daemon\Errors\CSharpErrors.generated.cs</OutputFile>
