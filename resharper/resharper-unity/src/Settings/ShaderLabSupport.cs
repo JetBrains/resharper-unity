@@ -2,7 +2,6 @@ using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
-using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
@@ -11,10 +10,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     {
         public IProperty<bool> IsParsingEnabled { get; }
 
-        public ShaderLabSupport(Lifetime lifetime, IApplicationWideContextBoundSettingStore settingsStore)
+        public ShaderLabSupport(Lifetime lifetime, ISettingsStore settingsStore)
         {
-            IsParsingEnabled = settingsStore.BoundSettingsStore.
-                GetValueProperty(lifetime, (UnitySettings s) => s.EnableShaderLabParsing);
+            // We can't use IApplicationWideContextBoundSettingsStore here because this a ShellComponent, because it's used
+            // in ShaderLabProjectFileLanguageService
+            // Keep a live context so that we'll get new mount points, e.g. Solution
+            IsParsingEnabled = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide)
+                .GetValueProperty(lifetime, (UnitySettings s) => s.EnableShaderLabParsing);
         }
     }
 }
