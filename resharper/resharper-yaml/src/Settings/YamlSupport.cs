@@ -2,6 +2,7 @@ using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Yaml.Settings
 {
@@ -10,10 +11,10 @@ namespace JetBrains.ReSharper.Plugins.Yaml.Settings
   {
     public IProperty<bool> IsParsingEnabled { get; }
 
-    public YamlSupport(Lifetime lifetime, ISettingsStore settingsStore)
+    public YamlSupport(Lifetime lifetime, IApplicationWideContextBoundSettingStore settingsStore)
     {
-      var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
-      IsParsingEnabled = boundStore.GetValueProperty(lifetime, (YamlSettings s) => s.EnableYamlParsing2);
+      IsParsingEnabled = settingsStore.BoundSettingsStore
+        .GetValueProperty(lifetime, (YamlSettings s) => s.EnableYamlParsing2);
     }
   }
 }
