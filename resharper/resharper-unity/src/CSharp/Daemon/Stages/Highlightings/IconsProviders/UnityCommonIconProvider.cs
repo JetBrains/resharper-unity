@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Application.Progress;
-using JetBrains.Application.Settings;
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Help;
 using JetBrains.Application.UI.Icons.CommonThemedIcons;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
@@ -20,6 +17,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util.Collections;
 
@@ -28,23 +26,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     [SolutionComponent]
     public class UnityCommonIconProvider
     {
-        protected readonly ISolution Solution;
         protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtensionProvider;
         protected readonly PerformanceCriticalCodeCallGraphMarksProvider MarksProvider;
+        protected readonly IApplicationWideContextBoundSettingStore SettingsStore;
         protected readonly UnityApi UnityApi;
-        protected readonly IContextBoundSettingsStore Settings;
+        private readonly ISolution mySolution;
         private readonly IElementIdProvider myProvider;
 
-        public UnityCommonIconProvider(ISolution solution,
-            CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi unityApi,
-            IElementIdProvider provider)
+        public UnityCommonIconProvider(ISolution solution, UnityApi unityApi,
+                                       CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+                                       IApplicationWideContextBoundSettingStore settingsStore,
+                                       PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
+                                       IElementIdProvider provider)
         {
-            Solution = solution;
+            mySolution = solution;
             CallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
             MarksProvider = marksProvider;
             UnityApi = unityApi;
-            Settings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
+            SettingsStore = settingsStore;
             myProvider = provider;
         }
 
@@ -57,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 {
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
                     consumer.AddHotHighlighting(CallGraphSwaExtensionProvider, cSharpDeclaration, MarksProvider,
-                        Settings, text,
+                        SettingsStore.BoundSettingsStore, text,
                         GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration),
                         myProvider);
                 }
@@ -68,8 +67,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             ICSharpDeclaration declaration,
             string text, string tooltip, DaemonProcessKind kind)
         {
-            consumer.AddHotHighlighting(CallGraphSwaExtensionProvider, declaration, MarksProvider, Settings, text,
-                tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, myProvider, true);
+            consumer.AddHotHighlighting(CallGraphSwaExtensionProvider, declaration, MarksProvider,
+                SettingsStore.BoundSettingsStore, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty,
+                myProvider, true);
         }
 
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)
@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (declaration is IMethodDeclaration methodDeclaration)
             {
                 var declaredElement = methodDeclaration.DeclaredElement;
-                var textControl = Solution.GetComponent<ITextControlManager>().LastFocusedTextControl.Value;
+                var textControl = mySolution.GetComponent<ITextControlManager>().LastFocusedTextControl.Value;
 
                 if (textControl != null && declaredElement != null)
                 {
@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                             bulbAction = new ConvertToCoroutineBulbAction(methodDeclaration);
 
                         result.Add(new BulbMenuItem(
-                            new IntentionAction.MyExecutableProxi(bulbAction, Solution, textControl),
+                            new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl),
                             bulbAction.Text, BulbThemedIcons.ContextAction.Id,
                             BulbMenuAnchors.FirstClassContextItems));
                     }
@@ -100,9 +100,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     if (UnityApi.IsEventFunction(declaredElement))
                     {
                         var documentationNavigationAction = new DocumentationNavigationAction(
-                            Solution.GetComponent<ShowUnityHelp>(), declaredElement, UnityApi);
+                            mySolution.GetComponent<ShowUnityHelp>(), declaredElement, UnityApi);
                         result.Add(new BulbMenuItem(
-                            new IntentionAction.MyExecutableProxi(documentationNavigationAction, Solution,
+                            new IntentionAction.MyExecutableProxi(documentationNavigationAction, mySolution,
                                 textControl), documentationNavigationAction.Text, CommonThemedIcons.Question.Id,
                             BulbMenuAnchors.FirstClassContextItems));
                     }

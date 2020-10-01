@@ -4,6 +4,7 @@ using JetBrains.Application.Environment.Helpers;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
@@ -12,10 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     {
         public IProperty<bool> IsErrorHighlightingEnabled { get; }
 
-        public CgSupportSettings(Lifetime lifetime, ISettingsStore settingsStore, RunsProducts.ProductConfigurations productConfigurations)
+        public CgSupportSettings(Lifetime lifetime, IApplicationWideContextBoundSettingStore settingsStore,
+                                 RunsProducts.ProductConfigurations productConfigurations)
         {
-            var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
-            IsErrorHighlightingEnabled = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.EnableCgErrorHighlighting);
+            IsErrorHighlightingEnabled = settingsStore.BoundSettingsStore
+                .GetValueProperty(lifetime, (UnitySettings s) => s.EnableCgErrorHighlighting);
 
             if (!productConfigurations.IsInternalMode())
             {

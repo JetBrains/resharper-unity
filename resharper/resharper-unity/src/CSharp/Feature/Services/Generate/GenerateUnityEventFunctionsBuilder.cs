@@ -3,7 +3,6 @@ using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.Application.Settings;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate;
 using JetBrains.ReSharper.Feature.Services.CSharp.Generate.MemberBody;
 using JetBrains.ReSharper.Feature.Services.Generate;
@@ -13,21 +12,21 @@ using JetBrains.ReSharper.Psi.CodeStyle;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.GenerateMemberBody;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
 {
-    [GeneratorBuilder(GeneratorUnityKinds.UnityEventFunctions, typeof (CSharpLanguage))]
+    [GeneratorBuilder(GeneratorUnityKinds.UnityEventFunctions, typeof(CSharpLanguage))]
     public class GenerateUnityEventFunctionsBuilder : GeneratorBuilderBase<CSharpGeneratorContext>
     {
-        private readonly ISolution mySolution;
         private readonly UnityApi myUnityApi;
-        private readonly IContextBoundSettingsStore mySettings;
+        private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
 
-        public GenerateUnityEventFunctionsBuilder(ISolution solution, ISettingsStore settingsStore, UnityApi unityApi)
+        public GenerateUnityEventFunctionsBuilder(ISolution solution, UnityApi unityApi,
+                                                  IApplicationWideContextBoundSettingStore settingsStore)
         {
-            mySolution = solution;
             myUnityApi = unityApi;
-            mySettings = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
+            mySettingsStore = settingsStore;
         }
 
         public override double Priority => 100;
@@ -64,7 +63,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
                 }
                 else
                 {
-                    var implementationKind = mySettings.GetValue((GenerateMemberBodySettings key) => key.MethodImplementationKind);
+                    var implementationKind = mySettingsStore.BoundSettingsStore
+                        .GetValue((GenerateMemberBodySettings key) => key.MethodImplementationKind);
                     block = CreateMethodBody(methodDeclaration, implementationKind);
                 }
 
@@ -74,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
                 context.PutMemberDeclaration(methodDeclaration);
             }
         }
-        
+
         private static IBlock CreateMethodBody(ICSharpDeclaration declaration, MethodImplementationKind implementationKind)
         {
             var factory = CSharpElementFactory.GetInstance(declaration);
@@ -90,7 +90,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Generate
                 {
                     return CSharpReturnStatementMemberBodyProvider.CreateBody(declaration);
                 }
-
                 case MethodImplementationKind.NotCompiledCode:
                 {
                     if (declaration.DeclaredElement is IMethod method && !method.ReturnType.IsVoid())

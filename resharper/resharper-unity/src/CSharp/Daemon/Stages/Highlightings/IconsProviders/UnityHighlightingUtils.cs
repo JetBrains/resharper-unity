@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -33,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
             return declaredElement.HasHotIcon(callGraphSwaExtensionProvider, settingsStore, marksProvider, kind, provider);
         }
-        
+
         public static bool HasHotIcon(this IDeclaredElement element,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, IContextBoundSettingsStore settingsStore,
             PerformanceCriticalCodeCallGraphMarksProvider marksProvider, DaemonProcessKind kind, IElementIdProvider provider)
@@ -48,19 +47,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (!id.HasValue)
                 return false;
 
-            return callGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(marksProvider.Id, 
+            return callGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(marksProvider.Id,
                 kind == DaemonProcessKind.GLOBAL_WARNINGS, id.Value);
         }
 
         public static void AddHotHighlighting(this IHighlightingConsumer consumer,
-            CallGraphSwaExtensionProvider swaExtensionProvider, ICSharpDeclaration element, PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
-            IContextBoundSettingsStore settings, string text,
-            string tooltip, DaemonProcessKind kind, IEnumerable<BulbMenuItem> items, IElementIdProvider provider, bool onlyHot = false)
+                                              CallGraphSwaExtensionProvider swaExtensionProvider,
+                                              ICSharpDeclaration element,
+                                              PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
+                                              IContextBoundSettingsStore settings, string text,
+                                              string tooltip, DaemonProcessKind kind, IEnumerable<BulbMenuItem> items,
+                                              IElementIdProvider provider, bool onlyHot = false)
         {
             var isIconHot = element.HasHotIcon(swaExtensionProvider, settings, marksProvider, kind, provider);
             if (onlyHot && !isIconHot)
                 return;
-            
+
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(items, element, tooltip)
                 : (IHighlighting) new UnityGutterMarkInfo(items, element, tooltip);

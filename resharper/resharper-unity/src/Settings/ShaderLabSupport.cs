@@ -2,6 +2,7 @@ using JetBrains.Application;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
 {
@@ -10,10 +11,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     {
         public IProperty<bool> IsParsingEnabled { get; }
 
-        public ShaderLabSupport(Lifetime lifetime, ISettingsStore settingsStore)
+        public ShaderLabSupport(Lifetime lifetime, IApplicationWideContextBoundSettingStore settingsStore)
         {
-            var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ApplicationWide);
-            IsParsingEnabled = boundStore.GetValueProperty(lifetime, (UnitySettings s) => s.EnableShaderLabParsing);
+            IsParsingEnabled = settingsStore.BoundSettingsStore.
+                GetValueProperty(lifetime, (UnitySettings s) => s.EnableShaderLabParsing);
         }
     }
 }
