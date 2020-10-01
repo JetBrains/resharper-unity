@@ -4,9 +4,6 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
-using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.Icons;
@@ -18,9 +15,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     // This class describes the UI of a highlight (gutter icon), while an IHighlighting
     // is an instance of a highlight at a specific location in a document. The IHighlighting
     // instance refers to this highlighter's attribute ID to wire up the UI
-    public class AbstractUnityGutterMark : IconGutterMark
+    public class AbstractUnityGutterMark : IconGutterMarkType
     {
-        public AbstractUnityGutterMark(IconId id) : base(id)
+        protected AbstractUnityGutterMark(IconId id) : base(id)
         {
         }
 
@@ -31,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
             var solution = Shell.Instance.GetComponent<SolutionsManager>().Solution;
             if (solution == null)
                 return EmptyList<BulbMenuItem>.InstanceList;
-            
+
             var daemon = solution.GetComponent<IDaemon>();
             var highlighting = daemon.GetHighlighting(highlighter);
 
