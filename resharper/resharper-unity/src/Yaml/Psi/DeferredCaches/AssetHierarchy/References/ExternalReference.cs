@@ -4,7 +4,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 {
     public readonly struct ExternalReference : IHierarchyReference
     {
-        public ExternalReference(Guid externalAssetGuid, ulong localDocumentAnchor)
+        public ExternalReference(Guid externalAssetGuid, long localDocumentAnchor)
         {
             ExternalAssetGuid = externalAssetGuid;
             LocalDocumentAnchor = localDocumentAnchor;
@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
 
         // TODO : think about storing pointer to Guid here (this will safe 12 bytes), all guids will be interned in some cache
         public Guid ExternalAssetGuid { get; }
-        public ulong LocalDocumentAnchor { get; }
+        public long LocalDocumentAnchor { get; }
 
 
         public bool Equals(ExternalReference other)

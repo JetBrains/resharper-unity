@@ -1,3 +1,5 @@
+import base.FindUsagesAssetTestBase
+import base.integrationTests.downloadUnityDll
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
@@ -11,6 +13,9 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     fun getUnityDll() {
         unityDll = downloadUnityDll()
     }
+
+    override val traceCategories: List<String>
+        get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"
 
     override fun getSolutionDirectoryName(): String {
         return "PrefabModificationTestSolution"

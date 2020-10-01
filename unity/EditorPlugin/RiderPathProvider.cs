@@ -44,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor
     /// <returns>May return null, if nothing found.</returns>
     public string GetActualRider(string externalEditor, string[] allFoundPaths)
     {
-      if (Environment.GetCommandLineArgs().Contains("-riderTests"))
+      if (UnityUtils.UseRiderTestPath)
         return "riderTestPath";
       
       if (!string.IsNullOrEmpty(externalEditor))

@@ -29,6 +29,10 @@ configurations {
 }
 
 dependencies {
+    // Compile time dependencies for testng 7.1.0, provided by the Rider SDK. Looks like the problem is fixed in 7.2
+    // https://github.com/cbeust/testng/issues/2223
+    testCompile group:"com.beust", name:"jcommander", version:"1.78"
+    testCompile group:"com.google.inject", name:"guice", version:"4.2.2"
     resharper group: "com.jetbrains.intellij.resharper", name: "resharperUltimatePackages", version: "${productVersion}-SNAPSHOT", ext: "zip"
 }
 

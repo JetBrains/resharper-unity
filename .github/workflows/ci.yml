@@ -25,6 +25,11 @@ jobs:
       - name: Build and Tests
         shell: powershell
         run: powershell -File .\build.ps1 -RunTests -Verbose
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: nunit-reports
+          path: rider\build\nunit\reports
   linux:
     needs: gradleValidation
     runs-on: ubuntu-latest

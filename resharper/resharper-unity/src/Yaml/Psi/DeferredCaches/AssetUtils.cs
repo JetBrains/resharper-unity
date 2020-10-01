@@ -68,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         public static bool IsStripped(IBuffer buffer) =>
             ourStrippedSearcher.Find(buffer, 0, Math.Min(buffer.Length, 150)) >= 0;
 
-        public static ulong? GetAnchorFromBuffer(IBuffer buffer)
+        public static long? GetAnchorFromBuffer(IBuffer buffer)
         {
             var index = 0;
             while (true)
@@ -84,13 +84,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             index++;
 
             var sb = new StringBuilder();
-            while (index != buffer.Length && buffer[index].IsDigit())
+            while (index != buffer.Length && (buffer[index].IsDigit() || buffer[index] == '-'))
             {
                 sb.Append(buffer[index++]);
             }
 
             var resultStr = sb.ToString();
-            if (ulong.TryParse(resultStr, out var result))
+            if (long.TryParse(resultStr, out var result))
                 return result;
 
             return null;

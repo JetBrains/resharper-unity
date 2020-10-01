@@ -1,4 +1,4 @@
-﻿# 1129 ITEMS #
+﻿# 1130 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -52,6 +52,7 @@ private
 protected
 public
 readonly
+record
 ref
 sbyte
 sealed
@@ -1130,7 +1131,7 @@ public override GetExtraPaneTypes() { … }    IEnumerable<Type>
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 1129 ITEMS #
+# 1130 ITEMS #
 
 + private Awake() { ... }
 private OnDestroy() { ... }
@@ -1184,6 +1185,7 @@ private
 protected
 public
 readonly
+record
 ref
 sbyte
 sealed

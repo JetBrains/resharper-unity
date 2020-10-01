@@ -29,6 +29,7 @@ using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
 using Newtonsoft.Json;
+using RunMethodData = JetBrains.Platform.Unity.EditorPluginModel.RunMethodData;
 using UnityApplicationData = JetBrains.Rider.Model.UnityApplicationData;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -201,7 +202,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                     editor.Play.Advise(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
                     editor.Pause.Advise(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
-                    editor.ClearOnPlay.Advise(lf, time => myHost.PerformModelAction(rd => rd.ClearOnPlay(time)));
+                    editor.LastPlayTime.Advise(lf, time => myHost.PerformModelAction(rd => rd.LastPlayTime.SetValue(time)));
+                    editor.LastInitTime.Advise(lf, time => myHost.PerformModelAction(rd => rd.LastInitTime.SetValue(time)));
 
                     editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
 
@@ -238,6 +240,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     });
                     
                     editor.BuildLocation.Advise(lf, b => myHost.PerformModelAction(rd => rd.BuildLocation.SetValue(b)));
+                    
+                    myHost.PerformModelAction(rd =>
+                    {
+                        rd.RunMethodInUnity.Set((l, data) =>
+                        {
+                            var editorRdTask = editor.RunMethodInUnity.Start(l, new RunMethodData(data.AssemblyName, data.TypeName, data.MethodName)).ToRdTask(l);
+                            var frontendRes = new RdTask<JetBrains.Rider.Model.RunMethodResult>();
+                            
+                            editorRdTask.Result.Advise(l, r =>
+                            {
+                                frontendRes.Set(new JetBrains.Rider.Model.RunMethodResult(r.Result.Success, r.Result.Message, r.Result.StackTrace));
+                            });
+                            return frontendRes;
+                        });
+                    });
 
                     TrackActivity(editor, lf);
 

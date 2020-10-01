@@ -32,11 +32,12 @@ namespace JetBrains.Rider.Unity.Editor
     private static bool ourInitialized;
     private static readonly ILog ourLogger = Log.GetLog("RiderPlugin");
     internal static string SlnFile;
+    private static long ourInitTime = DateTime.UtcNow.Ticks;
 
     // This an entry point
     static PluginEntryPoint()
     {
-      if (UnityEditorInternal.InternalEditorUtility.inBatchMode)
+      if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
 
       PluginSettings.InitLog(); // init log before doing any logging
@@ -103,12 +104,14 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool IsRiderDefaultEditor()
     {
+        if (UnityUtils.UseRiderTestPath)
+            return true;
+            
         // Regular check
         var defaultApp = EditorPrefsWrapper.ExternalScriptEditor;
         bool isEnabled = !string.IsNullOrEmpty(defaultApp) &&
                          Path.GetFileName(defaultApp).ToLower().Contains("rider") &&
-                         !UnityEditorInternal.InternalEditorUtility.inBatchMode;
-
+                         !UnityUtils.IsInBatchModeAndNotInRiderTests;
         return isEnabled;
     }
 
@@ -320,6 +323,8 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseGenerateUISchema(model);
           AdviseExitUnity(model);
           GetBuildLocation(model);
+          AdviseRunMethod(model);
+          GetInitTime(model);
 
           ourLogger.Verbose("UnityModel initialized.");
           var pair = new ModelWithLifetime(model, connectionLifetime);
@@ -331,6 +336,65 @@ namespace JetBrains.Rider.Unity.Editor
       {
         ourLogger.Error("Init Rider Plugin " + ex);
       }
+    }
+
+    private static void GetInitTime(EditorPluginModel model)
+    {
+      model.LastInitTime.SetValue(ourInitTime);
+      if (EditorApplication.isPaused || EditorApplication.isPlaying)
+        model.LastPlayTime.SetValue(ourInitTime);
+	}
+
+    private static void AdviseRunMethod(EditorPluginModel model)
+    {
+        model.RunMethodInUnity.Set((lifetime, data) => 
+        {
+            var task = new RdTask<RunMethodResult>();
+            MainThreadDispatcher.Instance.Queue(() =>
+            {
+                if (!lifetime.IsAlive)
+                {
+                    task.SetCancelled();
+                    return;
+                }
+
+                try
+                {
+                    ourLogger.Verbose($"Attempt to execute {data.MethodName}");
+                    var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                    var assembly = assemblies
+                        .FirstOrDefault(a => a.GetName().Name.Equals(data.AssemblyName));
+                    if (assembly == null)
+                        throw new Exception($"Could not find {data.AssemblyName} assembly in current AppDomain");
+
+                    var type = assembly.GetType(data.TypeName);
+                    if (type == null) 
+                        throw new Exception($"Could not find {data.TypeName} in assembly {data.AssemblyName}.");
+
+                    var method = type.GetMethod(data.MethodName,BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+                    
+                    if (method == null)
+                        throw new Exception($"Could not find {data.MethodName} in type {data.TypeName}");
+
+                    try
+                    {
+                        method.Invoke(null, null);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                    }
+
+                    task.Set(new RunMethodResult(true, string.Empty, string.Empty));
+                }
+                catch (Exception e)
+                {
+                    ourLogger.Log(LoggingLevel.WARN, $"Execute {data.MethodName} failed.", e);
+                    task.Set(new RunMethodResult(false, e.Message, e.StackTrace));
+                }
+            });
+            return task;
+        });
     }
 
     private static void GetBuildLocation(EditorPluginModel model)
@@ -509,8 +573,6 @@ namespace JetBrains.Rider.Unity.Editor
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
             model.Play.SetValue(isPlaying);
-            if (isPlaying)
-              model.ClearOnPlay(DateTime.UtcNow.Ticks);
           }
 
           var isPaused = EditorApplication.isPaused;

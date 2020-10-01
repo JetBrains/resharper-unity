@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes
 
                 var session = manager.CreateHotspotSessionAtopExistingText(solution, invalidRange,
                     textControl, LiveTemplatesManager.EscapeAction.LeaveTextAndCaret, fieldInfos);
-                session.Execute();
+                session.ExecuteAndForget();
             };
         }
 
