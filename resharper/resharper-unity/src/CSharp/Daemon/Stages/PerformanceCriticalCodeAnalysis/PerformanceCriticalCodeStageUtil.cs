@@ -150,7 +150,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public static bool IsPerformanceCriticalRootMethod(ITreeNode node)
         {
-
             if (!(node is ICSharpDeclaration declaration))
                 return false;
 
@@ -166,11 +165,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (typeElement == null)
                 return false;
 
-            if (!typeElement.DerivesFromMonoBehaviour())
-                return false;
+            if (!typeElement.DerivesFromMonoBehaviour() && declaration.DeclaredElement is IClrDeclaredElement monoBehaviorCLRDeclaredElement)
+                return ourKnownHotMonoBehaviourMethods.Contains(monoBehaviorCLRDeclaredElement.ShortName);
 
-            if (declaration.DeclaredElement is IClrDeclaredElement clrDeclaredElement)
-                return ourKnownHotMonoBehaviourMethods.Contains(clrDeclaredElement.ShortName);
+            if (!typeElement.DerivesFrom(KnownTypes.Editor) && declaration.DeclaredElement is IClrDeclaredElement editorCLRDeclaredElement)
+                return ourKnownHotEditorMethods.Contains(editorCLRDeclaredElement.ShortName);
+            
+            if (!typeElement.DerivesFrom(KnownTypes.EditorWindow) && declaration.DeclaredElement is IClrDeclaredElement editorWindowCLRDeclaredElement)
+                return ourKnownHotEditorWindowMethods.Contains(editorWindowCLRDeclaredElement.ShortName);
+            
+            if (!typeElement.DerivesFrom(KnownTypes.PropertyDrawer) && declaration.DeclaredElement is IClrDeclaredElement propertyDrawerCLRDeclaredElement)
+                return ourKnownHotPropertyDrawerMethods.Contains(propertyDrawerCLRDeclaredElement.ShortName);
 
             return false;
         }
@@ -179,7 +184,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         private static readonly ISet<string> ourKnownHotMonoBehaviourMethods = new HashSet<string>()
         {
-            "Update", "LateUpdate", "FixedUpdate",
+            "Update", "LateUpdate", "FixedUpdate", "OnGUI"
+        };
+        
+        private static readonly ISet<string> ourKnownHotEditorMethods = new HashSet<string>()
+        {
+            "DrawHeader", "OnInspectorGUI", "OnInteractivePreviewGUI", "OnPreviewGUI", "OnSceneGUI"
+        };
+        
+        private static readonly ISet<string> ourKnownHotEditorWindowMethods = new HashSet<string>()
+        {
+            "OnGUI", "OnInspectorUpdate"
+        };
+        
+        private static readonly ISet<string> ourKnownHotPropertyDrawerMethods = new HashSet<string>()
+        {
+            "OnGUI", "GetPropertyHeight"
         };
 
         private static readonly ISet<string> ourKnownComponentCostlyMethods = new HashSet<string>()
