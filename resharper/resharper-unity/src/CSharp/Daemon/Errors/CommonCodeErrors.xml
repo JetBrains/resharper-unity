@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Errors language="C#" configurableSeverityImplementationLanguage="CSHARP"
+        baseClass="CSharpUnityHighlightingBase, ICommonCodeHighlighting">
+
+  <Usings>
+    JetBrains.ReSharper.Psi.CSharp;
+    JetBrains.ReSharper.Psi.CSharp.Tree;
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
+    JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnalysis.Highlightings;
+  </Usings>
+
+  <SeverityConfiguration>
+    <Group name="UnityHighlightingGroupIds.Burst">
+      <Tag externalName="SharedStaticUnmanagedTypeWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Shared static type argument can be only unmanaged type</Title>
+        <Description>
+          Shared static type argument can be only unmanaged type
+        </Description>
+      </Tag>
+    </Group>
+  </SeverityConfiguration>
+  
+
+  <Warning name="SharedStaticUnmanagedType" configurableSeverity="Unity.SharedStaticUnmanagedType">
+    <Parameter type="ITreeNode" name="node" />
+    <Parameter type="string" name="name" isValid="skip"/>
+    <Message value="`SharedStatic`1` type parameter must be unmanaged, `{0}` is not">
+      <Argument>name</Argument>
+    </Message>
+    <Range>Node.GetDocumentRange()</Range>
+  </Warning>
+</Errors>

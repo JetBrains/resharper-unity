@@ -19,7 +19,6 @@
     <Compile Remove="**\Rider\**" />
     <EmbeddedResource Remove="**\Rider\**" />
     <None Remove="**\Rider\**" />
-    <Compile Remove="CSharp\Daemon\Stages\Burst\BurstContextHighlighterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="JsonNew\**" />
