@@ -24,9 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly DocumentHost myDocumentHost;
         private readonly ShaderContextCache myShaderContextCache;
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
+        private readonly ILogger myLogger;
 
         public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles, CppGlobalSymbolCache cppGlobalSymbolCache,
-            ShaderContextCache shaderContextCache, ShaderContextDataPresentationCache shaderContextDataPresentationCache,
+            ShaderContextCache shaderContextCache, ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
             [CanBeNull] UnityHost unityHost = null, [CanBeNull] DocumentHost documentHost = null)
         {
             mySolution = solution;
@@ -35,6 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             myDocumentHost = documentHost;
             myShaderContextCache = shaderContextCache;
             myShaderContextDataPresentationCache = shaderContextDataPresentationCache;
+            myLogger = logger;
 
             if (unityHost == null || documentHost == null)
                 return;
@@ -43,6 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             {
                 t.RequestShaderContexts.Set((lt, id) =>
                 {
+                    myLogger.Verbose("Requesting all shader context for file");
                     using (ReadLockCookie.Create())
                     {
                         var sourceFile = GetSourceFile(id);
@@ -57,6 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
 
                 t.ChangeContext.Advise(lifetime, c =>
                 {
+                    myLogger.Verbose("Setting new shader context for file");
                     using (ReadLockCookie.Create())
                     {
                         IPsiSourceFile sourceFile = GetSourceFile(c.Target);
@@ -71,6 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                 
                 t.RequestCurrentContext.Set((lt, id) =>
                 {
+                    myLogger.Verbose("Setting current context for file");
                     using (ReadLockCookie.Create())
                     {
                         var sourceFile = GetSourceFile(id);
