@@ -15,6 +15,8 @@ import com.intellij.openapi.wm.impl.status.EditorBasedWidget
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.SequentialLifetimes
+import com.jetbrains.rd.util.reactive.IProperty
+import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rdclient.document.getFirstEditableEntityId
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.cpp.fileType.CppFileType
@@ -36,16 +38,17 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
     private val statusBarComponent = JPanel(BorderLayout())
     private val label = JLabel(UnityIcons.FileTypes.ShaderLab)
     private val requestLifetime = SequentialLifetimes(project.lifetime)
+    private val currentContextMode : IProperty<ShaderContextData?> = Property(null)
 
     companion object {
-        fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}";
+        private fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}";
     }
 
     init {
         label.text = "..."
         statusBarComponent.isVisible = false
         statusBarComponent.add(label)
-        statusBarComponent.addMouseListener(object : MouseListener {
+        label.addMouseListener(object : MouseListener {
             override fun mouseClicked(e: MouseEvent?) {
             }
 
@@ -64,15 +67,26 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
 
         })
 
-        // do nothing for not unity projects
         if (UnityProjectDiscoverer.getInstance(project).isUnityProject) {
+
             project.messageBus.connect(project.lifetime.createNestedDisposable())
-                .subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
-                    override fun selectionChanged(event: FileEditorManagerEvent) {
-                        updateState((editor as? EditorImpl)?.virtualFile)
-                    }
-                })
+                .subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, this)
+
+            currentContextMode.advise(project.lifetime) {
+                if (it == null) {
+                    label.text = "Auto"
+                    label.toolTipText = "Default file and symbol context"
+                } else {
+                    label.text = getContextPresentation(it)
+                    label.toolTipText = "File and symbol context derived from include at ${getContextPresentation(it)}"
+                }
+            }
         }
+    }
+
+    override fun selectionChanged(event: FileEditorManagerEvent) {
+        if (UnityProjectDiscoverer.getInstance(project).isUnityProject)
+            updateState((editor as? EditorImpl)?.virtualFile)
     }
 
     private fun updateState(file: VirtualFile?) {
@@ -101,9 +115,9 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
             val result = it.unwrap()
             statusBarComponent.isVisible = true
             if (result is ShaderContextData)
-                label.text = getContextPresentation(result)
+                currentContextMode.value = result
             else
-                label.text = "Auto"
+                currentContextMode.value = null
         }
     }
 
@@ -131,15 +145,15 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
 
                 addAll(actions)
             }
-            val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project))
+            val popup = ShaderContextPopup(group, SimpleDataContext.getProjectContext(project), currentContextMode)
             popup.showInCenterOf(label)
         }
     }
 
-    private fun createActions(host: UnityHost, id: EditableEntityId, items: List<ShaderContextDataBase>): List<ShaderContextSwitchAction> {
-        val result = mutableListOf<ShaderContextSwitchAction>()
+    private fun createActions(host: UnityHost, id: EditableEntityId, items: List<ShaderContextDataBase>): List<AnAction> {
+        val result = mutableListOf<AnAction>(ShaderAutoContextSwitchAction(project, id, host, currentContextMode))
         for (item in items) {
-            result.add(ShaderContextSwitchAction(project, id, host, item as ShaderContextData, label))
+            result.add(ShaderContextSwitchAction(project, id, host, item as ShaderContextData, currentContextMode))
         }
         return result
     }

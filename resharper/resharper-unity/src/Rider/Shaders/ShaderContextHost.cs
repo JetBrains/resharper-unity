@@ -72,6 +72,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                         shaderContextCache.SetContext(sourceFile, cppFileLocation);
                     }
                 });
+
+                t.SetAutoShaderContext.Advise(lifetime, id =>
+                {
+                    using (ReadLockCookie.Create())
+                    {
+                        IPsiSourceFile sourceFile = GetSourceFile(id);
+                        if (sourceFile == null)
+                            return;
+                        shaderContextCache.SetContext(sourceFile, null);
+
+                    }
+                });
                 
                 t.RequestCurrentContext.Set((lt, id) =>
                 {

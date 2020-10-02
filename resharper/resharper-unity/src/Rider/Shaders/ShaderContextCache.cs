@@ -23,8 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly ILogger myLogger;
         private readonly DirectMappedCache<IPsiSourceFile, IRangeMarker> myShaderContext = new DirectMappedCache<IPsiSourceFile, IRangeMarker>(100);
     
-        public ShaderContextCache(Lifetime lifetime, ISolution solution, IPersistentIndexManager persistentIndexManager,
-            InjectedHlslFileLocationTracker locationTracker, DocumentManager manager, ILogger logger)
+        public ShaderContextCache(ISolution solution, InjectedHlslFileLocationTracker locationTracker, DocumentManager manager, ILogger logger)
         {
             mySolution = solution;
             myLocationTracker = locationTracker;
@@ -33,13 +32,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         }
 
 
-        public void SetContext(IPsiSourceFile psiSourceFile, CppFileLocation root)
+        public void SetContext(IPsiSourceFile psiSourceFile, CppFileLocation? root)
         {
             using (ReadLockCookie.Create())
             {
-                Assertion.Assert(root.RootRange.IsValid, "root.RootRange.IsValid()");
-                var range =  myManager.CreateRangeMarker(new DocumentRange(root.GetDocument(mySolution), root.RootRange));
-                myShaderContext.AddToCache(psiSourceFile, range);
+                if (root.HasValue)
+                {
+                    Assertion.Assert(root.Value.RootRange.IsValid, "root.RootRange.IsValid()");
+                    var range = myManager.CreateRangeMarker(new DocumentRange(root.Value.GetDocument(mySolution),
+                        root.Value.RootRange));
+                    myShaderContext.AddToCache(psiSourceFile, range);
+                }
+                else
+                {
+                    myShaderContext.RemoveFromCache(psiSourceFile);
+                }
             }
 
             var solution = psiSourceFile.GetSolution();

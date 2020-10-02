@@ -1,15 +1,18 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
 import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.util.Condition
 import com.intellij.ui.ErrorLabel
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.panels.OpaquePanel
 import com.intellij.ui.popup.PopupFactoryImpl
 import com.intellij.ui.popup.list.PopupListElementRenderer
-import com.intellij.util.FontUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
+import com.jetbrains.rd.util.reactive.IProperty
+import com.jetbrains.rider.model.ShaderContextData
 import icons.UnityIcons
 import java.awt.BorderLayout
 import javax.swing.JComponent
@@ -17,9 +20,16 @@ import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
 
-class ShaderContextPopup(private val group: ActionGroup, private val dataContext: DataContext) :
+class ShaderContextPopup(private val group: ActionGroup, private val dataContext: DataContext, currentContextMode: IProperty<ShaderContextData?>) :
     PopupFactoryImpl.ActionGroupPopup("Shader Context", group, dataContext, false, false,
-        false, true, null, 10, null, null)
+        false, true, null, 10, Condition {
+        if (it is ShaderAutoContextSwitchAction && currentContextMode.value == null)
+            return@Condition true
+        if (it is ShaderContextSwitchAction && currentContextMode.value?.path == it.data.path &&
+            currentContextMode.value?.startLine == it.data.startLine)
+            return@Condition true
+        return@Condition false
+    }, null)
 {
     init {
         setSpeedSearchAlwaysShown()
@@ -59,8 +69,11 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
 
             val action = value?.action ?: return
             if (action is ShaderContextSwitchAction) {
-                myInfoLabel!!.setText(action.data.folder);
+                myInfoLabel!!.text = action.data.folder
                 myPosLabel!!.text = ":" + action.data.startLine
+            } else {
+                myInfoLabel!!.text = ""
+                myPosLabel!!.text = ""
             }
         }
     }

@@ -148,6 +148,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
         call("requestShaderContexts", EditableEntityId, immutableList(shaderContextDataBase))
         call("requestCurrentContext", EditableEntityId, shaderContextDataBase)
+        source("setAutoShaderContext", EditableEntityId)
         source("changeContext", structdef ("contextInfo"){
             field("target", EditableEntityId)
             field("path", string.interned(shaderInternScope))
