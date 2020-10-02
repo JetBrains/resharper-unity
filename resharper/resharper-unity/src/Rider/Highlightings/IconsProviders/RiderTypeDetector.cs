@@ -1,4 +1,3 @@
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -14,6 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
@@ -31,12 +31,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly IconHost myIconHost;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public RiderTypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi unityApi,
-            AssetIndexingSupport assetIndexingSupport, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, UnityCodeInsightProvider codeInsightProvider, AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
-            DeferredCacheController deferredCacheController, UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost, AssetSerializationMode assetSerializationMode, IElementIdProvider provider)
-            : base(solution, callGraphSwaExtensionProvider, settingsStore, unityApi, marksProvider, provider)
+        public RiderTypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+                                 IApplicationWideContextBoundSettingStore settingsStore,
+                                 PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi unityApi,
+                                 AssetIndexingSupport assetIndexingSupport,
+                                 UnityUsagesCodeVisionProvider usagesCodeVisionProvider,
+                                 UnityCodeInsightProvider codeInsightProvider,
+                                 AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
+                                 DeferredCacheController deferredCacheController, UnitySolutionTracker solutionTracker,
+                                 ConnectionTracker connectionTracker,
+                                 IconHost iconHost, AssetSerializationMode assetSerializationMode,
+                                 IElementIdProvider elementIdProvider)
+            : base(solution, callGraphSwaExtensionProvider, settingsStore, unityApi, marksProvider, elementIdProvider)
         {
             myAssetIndexingSupport = assetIndexingSupport;
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
@@ -49,10 +55,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myAssetSerializationMode = assetSerializationMode;
         }
 
-        protected override void AddMonoBehaviourHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text,
-            string tooltip, DaemonProcessKind kind)
+        protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text,
+                                                             string tooltip, DaemonProcessKind kind)
         {
-            if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
+            if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, declaration, text, tooltip, kind); }, out var useFallback))
             {
                 if (!useFallback)
@@ -65,12 +71,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     if (myDeferredCacheController.IsProcessingFiles())
                         iconModel = myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id);
-                    
+
                     if (!myDeferredCacheController.CompletedOnce.Value)
                         tooltip = "Usages in assets are not available during asset indexing";
-
                 }
-                
+
                 if (!myAssetIndexingSupport.IsEnabled.Value ||!myDeferredCacheController.CompletedOnce.Value || !myAssetSerializationMode.IsForceText)
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text,
@@ -90,7 +95,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             string tooltip,
             DaemonProcessKind kind)
         {
-            if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
+            if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
             {
                 if (!useFallback)
