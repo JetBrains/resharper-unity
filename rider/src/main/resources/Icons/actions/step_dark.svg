@@ -1,10 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <title>step_dark</title>
-  <g>
-    <g>
-      <polygon points="10 14 10 9.27 3.948 14 2 14 2 2 3.948 2 10 6.73 10 2 14 2 14 14 10 14" fill="#252525" fill-rule="evenodd"/>
-      <path d="M11,3h2V13H11ZM3,13h.6L10,8,3.6,3H3Z" fill="#c4c4c4" fill-rule="evenodd"/>
-    </g>
-    <rect width="16" height="16" fill="#f0f" opacity="0"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect id="frame" width="16" height="16" fill="none"/><g fill="#AFB1B3" fill-rule="evenodd"><path d="M12 14V2h2v12z"/><path d="M6 7V3.336l4.684 4.667L6 12.67V9H1V7h5z"/></g></svg>
