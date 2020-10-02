@@ -6,6 +6,7 @@ import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderAction
+import icons.UnityIcons
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
@@ -64,33 +65,17 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createBeforePlay() = object : ToggleAction("Show/Hide messages before last Play", "", null) {
+        fun createBeforePlay() = object : ToggleAction("Messages before last Play in Unity", "", UnityIcons.LogView.FilterBeforePlay) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforePlay()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforePlay(value)
             }
-
-            override fun update(e: AnActionEvent) {
-                if (isSelected(e))
-                    e.presentation.text = "Hide messages before last Play"
-                else
-                    e.presentation.text = "Show messages before last Play"
-                super.update(e)
-            }
         }
 
-        fun createBeforeInit() = object : ToggleAction("Show/Hide messages before last [InitializeOnLoad] execution", "", null) {
+        fun createBeforeInit() = object : ToggleAction("Messages before last Domain reload", "",  UnityIcons.LogView.FilterBeforeRefresh) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforeInit()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforeLastBuild(value)
-            }
-
-            override fun update(e: AnActionEvent) {
-                if (isSelected(e))
-                    e.presentation.text = "Hide messages before last [InitializeOnLoad] execution"
-                else
-                    e.presentation.text = "Show messages before last [InitializeOnLoad] execution"
-                super.update(e)
             }
         }
 
