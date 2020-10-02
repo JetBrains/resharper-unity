@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Finder;
@@ -12,14 +13,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     [SearchGuru(SearchGuruPerformanceEnum.FastFilterOutByIndex)]
     public class UnityYamlSearchGuru : ISearchGuru
     {
-        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
+        [NotNull, ItemNotNull] private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
 
-        public UnityYamlSearchGuru(UnityApi unityApi, AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
-            UnityEventsElementContainer unityEventsElementContainer, AssetInspectorValuesContainer container)
+        public UnityYamlSearchGuru(UnityApi unityApi,
+                                   [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
+                                   UnityEventsElementContainer unityEventsElementContainer,
+                                   AssetInspectorValuesContainer container)
         {
-            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
+            myScriptsUsagesElementContainers = scriptsUsagesElementContainers;
             myUnityEventsElementContainer = unityEventsElementContainer;
             myInspectorValuesContainer = container;
         }
@@ -42,9 +45,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var set = new JetHashSet<IPsiSourceFile>();
             switch (element)
             {
-                case IClass _class:
-                    foreach (var sourceFile in myAssetScriptUsagesElementContainer.GetPossibleFilesWithUsage(_class))
-                        set.Add(sourceFile);
+                case IClass scriptClass:
+                    AddFilesWithPossibleScriptUsages(scriptClass, set);
                     break;
                 case IProperty _:
                 case IMethod _:
@@ -67,6 +69,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             }
 
             return new UnityYamlSearchGuruId(set);
+        }
+
+        private void AddFilesWithPossibleScriptUsages([NotNull] IClass scriptClass,
+                                                      [NotNull, ItemNotNull] ISet<IPsiSourceFile> filesSet)
+        {
+            foreach (var scriptsUsagesElementContainer in myScriptsUsagesElementContainers)
+            {
+                foreach (var sourceFile in scriptsUsagesElementContainer.GetPossibleFilesWithScriptUsages(scriptClass))
+                    filesSet.Add(sourceFile);
+            }
         }
 
         // False means definitely not, true means "maybe"

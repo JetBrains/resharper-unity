@@ -58,7 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
                 myAssetUsages.Add(usage);
             }
         }
-        public IEnumerable<AssetScriptUsages> EnumerateAssetUsages()
+        
+        [NotNull, ItemNotNull]
+        public IEnumerable<IScriptUsage> EnumerateAssetUsages()
         {
             foreach (var assetUsage in myAssetUsages)
             {

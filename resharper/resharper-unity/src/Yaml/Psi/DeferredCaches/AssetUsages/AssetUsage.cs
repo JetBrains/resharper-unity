@@ -7,7 +7,7 @@ using JetBrains.Serialization;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
     // TODO : Right now, we use it only for scripts, but we could calculate deps not only for scripts
-    public readonly struct AssetScriptUsages
+    public readonly struct AssetScriptUsages : IScriptUsage
     {
         // TODO, local reference deps
         public LocalReference Location { get; }

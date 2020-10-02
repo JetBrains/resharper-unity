@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
@@ -16,17 +19,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
-        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
+        [NotNull, ItemNotNull] private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
         private readonly IDeclaredElementsSet myElements;
 
-        public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController, AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,  AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
-            UnityEventsElementContainer unityEventsElementContainer, AssetInspectorValuesContainer assetInspectorValuesContainer, MetaFileGuidCache metaFileGuidCache, IDeclaredElementsSet elements, bool findCandidates)
+        public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController,
+                                           AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,
+                                           [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
+                                           UnityEventsElementContainer unityEventsElementContainer,
+                                           AssetInspectorValuesContainer assetInspectorValuesContainer,
+                                           MetaFileGuidCache metaFileGuidCache,
+                                           IDeclaredElementsSet elements,
+                                           bool findCandidates)
         {
             myDeferredCacheController = deferredCacheController;
             myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
-            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
+            myScriptsUsagesElementContainers = scriptsUsagesElementContainers;
             myUnityEventsElementContainer = unityEventsElementContainer;
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myElements = elements;
@@ -50,12 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
                 if (element is ITypeElement typeElement)
                 {
-                    var usages = myAssetScriptUsagesElementContainer.GetAssetUsagesFor(sourceFile, typeElement);
-
-                    foreach (var assetUsage in usages)
-                    {
-                        consumer.Accept(new UnityScriptsFindResults(sourceFile, element, assetUsage, assetUsage.Location));
-                    }
+                    AddScriptUsages(sourceFile, consumer, typeElement, element);
                 }
 
                 if (element is IField field)
@@ -79,6 +83,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             }
 
             return false;
+        }
+
+        private void AddScriptUsages<TResult>([NotNull] IPsiSourceFile sourceFile,
+                                              [NotNull] IFindResultConsumer<TResult> consumer,
+                                              [NotNull] ITypeElement typeElement,
+                                              [NotNull] IDeclaredElement element)
+        {
+            foreach (var scriptUsagesContainer in myScriptsUsagesElementContainers)
+            {
+                var scriptUsages = scriptUsagesContainer.GetScriptUsagesFor(sourceFile, typeElement);
+                foreach (var scriptUsage in scriptUsages)
+                {
+                    consumer.Accept(new UnityScriptsFindResults(sourceFile, element, scriptUsage, scriptUsage.Location));
+                }
+            }
         }
 
         public bool ProcessElement<TResult>(ITreeNode element, IFindResultConsumer<TResult> consumer)
