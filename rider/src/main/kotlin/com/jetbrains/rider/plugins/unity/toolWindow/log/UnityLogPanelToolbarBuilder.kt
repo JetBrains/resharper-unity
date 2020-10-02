@@ -72,7 +72,7 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createBeforeInit() = object : ToggleAction("Messages before last [InitializeOnLoad] execution", "",  UnityIcons.LogView.FilterBeforeRefresh) {
+        fun createBeforeInit() = object : ToggleAction("Messages before last Domain reload", "",  UnityIcons.LogView.FilterBeforeRefresh) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforeInit()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforeLastBuild(value)
