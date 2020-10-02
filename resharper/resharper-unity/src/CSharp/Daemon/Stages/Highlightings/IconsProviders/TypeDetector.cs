@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
@@ -12,6 +11,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.ReSharper.Resources.Resources.Icons;
 using JetBrains.TextControl;
 
@@ -22,9 +22,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         private readonly UnityApi myUnityApi;
 
-        public TypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, SettingsStore settingsStore, UnityApi unityApi,
-            PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
-            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, provider)
+        public TypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+                            IApplicationWideContextBoundSettingStore settingsStore, UnityApi unityApi,
+                            PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
+            : base(solution, settingsStore, callGraphSwaExtensionProvider, marksProvider, provider)
         {
             myUnityApi = unityApi;
         }
@@ -39,15 +40,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             {
                 if (typeElement.DerivesFromMonoBehaviour())
                 {
-                    AddMonoBehaviourHiglighting(consumer, element, "Script", "Unity script", kind);
+                    AddMonoBehaviourHighlighting(consumer, element, "Script", "Unity script", kind);
                 }
                 else if (typeElement.DerivesFrom(KnownTypes.Editor) || typeElement.DerivesFrom(KnownTypes.EditorWindow))
                 {
-                    AddEditorHiglighting(consumer, element, "Editor", "Custom Unity Editor", kind);
+                    AddEditorHighlighting(consumer, element, "Editor", "Custom Unity Editor", kind);
                 }
                 else if (typeElement.DerivesFromScriptableObject())
                 {
-                    AddMonoBehaviourHiglighting(consumer, element, "Scriptable object", "Scriptable Object", kind);
+                    AddMonoBehaviourHighlighting(consumer, element, "Scriptable object", "Scriptable Object", kind);
                 }
                 else if (myUnityApi.IsUnityType(typeElement))
                 {
@@ -65,12 +66,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             return false;
         }
 
-        protected virtual void AddMonoBehaviourHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
+        protected virtual void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
         {
             AddHighlighting(consumer, declaration, text, tooltip, kind);
         }
 
-        protected virtual void AddEditorHiglighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
+        protected virtual void AddEditorHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text, string tooltip, DaemonProcessKind kind)
         {
             AddHighlighting(consumer, declaration, text, tooltip, kind);
         }

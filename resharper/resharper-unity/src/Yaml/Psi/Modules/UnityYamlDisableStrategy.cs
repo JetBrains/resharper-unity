@@ -1,12 +1,10 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Application.Settings;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
@@ -24,16 +22,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
         private readonly bool myAllowRunHeuristic;
         private ulong myTotalSize;
 
-        public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches, ISettingsStore settingsStore, AssetIndexingSupport assetIndexingSupport)
+        public UnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches,
+                                        IApplicationWideContextBoundSettingStore settingsStore, AssetIndexingSupport assetIndexingSupport)
         {
             mySolutionCaches = solutionCaches;
             myAssetIndexingSupport = assetIndexingSupport;
-            var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.ManuallyRestrictWritesToOneContext(solution.ToDataContext()));
-            myAllowRunHeuristic = boundStore.GetValue((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic);
+            myAllowRunHeuristic = settingsStore.BoundSettingsStore
+                .GetValue((UnitySettings s) => s.EnableAssetIndexingPerformanceHeuristic);
 
             if (solutionCaches.PersistentProperties.TryGetValue(SolutionCachesId, out var result))
             {
-                myShouldRunHeuristic = Boolean.Parse(result);
+                myShouldRunHeuristic = bool.Parse(result);
             }
             else
             {
