@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly InjectedHlslFileLocationTracker myLocationTracker;
         private readonly DocumentManager myManager;
         private readonly ILogger myLogger;
-        private readonly DirectMappedCache<IPsiSourceFile, IRangeMarker> myShaderContext = new DirectMappedCache<IPsiSourceFile, IRangeMarker>(100);
+        private readonly DirectMappedCache<FileSystemPath, IRangeMarker> myShaderContext = new DirectMappedCache<FileSystemPath, IRangeMarker>(100);
     
         public ShaderContextCache(ISolution solution, InjectedHlslFileLocationTracker locationTracker, DocumentManager manager, ILogger logger)
         {
@@ -41,11 +41,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                     Assertion.Assert(root.Value.RootRange.IsValid, "root.RootRange.IsValid()");
                     var range = myManager.CreateRangeMarker(new DocumentRange(root.Value.GetDocument(mySolution),
                         root.Value.RootRange));
-                    myShaderContext.AddToCache(psiSourceFile, range);
+                    myShaderContext.AddToCache(psiSourceFile.GetLocation(), range);
                 }
                 else
                 {
-                    myShaderContext.RemoveFromCache(psiSourceFile);
+                    myShaderContext.RemoveFromCache(psiSourceFile.GetLocation());
                 }
             }
 
@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             {
                 var sourceFile = currentFile.GetRandomSourceFile(mySolution);
 
-                if (myShaderContext.TryGetFromCache(sourceFile, out var result))
+                if (myShaderContext.TryGetFromCache(sourceFile.GetLocation(), out var result))
                 {
                     var path = myManager.TryGetProjectFile(result.Document)?.Location;
                     if (path != null)
@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                         {
                             myLogger.Trace(
                                 $"Reset context for {sourceFile.GetPersistentIdForLogging()}, because inject is not registered");
-                            myShaderContext.RemoveFromCache(sourceFile);
+                            myShaderContext.RemoveFromCache(sourceFile.GetLocation());
                             return CppFileLocation.EMPTY;
                         }
 

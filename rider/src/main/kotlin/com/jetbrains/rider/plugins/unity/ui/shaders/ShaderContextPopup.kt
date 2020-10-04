@@ -21,7 +21,7 @@ import javax.swing.JList
 import javax.swing.JPanel
 
 class ShaderContextPopup(private val group: ActionGroup, private val dataContext: DataContext, currentContextMode: IProperty<ShaderContextData?>) :
-    PopupFactoryImpl.ActionGroupPopup("Shader Context", group, dataContext, false, false,
+    PopupFactoryImpl.ActionGroupPopup("Include context from:", group, dataContext, false, false,
         false, true, null, 10, Condition {
         if (it is ShaderAutoContextSwitchAction && currentContextMode.value == null)
             return@Condition true
