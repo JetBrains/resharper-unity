@@ -1,8 +1,8 @@
-using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Rider;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
 {
@@ -11,7 +11,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules
     {
         private readonly UnityHost myUnityHost;
 
-        public RiderUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches, ISettingsStore settingsStore,
+        public RiderUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches,
+                                             IApplicationWideContextBoundSettingStore settingsStore,
                                              AssetIndexingSupport assetIndexingSupport, UnityHost unityHost)
             : base(lifetime, solution, solutionCaches, settingsStore, assetIndexingSupport)
         {

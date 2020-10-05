@@ -7,7 +7,7 @@ shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=ScriptableWizard, ValidateFileName=True
 scopes: InUnityCSharpEditorFolder
-parameterOrder: HEADER, (CLASS), (NAMESPACE), MENUNAME, TITLE, CREATE, OTHER
+parameterOrder: HEADER, (CLASS), (NAMESPACE), MENUITEM, MENUITEMCOMMAND, TITLE, CREATE, OTHER
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
 NAMESPACE-expression: fileDefaultNamespace()
@@ -23,7 +23,7 @@ OTHER-expression: complete()
 $HEADER$namespace $NAMESPACE$ {
   public class $CLASS$ : UnityEditor.ScriptableWizard
   {
-    [UnityEditor.MenuItem("$MENUNAME$")]
+    [UnityEditor.MenuItem("$MENUITEM$/$MENUITEMCOMMAND$")]
     public static void CreateWizard()
     {
         DisplayWizard<$CLASS$>("$TITLE$", "$CREATE$", "$OTHER$");
@@ -35,6 +35,11 @@ $HEADER$namespace $NAMESPACE$ {
     }
 
     public void OnWizardUpdate()
+    {
+
+    }
+
+    public void OnWizardOtherButton()
     {
 
     }

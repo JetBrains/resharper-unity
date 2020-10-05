@@ -1,10 +1,9 @@
-﻿using JetBrains.Application.Settings;
-using JetBrains.Application.Threading;
+﻿using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -12,9 +11,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnitySettingsSynchronizer
     {
         public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, UnityHost host,
-                                         ISettingsStore settingsStore)
+                                         IApplicationWideContextBoundSettingStore settingsStore)
         {
-            var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
+            var boundStore = settingsStore.BoundSettingsStore;
             var entry = boundStore.Schema.GetScalarEntry((UnitySettings s) => s.EnableShaderLabHippieCompletion);
             boundStore.GetValueProperty<bool>(lifetime, entry, null).Change.Advise_HasNew(lifetime, args =>
             {

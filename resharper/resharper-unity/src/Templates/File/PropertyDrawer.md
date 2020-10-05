@@ -25,6 +25,11 @@ $HEADER$namespace $NAMESPACE$ {
     {
       $END$
     }
+
+    public override float GetPropertyHeight(UnityEditor.SerializedProperty property, UnityEngine.GUIContent label)
+    {
+      return base.GetPropertyHeight(property, label);
+    }
   }
 }
 ```
