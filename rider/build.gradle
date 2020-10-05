@@ -1,3 +1,4 @@
+import kotlin.text.Regex
 import org.apache.tools.ant.taskdefs.condition.Os
 import com.jetbrains.rider.plugins.gradle.buildServer.BuildServerKt
 
@@ -5,7 +6,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
     id 'org.jetbrains.intellij' // Version comes from buildSrc
-    id 'org.jetbrains.changelog' version '0.3.2'
+    id 'org.jetbrains.changelog' version '0.6.0'
     id 'com.jetbrains.rdgen' version '0.203.157'
     id 'com.ullink.nuget' version '2.22'
     id 'com.ullink.nunit' version '2.1'
@@ -43,7 +44,7 @@ logger.lifecycle("BuildConfiguration=$BuildConfiguration")
 
 changelog {
     path = "../CHANGELOG.md"
-    headerFormat = "{0}"
+    headerParserRegex = new Regex(~"\\d+\\.\\d+(\\.\\d+)?.*")
 }
 
 apply from: 'model.gradle'

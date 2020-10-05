@@ -836,7 +836,7 @@ For ReSharper 2018.3 (Based on work in progress 2018.3.2 for Rider)
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/182-eap12-2018.2.3)
 * No ReSharper release required.
 
-## Added
+### Added
 - Unity editor: Disable plugin when Unity is in batch mode (#776, [RIDER-19688](https://youtrack.jetbrains.com/issue/RIDER-19688))
 
 
