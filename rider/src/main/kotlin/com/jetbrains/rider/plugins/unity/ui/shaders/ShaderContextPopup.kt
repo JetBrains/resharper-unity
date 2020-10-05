@@ -37,7 +37,7 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
     init {
         setSpeedSearchAlwaysShown()
         title.setButtonComponent(InplaceButton(IconButton("Help", AllIcons.Actions.Help)) {
-            BrowserUtil.open("https://github.com/JetBrains/resharper-unity/wiki")
+            BrowserUtil.open("https://jb.gg/unity-shader-context")
         }, JBUI.Borders.emptyRight(2))
     }
 
