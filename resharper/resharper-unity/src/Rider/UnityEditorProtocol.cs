@@ -148,6 +148,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (protocolInstance.ProtocolGuid != ProtocolCompatibility.ProtocolGuid)
             {
                 OnOutOfSync(myComponentLifetime);
+                myLogger.Info("Avoid attempt to create protocol, incompatible.");
+                return;
             }
 
             try
