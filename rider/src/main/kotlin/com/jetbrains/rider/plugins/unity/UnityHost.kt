@@ -29,7 +29,7 @@ import com.jetbrains.rider.projectView.solution
 import java.awt.Frame
 
 class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
-    private val model = project.solution.rdUnityModel
+    val model = project.solution.rdUnityModel
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
 
