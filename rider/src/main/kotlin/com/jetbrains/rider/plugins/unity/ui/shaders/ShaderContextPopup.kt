@@ -1,10 +1,12 @@
 package com.jetbrains.rider.plugins.unity.ui.shaders
 
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.icons.AllIcons
+import com.intellij.ide.BrowserUtil
+import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.ui.popup.IconButton
 import com.intellij.openapi.util.Condition
 import com.intellij.ui.ErrorLabel
+import com.intellij.ui.InplaceButton
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.panels.OpaquePanel
 import com.intellij.ui.popup.PopupFactoryImpl
@@ -20,6 +22,7 @@ import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
 
+
 class ShaderContextPopup(private val group: ActionGroup, private val dataContext: DataContext, currentContextMode: IProperty<ShaderContextData?>) :
     PopupFactoryImpl.ActionGroupPopup("Include context from:", group, dataContext, false, false,
         false, true, null, 10, Condition {
@@ -33,6 +36,9 @@ class ShaderContextPopup(private val group: ActionGroup, private val dataContext
 {
     init {
         setSpeedSearchAlwaysShown()
+        title.setButtonComponent(InplaceButton(IconButton("Help", AllIcons.Actions.Help)) {
+            BrowserUtil.open("https://github.com/JetBrains/resharper-unity/wiki")
+        }, JBUI.Borders.emptyRight(2))
     }
 
     override fun getListElementRenderer() = object : PopupListElementRenderer<PopupFactoryImpl.ActionItem>(this) {
