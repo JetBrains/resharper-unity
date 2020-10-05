@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Application.Threading;
@@ -17,6 +16,7 @@ using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             IShellLocks shellLocks,
             UnityPluginDetector detector,
             NotificationsModel notifications,
-            ISettingsStore settingsStore,
+            IApplicationWideContextBoundSettingStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
             UnityVersion unityVersion,
             UnityHost unityHost,
@@ -64,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnitySolutionTracker = unitySolutionTracker;
             myRefresher = refresher;
 
-            myBoundSettingsStore = settingsStore.BindToContextLive(myLifetime, ContextRange.Smart(solution.ToDataContext()));
+            myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
 
             unityHost.PerformModelAction(rdUnityModel =>
@@ -116,7 +116,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var installationInfoToRemove = myDetector.GetInstallationInfo(myCurrentVersion, previousInstallationDir: FileSystemPath.Empty);
                 if (!installationInfoToRemove.PluginDirectory.IsAbsolute)
                     return;
-                
+
                 var pluginDll = installationInfoToRemove.PluginDirectory.Combine(PluginPathsProvider.BasicPluginDllFile);
                 if (pluginDll.ExistsFile)
                 {
@@ -125,8 +125,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         myLogger.Info($"Remove {pluginDll}. Rider package should be used instead.");
                         pluginDll.DeleteFile();
                         FileSystemPath.Parse(pluginDll.FullPath + ".meta").DeleteFile();
-                        
-                        // jetbrainsDir is usually "Assets\Plugins\Editor\JetBrains", however custom locations were also possible   
+
+                        // jetbrainsDir is usually "Assets\Plugins\Editor\JetBrains", however custom locations were also possible
                         var jetbrainsDir = installationInfoToRemove.PluginDirectory;
                         if (jetbrainsDir.GetChildren().Any() || jetbrainsDir.Name != "JetBrains") return;
                         jetbrainsDir.DeleteDirectoryNonRecursive();

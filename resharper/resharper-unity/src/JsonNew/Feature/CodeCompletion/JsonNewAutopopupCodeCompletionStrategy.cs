@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
     {
         private readonly JsonNewIntellisenseManager myJsonIntellisenseManager;
 
-        public JsonNewAutopopupCodeCompletionStrategy(JsonNewIntellisenseManager jsonNewIntellisenseManager, ISettingsStore settingsStore)
+        public JsonNewAutopopupCodeCompletionStrategy(JsonNewIntellisenseManager jsonNewIntellisenseManager)
         {
             myJsonIntellisenseManager = jsonNewIntellisenseManager;
         }
@@ -34,24 +34,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Feature.CodeCompletion
             return true;
         }
 
-        public bool ForceHideCompletion
-        {
-            get { return false; }
-        }
+        public bool ForceHideCompletion => false;
 
-        public PsiLanguageType Language
-        {
-            get { return JsonNewLanguage.Instance; }
-        }
+        // ReSharper disable once AssignNullToNotNullAttribute
+        public PsiLanguageType Language => JsonNewLanguage.Instance;
 
         public AutopopupType IsEnabledInSettings(IContextBoundSettingsStore settingsStore, ITextControl textControl)
         {
             return AutopopupType.HardAutopopup;
         }
 
-        public bool ProcessSubsequentTyping(char c, ITextControl textControl)
-        {
-            return true;
-        }
+        public bool ProcessSubsequentTyping(char c, ITextControl textControl) => true;
     }
 }

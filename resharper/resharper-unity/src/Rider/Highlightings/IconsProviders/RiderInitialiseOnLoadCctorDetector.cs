@@ -1,4 +1,3 @@
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
@@ -10,10 +9,10 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
-    
     [SolutionComponent]
     public class RiderInitialiseOnLoadCctorDetector : InitialiseOnLoadCctorDetector
     {
@@ -21,29 +20,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
-        private readonly IElementIdProvider myProvider;
 
-        public RiderInitialiseOnLoadCctorDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityCodeInsightFieldUsageProvider fieldUsageProvider,
-            UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost, IElementIdProvider provider)
-            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, provider)
+        public RiderInitialiseOnLoadCctorDetector(ISolution solution,
+                                                  CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+                                                  IApplicationWideContextBoundSettingStore settingsStore,
+                                                  PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
+                                                  UnityCodeInsightFieldUsageProvider fieldUsageProvider,
+                                                  UnitySolutionTracker solutionTracker,
+                                                  ConnectionTracker connectionTracker,
+                                                  IconHost iconHost, IElementIdProvider elementIdProvider)
+            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, elementIdProvider)
         {
             myFieldUsageProvider = fieldUsageProvider;
             mySolutionTracker = solutionTracker;
             myConnectionTracker = connectionTracker;
             myIconHost = iconHost;
-            myProvider = provider;
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            DaemonProcessKind kind)
+                                                DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(CallGraphSwaExtensionProvider, Settings, MarksProvider, kind, myProvider)
+            var iconId = element.HasHotIcon(CallGraphSwaExtensionProvider, SettingsStore.BoundSettingsStore, MarksProvider, kind, ElementIdProvider)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
-            
-            if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myFieldUsageProvider.ProviderId,
+
+            if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myFieldUsageProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
             {
                 if (!useFallback)

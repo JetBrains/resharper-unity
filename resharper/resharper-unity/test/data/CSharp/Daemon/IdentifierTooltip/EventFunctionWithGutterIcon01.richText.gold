@@ -1,0 +1,6 @@
+﻿(method) |void(ReSharper C# Keyword)| |A(ReSharper C# Class Identifier)|.|OnDestroy(ReSharper C# Method Identifier)|()
+
+Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
+Unity event function
+
+Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
