@@ -1,11 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <title>error_dark</title>
-  <g>
-    <g>
-      <circle cx="8" cy="8" r="7" fill="#252525"/>
-      <circle cx="8" cy="8" r="6" fill="#e31600"/>
-      <rect x="4" y="7" width="8" height="2" fill="#ebebeb"/>
-    </g>
-    <rect width="16" height="16" fill="#f0f" opacity="0"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" x="0" y="0" version="1.1" viewBox="0 0 16 16" xml:space="preserve">
+  <circle cx="8" cy="8" r="6" fill="#C75450"/>
+  <path fill="#fff" d="M4 7h8v2H4z"/>
 </svg>
