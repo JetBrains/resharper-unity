@@ -24,6 +24,7 @@ using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
@@ -101,10 +102,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
+
+        private DateTime myLastChangeTime;
+        
         private void OnChangeAction(FileSystemChangeDelta delta)
         {
             // connect on reload of server
             if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
+            if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
+            myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
             if (!myComponentLifetime.IsTerminated)
                 myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
                     () => CreateProtocols(delta.NewPath));
@@ -138,6 +144,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 return;
 
             myLogger.Info($"EditorPlugin protocol port {protocolInstance.Port} for Solution: {protocolInstance.SolutionName}.");
+
+            if (protocolInstance.ProtocolGuid != ProtocolCompatibility.ProtocolGuid)
+            {
+                OnOutOfSync(myComponentLifetime);
+                myLogger.Info("Avoid attempt to create protocol, incompatible.");
+                return;
+            }
 
             try
             {
@@ -178,6 +191,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     }
                 });
 
+                protocol.OutOfSyncModels.AdviseOnce(lifetime, e => { OnOutOfSync(lifetime); });
+                
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
@@ -279,6 +294,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
         }
 
+        private void OnOutOfSync(Lifetime lifetime)
+        {
+            if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
+                return;
+
+            myPluginInstallations.Add(mySolution
+                .SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
+
+            var appVersion = myUnityVersion.ActualVersionForSolution.Value;
+            if (appVersion < new Version(2019, 2))
+            {
+                var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
+                var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
+                if (!isEnabled)
+                {
+                    myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
+                }
+            }
+            else
+            {
+                var notification = new NotificationModel("Advanced Unity integration is unavailable",
+                    $"Please update External Editor to {myHostProductInfo.VersionMarketingString} in Unity Preferences.",
+                    true, RdNotificationEntryType.WARN);
+                mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify",
+                    () => myNotificationsModel.Notification(notification));
+            }
+        }
+
         private ScriptCompilationDuringPlay ConvertToScriptCompilationEnum(int mode)
         {
             if (mode < 0 || mode >= 3)
@@ -347,11 +390,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         public readonly int Port;
         public readonly string SolutionName;
+        public readonly Guid ProtocolGuid;
 
-        public ProtocolInstance(int port, string solutionName)
+        public ProtocolInstance(int port, string solutionName, Guid protocolGuid)
         {
             Port = port;
             SolutionName = solutionName;
+            ProtocolGuid = protocolGuid;
         }
 
         public static List<ProtocolInstance> FromJson(string json)
