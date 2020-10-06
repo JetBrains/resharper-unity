@@ -397,10 +397,9 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void GetInitTime(EditorPluginModel model)
     {
+      ourLogger.Verbose($"Set LastInitTime to {ourInitTime}");
       model.LastInitTime.SetValue(ourInitTime);
-      if (EditorApplication.isPaused || EditorApplication.isPlaying)
-        model.LastPlayTime.SetValue(ourInitTime);
-	}
+    }
 
     private static void AdviseRunMethod(EditorPluginModel model)
     {
@@ -626,6 +625,17 @@ namespace JetBrains.Rider.Unity.Editor
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
 
+          ourLogger.Verbose($"LastPlayModeEnabled will be changed to {EditorApplication.isPlaying}");
+
+          var data = RiderScriptableSingleton.Instance;
+          if (!data.LastPlayModeEnabled)
+          {
+              ourLogger.Verbose($"Set LastPlayTime to {ourInitTime}");
+              model.LastPlayTime.Value = ourInitTime;
+          }
+
+          RiderScriptableSingleton.Instance.LastPlayModeEnabled = EditorApplication.isPlaying;
+          
           if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);

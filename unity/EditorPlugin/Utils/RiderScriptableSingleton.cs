@@ -8,6 +8,11 @@ namespace JetBrains.Rider.Unity.Editor.Utils
   {
     [SerializeField] 
     private bool myCsprojProcessedOnce;
+    
+    [SerializeField] 
+    private bool myLastPlayModeEnabled = false;
+    
+    
     public bool CsprojProcessedOnce
     {
       get => myCsprojProcessedOnce;
@@ -16,6 +21,16 @@ namespace JetBrains.Rider.Unity.Editor.Utils
         myCsprojProcessedOnce = value;
         Save(true);
       }
+    }
+    
+    public bool LastPlayModeEnabled
+    {
+        get => myLastPlayModeEnabled;
+        set
+        {
+            myLastPlayModeEnabled = value;
+            Save(true);
+        }
     }
   }
 }
