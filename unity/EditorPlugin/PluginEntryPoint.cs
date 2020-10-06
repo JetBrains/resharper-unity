@@ -373,12 +373,6 @@ namespace JetBrains.Rider.Unity.Editor
           connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
           UnityModels.Add(pair);
           
-          riderProtocolController.Wire.HeartbeatAlive.WhenFalse(connectionLifetime, _ =>
-          {
-              ourLogger.Verbose($"Heartbeat alive is false for {solutionName}, destroying protocol");
-              currentWireAndProtocolLifetimeDef.Terminate();
-          });
-                
           connectionLifetime.OnTermination(() =>
           {
               ourLogger.Verbose($"Connection lifetime is not alive for {solutionName}, destroying protocol");
