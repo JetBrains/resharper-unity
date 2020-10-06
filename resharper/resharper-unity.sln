@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rider-yaml", "resharper-yam
 		{696CBCCC-09AB-42C1-B139-5BCD8EC2FDD7} = {696CBCCC-09AB-42C1-B139-5BCD8EC2FDD7}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "resharper-yaml", "resharper-yaml\src\resharper-yaml.csproj", "{696CBCCC-09AB-42C1-B139-5BCD8EC2FDD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "resharper-yaml", "resharper-yaml\src\resharper-yaml.csproj", "{696CBCCC-09AB-42C1-B139-5BCD8EC2FDD7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests.resharper-yaml", "resharper-yaml\test\src\tests.resharper-yaml.csproj", "{653E0090-709A-4DB5-A35A-CE1F954E8362}"
 EndProject

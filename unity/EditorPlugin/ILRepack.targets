@@ -4,6 +4,12 @@
     <LibDirectory>$(OutputPath)/$(TargetFramework)</LibDirectory>
   </PropertyGroup>
   <Target Name="RiderILRepack" AfterTargets="Build" Inputs="@(ILRepackInputAssemblies)" Outputs="$(ILRepackOutputAssembly)">
-      <Exec Command="&quot;$(DOTNET_HOST_PATH)&quot; $(ILRepackNetCore) /internalize /lib:&quot;$(LibDirectory)&quot; /out:&quot;$(ILRepackOutputAssembly)&quot; @(ILRepackInputAssemblies -> '&quot;%(FullPath)&quot;', ' ')"/>
+    <PropertyGroup>
+      <!-- This should only happen if we try to build using the mono/full framework msbuild -->
+      <_ILRepackDotnetExe>$(DOTNET_HOST_PATH)</_ILRepackDotnetExe>
+      <_ILRepackDotnetExe Condition=" '$(DOTNET_HOST_PATH)' == '' ">dotnet</_ILRepackDotnetExe>
+    </PropertyGroup>
+    <Exec Command="&quot;$(_ILRepackDotNetExe)&quot; $(ILRepackNetCore) /internalize /lib:&quot;$(LibDirectory)&quot; /out:&quot;$(ILRepackOutputAssembly)&quot; @(ILRepackInputAssemblies -> '&quot;%(FullPath)&quot;', ' ')"
+          StandardOutputImportance="Normal"/>
   </Target>
 </Project>
