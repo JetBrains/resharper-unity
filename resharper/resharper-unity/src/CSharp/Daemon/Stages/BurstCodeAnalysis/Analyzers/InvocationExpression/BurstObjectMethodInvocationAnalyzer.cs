@@ -14,10 +14,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         public BurstProblemSubAnalyzerStatus CheckAndAnalyze(IInvocationExpression invocationExpression, IHighlightingConsumer consumer)
         {
-            var invokedMethod = CallGraphUtil.GetCallee(invocationExpression) as IMethod;
-
+            var invokedMethod = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
+            
             if (invokedMethod == null)
-                return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
+                return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
 
             if (!IsBurstProhibitedObjectMethodInvocation(invocationExpression))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;

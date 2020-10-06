@@ -1,8 +1,8 @@
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -177,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         [ContractAnnotation("null => false")]
-        public static bool IsReturnValueBurstProhibited([CanBeNull] IFunction invokedMethod)
+        public static bool IsReturnValueBurstProhibited([CanBeNull] IParametersOwner invokedMethod)
         {
             if (invokedMethod == null)
                 return false;
@@ -209,7 +209,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 case IThrowStatement _:
                 case IThrowExpression _:
                 case IInvocationExpression invocationExpression
-                    when CallGraphUtil.GetCallee(invocationExpression) is IMethod method && IsBurstDiscarded(method):
+                    when invocationExpression.Reference.Resolve().DeclaredElement is IMethod method && IsBurstDiscarded(method):
                 case IFunctionDeclaration functionDeclaration
                     when IsBurstContextBannedFunction(functionDeclaration.DeclaredElement):
                 case IAttributeSectionList _:

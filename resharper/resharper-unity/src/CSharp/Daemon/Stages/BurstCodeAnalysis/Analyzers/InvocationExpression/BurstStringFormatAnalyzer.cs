@@ -15,31 +15,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public BurstProblemSubAnalyzerStatus CheckAndAnalyze(IInvocationExpression invocationExpression,
             IHighlightingConsumer consumer)
         {
-            var invokedMethod = CallGraphUtil.GetCallee(invocationExpression) as IMethod;
+            var invokedMethod = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
 
             if (invokedMethod == null)
-                return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
-
+                return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
+            
             if (!IsStringFormat(invokedMethod))
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
-
+            
             var argumentList = invocationExpression.ArgumentList.Arguments;
-
+            
             var isWarningPlaced = BurstStringLiteralOwnerAnalyzer.CheckAndAnalyze(invocationExpression,
                 new BurstManagedStringWarning(invocationExpression), consumer);
-
+            
             if (isWarningPlaced)
                 return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
-
+            
             if (argumentList.Count == 0)
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
-
+            
             var firstArgument = argumentList[0];
             var cSharpLiteralExpression = firstArgument.Expression as ICSharpLiteralExpression;
-
+            
             if (cSharpLiteralExpression != null && cSharpLiteralExpression.Literal.GetTokenType().IsStringLiteral)
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
-
+            
             consumer?.AddHighlighting(
                 new BurstDebugLogInvalidArgumentWarning(firstArgument.Expression));
 

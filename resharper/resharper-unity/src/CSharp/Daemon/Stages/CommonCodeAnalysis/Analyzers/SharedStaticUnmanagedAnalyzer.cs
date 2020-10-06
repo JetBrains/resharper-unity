@@ -1,7 +1,6 @@
 using System.Linq;
 using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
@@ -15,10 +14,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnaly
     public class SharedStaticUnmanagedAnalyzer : CommonProblemAnalyzerBase<IInvocationExpression>
     {
         protected override void Analyze(IInvocationExpression invocationExpression, IDaemonProcess daemonProcess,
-            DaemonProcessKind kind,
-            IHighlightingConsumer consumer)
+            DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
-            var invokedMethod = CallGraphUtil.GetCallee(invocationExpression) as IMethod;
+            var invokedMethod = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
             var containingType = invokedMethod?.GetContainingType();
             var typeClrName = containingType?.GetClrName();
 

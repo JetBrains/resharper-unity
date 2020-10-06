@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
                         if (invocationInfo is IInvocationExpression invocationExpression)
                         {
-                            var callee = CallGraphUtil.GetCallee(invocationExpression) as IMethod;
+                            var callee = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
 
                             if (BurstCodeAnalysisUtil.IsBurstPossibleArgumentString(cSharpArgument.GetExpressionType()
                                     .ToIType())
