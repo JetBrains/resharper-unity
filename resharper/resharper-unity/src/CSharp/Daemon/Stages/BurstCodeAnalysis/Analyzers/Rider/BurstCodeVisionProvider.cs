@@ -16,7 +16,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
     [SolutionComponent]
     public class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
