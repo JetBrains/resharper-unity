@@ -5,8 +5,8 @@ def hashBaseDir = new File(repoRoot, "rider/build/rdgen")
 
 task generateFrontendBackendModel(type: tasks.getByName('rdgen').class) {
     // Make sure to store separately generated models in separate folders, or the hash generation includes both
-    def backendCsOutDir = new File(repoRoot, "resharper/resharper-unity/src/Rider/RdUnityProtocol")
-    def frontendKtOutDir = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
+    def backendCsOutDir = new File(repoRoot, "resharper/resharper-unity/src/Rider/Model/FrontendBackend")
+    def frontendKtOutDir = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/model")
 
     // NOTE: classpath is evaluated lazily, at execution time, because it comes from the unzipped
     // intellij SDK, which is extracted in afterEvaluate
@@ -35,8 +35,10 @@ task generateFrontendBackendModel(type: tasks.getByName('rdgen').class) {
 
 task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
     // Make sure to store separately generated models in separate folders, or the hash generation includes both
-    def backendCsOutDir = new File(repoRoot, "resharper/resharper-unity/src/Rider/RdEditorProtocol")
-    def unityEditorCsOutDir = new File(repoRoot, "unity/EditorPlugin/NonUnity/RdEditorProtocol")
+    def backendCsOutDir = new File(repoRoot, "resharper/resharper-unity/src/Rider/Model/BackendUnity")
+    def unityEditorCsOutDir = new File(repoRoot, "unity/EditorPlugin/Model")
+
+    // TODO: Delete me
     def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol")
 
     params {
