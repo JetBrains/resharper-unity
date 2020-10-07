@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Highlightings.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
@@ -15,10 +16,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private readonly IProperty<BurstCodeHighlightingMode> myLineMarkerStatus;
 
-        public BurstLineMarkerAnalyzer(Lifetime lifetime, ISolution solution, ISettingsStore store)
+        public BurstLineMarkerAnalyzer(Lifetime lifetime, IApplicationWideContextBoundSettingStore store)
         {
-            myLineMarkerStatus = store.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()))
-                .GetValueProperty(lifetime, (UnitySettings key) => key.BurstCodeHighlightingMode);
+            myLineMarkerStatus = store.BoundSettingsStore.GetValueProperty(lifetime, (UnitySettings key) => key.BurstCodeHighlightingMode);
         }
 
         protected override bool CheckAndAnalyze(IFunctionDeclaration functionDeclaration,

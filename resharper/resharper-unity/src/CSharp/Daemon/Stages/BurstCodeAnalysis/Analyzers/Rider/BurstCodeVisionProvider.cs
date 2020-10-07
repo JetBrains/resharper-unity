@@ -14,6 +14,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
     {
-        private readonly IContextBoundSettingsStore mySettingsStore;
+        private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
         private readonly ISolution mySolution;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly IconHost myIconHost;
@@ -30,12 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public const string BURST_TOOLTIP = "Burst compiled code";
 
         public BurstCodeVisionProvider(ISolution solution,
-            SettingsStore settingsStore,
+            IApplicationWideContextBoundSettingStore store,
             UnityCodeInsightProvider codeInsightProvider, IconHost iconHost)
         {
             mySolution = solution;
             myTextControlManager = mySolution.GetComponent<ITextControlManager>();
-            mySettingsStore = settingsStore.BindToContextTransient(ContextRange.Smart(solution.ToDataContext()));
+            mySettingsStore = store;
             myCodeInsightProvider = codeInsightProvider;
             myIconHost = iconHost;
         }
@@ -45,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (consumer == null)
                 return false;
 
-            if (!RiderIconProviderUtil.IsCodeVisionEnabled(mySettingsStore, myCodeInsightProvider.ProviderId,
+            if (!RiderIconProviderUtil.IsCodeVisionEnabled(mySettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
                 () => { }, out _)) return false;
 
             var declaredElement = methodDeclaration.DeclaredElement;
