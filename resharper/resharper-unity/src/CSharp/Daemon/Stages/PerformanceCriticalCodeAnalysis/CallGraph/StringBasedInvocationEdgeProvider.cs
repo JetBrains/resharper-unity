@@ -1,5 +1,7 @@
 using JetBrains.Application;
 using JetBrains.ReSharper.Daemon.CallGraph;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -10,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [ShellComponent]
     public class StringBasedInvocationEdgeProvider : ICallGraphEdgeProvider
     {
-        public void FindEdges(ITreeNode treeNode, IDeclaredElement caller, ICallGraphEdgeConsumer consumer)
+        public void FindEdges(ITreeNode treeNode, IDeclaredElement caller, ICallGraphEdgeConsumer consumer, IElementIdProvider provider)
         {
             if (treeNode is IInvocationExpression invocationExpression)
             {
@@ -22,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         ?.GetReferences<UnityEventFunctionReference>().FirstOrDefault()?.Resolve().DeclaredElement;
                     if (implicitlyInvokeDeclaredElement != null)
                     {
-                        consumer.AddEdge(caller, implicitlyInvokeDeclaredElement);
+                        consumer.TryAddEdge(caller, implicitlyInvokeDeclaredElement, provider);
                     }
                 }
             }
