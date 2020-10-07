@@ -1,9 +1,9 @@
 using JetBrains.Application.Notifications;
-using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.VisualStudio.Psi.Modules
 {
@@ -13,8 +13,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.VisualStudio.Psi.Modules
         private readonly Lifetime myLifetime;
         private readonly UserNotifications myNotifications;
 
-        public ReSharperUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches, ISettingsStore settingsStore,
-                                                 AssetIndexingSupport assetIndexingSupport, UserNotifications notifications)
+        public ReSharperUnityYamlDisableStrategy(Lifetime lifetime, ISolution solution, SolutionCaches solutionCaches,
+                                                 IApplicationWideContextBoundSettingStore settingsStore,
+                                                 AssetIndexingSupport assetIndexingSupport,
+                                                 UserNotifications notifications)
             : base(lifetime, solution, solutionCaches, settingsStore, assetIndexingSupport)
         {
             myLifetime = lifetime;

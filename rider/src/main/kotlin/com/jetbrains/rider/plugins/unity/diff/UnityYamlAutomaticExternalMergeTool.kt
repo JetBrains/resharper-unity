@@ -50,7 +50,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
             else
                 settings.mergeParameters = mergeParameters
 
-            if (!ExternalDiffToolUtil.tryExecuteMerge(project, settings, request as ThreesideMergeRequest)){
+            if (!ExternalDiffToolUtil.tryExecuteMerge(project, settings, request as ThreesideMergeRequest, null)){
                 if (premergedBase.exists() && premergedRight.exists()){
                     val output: VirtualFile = (request.outputContent as FileContent).file
                     val byteContents = listOf(output.toIOFile().readBytes(), premergedBase.readBytes(), premergedRight.readBytes())

@@ -3,6 +3,7 @@ package model.rider
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
+import com.jetbrains.rider.model.nova.ide.SolutionModel.EditableEntityId
 
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
@@ -50,6 +51,26 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         field("message", string)
         field("stackTrace", string)
     }
+
+    private val shaderInternScope = internScope()
+
+    private val shaderContextDataBase = baseclass {
+
+    }
+
+    private val autoShaderContextData = classdef extends shaderContextDataBase {
+
+    }
+
+    private val shaderContextData = classdef extends shaderContextDataBase {
+        field("path", string.interned(shaderInternScope))
+        field("name", string.interned(shaderInternScope))
+        field("folder", string.interned(shaderInternScope))
+        field("start", int)
+        field("end", int)
+        field("startLine", int)
+    }
+
 
     init {
         sink("activateRider", void)
@@ -123,5 +144,16 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         })
 
         property("riderFrontendTests", bool)
+
+
+        call("requestShaderContexts", EditableEntityId, immutableList(shaderContextDataBase))
+        call("requestCurrentContext", EditableEntityId, shaderContextDataBase)
+        source("setAutoShaderContext", EditableEntityId)
+        source("changeContext", structdef ("contextInfo"){
+            field("target", EditableEntityId)
+            field("path", string.interned(shaderInternScope))
+            field("start", int)
+            field("end", int)
+        })
     }
 }

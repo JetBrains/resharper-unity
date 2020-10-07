@@ -58,7 +58,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
             {
                 // SetupLogging();
                 SetJetTestPackagesDir();
-                HackTaskRunnerFramework.Install();
                 HackTestDataInNugets.ApplyPatches();
 
                 // Temp workaround for GacCacheController, which adds all Mono GAC paths into a dictionary without

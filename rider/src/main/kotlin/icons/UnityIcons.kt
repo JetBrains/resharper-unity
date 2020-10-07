@@ -29,6 +29,13 @@ class UnityIcons {
         }
     }
 
+    class LogView {
+        companion object {
+            val FilterBeforePlay = IconLoader.getIcon("/Icons/logView/filterBeforePlay.svg", UnityIcons::class.java)
+            val FilterBeforeRefresh = IconLoader.getIcon("/Icons/logView/filterBeforeRefresh.svg", UnityIcons::class.java)
+        }
+    }
+
     class FileTypes {
         companion object {
             val ShaderLab = IconLoader.getIcon("/resharper/ShaderFileType/FileShader.svg", UnityIcons::class.java)

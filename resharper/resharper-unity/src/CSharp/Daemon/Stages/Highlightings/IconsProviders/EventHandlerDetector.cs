@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -9,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders
@@ -16,17 +16,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     [SolutionComponent]
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
-        private readonly UnityEventsElementContainer myUnityEventsElementContainer;
+        protected readonly UnityEventsElementContainer UnityEventsElementContainer;
 
-        public EventHandlerDetector(ISolution solution, SettingsStore settingsStore,
-            UnityEventsElementContainer unityEventsElementContainer, UnityProblemAnalyzerContextSystem contextSystem)
+        public EventHandlerDetector(ISolution solution, IApplicationWideContextBoundSettingStore settingsStore,
+                                    UnityEventsElementContainer unityEventsElementContainer,
+                                    UnityProblemAnalyzerContextSystem contextSystem)
             : base(solution, settingsStore, contextSystem)
         {
-            myUnityEventsElementContainer = unityEventsElementContainer;
+            UnityEventsElementContainer = unityEventsElementContainer;
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
-            DaemonProcessKind kind)
+                                                        DaemonProcessKind kind)
         {
             var declaredElement = treeNode.DeclaredElement;
             var method = declaredElement as IMethod;
@@ -36,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (declaredElement is IProperty property)
                 method = property.Setter;
 
-            if (method != null && myUnityEventsElementContainer.GetAssetUsagesCount(method, out _) > 0)
+            if (method != null && UnityEventsElementContainer.GetAssetUsagesCount(method, out _) > 0)
             {
                 AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
                 return true;
@@ -50,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             consumer.AddImplicitConfigurableHighlighting(element);
 
-            var isIconHot = element.HasHotIcon(ContextSystem, Settings, kind);
+            var isIconHot = element.HasHotIcon(ContextSystem, SettingsStore.BoundSettingsStore, kind);
 
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(GetActions(element), element, tooltip)

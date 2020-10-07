@@ -51,7 +51,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       var sb = new StringBuilder("[");
 
       sb.Append(connections
-        .Select(connection=> "{" + $"\"Port\":{connection.Port},\"SolutionName\":\"{connection.SolutionName}\"" + "}")
+        .Select(connection=> "{" + $"\"Port\":{connection.Port},\"SolutionName\":\"{connection.SolutionName}\",\"ProtocolGuid\":\"{ProtocolCompatibility.ProtocolGuid}\"" + "}")
         .Aggregate((a, b) => a + "," + b));
 
       sb.Append("]");

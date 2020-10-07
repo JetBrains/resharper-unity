@@ -1,4 +1,3 @@
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -9,10 +8,10 @@ using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
-    
     [SolutionComponent]
     public class RiderInitialiseOnLoadCctorDetector : InitialiseOnLoadCctorDetector
     {
@@ -21,10 +20,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly ConnectionTracker myConnectionTracker;
         private readonly IconHost myIconHost;
 
-        public RiderInitialiseOnLoadCctorDetector(ISolution solution,  
-            SettingsStore settingsStore, UnityCodeInsightFieldUsageProvider fieldUsageProvider,
-            UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost, UnityProblemAnalyzerContextSystem contextSystem)
+        public RiderInitialiseOnLoadCctorDetector(ISolution solution,
+                                                  IApplicationWideContextBoundSettingStore settingsStore,
+                                                  UnityCodeInsightFieldUsageProvider fieldUsageProvider,
+                                                  UnitySolutionTracker solutionTracker,
+                                                  ConnectionTracker connectionTracker,
+                                                  IconHost iconHost, UnityProblemAnalyzerContextSystem contextSystem)
             : base(solution, settingsStore, contextSystem)
         {
             myFieldUsageProvider = fieldUsageProvider;
@@ -34,13 +35,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            DaemonProcessKind kind)
+                                                DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(ContextSystem, Settings, kind)
+            var iconId = element.HasHotIcon(ContextSystem, SettingsStore.BoundSettingsStore, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
-            
-            if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myFieldUsageProvider.ProviderId,
+
+            if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myFieldUsageProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
             {
                 if (!useFallback)
