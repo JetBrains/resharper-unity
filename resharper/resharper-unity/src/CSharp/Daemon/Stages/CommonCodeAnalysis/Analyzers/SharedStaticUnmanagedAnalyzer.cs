@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnalysis.Analyzers
@@ -17,6 +18,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnaly
             DaemonProcessKind kind, IHighlightingConsumer consumer)
         {
             var invokedMethod = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
+            
+            if (invocationExpression.Reference.Resolve().ResolveErrorType != ResolveErrorType.OK)
+                return;
+            
             var containingType = invokedMethod?.GetContainingType();
             var typeClrName = containingType?.GetClrName();
 
@@ -54,9 +59,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnaly
 
             var substitutedType = substitution.Apply(typeParameter);
 
-            if (substitutedType.IsUnmanagedType(invocationExpression.GetLanguageVersion())) 
+            if (substitutedType.IsUnmanagedType(invocationExpression.GetLanguageVersion()))
                 return;
-            
+
             var typeParameterName = substitutedType.GetTypeElement()?.ShortName;
 
             if (typeParameterName != null)

@@ -1,8 +1,6 @@
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.Metadata.Reader.Impl;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -12,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 {
     public static class BurstCodeAnalysisUtil
     {
-        private static readonly IClrTypeName[] FixedStrings =
+        private static readonly IClrTypeName[] ourFixedStrings =
         {
             new ClrTypeName("Unity.Collections.FixedString32"),
             new ClrTypeName("Unity.Collections.FixedString64"),
@@ -56,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             var clrTypeName = declaredType.GetClrName();
             
-            foreach (var fixedString in FixedStrings)
+            foreach (var fixedString in ourFixedStrings)
             {
                 if (clrTypeName.Equals(fixedString))
                     return true;
@@ -71,25 +69,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             // if expression is type A -> then everything that returns form it is A. 
             // if in burst context there are managed variables(like string) -> it will be highlighted
             // assume there are no
-            // then there are only IStringLiteralOwners, fixedStrings and IInvocatoinExressions
+            // then there are only IStringLiteralOwner, fixedString and IInvocationExpression
 
             return type.IsString() || IsFixedString(type);
-        }
-
-        [ContractAnnotation("null => false")]
-        private static bool IsAccessedFromOpenType(
-            [CanBeNull] IConditionalAccessExpression conditionalAccessExpression)
-        {
-            if (conditionalAccessExpression is IInvocationExpression)
-            {
-                conditionalAccessExpression =
-                    conditionalAccessExpression.ConditionalQualifier as IConditionalAccessExpression;
-            }
-
-            if (conditionalAccessExpression == null)
-                return false;
-
-            return conditionalAccessExpression.ConditionalQualifier?.Type().IsOpenType ?? false;
         }
 
         public static bool IsDebugLog([NotNull] IMethod method)
@@ -156,8 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public static bool IsBurstProhibitedObjectMethodInvocation([CanBeNull] IInvocationExpression invocation)
         {
-            var function =
-                invocation?.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
+            var function = invocation?.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
             
             if (function == null)
                 return false;
