@@ -37,7 +37,7 @@ class BackendPaths(private val project: Project,
             if (project.buildServer.isAutomatedBuild) {
                 riderSdkPath = File(repositoryRoot, "rider/dependencies")
                 if (riderSdkPath?.isDirectory == true) {
-                    logger.lifecycle("Rider SDK bundle found: ${riderSdkPath?.canonicalPath}")
+                    logger.info("Rider SDK bundle found: ${riderSdkPath?.canonicalPath}")
                 } else {
                     logger.error("Bundle Rider SDK not found in '$riderSdkPath'. Falling back to public SDK")
                 }
@@ -59,7 +59,7 @@ class BackendPaths(private val project: Project,
                     root = File(intellij.ideaDependency.classes.absolutePath)
                 }
                 riderSdkPath = root
-                logger.lifecycle("Rider SDK bundle found: ${root.canonicalPath}")
+                logger.info("Rider SDK bundle found: ${root.canonicalPath}")
             }
         }
         assert(riderSdkPath?.isDirectory ?: false)

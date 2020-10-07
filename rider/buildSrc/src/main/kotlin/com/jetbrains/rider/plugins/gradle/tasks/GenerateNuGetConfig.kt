@@ -17,7 +17,7 @@ open class GenerateNuGetConfig: DefaultTask() {
     @TaskAction
     fun generate() {
         val dotNetSdkFile = dotNetSdkPath?.let { project.file(it)} ?: error("dotNetSdkLocation not set")
-        project.buildServer.progress("dotNetSdk location: '$dotNetSdkFile'")
+        logger.info("dotNetSdk location: '$dotNetSdkFile'")
         assert(dotNetSdkFile.isDirectory)
 
         project.buildServer.progress("Generating :${nuGetConfigFile.canonicalPath}...")
@@ -31,11 +31,13 @@ open class GenerateNuGetConfig: DefaultTask() {
             |</configuration>
             """.trimMargin()
         nuGetConfigFile.writeText(nugetConfigText)
-        project.buildServer.progress("Write content:\n$nugetConfigText")
+
+        logger.info("Generated content:\n$nugetConfigText")
+
         val sb = StringBuilder("Dump dotNetSdkFile content:\n")
         for(file in dotNetSdkFile.listFiles()) {
             sb.append("${file.canonicalPath}\n")
         }
-        project.buildServer.progress(sb.toString())
+        logger.info(sb.toString())
     }
 }
