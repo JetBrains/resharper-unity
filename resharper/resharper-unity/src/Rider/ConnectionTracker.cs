@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var updateConnectionAction = new Action(() =>
                 {
-                    var model = editorProtocol.UnityModel.Value;
+                    var model = editorProtocol.BackendUnityModel.Value;
                     if (model == null)
                     {
                         State.SetValue(UnityEditorState.Disconnected);

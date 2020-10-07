@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.Lifetimes;
 using JetBrains.Platform.Unity.EditorPluginModel;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.RunMarkers;
@@ -52,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
             var iconId = RunMarkersThemedIcons.RunThis.Id;
             yield return new BulbMenuItem(new ExecutableItem(() =>
                 {
-                    var model = editorProtocol.UnityModel.Value;
+                    var model = editorProtocol.BackendUnityModel.Value;
                     if (model == null)
                     {
                         var notification = new NotificationModel("No connection to Unity", "Make sure Unity is running.",

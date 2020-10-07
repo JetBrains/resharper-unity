@@ -4,7 +4,7 @@ import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 
 @Suppress("unused")
-object EditorPluginModel: Root() {
+object BackendUnityModel: Root() {
 
     var RdOpenFileArgs = structdef {
         field("path", string)

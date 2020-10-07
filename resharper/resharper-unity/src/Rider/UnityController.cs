@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public Task<ExitUnityResult> ExitUnityAsync(bool force)
         {
             var lifetimeDef = myLifetime.CreateNested();
-            if (myUnityEditorProtocol.UnityModel.Value == null) // no connection
+            if (myUnityEditorProtocol.BackendUnityModel.Value == null) // no connection
             {
                 if (force)
                 {
@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             var protocolTaskSource = new TaskCompletionSource<bool>();
-            mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myUnityEditorProtocol.UnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
+            mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myUnityEditorProtocol.BackendUnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
                 .AsTask());
             var protocolTask = protocolTaskSource.Task;
 
@@ -79,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private Task<ExitUnityResult> WaitModelUpdate()
         {
             var successExitResult = new ExitUnityResult(true, null, null);
-            if (!myUnityEditorProtocol.UnityModel.HasValue())
+            if (!myUnityEditorProtocol.BackendUnityModel.HasValue())
                 return Task.FromResult(successExitResult);
 
             var taskSource = new TaskCompletionSource<ExitUnityResult>();
@@ -87,13 +87,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             waitLifetimeDef.SynchronizeWith(taskSource);
 
             // Wait RdModel Update
-            myUnityEditorProtocol.UnityModel.ViewNull(waitLifetimeDef.Lifetime, _ => taskSource.SetResult(successExitResult));
+            myUnityEditorProtocol.BackendUnityModel.ViewNull(waitLifetimeDef.Lifetime, _ => taskSource.SetResult(successExitResult));
             return taskSource.Task;
         }
 
         public int? TryGetUnityProcessId()
         {
-            var model = myUnityEditorProtocol.UnityModel.Value;
+            var model = myUnityEditorProtocol.BackendUnityModel.Value;
             if (model != null)
             {
                 if (model.UnityProcessId.HasValue())
@@ -112,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var lifetimeDef = myLifetime.CreateNested();
             lifetimeDef.SynchronizeWith(source);
 
-            myUnityEditorProtocol.UnityModel.ViewNotNull(
+            myUnityEditorProtocol.BackendUnityModel.ViewNotNull(
                 lifetimeDef.Lifetime,
                 (lt, model) => model.UnityProcessId.Advise(lt, id => source.TrySetResult(id)));
 

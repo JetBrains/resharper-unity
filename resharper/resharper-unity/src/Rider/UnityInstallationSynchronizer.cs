@@ -24,13 +24,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             host.PerformModelAction(rd =>
             {
                 // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more correct than any counted value
-                if (myUnityEditorProtocol.UnityModel.Value != null)
+                if (myUnityEditorProtocol.BackendUnityModel.Value != null)
                     return;
-                
+
                 var info = UnityInstallationFinder.GetApplicationInfo(version, unityVersion);
-                if (info == null) 
+                if (info == null)
                     return;
-                
+
                 var contentsPath = UnityInstallationFinder.GetApplicationContentsPath(info.Path);
                 rd.UnityApplicationData.SetValue(new UnityApplicationData(info.Path.FullPath,
                     contentsPath.FullPath,

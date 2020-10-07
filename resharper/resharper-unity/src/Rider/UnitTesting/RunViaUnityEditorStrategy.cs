@@ -109,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     myUnityProcessId.Value = null;
             });
 
-            myEditorProtocol.UnityModel.ViewNotNull(lifetime, (lt, model) =>
+            myEditorProtocol.BackendUnityModel.ViewNotNull(lifetime, (lt, model) =>
             {
                 if (model.UnityProcessId.HasValue())
                     myUnityProcessId.Value = model.UnityProcessId.Value;
@@ -233,13 +233,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
                     var launch = SetupLaunch(run);
 
-                    if (myEditorProtocol.UnityModel.Value == null)
+                    if (myEditorProtocol.BackendUnityModel.Value == null)
                     {
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         return;
                     }
 
-                    myEditorProtocol.UnityModel.ViewNotNull(taskLifetime, (lt, model) =>
+                    myEditorProtocol.BackendUnityModel.ViewNotNull(taskLifetime, (lt, model) =>
                     {
                         // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                         myLogger.Trace("UnitTestLaunch.SetValue.");
@@ -248,7 +248,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     });
 
                     myLogger.Trace("RunUnitTestLaunch.Start.");
-                    var rdTask = myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
+                    var rdTask = myEditorProtocol.BackendUnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
                     rdTask?.Result.Advise(taskLifetime, res =>
                     {
                         myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
@@ -263,7 +263,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
                                 defaultMessage = $"{defaultMessage} {message}";
 
-                            if (myEditorProtocol.UnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
+                            if (myEditorProtocol.BackendUnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
                             {
                                 if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
                                     defaultMessage = $"{defaultMessage} {playMessage}";
@@ -302,14 +302,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 .Unwrap()
                 .ContinueWith(__ =>
                 {
-                    if (myEditorProtocol.UnityModel.Value == null)
+                    if (myEditorProtocol.BackendUnityModel.Value == null)
                     {
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         refreshLifetimeDef.Terminate();
                         return;
                     }
 
-                    var task = myEditorProtocol.UnityModel.Value.GetCompilationResult.Start(Unit.Instance);
+                    var task = myEditorProtocol.BackendUnityModel.Value.GetCompilationResult.Start(Unit.Instance);
                     task.Result.AdviseNotNull(refreshLifetime, result =>
                     {
                         if (result.Result)
@@ -470,7 +470,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     {
                         if (res)
                         {
-                            myEditorProtocol.UnityModel.Advise(waitingLifetime, model =>
+                            myEditorProtocol.BackendUnityModel.Advise(waitingLifetime, model =>
                             {
                                 if (model != null)
                                     waitingLifetimeDef.Terminate();
@@ -527,7 +527,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
         {
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "CancellingUnitTests", () =>
             {
-                var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+                var launchProperty = myEditorProtocol.BackendUnityModel.Value?.UnitTestLaunch;
                 var launch = launchProperty?.Maybe.ValueOrDefault;
                 if (launch != null && launch.SessionId == run.Launch.Session.Id)
                     launch.Abort.Start(Unit.Instance);

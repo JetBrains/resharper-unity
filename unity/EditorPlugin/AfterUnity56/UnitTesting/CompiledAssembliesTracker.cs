@@ -9,7 +9,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   internal static class CompiledAssembliesTracker
   {
-    private static EditorPluginModel ourModel;
+    private static BackendUnityModel ourModel;
     private static readonly HashSet<string> ourCompiledAssemblyPaths = new HashSet<string>();
 
     public static void Init(UnityModelAndLifetime modelAndLifetime)

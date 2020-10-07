@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             myProjectNameToOutputFilePathMap = new ConcurrentDictionary<string, FileSystemPath>();
 
-            editorProtocol.UnityModel.ViewNotNull(lifetime, (modelLifetime, model) =>
+            editorProtocol.BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, model) =>
             {
                 model.CompiledAssemblies.AdviseNotNull(modelLifetime, compiledAssemblies =>
                 {

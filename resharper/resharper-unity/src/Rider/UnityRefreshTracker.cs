@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             myLocks.AssertMainThread();
 
-            if (myEditorProtocol.UnityModel.Value == null)
+            if (myEditorProtocol.BackendUnityModel.Value == null)
                 return Task.CompletedTask;
 
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&
@@ -96,7 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             myLocks.ReentrancyGuard.AssertGuarded();
 
-            if (myEditorProtocol.UnityModel.Value == null)
+            if (myEditorProtocol.BackendUnityModel.Value == null)
                 return;
 
             if (!myConnectionTracker.IsConnectionEstablished())
@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         {
                             try
                             {
-                                await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                                await myEditorProtocol.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                             }
                             finally
                             {
@@ -128,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }
                     }
                     else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
-                        await myEditorProtocol.UnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                        await myEditorProtocol.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                 }
                 catch (Exception e)
                 {

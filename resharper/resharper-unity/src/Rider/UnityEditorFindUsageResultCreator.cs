@@ -63,10 +63,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var sourceFile = myPersistentIndexManager[location.OwningPsiPersistentIndex];
             if (sourceFile == null)
                 return;
-            
+
             var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, location, sourceFile, false);
-            
-            
+
+
             var lifetimeDef = myLifetime.CreateNested();
             var pi = new ProgressIndicator(myLifetime);
             if (myBackgroundTaskHost != null)
@@ -92,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private static AssetFindUsagesResultBase CreateRequest(FileSystemPath solutionDirPath, AssetHierarchyProcessor assetDocumentHierarchy, 
+        private static AssetFindUsagesResultBase CreateRequest(FileSystemPath solutionDirPath, AssetHierarchyProcessor assetDocumentHierarchy,
             LocalReference location, IPsiSourceFile sourceFile, bool needExpand = false)
         {
             if (!GetPathFromAssetFolder(solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
@@ -105,11 +105,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var consumer = new UnityScenePathGameObjectConsumer();
             assetDocumentHierarchy.ProcessSceneHierarchyFromComponentToRoot(location, consumer, true, true);
-            
+
             return new HierarchyFindUsagesResult(consumer.NameParts.ToArray(), consumer.RootIndexes.ToArray(), needExpand, pathFromAsset, fileName, extension);
         }
 
-        private static bool GetPathFromAssetFolder([NotNull] FileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file, 
+        private static bool GetPathFromAssetFolder([NotNull] FileSystemPath solutionDirPath, [NotNull] IPsiSourceFile file,
             out string filePath, out string fileName, out string extension)
         {
             extension = null;
@@ -117,9 +117,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             fileName = null;
             var path = file.GetLocation().MakeRelativeTo(solutionDirPath);
             var assetFolder = path.Components.FirstOrEmpty;
-            if (!assetFolder.Equals(UnityYamlConstants.AssetsFolder)) 
+            if (!assetFolder.Equals(UnityYamlConstants.AssetsFolder))
                 return false;
-            
+
             var pathComponents = path.Components;
 
             extension = path.ExtensionWithDot;
@@ -128,14 +128,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             return true;
         }
-        
+
         private class UnityUsagesFinderConsumer : IFindResultConsumer<UnityAssetFindResult>
         {
             private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
             private readonly IPersistentIndexManager myPersistentIndexManager;
             private readonly FileSystemPath mySolutionDirectoryPath;
             private FindExecution myFindExecution = FindExecution.Continue;
-            
+
             public List<AssetFindUsagesResultBase> Result = new List<AssetFindUsagesResultBase>();
 
             public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor, IPersistentIndexManager persistentIndexManager,
@@ -145,7 +145,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myPersistentIndexManager = persistentIndexManager;
                 mySolutionDirectoryPath = solutionDirectoryPath;
             }
-            
+
             public UnityAssetFindResult Build(FindResult result)
             {
                 return result as UnityAssetFindResult;
@@ -156,16 +156,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var sourceFile = myPersistentIndexManager[data.OwningElemetLocation.OwningPsiPersistentIndex];
                 if (sourceFile == null)
                     return myFindExecution;
-                
+
                 var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.OwningElemetLocation, sourceFile);
                 if (request != null)
                     Result.Add(request);
-                
+
                 return myFindExecution;
             }
 
         }
-        
+
         private class UnityUsagesAsyncFinderCallback : IFinderAsyncCallback
         {
             private readonly LifetimeDefinition myProgressBarLifetimeDefinition;
@@ -177,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private readonly string myDisplayName;
             private readonly AssetFindUsagesResultBase mySelected;
 
-            public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, UnityHost unityHost, UnityEditorProtocol editorProtocol, IShellLocks shellLocks, 
+            public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, UnityHost unityHost, UnityEditorProtocol editorProtocol, IShellLocks shellLocks,
                 string displayName, AssetFindUsagesResultBase selected, bool focusUnity)
             {
                 myProgressBarLifetimeDefinition = progressBarLifetimeDefinition;
@@ -196,13 +196,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     if (myConsumer.Result.Count != 0)
                     {
-                        if (myEditorProtocol.UnityModel.Value == null) return;
+                        if (myEditorProtocol.BackendUnityModel.Value == null) return;
 
                         myUnityHost.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result
                             .Advise(myComponentLifetime,
                                 result =>
                                 {
-                                    var model = myEditorProtocol.UnityModel.Value;
+                                    var model = myEditorProtocol.BackendUnityModel.Value;
                                     if (mySelected != null)
                                         model.ShowUsagesInUnity.Fire(mySelected);
                                     // pass all references to Unity TODO temp workaround, replace with async api
