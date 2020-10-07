@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Application.Progress;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;

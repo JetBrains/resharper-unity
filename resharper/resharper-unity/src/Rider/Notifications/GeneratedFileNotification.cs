@@ -2,7 +2,7 @@ using System;
 using JetBrains.Annotations;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
 using JetBrains.ReSharper.Features.XamlRendererHost.Preview;

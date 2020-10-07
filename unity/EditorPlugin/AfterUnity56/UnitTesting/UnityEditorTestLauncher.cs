@@ -4,12 +4,12 @@ using System.Reflection;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rd.Tasks;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using UnityEngine.Events;
-using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
+using TestResult = JetBrains.Rider.Model.Unity.BackendUnity.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {

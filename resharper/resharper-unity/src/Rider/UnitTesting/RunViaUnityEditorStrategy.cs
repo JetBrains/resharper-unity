@@ -13,7 +13,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Access;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
@@ -32,8 +32,8 @@ using JetBrains.Rider.Model.Notifications;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Threading;
-using Status = JetBrains.Platform.Unity.EditorPluginModel.Status;
-using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
+using Status = JetBrains.Rider.Model.Unity.BackendUnity.Status;
+using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {

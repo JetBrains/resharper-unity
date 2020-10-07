@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.RunMarkers;
 using JetBrains.ReSharper.Plugins.Unity.Rider;

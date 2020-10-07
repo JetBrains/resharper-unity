@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;

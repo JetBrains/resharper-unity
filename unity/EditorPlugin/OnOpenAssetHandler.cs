@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.AssetPostprocessors;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Diagnostics;

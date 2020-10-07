@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Text;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
+using TestResult = JetBrains.Rider.Model.Unity.BackendUnity.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {

@@ -1,5 +1,5 @@
 using System;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;

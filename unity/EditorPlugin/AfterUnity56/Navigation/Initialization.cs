@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.Navigation;
 using JetBrains.Rider.Unity.Editor.Navigation.Window;
 using JetBrains.Rider.Unity.Editor.NonUnity;

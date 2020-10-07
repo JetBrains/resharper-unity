@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting

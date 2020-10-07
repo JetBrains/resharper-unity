@@ -7,7 +7,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rd;

@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;

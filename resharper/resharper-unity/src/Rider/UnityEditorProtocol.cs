@@ -12,7 +12,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.Rd;
 using JetBrains.Rd.Base;
@@ -30,7 +30,7 @@ using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
 using Newtonsoft.Json;
-using RunMethodData = JetBrains.Platform.Unity.EditorPluginModel.RunMethodData;
+using RunMethodData = JetBrains.Rider.Model.Unity.BackendUnity.RunMethodData;
 using UnityApplicationData = JetBrains.Rider.Model.UnityApplicationData;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider

@@ -2,6 +2,7 @@ package model.backendUnity
 
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
+import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 
 @Suppress("unused")
 object BackendUnityModel: Root() {
@@ -138,6 +139,8 @@ object BackendUnityModel: Root() {
     }
 
     init {
+        setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
+
         property("play", bool)
         property("pause", bool)
         source("step", void)

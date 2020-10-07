@@ -1,5 +1,5 @@
 ﻿using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 
 namespace JetBrains.Rider.Unity.Editor
 {
