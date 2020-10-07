@@ -12,7 +12,7 @@ import com.jetbrains.rider.model.nova.ide.SolutionModel.EditableEntityId
 // Call is an RPC method (with return value) that is called by the frontend/implemented by the backend
 // Callback is an RPC method (with return value) that is implemented by the frontend/called by the backend
 @Suppress("unused")
-object RdUnityModel : Ext(SolutionModel.Solution) {
+object FrontendBackendModel : Ext(SolutionModel.Solution) {
     private val UnitTestLaunchPreference = enum {
         +"NUnit"
         +"EditMode"

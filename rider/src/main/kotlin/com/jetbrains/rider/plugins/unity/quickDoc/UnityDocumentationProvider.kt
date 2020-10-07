@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.util.io.exists
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
@@ -14,7 +14,7 @@ class UnityDocumentationProvider() : DocumentationProvider {
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String>? {
         val project = p0?.project
-        val context = project?.solution?.rdUnityModel?.externalDocContext?.valueOrNull
+        val context = project?.solution?.frontendBackendModel?.externalDocContext?.valueOrNull
         if (context != null && !context.isNullOrBlank())
             return arrayListOf(getUrlForContext(context, project))
         return null

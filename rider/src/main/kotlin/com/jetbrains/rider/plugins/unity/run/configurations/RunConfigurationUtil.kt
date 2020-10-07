@@ -13,7 +13,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.IRiderDebuggable
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.*
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
@@ -21,7 +21,6 @@ import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
-import org.jetbrains.concurrency.Promise
 import javax.swing.Icon
 
 fun attachToUnityProcess(project: Project, process: UnityProcess) {
@@ -33,7 +32,7 @@ fun attachToUnityProcess(project: Project, process: UnityProcess) {
 }
 
 fun GeneralCommandLine.withUnityExtensionsEnabledEnvironment(project: Project): GeneralCommandLine {
-    val enabled = project.solution.rdUnityModel.backendSettings.enableDebuggerExtensions.valueOrNull ?: false
+    val enabled = project.solution.frontendBackendModel.backendSettings.enableDebuggerExtensions.valueOrNull ?: false
     return this.withEnvironment("_RIDER_UNITY_ENABLE_DEBUGGER_EXTENSIONS", if (enabled) "1" else "0")
 }
 

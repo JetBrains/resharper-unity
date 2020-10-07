@@ -4,7 +4,7 @@ import com.intellij.openapi.editor.impl.EditorImpl
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.base.CodeLensBaseTest
@@ -133,7 +133,7 @@ class PropertyCodeVisionAssetTest : CodeLensBaseTest() {
 
     fun doUnityTest(showProperties: String, file: String, action: EditorImpl.() -> Boolean) {
         setReSharperSetting("CodeEditing/Unity/EnableInspectorPropertiesEditor/@EntryValue", showProperties)
-        waitAndPump(project.lifetime, { project.solution.rdUnityModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
+        waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
 
         waitForLensInfos(project)
         waitForAllAnalysisFinished(project)

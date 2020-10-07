@@ -363,13 +363,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
         {
-            var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
+            var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
             var filters = GetFilters(firstRun);
 
             var mode = TestMode.Edit;
-            if (rdUnityModel.UnitTestPreference.HasValue())
+            if (frontendBackendModel.UnitTestPreference.HasValue())
             {
-                mode = rdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
+                mode = frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
                     ? TestMode.Play
                     : TestMode.Edit;
             }
@@ -418,7 +418,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         firstRun.AddDynamicElement(unitTestElement);
                     }
                 }
-                
+
                 if (unitTestElement == null)
                     return;
 

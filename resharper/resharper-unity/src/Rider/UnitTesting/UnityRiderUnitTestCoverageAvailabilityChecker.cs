@@ -24,8 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             if (tracker.IsUnityProject.HasValue() && !tracker.IsUnityProject.Value)
                 return HostProviderAvailability.Available;
 
-            var rdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
-            switch (rdUnityModel.UnitTestPreference.Value)
+            var frontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
+            switch (frontendBackendModel.UnitTestPreference.Value)
             {
                 case UnitTestLaunchPreference.NUnit:
                     return HostProviderAvailability.Available;
@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     return HostProviderAvailability.Nonexistent;
                 case UnitTestLaunchPreference.EditMode:
                 {
-                    var unityVersion = UnityVersion.Parse(rdUnityModel.UnityApplicationData.Maybe.ValueOrDefault?.ApplicationVersion ?? string.Empty);
+                    var unityVersion = UnityVersion.Parse(frontendBackendModel.UnityApplicationData.Maybe.ValueOrDefault?.ApplicationVersion ?? string.Empty);
 
                     return unityVersion == null || unityVersion < ourMinSupportedUnityVersion
                         ? HostProviderAvailability.Nonexistent

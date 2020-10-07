@@ -5,14 +5,14 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.isUnityProjectFolder
-import com.jetbrains.rider.model.RdUnityModel
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.FrontendBackendModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.solution
 
-fun AnActionEvent.getModel(): RdUnityModel? {
+fun AnActionEvent.getModel(): FrontendBackendModel? {
     val project = project ?: return null
-    return project.solution.rdUnityModel
+    return project.solution.frontendBackendModel
 }
 
 fun AnActionEvent.getHost(): UnityHost? {
@@ -30,7 +30,7 @@ fun AnActionEvent.isUnityProjectFolder(): Boolean {
     return project.isUnityProjectFolder()
 }
 
-fun AnActionEvent.handleUpdateForUnityConnection(fn: ((RdUnityModel) -> Boolean)? = null) {
+fun AnActionEvent.handleUpdateForUnityConnection(fn: ((FrontendBackendModel) -> Boolean)? = null) {
     if (!isUnityProject()) {
         presentation.isVisible = false
         return

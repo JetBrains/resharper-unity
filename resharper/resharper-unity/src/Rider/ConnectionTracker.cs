@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     while (lifetime.IsAlive)
                     {
                         if (isApplicationActiveState.IsApplicationActive.Value ||
-                            host.GetValue(rdUnityModel => rdUnityModel.RiderFrontendTests).HasTrueValue())
+                            host.GetValue(frontendBackendModel => frontendBackendModel.RiderFrontendTests).HasTrueValue())
                         {
                             updateConnectionAction();
                         }

@@ -67,9 +67,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
 
-            unityHost.PerformModelAction(rdUnityModel =>
+            unityHost.PerformModelAction(frontendBackendModel =>
             {
-                rdUnityModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
+                frontendBackendModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
                 {
                     myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.InstallEditorPlugin", () =>
                     {

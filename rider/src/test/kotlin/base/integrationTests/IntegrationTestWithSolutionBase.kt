@@ -1,19 +1,19 @@
 package base.integrationTests
 
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
-import com.jetbrains.rider.model.RdUnityModel
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.FrontendBackendModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 import java.io.File
 
-abstract class IntegrationTestWithSolutionBase : BaseTestWithSolution(), IntegrationTestWithRdUnityModel {
+abstract class IntegrationTestWithSolutionBase : BaseTestWithSolution(), IntegrationTestWithFrontendBackendModel {
     override val waitForCaches = true
 
-    override val rdUnityModel: RdUnityModel
-        get() = project.solution.rdUnityModel
+    override val frontendBackendModel: FrontendBackendModel
+        get() = project.solution.frontendBackendModel
 
     private lateinit var lifetimeDefinition: LifetimeDefinition
 
@@ -29,7 +29,7 @@ abstract class IntegrationTestWithSolutionBase : BaseTestWithSolution(), Integra
     }
 
     @BeforeMethod
-    fun setUpRdUnityModelSettings() {
+    fun setUpModelSettings() {
         activateRiderFrontendTest()
     }
 }

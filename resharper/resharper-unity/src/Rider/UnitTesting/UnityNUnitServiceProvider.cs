@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
-        private readonly RdUnityModel myRdUnityModel;
+        private readonly FrontendBackendModel myFrontendBackendModel;
 
         public UnityNUnitServiceProvider(ISolution solution,
             IPsiModules psiModules,
@@ -42,8 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
-            
-            myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
+
+            myFrontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
             myEditorProtocol = editorProtocol;
             myUnityEditorStrategy = runViaUnityEditorStrategy;
             myUnitySolutionTracker = unitySolutionTracker;
@@ -54,19 +54,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return IsUnityUnitTestStrategy() ? myUnityEditorStrategy : base.GetRunStrategy(element);
         }
 
-        public static bool IsUnityUnitTestStrategy(UnitySolutionTracker unitySolutionTracker, RdUnityModel rdUnityModel, UnityEditorProtocol editorProtocol)
+        public static bool IsUnityUnitTestStrategy(UnitySolutionTracker unitySolutionTracker, FrontendBackendModel frontendBackendModel, UnityEditorProtocol editorProtocol)
         {
             if (!unitySolutionTracker.IsUnityProjectFolder.HasTrueValue())
                 return false;
 
             // first run from gutter mark should try to run in Unity by default. https://github.com/JetBrains/resharper-unity/issues/605
-            return !rdUnityModel.UnitTestPreference.HasValue() && editorProtocol.UnityModel.Value != null ||
-                   (rdUnityModel.UnitTestPreference.HasValue() && rdUnityModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit);
+            return !frontendBackendModel.UnitTestPreference.HasValue() && editorProtocol.UnityModel.Value != null ||
+                   (frontendBackendModel.UnitTestPreference.HasValue() && frontendBackendModel.UnitTestPreference.Value != UnitTestLaunchPreference.NUnit);
         }
 
         public bool IsUnityUnitTestStrategy()
         {
-            return IsUnityUnitTestStrategy(myUnitySolutionTracker, myRdUnityModel, myEditorProtocol);
+            return IsUnityUnitTestStrategy(myUnitySolutionTracker, myFrontendBackendModel, myEditorProtocol);
         }
     }
 }

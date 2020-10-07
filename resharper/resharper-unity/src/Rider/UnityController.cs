@@ -28,15 +28,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityVersion myUnityVersion;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
-        private readonly RdUnityModel myRdUnityModel;
+        private readonly FrontendBackendModel myFrontendBackendModel;
 
         private FileSystemPath EditorInstanceJsonPath => mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
 
-        public UnityController(Lifetime lifetime, 
+        public UnityController(Lifetime lifetime,
                                ISolution solution,
                                UnityEditorProtocol unityEditorProtocol,
                                UnityVersion unityVersion)
-
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -45,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myUnityVersion = unityVersion;
             mySolution = solution;
             myLifetime = lifetime;
-            myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
+            myFrontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
         }
 
         public Task<ExitUnityResult> ExitUnityAsync(bool force)
@@ -130,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         [CanBeNull]
         public string[] GetUnityCommandline()
         {
-            var unityPathData = myRdUnityModel.UnityApplicationData;
+            var unityPathData = myFrontendBackendModel.UnityApplicationData;
             if (!unityPathData.HasValue())
                 return null;
             var unityPath = unityPathData.Value?.ApplicationPath;
@@ -138,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 unityPath = FileSystemPath.Parse(unityPath).Combine("Contents/MacOS/Unity").FullPath;
 
             return unityPath == null
-                ? null 
+                ? null
                 : new[] { CommandLineUtil.QuoteIfNeeded(unityPath), "-projectPath", CommandLineUtil.QuoteIfNeeded(mySolution.SolutionDirectory.FullPath) };
         }
 

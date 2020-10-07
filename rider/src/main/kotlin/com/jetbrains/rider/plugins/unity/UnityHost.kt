@@ -16,7 +16,7 @@ import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
 import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
@@ -29,7 +29,7 @@ import com.jetbrains.rider.projectView.solution
 import java.awt.Frame
 
 class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
-    val model = project.solution.rdUnityModel
+    val model = project.solution.frontendBackendModel
     val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
 
@@ -110,4 +110,4 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
 
 }
 
-fun Project.isConnectedToEditor() = this.solution.rdUnityModel.sessionInitialized.valueOrDefault(false)
+fun Project.isConnectedToEditor() = this.solution.frontendBackendModel.sessionInitialized.valueOrDefault(false)

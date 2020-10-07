@@ -2,7 +2,7 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -79,11 +79,11 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     private fun getApplicationContentsPathFromProtocol(): Path? {
-        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.let { Paths.get(it.applicationContentsPath) }
+        return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.let { Paths.get(it.applicationContentsPath) }
     }
 
     private fun tryGetApplicationPathFromProtocol(): Path? {
-        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.let { Paths.get(it.applicationPath) }
+        return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.let { Paths.get(it.applicationPath) }
     }
 
     fun getApplicationVersion(): String? {
@@ -96,10 +96,10 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     private fun tryGetApplicationVersionFromProtocol(): String? {
-        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.applicationVersion
+        return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.applicationVersion
     }
 
     fun requiresRiderPackage(): Boolean {
-        return project.solution.rdUnityModel.unityApplicationData.valueOrNull?.requiresRiderPackage ?: return false
+        return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.requiresRiderPackage ?: return false
     }
 }

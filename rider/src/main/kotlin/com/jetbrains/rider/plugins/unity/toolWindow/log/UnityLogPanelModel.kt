@@ -9,7 +9,7 @@ import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
 class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
@@ -88,8 +88,8 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
         private var showBeforeInit = true
 
         fun getShouldBeShown(time: Long):Boolean {
-            return (showBeforeInit || time > project.solution.rdUnityModel.lastInitTime.valueOrDefault(0))
-                && (showBeforePlay || time > project.solution.rdUnityModel.lastPlayTime.valueOrDefault(0))
+            return (showBeforeInit || time > project.solution.frontendBackendModel.lastInitTime.valueOrDefault(0))
+                && (showBeforePlay || time > project.solution.frontendBackendModel.lastPlayTime.valueOrDefault(0))
         }
         fun getShouldBeShownBeforeInit():Boolean {
             return showBeforeInit

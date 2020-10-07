@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.model.EditorState
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
 
@@ -17,7 +17,7 @@ open class StartUnityAction : DumbAwareAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        val model = e.project?.solution?.rdUnityModel
+        val model = e.project?.solution?.frontendBackendModel
         val version = model?.unityApplicationData?.valueOrNull?.applicationVersion
         val state = model?.editorState?.valueOrNull
 

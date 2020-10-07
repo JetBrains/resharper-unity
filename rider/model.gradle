@@ -1,35 +1,34 @@
-def modelDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
+def modelSrcDir = new File(repoRoot, "rider/protocol/src/main/kotlin/model")
 def hashBaseDir = new File(repoRoot, "rider/build/rdgen")
 
 // TODO: Think about adding an msbuild task for rdgen
 
-task generateRiderModel(type: tasks.getByName('rdgen').class) {
-    def csOutput = new File(repoRoot, "resharper/resharper-unity/src/Rider/RdUnityProtocol")
-    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
+task generateFrontendBackendModel(type: tasks.getByName('rdgen').class) {
+    // Make sure to store separately generated models in separate folders, or the hash generation includes both
+    def backendCsOutDir = new File(repoRoot, "resharper/resharper-unity/src/Rider/RdUnityProtocol")
+    def frontendKtOutDir = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdUnityProtocol")
 
     // NOTE: classpath is evaluated lazily, at execution time, because it comes from the unzipped
     // intellij SDK, which is extracted in afterEvaluate
     params {
         verbose = true
         classpath { backend.getRiderModelJar() }
-        sources "$modelDir/rider"
-        hashFolder = "$hashBaseDir/rider"
+        sources "$modelSrcDir/rider"
+        hashFolder = "$hashBaseDir/frontendBackend"
         packages = "model.rider"
 
         generator {
             language = "kotlin"
             transform = "asis"
             root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
-            namespace = "com.jetbrains.rider.model"
-            directory = "$ktOutput"
+            directory = "$frontendKtOutDir"
         }
 
         generator {
             language = "csharp"
             transform = "reversed"
             root = "com.jetbrains.rider.model.nova.ide.IdeRoot"
-            namespace = "JetBrains.Rider.Model"
-            directory = "$csOutput"
+            directory = "$backendCsOutDir"
         }
     }
 }
@@ -42,7 +41,7 @@ task generateEditorPluginModel(type: tasks.getByName('rdgen').class) {
     params {
         verbose = true
         classpath { backend.getRiderModelJar() }
-        sources "$modelDir/editorPlugin"
+        sources "$modelSrcDir/editorPlugin"
         hashFolder = "$hashBaseDir/editorPlugin"
         packages = "model.editorPlugin"
 
@@ -72,11 +71,11 @@ task generateEditorPluginModel(type: tasks.getByName('rdgen').class) {
     }
 }
 
-task generateModel {
+task generateModels {
     group = 'protocol'
     description = 'Generates protocol models.'
-    dependsOn generateRiderModel, generateEditorPluginModel
+    dependsOn generateFrontendBackendModel, generateEditorPluginModel
 }
 
-jar.dependsOn generateModel
+jar.dependsOn generateModels
 // Make sure the dotnet build tasks depend on model, too

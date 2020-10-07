@@ -9,14 +9,14 @@ import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.IDotNetSupportedBreakpointHandlerFactory
 import com.jetbrains.rider.model.EditorState
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.projectView.solution
 
 class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBreakpointHandler<XLineBreakpoint<DotNetLineBreakpointProperties>>(UnityPausepointBreakpointType::class.java) {
 
-    private val unityModel = debugProcess.project.solution.rdUnityModel
+    private val unityModel = debugProcess.project.solution.frontendBackendModel
     private val registeredBreakpoints = mutableSetOf<XBreakpoint<*>>()
 
     init {

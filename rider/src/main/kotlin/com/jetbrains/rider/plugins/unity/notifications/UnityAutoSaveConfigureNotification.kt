@@ -23,7 +23,7 @@ import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.document.getFirstEditor
 import com.jetbrains.rider.model.EditorState
 import com.jetbrains.rider.model.ScriptCompilationDuringPlay
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.projectView.solution
 
@@ -45,7 +45,7 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
 
                 val documentListener: DocumentListener = object : DocumentListener {
                     override fun documentChanged(event: DocumentEvent) {
-                        val model = project.solution.rdUnityModel
+                        val model = project.solution.frontendBackendModel
                         if (model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
                             return
 
@@ -83,14 +83,14 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
         textEditor.putUserData(KEY, Any())
 
         // Do not show notification, when user leaves play mode and start typing in that moment
-        if (project.solution.rdUnityModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
+        if (project.solution.frontendBackendModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
             return
 
         val panel = EditorNotificationPanel(LightColors.RED)
         panel.setText("You are modifying a script while Unity Editor is being in Play Mode. This can lead to a loss of the state in your running game.")
 
         panel.createActionLabel("Configure Unity Editor") {
-            project.solution.rdUnityModel.showPreferences.fire()
+            project.solution.frontendBackendModel.showPreferences.fire()
             lifetimeDefinition.terminate()
         }
 

@@ -3,8 +3,7 @@ package com.jetbrains.rider.plugins.unity.ui.unitTesting
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.rider.model.UnitTestLaunchPreference
-import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.plugins.unity.isConnectedToEditor
+import com.jetbrains.rider.model.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
 class UseUnityEditLauncherAction : DumbAwareAction(EditModeDescription, "Run with Unity Editor in Edit Mode", null) {
@@ -14,7 +13,7 @@ class UseUnityEditLauncherAction : DumbAwareAction(EditModeDescription, "Run wit
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        project.solution.rdUnityModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
+        project.solution.frontendBackendModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
     }
 
     override fun update(e: AnActionEvent) {
