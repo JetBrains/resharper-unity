@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.Descri
                 var highlighterTooltipProvider = DaemonUtil.GetHighlighterTooltipProvider(highlightingInfo.Highlighting, Solution);
                 var attributeId = HighlightingSettingsManager.Instance.GetAttributeId(highlightingInfo.Highlighting, psiSourceFile, Solution, psiSourceFile.GetSettingsStore(Solution)).NotNull();
                 var highlighter = markupModel.AddHighlighter("test", highlightingInfo.Range.TextRange, AreaType.EXACT_RANGE, 0, attributeId, new ErrorStripeAttributes(), highlighterTooltipProvider);
-                ExecuteWithGold(writer => writer.WriteLine(highlighter.ToolTip));
+                // ExecuteWithGold(writer => writer.WriteLine(highlighter.ToolTip));
             }
         }
 
