@@ -13,9 +13,9 @@ task generateFrontendBackendModel(type: tasks.getByName('rdgen').class) {
     params {
         verbose = true
         classpath { backend.getRiderModelJar() }
-        sources "$modelSrcDir/rider"
+        sources "$modelSrcDir/frontendBackend"
         hashFolder = "$hashBaseDir/frontendBackend"
-        packages = "model.rider"
+        packages = "model.frontendBackend"
 
         generator {
             language = "kotlin"
@@ -42,15 +42,15 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
     params {
         verbose = true
         classpath { backend.getRiderModelJar() }
-        sources "$modelSrcDir/editorPlugin"
+        sources "$modelSrcDir/backendUnity"
         hashFolder = "$hashBaseDir/backendUnity"
-        packages = "model.editorPlugin"
+        packages = "model.backendUnity"
 
         generator {
             language = "csharp"
             transform = "asis"
             namespace = "JetBrains.Platform.Unity.EditorPluginModel"
-            root = "model.editorPlugin.BackendUnityModel"
+            root = "model.backendUnity.BackendUnityModel"
             directory = "$backendCsOutDir"
         }
 
@@ -58,7 +58,7 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
             language = "csharp"
             transform = "reversed"
             namespace = "JetBrains.Platform.Unity.EditorPluginModel"
-            root = "model.editorPlugin.BackendUnityModel"
+            root = "model.backendUnity.BackendUnityModel"
             directory = "$unityEditorCsOutDir"
         }
 
@@ -67,7 +67,7 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
             language = "kotlin"
             transform = "asis"
             namespace = "com.jetbrains.rider.plugins.unity.editorPlugin.model"
-            root = "model.editorPlugin.BackendUnityModel"
+            root = "model.backendUnity.BackendUnityModel"
             directory = "$ktOutput"
         }
     }

@@ -1,4 +1,4 @@
-package model.editorPlugin
+package model.backendUnity
 
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*

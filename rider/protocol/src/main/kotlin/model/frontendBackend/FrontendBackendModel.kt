@@ -1,4 +1,4 @@
-package model.rider
+package model.frontendBackend
 
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
