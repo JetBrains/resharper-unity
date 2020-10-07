@@ -21,8 +21,8 @@ import com.jetbrains.rdclient.document.getFirstEditableEntityId
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.cpp.fileType.CppFileType
 import com.jetbrains.rider.model.EditableEntityId
-import com.jetbrains.rider.model.ShaderContextData
-import com.jetbrains.rider.model.ShaderContextDataBase
+import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextData
+import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.UnityHost
 import icons.UnityIcons
 import java.awt.BorderLayout

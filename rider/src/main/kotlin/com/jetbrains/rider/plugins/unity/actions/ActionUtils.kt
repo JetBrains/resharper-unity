@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.isUnityProjectFolder
-import com.jetbrains.rider.model.FrontendBackendModel
-import com.jetbrains.rider.model.frontendBackendModel
+import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.solution
 

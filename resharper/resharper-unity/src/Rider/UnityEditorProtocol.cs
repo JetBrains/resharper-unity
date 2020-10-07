@@ -22,8 +22,8 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -31,7 +31,8 @@ using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
 using Newtonsoft.Json;
 using RunMethodData = JetBrains.Rider.Model.Unity.BackendUnity.RunMethodData;
-using UnityApplicationData = JetBrains.Rider.Model.UnityApplicationData;
+using RunMethodResult = JetBrains.Rider.Model.Unity.FrontendBackend.RunMethodResult;
+using UnityApplicationData = JetBrains.Rider.Model.Unity.FrontendBackend.UnityApplicationData;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -259,11 +260,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         rd.RunMethodInUnity.Set((l, data) =>
                         {
                             var editorRdTask = backendUnityModel.RunMethodInUnity.Start(l, new RunMethodData(data.AssemblyName, data.TypeName, data.MethodName)).ToRdTask(l);
-                            var frontendRes = new RdTask<JetBrains.Rider.Model.RunMethodResult>();
+                            var frontendRes = new RdTask<RunMethodResult>();
 
                             editorRdTask.Result.Advise(l, r =>
                             {
-                                frontendRes.Set(new JetBrains.Rider.Model.RunMethodResult(r.Result.Success, r.Result.Message, r.Result.StackTrace));
+                                frontendRes.Set(new RunMethodResult(r.Result.Success, r.Result.Message, r.Result.StackTrace));
                             });
                             return frontendRes;
                         });

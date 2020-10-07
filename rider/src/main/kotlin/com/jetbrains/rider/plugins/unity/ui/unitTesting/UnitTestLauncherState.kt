@@ -7,8 +7,8 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rider.model.UnitTestLaunchPreference
-import com.jetbrains.rider.model.frontendBackendModel
+import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import org.jdom.Element
 

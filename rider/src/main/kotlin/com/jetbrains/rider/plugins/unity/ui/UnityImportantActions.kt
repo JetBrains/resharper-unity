@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.DumbAware
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.frontendBackendModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.isUnityProject
 import com.jetbrains.rider.plugins.unity.actions.isUnityProjectFolder
 import com.jetbrains.rider.projectView.solution

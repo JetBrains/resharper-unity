@@ -2,8 +2,8 @@ package com.jetbrains.rider.plugins.unity.ui.unitTesting
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
-import com.jetbrains.rider.model.UnitTestLaunchPreference
-import com.jetbrains.rider.model.frontendBackendModel
+import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
 class UseUnityEditLauncherAction : DumbAwareAction(EditModeDescription, "Run with Unity Editor in Edit Mode", null) {

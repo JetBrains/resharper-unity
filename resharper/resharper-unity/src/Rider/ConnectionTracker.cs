@@ -11,7 +11,7 @@ using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
-using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
 

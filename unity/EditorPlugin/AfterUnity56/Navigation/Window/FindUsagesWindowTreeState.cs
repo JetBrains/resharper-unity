@@ -12,20 +12,20 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
   [Serializable]
   internal class FindUsagesWindowTreeState : TreeViewState
   {
-    [SerializeField] 
+    [SerializeField]
     public List<SceneElement> SceneElements = new List<SceneElement>();
 
-    [SerializeField] 
+    [SerializeField]
     public List<PrefabElement> PrefabElements = new List<PrefabElement>();
-    
-    [SerializeField] 
+
+    [SerializeField]
     public List<ScriptableObjectElement> ScriptableObjectElements = new List<ScriptableObjectElement>();
-    
+
     public FindUsagesWindowTreeState()
     {
-      
+
     }
-    
+
     public FindUsagesWindowTreeState(AssetFindUsagesResultBase[] requests)
     {
       foreach (var request in requests)

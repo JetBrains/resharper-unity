@@ -15,7 +15,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     public static void Init(UnityModelAndLifetime modelAndLifetime)
     {
       ourModel = modelAndLifetime.Model;
-      
+
       void OnCompilationFinished(string assemblyPath, CompilerMessage[] messages)
       {
         if (!ourCompiledAssemblyPaths.Contains(assemblyPath))
@@ -32,7 +32,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     private static void UpdateAssemblies()
     {
       ourCompiledAssemblyPaths.Clear();
-      
+
       var projectPath = Directory.GetParent(Application.dataPath).FullName;
       var compiledAssemblies = CompilationPipeline.GetAssemblies().Select(a =>
       {

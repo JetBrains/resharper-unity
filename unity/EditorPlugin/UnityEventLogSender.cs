@@ -17,7 +17,7 @@ namespace JetBrains.Rider.Unity.Editor
       ourLogEventsCollectorEnabled = PluginSettings.LogEventsCollectorEnabled;
       if (!ourLogEventsCollectorEnabled)
         return;
-      
+
       EditorApplication.update += () =>
       {
         // can be called only from main thread
@@ -70,7 +70,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (!ourLogEventsCollectorEnabled) // stop collecting, if setting was disabled
         return;
-      
+
       RdLogEventType eventType;
       switch (type)
       {
@@ -103,7 +103,7 @@ namespace JetBrains.Rider.Unity.Editor
         while ((element  = ourDelayedLogEvents.Dequeue()) != null)
         {
           SendLogEvent(element);
-        }  
+        }
       }
     }
 

@@ -3,6 +3,8 @@ package model.frontendBackend
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
+import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
+import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 import com.jetbrains.rider.model.nova.ide.SolutionModel.EditableEntityId
 
 // frontend <-> backend model, from point of view of frontend, meaning:
@@ -73,6 +75,9 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
 
     init {
+        setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
+        setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
+
         sink("activateRider", void)
         sink("activateUnityLogView", void)
         sink("showInstallMonoDialog", void)

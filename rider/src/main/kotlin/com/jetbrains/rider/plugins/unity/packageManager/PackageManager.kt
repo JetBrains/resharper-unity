@@ -22,7 +22,7 @@ import com.intellij.util.pooledThreadSingleAlarm
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.debugger.util.isExistingFile
-import com.jetbrains.rider.model.frontendBackendModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder

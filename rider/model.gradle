@@ -51,7 +51,6 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
         generator {
             language = "csharp"
             transform = "asis"
-            namespace = "JetBrains.Platform.Unity.EditorPluginModel"
             root = "model.backendUnity.BackendUnityModel"
             directory = "$backendCsOutDir"
         }
@@ -59,7 +58,6 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
         generator {
             language = "csharp"
             transform = "reversed"
-            namespace = "JetBrains.Platform.Unity.EditorPluginModel"
             root = "model.backendUnity.BackendUnityModel"
             directory = "$unityEditorCsOutDir"
         }

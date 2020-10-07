@@ -14,7 +14,7 @@ using JetBrains.ReSharper.Host.Features.Unity;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
-using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider

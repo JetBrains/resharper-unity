@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
 
             if (unityHost == null || documentHost == null)
                 return;
-            
+
             unityHost.PerformModelAction(t =>
             {
                 t.RequestShaderContexts.Set((lt, id) =>
@@ -84,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
 
                     }
                 });
-                
+
                 t.RequestCurrentContext.Set((lt, id) =>
                 {
                     myLogger.Verbose("Setting current context for file");
@@ -93,7 +94,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                         var sourceFile = GetSourceFile(id);
                         if (sourceFile == null)
                             return Rd.Tasks.RdTask<ShaderContextDataBase>.Successful(new AutoShaderContextData());
-                    
+
                         var task = new Rd.Tasks.RdTask<ShaderContextDataBase>();
                         RequestCurrentContext(lt, sourceFile, task);
                         return task;
@@ -108,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             var document = myDocumentHost.TryGetHostDocument(id);
             return document?.GetPsiSourceFile(mySolution);
         }
-        
+
         private void RequestCurrentContext(Lifetime lt, IPsiSourceFile sourceFile, Rd.Tasks.RdTask<ShaderContextDataBase> task)
         {
             var currentRoot = myShaderContextCache.GetPreferredRootFile(new CppFileLocation(sourceFile));
@@ -117,7 +118,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                 task.Set(new AutoShaderContextData());
                 return;
             }
-            
+
             mySolution.Locks.Tasks.StartNew(lt, Scheduling.FreeThreaded, () =>
             {
                 using (ReadLockCookie.Create())
@@ -140,7 +141,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                 }
             });
         }
-        
+
         private void RequestShaderContexts(Lifetime lt, IPsiSourceFile sourceFile, Rd.Tasks.RdTask<List<ShaderContextDataBase>> task)
         {
             if (!lt.IsAlive)
@@ -171,7 +172,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             var range = myShaderContextDataPresentationCache.GetRangeForShaderProgram(root.GetRandomSourceFile(mySolution), root.RootRange);
             if (!range.HasValue)
                 return null;
-        
+
             var folderFullPath = root.Location.Parent;
             var folderPath = folderFullPath.TryMakeRelativeTo(mySolution.SolutionDirectory);
 

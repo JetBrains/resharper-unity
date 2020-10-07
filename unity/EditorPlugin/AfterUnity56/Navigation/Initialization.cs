@@ -11,7 +11,7 @@ using UnityEngine;
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
 {
   public static class Initialization
-  {    
+  {
     public static void OnModelInitializationHandler(UnityModelAndLifetime modelAndLifetime)
     {
       var modelValue = modelAndLifetime.Model;
@@ -23,7 +23,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
           MainThreadDispatcher.Instance.Queue(() =>
           {
             ExpandMinimizedUnityWindow();
-            
+
             EditorUtility.FocusProjectWindow();
 
             if (findUsagesResult is HierarchyFindUsagesResult hierarchyFindUsagesResult)
@@ -42,10 +42,10 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
               ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
             }
 
-          });  
+          });
         }
       });
-      
+
       modelValue.SendFindUsagesSessionResult.Advise(connectionLifetime, result =>
       {
         if (result != null)
@@ -53,15 +53,15 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
           MainThreadDispatcher.Instance.Queue(() =>
           {
             GUI.BringWindowToFront(EditorWindow.GetWindow<SceneView>().GetInstanceID());
-            GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());      
+            GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.SceneHierarchyWindow")).GetInstanceID());
             GUI.BringWindowToFront(EditorWindow.GetWindow(typeof(SceneView).Assembly.GetType("UnityEditor.ProjectBrowser")).GetInstanceID());
 
             var window = FindUsagesWindow.GetWindow(result.Target);
             window.SetDataToEditor(result.Elements);
-          });  
+          });
         }
       });
-      
+
       modelValue.ShowFileInUnity.Advise(connectionLifetime, result =>
       {
         if (result != null)
@@ -71,7 +71,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
             ExpandMinimizedUnityWindow();
             EditorUtility.FocusProjectWindow();
             ShowUtil.ShowFileUsage(result);
-          });  
+          });
         }
       });
     }

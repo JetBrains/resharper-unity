@@ -4,9 +4,9 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.reactive.IProperty
-import com.jetbrains.rider.model.ContextInfo
+import com.jetbrains.rider.model.unity.frontendBackend.ContextInfo
 import com.jetbrains.rider.model.EditableEntityId
-import com.jetbrains.rider.model.ShaderContextData
+import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextData
 import com.jetbrains.rider.plugins.unity.UnityHost
 
 class ShaderContextSwitchAction(val project: Project, val id: EditableEntityId, val host: UnityHost,
