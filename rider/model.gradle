@@ -11,7 +11,7 @@ task generateFrontendBackendModel(type: tasks.getByName('rdgen').class) {
     // NOTE: classpath is evaluated lazily, at execution time, because it comes from the unzipped
     // intellij SDK, which is extracted in afterEvaluate
     params {
-        verbose = true
+        verbose = project.gradle.startParameter.logLevel == LogLevel.INFO || project.gradle.startParameter.logLevel == LogLevel.DEBUG
         classpath { backend.getRiderModelJar() }
         sources "$modelSrcDir/frontendBackend"
         hashFolder = "$hashBaseDir/frontendBackend"
@@ -42,7 +42,7 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
     def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol")
 
     params {
-        verbose = true
+        verbose = project.gradle.startParameter.logLevel == LogLevel.INFO || project.gradle.startParameter.logLevel == LogLevel.DEBUG
         classpath { backend.getRiderModelJar() }
         sources "$modelSrcDir/backendUnity"
         hashFolder = "$hashBaseDir/backendUnity"
