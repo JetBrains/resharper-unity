@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.gradle.tasks
 
 import com.jetbrains.rider.plugins.gradle.buildServer.BuildServer
 import com.jetbrains.rider.plugins.gradle.buildServer.buildServer
+import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.logging.LogLevel
@@ -11,9 +12,6 @@ import org.gradle.kotlin.dsl.extra
 import java.io.File
 
 open class DotNetBuildTask: DefaultTask() {
-    companion object {
-        val isWindows = System.getProperty("os.name").toLowerCase().contains("win")
-    }
     @InputFile
     val buildFile: RegularFileProperty = project.objects.fileProperty()
 
@@ -22,6 +20,7 @@ open class DotNetBuildTask: DefaultTask() {
         val buildConfiguration = project.extra["BuildConfiguration"] as String
         val warningsAsErrors = project.extra["warningsAsErrors"] as String
         val file = buildFile.asFile.get()
+
         project.buildServer.progress("Building $file ($buildConfiguration)")
 
         val dotNetCliPath = findDotNetCliPath()
@@ -53,7 +52,7 @@ open class DotNetBuildTask: DefaultTask() {
 
         val pathComponents = System.getenv("PATH").split(File.pathSeparatorChar)
         for (dir in pathComponents) {
-            val dotNetCliFile = File(dir, if (isWindows) {
+            val dotNetCliFile = File(dir, if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 "dotnet.exe"
             } else {
                 "dotnet"

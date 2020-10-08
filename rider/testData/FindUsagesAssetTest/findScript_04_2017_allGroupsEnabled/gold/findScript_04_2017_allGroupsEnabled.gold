@@ -9,9 +9,13 @@ Found usages  (3 usages found)
                         [244, Assets/NewBehaviourScript.cs] (10: 27)  gameObject.AddComponent<NewBehaviourScript>();
     Assets  (2 usages found)
         scene.unity  (2 usages found)
-            Prefab\Element0\Element1  (1 usage found)
-                NewBehaviourScript  (1 usage found)
-                    Guid: d62add12657408a4883f4b863a1389d6
-            Prefab_NewName\Element0\Element1  (1 usage found)
-                NewBehaviourScript  (1 usage found)
-                    Guid: d62add12657408a4883f4b863a1389d6
+            Prefab  (1 usage found)
+                Element0  (1 usage found)
+                    Element1  (1 usage found)
+                        NewBehaviourScript  (1 usage found)
+                            Guid: d62add12657408a4883f4b863a1389d6
+            Prefab_NewName  (1 usage found)
+                Element0  (1 usage found)
+                    Element1  (1 usage found)
+                        NewBehaviourScript  (1 usage found)
+                            Guid: d62add12657408a4883f4b863a1389d6

@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Feature.Services.DataConstant
                 }
             }
 
-            return EmptyList<IDeclaredElement>.Instance;
+            return null;
         }
     }
 }

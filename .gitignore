@@ -25,6 +25,7 @@
 # See https://youtrack.jetbrains.com/issue/IDEA-55923 for some more information
 .gradle/
 rider/.idea/**/libraries
+rider/.idea/**/jarRepositories.xml
 
 # NOTE: We normally include *.iml for JetBrains IDEs, but Gradle based projects auto generate
 # this on import, so we can happily ignore them. Don't do this for the Rider controlled project!
@@ -106,3 +107,5 @@ Desktop.ini
 
 build/
 resharper/_ReSharper.Caches/*
+
+**/*.binlog

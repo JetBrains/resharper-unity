@@ -15,15 +15,43 @@
        * https://github.com/dotnet/sdk/issues/803
        * https://github.com/dotnet/sdk/issues/802 -->
   <PropertyGroup>
-    <BaseIntermediateOutputPath Condition=" '$(OS)' == 'Unix' ">$(MSBuildThisFileDirectory)/build/$(MSBuildProjectName)/obj/</BaseIntermediateOutputPath>
-    <BaseIntermediateOutputPath Condition=" '$(OS)' != 'Unix' ">$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
+    <!-- Build tests and production to a common bin folder to reduce unnecessary duplication and copies. By default,
+         production would skip copying @(JetContent) and should skip @(JetReference) but because we're not using the
+         standard SDK entry point, which would set JetReferencesPrivate=False, production gets all @(JetReference)
+         assemblies. It also gets all nuget assemblies. Combining test and production means we only get a single copy
+         of @(JetReference), nuget assemblies and @(JetContent) for each build - rider and resharper.
+         Note that obj folders are kept separate because per-project files are saved there, e.g. nuget restore details
+         and generated source files. -->
+    <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName.Replace("tests.", ""))\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
   <Import Project="..\Packaging.props" />
   <Import Project="$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props"
           Condition="Exists('$(MSBuildThisFileDirectory)build\generated\DotNetSdkPath.generated.props')" />
+
+  <!-- Running tests on a Mac requires PresentationCore/PresentationFramework, which isn't part of the standard Mono/netcore
+       distro. We need to copy them from the SDK. Note that the IsOsPlatform function requires msbuild 15.3+
+       Note that this works, even though JetTestProject is defined AFTER this file is imported, because properties and
+       imports are evaluated before ItemGroups -->
+  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$([MSBuild]::IsOsPlatform(OSX))' == 'True' ">
+    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\NetCore\runtimes\unix\lib\netcoreapp3.0\PresentationFramework.dll">
+      <TargetPath>PresentationFramework.dll</TargetPath>
+    </JetContent>
+    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\NetCore\runtimes\unix\lib\netcoreapp3.0\PresentationCore.dll">
+      <TargetPath>PresentationCore.dll</TargetPath>
+    </JetContent>
+  </ItemGroup>
+  <!-- This is untested -->
+  <ItemGroup Condition=" '$(JetTestProject)' == 'True' AND '$([MSBuild]::IsOsPlatform(Linux))' == 'True' ">
+    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\NetCore\runtimes\unix\lib\netcoreapp3.0\PresentationFramework.dll">
+      <TargetPath>PresentationFramework.dll</TargetPath>
+    </JetContent>
+    <JetContent Include="$(DotNetSdkPath)\..\ReSharperHost\NetCore\runtimes\unix\lib\netcoreapp3.0\PresentationCore.dll">
+      <TargetPath>PresentationCore.dll</TargetPath>
+    </JetContent>
+  </ItemGroup>
 </Project>

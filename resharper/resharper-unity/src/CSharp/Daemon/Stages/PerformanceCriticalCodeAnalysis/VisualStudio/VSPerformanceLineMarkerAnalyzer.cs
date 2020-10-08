@@ -1,4 +1,3 @@
-using JetBrains.Application.Settings;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -6,19 +5,21 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.VisualStudio
 {
     [SolutionComponent]
     public class VSPerformanceLineMarkerAnalyzer : PerformanceLineMarkerAnalyzer
     {
-        public VSPerformanceLineMarkerAnalyzer(Lifetime lifetime, ISolution solution, ISettingsStore store)
+        public VSPerformanceLineMarkerAnalyzer(Lifetime lifetime, ISolution solution,
+                                               IApplicationWideContextBoundSettingStore store)
             : base(lifetime, solution, store)
         {
         }
-        
+
         protected override void Analyze(IFunctionDeclaration t, IDaemonProcess daemonProcess, DaemonProcessKind kind,
-            IHighlightingConsumer consumer)
+                                        IHighlightingConsumer consumer)
         {
             if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)
             {

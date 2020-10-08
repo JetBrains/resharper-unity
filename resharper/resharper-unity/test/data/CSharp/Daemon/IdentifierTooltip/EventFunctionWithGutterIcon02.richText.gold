@@ -1,0 +1,8 @@
+﻿(method) |void(ReSharper C# Keyword)| |A(ReSharper C# Class Identifier)|.|OnMouseExit(ReSharper C# Method Identifier)|()
+
+Called when the mouse is not any longer over the Collider.
+This function can be a coroutine.
+Unity event function
+
+Called when the mouse is not any longer over the Collider.
+This function can be a coroutine.

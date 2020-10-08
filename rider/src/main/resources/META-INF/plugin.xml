@@ -121,7 +121,8 @@
          can't order relative to other Rider status bar widgets. Previously, we only had "after readOnlyWidget", with
          no "before" -->
     <!--suppress PluginXmlValidity -->
-    <statusBarWidgetFactory implementation="com.jetbrains.rider.plugins.unity.ui.UnityStatusBarWidget" order="after readOnlyWidget, before fatalErrorWidget" />
+    <statusBarWidgetFactory id="unityWidget" implementation="com.jetbrains.rider.plugins.unity.ui.UnityStatusBarWidget" order="after readOnlyWidget, before fatalErrorWidget" />
+    <statusBarWidgetFactory implementation="com.jetbrains.rider.plugins.unity.ui.shaders.ShaderWidgetFactory" order="before unityWidget" />
 
     <!-- File Layout -->
     <standardResourceProvider implementation="com.jetbrains.rider.plugins.unity.settings.fileLayout.AdditionalFileLayoutStandardResourceProvider"/>
@@ -273,6 +274,12 @@
     <!-- IDEA default schemes -->
     <additionalTextAttributes file="colorSchemes/default_additional.xml" scheme="Default" />
     <additionalTextAttributes file="colorSchemes/darcula_additional.xml" scheme="Darcula" />
+
+    <notificationGroup id="Unity log open" displayType="BALLOON"/>
+    <notificationGroup id="Unity Asset Mode" displayType="BALLOON"/>
+    <notificationGroup id="Unity project open" displayType="STICKY_BALLOON"/>
+    <notificationGroup id="Unity connection is out of sync" displayType="BALLOON"/>
+    <notificationGroup id="Unity Enable Yaml" displayType="BALLOON"/>
   </extensions>
 
   <extensions defaultExtensionNs="JavaScript">

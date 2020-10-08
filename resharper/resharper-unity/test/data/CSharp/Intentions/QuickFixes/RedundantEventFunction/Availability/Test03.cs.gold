@@ -1,0 +1,17 @@
+﻿using UnityEngine;
+
+public class MyBehaviour : MonoBehaviour
+{
+    public void DoSomething()
+    {
+    }
+
+    |public void Update()
+    {
+    }|(0)
+}
+
+------------------------------------------------
+0: Redundant Unity event function
+QUICKFIXES:
+Remove redundant Unity event function

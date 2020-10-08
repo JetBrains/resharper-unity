@@ -1,0 +1,21 @@
+-ROOT
+ -Tests
+  -Tests
+   -Test1
+    -Test1("Test1Fixture1")
+     -NewTestScriptWithEnumeratorPasses
+      NewTestScriptWithEnumeratorPasses("ab")
+      NewTestScriptWithEnumeratorPasses("b")
+    -Test1("Test1Fixture2")
+     -NewTestScriptWithEnumeratorPasses
+      NewTestScriptWithEnumeratorPasses("ab")
+      NewTestScriptWithEnumeratorPasses("b")
+   -Test2
+    -Test2("Test2Fixture1")
+     NewTestScriptWithEnumeratorPasses
+    -Test2("Test2Fixture2")
+     NewTestScriptWithEnumeratorPasses
+   -Test3
+    -NewTestScriptWithEnumeratorPasses
+     NewTestScriptWithEnumeratorPasses("ab")
+     NewTestScriptWithEnumeratorPasses("b")
