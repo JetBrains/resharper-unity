@@ -134,6 +134,17 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("lifetimeDefinition.Terminate");
         lifetimeDefinition.Terminate();
       });
+      
+#if !UNITY_4_7 && !UNITY_5_5 && !UNITY_5_6
+        EditorApplication.playModeStateChanged += state =>
+        {
+            if (state == PlayModeStateChange.EnteredPlayMode)
+            {
+                var time = DateTime.UtcNow.Ticks.ToString();
+                SessionState.SetString("Rider_EnterPlayMode_DateTime", time);
+            }
+        };
+#endif
 
       if (PluginSettings.SelectedLoggingLevel >= LoggingLevel.VERBOSE)
       {
@@ -340,10 +351,13 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void GetInitTime(EditorPluginModel model)
     {
-      model.LastInitTime.SetValue(ourInitTime);
-      if (EditorApplication.isPaused || EditorApplication.isPlaying)
-        model.LastPlayTime.SetValue(ourInitTime);
-	}
+        model.LastInitTime.SetValue(ourInitTime);
+
+#if !UNITY_4_7 && !UNITY_5_5 && !UNITY_5_6
+        var enterPlayTime = long.Parse(SessionState.GetString("Rider_EnterPlayMode_DateTime", "0"));
+        model.LastPlayTime.SetValue(enterPlayTime);
+#endif
+    }
 
     private static void AdviseRunMethod(EditorPluginModel model)
     {
