@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using JetBrains.Rider.Model.Unity.BackendUnity;
+using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using UnityEditor;
 using UnityEngine;
@@ -9,7 +9,7 @@ namespace JetBrains.Rider.Unity.Editor
 {
   public static class UnityEventLogSender
   {
-    private static readonly BoundedSynchronizedQueue<RdLogEvent> ourDelayedLogEvents = new BoundedSynchronizedQueue<RdLogEvent>(1000);
+    private static readonly BoundedSynchronizedQueue<LogEvent> ourDelayedLogEvents = new BoundedSynchronizedQueue<LogEvent>(1000);
     private static bool ourLogEventsCollectorEnabled;
 
     public static void Start()
@@ -71,27 +71,27 @@ namespace JetBrains.Rider.Unity.Editor
       if (!ourLogEventsCollectorEnabled) // stop collecting, if setting was disabled
         return;
 
-      RdLogEventType eventType;
+      LogEventType eventType;
       switch (type)
       {
         case LogType.Error:
         case LogType.Exception:
-          eventType = RdLogEventType.Error;
+          eventType = LogEventType.Error;
           break;
         case LogType.Warning:
-          eventType = RdLogEventType.Warning;
+          eventType = LogEventType.Warning;
           break;
         default:
-          eventType = RdLogEventType.Message;
+          eventType = LogEventType.Message;
           break;
       }
 
-      var mode = RdLogEventMode.Play;
+      var mode = LogEventMode.Play;
       if (PluginEntryPoint.PlayModeSavedState == PluginEntryPoint.PlayModeState.Stopped)
-        mode = RdLogEventMode.Edit;
+        mode = LogEventMode.Edit;
 
       var ticks = DateTime.UtcNow.Ticks;
-      var evt = new RdLogEvent(ticks, eventType, mode, message, stackTrace);
+      var evt = new LogEvent(ticks, eventType, mode, message, stackTrace);
       ourDelayedLogEvents.Enqueue(evt);
     }
 
@@ -99,7 +99,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
       if (PluginEntryPoint.UnityModels.Count > 0) // maybe worth checking Any( with .Lifetime.IsAlive ), but shows up more expensive in Profiler
       {
-        RdLogEvent element;
+        LogEvent element;
         while ((element  = ourDelayedLogEvents.Dequeue()) != null)
         {
           SendLogEvent(element);
@@ -107,7 +107,7 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
-    private static void SendLogEvent(RdLogEvent logEvent)
+    private static void SendLogEvent(LogEvent logEvent)
     {
       foreach (var modelWithLifetime in PluginEntryPoint.UnityModels)
       {

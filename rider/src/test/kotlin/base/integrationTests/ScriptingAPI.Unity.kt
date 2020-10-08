@@ -21,14 +21,14 @@ import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.model.*
+import com.jetbrains.rider.model.unity.LogEvent
+import com.jetbrains.rider.model.unity.LogEventType
 import com.jetbrains.rider.model.unity.frontendBackend.*
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
-import com.jetbrains.rider.plugins.unity.toolWindow.log.LogEventMode
-import com.jetbrains.rider.plugins.unity.toolWindow.log.LogEventType
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
@@ -255,12 +255,10 @@ fun BaseTestWithSolution.checkSweaInSolution() = checkSweaInSolution(project)
 fun IntegrationTestWithFrontendBackendModel.executeIntegrationTestMethod(methodName: String) =
     executeMethod(RunMethodData("Assembly-CSharp-Editor", "Editor.IntegrationTestHelper", methodName))
 
-fun printEditorLogEntry(stream: PrintStream, editorLogEntry: EditorLogEntry) {
-    val type = LogEventType.values()[editorLogEntry.type]
-    val mode = LogEventMode.values()[editorLogEntry.mode]
-    if (type == LogEventType.Message) {
-        stream.println("$type, $mode, ${editorLogEntry.message}\n " +
-            editorLogEntry.stackTrace.replace(Regex(" \\(at .+\\)"), ""))
+fun printEditorLogEntry(stream: PrintStream, logEvent: LogEvent) {
+    if (logEvent.type == LogEventType.Message) {
+        stream.println("${logEvent.type}, ${logEvent.mode}, ${logEvent.message}\n " +
+            logEvent.stackTrace.replace(Regex(" \\(at .+\\)"), ""))
     }
 }
 
@@ -308,10 +306,10 @@ fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = wait
 
 fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(EditorState.ConnectedIdle)
 
-fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<EditorLogEntry> {
+fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<LogEvent> {
     val logLifetime = Lifetime.Eternal.createNested()
     val setOfMessages = expectedMessages.toHashSet()
-    val editorLogEntries = mutableListOf<EditorLogEntry>()
+    val editorLogEntries = mutableListOf<LogEvent>()
     frontendBackendModel.onUnityLogEvent.adviseNotNull(logLifetime) {
         if (setOfMessages.remove(it.message)) {
             editorLogEntries.add(it)

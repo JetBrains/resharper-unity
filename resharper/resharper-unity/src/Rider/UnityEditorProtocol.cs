@@ -376,12 +376,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void SubscribeToLogs(Lifetime lifetime, BackendUnityModel backendUnityModel)
         {
-            backendUnityModel.Log.Advise(lifetime, entry =>
-            {
-                myLogger.Verbose(entry.Time + " " + entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
-                var logEntry = new EditorLogEntry((int)entry.Type, (int)entry.Mode, entry.Time, entry.Message, entry.StackTrace);
-                myHost.PerformModelAction(m => m.OnUnityLogEvent(logEntry));
-            });
+            backendUnityModel.Log.Advise(lifetime, entry => myHost.PerformModelAction(m => m.OnUnityLogEvent(entry)));
         }
     }
 

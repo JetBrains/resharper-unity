@@ -6,7 +6,9 @@ import com.jetbrains.rd.util.reactive.Property
 import com.jetbrains.rd.util.reactive.Signal
 import com.jetbrains.rd.util.reactive.fire
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.unity.frontendBackend.EditorLogEntry
+import com.jetbrains.rider.model.unity.LogEvent
+import com.jetbrains.rider.model.unity.LogEventMode
+import com.jetbrains.rider.model.unity.LogEventType
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
@@ -109,7 +111,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
     }
 
     inner class Events {
-        val allEvents = ArrayList<EditorLogEntry>()
+        val allEvents = ArrayList<LogEvent>()
 
         fun clear() {
             synchronized(lock) { allEvents.clear() }
@@ -118,7 +120,7 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
             onCleared.fire()
         }
 
-        fun addEvent(event: EditorLogEntry) {
+        fun addEvent(event: LogEvent) {
             synchronized(lock) {
                 if (allEvents.count() > maxItemsCount)
                 {
@@ -136,15 +138,15 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
         val onAutoscrollChanged = Signal<Boolean>()
     }
 
-    private fun isVisibleEvent(event: EditorLogEntry):Boolean
+    private fun isVisibleEvent(event: LogEvent):Boolean
     {
-        return typeFilters.getShouldBeShown(LogEventType.fromRdLogEventTypeInt(event.type))
-            && modeFilters.getShouldBeShown(LogEventMode.fromRdLogEventModeInt(event.mode))
+        return typeFilters.getShouldBeShown(event.type)
+            && modeFilters.getShouldBeShown(event.mode)
             && textFilter.getShouldBeShown(event.message)
-            && timeFilters.getShouldBeShown(event.ticks)
+            && timeFilters.getShouldBeShown(event.time)
     }
 
-    private fun getVisibleEvents(): List<EditorLogEntry> {
+    private fun getVisibleEvents(): List<LogEvent> {
         synchronized(lock) {
             return events.allEvents
                 .filter { isVisibleEvent(it) }
@@ -159,8 +161,8 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
     val autoscroll = Property(false)
     var timeFilters = TimeFilters()
 
-    val onAdded = Signal<EditorLogEntry>()
-    val onChanged = Signal<List<EditorLogEntry>>()
+    val onAdded = Signal<LogEvent>()
+    val onChanged = Signal<List<LogEvent>>()
     val onCleared = Signal.Void()
 
     fun fire() = onChanged.fire(getVisibleEvents())

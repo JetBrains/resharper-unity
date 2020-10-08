@@ -6,6 +6,7 @@ import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 import com.jetbrains.rider.model.nova.ide.SolutionModel.EditableEntityId
+import model.lib.Library
 
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
@@ -109,13 +110,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         // doesn't seem like the best way to do this
         property("externalDocContext", string)
 
-        sink("onUnityLogEvent", structdef("editorLogEntry") {
-            field("type", int)
-            field("mode", int)
-            field("ticks", long)
-            field("message", string)
-            field("stackTrace", string)
-        })
+        sink("onUnityLogEvent", Library.LogEvent)
 
         source("installEditorPlugin", void)
 

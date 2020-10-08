@@ -26,7 +26,9 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rider.model.unity.frontendBackend.EditorLogEntry
+import com.jetbrains.rider.model.unity.LogEvent
+import com.jetbrains.rider.model.unity.LogEventMode
+import com.jetbrains.rider.model.unity.LogEventType
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
@@ -196,49 +198,21 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
-    private fun addToList(newEvent: EditorLogEntry) {
+    private fun addToList(newEvent: LogEvent) {
         if (logModel.mergeSimilarItems.value) {
             val existing = eventList.riderModel.elements().toList().singleOrNull {
                 it.message == newEvent.message && it.stackTrace == newEvent.stackTrace
-                    && LogEventMode.values()[newEvent.mode] == it.mode
-                    && LogEventType.values()[newEvent.type] == it.type
+                    it.mode == newEvent.mode && it.type == newEvent.type
             }
             if (existing == null) {
-                eventList.riderModel.addElement(
-                    LogPanelItem(
-                        newEvent.ticks,
-                        LogEventType.fromRdLogEventTypeInt(newEvent.type),
-                        LogEventMode.fromRdLogEventModeInt(newEvent.mode),
-                        newEvent.message,
-                        newEvent.stackTrace,
-                        1
-                    )
-                )
+                eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
             }
             else {
                 val index = eventList.riderModel.indexOf(existing)
-                eventList.riderModel.setElementAt(
-                    LogPanelItem(
-                        existing.time,
-                        existing.type,
-                        existing.mode,
-                        existing.message,
-                        existing.stackTrace,
-                        existing.count + 1
-                    ), index
-                )
+                eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count + 1), index)
             }
         } else {
-            eventList.riderModel.addElement(
-                LogPanelItem(
-                    newEvent.ticks,
-                    LogEventType.fromRdLogEventTypeInt(newEvent.type),
-                    LogEventMode.fromRdLogEventModeInt(newEvent.mode),
-                    newEvent.message,
-                    newEvent.stackTrace,
-                    1
-                )
-            )
+            eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
         }
 
         // since we do not follow new items which appear, it makes sense to auto-select first one. RIDER-19937
@@ -280,14 +254,14 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             if (logModel.mergeSimilarItems.value) {
                 val list = item
                     .groupBy {
-                        LogItem(LogEventType.fromRdLogEventTypeInt(it.type), LogEventMode.fromRdLogEventModeInt(it.mode), it.message, it.stackTrace)
+                        LogItem(it.type, it.mode, it.message, it.stackTrace)
                     }
-                    .mapValues { LogPanelItem(it.value.first().ticks, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
+                    .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
                     .values.toList()
                 refreshList(list)
             } else {
                 val list = item.map {
-                    LogPanelItem(it.ticks, LogEventType.fromRdLogEventTypeInt(it.type), LogEventMode.fromRdLogEventModeInt(it.mode), it.message, it.stackTrace, 1)
+                    LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace, 1)
                 }
                 refreshList(list)
             }
