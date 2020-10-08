@@ -38,9 +38,6 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
     def backendCsOutDir = new File(repoRoot, "resharper/resharper-unity/src/Rider/Model/BackendUnity")
     def unityEditorCsOutDir = new File(repoRoot, "unity/EditorPlugin/Model")
 
-    // TODO: Delete me
-    def ktOutput = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/protocol/RdEditorProtocol")
-
     params {
         verbose = project.gradle.startParameter.logLevel == LogLevel.INFO || project.gradle.startParameter.logLevel == LogLevel.DEBUG
         classpath { backend.getRiderModelJar() }
@@ -60,15 +57,6 @@ task generateBackendUnityModel(type: tasks.getByName('rdgen').class) {
             transform = "reversed"
             root = "model.backendUnity.BackendUnityModel"
             directory = "$unityEditorCsOutDir"
-        }
-
-        // TODO: Delete me. This is created to reuse types for the backend/unity model on the frontend
-        generator {
-            language = "kotlin"
-            transform = "asis"
-            namespace = "com.jetbrains.rider.plugins.unity.editorPlugin.model"
-            root = "model.backendUnity.BackendUnityModel"
-            directory = "$ktOutput"
         }
     }
 }

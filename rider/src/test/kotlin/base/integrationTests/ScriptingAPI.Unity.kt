@@ -25,10 +25,10 @@ import com.jetbrains.rider.model.unity.frontendBackend.*
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
+import com.jetbrains.rider.plugins.unity.toolWindow.log.LogEventMode
+import com.jetbrains.rider.plugins.unity.toolWindow.log.LogEventType
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
@@ -256,9 +256,9 @@ fun IntegrationTestWithFrontendBackendModel.executeIntegrationTestMethod(methodN
     executeMethod(RunMethodData("Assembly-CSharp-Editor", "Editor.IntegrationTestHelper", methodName))
 
 fun printEditorLogEntry(stream: PrintStream, editorLogEntry: EditorLogEntry) {
-    val type = RdLogEventType.values()[editorLogEntry.type]
-    val mode = RdLogEventMode.values()[editorLogEntry.mode]
-    if (type == RdLogEventType.Message) {
+    val type = LogEventType.values()[editorLogEntry.type]
+    val mode = LogEventMode.values()[editorLogEntry.mode]
+    if (type == LogEventType.Message) {
         stream.println("$type, $mode, ${editorLogEntry.message}\n " +
             editorLogEntry.stackTrace.replace(Regex(" \\(at .+\\)"), ""))
     }

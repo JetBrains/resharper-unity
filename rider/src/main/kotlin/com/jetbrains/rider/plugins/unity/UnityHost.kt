@@ -16,11 +16,9 @@ import com.jetbrains.rd.util.reactive.adviseNotNull
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
+import com.jetbrains.rider.model.unity.frontendBackend.EditorLogEntry
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurationType
@@ -30,10 +28,9 @@ import java.awt.Frame
 
 class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
     val model = project.solution.frontendBackendModel
-    val sessionInitialized = model.sessionInitialized
     val unityState = model.editorState
 
-    val logSignal = Signal<RdLogEvent>()
+    val logSignal = Signal<EditorLogEntry>()
 
     init {
         model.activateRider.advise(projectComponentLifetime) {
@@ -46,9 +43,7 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
         }
 
         model.onUnityLogEvent.adviseNotNull(projectComponentLifetime) {
-            val type = RdLogEventType.values()[it.type]
-            val mode = RdLogEventMode.values()[it.mode]
-            logSignal.fire(RdLogEvent(it.ticks, type, mode, it.message, it.stackTrace))
+            logSignal.fire(it)
         }
 
         model.startUnity.advise(projectComponentLifetime) {
