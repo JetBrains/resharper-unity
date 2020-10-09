@@ -48,18 +48,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myRdUnityModel = solution.GetProtocolSolution().GetRdUnityModel();
         }
 
-        public Task<ExitUnityResult> ExitUnityAsync(bool force)
+        public Task<ExitUnityResult> ExitUnityAsync(Lifetime lifetime, bool force)
         {
-            var lifetimeDef = myLifetime.CreateNested();
+            var lifetimeDef = Lifetime.DefineIntersection(myLifetime, lifetime);
             if (myUnityEditorProtocol.UnityModel.Value == null) // no connection
-            {
-                if (force)
-                {
-                    return Task.FromResult(KillProcess());
-                }
-
-                return Task.FromResult(new ExitUnityResult(false, "No connection to Unity Editor.", null));
-            }
+                return Task.FromResult(force ? KillProcess() : new ExitUnityResult(false, "No connection to Unity Editor.", null));
 
             var protocolTaskSource = new TaskCompletionSource<bool>();
             mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myUnityEditorProtocol.UnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
@@ -107,10 +100,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return processIdString == null ? (int?) null : Convert.ToInt32(processIdString);
         }
 
-        public Task<int> WaitConnectedUnityProcessId()
+        public Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
         {
             var source = new TaskCompletionSource<int>();
-            var lifetimeDef = myLifetime.CreateNested();
+            var lifetimeDef = Lifetime.DefineIntersection(myLifetime, lifetime);
             lifetimeDef.SynchronizeWith(source);
 
             myUnityEditorProtocol.UnityModel.ViewNotNull(
