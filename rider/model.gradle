@@ -9,7 +9,7 @@ task generateLibModel(type: tasks.getByName('rdgen').class) {
     // that pushes responsibilities on the project files
     def backendCsOutDir = new File(repoRoot, "resharper/resharper-unity/src/Rider/Model/Lib")
     def unityEditorCsOutDir = new File(repoRoot, "unity/EditorPlugin/Model/Lib")
-    def frontendKtOutDir = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/model/lib")
+    def frontendKtOutDir = new File(repoRoot, "rider/src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/lib")
 
     params {
         verbose = project.gradle.startParameter.logLevel == LogLevel.INFO || project.gradle.startParameter.logLevel == LogLevel.DEBUG
@@ -46,7 +46,7 @@ task generateFrontendBackendModel(type: tasks.getByName('rdgen').class) {
 
     // Always store models in their own folder, so the hash is only looking at the files we generate
     def backendCsOutDir = new File(repoRoot, "resharper/resharper-unity/src/Rider/Model/FrontendBackend")
-    def frontendKtOutDir = new File(repoRoot, "rider/src/main/kotlin/com/jetbrains/rider/plugins/unity/model/frontendBackend")
+    def frontendKtOutDir = new File(repoRoot, "rider/src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/frontendBackend")
 
     // NOTE: classpath is evaluated lazily, at execution time, because it comes from the unzipped
     // intellij SDK, which is extracted in afterEvaluate

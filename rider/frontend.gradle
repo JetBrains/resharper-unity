@@ -3,6 +3,17 @@ import org.jetbrains.intellij.tasks.PrepareSandboxTask
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 
+sourceSets {
+    main {
+        kotlin {
+            srcDir 'src/main/gen/kotlin'
+        }
+        resources {
+            srcDir 'src/main/gen/resources'
+        }
+    }
+}
+
 // Set -PwarningsAsErrors to disable warnings as errors. Useful in TeamCity where the build of the bundled plugin
 // shouldn't cause the rest of the build to fail for warnings (e.g. some APIs are deprecated)
 compileKotlin {
@@ -16,6 +27,13 @@ compileTestKotlin {
     kotlinOptions {
         jvmTarget = javaVersion
         allWarningsAsErrors = false
+    }
+}
+
+idea {
+    module {
+        generatedSourceDirs += file('src/main/gen/kotlin')
+        resourceDirs += file('src/main/gen/resources')
     }
 }
 
@@ -204,7 +222,7 @@ prepareSandbox.dependsOn validatePluginXml
 processResources {
     copy {
         from "../common/dictionaries/unity.dic"
-        into "src/main/resources/com/jetbrains/rider/plugins/unity/spellchecker/"
+        into "src/main/gen/resources/com/jetbrains/rider/plugins/unity/spellchecker/"
     }
 }
 
