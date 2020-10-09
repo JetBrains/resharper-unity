@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
     {
         public const string PID = "ShaderLabFormattingStylePage";
 
-        protected override bool ShowAutoDetectAndConfigureFormattingTip => true;
+        public override bool ShowAutoDetectAndConfigureFormattingTip => true;
 
         public override string Id => PID;
 
