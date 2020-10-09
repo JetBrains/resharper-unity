@@ -138,19 +138,13 @@ object EditorPluginModel: Root() {
     }
 
     init {
-        property("play", bool)
-        property("pause", bool)
         source("step", void)
         signal("showFileInUnity", string)
         signal("showUsagesInUnity", AssetFindUsagesResultBase)
         signal("sendFindUsagesSessionResult", FindUsagesSessionResult)
         signal("showPreferences", void)
 
-        property("riderProcessId", int)
-        property("unityProcessId", int)
 
-        property("unityApplicationData", UnityApplicationData)
-        property("scriptingRuntime", int)
 
         sink("log", RdLogEvent)
 
@@ -162,10 +156,33 @@ object EditorPluginModel: Root() {
         call("getCompilationResult", void, bool)
         sink("compiledAssemblies", immutableList(CompiledAssembly))
 
-        property("unitTestLaunch", UnitTestLaunch)
         call("runUnitTestLaunch", void, bool)
 
         call("runMethodInUnity", RunMethodData, RunMethodResult)
+
+
+
+        call("generateUIElementsSchema", void, bool)
+        call("exitUnity", void, bool)
+
+
+        // statefull entities
+        // do not forget, that protocol between Rider and Unity could be destroyed when
+        // 1) Unity reloads AppDomain (e.g enter playmode, script compilation)
+        // 2) Unity lost connection to Rider
+
+        // If your value is not set on protocol initialization or depends on some Unity event,
+        // do not forget to store it outside protocol and restore when protocol is recreated
+        property("play", bool)
+        property("pause", bool)
+
+        property("riderProcessId", int)
+        property("unityProcessId", int)
+
+        property("unityApplicationData", UnityApplicationData)
+        property("scriptingRuntime", int)
+
+        property("unitTestLaunch", UnitTestLaunch)
 
         property("editorLogPath", string)
         property("playerLogPath", string)
@@ -173,9 +190,6 @@ object EditorPluginModel: Root() {
         property("ScriptCompilationDuringPlay", int)
         property("lastPlayTime", long)
         property("lastInitTime", long)
-
-        call("generateUIElementsSchema", void, bool)
-        call("exitUnity", void, bool)
 
         property("buildLocation", string)
     }
