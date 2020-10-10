@@ -23,12 +23,6 @@
     <OutputPath>$(MSBuildThisFileDirectory)\build\$(MSBuildProjectName)\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
-  <ItemGroup Label="Model">
-    <Compile Include="..\build\generated\Model\**\*" LinkBase="Model">
-        <Visible>False</Visible>
-    </Compile>
-  </ItemGroup>
-
   <!-- Import version number -->
   <Import Project="..\Packaging.props" />
   <Import Project="$(MSBuildThisFileDirectory)..\resharper\build\generated\DotNetSdkPath.generated.props" Condition="Exists('$(MSBuildThisFileDirectory)..\resharper\build\generated\DotNetSdkPath.generated.props')" />

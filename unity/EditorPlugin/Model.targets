@@ -1,0 +1,7 @@
+﻿<Project>
+  <ItemGroup Label="Model">
+    <Compile Include="..\build\generated\Model\**\*" LinkBase="Model">
+        <Visible>False</Visible>
+    </Compile>
+  </ItemGroup>
+</Project>
