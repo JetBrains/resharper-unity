@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using UnityEditor.Compilation;
 using UnityEngine;
 
@@ -9,13 +9,13 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   internal static class CompiledAssembliesTracker
   {
-    private static EditorPluginModel ourModel;
+    private static BackendUnityModel ourModel;
     private static readonly HashSet<string> ourCompiledAssemblyPaths = new HashSet<string>();
 
     public static void Init(UnityModelAndLifetime modelAndLifetime)
     {
       ourModel = modelAndLifetime.Model;
-      
+
       void OnCompilationFinished(string assemblyPath, CompilerMessage[] messages)
       {
         if (!ourCompiledAssemblyPaths.Contains(assemblyPath))
@@ -32,7 +32,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     private static void UpdateAssemblies()
     {
       ourCompiledAssemblyPaths.Clear();
-      
+
       var projectPath = Directory.GetParent(Application.dataPath).FullName;
       var compiledAssemblies = CompilationPipeline.GetAssemblies().Select(a =>
       {

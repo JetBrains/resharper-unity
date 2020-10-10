@@ -35,8 +35,7 @@ rider/.idea/**/compiler.xml
 
 rider/dependencies
 
-# This file is copied from common/dictionaries
-rider/src/main/resources/com/jetbrains/rider/plugins/unity/spellchecker/
+rider/src/main/gen/
 
 
 # C# solutions (Rider excludes)

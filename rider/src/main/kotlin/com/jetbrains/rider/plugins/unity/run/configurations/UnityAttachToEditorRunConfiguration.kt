@@ -14,7 +14,7 @@ import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.rider.isUnityClassLibraryProject
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.isUnityProjectFolder
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
 import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.projectDir
@@ -64,7 +64,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                     addPlayModeArguments(args)
                 }
 
-                return ext.executor(UnityAttachConfigurationParametersImpl(project.solution.rdUnityModel.unityProcessId.valueOrNull ?: pid,
+                return ext.executor(UnityAttachConfigurationParametersImpl(project.solution.frontendBackendModel.unityProcessId.valueOrNull ?: pid,
                     finder.getApplicationExecutablePath(), args, finder.getApplicationVersion()), environment)
             }
         }

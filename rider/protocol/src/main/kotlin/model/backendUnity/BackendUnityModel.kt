@@ -1,22 +1,17 @@
-package model.editorPlugin
+package model.backendUnity
 
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
+import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
+import model.lib.Library
 
 @Suppress("unused")
-object EditorPluginModel: Root() {
+object BackendUnityModel: Root() {
 
     var RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
         field("col", int)
-    }
-    val RdLogEvent = structdef {
-        field("time", long)
-        field("type", RdLogEventType)
-        field("mode", RdLogEventMode)
-        field("message", string)
-        field("stackTrace", string)
     }
 
     val FindUsagesSessionResult = structdef {
@@ -37,17 +32,6 @@ object EditorPluginModel: Root() {
     val HierarchyFindUsagesResult = structdef extends  AssetFindUsagesResultBase {
         field("pathElements", array(string))
         field("rootIndices", array(int))
-    }
-
-    val RdLogEventType = enum {
-        +"Error"
-        +"Warning"
-        +"Message"
-    }
-
-    val RdLogEventMode = enum {
-        +"Edit"
-        +"Play"
     }
 
     val TestResult = structdef {
@@ -138,6 +122,8 @@ object EditorPluginModel: Root() {
     }
 
     init {
+        setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
+
         source("step", void)
         signal("showFileInUnity", string)
         signal("showUsagesInUnity", AssetFindUsagesResultBase)
@@ -146,7 +132,7 @@ object EditorPluginModel: Root() {
 
 
 
-        sink("log", RdLogEvent)
+        sink("log", Library.LogEvent)
 
         callback("isBackendConnected", void, bool)
         call("getUnityEditorState", void, UnityEditorState)

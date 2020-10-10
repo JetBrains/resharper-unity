@@ -4,8 +4,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.LifetimedProjectService
 import com.jetbrains.rider.model.RdExistingSolution
-import com.jetbrains.rider.model.rdUnityModel
-import com.jetbrains.rider.projectView.hasSolution
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.projectView.solutionFile
@@ -25,7 +24,7 @@ class UnityProjectDiscoverer(project: Project) : LifetimedProjectService(project
     // Note that this will only return a sensible value once the solution + backend have finished loading
     val isUnityClassLibraryProject: Boolean?
         get() {
-            val hasReference = project.solution.rdUnityModel.hasUnityReference.valueOrNull ?: return null
+            val hasReference = project.solution.frontendBackendModel.hasUnityReference.valueOrNull ?: return null
             return hasReference && isCorrectlyLoadedSolution(project)
         }
 

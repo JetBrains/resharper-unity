@@ -12,7 +12,7 @@ using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
@@ -67,9 +67,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
 
-            unityHost.PerformModelAction(rdUnityModel =>
+            unityHost.PerformModelAction(frontendBackendModel =>
             {
-                rdUnityModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
+                frontendBackendModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
                 {
                     myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.InstallEditorPlugin", () =>
                     {

@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
 import com.jetbrains.rd.util.reactive.fire
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import javax.swing.event.HyperlinkEvent
 
@@ -16,7 +16,7 @@ class YamlHugeFileNotification(project: Project): ProtocolSubscribedProjectCompo
     }
 
     init {
-        project.solution.rdUnityModel.notifyYamlHugeFiles.adviseNotNullOnce(projectComponentLifetime){
+        project.solution.frontendBackendModel.notifyYamlHugeFiles.adviseNotNullOnce(projectComponentLifetime){
             showNotificationIfNeeded()
         }
     }
@@ -35,7 +35,7 @@ class YamlHugeFileNotification(project: Project): ProtocolSubscribedProjectCompo
                 return@setListener
 
             if (hyperlinkEvent.description == "turnOnYamlParsing"){
-                project.solution.rdUnityModel.enableYamlParsing.fire()
+                project.solution.frontendBackendModel.enableYamlParsing.fire()
                 notification.hideBalloon()
             }
         }

@@ -1,9 +1,12 @@
-package model.rider
+package model.frontendBackend
 
 import com.jetbrains.rider.model.nova.ide.SolutionModel
 import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
+import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
+import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
 import com.jetbrains.rider.model.nova.ide.SolutionModel.EditableEntityId
+import model.lib.Library
 
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
@@ -12,7 +15,7 @@ import com.jetbrains.rider.model.nova.ide.SolutionModel.EditableEntityId
 // Call is an RPC method (with return value) that is called by the frontend/implemented by the backend
 // Callback is an RPC method (with return value) that is implemented by the frontend/called by the backend
 @Suppress("unused")
-object RdUnityModel : Ext(SolutionModel.Solution) {
+object FrontendBackendModel : Ext(SolutionModel.Solution) {
     private val UnitTestLaunchPreference = enum {
         +"NUnit"
         +"EditMode"
@@ -73,6 +76,9 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
 
 
     init {
+        setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
+        setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
+
         sink("activateRider", void)
         sink("activateUnityLogView", void)
         sink("showInstallMonoDialog", void)
@@ -104,13 +110,7 @@ object RdUnityModel : Ext(SolutionModel.Solution) {
         // doesn't seem like the best way to do this
         property("externalDocContext", string)
 
-        sink("onUnityLogEvent", structdef("editorLogEntry") {
-            field("type", int)
-            field("mode", int)
-            field("ticks", long)
-            field("message", string)
-            field("stackTrace", string)
-        })
+        sink("onUnityLogEvent", Library.LogEvent)
 
         source("installEditorPlugin", void)
 

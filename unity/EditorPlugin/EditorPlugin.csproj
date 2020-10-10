@@ -30,5 +30,6 @@
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
-  <Import Project="$(MSBuildProjectDirectory)\..\EditorPlugin\ILRepack.targets" /> 
+  <Import Project="ILRepack.targets" /> 
+  <Import Project="Model.targets" />
 </Project>

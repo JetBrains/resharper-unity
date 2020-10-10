@@ -19,7 +19,7 @@ import com.intellij.util.io.readBytes
 import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.toIOFile
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.ideaInterop.fileTypes.yaml.UnityYamlFileType
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
@@ -44,7 +44,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         try {
             settings.isMergeTrustExitCode = true
             settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
-            val mergeParameters = project.solution.rdUnityModel.mergeParameters.valueOrThrow
+            val mergeParameters = project.solution.frontendBackendModel.mergeParameters.valueOrThrow
             if (mergeParameters.contains(" -p "))
                 settings.mergeParameters = "$mergeParameters $premergedBase $premergedRight"
             else
@@ -72,7 +72,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     override fun canShow(project: Project?, request: MergeRequest): Boolean {
         project?: return false
 
-        if (!project.solution.rdUnityModel.useUnityYamlMerge.hasTrueValue)
+        if (!project.solution.frontendBackendModel.useUnityYamlMerge.hasTrueValue)
             return false
 
         if (request is ThreesideMergeRequest) {

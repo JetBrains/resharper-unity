@@ -12,7 +12,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.Rd;
 using JetBrains.Rd.Base;
@@ -22,16 +22,17 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 using JetBrains.Util.Special;
 using Newtonsoft.Json;
-using RunMethodData = JetBrains.Platform.Unity.EditorPluginModel.RunMethodData;
-using UnityApplicationData = JetBrains.Rider.Model.UnityApplicationData;
+using RunMethodData = JetBrains.Rider.Model.Unity.BackendUnity.RunMethodData;
+using RunMethodResult = JetBrains.Rider.Model.Unity.FrontendBackend.RunMethodResult;
+using UnityApplicationData = JetBrains.Rider.Model.Unity.FrontendBackend.UnityApplicationData;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -55,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
-        public readonly ViewableProperty<EditorPluginModel> UnityModel = new ViewableProperty<EditorPluginModel>(null);
+        public readonly ViewableProperty<BackendUnityModel> BackendUnityModel = new ViewableProperty<BackendUnityModel>(null);
 
         [NotNull]
         public readonly ViewableProperty<SocketWire.Base> UnityWire = new ViewableProperty<SocketWire.Base>(null);
@@ -102,9 +103,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-
         private DateTime myLastChangeTime;
-        
+
         private void OnChangeAction(FileSystemChangeDelta delta)
         {
             // connect on reload of server
@@ -118,9 +118,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime)
         {
-           myHost.PerformModelAction(rd => rd.Play.Advise(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
-           myHost.PerformModelAction(rd => rd.Pause.Advise(lifetime, p => UnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-           myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => UnityModel.Value.DoIfNotNull(editor => editor.Step())));
+           myHost.PerformModelAction(rd => rd.Play.Advise(lifetime, p => BackendUnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
+           myHost.PerformModelAction(rd => rd.Pause.Advise(lifetime, p => BackendUnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
+           myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => BackendUnityModel.Value.DoIfNotNull(editor => editor.Step())));
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -192,89 +192,89 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 });
 
                 protocol.OutOfSyncModels.AdviseOnce(lifetime, e => { OnOutOfSync(lifetime); });
-                
+
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
                     myLogger.Info("WireConnected.");
 
-                    var editor = new EditorPluginModel(lf, protocol);
-                    editor.IsBackendConnected.Set(rdVoid => true);
+                    var backendUnityModel = new BackendUnityModel(lf, protocol);
+                    backendUnityModel.IsBackendConnected.Set(rdVoid => true);
 
                     if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
                     {
                         var frontendProcess = Process.GetCurrentProcess().GetParent(); // RiderProcessId is not used on non-Windows, but this line gives bad warning in the log
                         if (frontendProcess != null)
                         {
-                            editor.RiderProcessId.SetValue(frontendProcess.Id);
+                            backendUnityModel.RiderProcessId.SetValue(frontendProcess.Id);
                         }
                     }
 
                     myHost.PerformModelAction(m => m.SessionInitialized.Value = true);
 
-                    SubscribeToLogs(lf, editor);
-                    SubscribeToOpenFile(editor);
+                    SubscribeToLogs(lf, backendUnityModel);
+                    SubscribeToOpenFile(backendUnityModel);
 
-                    editor.Play.Advise(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
-                    editor.Pause.Advise(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
-                    editor.LastPlayTime.Advise(lf, time => myHost.PerformModelAction(rd => rd.LastPlayTime.SetValue(time)));
-                    editor.LastInitTime.Advise(lf, time => myHost.PerformModelAction(rd => rd.LastInitTime.SetValue(time)));
+                    backendUnityModel.Play.Advise(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
+                    backendUnityModel.Pause.Advise(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
+                    backendUnityModel.LastPlayTime.Advise(lf, time => myHost.PerformModelAction(rd => rd.LastPlayTime.SetValue(time)));
+                    backendUnityModel.LastInitTime.Advise(lf, time => myHost.PerformModelAction(rd => rd.LastInitTime.SetValue(time)));
 
-                    editor.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
+                    backendUnityModel.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
 
                     // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
-                    myHost.PerformModelAction(t => t.ShowFileInUnity.Advise(lf, v => editor.ShowFileInUnity.Fire(v)));
+                    myHost.PerformModelAction(t => t.ShowFileInUnity.Advise(lf, v => backendUnityModel.ShowFileInUnity.Fire(v)));
                     myHost.PerformModelAction(t => t.ShowPreferences.Advise(lf, v =>
                     {
-                        editor.ShowPreferences.Fire();
+                        backendUnityModel.ShowPreferences.Fire();
                     }));
 
-                    editor.EditorLogPath.Advise(lifetime,
+                    backendUnityModel.EditorLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
-                    editor.PlayerLogPath.Advise(lifetime,
+                    backendUnityModel.PlayerLogPath.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.PlayerLogPath.SetValue(s)));
 
                     // Note that these are late-init properties. Once set, they are always set and do not allow nulls.
                     // This means that if/when the Unity <-> Backend protocol closes, they still retain the last value
                     // they had - so the front end will retain the log and application paths of the just-closed editor.
                     // Opening a new editor instance will reconnect and push a new value through to the front end
-                    editor.UnityApplicationData.Advise(lifetime,
+                    backendUnityModel.UnityApplicationData.Advise(lifetime,
                         s => myHost.PerformModelAction(a =>
                         {
                             var version = UnityVersion.Parse(s.ApplicationVersion);
                             a.UnityApplicationData.SetValue(new UnityApplicationData(s.ApplicationPath,
                                     s.ApplicationContentsPath, s.ApplicationVersion, UnityVersion.RequiresRiderPackage(version)));
                         }));
-                    editor.ScriptCompilationDuringPlay.Advise(lifetime,
+                    backendUnityModel.ScriptCompilationDuringPlay.Advise(lifetime,
                         s => myHost.PerformModelAction(a => a.ScriptCompilationDuringPlay.Set(ConvertToScriptCompilationEnum(s))));
 
                     myHost.PerformModelAction(rd =>
                     {
                         rd.GenerateUIElementsSchema.Set((l, u) =>
-                            editor.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
+                            backendUnityModel.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
                     });
 
-                    editor.BuildLocation.Advise(lf, b => myHost.PerformModelAction(rd => rd.BuildLocation.SetValue(b)));
+                    backendUnityModel.BuildLocation.Advise(lf, b => myHost.PerformModelAction(rd => rd.BuildLocation.SetValue(b)));
 
                     myHost.PerformModelAction(rd =>
                     {
                         rd.RunMethodInUnity.Set((l, data) =>
                         {
-                            var editorRdTask = editor.RunMethodInUnity.Start(l, new RunMethodData(data.AssemblyName, data.TypeName, data.MethodName)).ToRdTask(l);
-                            var frontendRes = new RdTask<JetBrains.Rider.Model.RunMethodResult>();
+                            var editorRdTask = backendUnityModel.RunMethodInUnity.Start(l, new RunMethodData(data.AssemblyName, data.TypeName, data.MethodName)).ToRdTask(l);
+                            var frontendRes = new RdTask<RunMethodResult>();
 
                             editorRdTask.Result.Advise(l, r =>
                             {
-                                frontendRes.Set(new JetBrains.Rider.Model.RunMethodResult(r.Result.Success, r.Result.Message, r.Result.StackTrace));
+                                frontendRes.Set(new RunMethodResult(r.Result.Success, r.Result.Message, r.Result.StackTrace));
                             });
                             return frontendRes;
                         });
                     });
 
-                    TrackActivity(editor, lf);
+                    TrackActivity(backendUnityModel, lf);
 
                     if (!myComponentLifetime.IsTerminated)
                         myLocks.ExecuteOrQueueEx(myComponentLifetime, "setModel",
-                            () => { UnityModel.SetValue(editor); });
+                            () => { BackendUnityModel.SetValue(backendUnityModel); });
 
                     lf.AddAction(() =>
                     {
@@ -283,7 +283,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             {
                                 myLogger.Info("Wire disconnected.");
                                 myHost.PerformModelAction(m => m.SessionInitialized.Value = false);
-                                UnityModel.SetValue(null);
+                                BackendUnityModel.SetValue(null);
                             });
                     });
                 });
@@ -330,15 +330,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return (ScriptCompilationDuringPlay) mode;
         }
 
-        private void TrackActivity(EditorPluginModel editor, Lifetime lf)
+        private void TrackActivity(BackendUnityModel backendUnityModel, Lifetime lf)
         {
-            editor.UnityApplicationData.AdviseOnce(lf, data => { myUsageStatistics.TrackActivity("UnityVersion", data.ApplicationVersion); });
-            editor.ScriptingRuntime.AdviseOnce(lf, runtime => { myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()); });
+            backendUnityModel.UnityApplicationData.AdviseOnce(lf, data => myUsageStatistics.TrackActivity("UnityVersion", data.ApplicationVersion));
+            backendUnityModel.ScriptingRuntime.AdviseOnce(lf, runtime => myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()));
         }
 
-        private void SubscribeToOpenFile([NotNull] EditorPluginModel editor)
+        private void SubscribeToOpenFile([NotNull] BackendUnityModel backendUnityModel)
         {
-            editor.OpenFileLineCol.Set(args =>
+            backendUnityModel.OpenFileLineCol.Set(args =>
             {
                 var result = false;
                 mySolution.Locks.ExecuteWithReadLock(() =>
@@ -374,14 +374,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private void SubscribeToLogs(Lifetime lifetime, EditorPluginModel editor)
+        private void SubscribeToLogs(Lifetime lifetime, BackendUnityModel backendUnityModel)
         {
-            editor.Log.Advise(lifetime, entry =>
-            {
-                myLogger.Verbose(entry.Time + " " + entry.Mode + " " + entry.Type + " " + entry.Message + " " + Environment.NewLine + " " + entry.StackTrace);
-                var logEntry = new EditorLogEntry((int)entry.Type, (int)entry.Mode, entry.Time, entry.Message, entry.StackTrace);
-                myHost.PerformModelAction(m => m.OnUnityLogEvent(logEntry));
-            });
+            backendUnityModel.Log.Advise(lifetime, entry => myHost.PerformModelAction(m => m.OnUnityLogEvent(entry)));
         }
     }
 
