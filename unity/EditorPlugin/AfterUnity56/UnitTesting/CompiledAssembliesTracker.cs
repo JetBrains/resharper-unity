@@ -9,12 +9,12 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   internal static class CompiledAssembliesTracker
   {
-    private static BackendUnityModel ourModel;
+    private static UnityModelAndLifetime ourModelAndLifetime;
     private static readonly HashSet<string> ourCompiledAssemblyPaths = new HashSet<string>();
 
     public static void Init(UnityModelAndLifetime modelAndLifetime)
     {
-      ourModel = modelAndLifetime.Model;
+      ourModelAndLifetime = modelAndLifetime;
 
       void OnCompilationFinished(string assemblyPath, CompilerMessage[] messages)
       {
@@ -43,7 +43,8 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       })
       .ToList();
 
-      ourModel.CompiledAssemblies(compiledAssemblies);
+      if (ourModelAndLifetime.Lifetime.IsAlive)
+        ourModelAndLifetime.Model.CompiledAssemblies(compiledAssemblies);
     }
   }
 }
