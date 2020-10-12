@@ -4,6 +4,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -19,15 +20,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             consumer.AddHighlighting(new UnityImplicitlyUsedIdentifierHighlighting(declaration.NameIdentifier.GetDocumentRange()));
         }
 
-        public static bool HasHotIcon(this ICSharpDeclaration element, UnityProblemAnalyzerContextSystem contextSystem,
+        public static bool HasHotIcon(this ICSharpDeclaration element, PerformanceCriticalContextProvider contextProvider,
             IContextBoundSettingsStore settingsStore, DaemonProcessKind kind)
         {
             var declaredElement = element.DeclaredElement;
             
-            return declaredElement.HasHotIcon(contextSystem, settingsStore, kind);
+            return declaredElement.HasHotIcon(contextProvider, settingsStore, kind);
         }
 
-        public static bool HasHotIcon(this IDeclaredElement element, UnityProblemAnalyzerContextSystem contextSystem,
+        public static bool HasHotIcon(this IDeclaredElement element, PerformanceCriticalContextProvider contextProvider,
             IContextBoundSettingsStore settingsStore, DaemonProcessKind kind)
         {
             if (element == null)
@@ -36,13 +37,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (!settingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode))
                 return false;
 
-            return contextSystem
-                .GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT)
-                .IsMarked(element, kind);
+            return contextProvider.IsMarked(element, kind);
         }
         
         public static void AddHotHighlighting(this IHighlightingConsumer consumer,
-                                              UnityProblemAnalyzerContextSystem contextProvider,
+                                              PerformanceCriticalContextProvider contextProvider,
                                               ICSharpDeclaration element,
                                               IContextBoundSettingsStore settings, string text,
                                               string tooltip, DaemonProcessKind kind, IEnumerable<BulbMenuItem> items,
@@ -56,6 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(items, element, tooltip)
                 : (IHighlighting) new UnityGutterMarkInfo(items, element, tooltip);
+            
             consumer.AddHighlighting(highlighting);
         }
     }

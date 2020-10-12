@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -20,8 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
         public EventHandlerDetector(ISolution solution, IApplicationWideContextBoundSettingStore settingsStore,
                                     UnityEventsElementContainer unityEventsElementContainer,
-                                    UnityProblemAnalyzerContextSystem contextSystem)
-            : base(solution, settingsStore, contextSystem)
+                                    PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, contextProvider)
         {
             UnityEventsElementContainer = unityEventsElementContainer;
         }
@@ -51,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             consumer.AddImplicitConfigurableHighlighting(element);
 
-            var isIconHot = element.HasHotIcon(ContextSystem, SettingsStore.BoundSettingsStore, kind);
+            var isIconHot = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind);
 
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(GetActions(element), element, tooltip)

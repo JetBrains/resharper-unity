@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using JetBrains.Collections;
 using JetBrains.Metadata.Reader.API;
-using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis
@@ -21,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var declaredElement = MethodDeclaration?.DeclaredElement;
 
             return declaredElement != null && MethodDeclaration.IsValid() &&
-                   !BurstCodeAnalysisUtil.IsBurstContextBannedFunction(declaredElement) &&
+                   !BurstCodeAnalysisUtil.IsBurstProhibitedFunction(declaredElement) &&
                    !declaredElement.HasAttributeInstance(ProtagonistAttribute, AttributesSource.Self);
         }
     }

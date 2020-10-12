@@ -1,14 +1,15 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    public abstract class BurstProblemAnalyzerBase<T> : UnityProblemAnalyzerBase<T>, IBurstBannedAnalyzer where T : ITreeNode
+    public abstract class BurstProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T>, IBurstBannedAnalyzer where T : ITreeNode
     {
-        public override UnityProblemAnalyzerContextElement Context => UnityProblemAnalyzerContextElement.BURST_CONTEXT;
-        public override UnityProblemAnalyzerContextElement ProhibitedContext => UnityProblemAnalyzerContextElement.NONE;
+        public override CallGraphContextElement Context => CallGraphContextElement.BURST_CONTEXT;
+        public override CallGraphContextElement ProhibitedContext => CallGraphContextElement.NONE;
 
         protected override void Analyze(T t, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
         {

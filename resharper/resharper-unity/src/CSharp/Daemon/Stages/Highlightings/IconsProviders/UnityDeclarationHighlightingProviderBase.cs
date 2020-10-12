@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -12,16 +12,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public abstract class UnityDeclarationHighlightingProviderBase : IUnityDeclarationHighlightingProvider
     {
         protected readonly ISolution Solution;
-        protected readonly UnityProblemAnalyzerContextSystem ContextSystem;
+        protected readonly PerformanceCriticalContextProvider ContextProvider;
         protected readonly IApplicationWideContextBoundSettingStore SettingsStore;
         
         protected UnityDeclarationHighlightingProviderBase(ISolution solution,
                                                            IApplicationWideContextBoundSettingStore settingsStore,
-                                                           UnityProblemAnalyzerContextSystem contextSystem)
+                                                           PerformanceCriticalContextProvider contextProvider)
         {
             Solution = solution;
             SettingsStore = settingsStore;
-            ContextSystem = contextSystem;
+            ContextProvider = contextProvider;
         }
 
         public abstract bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
@@ -31,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             string tooltip, DaemonProcessKind kind)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
-            consumer.AddHotHighlighting(ContextSystem, element, SettingsStore.BoundSettingsStore, text, tooltip, kind, GetActions(element));
+            consumer.AddHotHighlighting(ContextProvider, element, SettingsStore.BoundSettingsStore, text, tooltip, kind, GetActions(element));
         }
 
 

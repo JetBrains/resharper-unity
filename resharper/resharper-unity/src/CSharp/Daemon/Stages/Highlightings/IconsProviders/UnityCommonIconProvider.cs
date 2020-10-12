@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -26,17 +27,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         protected readonly IApplicationWideContextBoundSettingStore SettingsStore;
         protected readonly UnityApi UnityApi;
-        protected readonly UnityProblemAnalyzerContextSystem ContextSystem;
+        protected readonly PerformanceCriticalContextProvider ContextProvider;
         private readonly ISolution mySolution;
        
         public UnityCommonIconProvider(ISolution solution, UnityApi unityApi,
                                        IApplicationWideContextBoundSettingStore settingsStore,
-                                       UnityProblemAnalyzerContextSystem contextSystem)
+                                       PerformanceCriticalContextProvider contextProvider)
         {
             mySolution = solution;
             UnityApi = unityApi;
             SettingsStore = settingsStore;
-            ContextSystem = contextSystem;
+            ContextProvider = contextProvider;
         }
 
         public virtual void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method,
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
                 {
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
-                    consumer.AddHotHighlighting(ContextSystem, cSharpDeclaration,
+                    consumer.AddHotHighlighting(ContextProvider, cSharpDeclaration,
                         SettingsStore.BoundSettingsStore, text,
                         GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration));
                 }
@@ -58,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             ICSharpDeclaration declaration,
             string text, string tooltip, DaemonProcessKind kind)
         {
-            consumer.AddHotHighlighting(ContextSystem, declaration,
+            consumer.AddHotHighlighting(ContextProvider, declaration,
                 SettingsStore.BoundSettingsStore, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
 

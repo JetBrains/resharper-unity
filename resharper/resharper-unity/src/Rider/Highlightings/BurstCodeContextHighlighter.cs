@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Highlightings.Rider;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
@@ -49,11 +50,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             if (!UnityCallGraphUtil.IsSweaCompleted(swa))
                 return;
 
-            var contextSystem = solution.GetComponent<UnityProblemAnalyzerContextSystem>();
+            var contextProvider = solution.GetComponent<BurstContextProvider>();
             var settingsStore = psiDocumentRangeView.GetSettingsStore();
-            var contextProvider = contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.BURST_CONTEXT);
  
-            if (contextProvider.IsProblemContextBound == false)
+            if (contextProvider.IsContextAvailable == false)
                 return;
 
             if (settingsStore.GetValue((UnitySettings key) => key.BurstCodeHighlightingMode) !=
@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             
             var processKind = UnityCallGraphUtil.GetProcessKindForGraph(swa);
 
-            if (contextProvider.IsMarked(node, processKind, false))
+            if (contextProvider.HasContext(node, processKind))
                 consumer.ConsumeHighlighting(new BurstContextHighlightInfo(node.GetDocumentRange()));
         }
     }

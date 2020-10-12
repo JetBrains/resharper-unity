@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -25,8 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                                   UnityCodeInsightFieldUsageProvider fieldUsageProvider,
                                                   UnitySolutionTracker solutionTracker,
                                                   ConnectionTracker connectionTracker,
-                                                  IconHost iconHost, UnityProblemAnalyzerContextSystem contextSystem)
-            : base(solution, settingsStore, contextSystem)
+                                                  IconHost iconHost, PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, contextProvider)
         {
             myFieldUsageProvider = fieldUsageProvider;
             mySolutionTracker = solutionTracker;
@@ -37,7 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
                                                 DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(ContextSystem, SettingsStore.BoundSettingsStore, kind)
+            var iconId = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
 

@@ -6,6 +6,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -20,8 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         private readonly UnityApi myUnityApi;
 
-        public TypeDetector(ISolution solution, IApplicationWideContextBoundSettingStore settingsStore, UnityApi unityApi, UnityProblemAnalyzerContextSystem contextSystem)
-            : base(solution, settingsStore, contextSystem)
+        public TypeDetector(ISolution solution, IApplicationWideContextBoundSettingStore settingsStore, UnityApi unityApi, PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, contextProvider)
         {
             myUnityApi = unityApi;
         }

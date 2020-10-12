@@ -48,12 +48,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public static bool IsFixedString([CanBeNull] IType type)
         {
             var declaredType = type as IDeclaredType;
-            
+
             if (declaredType == null)
                 return false;
 
             var clrTypeName = declaredType.GetClrName();
-            
+
             foreach (var fixedString in ourFixedStrings)
             {
                 if (clrTypeName.Equals(fixedString))
@@ -64,19 +64,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         [ContractAnnotation("null => false")]
-        public static bool IsBurstPossibleArgumentString(IType type)
+        public static bool IsBurstPossibleArgumentString([NotNull] ICSharpArgument argument)
         {
-            // if expression is type A -> then everything that returns form it is A. 
+            var unused = argument.Expression; // for debug
+            var expressionType = argument.GetExpressionType();
+            var type = expressionType.ToIType();
+            
+            // if expression is type A -> then everything that returns from it is A. 
             // if in burst context there are managed variables(like string) -> it will be highlighted
             // assume there are no
             // then there are only IStringLiteralOwner, fixedString and IInvocationExpression
-
             return type.IsString() || IsFixedString(type);
         }
 
-        public static bool IsDebugLog([NotNull] IMethod method)
+        [ContractAnnotation("null => false")]
+        public static bool IsDebugLog([CanBeNull] IMethod method)
         {
-            if (!method.IsStatic)
+            if (method == null)
+                return false;
+
+            if (method.IsStatic)
                 return false;
 
             if (method.Parameters.Count != 1)
@@ -86,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var clrTypeName = method.GetContainingType()?.GetClrName();
-            
+
             if (clrTypeName == null)
                 return false;
 
@@ -94,15 +101,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var parameter = method.Parameters[0];
-            
+
             if (!parameter.Type.IsObject())
                 return false;
 
             return true;
         }
 
-        public static bool IsStringFormat([NotNull] IMethod method)
+        [ContractAnnotation("null => false")]
+        public static bool IsStringFormat([CanBeNull] IMethod method)
         {
+            if (method == null)
+                return false;
+
             if (!method.IsStatic)
                 return false;
 
@@ -110,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var clrTypeName = method.GetContainingType()?.GetClrName();
-            
+
             if (clrTypeName == null)
                 return false;
 
@@ -118,7 +129,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var parameters = method.Parameters;
-            
+
             if (parameters.Count < 2)
                 return false;
 
@@ -128,54 +139,48 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return true;
         }
 
-        public static bool IsBurstCompileFunctionPointerMethod([NotNull] IMethod method)
+        public static bool IsBurstCompileFunctionPointer([CanBeNull] IMethod method)
         {
+            if (method == null)
+                return false;
+            
             var isContainingTypeBurstCompile =
                 method.GetContainingType()?.GetClrName().Equals(KnownTypes.BurstCompiler) ?? false;
 
             return isContainingTypeBurstCompile && method.ShortName == "CompileFunctionPointer";
         }
 
-        public static bool IsBurstProhibitedObjectMethodInvocation([CanBeNull] IInvocationExpression invocation)
+        public static bool IsBurstProhibitedObjectMethod([NotNull] IMethod method)
         {
-            var function = invocation?.InvocationExpressionReference.Resolve().DeclaredElement as IFunction;
-            
-            if (function == null)
-                return false;
-            
-            var containingType = function.GetContainingType();
-            
+            var containingType = method.GetContainingType();
+
             // GetHashCode permitted in burst only if no boxing happens i.e. calling base.GetHashCode
             // Equals is prohibited because it works through System.Object and require boxing, which 
             // Burst does not support
-            if (containingType is IStruct && function is IMethod method && method.IsOverridesObjectGetHashCode())
+            if (containingType is IStruct && method.IsOverridesObjectGetHashCode())
                 return false;
 
-            var isValueTypeOrObject = containingType is IClass @class &&
-                                      (@class.IsSystemValueTypeClass() || @class.IsObjectClass());
+            // it means object method is called, only GetHashCode allowed
+            if (containingType is IStruct && method.IsOverride)
+                return true;
             
-            return isValueTypeOrObject || containingType is IStruct && function.IsOverride;
+            // NOTE: this method checks that it is EXACTLY object/valueType method, 
+            // for common inheritance it would return false!
+            return containingType is IClass @class &&
+                   (@class.IsSystemValueTypeClass() || @class.IsObjectClass());
         }
 
-        [ContractAnnotation("null => false")]
-        public static bool IsReturnValueBurstProhibited([CanBeNull] IParametersOwner invokedMethod)
+        public static bool HasBurstProhibitedReturnValue([NotNull] IParametersOwner invokedMethod)
         {
-            if (invokedMethod == null)
-                return false;
-
             return invokedMethod.ReturnType.Classify == TypeClassification.REFERENCE_TYPE;
         }
 
-        [ContractAnnotation("null => false")]
-        public static bool HasBurstProhibitedArguments([CanBeNull] IArgumentList argumentList)
+        public static bool HasBurstProhibitedArguments([NotNull] IArgumentList argumentList)
         {
-            if (argumentList == null)
-                return false;
-
             foreach (var argument in argumentList.Arguments)
             {
                 var matchingParameterType = argument.MatchingParameter?.Type;
-                
+
                 if (matchingParameterType != null && !IsBurstPermittedType(matchingParameterType))
                     return true;
             }
@@ -183,16 +188,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return false;
         }
 
-        public static bool IsBurstContextBannedNode([CanBeNull] ITreeNode node)
+        public static bool IsBurstProhibitedNode([NotNull] ITreeNode node)
         {
             switch (node)
             {
                 case IThrowStatement _:
                 case IThrowExpression _:
                 case IInvocationExpression invocationExpression
-                    when invocationExpression.Reference.Resolve().DeclaredElement is IMethod method && IsBurstDiscarded(method):
+                    when invocationExpression.Reference.Resolve().DeclaredElement is IMethod method &&
+                         IsBurstDiscarded(method):
                 case IFunctionDeclaration functionDeclaration
-                    when IsBurstContextBannedFunction(functionDeclaration.DeclaredElement):
+                    when functionDeclaration.DeclaredElement is IFunction function &&
+                         IsBurstProhibitedFunction(function):
                 case IAttributeSectionList _:
                     return true;
                 default:
@@ -200,26 +207,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             }
         }
 
-        public static bool IsBurstContextBannedFunction(IFunction function)
+        public static bool IsBurstProhibitedFunction([NotNull] IFunction function)
         {
-            if (function == null)
-                //true because it is consistent with method semantics
+            if (!IsBurstPossibleFunction(function))
+                //it is consistent with method semantics
                 return true;
-            
-            if (function.IsStatic || function.GetContainingTypeMember() is IStruct)
-                return function is IMethod method && IsBurstDiscarded(method);
-            
-            return true;
+
+            return function is IMethod method && IsBurstDiscarded(method);
         }
 
-        public static bool IsBurstDiscarded([CanBeNull] IMethod method)
+        public static bool IsBurstPossibleFunction([NotNull] IFunction function)
         {
-            if (method == null)
-                return true;
+            return function.IsStatic || function.GetContainingTypeMember() is IStruct;
+        }
 
-            var attributes = method.GetAttributeInstances(KnownTypes.BurstDiscardAttribute, AttributesSource.Self);
-
-            return attributes.Count != 0;
+        public static bool IsBurstDiscarded([NotNull] IMethod method)
+        {
+            return method.HasAttributeInstance(KnownTypes.BurstDiscardAttribute, AttributesSource.Self);
         }
     }
 }

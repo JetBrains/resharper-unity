@@ -1,20 +1,25 @@
 using System.Collections.Generic;
+using JetBrains.Application.Settings;
+using JetBrains.DataFlow;
+using JetBrains.Lifetimes;
 using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem
 {
     [SolutionComponent]
-    public sealed class BurstContextProvider : UnityProblemAnalyzerContextProviderBase
+    public sealed class BurstContextProvider : CallGraphContextProviderBase
     {
         private static readonly HashSet<IClrTypeName> ourJobsSet = new HashSet<IClrTypeName>
         {
@@ -29,35 +34,53 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             KnownTypes.AnimationJob
         };
 
-        public BurstContextProvider(IElementIdProvider elementIdProvider,
+        private readonly IProperty<bool> myIsBurstEnabledProperty;
+
+        public BurstContextProvider(Lifetime lifetime, IElementIdProvider elementIdProvider, IApplicationWideContextBoundSettingStore store,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, BurstMarksProvider marksProviderBase)
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
+            myIsBurstEnabledProperty = store.BoundSettingsStore.GetValueProperty(lifetime, (UnitySettings key) => key.EnableBurstCodeHighlighting);
         }
 
-        public override UnityProblemAnalyzerContextElement Context => UnityProblemAnalyzerContextElement.BURST_CONTEXT;
+        public override CallGraphContextElement Context => CallGraphContextElement.BURST_CONTEXT;
+        public override bool IsContextAvailable => myIsBurstEnabledProperty.Value;
+        public override bool IsContextChangingNode(ITreeNode node) => IsBurstProhibitedNode(node) || base.IsContextChangingNode(node);
 
-        /// <summary>
-        /// This is fast and incomplete version of <see cref="BurstMarksProvider"/>
-        /// </summary>
-        /// <param name="treeNode"></param>
-        /// <returns></returns>
-        protected override bool HasContextFast(ITreeNode treeNode)
+        public override bool HasContext(IDeclaration declaration, DaemonProcessKind processKind)
         {
-            var methodDeclaration = treeNode as IMethodDeclaration;
-            var method = methodDeclaration?.DeclaredElement;
+            if (IsContextAvailable == false)
+                return false;
+            
+            if (declaration == null || IsBurstProhibitedNode(declaration))
+                return false;
 
-            return method != null && IsMarkedFast(method);
+            return base.HasContext(declaration, processKind);
         }
 
-        protected override bool IsMarkedFast(IDeclaredElement declaredElement)
+        public override bool IsMarked(IDeclaredElement declaredElement, DaemonProcessKind processKind)
+        {
+            if (IsContextAvailable == false)
+                return false;
+            
+            if (IsMarkedFast(declaredElement))
+                return true;
+
+            if (IsBannedFast(declaredElement))
+                return false;
+            
+            return base.IsMarked(declaredElement, processKind);
+        }
+
+        private static bool IsMarkedFast(IDeclaredElement declaredElement)
         {
             var method = declaredElement as IMethod;
 
             if (method == null)
                 return false;
-
-            var methodSignature = method.GetSignature(EmptySubstitution.INSTANCE);
+            
+            // if (getCallee && node is ICSharpExpression icSharpExpression)
+            //     declaredElement = CallGraphUtil.GetCallee(icSharpExpression);
             var containingTypeElement = method.GetContainingType();
 
             if (containingTypeElement == null)
@@ -73,6 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 return false;
 
             var superTypes = @struct.GetSuperTypes();
+            var methodSignature = method.GetSignature(EmptySubstitution.INSTANCE);
 
             foreach (var type in superTypes)
             {
@@ -100,10 +124,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return false;
         }
 
-        protected override bool IsBannedFast(IDeclaredElement declaredElement) =>
-            IsBurstContextBannedFunction(declaredElement as IFunction) ||
-            IsBurstDiscarded(declaredElement as IMethod);
-
-        protected override bool IsContextProhibitedFast(ITreeNode treeNode) => IsBurstContextBannedNode(treeNode);
+        private static bool IsBannedFast(IDeclaredElement declaredElement)
+        {
+            return declaredElement is IFunction function && IsBurstProhibitedFunction(function);
+        }
     }
 }

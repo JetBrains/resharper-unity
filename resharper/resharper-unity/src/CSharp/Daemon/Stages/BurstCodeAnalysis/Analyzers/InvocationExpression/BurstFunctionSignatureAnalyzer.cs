@@ -20,12 +20,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (invokedMethod == null)
                 return BurstProblemSubAnalyzerStatus.NO_WARNING_STOP;
 
-            if (!IsReturnValueBurstProhibited(invokedMethod) && !HasBurstProhibitedArguments(invocationExpression.ArgumentList))
-                return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
-            
-            consumer?.AddHighlighting(new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression, invokedMethod.ShortName));
+            var argumentList = invocationExpression.ArgumentList;
 
-            return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
+            if (HasBurstProhibitedReturnValue(invokedMethod) ||
+                argumentList != null && HasBurstProhibitedArguments(invocationExpression.ArgumentList))
+            {
+                consumer?.AddHighlighting(
+                    new BurstFunctionSignatureContainsManagedTypesWarning(invocationExpression, invokedMethod.ShortName));
+
+                return BurstProblemSubAnalyzerStatus.WARNING_PLACED_STOP;
+            }
+
+            return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
         }
 
         public int Priority => 4000;

@@ -7,6 +7,9 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
+    // !!!IMPORTANT!!!
+    // If it is not broke -> don’t fix it!
+    // !!!IMPORTANT!!!
     [SolutionComponent]
     public class BurstStringLiteralOwnerAnalyzer : BurstProblemAnalyzerBase<IStringLiteralOwner>
     {
@@ -55,8 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                         {
                             var callee = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
 
-                            if (BurstCodeAnalysisUtil.IsBurstPossibleArgumentString(cSharpArgument.GetExpressionType()
-                                    .ToIType())
+                            if (BurstCodeAnalysisUtil.IsBurstPossibleArgumentString(cSharpArgument)
                                 && callee != null
                                 && (BurstCodeAnalysisUtil.IsDebugLog(callee) ||
                                     BurstCodeAnalysisUtil.IsStringFormat(callee)))

@@ -5,6 +5,7 @@ using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -33,8 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                   DeferredCacheController deferredCacheController,
                                   UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
                                   IconHost iconHost, AssetSerializationMode assetSerializationMode,
-                                  UnityProblemAnalyzerContextSystem contextSystem)
-            : base(solution, settingsStore, unityApi, contextSystem)
+                                  PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, unityApi, contextProvider)
         {
             myFieldUsageProvider = fieldUsageProvider;
             myDeferredCacheController = deferredCacheController;

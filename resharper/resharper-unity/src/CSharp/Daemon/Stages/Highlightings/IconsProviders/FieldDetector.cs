@@ -3,7 +3,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -19,8 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         public FieldDetector(ISolution solution,
                              IApplicationWideContextBoundSettingStore settingsStore,
                              UnityApi unityApi, 
-                             UnityProblemAnalyzerContextSystem contextSystem)
-            : base(solution, settingsStore, contextSystem)
+                             PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, contextProvider)
         {
             myUnityApi = unityApi;
         }

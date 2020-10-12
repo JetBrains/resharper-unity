@@ -7,8 +7,8 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -37,8 +37,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                             UnityApi api,
                                             UnityCodeInsightProvider codeInsightProvider,
                                             UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-                                            IconHost iconHost, UnityProblemAnalyzerContextSystem contextSystem)
-            : base(solution, api, settingsStore, contextSystem)
+                                            IconHost iconHost, PerformanceCriticalContextProvider contextProvider)
+            : base(solution, api, settingsStore, contextProvider)
         {
             mySolution = solution;
             myTextControlManager = mySolution.GetComponent<ITextControlManager>();
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method, UnityEventFunction eventFunction,
                                                           string text,DaemonProcessKind kind)
         {
-            var iconId = method.HasHotIcon(ContextSystem, SettingsStore.BoundSettingsStore, kind)
+            var iconId = method.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
 
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         public override void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, string text,
             string tooltip, DaemonProcessKind kind)
         {
-            var isHot = declaration.HasHotIcon(ContextSystem, SettingsStore.BoundSettingsStore, kind);
+            var isHot = declaration.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind);
             if (!isHot)
                 return;
 

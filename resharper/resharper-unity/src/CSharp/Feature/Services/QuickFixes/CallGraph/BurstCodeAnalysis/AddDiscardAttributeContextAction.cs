@@ -8,7 +8,9 @@ using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -26,14 +28,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         AddDiscardAttributeContextAction : AddDiscardAttributeActionBase
     {
         private readonly IContextBoundSettingsStore mySettingsStore;
-        private readonly UnityProblemAnalyzerContextSystem myUnityProblemAnalyzerContextSystem;
+        private readonly BurstContextProvider myBurstContextProvider;
         private readonly SolutionAnalysisService mySwa;
 
         public AddDiscardAttributeContextAction(ICSharpContextActionDataProvider dataProvider)
         {
             mySwa = dataProvider.Solution.GetComponent<SolutionAnalysisService>();
-            myUnityProblemAnalyzerContextSystem =
-                dataProvider.Solution.GetComponent<UnityProblemAnalyzerContextSystem>();
+            myBurstContextProvider =
+                dataProvider.Solution.GetComponent<BurstContextProvider>();
             mySettingsStore = dataProvider.Solution.GetSettingsStore();
 
             var identifier = dataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
@@ -48,10 +50,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             if (!UnityCallGraphUtil.IsSweaCompleted(mySwa))
                 yield break;
             
-            var burstContextProvider = myUnityProblemAnalyzerContextSystem.GetContextProvider(mySettingsStore,
-                UnityProblemAnalyzerContextElement.BURST_CONTEXT);
             var processKind = UnityCallGraphUtil.GetProcessKindForGraph(mySwa);
-            var isBurstContext = burstContextProvider.IsMarked(MethodDeclaration, processKind, false);
+            var isBurstContext = myBurstContextProvider.HasContext(MethodDeclaration, processKind);
 
             if (isBurstContext)
                 yield return this.ToContextActionIntention();

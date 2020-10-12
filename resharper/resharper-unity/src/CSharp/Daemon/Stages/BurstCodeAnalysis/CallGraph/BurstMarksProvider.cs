@@ -99,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (function == null)
                 return result;
 
-            if (IsBurstContextBannedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
+            if (IsBurstProhibitedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
                 result.Add(function);
 
             return result;
@@ -131,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 if (element == StartTreeNode)
                     return true;
 
-                return !UnityCallGraphUtil.IsFunctionNode(element) && !IsBurstContextBannedNode(element);
+                return !UnityCallGraphUtil.IsFunctionNode(element) && !IsBurstProhibitedNode(element);
             }
 
             public override void ProcessBeforeInterior(ITreeNode element)

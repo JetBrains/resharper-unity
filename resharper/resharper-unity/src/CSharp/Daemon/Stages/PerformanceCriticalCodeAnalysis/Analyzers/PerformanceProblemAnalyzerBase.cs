@@ -1,11 +1,12 @@
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
 {
-    public abstract class PerformanceProblemAnalyzerBase<T> : UnityProblemAnalyzerBase<T> where T : ITreeNode
+    public abstract class PerformanceProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T> where T : ITreeNode
     {
-        public override UnityProblemAnalyzerContextElement Context => UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT;
-        public override UnityProblemAnalyzerContextElement ProhibitedContext => UnityProblemAnalyzerContextElement.NONE;
+        public override CallGraphContextElement Context => CallGraphContextElement.PERFORMANCE_CRITICAL_CONTEXT;
+        public override CallGraphContextElement ProhibitedContext => CallGraphContextElement.NONE;
     }
 }

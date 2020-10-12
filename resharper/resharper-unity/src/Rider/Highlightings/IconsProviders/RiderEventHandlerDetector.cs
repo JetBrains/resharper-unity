@@ -4,6 +4,7 @@ using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -37,8 +38,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                          DeferredCacheController deferredCacheController,
                                          UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
                                          IconHost iconHost, AssetSerializationMode assetSerializationMode,
-                                         UnityProblemAnalyzerContextSystem contextSystem)
-            : base(solution, settingsStore, unityEventsElementContainer, contextSystem)
+                                         PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, unityEventsElementContainer, contextProvider)
         {
             myAssetIndexingSupport = assetIndexingSupport;
             myCodeInsightProvider = codeInsightProvider;
@@ -53,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
                                                 DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(ContextSystem, SettingsStore.BoundSettingsStore, kind)
+            var iconId = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
 

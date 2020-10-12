@@ -9,6 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -50,11 +51,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             if (!UnityCallGraphUtil.IsSweaCompleted(swa))
                 return;
             
-            var contextSystem = solution.GetComponent<UnityProblemAnalyzerContextSystem>();
+            var contextProvider = solution.GetComponent<PerformanceCriticalContextProvider>();
             var settingsStore = psiDocumentRangeView.GetSettingsStore();
-            var contextProvider = contextSystem.GetContextProvider(settingsStore, UnityProblemAnalyzerContextElement.PERFORMANCE_CONTEXT);
 
-            if (contextProvider.IsProblemContextBound == false) 
+            if (contextProvider.IsContextAvailable == false) 
                 return;
 
             if (settingsStore.GetValue((UnitySettings key) => key.PerformanceHighlightingMode) !=
@@ -63,7 +63,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
             
             var kind = UnityCallGraphUtil.GetProcessKindForGraph(swa);
 
-            if (contextProvider.IsMarked(node, kind, false))
+            if (contextProvider.HasContext(node, kind))
                 consumer.ConsumeHighlighting(new UnityPerformanceContextHighlightInfo(node.GetDocumentRange()));
         }
     }
