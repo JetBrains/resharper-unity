@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.Rider;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Model.Unity;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;

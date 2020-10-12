@@ -2,6 +2,7 @@ package model.lib
 
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.Root
+import com.jetbrains.rd.generator.nova.call
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.field
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
@@ -33,6 +34,18 @@ object Library : Root() {
             +"Edit"
             +"Play"
         })
+        field("message", string)
+        field("stackTrace", string)
+    }
+
+    val RunMethodData = structdef {
+        field("assemblyName", string)
+        field("typeName", string)
+        field("methodName", string)
+    }
+
+    val RunMethodResult = structdef {
+        field("success", bool)
         field("message", string)
         field("stackTrace", string)
     }

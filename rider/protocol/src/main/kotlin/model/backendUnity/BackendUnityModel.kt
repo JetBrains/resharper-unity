@@ -101,18 +101,6 @@ object BackendUnityModel: Root() {
         field("applicationVersion", string)
     }
 
-    val RunMethodData = structdef{
-        field("assemblyName", string)
-        field("typeName", string)
-        field("methodName", string)
-    }
-
-    val RunMethodResult =  classdef{
-        field("success", bool)
-        field("message", string)
-        field("stackTrace", string)
-    }
-
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -136,9 +124,7 @@ object BackendUnityModel: Root() {
 
         call("runUnitTestLaunch", void, bool)
 
-        call("runMethodInUnity", RunMethodData, RunMethodResult)
-
-
+        call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
 
         call("generateUIElementsSchema", void, bool)
         call("exitUnity", void, bool)

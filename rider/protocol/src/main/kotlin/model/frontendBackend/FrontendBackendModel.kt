@@ -35,18 +35,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         field("requiresRiderPackage", bool)
     }
 
-    val RunMethodData = structdef{
-        field("assemblyName", string)
-        field("typeName", string)
-        field("methodName", string)
-    }
-
-    val RunMethodResult =  classdef{
-        field("success", bool)
-        field("message", string)
-        field("stackTrace", string)
-    }
-
     private val shaderInternScope = internScope()
 
     private val shaderContextDataBase = baseclass {
@@ -81,7 +69,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         property("unityApplicationData", UnityApplicationData)
 
-        call("runMethodInUnity", RunMethodData, RunMethodResult)
 
         property("editorLogPath", string)
         property("playerLogPath", string)
@@ -136,6 +123,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         })
 
         property("riderFrontendTests", bool)
+        // Note: only called from integration tests
+        call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
 
 
         call("requestShaderContexts", RdDocumentId, immutableList(shaderContextDataBase))
