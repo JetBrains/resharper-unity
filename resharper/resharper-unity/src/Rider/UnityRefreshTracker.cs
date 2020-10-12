@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Host.Features.FileSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model;
@@ -32,12 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
-        private readonly ConnectionTracker myConnectionTracker;
+        private readonly UnityEditorStateHost myUnityEditorStateHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
             UnityEditorProtocol editorProtocol, IApplicationWideContextBoundSettingStore settingsStore,
-            ILogger logger, UnityVersion unityVersion, ConnectionTracker connectionTracker)
+            ILogger logger, UnityVersion unityVersion, UnityEditorStateHost unityEditorStateHost)
         {
             myLocks = locks;
             myLifetime = lifetime;
@@ -45,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myEditorProtocol = editorProtocol;
             myLogger = logger;
             myUnityVersion = unityVersion;
-            myConnectionTracker = connectionTracker;
+            myUnityEditorStateHost = unityEditorStateHost;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -99,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (myEditorProtocol.BackendUnityModel.Value == null)
                 return;
 
-            if (!myConnectionTracker.IsConnectionEstablished())
+            if (!myUnityEditorStateHost.IsConnectionEstablished())
                 return;
 
             var lifetimeDef = Lifetime.Define(lifetime);

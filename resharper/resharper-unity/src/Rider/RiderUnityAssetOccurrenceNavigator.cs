@@ -1,6 +1,7 @@
 using JetBrains.Application.UI.PopupLayout;
 using JetBrains.Application.UI.Tooltips;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
@@ -14,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         public override bool Navigate(ISolution solution, IDeclaredElementPointer<IDeclaredElement> pointer, LocalReference location)
         {
-            if (!solution.GetComponent<ConnectionTracker>().IsConnectionEstablished())
+            if (!solution.GetComponent<UnityEditorStateHost>().IsConnectionEstablished())
             {
                 var textControl = solution.GetComponent<TextControlManager>().LastFocusedTextControl.Value;
                 if (textControl == null)

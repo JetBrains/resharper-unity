@@ -21,6 +21,7 @@ import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.model.*
+import com.jetbrains.rider.model.unity.EditorState
 import com.jetbrains.rider.model.unity.LogEvent
 import com.jetbrains.rider.model.unity.LogEventType
 import com.jetbrains.rider.model.unity.frontendBackend.*
@@ -300,11 +301,11 @@ fun IntegrationTestWithFrontendBackendModel.unpause(waitForPlay: Boolean = true)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(EditorState.ConnectedPlay)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(EditorState.Play)
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(EditorState.ConnectedPause)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(EditorState.Pause)
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(EditorState.ConnectedIdle)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(EditorState.Idle)
 
 fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<LogEvent> {
     val logLifetime = Lifetime.Eternal.createNested()

@@ -14,16 +14,17 @@ using JetBrains.Rider.Model.Unity;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 {
     [SolutionComponent]
-    public class ConnectionTracker
+    public class UnityEditorStateHost
     {
         public readonly IProperty<EditorState> State;
 
-        public ConnectionTracker(Lifetime lifetime, ILogger logger, UnityHost host, UnityEditorProtocol editorProtocol,
-            IThreading locks, UnitySolutionTracker unitySolutionTracker,
-            IIsApplicationActiveState isApplicationActiveState)
+        public UnityEditorStateHost(Lifetime lifetime, ILogger logger, UnityHost host,
+                                    UnityEditorProtocol editorProtocol, IThreading locks,
+                                    UnitySolutionTracker unitySolutionTracker,
+                                    IIsApplicationActiveState isApplicationActiveState)
         {
             State = new Property<EditorState>(lifetime, "UnityEditorPlugin::ConnectionState", EditorState.Disconnected);
 
@@ -57,7 +58,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         {
                             if (rdTask != null && !rdTask.AsTask().IsCompleted)
                             {
-                                logger.Trace("There were no response from Unity in two seconds. Set connection state to Disconnected.");
+                                logger.Trace(
+                                    "There were no response from Unity in two seconds. Set connection state to Disconnected.");
                                 State.SetValue(EditorState.Disconnected);
                             }
                         }, locks.Tasks.GuardedMainThreadScheduler);
@@ -72,7 +74,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     while (lifetime.IsAlive)
                     {
                         if (isApplicationActiveState.IsApplicationActive.Value ||
-                            host.GetValue(frontendBackendModel => frontendBackendModel.RiderFrontendTests).HasTrueValue())
+                            host.GetValue(frontendBackendModel => frontendBackendModel.RiderFrontendTests)
+                                .HasTrueValue())
                         {
                             updateConnectionAction();
                         }

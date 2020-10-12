@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Host.Features.ProjectModel;
 using JetBrains.ReSharper.Host.Features.TextControls;
 using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Util;
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
     public class GeneratedFileNotification
     {
         public GeneratedFileNotification(Lifetime lifetime, UnityHost unityHost, UnitySolutionTracker solutionTracker,
-            ConnectionTracker connectionTracker, UnityEditorProtocol editorProtocol, ISolution solution,
+            UnityEditorStateHost unityEditorStateHost, UnityEditorProtocol editorProtocol, ISolution solution,
             AsmDefNameCache asmDefNameCache, [CanBeNull] TextControlHost textControlHost = null,
             [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,  [CanBeNull] NotificationPanelHost notificationPanelHost = null)
         {
@@ -43,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                     if (!projectFile.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase))
                         return;
 
-                    connectionTracker.State.View(lt, (unityStateLifetime, state) =>
+                    unityEditorStateHost.State.View(lt, (unityStateLifetime, state) =>
                     {
                         var name = projectFile.Location.NameWithoutExtension;
 

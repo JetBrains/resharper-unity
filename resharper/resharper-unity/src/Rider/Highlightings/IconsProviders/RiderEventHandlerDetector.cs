@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -26,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly ConnectionTracker myConnectionTracker;
+        private readonly UnityEditorStateHost myUnityEditorStateHost;
         private readonly IconHost myIconHost;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
@@ -39,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                          UnityCodeInsightProvider codeInsightProvider,
                                          UnityUsagesCodeVisionProvider usagesCodeVisionProvider,
                                          DeferredCacheController deferredCacheController,
-                                         UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
+                                         UnitySolutionTracker solutionTracker, UnityEditorStateHost unityEditorStateHost,
                                          IconHost iconHost, AssetSerializationMode assetSerializationMode,
                                          IElementIdProvider elementIdProvider)
             : base(solution, settingsStore, callGraphSwaExtensionProvider, unityEventsElementContainer, marksProvider,
@@ -50,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
             myDeferredCacheController = deferredCacheController;
             mySolutionTracker = solutionTracker;
-            myConnectionTracker = connectionTracker;
+            myUnityEditorStateHost = unityEditorStateHost;
             myIconHost = iconHost;
             myAssetSerializationMode = assetSerializationMode;
         }
@@ -86,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                         tooltip, text, iconModel, GetActions(element),
-                        RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
+                        RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myUnityEditorStateHost));
                 }
                 else
                 {
