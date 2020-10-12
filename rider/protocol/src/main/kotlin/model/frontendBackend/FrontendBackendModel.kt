@@ -5,7 +5,7 @@ import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
-import com.jetbrains.rider.model.nova.ide.SolutionModel.EditableEntityId
+import com.jetbrains.rider.model.nova.ide.SolutionModel.RdDocumentId
 import model.lib.Library
 
 // frontend <-> backend model, from point of view of frontend, meaning:
@@ -146,11 +146,11 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("riderFrontendTests", bool)
 
 
-        call("requestShaderContexts", EditableEntityId, immutableList(shaderContextDataBase))
-        call("requestCurrentContext", EditableEntityId, shaderContextDataBase)
-        source("setAutoShaderContext", EditableEntityId)
+        call("requestShaderContexts", RdDocumentId, immutableList(shaderContextDataBase))
+        call("requestCurrentContext", RdDocumentId, shaderContextDataBase)
+        source("setAutoShaderContext", RdDocumentId)
         source("changeContext", structdef ("contextInfo"){
-            field("target", EditableEntityId)
+            field("target", RdDocumentId)
             field("path", string.interned(shaderInternScope))
             field("start", int)
             field("end", int)

@@ -12,15 +12,15 @@ import com.intellij.openapi.wm.CustomStatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.StatusBarWidget.Multiframe
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget
+import com.jetbrains.rd.ide.model.RdDocumentId
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.SequentialLifetimes
 import com.jetbrains.rd.util.reactive.IProperty
 import com.jetbrains.rd.util.reactive.Property
-import com.jetbrains.rdclient.document.getFirstEditableEntityId
+import com.jetbrains.rdclient.document.getFirstDocumentId
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.cpp.fileType.CppFileType
-import com.jetbrains.rider.model.EditableEntityId
 import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextData
 import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextDataBase
 import com.jetbrains.rider.plugins.unity.UnityHost
@@ -41,7 +41,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
     private val currentContextMode : IProperty<ShaderContextData?> = Property(null)
 
     companion object {
-        private fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}";
+        private fun getContextPresentation(data : ShaderContextData) = "${data.name}:${data.startLine}"
     }
 
     init {
@@ -104,12 +104,11 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
             return
         }
 
-        val id = editor?.document?.getFirstEditableEntityId(project)
+        val id = editor?.document?.getFirstDocumentId(project)
         if (id == null) {
             statusBarComponent.isVisible = false
             return
         }
-
 
         host.model.requestCurrentContext.start(lifetimeDef.lifetime, id).result.advise(lifetimeDef.lifetime) {
             val result = it.unwrap()
@@ -134,7 +133,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
 
     fun showPopup(label: JLabel) {
         val lt: Lifetime = Lifetime.Eternal
-        val id = editor?.document?.getFirstEditableEntityId(project)
+        val id = editor?.document?.getFirstDocumentId(project)
         if (id == null)
             return
         val host = UnityHost.getInstance(project)
@@ -150,7 +149,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
         }
     }
 
-    private fun createActions(host: UnityHost, id: EditableEntityId, items: List<ShaderContextDataBase>): List<AnAction> {
+    private fun createActions(host: UnityHost, id: RdDocumentId, items: List<ShaderContextDataBase>): List<AnAction> {
         val result = mutableListOf<AnAction>(ShaderAutoContextSwitchAction(project, id, host, currentContextMode))
         for (item in items) {
             result.add(ShaderContextSwitchAction(project, id, host, item as ShaderContextData, currentContextMode))
