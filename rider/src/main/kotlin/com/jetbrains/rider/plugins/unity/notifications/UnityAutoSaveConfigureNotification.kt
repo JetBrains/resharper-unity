@@ -22,7 +22,7 @@ import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.document.getFirstEditor
 import com.jetbrains.rider.model.unity.EditorState
-import com.jetbrains.rider.model.unity.frontendBackend.ScriptCompilationDuringPlay
+import com.jetbrains.rider.model.unity.ScriptCompilationDuringPlay
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.projectView.solution

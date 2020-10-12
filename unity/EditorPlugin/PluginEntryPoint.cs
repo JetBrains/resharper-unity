@@ -297,7 +297,7 @@ namespace JetBrains.Rider.Unity.Editor
       EditorApplication.playmodeStateChanged += () =>
 #pragma warning restore 618
       {
-        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
+        if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying)
         {
           MainThreadDispatcher.Instance.Queue(() =>
           {
@@ -322,7 +322,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopPlayingAndRecompile)
+        if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.StopPlayingAndRecompile)
         {
           if (EditorApplication.isPlaying)
           {
@@ -368,10 +368,10 @@ namespace JetBrains.Rider.Unity.Editor
             EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
-          if (UnityUtils.UnityVersion >= new Version(2018, 2))
-            model.ScriptCompilationDuringPlay.Set(EditorPrefsWrapper.ScriptChangesDuringPlayOptions);
-          else
-            model.ScriptCompilationDuringPlay.Set((int)PluginSettings.AssemblyReloadSettings);
+          var scriptCompilationDuringPlay = UnityUtils.UnityVersion >= new Version(2018, 2)
+              ? EditorPrefsWrapper.ScriptCompilationDuringPlay
+              : PluginSettings.AssemblyReloadSettings;
+          model.ScriptCompilationDuringPlay.Set(scriptCompilationDuringPlay);
 
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
           AdviseGenerateUISchema(model);

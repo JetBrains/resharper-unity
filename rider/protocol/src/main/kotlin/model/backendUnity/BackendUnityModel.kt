@@ -151,7 +151,7 @@ object BackendUnityModel: Root() {
         property("editorLogPath", string)
         property("playerLogPath", string)
 
-        property("ScriptCompilationDuringPlay", int)
+        property("ScriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
         property("lastPlayTime", long)
         property("lastInitTime", long)
 

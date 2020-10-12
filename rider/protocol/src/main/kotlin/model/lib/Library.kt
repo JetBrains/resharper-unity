@@ -49,4 +49,10 @@ object Library : Root() {
         field("message", string)
         field("stackTrace", string)
     }
+
+    val ScriptCompilationDuringPlay = enum {
+        +"RecompileAndContinuePlaying"
+        +"RecompileAfterFinishedPlaying"
+        +"StopPlayingAndRecompile"
+    }
 }

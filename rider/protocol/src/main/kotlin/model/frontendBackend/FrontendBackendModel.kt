@@ -22,12 +22,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"PlayMode"
     }
 
-    private val ScriptCompilationDuringPlay = enum {
-        +"RecompileAndContinuePlaying"
-        +"RecompileAfterFinishedPlaying"
-        +"StopPlayingAndRecompile"
-    }
-
     private val UnityApplicationData = structdef {
         field("applicationPath", string)
         field("applicationContentsPath", string)
@@ -101,7 +95,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         sink("showDeferredCachesProgressNotification", void)
         property("isDeferredCachesCompletedOnce", bool)
 
-        property("ScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
+        property("ScriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
 
         signal("showFileInUnity", string)

@@ -11,7 +11,9 @@ using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.DocumentModel;
 using JetBrains.IDE;
+using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
+using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.Rd;
@@ -243,8 +245,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             a.UnityApplicationData.SetValue(new UnityApplicationData(s.ApplicationPath,
                                     s.ApplicationContentsPath, s.ApplicationVersion, UnityVersion.RequiresRiderPackage(version)));
                         }));
-                    backendUnityModel.ScriptCompilationDuringPlay.Advise(lifetime,
-                        s => myHost.PerformModelAction(a => a.ScriptCompilationDuringPlay.Set(ConvertToScriptCompilationEnum(s))));
+                    myHost.PerformModelAction(m =>
+                    {
+                        backendUnityModel.ScriptCompilationDuringPlay.FlowIntoRd(lifetime, m.ScriptCompilationDuringPlay);
+                    });
 
                     myHost.PerformModelAction(rd =>
                     {

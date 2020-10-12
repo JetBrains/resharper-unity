@@ -5,6 +5,7 @@ using System.Reflection;
 using JetBrains.Diagnostics;
 using JetBrains.Diagnostics.Internal;
 using JetBrains.Lifetimes;
+using JetBrains.Rider.Model.Unity;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,17 +16,10 @@ namespace JetBrains.Rider.Unity.Editor
     OperatingSystemFamilyRider OperatingSystemFamilyRider { get; }
   }
 
-  public enum AssemblyReloadSettings
-  {
-    RecompileAndContinuePlaying = 0,
-    RecompileAfterFinishedPlaying = 1,
-    StopPlayingAndRecompile = 2
-  }
-
   public class PluginSettings : IPluginSettings
   {
     private static readonly ILog ourLogger = Log.GetLog<PluginSettings>();
-    
+
     public static LoggingLevel SelectedLoggingLevel
     {
       get => (LoggingLevel) EditorPrefs.GetInt("Rider_SelectedLoggingLevel", 0);
@@ -38,10 +32,10 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static void InitLog()
     {
-      if (SelectedLoggingLevel > LoggingLevel.OFF) 
+      if (SelectedLoggingLevel > LoggingLevel.OFF)
         Log.DefaultFactory = Log.CreateFileLogFactory(Lifetime.Eternal, PluginEntryPoint.LogPath, true, SelectedLoggingLevel);
       else
-        Log.DefaultFactory = new SingletonLogFactory(NullLog.Instance); // use profiler in Unity - this is faster than leaving TextWriterLogFactory with LoggingLevel OFF 
+        Log.DefaultFactory = new SingletonLogFactory(NullLog.Instance); // use profiler in Unity - this is faster than leaving TextWriterLogFactory with LoggingLevel OFF
     }
 
     public static string[] GetInstalledNetFrameworks()
@@ -58,7 +52,7 @@ namespace JetBrains.Rider.Unity.Editor
         Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework\.NETFramework"),
         Path.Combine(programFiles86, @"Reference Assemblies\Microsoft\Framework") //RIDER-42873
       }.Select(s => new DirectoryInfo(s)).Where(a=>a.Exists).ToArray();
-      
+
       if (!referenceAssembliesPaths.Any())
         return new string[0];
 
@@ -94,20 +88,26 @@ namespace JetBrains.Rider.Unity.Editor
     public static bool OverrideTargetFrameworkVersion
     {
       get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersion", false); }
-      private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersion", value);; }
+      private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersion", value); }
     }
-    
-    public static AssemblyReloadSettings AssemblyReloadSettings
+
+    // Only used for Unity 2018.1 and below
+    public static ScriptCompilationDuringPlay AssemblyReloadSettings
     {
       get
       {
-        if (UnityUtils.UnityVersion >= new Version(2018, 2))
-          return AssemblyReloadSettings.RecompileAndContinuePlaying;
-        return (AssemblyReloadSettings) EditorPrefs.GetInt("Rider_AssemblyReloadSettings", (int) AssemblyReloadSettings.RecompileAndContinuePlaying);
+          if (UnityUtils.UnityVersion >= new Version(2018, 2))
+          {
+              Debug.Log("Incorrectly accessing old script compilation settings on newer Unity. Use EditorPrefsWrapper.ScriptChangedDuringPlayOptions");
+              return ScriptCompilationDuringPlay.RecompileAndContinuePlaying;
+          }
+
+          return UnityUtils.ToScriptCompilationDuringPlay(EditorPrefs.GetInt("Rider_AssemblyReloadSettings",
+              UnityUtils.FromScriptCompilationDuringPlay(ScriptCompilationDuringPlay.RecompileAndContinuePlaying)));
       }
-      set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", (int) value);; }
+      set { EditorPrefs.SetInt("Rider_AssemblyReloadSettings", UnityUtils.FromScriptCompilationDuringPlay(value)); }
     }
-    
+
     public static bool UseLatestRiderFromToolbox
     {
       get { return EditorPrefs.GetBool("UseLatestRiderFromToolbox", true); }
@@ -125,7 +125,7 @@ namespace JetBrains.Rider.Unity.Editor
     public static bool OverrideTargetFrameworkVersionOldMono
     {
       get { return EditorPrefs.GetBool("Rider_OverrideTargetFrameworkVersionOldMono", false); }
-      private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersionOldMono", value);; }
+      private set { EditorPrefs.SetBool("Rider_OverrideTargetFrameworkVersionOldMono", value); }
     }
 
     private static string TargetFrameworkVersionOldMonoDefault = "3.5";
@@ -139,7 +139,7 @@ namespace JetBrains.Rider.Unity.Editor
     public static bool OverrideLangVersion
     {
       get { return EditorPrefs.GetBool("Rider_OverrideLangVersion", false); }
-      private set { EditorPrefs.SetBool("Rider_OverrideLangVersion", value);; }
+      private set { EditorPrefs.SetBool("Rider_OverrideLangVersion", value); }
     }
 
     public static string LangVersion
@@ -186,20 +186,20 @@ namespace JetBrains.Rider.Unity.Editor
         }
 
         var index = paths.IndexOf(externalEditor);
-        
-        
+
+
         var result = paths[EditorGUILayout.Popup("Rider build:", index == -1 ? 0 : index, alts.ToArray())];
-        
+
         EditorPrefsWrapper.ExternalScriptEditor = result;
       }
-      
+
       if (PluginEntryPoint.IsRiderDefaultEditor() && !RiderPathProvider.RiderPathExist(EditorPrefsWrapper.ExternalScriptEditor, SystemInfoRiderPlugin.operatingSystemFamily))
       {
         EditorGUILayout.HelpBox($"Rider is selected as preferred ExternalEditor, but doesn't exist on disk {EditorPrefsWrapper.ExternalScriptEditor}", MessageType.Warning);
       }
 
       UseLatestRiderFromToolbox = EditorGUILayout.Toggle(new GUIContent("Update Rider to latest version"),  UseLatestRiderFromToolbox);
-      
+
       GUILayout.BeginVertical();
       LogEventsCollectorEnabled = EditorGUILayout.Toggle(new GUIContent("Pass Console to Rider:"), LogEventsCollectorEnabled);
 
@@ -259,7 +259,7 @@ namespace JetBrains.Rider.Unity.Editor
         EditorGUILayout.HelpBox(helpLangVersion, MessageType.None);
       }
       GUILayout.Label("");
-      
+
       EditorGUILayout.BeginHorizontal();
       EditorGUILayout.PrefixLabel("Log file:");
       var previous = GUI.enabled;
@@ -273,25 +273,23 @@ namespace JetBrains.Rider.Unity.Editor
       }
       GUI.enabled = previous;
       GUILayout.EndHorizontal();
-      
+
       var loggingMsg =
         @"Sets the amount of Rider Debug output. If you are about to report an issue, please select Verbose logging level and attach Unity console output to the issue.";
       SelectedLoggingLevel =
         (LoggingLevel) EditorGUILayout.EnumPopup(new GUIContent("Logging Level:", loggingMsg),
           SelectedLoggingLevel);
 
-      
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
-      
 
       if (UnityUtils.UnityVersion < new Version(2018, 2))
       {
         EditorGUI.BeginChangeCheck();
-        AssemblyReloadSettings = (AssemblyReloadSettings) EditorGUILayout.EnumPopup("Script Changes during Playing:", AssemblyReloadSettings);
+        AssemblyReloadSettings = (ScriptCompilationDuringPlay) EditorGUILayout.EnumPopup("Script Changes during Playing:", AssemblyReloadSettings);
 
         if (EditorGUI.EndChangeCheck())
         {
-          if (AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
+          if (AssemblyReloadSettings == ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying && EditorApplication.isPlaying)
           {
             ourLogger.Info("LockReloadAssemblies");
             EditorApplication.LockReloadAssemblies();
@@ -301,16 +299,16 @@ namespace JetBrains.Rider.Unity.Editor
             ourLogger.Info("UnlockReloadAssemblies");
             EditorApplication.UnlockReloadAssemblies();
           }
-        }  
+        }
       }
-      
+
       var githubRepo = "https://github.com/JetBrains/resharper-unity";
       var caption = $"<color=#0000FF>{githubRepo}</color>";
       LinkButton(caption: caption, url: githubRepo);
-      
+
       GUILayout.FlexibleSpace();
       GUILayout.BeginHorizontal();
-      
+
       GUILayout.FlexibleSpace();
       var version = Assembly.GetExecutingAssembly().GetName().Version;
       GUILayout.Label("Plugin version: " + version, new GUIStyle()
@@ -318,12 +316,12 @@ namespace JetBrains.Rider.Unity.Editor
         normal = new GUIStyleState()
         {
           textColor = new Color(0, 0, 0, .6f),
-        }, 
+        },
         margin = new RectOffset(4, 4, 4, 4),
       });
-      
+
       GUILayout.EndHorizontal();
-      
+
       // left for testing purposes
 /*      if (GUILayout.Button("reset RiderInitializedOnce = false"))
       {
