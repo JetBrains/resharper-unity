@@ -42,6 +42,9 @@ data class EditorInstanceJson(val status: EditorInstanceJsonStatus, val contents
         }
 
         private fun load(project: Project): EditorInstanceJson {
+            if (project.isDefault) // RIDER-51997 RunConfiguration templates from Welcome screen
+                return empty(EditorInstanceJsonStatus.Missing)
+
             // Canonical path will always be true for a Rider project
             val file = Paths.get(project.projectDir.canonicalPath!!, "Library/EditorInstance.json").toFile()
             if (!file.exists()) {

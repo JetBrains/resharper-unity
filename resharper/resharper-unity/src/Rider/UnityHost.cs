@@ -5,7 +5,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
-using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     public class UnityHost
     {
         private readonly bool myIsInTests;
-        private readonly RdUnityModel myModel;
+        private readonly FrontendBackendModel myModel;
 
         public UnityHost(Lifetime lifetime, ISolution solution, IShellLocks shellLocks, DeferredCacheController deferredCacheController, bool isInTests = false)
         {
@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (myIsInTests)
                 return;
 
-            myModel = solution.GetProtocolSolution().GetRdUnityModel();
+            myModel = solution.GetProtocolSolution().GetFrontendBackendModel();
             deferredCacheController.CompletedOnce.Advise(lifetime, v =>
             {
                 if (v)
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        public void PerformModelAction(Action<RdUnityModel> action)
+        public void PerformModelAction(Action<FrontendBackendModel> action)
         {
             if (myIsInTests)
                 return;
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             action(myModel);
         }
 
-        public T GetValue<T>(Func<RdUnityModel, T> getter)
+        public T GetValue<T>(Func<FrontendBackendModel, T> getter)
         {
             return getter(myModel);
         }

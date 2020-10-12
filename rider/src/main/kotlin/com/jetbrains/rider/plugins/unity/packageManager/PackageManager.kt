@@ -22,7 +22,7 @@ import com.intellij.util.pooledThreadSingleAlarm
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.debugger.util.isExistingFile
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityCachesFinder
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -75,7 +75,7 @@ class PackageManager(private val project: Project) {
 
         // The application path affects the module packages. This comes from the backend, so will be up to date with
         // changes from the Editor via protocol, or changes to the project files via heuristics
-        project.solution.rdUnityModel.unityApplicationData.advise(lifetime) { scheduleRefreshAndNotify() }
+        project.solution.frontendBackendModel.unityApplicationData.advise(lifetime) { scheduleRefreshAndNotify() }
 
         scheduleRefreshAndNotify()
     }

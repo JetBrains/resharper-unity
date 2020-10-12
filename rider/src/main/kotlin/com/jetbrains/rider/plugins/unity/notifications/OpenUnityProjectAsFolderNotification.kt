@@ -1,6 +1,5 @@
 package com.jetbrains.rider.plugins.unity.notifications
 
-import com.intellij.ide.impl.ProjectUtil
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -9,11 +8,11 @@ import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import com.intellij.util.ui.EdtInvocationManager
+import com.jetbrains.rd.ide.model.RdExistingSolution
+import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rider.UnityProjectDiscoverer
-import com.jetbrains.rider.model.RdExistingSolution
-import com.jetbrains.rider.model.RdVirtualSolution
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
@@ -33,7 +32,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
     }
 
     init {
-        project.solution.rdUnityModel.unityApplicationData.advise(projectComponentLifetime) {
+        project.solution.frontendBackendModel.unityApplicationData.advise(projectComponentLifetime) {
             if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
                 return@advise
 

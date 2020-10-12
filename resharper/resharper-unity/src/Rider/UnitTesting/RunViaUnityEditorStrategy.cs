@@ -13,7 +13,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Metadata.Access;
 using JetBrains.Platform.RdFramework.Util;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.Features.SolutionBuilders.Prototype.Services.Execution;
 using JetBrains.Rd.Base;
@@ -27,13 +27,13 @@ using JetBrains.ReSharper.UnitTestFramework.Launch;
 using JetBrains.ReSharper.UnitTestFramework.Strategy;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30;
 using JetBrains.ReSharper.UnitTestProvider.nUnit.v30.Elements;
-using JetBrains.Rider.Model;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using JetBrains.Util.Threading;
-using Status = JetBrains.Platform.Unity.EditorPluginModel.Status;
-using UnitTestLaunch = JetBrains.Platform.Unity.EditorPluginModel.UnitTestLaunch;
+using Status = JetBrains.Rider.Model.Unity.BackendUnity.Status;
+using UnitTestLaunch = JetBrains.Rider.Model.Unity.BackendUnity.UnitTestLaunch;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 {
@@ -109,7 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     myUnityProcessId.Value = null;
             });
 
-            myEditorProtocol.UnityModel.ViewNotNull(lifetime, (lt, model) =>
+            myEditorProtocol.BackendUnityModel.ViewNotNull(lifetime, (lt, model) =>
             {
                 if (model.UnityProcessId.HasValue())
                     myUnityProcessId.Value = model.UnityProcessId.Value;
@@ -233,13 +233,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
                     var launch = SetupLaunch(run);
 
-                    if (myEditorProtocol.UnityModel.Value == null)
+                    if (myEditorProtocol.BackendUnityModel.Value == null)
                     {
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         return;
                     }
 
-                    myEditorProtocol.UnityModel.ViewNotNull(taskLifetime, (lt, model) =>
+                    myEditorProtocol.BackendUnityModel.ViewNotNull(taskLifetime, (lt, model) =>
                     {
                         // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                         myLogger.Trace("UnitTestLaunch.SetValue.");
@@ -248,7 +248,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     });
 
                     myLogger.Trace("RunUnitTestLaunch.Start.");
-                    var rdTask = myEditorProtocol.UnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
+                    var rdTask = myEditorProtocol.BackendUnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
                     rdTask?.Result.Advise(taskLifetime, res =>
                     {
                         myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
@@ -263,7 +263,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
                                 defaultMessage = $"{defaultMessage} {message}";
 
-                            if (myEditorProtocol.UnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
+                            if (myEditorProtocol.BackendUnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
                             {
                                 if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
                                     defaultMessage = $"{defaultMessage} {playMessage}";
@@ -302,14 +302,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 .Unwrap()
                 .ContinueWith(__ =>
                 {
-                    if (myEditorProtocol.UnityModel.Value == null)
+                    if (myEditorProtocol.BackendUnityModel.Value == null)
                     {
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         refreshLifetimeDef.Terminate();
                         return;
                     }
 
-                    var task = myEditorProtocol.UnityModel.Value.GetCompilationResult.Start(Unit.Instance);
+                    var task = myEditorProtocol.BackendUnityModel.Value.GetCompilationResult.Start(Unit.Instance);
                     task.Result.AdviseNotNull(refreshLifetime, result =>
                     {
                         if (result.Result)
@@ -363,13 +363,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
         {
-            var rdUnityModel = mySolution.GetProtocolSolution().GetRdUnityModel();
+            var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
             var filters = GetFilters(firstRun);
 
             var mode = TestMode.Edit;
-            if (rdUnityModel.UnitTestPreference.HasValue())
+            if (frontendBackendModel.UnitTestPreference.HasValue())
             {
-                mode = rdUnityModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
+                mode = frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
                     ? TestMode.Play
                     : TestMode.Edit;
             }
@@ -418,7 +418,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         firstRun.AddDynamicElement(unitTestElement);
                     }
                 }
-                
+
                 if (unitTestElement == null)
                     return;
 
@@ -470,7 +470,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     {
                         if (res)
                         {
-                            myEditorProtocol.UnityModel.Advise(waitingLifetime, model =>
+                            myEditorProtocol.BackendUnityModel.Advise(waitingLifetime, model =>
                             {
                                 if (model != null)
                                     waitingLifetimeDef.Terminate();
@@ -527,7 +527,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
         {
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "CancellingUnitTests", () =>
             {
-                var launchProperty = myEditorProtocol.UnityModel.Value?.UnitTestLaunch;
+                var launchProperty = myEditorProtocol.BackendUnityModel.Value?.UnitTestLaunch;
                 var launch = launchProperty?.Maybe.ValueOrDefault;
                 if (launch != null && launch.SessionId == run.Launch.Session.Id)
                     launch.Abort.Start(Unit.Instance);

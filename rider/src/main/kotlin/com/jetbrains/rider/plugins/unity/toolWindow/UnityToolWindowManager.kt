@@ -4,7 +4,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.whenTrue
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.UnityHost
 import com.jetbrains.rider.projectView.solution
 
@@ -15,7 +15,7 @@ class UnityToolWindowManager(project: Project) : ProtocolSubscribedProjectCompon
     }
 
     init {
-        project.solution.rdUnityModel.sessionInitialized.whenTrue(projectComponentLifetime) {
+        project.solution.frontendBackendModel.sessionInitialized.whenTrue(projectComponentLifetime) {
             myLogger.info("new session")
             val context = UnityToolWindowFactory.getInstance(project).getOrCreateContext()
             val shouldReactivateBuildToolWindow = context.isActive
@@ -30,7 +30,7 @@ class UnityToolWindowManager(project: Project) : ProtocolSubscribedProjectCompon
             context.addEvent(message)
         }
 
-        project.solution.rdUnityModel.activateUnityLogView.advise(projectComponentLifetime){
+        project.solution.frontendBackendModel.activateUnityLogView.advise(projectComponentLifetime){
             val context = UnityToolWindowFactory.getInstance(project).getOrCreateContext()
             context.activateToolWindowIfNotActive()
         }

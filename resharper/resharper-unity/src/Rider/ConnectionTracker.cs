@@ -6,12 +6,12 @@ using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Resources.Shell;
-using JetBrains.Rider.Model;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
 
@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
                 var updateConnectionAction = new Action(() =>
                 {
-                    var model = editorProtocol.UnityModel.Value;
+                    var model = editorProtocol.BackendUnityModel.Value;
                     if (model == null)
                     {
                         State.SetValue(UnityEditorState.Disconnected);
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     while (lifetime.IsAlive)
                     {
                         if (isApplicationActiveState.IsApplicationActive.Value ||
-                            host.GetValue(rdUnityModel => rdUnityModel.RiderFrontendTests).HasTrueValue())
+                            host.GetValue(frontendBackendModel => frontendBackendModel.RiderFrontendTests).HasTrueValue())
                         {
                             updateConnectionAction();
                         }
