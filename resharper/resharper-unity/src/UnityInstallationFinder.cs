@@ -254,21 +254,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 {
                     case PlatformUtil.Platform.Windows:
                     {
-                        var exePath = filePath.Combine("../../../Unity.exe"); // Editor\Data\Managed\UnityEngine.dll
-                        if (!exePath.ExistsFile)
-                            exePath = filePath.Combine("../../../../Unity.exe"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
-                        if (exePath.ExistsFile)
-                            return exePath;
-                        break;
+                        return GoUpForUnityExecutable(filePath,"Unity.exe");
                     }
                     case PlatformUtil.Platform.Linux:
                     {
-                        var exePath = filePath.Combine("../../../Unity"); // Editor\Data\Managed\UnityEngine.dll
-                        if (!exePath.ExistsFile)
-                            exePath = filePath.Combine("../../../../Unity"); // Editor\Data\Managed\UnityEngine\UnityEngine.dll
-                        if (exePath.ExistsFile)
-                            return exePath;
-                        break;
+                        return GoUpForUnityExecutable(filePath,"Unity");
                     }
                     case PlatformUtil.Platform.MacOsX:
                     {
@@ -289,6 +279,24 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
             }
 
+            return null;
+        }
+
+        private static FileSystemPath GoUpForUnityExecutable(FileSystemPath filePath, string targetName)
+        {
+            // For Player Projects it might be: Editor/Data/PlaybackEngines/LinuxStandaloneSupport/Variations/mono/Managed/UnityEngine.dll
+            // For Editor: Editor\Data\Managed\UnityEngine.dll
+            // Or // Editor\Data\Managed\UnityEngine\UnityEngine.dll
+            
+            var path = filePath;
+            while (!path.IsEmpty)
+            {
+                if (path.Combine(targetName).ExistsFile)
+                {
+                    return path.Combine(targetName);
+                }
+                path = path.Directory;
+            }
             return null;
         }
 
