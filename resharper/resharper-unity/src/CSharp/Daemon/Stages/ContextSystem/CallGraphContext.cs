@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -18,11 +19,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
                 Node = node;
             }
         }
-
+        
         private readonly Stack<BoundContextElement> myStack = new Stack<BoundContextElement>();
+
+        public CallGraphContext()
+        {
+            myStack.Push(new BoundContextElement(CallGraphContextElement.NONE, null));
+        }
 
         public void Rollback([NotNull] ITreeNode node)
         {
+            // null node can occasionally broke first stack entry.
             var boundElement = myStack.Peek();
 
             if (boundElement.Node == node)

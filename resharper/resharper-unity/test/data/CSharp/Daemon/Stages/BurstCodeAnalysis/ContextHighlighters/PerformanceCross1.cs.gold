@@ -77,13 +77,12 @@ namespace SmartMarkingTests
         {
             public void Execute()
             {
-                F();
             }
 
-            ||public void F()
+            |public void F()
             {
                     
-            }|(0:caret)|(1:caret)
+            }|(0:caret)
         }
 
         private void Update()
@@ -94,5 +93,4 @@ namespace SmartMarkingTests
    }
 }
 ---------------------------------------------------------
-(0:caret): ReSharper Unity Burst Code Line Marker
-(1:caret): ReSharper Unity Performance Critical Line Marker
+(0:caret): ReSharper Unity Performance Critical Line Marker

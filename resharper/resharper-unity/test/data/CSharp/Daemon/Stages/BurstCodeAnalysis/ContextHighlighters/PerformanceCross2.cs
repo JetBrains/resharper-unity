@@ -77,6 +77,7 @@ namespace SmartMarkingTests
         {
             public void Execute()
             {
+                F();
             }
 
             public void F()

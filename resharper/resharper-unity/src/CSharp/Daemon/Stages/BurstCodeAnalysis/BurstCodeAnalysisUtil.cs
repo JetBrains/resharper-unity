@@ -83,7 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (method == null)
                 return false;
 
-            if (method.IsStatic)
+            if (!method.IsStatic)
                 return false;
 
             if (method.Parameters.Count != 1)

@@ -7,9 +7,6 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    // !!!IMPORTANT!!!
-    // If it is not broke -> don’t fix it!
-    // !!!IMPORTANT!!!
     [SolutionComponent]
     public class BurstStringLiteralOwnerAnalyzer : BurstProblemAnalyzerBase<IStringLiteralOwner>
     {
