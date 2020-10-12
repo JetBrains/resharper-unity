@@ -11,7 +11,7 @@ import model.lib.Library
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
 // Source is a one-way signal the frontend fires
-// Property and Signal are two-way and can be updated/fired on both ends
+// Property and Signal are two-way and can be updated/fired on both ends. Property is stateful.
 // Call is an RPC method (with return value) that is called by the frontend/implemented by the backend
 // Callback is an RPC method (with return value) that is implemented by the frontend/called by the backend
 @Suppress("unused")
@@ -31,13 +31,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
     private val shaderInternScope = internScope()
 
-    private val shaderContextDataBase = baseclass {
-
-    }
-
-    private val autoShaderContextData = classdef extends shaderContextDataBase {
-
-    }
+    private val shaderContextDataBase = baseclass {}
+    private val autoShaderContextData = classdef extends shaderContextDataBase {}
 
     private val shaderContextData = classdef extends shaderContextDataBase {
         field("path", string.interned(shaderInternScope))
@@ -63,7 +58,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         property("unityApplicationData", UnityApplicationData)
 
-
         property("editorLogPath", string)
         property("playerLogPath", string)
 
@@ -77,8 +71,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("lastInitTime", long)
 
         property("sessionInitialized", bool)
-
-        property("enableShaderLabHippieCompletion", bool)
 
         // doesn't seem like the best way to do this
         property("externalDocContext", string)
@@ -107,13 +99,14 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
 
         call("generateUIElementsSchema", void, bool)
 
-        property("useUnityYamlMerge", bool)
-        property("mergeParameters", string)
-
         property("buildLocation", string)
 
         field("backendSettings", aggregatedef("BackendSettings") {
+            property("enableShaderLabHippieCompletion", bool)
             property("enableDebuggerExtensions", bool)
+
+            property("useUnityYamlMerge", bool)
+            property("mergeParameters", string)
         })
 
         property("riderFrontendTests", bool)
