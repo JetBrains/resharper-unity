@@ -21,7 +21,7 @@ import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.document.getFirstEditor
-import com.jetbrains.rider.model.unity.frontendBackend.EditorState
+import com.jetbrains.rider.model.unity.EditorState
 import com.jetbrains.rider.model.unity.frontendBackend.ScriptCompilationDuringPlay
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
@@ -46,7 +46,7 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
                 val documentListener: DocumentListener = object : DocumentListener {
                     override fun documentChanged(event: DocumentEvent) {
                         val model = project.solution.frontendBackendModel
-                        if (model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
+                        if (model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Play)
                             return
 
                         if (!model.scriptCompilationDuringPlay.hasValue)
@@ -83,7 +83,7 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
         textEditor.putUserData(KEY, Any())
 
         // Do not show notification, when user leaves play mode and start typing in that moment
-        if (project.solution.frontendBackendModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.ConnectedPlay)
+        if (project.solution.frontendBackendModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Play)
             return
 
         val panel = EditorNotificationPanel(LightColors.RED)

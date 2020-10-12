@@ -22,14 +22,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"PlayMode"
     }
 
-    private val EditorState = enum {
-        +"Disconnected"
-        +"ConnectedIdle"
-        +"ConnectedPlay"
-        +"ConnectedPause"
-        +"ConnectedRefresh"
-    }
-
     private val ScriptCompilationDuringPlay = enum {
         +"RecompileAndContinuePlaying"
         +"RecompileAfterFinishedPlaying"
@@ -83,7 +75,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         sink("activateUnityLogView", void)
         sink("showInstallMonoDialog", void)
 
-        property("editorState", EditorState)
+        property("editorState", Library.EditorState)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
         property("hideSolutionConfiguration", bool)
 

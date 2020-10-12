@@ -11,7 +11,7 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.unity.frontendBackend.EditorState
+import com.jetbrains.rider.model.unity.EditorState
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.plugins.unity.util.isNonEditableUnityFile

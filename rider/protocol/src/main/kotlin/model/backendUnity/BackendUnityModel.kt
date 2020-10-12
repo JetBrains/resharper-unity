@@ -84,14 +84,6 @@ object BackendUnityModel: Root() {
         call("abort", void, bool)
     }
 
-    val UnityEditorState = enum {
-        +"Disconnected"
-        +"Idle"
-        +"Play"
-        +"Pause"
-        +"Refresh"
-    }
-
     val RefreshType = enum {
         +"ForceRequestScriptReload"
         +"Force"
@@ -135,7 +127,7 @@ object BackendUnityModel: Root() {
         sink("log", Library.LogEvent)
 
         callback("isBackendConnected", void, bool)
-        call("getUnityEditorState", void, UnityEditorState)
+        call("getUnityEditorState", void, Library.EditorState)
         callback("openFileLineCol", RdOpenFileArgs, bool)
         call("updateUnityPlugin", string, bool)
         call("refresh", RefreshType, void)

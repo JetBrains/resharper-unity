@@ -14,6 +14,14 @@ object Library : Root() {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity")
     }
 
+    val EditorState = enum {
+        +"Disconnected"
+        +"Idle"
+        +"Play"
+        +"Pause"
+        +"Refresh"
+    }
+
     val LogEvent = structdef {
         field("time", long)
         field("type", enum("LogEventType") {

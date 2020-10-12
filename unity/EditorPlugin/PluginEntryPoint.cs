@@ -14,6 +14,7 @@ using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
 using JetBrains.Rd.Tasks;
+using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
@@ -135,7 +136,7 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("lifetimeDefinition.Terminate");
         lifetimeDefinition.Terminate();
       });
-      
+
 #if !UNITY_4_7 && !UNITY_5_5 && !UNITY_5_6
         EditorApplication.playModeStateChanged += state =>
         {
@@ -156,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
       InitializeProtocol(Lifetime, protocolInstanceJsonPath);
-      
+
       OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
 
@@ -175,7 +176,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
         var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         var solutionNames = new List<string>() { currentDirectory.Name};
-        
+
         var solutionFiles = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
         foreach (var solutionFile in solutionFiles)
         {
@@ -187,7 +188,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
 
         var protocols = new List<ProtocolInstance>();
-        
+
         // if any protocol connection losts, we will drop all protocol and recreate them
         var allProtocolsLifetimeDefinition = lifetime.CreateNested();
         foreach (var solutionName in solutionNames)
@@ -196,10 +197,10 @@ namespace JetBrains.Rider.Unity.Editor
             {
                 allProtocolsLifetimeDefinition.Terminate();
             });
-            
+
             if (port == -1)
                 continue;
-            
+
             protocols.Add(new ProtocolInstance(solutionName, port));
         }
 
@@ -215,7 +216,7 @@ namespace JetBrains.Rider.Unity.Editor
                 ourLogger.Verbose("Protocol will be recreating on next domain load, project lifetime is not alive");
             }
         });
-        
+
 
         var result = ProtocolInstance.ToJson(protocols);
         File.WriteAllText(protocolInstancePath, result);
@@ -339,7 +340,7 @@ namespace JetBrains.Rider.Unity.Editor
         var currentWireAndProtocolLifetimeDef = lifetime.CreateNested();
         var currentWireAndProtocolLifetime = currentWireAndProtocolLifetimeDef.Lifetime;
 
-        
+
         var riderProtocolController = new RiderProtocolController(dispatcher, currentWireAndProtocolLifetime);
 
 #if !NET35
@@ -383,7 +384,7 @@ namespace JetBrains.Rider.Unity.Editor
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
           UnityModels.Add(pair);
-          
+
           connectionLifetime.OnTermination(() =>
           {
               ourLogger.Verbose($"Connection lifetime is not alive for {solutionName}, destroying protocol");
@@ -558,20 +559,20 @@ namespace JetBrains.Rider.Unity.Editor
       {
         if (EditorApplication.isPaused)
         {
-          return UnityEditorState.Pause;
+          return EditorState.Pause;
         }
 
         if (EditorApplication.isPlaying)
         {
-          return UnityEditorState.Play;
+          return EditorState.Play;
         }
 
         if (EditorApplication.isCompiling || EditorApplication.isUpdating)
         {
-          return UnityEditorState.Refresh;
+          return EditorState.Refresh;
         }
 
-        return UnityEditorState.Idle;
+        return EditorState.Idle;
       });
     }
 

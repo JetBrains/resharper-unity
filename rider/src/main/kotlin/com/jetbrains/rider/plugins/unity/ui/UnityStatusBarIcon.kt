@@ -8,7 +8,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.Consumer
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.unity.frontendBackend.EditorState
+import com.jetbrains.rider.model.unity.EditorState
 import com.jetbrains.rider.plugins.unity.UnityHost
 import icons.UnityIcons
 import java.awt.event.MouseEvent
@@ -38,13 +38,8 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
     private val progressIcon = ExecutionUtil.getLiveIndicator(UnityIcons.Status.UnityStatusProgress)
     private var myStatusBar: StatusBar? = null
 
-    override fun ID(): String {
-        return StatusBarIconId
-    }
-
-    override fun getPresentation(): StatusBarWidget.WidgetPresentation? {
-        return this
-    }
+    override fun ID() = StatusBarIconId
+    override fun getPresentation() = this
 
     override fun install(statusBar: StatusBar) {
         myStatusBar = statusBar
@@ -54,13 +49,14 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
         myStatusBar = null
     }
 
-    override fun getTooltipText(): String? {
+    @Suppress("DialogTitleCapitalization")
+    override fun getTooltipText(): String {
         return when (host.unityState.valueOrDefault(EditorState.Disconnected)) {
-            EditorState.Disconnected -> "No Unity Editor connection\nLoad the project in the Unity Editor to enable advanced functionality"
-            EditorState.ConnectedIdle -> "Connected to Unity Editor"
-            EditorState.ConnectedPlay -> "Connected to Unity Editor"
-            EditorState.ConnectedPause -> "Connected to Unity Editor"
-            EditorState.ConnectedRefresh -> "Refreshing assets in Unity Editor"
+            EditorState.Disconnected -> "No Unity Editor connection<br/>Load the project in the Unity Editor to enable advanced functionality"
+            EditorState.Idle -> "Connected to Unity Editor"
+            EditorState.Play -> "Connected to Unity Editor"
+            EditorState.Pause -> "Connected to Unity Editor"
+            EditorState.Refresh -> "Refreshing assets in Unity Editor"
         }
     }
 
@@ -69,10 +65,10 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
     override fun getIcon(): Icon {
         return when (host.unityState.valueOrDefault(EditorState.Disconnected)) {
             EditorState.Disconnected -> statusIcon
-            EditorState.ConnectedIdle -> connectedIcon
-            EditorState.ConnectedPlay -> playIcon
-            EditorState.ConnectedPause -> pauseIcon
-            EditorState.ConnectedRefresh -> progressIcon
+            EditorState.Idle -> connectedIcon
+            EditorState.Play -> playIcon
+            EditorState.Pause -> pauseIcon
+            EditorState.Refresh -> progressIcon
         }
     }
 }
