@@ -14,7 +14,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 
     public static void Init(UnityModelAndLifetime modelAndLifetime)
     {
-        ourModelAndLifetime = modelAndLifetime;
+      ourModelAndLifetime = modelAndLifetime;
 
       void OnCompilationFinished(string assemblyPath, CompilerMessage[] messages)
       {
@@ -44,7 +44,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       .ToList();
 
       if (ourModelAndLifetime.Lifetime.IsAlive)
-          ourModelAndLifetime.Model.CompiledAssemblies(compiledAssemblies);
+        ourModelAndLifetime.Model.CompiledAssemblies(compiledAssemblies);
     }
   }
 }
