@@ -6,6 +6,7 @@ using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Reflection;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnitySettingsSynchronizer
     {
-        public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, UnityHost host,
+        public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, FrontendBackendHost host,
                                          IApplicationWideContextBoundSettingStore settingsStore)
         {
             var boundStore = settingsStore.BoundSettingsStore;
@@ -35,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 (model, args) => model.BackendSettings.EnableDebuggerExtensions.Value = args.New);
         }
 
-        private static void BindSettingToProperty<TKeyClass, TEntryMemberType>(Lifetime lifetime, ISolution solution, UnityHost host,
+        private static void BindSettingToProperty<TKeyClass, TEntryMemberType>(Lifetime lifetime, ISolution solution, FrontendBackendHost host,
                                                                                IContextBoundSettingsStoreLive boundStore,
                                                                                Expression<Func<TKeyClass, TEntryMemberType>> entry,
                                                                                Action<FrontendBackendModel, PropertyChangedEventArgs<TEntryMemberType>> action)
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     solution.Locks.ExecuteOrQueueEx(lifetime, name, () =>
                     {
-                        host.PerformModelAction(m => action(m, args));
+                        host.Do(m => action(m, args));
                     });
                 });
         }

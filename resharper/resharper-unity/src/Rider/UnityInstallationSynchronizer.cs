@@ -2,6 +2,7 @@ using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -12,16 +13,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityEditorProtocol myUnityEditorProtocol;
 
         public UnityInstallationSynchronizer(Lifetime lifetime,
-                                             UnityHost host, UnityVersion unityVersion,
+                                             FrontendBackendHost host, UnityVersion unityVersion,
                                                  UnityEditorProtocol unityEditorProtocol)
         {
             myUnityEditorProtocol = unityEditorProtocol;
             unityVersion.ActualVersionForSolution.Advise(lifetime, version => NotifyFrontend(host, unityVersion, version));
         }
 
-        private void NotifyFrontend(UnityHost host, UnityVersion unityVersion, Version version)
+        private void NotifyFrontend(FrontendBackendHost host, UnityVersion unityVersion, Version version)
         {
-            host.PerformModelAction(rd =>
+            host.Do(rd =>
             {
                 // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more correct than any counted value
                 if (myUnityEditorProtocol.BackendUnityModel.Value != null)

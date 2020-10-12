@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
     {
         public readonly IProperty<EditorState> State;
 
-        public UnityEditorStateHost(Lifetime lifetime, ILogger logger, UnityHost host,
+        public UnityEditorStateHost(Lifetime lifetime, ILogger logger, FrontendBackendHost frontendBackendHost,
                                     UnityEditorProtocol editorProtocol, IThreading locks,
                                     UnitySolutionTracker unitySolutionTracker,
                                     IIsApplicationActiveState isApplicationActiveState)
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                         {
                             State.SetValue(result.Result);
                             logger.Trace($"Inside Result. Sending connection state. State: {State.Value}");
-                            host.PerformModelAction(m => m.EditorState.Value = State.Value);
+                            frontendBackendHost.Do(m => m.EditorState.Value = State.Value);
                         });
 
                         var waitTask = Task.Delay(TimeSpan.FromSeconds(2));
@@ -66,16 +66,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     }
 
                     logger.Trace($"Sending connection state. State: {State.Value}");
-                    host.PerformModelAction(m => m.EditorState.Value = State.Value);
+                    frontendBackendHost.Do(m => m.EditorState.Value = State.Value);
                 });
 
                 lifetime.StartMainUnguardedAsync(async () =>
                 {
                     while (lifetime.IsAlive)
                     {
-                        if (isApplicationActiveState.IsApplicationActive.Value ||
-                            host.GetValue(frontendBackendModel => frontendBackendModel.RiderFrontendTests)
-                                .HasTrueValue())
+                        if (isApplicationActiveState.IsApplicationActive.Value
+                            || frontendBackendHost.Model?.RiderFrontendTests.HasTrueValue() == true)
                         {
                             updateConnectionAction();
                         }

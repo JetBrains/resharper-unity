@@ -1,23 +1,24 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
     public class RiderUnityUsagesNotification : UnityUsagesDeferredCachesNotification
     {
-        private readonly UnityHost myUnityHost;
+        private readonly FrontendBackendHost myFrontendBackendHost;
 
-        public RiderUnityUsagesNotification(UnityHost unityHost, DeferredCacheController controller)
+        public RiderUnityUsagesNotification(FrontendBackendHost frontendBackendHost, DeferredCacheController controller)
             : base(controller)
         {
-            myUnityHost = unityHost;
+            myFrontendBackendHost = frontendBackendHost;
         }
 
         protected override void ShowNotification()
         {
-            myUnityHost.PerformModelAction(t => t.ShowDeferredCachesProgressNotification());
+            myFrontendBackendHost.Do(t => t.ShowDeferredCachesProgressNotification());
         }
     }
 }

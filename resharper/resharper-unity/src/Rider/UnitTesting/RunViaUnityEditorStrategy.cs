@@ -20,6 +20,7 @@ using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Packages;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TaskRunnerFramework;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -51,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ISolutionSaver myRiderSolutionSaver;
         private readonly UnityRefresher myUnityRefresher;
         private readonly NotificationsModel myNotificationsModel;
-        private readonly UnityHost myUnityHost;
+        private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
@@ -70,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             ISolutionSaver riderSolutionSaver,
             UnityRefresher unityRefresher,
             NotificationsModel notificationsModel,
-            UnityHost unityHost,
+            FrontendBackendHost frontendBackendHost,
             ILogger logger,
             Lifetime lifetime,
             PackageValidator packageValidator
@@ -84,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myRiderSolutionSaver = riderSolutionSaver;
             myUnityRefresher = unityRefresher;
             myNotificationsModel = notificationsModel;
-            myUnityHost = unityHost;
+            myFrontendBackendHost = frontendBackendHost;
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
@@ -182,13 +183,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 case WellKnownHostProvidersIds.DebugProviderId:
                     mySolution.Locks.ExecuteOrQueueEx(myLifetime, "AttachDebuggerToUnityEditor", () =>
                     {
-                        if (!run.Lifetime.IsAlive)
+                        if (!run.Lifetime.IsAlive || myFrontendBackendHost.Model == null)
                         {
                             tcs.TrySetCanceled();
                             return;
                         }
 
-                        var task = myUnityHost.GetValue(model => model.AttachDebuggerToUnityEditor.Start(Unit.Instance));
+                        var task = myFrontendBackendHost.Model.AttachDebuggerToUnityEditor.Start(Unit.Instance);
                         task.Result.AdviseNotNull(myLifetime, result =>
                         {
                             if (!run.Lifetime.IsAlive)
@@ -327,7 +328,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                         RdNotificationEntryType.INFO);
                                     myNotificationsModel.Notification(notification);
                                 });
-                            myUnityHost.PerformModelAction(model => model.ActivateUnityLogView());
+                            myFrontendBackendHost.Do(model => model.ActivateUnityLogView());
                             refreshLifetimeDef.Terminate();
                         }
                     });

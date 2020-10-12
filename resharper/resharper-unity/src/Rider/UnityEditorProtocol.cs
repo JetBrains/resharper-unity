@@ -13,7 +13,6 @@ using JetBrains.DocumentModel;
 using JetBrains.IDE;
 using JetBrains.IDE.UI.Extensions;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.RdFramework.Util;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.Rd;
@@ -22,11 +21,11 @@ using JetBrains.Rd.Impl;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model.Notifications;
 using JetBrains.Rider.Model.Unity;
-using JetBrains.Rider.Model.Unity.FrontendBackend;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -53,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly UnityVersion myUnityVersion;
         private readonly NotificationsModel myNotificationsModel;
         private readonly IHostProductInfo myHostProductInfo;
-        private readonly UnityHost myHost;
+        private readonly FrontendBackendHost myHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         [NotNull]
@@ -62,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         [NotNull]
         public readonly ViewableProperty<SocketWire.Base> UnityWire = new ViewableProperty<SocketWire.Base>(null);
 
-        public UnityEditorProtocol(Lifetime lifetime, ILogger logger, UnityHost host,
+        public UnityEditorProtocol(Lifetime lifetime, ILogger logger, FrontendBackendHost host,
                                    IScheduler dispatcher, IShellLocks locks, ISolution solution,
                                    IApplicationWideContextBoundSettingStore settingsStore,
                                    JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics,
@@ -119,9 +118,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void AdviseModelData(Lifetime lifetime)
         {
-           myHost.PerformModelAction(rd => rd.Play.Advise(lifetime, p => BackendUnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
-           myHost.PerformModelAction(rd => rd.Pause.Advise(lifetime, p => BackendUnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-           myHost.PerformModelAction(rd => rd.Step.Advise(lifetime, () => BackendUnityModel.Value.DoIfNotNull(editor => editor.Step())));
+           myHost.Do(rd => rd.Play.Advise(lifetime, p => BackendUnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
+           myHost.Do(rd => rd.Pause.Advise(lifetime, p => BackendUnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
+           myHost.Do(rd => rd.Step.Advise(lifetime, () => BackendUnityModel.Value.DoIfNotNull(editor => editor.Step())));
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -180,7 +179,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
                         if (!isEnabled)
                         {
-                            myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
+                            myHost.Do(model => model.OnEditorModelOutOfSync());
                         }
                     }
                     else
@@ -210,55 +209,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }
                     }
 
-                    myHost.PerformModelAction(m => m.SessionInitialized.Value = true);
+                    myHost.Do(m => m.SessionInitialized.Value = true);
 
                     SubscribeToLogs(lf, backendUnityModel);
                     SubscribeToOpenFile(backendUnityModel);
 
-                    backendUnityModel.Play.Advise(lf, b => myHost.PerformModelAction(rd => rd.Play.SetValue(b)));
-                    backendUnityModel.Pause.Advise(lf, b => myHost.PerformModelAction(rd => rd.Pause.SetValue(b)));
-                    backendUnityModel.LastPlayTime.Advise(lf, time => myHost.PerformModelAction(rd => rd.LastPlayTime.SetValue(time)));
-                    backendUnityModel.LastInitTime.Advise(lf, time => myHost.PerformModelAction(rd => rd.LastInitTime.SetValue(time)));
+                    backendUnityModel.Play.Advise(lf, b => myHost.Do(rd => rd.Play.SetValue(b)));
+                    backendUnityModel.Pause.Advise(lf, b => myHost.Do(rd => rd.Pause.SetValue(b)));
+                    backendUnityModel.LastPlayTime.Advise(lf, time => myHost.Do(rd => rd.LastPlayTime.SetValue(time)));
+                    backendUnityModel.LastInitTime.Advise(lf, time => myHost.Do(rd => rd.LastInitTime.SetValue(time)));
 
-                    backendUnityModel.UnityProcessId.View(lf, (_, pid) => myHost.PerformModelAction(t => t.UnityProcessId.Set(pid)));
+                    backendUnityModel.UnityProcessId.View(lf, (_, pid) => myHost.Do(t => t.UnityProcessId.Set(pid)));
 
                     // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
-                    myHost.PerformModelAction(t => t.ShowFileInUnity.Advise(lf, v => backendUnityModel.ShowFileInUnity.Fire(v)));
-                    myHost.PerformModelAction(t => t.ShowPreferences.Advise(lf, v =>
+                    myHost.Do(t => t.ShowFileInUnity.Advise(lf, v => backendUnityModel.ShowFileInUnity.Fire(v)));
+                    myHost.Do(t => t.ShowPreferences.Advise(lf, v =>
                     {
                         backendUnityModel.ShowPreferences.Fire();
                     }));
 
                     backendUnityModel.EditorLogPath.Advise(lifetime,
-                        s => myHost.PerformModelAction(a => a.EditorLogPath.SetValue(s)));
+                        s => myHost.Do(a => a.EditorLogPath.SetValue(s)));
                     backendUnityModel.PlayerLogPath.Advise(lifetime,
-                        s => myHost.PerformModelAction(a => a.PlayerLogPath.SetValue(s)));
+                        s => myHost.Do(a => a.PlayerLogPath.SetValue(s)));
 
                     // Note that these are late-init properties. Once set, they are always set and do not allow nulls.
                     // This means that if/when the Unity <-> Backend protocol closes, they still retain the last value
                     // they had - so the front end will retain the log and application paths of the just-closed editor.
                     // Opening a new editor instance will reconnect and push a new value through to the front end
                     backendUnityModel.UnityApplicationData.Advise(lifetime,
-                        s => myHost.PerformModelAction(a =>
+                        s => myHost.Do(a =>
                         {
                             var version = UnityVersion.Parse(s.ApplicationVersion);
                             a.UnityApplicationData.SetValue(new UnityApplicationData(s.ApplicationPath,
                                     s.ApplicationContentsPath, s.ApplicationVersion, UnityVersion.RequiresRiderPackage(version)));
                         }));
-                    myHost.PerformModelAction(m =>
+                    myHost.Do(m =>
                     {
                         backendUnityModel.ScriptCompilationDuringPlay.FlowIntoRd(lifetime, m.ScriptCompilationDuringPlay);
                     });
 
-                    myHost.PerformModelAction(rd =>
+                    myHost.Do(rd =>
                     {
                         rd.GenerateUIElementsSchema.Set((l, u) =>
                             backendUnityModel.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
                     });
 
-                    backendUnityModel.BuildLocation.Advise(lf, b => myHost.PerformModelAction(rd => rd.BuildLocation.SetValue(b)));
+                    backendUnityModel.BuildLocation.Advise(lf, b => myHost.Do(rd => rd.BuildLocation.SetValue(b)));
 
-                    myHost.PerformModelAction(rd =>
+                    myHost.Do(rd =>
                     {
                         rd.RunMethodInUnity.Set((l, data) =>
                         {
@@ -285,7 +284,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                             myLocks.ExecuteOrQueueEx(myComponentLifetime, "clearModel", () =>
                             {
                                 myLogger.Info("Wire disconnected.");
-                                myHost.PerformModelAction(m => m.SessionInitialized.Value = false);
+                                myHost.Do(m => m.SessionInitialized.Value = false);
                                 BackendUnityModel.SetValue(null);
                             });
                     });
@@ -312,7 +311,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
                 if (!isEnabled)
                 {
-                    myHost.PerformModelAction(model => model.OnEditorModelOutOfSync());
+                    myHost.Do(model => model.OnEditorModelOutOfSync());
                 }
             }
             else
@@ -323,14 +322,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify",
                     () => myNotificationsModel.Notification(notification));
             }
-        }
-
-        private ScriptCompilationDuringPlay ConvertToScriptCompilationEnum(int mode)
-        {
-            if (mode < 0 || mode >= 3)
-                return ScriptCompilationDuringPlay.RecompileAndContinuePlaying;
-
-            return (ScriptCompilationDuringPlay) mode;
         }
 
         private void TrackActivity(BackendUnityModel backendUnityModel, Lifetime lf)
@@ -364,7 +355,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                         CaretVisualPlacement.Generic);
                                 }
 
-                                myHost.PerformModelAction(m =>
+                                myHost.Do(m =>
                                 {
                                     m.ActivateRider();
                                     result = true;
@@ -379,7 +370,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void SubscribeToLogs(Lifetime lifetime, BackendUnityModel backendUnityModel)
         {
-            backendUnityModel.Log.Advise(lifetime, entry => myHost.PerformModelAction(m => m.OnUnityLogEvent(entry)));
+            backendUnityModel.Log.Advise(lifetime, entry => myHost.Do(m => m.OnUnityLogEvent(entry)));
         }
     }
 

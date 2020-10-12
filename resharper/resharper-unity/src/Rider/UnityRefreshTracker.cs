@@ -170,7 +170,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
             IFileSystemTracker fileSystemTracker,
-            UnityHost host,
+            FrontendBackendHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
             myLogger = logger;
@@ -189,7 +189,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         refresher.StartRefresh(RefreshType.Normal);
                     });
 
-                host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force =>
+                host.Do(rd => rd.Refresh.Advise(lifetime, force =>
                     {
                         if (force)
                             refresher.StartRefresh(RefreshType.ForceRequestScriptReload);

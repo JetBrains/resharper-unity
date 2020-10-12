@@ -9,6 +9,7 @@ using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
@@ -33,13 +34,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
         private readonly RiderBackgroundTaskHost myBackgroundTaskHost;
-        private readonly UnityHost myUnityHost;
+        private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly UnityEditorProtocol myEditorProtocol;
         private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly FileSystemPath mySolutionDirectoryPath;
 
         public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
-            AssetHierarchyProcessor assetHierarchyProcessor, UnityHost unityHost, UnityExternalFilesModuleFactory externalFilesModuleFactory,
+            AssetHierarchyProcessor assetHierarchyProcessor, FrontendBackendHost frontendBackendHost, UnityExternalFilesModuleFactory externalFilesModuleFactory,
             UnityEditorProtocol editorProtocol, IPersistentIndexManager persistentIndexManager,
             [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
@@ -49,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myAssetHierarchyProcessor = assetHierarchyProcessor;
             myBackgroundTaskHost = backgroundTaskHost;
             myYamlSearchDomain = searchDomainFactory.CreateSearchDomain(externalFilesModuleFactory.PsiModule);
-            myUnityHost = unityHost;
+            myFrontendBackendHost = frontendBackendHost;
             myEditorProtocol = editorProtocol;
             myPersistentIndexManager = persistentIndexManager;
             mySolutionDirectoryPath = solution.SolutionDirectory;
@@ -86,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     finder.FindAsync(new[] {declaredElement}, myYamlSearchDomain,
                         consumer, SearchPattern.FIND_USAGES ,pi,
-                        FinderSearchRoot.Empty, new UnityUsagesAsyncFinderCallback(lifetimeDef, myLifetime, consumer, myUnityHost, myEditorProtocol, myLocks,
+                        FinderSearchRoot.Empty, new UnityUsagesAsyncFinderCallback(lifetimeDef, myLifetime, consumer, myFrontendBackendHost, myEditorProtocol, myLocks,
                             declaredElement.ShortName, selectRequest, focusUnity));
                 }
             });
@@ -171,19 +172,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private readonly LifetimeDefinition myProgressBarLifetimeDefinition;
             private readonly Lifetime myComponentLifetime;
             private readonly UnityUsagesFinderConsumer myConsumer;
-            private readonly UnityHost myUnityHost;
+            private readonly FrontendBackendHost myFrontendBackendHost;
             private readonly UnityEditorProtocol myEditorProtocol;
             private readonly IShellLocks myShellLocks;
             private readonly string myDisplayName;
             private readonly AssetFindUsagesResultBase mySelected;
 
-            public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, UnityHost unityHost, UnityEditorProtocol editorProtocol, IShellLocks shellLocks,
+            public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, FrontendBackendHost frontendBackendHost, UnityEditorProtocol editorProtocol, IShellLocks shellLocks,
                 string displayName, AssetFindUsagesResultBase selected, bool focusUnity)
             {
                 myProgressBarLifetimeDefinition = progressBarLifetimeDefinition;
                 myComponentLifetime = componentLifetime;
                 myConsumer = consumer;
-                myUnityHost = unityHost;
+                myFrontendBackendHost = frontendBackendHost;
                 myEditorProtocol = editorProtocol;
                 myShellLocks = shellLocks;
                 myDisplayName = displayName;
@@ -198,7 +199,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     {
                         if (myEditorProtocol.BackendUnityModel.Value == null) return;
 
-                        myUnityHost.PerformModelAction(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result
+                        myFrontendBackendHost.Do(a => a.AllowSetForegroundWindow.Start(Unit.Instance).Result
                             .Advise(myComponentLifetime,
                                 result =>
                                 {

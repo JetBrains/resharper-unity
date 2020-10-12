@@ -48,13 +48,14 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
 
+        property("sessionInitialized", bool).documentation = "Is the backend/Unity protocol created?"
+
         sink("activateRider", void)
         sink("activateUnityLogView", void)
         sink("showInstallMonoDialog", void)
 
         property("editorState", Library.EditorState)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
-        property("hideSolutionConfiguration", bool)
 
         property("unityApplicationData", UnityApplicationData)
 
@@ -70,8 +71,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("lastPlayTime", long)
         property("lastInitTime", long)
 
-        property("sessionInitialized", bool)
-
         // doesn't seem like the best way to do this
         property("externalDocContext", string)
 
@@ -85,7 +84,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         sink("notifyYamlHugeFiles", void)
         sink("notifyAssetModeForceText", void)
         sink("showDeferredCachesProgressNotification", void)
-        property("isDeferredCachesCompletedOnce", bool)
 
         property("ScriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
         source("enableYamlParsing", void)
@@ -94,7 +92,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("unityProcessId", int)
 
         sink("onEditorModelOutOfSync", void)
-        callback("attachDebuggerToUnityEditor", void, bool)
+        callback("attachDebuggerToUnityEditor", void, bool).documentation = "Tell the frontend to attach the debugger to the Unity editor. Used for debugging unit tests"
         callback("allowSetForegroundWindow", void, bool)
 
         call("generateUIElementsSchema", void, bool)
@@ -109,9 +107,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
             property("mergeParameters", string)
         })
 
+        // Only used in tests
         property("riderFrontendTests", bool)
-        // Note: only called from integration tests
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
+        property("isDeferredCachesCompletedOnce", bool)
 
 
         call("requestShaderContexts", RdDocumentId, immutableList(shaderContextDataBase))
