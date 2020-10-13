@@ -24,12 +24,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         protected override bool CheckAndAnalyze(IFunctionDeclaration functionDeclaration,
             IHighlightingConsumer consumer)
         {
-            if (consumer == null || myLineMarkerStatus.Value != BurstCodeHighlightingMode.Always)
-                return false;
+            if (myLineMarkerStatus.Value == BurstCodeHighlightingMode.Always)
+                consumer?.AddHighlighting(new BurstCodeLineMarker(functionDeclaration.GetDocumentRange()));
             
-            consumer.AddHighlighting(new BurstCodeLineMarker(functionDeclaration.GetDocumentRange()));
-            
-            return true;
+            return false;
         }
     }
 }

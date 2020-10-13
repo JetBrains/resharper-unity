@@ -30,5 +30,6 @@
       <Argument>name</Argument>
     </Message>
     <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
   </Warning>
 </Errors>

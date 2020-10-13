@@ -1,8 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
 using Unity.Burst;
 using Unity.Jobs;
 using UnityEngine;
-using static Unity.Burst.SharedStatic<Burst.SharedStaticTests.SharedStaticUnmanagedUsing>;
 
 namespace UnityEngine
 {
@@ -98,70 +97,17 @@ namespace Unity
     }
 }
 
-namespace Burst.SharedStaticTests
-{
-    public struct SharedStaticUnmanagedUsing
+public class SharedStaticCreateTests2 : MonoBehaviour
     {
-        private int a;
-        private object obj;
-    }
-    
-    public class SharedStaticCreateTests : MonoBehaviour
-    {
-        private void Start()
-        {
-            var test1 = new SharedStaticTest1();
-            test1.Schedule().Complete();
+        private static readonly Type myDoubleType = typeof(double);
+        private static readonly Type myIntType = typeof(int);
 
-            var test2 = new SharedStaticTest2();
-            test2.Schedule().Complete();
-
-            var test3 = new SharedStaticTest3();
-            test3.Schedule().Complete();
-
-            var test4 = new SharedStaticTest4();
-            test4.Schedule().Complete();
-
-            var test5 = new SharedStaticTest4();
-            test4.Schedule().Complete();
-        }
-        
         [BurstCompile]
         public struct SharedStaticTest1 : IJob
         {
             public void Execute()
             {
-                var sharedStatic0 = SharedStatic<int>.GetOrCreate(typeof(double));
-            }
-        }
-
-        private struct SharedStaticMixed
-        {
-            private int a;
-            public object obj;
-        }
-
-        [BurstCompile]
-        public struct SharedStaticTest2 : IJob
-        {
-            public void Execute()
-            {
-                var sharedStatic1 = |SharedStatic<SharedStaticMixed>.GetOrCreate<double>()|(0);
-            }
-        }
-        
-        private struct SharedStaticUnmanaged
-        {
-            private int a;
-            private double b;
-        }
-
-        [BurstCompile]
-        public struct SharedStaticTest3 : IJob
-        {
-            public void Execute()
-            {
-                var sharedStatic2 = SharedStatic<SharedStaticUnmanaged>.GetOrCreate<float, double>();
+                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|myDoubleType|(1))|(0);
             }
         }
 
@@ -170,20 +116,19 @@ namespace Burst.SharedStaticTests
         {
             public void Execute()
             {
-                var sharedStatic3 = SharedStatic<int>.GetOrCreate(typeof(double), typeof(int));
+                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|myDoubleType|(3), |myIntType|(4))|(2);
+                F();
             }
-        }
 
-        [BurstCompile]
-        public struct SharedStaticTest5 : IJob
-        {
-            public void Execute()
+            private void F()
             {
-                var sharedStatic2 = |GetOrCreate<float, double>()|(1);
+                var obj = new object();
             }
         }
     }
-}
 ---------------------------------------------------------
-(0): ReSharper Warning: `SharedStatic`1` type parameter must be unmanaged, `SharedStaticMixed` is not
-(1): ReSharper Warning: `SharedStatic`1` type parameter must be unmanaged, `SharedStaticUnmanagedUsing` is not
+(0): ReSharper Warning: Burst: this method is available in C# only, not HPC#
+(1): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
+(2): ReSharper Warning: Burst: this method is available in C# only, not HPC#
+(3): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
+(4): ReSharper Warning: Burst: Loading managed type 'Type' is not supported

@@ -96,6 +96,13 @@
           Typeof is prohibited in Burst
         </Description>
       </Tag>
+
+      <Tag externalName="BurstSharedStaticCreateWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>Some SharedStatic`1.GetOrCreate overloads cause compiler errors</Title>
+        <Description>
+          Some SharedStatic`1.GetOrCreate overloads cause compiler errors
+        </Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
   
@@ -204,6 +211,13 @@
   <Warning name="BurstTypeofExpression" configurableSeverity="Unity.BurstTypeofExpression">
     <Parameter type="ITreeNode" name="node" />
     <Message value="Burst: Typeof is prohibited"/>
+    <Range>Node.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="NONE" />
+  </Warning>
+
+  <Warning name="BurstSharedStaticCreate" configurableSeverity="Unity.BurstSharedStaticCreate">
+    <Parameter type="ITreeNode" name="node" />
+    <Message value="Burst: this method is available in C# only, not HPC#"/>
     <Range>Node.GetDocumentRange()</Range>
     <Behavour overlapResolvePolicy="NONE" />
   </Warning>

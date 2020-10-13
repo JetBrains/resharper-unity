@@ -225,5 +225,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             return method.HasAttributeInstance(KnownTypes.BurstDiscardAttribute, AttributesSource.Self);
         }
+
+        [ContractAnnotation("null => false")]
+        public static bool IsSharedStaticCreateMethod([CanBeNull] IMethod method)
+        {
+            var containingType = method?.GetContainingType();
+            var typeClrName = containingType?.GetClrName();
+
+            if (typeClrName == null)
+                return false;
+
+            if (!typeClrName.Equals(KnownTypes.SharedStatic))
+                return false;
+
+            if (method.IsStatic == false)
+                return false;
+
+            if (method.ShortName != "GetOrCreate")
+                return false;
+
+            return true;
+        }
     }
 }

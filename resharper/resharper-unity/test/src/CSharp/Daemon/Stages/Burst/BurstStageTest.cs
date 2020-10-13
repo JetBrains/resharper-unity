@@ -22,6 +22,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Burst
         [Test] public void DebugStringTests() { DoNamedTest(); }
         [Test] public void AttributesTests() { DoNamedTest(); }
         [Test] public void TypeofTests() { DoNamedTest(); }
+        [Test] public void SharedStaticCreateTests() { DoNamedTest(); }
+        [Test] public void NullableTests() { DoNamedTest(); }
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file, IContextBoundSettingsStore settingsStore)
         {
             return highlighting is IBurstHighlighting;

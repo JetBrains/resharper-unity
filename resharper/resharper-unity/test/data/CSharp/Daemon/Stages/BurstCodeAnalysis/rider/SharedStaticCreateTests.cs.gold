@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Unity.Burst;
 using Unity.Jobs;
 using UnityEngine;
-using static Unity.Burst.SharedStatic<Burst.SharedStaticTests.SharedStaticUnmanagedUsing>;
 
 namespace UnityEngine
 {
@@ -99,71 +97,18 @@ namespace Unity
     }
 }
 
-namespace Burst.SharedStaticTests
-{
-    public struct SharedStaticUnmanagedUsing
+public class SharedStaticCreateTests2 : MonoBehaviour
     {
-        private int a;
-        private object obj;
-    }
-    
-    public class SharedStaticCreateTests : MonoBehaviour
-    {
-        private void Start()
-        {
-            var test1 = new SharedStaticTest1();
-            test1.Schedule().Complete();
+        private static readonly Type myDoubleType = typeof(double);
+        private static readonly Type myIntType = typeof(int);
 
-            var test2 = new SharedStaticTest2();
-            test2.Schedule().Complete();
-
-            var test3 = new SharedStaticTest3();
-            test3.Schedule().Complete();
-
-            var test4 = new SharedStaticTest4();
-            test4.Schedule().Complete();
-
-            var test5 = new SharedStaticTest4();
-            test4.Schedule().Complete();
-        }
-        
         [BurstCompile]
         public struct SharedStaticTest1 : IJob
         {
             |public void Execute()
             {
-                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(2))|(1);
+                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|myDoubleType|(2))|(1);
             }|(0)
-        }
-
-        private struct SharedStaticMixed
-        {
-            private int a;
-            public object obj;
-        }
-
-        [BurstCompile]
-        public struct SharedStaticTest2 : IJob
-        {
-            |public void Execute()
-            {
-                var sharedStatic1 = SharedStatic<SharedStaticMixed>.GetOrCreate<double>();
-            }|(3)
-        }
-        
-        private struct SharedStaticUnmanaged
-        {
-            private int a;
-            private double b;
-        }
-
-        [BurstCompile]
-        public struct SharedStaticTest3 : IJob
-        {
-            |public void Execute()
-            {
-                var sharedStatic2 = SharedStatic<SharedStaticUnmanaged>.GetOrCreate<float, double>();
-            }|(4)
         }
 
         [BurstCompile]
@@ -171,28 +116,21 @@ namespace Burst.SharedStaticTests
         {
             |public void Execute()
             {
-                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(7), |typeof(int)|(8))|(6);
-            }|(5)
-        }
+                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|myDoubleType|(5), |myIntType|(6))|(4);
+                F();
+            }|(3)
 
-        [BurstCompile]
-        public struct SharedStaticTest5 : IJob
-        {
-            |public void Execute()
+            private void F()
             {
-                var sharedStatic2 = GetOrCreate<float, double>();
-            }|(9)
+                var obj = new object();
+            }
         }
     }
-}
 ---------------------------------------------------------
 (0): ReSharper Unity Burst Code Line Marker: Burst compiled code
 (1): ReSharper Warning: Burst: this method is available in C# only, not HPC#
-(2): ReSharper Warning: Burst: Typeof is prohibited
+(2): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
 (3): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(5): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(6): ReSharper Warning: Burst: this method is available in C# only, not HPC#
-(7): ReSharper Warning: Burst: Typeof is prohibited
-(8): ReSharper Warning: Burst: Typeof is prohibited
-(9): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(4): ReSharper Warning: Burst: this method is available in C# only, not HPC#
+(5): ReSharper Warning: Burst: Loading managed type 'Type' is not supported
+(6): ReSharper Warning: Burst: Loading managed type 'Type' is not supported

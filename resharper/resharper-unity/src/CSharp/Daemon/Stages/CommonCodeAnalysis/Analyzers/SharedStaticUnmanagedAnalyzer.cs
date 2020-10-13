@@ -3,10 +3,10 @@ using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.CSharp.Util;
-using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnalysis.Analyzers
@@ -19,24 +19,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnaly
         {
             var invokedMethod = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
             
-            if (invocationExpression.Reference.Resolve().ResolveErrorType != ResolveErrorType.OK)
+            if (!BurstCodeAnalysisUtil.IsSharedStaticCreateMethod(invokedMethod))
                 return;
             
-            var containingType = invokedMethod?.GetContainingType();
-            var typeClrName = containingType?.GetClrName();
-
-            if (typeClrName == null)
-                return;
-
-            if (!typeClrName.Equals(KnownTypes.SharedStatic))
-                return;
-
-            if (invokedMethod.IsStatic == false)
-                return;
-
-            if (invokedMethod.ShortName != "GetOrCreate")
-                return;
-
             var substitution = invocationExpression.Reference.Resolve().Substitution;
             var domain = substitution.Domain;
             var sharedStaticDomain = domain.Where(parameter =>

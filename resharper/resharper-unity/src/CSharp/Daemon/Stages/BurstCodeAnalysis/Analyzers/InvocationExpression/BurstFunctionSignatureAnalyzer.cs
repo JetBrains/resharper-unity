@@ -34,6 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return BurstProblemSubAnalyzerStatus.NO_WARNING_CONTINUE;
         }
 
-        public int Priority => 4000;
+        public int Priority => 5000;
     }
 }
