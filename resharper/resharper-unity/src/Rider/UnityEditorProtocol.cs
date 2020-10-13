@@ -105,13 +105,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void OnChangeAction(FileSystemChangeDelta delta)
         {
-            // connect on reload of server
+            // Connect when protocols.json is updated (AppDomain start/reload in Unity editor)
             if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
             if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
             myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
             if (!myComponentLifetime.IsTerminated)
+            {
                 myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
                     () => CreateProtocols(delta.NewPath));
+            }
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -156,33 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 var protocol = new Rd.Impl.Protocol("UnityEditorPlugin", new Serializers(),
                     new Identities(IdKind.Client), myDispatcher, wire, lifetime) {ThrowErrorOnOutOfSyncModels = false};
 
-                protocol.OutOfSyncModels.AdviseOnce(lifetime, e =>
-                {
-                    if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
-                        return;
-
-                    myPluginInstallations.Add(mySolution.SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
-
-                    var appVersion = myUnityVersion.ActualVersionForSolution.Value;
-                    if (appVersion < new Version(2019, 2))
-                    {
-                        var entry = myBoundSettingsStore.Schema.GetScalarEntry((UnitySettings s) => s.InstallUnity3DRiderPlugin);
-                        var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
-                        if (!isEnabled)
-                        {
-                            myHost.Do(model => model.OnEditorModelOutOfSync());
-                        }
-                    }
-                    else
-                    {
-                        var notification = new NotificationModel("Advanced Unity integration is unavailable",
-                            $"Please update External Editor to {myHostProductInfo.VersionMarketingString} in Unity Preferences.",
-                            true, RdNotificationEntryType.WARN);
-                        mySolution.Locks.ExecuteOrQueue(lifetime, "OutOfSyncModels.Notify", () => myNotificationsModel.Notification(notification));
-                    }
-                });
-
-                protocol.OutOfSyncModels.AdviseOnce(lifetime, e => { OnOutOfSync(lifetime); });
+                protocol.OutOfSyncModels.AdviseOnce(lifetime, _ => OnOutOfSync(lifetime));
 
                 wire.Connected.WhenTrue(lifetime, lf =>
                 {
@@ -292,8 +268,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (myPluginInstallations.Contains(mySolution.SolutionFilePath))
                 return;
 
-            myPluginInstallations.Add(mySolution
-                .SolutionFilePath); // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
+            // avoid displaying Notification multiple times on each AppDomain.Reload in Unity
+            myPluginInstallations.Add(mySolution.SolutionFilePath);
 
             var appVersion = myUnityVersion.ActualVersionForSolution.Value;
             if (appVersion < new Version(2019, 2))
