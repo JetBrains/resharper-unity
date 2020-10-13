@@ -57,9 +57,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         [NotNull]
         public readonly ViewableProperty<BackendUnityModel> BackendUnityModel = new ViewableProperty<BackendUnityModel>(null);
 
-        [NotNull]
-        public readonly ViewableProperty<SocketWire.Base> UnityWire = new ViewableProperty<SocketWire.Base>(null);
-
         public UnityEditorProtocol(Lifetime lifetime, ILogger logger, FrontendBackendHost host,
                                    IScheduler dispatcher, IShellLocks locks, ISolution solution,
                                    IApplicationWideContextBoundSettingStore settingsStore,
@@ -151,9 +148,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 myLogger.Info("Create protocol...");
 
                 myLogger.Info("Creating SocketWire with port = {0}", protocolInstance.Port);
-                var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient");
-                UnityWire.Value = wire;
-                wire.BackwardsCompatibleWireFormat = true;
+                var wire = new SocketWire.Client(lifetime, myDispatcher, protocolInstance.Port, "UnityClient")
+                {
+                    BackwardsCompatibleWireFormat = true
+                };
 
                 var protocol = new Rd.Impl.Protocol("UnityEditorPlugin", new Serializers(),
                     new Identities(IdKind.Client), myDispatcher, wire, lifetime) {ThrowErrorOnOutOfSyncModels = false};

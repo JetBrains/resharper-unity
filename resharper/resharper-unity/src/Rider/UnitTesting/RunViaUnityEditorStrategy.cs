@@ -112,9 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             myEditorProtocol.BackendUnityModel.ViewNotNull(lifetime, (lt, model) =>
             {
-                if (model.UnityProcessId.HasValue())
-                    myUnityProcessId.Value = model.UnityProcessId.Value;
-
+                // This will set the current value, if it exists
                 model.UnityProcessId.FlowInto(lt, myUnityProcessId, id => id);
             });
         }
@@ -465,19 +463,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             waitingLifetime.StartMainUnguarded(() =>
             {
-                myEditorProtocol.UnityWire.Advise(waitingLifetime, wire =>
+                myEditorProtocol.BackendUnityModel.Advise(waitingLifetime, model =>
                 {
-                    wire.HeartbeatAlive.Advise(waitingLifetime, res =>
-                    {
-                        if (res)
-                        {
-                            myEditorProtocol.BackendUnityModel.Advise(waitingLifetime, model =>
-                            {
-                                if (model != null)
-                                    waitingLifetimeDef.Terminate();
-                            });
-                        }
-                    });
+                    if (model != null)
+                        waitingLifetimeDef.Terminate();
                 });
             });
 
