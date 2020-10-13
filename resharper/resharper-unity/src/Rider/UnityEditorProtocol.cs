@@ -166,8 +166,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     // This is telling the frontend that the BackendUnityModel is available
                     myHost.Do(frontendBackendModel => frontendBackendModel.SessionInitialized.Value = true);
 
-                    // TODO: Can we add the model before it's been advised?
-                    AdviseModel(backendUnityModel, connectionLifetime, thisSessionLifetime);
+                    AdviseModel(connectionLifetime, backendUnityModel);
 
                     SafeExecuteOrQueueEx("setModel", () => BackendUnityModel.SetValue(backendUnityModel));
 
@@ -226,8 +225,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return protocolInstance;
         }
 
-        // TODO: We should only have one lifetime
-        private void AdviseModel(BackendUnityModel backendUnityModel, Lifetime lf, Lifetime lifetime)
+        private void AdviseModel(Lifetime modelLifetime, BackendUnityModel backendUnityModel)
         {
             if (PlatformUtil.RuntimePlatform == PlatformUtil.Platform.Windows)
             {
@@ -240,31 +238,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
             }
 
-
-            SubscribeToLogs(lf, backendUnityModel);
+            SubscribeToLogs(modelLifetime, backendUnityModel);
             SubscribeToOpenFile(backendUnityModel);
 
-            backendUnityModel.Play.Advise(lf, b => myHost.Do(rd => rd.Play.SetValue(b)));
-            backendUnityModel.Pause.Advise(lf, b => myHost.Do(rd => rd.Pause.SetValue(b)));
-            backendUnityModel.LastPlayTime.Advise(lf, time => myHost.Do(rd => rd.LastPlayTime.SetValue(time)));
-            backendUnityModel.LastInitTime.Advise(lf, time => myHost.Do(rd => rd.LastInitTime.SetValue(time)));
+            backendUnityModel.Play.Advise(modelLifetime, b => myHost.Do(rd => rd.Play.SetValue(b)));
+            backendUnityModel.Pause.Advise(modelLifetime, b => myHost.Do(rd => rd.Pause.SetValue(b)));
+            backendUnityModel.LastPlayTime.Advise(modelLifetime, time => myHost.Do(rd => rd.LastPlayTime.SetValue(time)));
+            backendUnityModel.LastInitTime.Advise(modelLifetime, time => myHost.Do(rd => rd.LastInitTime.SetValue(time)));
 
-            backendUnityModel.UnityProcessId.View(lf, (_, pid) => myHost.Do(t => t.UnityProcessId.Set(pid)));
+            backendUnityModel.UnityProcessId.View(modelLifetime, (_, pid) => myHost.Do(t => t.UnityProcessId.Set(pid)));
 
             // I have split this into groups, because want to use async api for finding reference and pass them via groups to Unity
-            myHost.Do(t => t.ShowFileInUnity.Advise(lf, v => backendUnityModel.ShowFileInUnity.Fire(v)));
-            myHost.Do(t => t.ShowPreferences.Advise(lf, v => { backendUnityModel.ShowPreferences.Fire(); }));
+            myHost.Do(t => t.ShowFileInUnity.Advise(modelLifetime, v => backendUnityModel.ShowFileInUnity.Fire(v)));
+            myHost.Do(t => t.ShowPreferences.Advise(modelLifetime, v => { backendUnityModel.ShowPreferences.Fire(); }));
 
-            backendUnityModel.EditorLogPath.Advise(lifetime,
-                s => myHost.Do(a => a.EditorLogPath.SetValue(s)));
-            backendUnityModel.PlayerLogPath.Advise(lifetime,
-                s => myHost.Do(a => a.PlayerLogPath.SetValue(s)));
+            backendUnityModel.EditorLogPath.Advise(modelLifetime, s => myHost.Do(a => a.EditorLogPath.SetValue(s)));
+            backendUnityModel.PlayerLogPath.Advise(modelLifetime, s => myHost.Do(a => a.PlayerLogPath.SetValue(s)));
 
             // Note that these are late-init properties. Once set, they are always set and do not allow nulls.
             // This means that if/when the Unity <-> Backend protocol closes, they still retain the last value
             // they had - so the front end will retain the log and application paths of the just-closed editor.
             // Opening a new editor instance will reconnect and push a new value through to the front end
-            backendUnityModel.UnityApplicationData.Advise(lifetime,
+            backendUnityModel.UnityApplicationData.Advise(modelLifetime,
                 s => myHost.Do(a =>
                 {
                     var version = UnityVersion.Parse(s.ApplicationVersion);
@@ -273,7 +268,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }));
             myHost.Do(m =>
             {
-                backendUnityModel.ScriptCompilationDuringPlay.FlowChangesIntoRd(lifetime, m.ScriptCompilationDuringPlay);
+                backendUnityModel.ScriptCompilationDuringPlay.FlowChangesIntoRd(modelLifetime, m.ScriptCompilationDuringPlay);
             });
 
             myHost.Do(rd =>
@@ -282,7 +277,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     backendUnityModel.GenerateUIElementsSchema.Start(l, u).ToRdTask(l));
             });
 
-            backendUnityModel.BuildLocation.Advise(lf, b => myHost.Do(rd => rd.BuildLocation.SetValue(b)));
+            backendUnityModel.BuildLocation.Advise(modelLifetime, b => myHost.Do(rd => rd.BuildLocation.SetValue(b)));
 
             myHost.Do(rd =>
             {
@@ -296,7 +291,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 });
             });
 
-            TrackActivity(backendUnityModel, lf);
+            TrackActivity(backendUnityModel, modelLifetime);
         }
 
         private void OnOutOfSync(Lifetime lifetime)
