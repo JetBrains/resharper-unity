@@ -1,3 +1,6 @@
+using System;
+using JetBrains.Annotations;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.Rd.Tasks;
 
@@ -27,6 +30,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 }
             });
             return newRdTask;
+        }
+
+        public static void FlowChangesIntoRdDeferred<TValue>(
+            [NotNull] this IViewableProperty<TValue> source,
+            Lifetime lifetime,
+            [NotNull] Func<IViewableProperty<TValue>> nullableTargetCreator)
+        {
+            source.Change.Advise(lifetime, args =>
+            {
+                var target = nullableTargetCreator();
+                if (target != null) target.Value = source.Value;
+            });
         }
     }
 }

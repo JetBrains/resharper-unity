@@ -44,6 +44,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             });
         }
 
+        public bool IsAvailable => !myIsInTests && Model != null;
+
         // Convenience method to fire and forget an action on the model (e.g. set a value, fire a signal, etc). Fire and
         // forget means it's safe to use during testing, when there won't be a frontend model available, and Model will
         // be null.

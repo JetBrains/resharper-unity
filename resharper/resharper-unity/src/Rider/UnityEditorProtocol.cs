@@ -30,7 +30,6 @@ using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
-using JetBrains.Util.Special;
 using Newtonsoft.Json;
 using UnityApplicationData = JetBrains.Rider.Model.Unity.FrontendBackend.UnityApplicationData;
 
@@ -93,7 +92,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (!args) return;
 
                 var solFolder = mySolution.SolutionDirectory;
-                AdviseModelData(lifetime);
 
                 // todo: consider non-Unity Solution with Unity-generated projects
                 var protocolInstancePath = solFolder.Combine("Library/ProtocolInstance.json");
@@ -114,13 +112,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (!myComponentLifetime.IsTerminated)
                 myLocks.ExecuteOrQueue(myComponentLifetime, "CreateProtocol",
                     () => CreateProtocols(delta.NewPath));
-        }
-
-        private void AdviseModelData(Lifetime lifetime)
-        {
-           myHost.Do(rd => rd.Play.Advise(lifetime, p => BackendUnityModel.Value.IfNotNull(editor => editor.Play.Value = p)));
-           myHost.Do(rd => rd.Pause.Advise(lifetime, p => BackendUnityModel.Value.IfNotNull(editor => editor.Pause.Value = p)));
-           myHost.Do(rd => rd.Step.Advise(lifetime, () => BackendUnityModel.Value.DoIfNotNull(editor => editor.Step())));
         }
 
         private void CreateProtocols(FileSystemPath protocolInstancePath)
@@ -246,7 +237,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }));
                     myHost.Do(m =>
                     {
-                        backendUnityModel.ScriptCompilationDuringPlay.FlowIntoRd(lifetime, m.ScriptCompilationDuringPlay);
+                        backendUnityModel.ScriptCompilationDuringPlay.FlowChangesIntoRd(lifetime, m.ScriptCompilationDuringPlay);
                     });
 
                     myHost.Do(rd =>
