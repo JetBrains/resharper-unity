@@ -109,6 +109,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             // connect on reload of server
             if (delta.ChangeType != FileSystemChangeType.ADDED && delta.ChangeType != FileSystemChangeType.CHANGED) return;
+            if (!delta.NewPath.ExistsFile) return;
             if (delta.NewPath.FileModificationTimeUtc == myLastChangeTime) return;
             myLastChangeTime = delta.NewPath.FileModificationTimeUtc;
             if (!myComponentLifetime.IsTerminated)

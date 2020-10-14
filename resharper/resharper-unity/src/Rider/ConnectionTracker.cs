@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                     host.PerformModelAction(m => m.EditorState.Value = Wrap(State.Value));
                 });
 
-                lifetime.StartMainUnguardedAsync(async () =>
+                lifetime.StartAsync(locks.Tasks.GuardedMainThreadScheduler, async () =>
                 {
                     while (lifetime.IsAlive)
                     {
