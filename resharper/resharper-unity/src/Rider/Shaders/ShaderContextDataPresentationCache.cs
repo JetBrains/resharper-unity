@@ -27,8 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private ConcurrentDictionary<IPsiSourceFile, ConcurrentDictionary<TextRange, (int, int)>> myFileAndRangeToLine 
             = new ConcurrentDictionary<IPsiSourceFile, ConcurrentDictionary<TextRange, (int, int)>> ();
         
-        public ShaderContextDataPresentationCache(Lifetime lifetime, ISolution solution, IPersistentIndexManager persistentIndexManager) : 
-            base(lifetime, persistentIndexManager, UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<ShaderProgramInfo>(c)))
+        public ShaderContextDataPresentationCache(Lifetime lifetime, IShellLocks shellLocks, ISolution solution, IPersistentIndexManager persistentIndexManager) : 
+            base(lifetime, shellLocks, persistentIndexManager, UnsafeMarshallers.GetCollectionMarshaller(Read, Write, c => new List<ShaderProgramInfo>(c)))
         {
             mySolution = solution;
         }

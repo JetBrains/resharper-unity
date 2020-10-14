@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -26,8 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDef.Psi.Caches
         private readonly Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement> myDeclaredElements =
             new Dictionary<IPsiSourceFile, AsmDefNameDeclaredElement>();
 
-        public AsmDefNameCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, ISolution solution)
-            : base(lifetime, persistentIndexManager, AsmDefCacheItem.Marshaller)
+        public AsmDefNameCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ISolution solution)
+            : base(lifetime, shellLocks, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
             mySolution = solution;
         }
