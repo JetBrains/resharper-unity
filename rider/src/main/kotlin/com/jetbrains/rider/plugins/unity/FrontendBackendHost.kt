@@ -26,7 +26,7 @@ import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForeg
 import com.jetbrains.rider.projectView.solution
 import java.awt.Frame
 
-class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
+class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
     val model = project.solution.frontendBackendModel
     val unityState = model.editorState
 
@@ -96,13 +96,11 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
 
             task
         }
-
     }
 
     companion object {
-        fun getInstance(project: Project): UnityHost = project.getComponent(UnityHost::class.java)
+        fun getInstance(project: Project): FrontendBackendHost = project.getComponent(FrontendBackendHost::class.java)
     }
-
 }
 
 fun Project?.isConnectedToEditor() = this != null && this.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)

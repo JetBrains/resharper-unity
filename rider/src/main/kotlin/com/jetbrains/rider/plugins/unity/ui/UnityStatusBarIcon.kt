@@ -9,7 +9,7 @@ import com.intellij.util.Consumer
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.model.unity.EditorState
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import icons.UnityIcons
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -22,7 +22,7 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
         const val StatusBarIconId = "UnityStatusIcon"
     }
 
-    private val host = UnityHost.getInstance(project)
+    private val host = FrontendBackendHost.getInstance(project)
 
     init {
         host.unityState.advise(project.lifetime) {

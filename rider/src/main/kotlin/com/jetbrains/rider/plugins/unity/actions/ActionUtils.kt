@@ -1,23 +1,17 @@
 package com.jetbrains.rider.plugins.unity.actions
 
-
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.isUnityProjectFolder
 import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.projectView.solution
 
 fun AnActionEvent.getFrontendBackendModel(): FrontendBackendModel? {
     val project = project ?: return null
     return project.solution.frontendBackendModel
-}
-
-fun AnActionEvent.getHost(): UnityHost? {
-    val project = project ?: return null
-    return UnityHost.getInstance(project)
 }
 
 fun AnActionEvent.isUnityProject(): Boolean {
