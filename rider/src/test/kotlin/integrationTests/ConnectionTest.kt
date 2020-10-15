@@ -84,7 +84,7 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test(enabled = false)
+    @Test
     fun checkDebuggerStartsAfterAttachDebugger() {
         installPlugin()
         try {
