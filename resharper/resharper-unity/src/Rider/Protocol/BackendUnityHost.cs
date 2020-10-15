@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 var frontendBackendModel = frontendBackendHost.Model.NotNull("frontendBackendHost.Model != null");
                 BackendUnityModel.FlowIntoRdSafe(lifetime,
                     backendUnityModel => backendUnityModel != null,
-                    frontendBackendModel.SessionInitialized);
+                    frontendBackendModel.UnityEditorConnected);
             }
         }
 

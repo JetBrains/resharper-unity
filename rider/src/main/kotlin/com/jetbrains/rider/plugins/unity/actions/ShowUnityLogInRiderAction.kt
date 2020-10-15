@@ -14,6 +14,6 @@ class ShowUnityLogInRiderAction : DumbAwareAction() {
 
     override fun update(e: AnActionEvent) {
         val model = e.getModel()
-        e.presentation.isEnabled = !(model == null || !model.sessionInitialized.valueOrDefault(false))
+        e.presentation.isEnabled = !(model == null || !model.unityEditorConnected.valueOrDefault(false))
     }
 }

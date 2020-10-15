@@ -48,7 +48,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
 
-        property("sessionInitialized", bool).documentation = "Is the backend/Unity protocol created?"
+        property("unityEditorConnected", bool).documentation = "Is the backend/Unity protocol connected?"
 
         sink("activateRider", void)
         sink("activateUnityLogView", void)

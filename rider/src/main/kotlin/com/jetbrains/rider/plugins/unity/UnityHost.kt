@@ -105,4 +105,4 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
 
 }
 
-fun Project.isConnectedToEditor() = this.solution.frontendBackendModel.sessionInitialized.valueOrDefault(false)
+fun Project.isConnectedToEditor() = this.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)

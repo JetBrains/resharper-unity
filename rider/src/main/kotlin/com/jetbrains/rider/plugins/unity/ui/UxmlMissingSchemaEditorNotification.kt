@@ -93,11 +93,9 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
                         panel.text("Starting Unity. Please wait.")
 
                         val lifetimeDefinition = project.defineNestedLifetime()
-                        project.solution.frontendBackendModel.sessionInitialized.advise(lifetimeDefinition.lifetime) {
-                            if (project.isConnectedToEditor()) {
-                                generateSchema(project, panel, link)
-                                lifetimeDefinition.terminate()
-                            }
+                        project.solution.frontendBackendModel.unityEditorConnected.whenTrue(lifetimeDefinition.lifetime) {
+                            generateSchema(project, panel, link)
+                            lifetimeDefinition.terminate()
                         }
 
                         link?.isVisible = false

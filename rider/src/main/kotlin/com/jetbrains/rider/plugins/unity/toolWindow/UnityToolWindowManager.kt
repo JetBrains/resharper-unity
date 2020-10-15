@@ -15,7 +15,7 @@ class UnityToolWindowManager(project: Project) : ProtocolSubscribedProjectCompon
     }
 
     init {
-        project.solution.frontendBackendModel.sessionInitialized.whenTrue(projectComponentLifetime) {
+        project.solution.frontendBackendModel.unityEditorConnected.whenTrue(projectComponentLifetime) {
             myLogger.info("new session")
             val context = UnityToolWindowFactory.getInstance(project).getOrCreateContext()
             val shouldReactivateBuildToolWindow = context.isActive

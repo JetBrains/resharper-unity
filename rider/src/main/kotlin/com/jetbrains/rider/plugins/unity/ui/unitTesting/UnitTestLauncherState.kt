@@ -7,6 +7,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.lifetime
+import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
@@ -28,13 +29,10 @@ class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Ele
         val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance(project)
         if (!propertiesComponent.getBoolean(discoverLaunchViaUnity)) {
             val nestedLifetime = project.lifetime.createNested()
-            project.solution.frontendBackendModel.sessionInitialized.advise(nestedLifetime){ isConnected ->
-                if(isConnected ) {
-                    project.solution.frontendBackendModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
-                    propertiesComponent.setValue(discoverLaunchViaUnity, true)
-                    nestedLifetime.terminate()
-                }
-
+            project.solution.frontendBackendModel.unityEditorConnected.whenTrue(nestedLifetime) {
+                project.solution.frontendBackendModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
+                propertiesComponent.setValue(discoverLaunchViaUnity, true)
+                nestedLifetime.terminate()
             }
         }
     }

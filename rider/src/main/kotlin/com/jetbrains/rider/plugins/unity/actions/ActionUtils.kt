@@ -40,5 +40,5 @@ fun AnActionEvent.handleUpdateForUnityConnection(fn: ((FrontendBackendModel) -> 
 
     val model = getModel() ?: return
     val connectedProperty = fn?.invoke(model) ?: true
-    presentation.isEnabled = connectedProperty && model.sessionInitialized.valueOrDefault(false)
+    presentation.isEnabled = connectedProperty && model.unityEditorConnected.valueOrDefault(false)
 }
