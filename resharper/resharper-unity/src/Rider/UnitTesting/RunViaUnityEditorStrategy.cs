@@ -244,36 +244,54 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                         myLogger.Trace("UnitTestLaunch.SetValue.");
                         model.UnitTestLaunch.SetValue(launch);
-                        SubscribeResults(run, lt, tcs, launch);
-                    });
-
-                    myLogger.Trace("RunUnitTestLaunch.Start.");
-                    var rdTask = myEditorProtocol.BackendUnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
-                    rdTask?.Result.Advise(taskLifetime, res =>
-                    {
-                        myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
-                        if (!res.Result)
+                        SubscribeResults(run, taskLifetime, launch);
+                        
+                        launch.RunResult.Advise(taskLifetime, result =>
                         {
-                            var defaultMessage = "Failed to start tests in Unity.";
-
-                            var isCoverage =
-                                run.HostController.HostId != WellKnownHostProvidersIds.DebugProviderId &&
-                                run.HostController.HostId != WellKnownHostProvidersIds.RunProviderId;
-
-                            if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
-                                defaultMessage = $"{defaultMessage} {message}";
-
-                            if (myEditorProtocol.BackendUnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
+                            if (launch.TestMode == TestMode.Play) 
+                                tcs.SetResult(result.Passed);
+                            else
                             {
-                                if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
-                                    defaultMessage = $"{defaultMessage} {playMessage}";
+                                launch = new UnitTestLaunch(launch.SessionId, launch.TestFilters, TestMode.Play, launch.ClientControllerInfo);
+                                model.UnitTestLaunch.SetValue(launch);
+                                SubscribeResults(run, taskLifetime, launch);
+                                StartTests(run, tcs, taskLifetime);
                             }
-
-                            tcs.TrySetException(new Exception(defaultMessage));
-                        }
+                        });
                     });
+
+                    StartTests(run, tcs, taskLifetime);
                 });
             }, cancellationToken);
+        }
+
+        private void StartTests(IUnitTestRun run, TaskCompletionSource<bool> tcs, Lifetime taskLifetime)
+        {
+            myLogger.Trace("RunUnitTestLaunch.Start.");
+            var rdTask = myEditorProtocol.BackendUnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
+            rdTask?.Result.Advise(taskLifetime, res =>
+            {
+                myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
+                if (!res.Result)
+                {
+                    var defaultMessage = "Failed to start tests in Unity.";
+
+                    var isCoverage =
+                        run.HostController.HostId != WellKnownHostProvidersIds.DebugProviderId &&
+                        run.HostController.HostId != WellKnownHostProvidersIds.RunProviderId;
+
+                    if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
+                        defaultMessage = $"{defaultMessage} {message}";
+
+                    if (myEditorProtocol.BackendUnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
+                    {
+                        if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
+                            defaultMessage = $"{defaultMessage} {playMessage}";
+                    }
+
+                    tcs.TrySetException(new Exception(defaultMessage));
+                }
+            });
         }
 
         private Task Refresh(Lifetime lifetime, TaskCompletionSource<bool> tcs, CancellationToken cancellationToken)
@@ -387,7 +405,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return launch;
         }
 
-        private void SubscribeResults(IUnitTestRun firstRun, Lifetime connectionLifetime, TaskCompletionSource<bool> tcs, UnitTestLaunch launch)
+        private void SubscribeResults(IUnitTestRun firstRun, Lifetime connectionLifetime, UnitTestLaunch launch)
         {
             mySolution.Locks.AssertMainThread();
 
@@ -451,8 +469,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         throw new ArgumentOutOfRangeException($"Unknown test result from the protocol: {result.Status}");
                 }
             });
-
-            launch.RunResult.Advise(connectionLifetime, result => { tcs.SetResult(result.Passed); });
         }
 
         private Task WaitForUnityEditorConnectedAndIdle(Lifetime lifetime)
