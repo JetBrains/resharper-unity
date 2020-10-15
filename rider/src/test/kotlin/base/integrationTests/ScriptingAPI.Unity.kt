@@ -24,6 +24,8 @@ import com.jetbrains.rider.model.*
 import com.jetbrains.rider.model.unity.LogEvent
 import com.jetbrains.rider.model.unity.LogEventType
 import com.jetbrains.rider.model.unity.frontendBackend.*
+import com.jetbrains.rider.model.unity.frontendBackend.EditorState
+import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
@@ -83,6 +85,16 @@ fun createLibraryFolderIfNotExist(solutionDirectory: File) {
     if (!libraryFolder.exists()) {
         Files.createDirectory(libraryFolder)
     }
+}
+
+fun replaceUnityVersionOnCurrent(project: Project) {
+    val projectVersionFile = File(project.basePath, "ProjectSettings").resolve("ProjectVersion.txt")
+    val oldVersion = projectVersionFile.readText().split(Regex("\\s+"))[1]
+
+    val newVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion()
+
+    frameworkLogger.info("Replace unity project version '$oldVersion' by '$newVersion'")
+    projectVersionFile.writeText("m_EditorVersion: $newVersion")
 }
 
 fun IntegrationTestWithFrontendBackendModel.activateRiderFrontendTest() {
@@ -146,9 +158,7 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
                 unityInstallationFinder.getApplicationVersion()
             )
             project.solution.dotCoverModel.unityCoverageRequested.fire(unityConfigurationParameters)
-            val unityProcessId = project.solution.frontendBackendModel.unityProcessId
-            waitAndPump(unityDefaultTimeout, { unityProcessId.valueOrNull != null }) { "Can't get unity process id" }
-            ProcessHandle.of(unityProcessId.valueOrNull!!.toLong()).get()
+            getUnityProcessHandle(project)
         }
         else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
     }
@@ -156,6 +166,12 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     frameworkLogger.info("Unity process started [pid: ${processHandle.pid()}]")
 
     return processHandle
+}
+
+fun getUnityProcessHandle(project: Project): ProcessHandle {
+    val unityProcessId = project.solution.frontendBackendModel.unityProcessId
+    waitAndPump(unityDefaultTimeout, { unityProcessId.valueOrNull != null }) { "Can't get unity process id" }
+    return ProcessHandle.of(unityProcessId.valueOrNull!!.toLong()).get()
 }
 
 fun BaseTestWithSolutionBase.startUnity(project: Project, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
@@ -175,7 +191,7 @@ fun killUnity(project: Project, processHandle: ProcessHandle) {
     frameworkLogger.info("Unity process killed")
 }
 
-fun BaseTestWithSolution.killUnity(processHandle: ProcessHandle) = killUnity(project, processHandle)
+fun killUnity(project: Project) = killUnity(project, getUnityProcessHandle(project))
 
 fun BaseTestWithSolution.withUnityProcess(
     withCoverage: Boolean = false,
