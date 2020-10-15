@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
 
         private IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
         {
-            var backendUnityProtocol = solution.GetComponent<BackendUnityProtocol>();
+            var backendUnityHost = solution.GetComponent<BackendUnityHost>();
             var notificationsModel = solution.GetComponent<NotificationsModel>();
 
             var methodFqn = DeclaredElementPresenter.Format(runMarker.Method.PresentationLanguage,
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
             var iconId = RunMarkersThemedIcons.RunThis.Id;
             yield return new BulbMenuItem(new ExecutableItem(() =>
                 {
-                    var model = backendUnityProtocol.BackendUnityModel.Value;
+                    var model = backendUnityHost.BackendUnityModel.Value;
                     if (model == null)
                     {
                         var notification = new NotificationModel("No connection to Unity", "Make sure Unity is running.",

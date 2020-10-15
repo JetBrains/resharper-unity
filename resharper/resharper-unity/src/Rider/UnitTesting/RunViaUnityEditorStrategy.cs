@@ -46,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private readonly ISolution mySolution;
         private readonly IUnitTestResultManager myUnitTestResultManager;
-        private readonly BackendUnityProtocol myBackendUnityProtocol;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly NUnitTestProvider myUnitTestProvider;
         private readonly IUnitTestElementIdFactory myIDFactory;
         private readonly ISolutionSaver myRiderSolutionSaver;
@@ -64,22 +64,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly IProperty<int?> myUnityProcessId;
 
         public RunViaUnityEditorStrategy(ISolution solution,
-            IUnitTestResultManager unitTestResultManager,
-            BackendUnityProtocol backendUnityProtocol,
-            NUnitTestProvider unitTestProvider,
-            IUnitTestElementIdFactory idFactory,
-            ISolutionSaver riderSolutionSaver,
-            UnityRefresher unityRefresher,
-            NotificationsModel notificationsModel,
-            FrontendBackendHost frontendBackendHost,
-            ILogger logger,
-            Lifetime lifetime,
-            PackageValidator packageValidator
-        )
+                                         IUnitTestResultManager unitTestResultManager,
+                                         BackendUnityHost backendUnityHost,
+                                         NUnitTestProvider unitTestProvider,
+                                         IUnitTestElementIdFactory idFactory,
+                                         ISolutionSaver riderSolutionSaver,
+                                         UnityRefresher unityRefresher,
+                                         NotificationsModel notificationsModel,
+                                         FrontendBackendHost frontendBackendHost,
+                                         ILogger logger,
+                                         Lifetime lifetime,
+                                         PackageValidator packageValidator)
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
-            myBackendUnityProtocol = backendUnityProtocol;
+            myBackendUnityHost = backendUnityHost;
             myUnitTestProvider = unitTestProvider;
             myIDFactory = idFactory;
             myRiderSolutionSaver = riderSolutionSaver;
@@ -110,31 +109,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     myUnityProcessId.Value = null;
             });
 
-            myBackendUnityProtocol.BackendUnityModel.ViewNotNull(lifetime, (lt, model) =>
+            myBackendUnityHost.BackendUnityModel.ViewNotNull(lifetime, (lt, model) =>
             {
                 // This will set the current value, if it exists
                 model.UnityProcessId.FlowInto(lt, myUnityProcessId, id => id);
             });
         }
 
-        public bool RequiresProjectBuild(IProject project)
-        {
-            return false;
-        }
-
-        public bool RequiresProjectExplorationAfterBuild(IProject project)
-        {
-            return false;
-        }
-
-        public bool RequiresProjectPropertiesRefreshBeforeLaunch()
-        {
-            return false;
-        }
+        public bool RequiresProjectBuild(IProject project) => false;
+        public bool RequiresProjectExplorationAfterBuild(IProject project) => false;
+        public bool RequiresProjectPropertiesRefreshBeforeLaunch() => false;
 
         public IRuntimeEnvironment GetRuntimeEnvironment(IUnitTestLaunch launch, IProject project,
-            TargetFrameworkId targetFrameworkId,
-            IUnitTestElement element)
+                                                         TargetFrameworkId targetFrameworkId,
+                                                         IUnitTestElement element)
         {
             var targetPlatform = TargetPlatformCalculator.GetTargetPlatform(launch, project, targetFrameworkId);
             return new UnityRuntimeEnvironment(targetPlatform, project);
@@ -232,13 +220,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
                     var launch = SetupLaunch(run);
 
-                    if (myBackendUnityProtocol.BackendUnityModel.Value == null)
+                    if (myBackendUnityHost.BackendUnityModel.Value == null)
                     {
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         return;
                     }
 
-                    myBackendUnityProtocol.BackendUnityModel.ViewNotNull(taskLifetime, (lt, model) =>
+                    myBackendUnityHost.BackendUnityModel.ViewNotNull(taskLifetime, (lt, model) =>
                     {
                         // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                         myLogger.Trace("UnitTestLaunch.SetValue.");
@@ -247,7 +235,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     });
 
                     myLogger.Trace("RunUnitTestLaunch.Start.");
-                    var rdTask = myBackendUnityProtocol.BackendUnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
+                    var rdTask = myBackendUnityHost.BackendUnityModel.Value.RunUnitTestLaunch.Start(Unit.Instance);
                     rdTask?.Result.Advise(taskLifetime, res =>
                     {
                         myLogger.Trace($"RunUnitTestLaunch result = {res.Result}");
@@ -262,7 +250,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             if (myPackageValidator.HasNonCompatiblePackagesCombination(isCoverage, out var message))
                                 defaultMessage = $"{defaultMessage} {message}";
 
-                            if (myBackendUnityProtocol.BackendUnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
+                            if (myBackendUnityHost.BackendUnityModel.Value.UnitTestLaunch.Value.TestMode == TestMode.Play)
                             {
                                 if (!myPackageValidator.CanRunPlayModeTests(out var playMessage))
                                     defaultMessage = $"{defaultMessage} {playMessage}";
@@ -301,14 +289,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 .Unwrap()
                 .ContinueWith(__ =>
                 {
-                    if (myBackendUnityProtocol.BackendUnityModel.Value == null)
+                    if (myBackendUnityHost.BackendUnityModel.Value == null)
                     {
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         refreshLifetimeDef.Terminate();
                         return;
                     }
 
-                    var task = myBackendUnityProtocol.BackendUnityModel.Value.GetCompilationResult.Start(Unit.Instance);
+                    var task = myBackendUnityHost.BackendUnityModel.Value.GetCompilationResult.Start(Unit.Instance);
                     task.Result.AdviseNotNull(refreshLifetime, result =>
                     {
                         if (result.Result)
@@ -463,7 +451,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
             waitingLifetime.StartMainUnguarded(() =>
             {
-                myBackendUnityProtocol.BackendUnityModel.Advise(waitingLifetime, model =>
+                myBackendUnityHost.BackendUnityModel.Advise(waitingLifetime, model =>
                 {
                     if (model != null)
                         waitingLifetimeDef.Terminate();
@@ -517,7 +505,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
         {
             mySolution.Locks.ExecuteOrQueueEx(run.Lifetime, "CancellingUnitTests", () =>
             {
-                var launchProperty = myBackendUnityProtocol.BackendUnityModel.Value?.UnitTestLaunch;
+                var launchProperty = myBackendUnityHost.BackendUnityModel.Value?.UnitTestLaunch;
                 var launch = launchProperty?.Maybe.ValueOrDefault;
                 if (launch != null && launch.SessionId == run.Launch.Session.Id)
                     launch.Abort.Start(Unit.Instance);

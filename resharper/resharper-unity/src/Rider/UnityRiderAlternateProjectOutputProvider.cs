@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private volatile IDictionary<string, FileSystemPath> myProjectNameToOutputFilePathMap;
 
-        public UnityRiderAlternateProjectOutputProvider(Lifetime lifetime, BackendUnityProtocol backendUnityProtocol,
+        public UnityRiderAlternateProjectOutputProvider(Lifetime lifetime, BackendUnityHost backendUnityHost,
                                                         IShellLocks shellLocks)
             : base(lifetime)
         {
@@ -27,9 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             myProjectNameToOutputFilePathMap = new ConcurrentDictionary<string, FileSystemPath>();
 
-            backendUnityProtocol.BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, model) =>
+            backendUnityHost.BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, backendUnityModel) =>
             {
-                model.CompiledAssemblies.AdviseNotNull(modelLifetime, compiledAssemblies =>
+                backendUnityModel.CompiledAssemblies.AdviseNotNull(modelLifetime, compiledAssemblies =>
                 {
                     myProjectNameToOutputFilePathMap =
                         compiledAssemblies.ToDictionary(a => a.Name, a => FileSystemPath.TryParse(a.OutputPath));

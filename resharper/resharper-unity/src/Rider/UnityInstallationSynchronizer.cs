@@ -10,14 +10,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     [SolutionComponent]
     public class UnityInstallationSynchronizer
     {
-        private readonly BackendUnityProtocol myBackendUnityProtocol;
+        private readonly BackendUnityHost myBackendUnityHost;
 
         public UnityInstallationSynchronizer(Lifetime lifetime,
                                              FrontendBackendHost frontendBackendHost,
-                                             BackendUnityProtocol backendUnityProtocol,
+                                             BackendUnityHost backendUnityHost,
                                              UnityVersion unityVersion)
         {
-            myBackendUnityProtocol = backendUnityProtocol;
+            myBackendUnityHost = backendUnityHost;
             unityVersion.ActualVersionForSolution.Advise(lifetime,
                 version => NotifyFrontend(frontendBackendHost, unityVersion, version));
         }
@@ -26,8 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             host.Do(rd =>
             {
-                // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more correct than any counted value
-                if (myBackendUnityProtocol.BackendUnityModel.Value != null)
+                // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more
+                // correct than any counted value
+                if (myBackendUnityHost.BackendUnityModel.Value != null)
                     return;
 
                 var info = UnityInstallationFinder.GetApplicationInfo(version, unityVersion);

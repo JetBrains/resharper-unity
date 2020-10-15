@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         private static readonly TimeSpan ourUnityConnectionTimeout = TimeSpan.FromMinutes(10);
         private static readonly string ourUnityTimeoutMessage = $"Unity hasn't connected. Timeout {ourUnityConnectionTimeout.TotalMilliseconds} ms is over.";
-        private readonly BackendUnityProtocol myBackendUnityProtocol;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly UnityVersion myUnityVersion;
         private readonly ISolution mySolution;
         private readonly Lifetime myLifetime;
@@ -35,13 +35,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public UnityController(Lifetime lifetime,
                                ISolution solution,
-                               BackendUnityProtocol backendUnityProtocol,
+                               BackendUnityHost backendUnityHost,
                                UnityVersion unityVersion)
         {
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
 
-            myBackendUnityProtocol = backendUnityProtocol;
+            myBackendUnityHost = backendUnityHost;
             myUnityVersion = unityVersion;
             mySolution = solution;
             myLifetime = lifetime;
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public Task<ExitUnityResult> ExitUnityAsync(bool force)
         {
             var lifetimeDef = myLifetime.CreateNested();
-            if (myBackendUnityProtocol.BackendUnityModel.Value == null) // no connection
+            if (myBackendUnityHost.BackendUnityModel.Value == null) // no connection
             {
                 if (force)
                 {
@@ -62,7 +62,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             }
 
             var protocolTaskSource = new TaskCompletionSource<bool>();
-            mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myBackendUnityProtocol.BackendUnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
+            mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myBackendUnityHost.BackendUnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
                 .AsTask());
             var protocolTask = protocolTaskSource.Task;
 
@@ -80,7 +80,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private Task<ExitUnityResult> WaitModelUpdate()
         {
             var successExitResult = new ExitUnityResult(true, null, null);
-            if (!myBackendUnityProtocol.BackendUnityModel.HasValue())
+            if (!myBackendUnityHost.BackendUnityModel.HasValue())
                 return Task.FromResult(successExitResult);
 
             var taskSource = new TaskCompletionSource<ExitUnityResult>();
@@ -88,13 +88,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             waitLifetimeDef.SynchronizeWith(taskSource);
 
             // Wait RdModel Update
-            myBackendUnityProtocol.BackendUnityModel.ViewNull(waitLifetimeDef.Lifetime, _ => taskSource.SetResult(successExitResult));
+            myBackendUnityHost.BackendUnityModel.ViewNull(waitLifetimeDef.Lifetime, _ => taskSource.SetResult(successExitResult));
             return taskSource.Task;
         }
 
         public int? TryGetUnityProcessId()
         {
-            var model = myBackendUnityProtocol.BackendUnityModel.Value;
+            var model = myBackendUnityHost.BackendUnityModel.Value;
             if (model != null)
             {
                 if (model.UnityProcessId.HasValue())
@@ -113,7 +113,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var lifetimeDef = myLifetime.CreateNested();
             lifetimeDef.SynchronizeWith(source);
 
-            myBackendUnityProtocol.BackendUnityModel.ViewNotNull(
+            myBackendUnityHost.BackendUnityModel.ViewNotNull(
                 lifetimeDef.Lifetime,
                 (lt, model) => model.UnityProcessId.Advise(lt, id => source.TrySetResult(id)));
 

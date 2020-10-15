@@ -30,21 +30,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
-        private readonly BackendUnityProtocol myBackendUnityProtocol;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
         private readonly UnityEditorStateHost myUnityEditorStateHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
-                              BackendUnityProtocol backendUnityProtocol,
+                              BackendUnityHost backendUnityHost,
                               IApplicationWideContextBoundSettingStore settingsStore,
                               ILogger logger, UnityVersion unityVersion, UnityEditorStateHost unityEditorStateHost)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
-            myBackendUnityProtocol = backendUnityProtocol;
+            myBackendUnityHost = backendUnityHost;
             myLogger = logger;
             myUnityVersion = unityVersion;
             myUnityEditorStateHost = unityEditorStateHost;
@@ -73,7 +73,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             myLocks.AssertMainThread();
 
-            if (myBackendUnityProtocol.BackendUnityModel.Value == null)
+            if (myBackendUnityHost.BackendUnityModel.Value == null)
                 return Task.CompletedTask;
 
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&
@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             myLocks.ReentrancyGuard.AssertGuarded();
 
-            if (myBackendUnityProtocol.BackendUnityModel.Value == null)
+            if (myBackendUnityHost.BackendUnityModel.Value == null)
                 return;
 
             if (!myUnityEditorStateHost.IsConnectionEstablished())
@@ -121,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         {
                             try
                             {
-                                await myBackendUnityProtocol.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                                await myBackendUnityHost.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                             }
                             finally
                             {
@@ -130,7 +130,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }
                     }
                     else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
-                        await myBackendUnityProtocol.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                        await myBackendUnityHost.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                 }
                 catch (Exception e)
                 {

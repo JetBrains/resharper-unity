@@ -31,39 +31,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private readonly Lifetime myLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
         private readonly ILogger myLogger;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly IScheduler myDispatcher;
         private readonly IShellLocks myLocks;
         private readonly ISolution mySolution;
         private readonly UnityVersion myUnityVersion;
         private readonly NotificationsModel myNotificationsModel;
         private readonly IHostProductInfo myHostProductInfo;
-        private readonly FrontendBackendHost myHost;
+        private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
         private readonly JetHashSet<FileSystemPath> myPluginInstallations;
 
         private DateTime myLastChangeTime;
 
-        [NotNull]
-        public readonly ViewableProperty<BackendUnityModel> BackendUnityModel = new ViewableProperty<BackendUnityModel>(null);
-
-        public BackendUnityProtocol(Lifetime lifetime, ILogger logger, FrontendBackendHost host,
-                                   IScheduler dispatcher, IShellLocks locks, ISolution solution,
-                                   IApplicationWideContextBoundSettingStore settingsStore,
-                                   UnitySolutionTracker unitySolutionTracker,
-                                   UnityVersion unityVersion, NotificationsModel notificationsModel,
-                                   IHostProductInfo hostProductInfo, IFileSystemTracker fileSystemTracker)
+        public BackendUnityProtocol(Lifetime lifetime, ILogger logger,
+                                    BackendUnityHost backendUnityHost, FrontendBackendHost frontendBackendHost,
+                                    IScheduler dispatcher, IShellLocks locks, ISolution solution,
+                                    IApplicationWideContextBoundSettingStore settingsStore,
+                                    UnitySolutionTracker unitySolutionTracker,
+                                    UnityVersion unityVersion, NotificationsModel notificationsModel,
+                                    IHostProductInfo hostProductInfo, IFileSystemTracker fileSystemTracker)
         {
             myPluginInstallations = new JetHashSet<FileSystemPath>();
 
             myLifetime = lifetime;
             myLogger = logger;
+            myBackendUnityHost = backendUnityHost;
             myDispatcher = dispatcher;
             myLocks = locks;
             mySolution = solution;
             myUnityVersion = unityVersion;
             myNotificationsModel = notificationsModel;
             myHostProductInfo = hostProductInfo;
-            myHost = host;
+            myFrontendBackendHost = frontendBackendHost;
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             mySessionLifetimes = new SequentialLifetimes(lifetime);
 
@@ -141,7 +141,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
                     var backendUnityModel = new BackendUnityModel(connectionLifetime, protocol);
 
-                    SafeExecuteOrQueueEx("setModel", () => BackendUnityModel.SetValue(backendUnityModel));
+                    SafeExecuteOrQueueEx("setModel",
+                        () => myBackendUnityHost.BackendUnityModel.SetValue(backendUnityModel));
 
                     connectionLifetime.OnTermination(() =>
                     {
@@ -150,7 +151,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                             myLogger.Info("Wire disconnected.");
 
                             // Clear model
-                            BackendUnityModel.SetValue(null);
+                            myBackendUnityHost.BackendUnityModel.SetValue(null);
                         });
                     });
                 });
@@ -209,7 +210,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 var isEnabled = myBoundSettingsStore.GetValueProperty<bool>(lifetime, entry, null).Value;
                 if (!isEnabled)
                 {
-                    myHost.Do(model => model.OnEditorModelOutOfSync());
+                    myFrontendBackendHost.Do(model => model.OnEditorModelOutOfSync());
                 }
             }
             else

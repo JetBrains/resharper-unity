@@ -1,5 +1,6 @@
 using System;
 using JetBrains.Annotations;
+using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -21,10 +22,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
     [SolutionComponent]
     public class GeneratedFileNotification
     {
-        public GeneratedFileNotification(Lifetime lifetime, FrontendBackendHost frontendBackendHost,
+        public GeneratedFileNotification(Lifetime lifetime,
+                                         FrontendBackendHost frontendBackendHost,
+                                         BackendUnityHost backendUnityHost,
                                          UnitySolutionTracker solutionTracker,
                                          UnityEditorStateHost unityEditorStateHost,
-                                         BackendUnityProtocol backendUnityProtocol,
                                          ISolution solution,
                                          AsmDefNameCache asmDefNameCache,
                                          [CanBeNull] TextControlHost textControlHost = null,
@@ -70,9 +72,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                                     frontendBackendHost.Do(t =>
                                     {
                                         t.AllowSetForegroundWindow.Start(unityStateLifetime, Unit.Instance)
-                                            .Result.Advise(unityStateLifetime, __ =>
+                                            .Result.AdviseOnce(unityStateLifetime, __ =>
                                             {
-                                                backendUnityProtocol.BackendUnityModel.Value?.ShowFileInUnity.Fire(strPath);
+                                                backendUnityHost.BackendUnityModel.Value?.ShowFileInUnity.Fire(strPath);
                                             });
                                     });
                                 }));

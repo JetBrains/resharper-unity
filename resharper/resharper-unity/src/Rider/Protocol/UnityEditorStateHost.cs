@@ -20,8 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
     {
         public readonly IProperty<EditorState> State;
 
-        public UnityEditorStateHost(Lifetime lifetime, ILogger logger, FrontendBackendHost frontendBackendHost,
-                                    BackendUnityProtocol backendUnityProtocol, IThreading locks,
+        public UnityEditorStateHost(Lifetime lifetime, ILogger logger, IThreading locks,
+                                    FrontendBackendHost frontendBackendHost, BackendUnityHost backendUnityHost,
                                     UnitySolutionTracker unitySolutionTracker,
                                     IIsApplicationActiveState isApplicationActiveState)
         {
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
                 var updateConnectionAction = new Action(() =>
                 {
-                    var model = backendUnityProtocol.BackendUnityModel.Value;
+                    var model = backendUnityHost.BackendUnityModel.Value;
                     if (model == null || !model.IsBound)
                     {
                         State.SetValue(EditorState.Disconnected);
