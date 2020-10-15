@@ -47,6 +47,9 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="UnityEngine" />
+  </ItemGroup>
+  <ItemGroup>
      <Compile Include="Assets\NewBehaviourScript.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

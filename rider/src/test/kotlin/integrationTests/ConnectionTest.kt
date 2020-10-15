@@ -35,7 +35,8 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
 
     @Test
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
-        executeIntegrationTestMethod("DumpExternalEditor") }
+        executeIntegrationTestMethod("DumpExternalEditor")
+    }
 
     @Test(enabled = false)
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
@@ -79,6 +80,27 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
                 printEditorLogEntry(it, editorLogEntry)
             }
 
+            checkSweaInSolution()
+        }
+    }
+
+    @Test(enabled = false)
+    fun checkDebuggerStartsAfterAttachDebugger() {
+        installPlugin()
+        try {
+//            startUnity(false, false, false ,true)
+//            waitFirstScriptCompilation(project)
+//            waitConnectionToUnityEditor(project)
+            attachDebuggerToUnityEditor(
+                {
+                //    replaceUnityVersionOnCurrent(project)
+                },
+                {
+                    waitConnectionToUnityEditor(project)
+                }
+            )
+        } finally {
+            killUnity(project)
             checkSweaInSolution()
         }
     }
