@@ -32,12 +32,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             return newRdTask;
         }
 
+        // BeUtilExtensions.FlowIntoRd subscribes to Advise on source.Change, which is a signal. This means it doesn't
+        // send the acknowledgement (i.e. set the current value immediately) as part of Advise. FlowIntoRd will set the
+        // target value from the source itself, but doesn't check if the source value has been set, which can cause
+        // exceptions. We'll Advise the source itself, which does check the source value, and sends an acknowledgement
+        public static void FlowIntoRdSafe<TValue>(
+            [NotNull] this IViewableProperty<TValue> source,
+            Lifetime lifetime,
+            [NotNull] IViewableProperty<TValue> target)
+        {
+            source.Advise(lifetime, _ => target.Value = source.Value);
+        }
+
+        public static void FlowIntoRdSafe<TValue, TResult>(
+            [NotNull] this IViewableProperty<TValue> source,
+            Lifetime lifetime,
+            Func<TValue, TResult> converter,
+            [NotNull] IViewableProperty<TResult> target)
+        {
+            source.Advise(lifetime, _ => target.Value = converter(source.Value));
+        }
+
         public static void FlowChangesIntoRdDeferred<TValue>(
             [NotNull] this IViewableProperty<TValue> source,
             Lifetime lifetime,
             [NotNull] Func<IViewableProperty<TValue>> nullableTargetCreator)
         {
-            source.Change.Advise(lifetime, args =>
+            // If the source has a value, Advise will immediately try to set it on target
+            source.Advise(lifetime, args =>
             {
                 var target = nullableTargetCreator();
                 if (target != null) target.Value = source.Value;
