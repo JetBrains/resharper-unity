@@ -10,9 +10,6 @@ using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 {
-    /// <summary>
-    /// This class simply exists to allow running tests without a frontend/backend connection. Any model action is ignored.
-    /// </summary>
     [SolutionComponent]
     public class FrontendBackendHost
     {
@@ -31,15 +28,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
             // This will throw in tests, as GetProtocolSolution will return null
             var model = solution.GetProtocolSolution().GetFrontendBackendModel();
+            AdviseModel(lifetime, model, deferredCacheController, shellLocks);
             Model = model;
+        }
 
-            // TODO: Where is the best place to advise frontend/backend model?
+        private static void AdviseModel(Lifetime lifetime, FrontendBackendModel frontendBackendModel,
+                                        DeferredCacheController deferredCacheController, IThreading shellLocks)
+        {
             deferredCacheController.CompletedOnce.Advise(lifetime, v =>
             {
                 if (v)
                 {
                     shellLocks.Tasks.StartNew(lifetime, Scheduling.MainDispatcher,
-                        () => { model.IsDeferredCachesCompletedOnce.Value = true; });
+                        () => { frontendBackendModel.IsDeferredCachesCompletedOnce.Value = true; });
                 }
             });
         }

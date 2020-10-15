@@ -36,10 +36,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 (model, args) => model.BackendSettings.EnableDebuggerExtensions.Value = args.New);
         }
 
-        private static void BindSettingToProperty<TKeyClass, TEntryMemberType>(Lifetime lifetime, ISolution solution, FrontendBackendHost host,
-                                                                               IContextBoundSettingsStoreLive boundStore,
-                                                                               Expression<Func<TKeyClass, TEntryMemberType>> entry,
-                                                                               Action<FrontendBackendModel, PropertyChangedEventArgs<TEntryMemberType>> action)
+        private static void BindSettingToProperty<TKeyClass, TEntryMemberType>(
+            Lifetime lifetime, ISolution solution, FrontendBackendHost frontendBackendHost,
+            IContextBoundSettingsStoreLive boundStore,
+            Expression<Func<TKeyClass, TEntryMemberType>> entry,
+            Action<FrontendBackendModel, PropertyChangedEventArgs<TEntryMemberType>> action)
         {
             var name = entry.GetInstanceMemberName();
             var setting = boundStore.Schema.GetScalarEntry(entry);
@@ -48,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     solution.Locks.ExecuteOrQueueEx(lifetime, name, () =>
                     {
-                        host.Do(m => action(m, args));
+                        frontendBackendHost.Do(m => action(m, args));
                     });
                 });
         }
