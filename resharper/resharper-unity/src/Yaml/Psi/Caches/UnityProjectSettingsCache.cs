@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -25,9 +26,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         private readonly CountingSet<string> myDisabledShortNameAtBuildSettings = new CountingSet<string>();
         private readonly CountingSet<string> myShortNameAll = new CountingSet<string>();
 
-        public UnityProjectSettingsCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager,
+        public UnityProjectSettingsCache(Lifetime lifetime, IShellLocks shellLocks,  IPersistentIndexManager persistentIndexManager,
             IEnumerable<IProjectSettingsAssetHandler> projectSettingsAssetHandlers)
-            : base(lifetime, persistentIndexManager, ProjectSettingsCacheItem.Marshaller)
+            : base(lifetime, shellLocks, persistentIndexManager, ProjectSettingsCacheItem.Marshaller)
         {
             myProjectSettingsAssetHandlers = projectSettingsAssetHandlers;
             

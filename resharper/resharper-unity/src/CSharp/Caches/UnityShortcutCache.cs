@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -23,8 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Caches
         private CountingSet<string> myLocalCache = new CountingSet<string>();
         private OneToCompactCountingSet<string, IPsiSourceFile> myFilesWithShortCut = new OneToCompactCountingSet<string, IPsiSourceFile>();
         
-        public UnityShortcutCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, UnityReferencesTracker unityReferencesTracker)
-            : base(lifetime, persistentIndexManager,  CreateMarshaller())
+        public UnityShortcutCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, UnityReferencesTracker unityReferencesTracker)
+            : base(lifetime, shellLocks, persistentIndexManager,  CreateMarshaller())
         {
             myUnityReferencesTracker = unityReferencesTracker;
         }

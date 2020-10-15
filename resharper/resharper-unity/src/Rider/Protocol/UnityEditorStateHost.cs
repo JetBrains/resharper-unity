@@ -69,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     frontendBackendHost.Do(m => m.EditorState.Value = State.Value);
                 });
 
-                lifetime.StartMainUnguardedAsync(async () =>
+                lifetime.StartAsync(locks.Tasks.GuardedMainThreadScheduler, async () =>
                 {
                     while (lifetime.IsAlive)
                     {
