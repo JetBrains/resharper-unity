@@ -3,8 +3,8 @@ package com.jetbrains.rider.plugins.unity.actions
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
-import com.jetbrains.rider.model.unity.EditorState
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
 
@@ -19,12 +19,11 @@ open class StartUnityAction : DumbAwareAction() {
     override fun update(e: AnActionEvent) {
         val model = e.project?.solution?.frontendBackendModel
         val version = model?.unityApplicationData?.valueOrNull?.applicationVersion
-        val state = model?.editorState?.valueOrNull
 
         if (version != null)
             e.presentation.text = "Start Unity ($version)"
 
-        e.presentation.isEnabled = version != null && (state == null || state == EditorState.Disconnected)
+        e.presentation.isEnabled = version != null && e.project.isConnectedToEditor()
         super.update(e)
     }
 

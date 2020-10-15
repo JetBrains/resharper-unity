@@ -238,7 +238,7 @@ fun waitConnectionToUnityEditor(project: Project) {
     waitAndPump(project.lifetime,
         {
             project.isConnectedToEditor()
-                && project.solution.frontendBackendModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected
+                && project.solution.frontendBackendModel.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Disconnected
         },
         unityDefaultTimeout) { "unityHost is not initialized." }
     frameworkLogger.info("unityHost is initialized.")
@@ -299,11 +299,11 @@ fun IntegrationTestWithFrontendBackendModel.unpause(waitForPlay: Boolean = true)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(EditorState.Play)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(UnityEditorState.Play)
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(EditorState.Pause)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(UnityEditorState.Pause)
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(EditorState.Idle)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(UnityEditorState.Idle)
 
 fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<LogEvent> {
     val logLifetime = Lifetime.Eternal.createNested()
@@ -325,10 +325,10 @@ fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg 
     return editorLogEntries
 }
 
-private fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorState(editorState: EditorState) {
+private fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorState(editorState: UnityEditorState) {
     frameworkLogger.info("Waiting for unity editor in state '$editorState'")
-    waitAndPump(unityActionsTimeout, { frontendBackendModel.editorState.valueOrNull == editorState })
-    { "Unity editor isn't in state '$editorState', actual state '${frontendBackendModel.editorState.valueOrNull}'" }
+    waitAndPump(unityActionsTimeout, { frontendBackendModel.unityEditorState.valueOrNull == editorState })
+    { "Unity editor isn't in state '$editorState', actual state '${frontendBackendModel.unityEditorState.valueOrNull}'" }
 }
 
 fun IntegrationTestWithFrontendBackendModel.restart() {

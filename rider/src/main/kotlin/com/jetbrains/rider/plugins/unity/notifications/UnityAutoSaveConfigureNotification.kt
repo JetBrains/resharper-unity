@@ -21,8 +21,8 @@ import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rd.util.reactive.*
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.document.getFirstEditor
-import com.jetbrains.rider.model.unity.EditorState
 import com.jetbrains.rider.model.unity.ScriptCompilationDuringPlay
+import com.jetbrains.rider.model.unity.UnityEditorState
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.SolutionLifecycleHost
 import com.jetbrains.rider.projectView.solution
@@ -46,7 +46,7 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
                 val documentListener: DocumentListener = object : DocumentListener {
                     override fun documentChanged(event: DocumentEvent) {
                         val model = project.solution.frontendBackendModel
-                        if (model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Play)
+                        if (model.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Play)
                             return
 
                         if (!model.scriptCompilationDuringPlay.hasValue)
@@ -83,12 +83,13 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
         textEditor.putUserData(KEY, Any())
 
         // Do not show notification, when user leaves play mode and start typing in that moment
-        if (project.solution.frontendBackendModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Play)
+        if (project.solution.frontendBackendModel.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Play)
             return
 
         val panel = EditorNotificationPanel(LightColors.RED)
-        panel.setText("You are modifying a script while Unity Editor is being in Play Mode. This can lead to a loss of the state in your running game.")
+        panel.text = "You are modifying a script while Unity Editor is being in Play Mode. This can lead to a loss of the state in your running game."
 
+        @Suppress("DialogTitleCapitalization")
         panel.createActionLabel("Configure Unity Editor") {
             project.solution.frontendBackendModel.showPreferences.fire()
             lifetimeDefinition.terminate()

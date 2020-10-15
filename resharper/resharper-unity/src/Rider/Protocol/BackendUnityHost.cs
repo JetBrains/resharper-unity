@@ -21,7 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
     public class BackendUnityHost
     {
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
-        private EditorState myState;
+
+        private UnityEditorState myEditorState;
 
         // The property value will be null when the backend/Unity protocol is not available
         [NotNull]
@@ -34,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         {
             myUsageStatistics = usageStatistics;
 
-            myState = EditorState.Disconnected;
+            myEditorState = UnityEditorState.Disconnected;
 
             BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, backendUnityModel) =>
             {
@@ -45,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             });
             BackendUnityModel.ViewNull(lifetime, _ =>
             {
-                myState = EditorState.Disconnected;
+                myEditorState = UnityEditorState.Disconnected;
                 if (frontendBackendHost.IsAvailable)
                     UpdateFrontendEditorState(frontendBackendHost, logger);
             });
@@ -64,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
         public bool IsConnectionEstablished()
         {
-            return myState != EditorState.Refresh && myState != EditorState.Disconnected;
+            return myEditorState != UnityEditorState.Refresh && myEditorState != UnityEditorState.Disconnected;
         }
 
         private static void InitialiseModel(BackendUnityModel backendUnityModel)
@@ -137,7 +138,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         {
             if (!backendUnityModel.IsBound)
             {
-                myState = EditorState.Disconnected;
+                myEditorState = UnityEditorState.Disconnected;
                 UpdateFrontendEditorState(frontendBackendHost, logger);
                 return;
             }
@@ -146,7 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             task?.Result.AdviseOnce(modelLifetime, result =>
             {
                 logger.Trace($"Got poll result from Unity editor: {result.Result}");
-                myState = result.Result;
+                myEditorState = result.Result;
                 UpdateFrontendEditorState(frontendBackendHost, logger);
             });
 
@@ -155,8 +156,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 if (task != null && !task.AsTask().IsCompleted)
                 {
                     logger.Trace(
-                        "There were no response from Unity in two seconds. Set connection state to Disconnected.");
-                    myState = EditorState.Disconnected;
+                        "There were no response from Unity in two seconds. Setting state to Disconnected.");
+                    myEditorState = UnityEditorState.Disconnected;
                     UpdateFrontendEditorState(frontendBackendHost, logger);
                 }
             }, threading.Tasks.GuardedMainThreadScheduler);
@@ -164,8 +165,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
         private void UpdateFrontendEditorState(FrontendBackendHost frontendBackendHost, ILogger logger)
         {
-            logger.Trace($"Sending connection state to frontend. State: {myState}");
-            frontendBackendHost.Do(m => m.EditorState.Value = myState);
+            logger.Trace($"Sending connection state to frontend: {myEditorState}");
+            frontendBackendHost.Do(m => m.UnityEditorState.Value = myEditorState);
         }
     }
 }

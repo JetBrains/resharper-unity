@@ -28,7 +28,6 @@ import java.awt.Frame
 
 class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
     val model = project.solution.frontendBackendModel
-    val unityState = model.editorState
 
     val logSignal = Signal<LogEvent>()
 

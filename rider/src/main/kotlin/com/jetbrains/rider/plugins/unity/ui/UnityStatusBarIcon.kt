@@ -8,7 +8,7 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.util.Consumer
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rider.model.unity.EditorState
+import com.jetbrains.rider.model.unity.UnityEditorState
 import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import icons.UnityIcons
 import java.awt.event.MouseEvent
@@ -25,7 +25,7 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
     private val host = FrontendBackendHost.getInstance(project)
 
     init {
-        host.unityState.advise(project.lifetime) {
+        host.model.unityEditorState.advise(project.lifetime) {
             val statusBar = WindowManager.getInstance().getStatusBar(project)
             statusBar.updateWidget(StatusBarIconId)
         }
@@ -51,24 +51,24 @@ class UnityStatusBarIcon(project: Project): StatusBarWidget, StatusBarWidget.Ico
 
     @Suppress("DialogTitleCapitalization")
     override fun getTooltipText(): String {
-        return when (host.unityState.valueOrDefault(EditorState.Disconnected)) {
-            EditorState.Disconnected -> "No Unity Editor connection<br/>Load the project in the Unity Editor to enable advanced functionality"
-            EditorState.Idle -> "Connected to Unity Editor"
-            EditorState.Play -> "Connected to Unity Editor"
-            EditorState.Pause -> "Connected to Unity Editor"
-            EditorState.Refresh -> "Refreshing assets in Unity Editor"
+        return when (host.model.unityEditorState.valueOrDefault(UnityEditorState.Disconnected)) {
+            UnityEditorState.Disconnected -> "No Unity Editor connection<br/>Load the project in the Unity Editor to enable advanced functionality"
+            UnityEditorState.Idle -> "Connected to Unity Editor"
+            UnityEditorState.Play -> "Connected to Unity Editor"
+            UnityEditorState.Pause -> "Connected to Unity Editor"
+            UnityEditorState.Refresh -> "Refreshing assets in Unity Editor"
         }
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? = null
 
     override fun getIcon(): Icon {
-        return when (host.unityState.valueOrDefault(EditorState.Disconnected)) {
-            EditorState.Disconnected -> statusIcon
-            EditorState.Idle -> connectedIcon
-            EditorState.Play -> playIcon
-            EditorState.Pause -> pauseIcon
-            EditorState.Refresh -> progressIcon
+        return when (host.model.unityEditorState.valueOrDefault(UnityEditorState.Disconnected)) {
+            UnityEditorState.Disconnected -> statusIcon
+            UnityEditorState.Idle -> connectedIcon
+            UnityEditorState.Play -> playIcon
+            UnityEditorState.Pause -> pauseIcon
+            UnityEditorState.Refresh -> progressIcon
         }
     }
 }

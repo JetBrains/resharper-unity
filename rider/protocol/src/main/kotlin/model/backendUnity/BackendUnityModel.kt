@@ -5,6 +5,12 @@ import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import model.lib.Library
 
+// backend <-> Unity Editor model, from point of view of backend, meaning:
+// Sink is a one-way signal the backend subscribes to
+// Source is a one-way signal the backend fires
+// Property and Signal are two-way and can be updated/fired on both ends. Property is stateful.
+// Call is an RPC method (with return value) that is called by the backend/implemented by the Unity Editor
+// Callback is an RPC method (with return value) that is implemented by the backend/called by the Unity Editor
 @Suppress("unused")
 object BackendUnityModel: Root() {
 
@@ -26,10 +32,10 @@ object BackendUnityModel: Root() {
         field("extension", string)
     }
 
-    val AssetFindUsagesResult = structdef extends  AssetFindUsagesResultBase {
+    val AssetFindUsagesResult = structdef extends AssetFindUsagesResultBase {
     }
 
-    val HierarchyFindUsagesResult = structdef extends  AssetFindUsagesResultBase {
+    val HierarchyFindUsagesResult = structdef extends AssetFindUsagesResultBase {
         field("pathElements", array(string))
         field("rootIndices", array(int))
     }
@@ -104,18 +110,19 @@ object BackendUnityModel: Root() {
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
+        callback("isBackendConnected", void, bool).documentation = "Called from Unity to ensure backend is connected before opening a file"
+
+        // TODO: This should be a simple property, reset when the protocol is lost
+        call("getUnityEditorState", void, Library.UnityEditorState).documentation = "Polled from the backend to get what the editor is currently doing"
+
         source("step", void)
         signal("showFileInUnity", string)
         signal("showUsagesInUnity", AssetFindUsagesResultBase)
         signal("sendFindUsagesSessionResult", FindUsagesSessionResult)
         signal("showPreferences", void)
 
-
-
         sink("log", Library.LogEvent)
 
-        callback("isBackendConnected", void, bool)
-        call("getUnityEditorState", void, Library.EditorState)
         callback("openFileLineCol", RdOpenFileArgs, bool)
         call("updateUnityPlugin", string, bool)
         call("refresh", RefreshType, void)

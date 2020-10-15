@@ -559,20 +559,20 @@ namespace JetBrains.Rider.Unity.Editor
       {
         if (EditorApplication.isPaused)
         {
-          return EditorState.Pause;
+          return UnityEditorState.Pause;
         }
 
         if (EditorApplication.isPlaying)
         {
-          return EditorState.Play;
+          return UnityEditorState.Play;
         }
 
         if (EditorApplication.isCompiling || EditorApplication.isUpdating)
         {
-          return EditorState.Refresh;
+          return UnityEditorState.Refresh;
         }
 
-        return EditorState.Idle;
+        return UnityEditorState.Idle;
       });
     }
 

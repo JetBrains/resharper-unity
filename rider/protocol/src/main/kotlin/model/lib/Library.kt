@@ -2,7 +2,6 @@ package model.lib
 
 import com.jetbrains.rd.generator.nova.PredefinedType.*
 import com.jetbrains.rd.generator.nova.Root
-import com.jetbrains.rd.generator.nova.call
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import com.jetbrains.rd.generator.nova.field
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
@@ -15,7 +14,7 @@ object Library : Root() {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity")
     }
 
-    val EditorState = enum {
+    val UnityEditorState = enum {
         +"Disconnected"
         +"Idle"
         +"Play"

@@ -49,12 +49,12 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
 
         property("unityEditorConnected", bool).documentation = "Is the backend/Unity protocol connected?"
+        property("unityEditorState", Library.UnityEditorState)
 
         sink("activateRider", void)
         sink("activateUnityLogView", void)
         sink("showInstallMonoDialog", void)
 
-        property("editorState", Library.EditorState)
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
 
         property("unityApplicationData", UnityApplicationData)
