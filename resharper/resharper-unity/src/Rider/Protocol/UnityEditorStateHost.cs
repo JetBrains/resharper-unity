@@ -4,7 +4,6 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Components;
 using JetBrains.Collections.Viewable;
 using JetBrains.Core;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
@@ -18,14 +17,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
     [SolutionComponent]
     public class UnityEditorStateHost
     {
-        public readonly IProperty<EditorState> State;
+        private EditorState myState;
 
         public UnityEditorStateHost(Lifetime lifetime, ILogger logger, IThreading locks,
                                     FrontendBackendHost frontendBackendHost, BackendUnityHost backendUnityHost,
                                     UnitySolutionTracker unitySolutionTracker,
                                     IIsApplicationActiveState isApplicationActiveState)
         {
-            State = new Property<EditorState>(lifetime, "UnityEditorPlugin::ConnectionState", EditorState.Disconnected);
+            myState = EditorState.Disconnected;
 
             if (locks.Dispatcher.IsAsyncBehaviorProhibited)
                 return;
@@ -40,16 +39,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     var model = backendUnityHost.BackendUnityModel.Value;
                     if (model == null || !model.IsBound)
                     {
-                        State.SetValue(EditorState.Disconnected);
+                        myState = EditorState.Disconnected;
                     }
                     else
                     {
                         var rdTask = model.GetUnityEditorState.Start(Unit.Instance);
                         rdTask?.Result.Advise(lifetime, result =>
                         {
-                            State.SetValue(result.Result);
-                            logger.Trace($"Inside Result. Sending connection state. State: {State.Value}");
-                            frontendBackendHost.Do(m => m.EditorState.Value = State.Value);
+                            myState = result.Result;
+                            logger.Trace($"Inside Result. Sending connection state. State: {myState}");
+                            frontendBackendHost.Do(m => m.EditorState.Value = myState);
                         });
 
                         var waitTask = Task.Delay(TimeSpan.FromSeconds(2));
@@ -59,13 +58,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                             {
                                 logger.Trace(
                                     "There were no response from Unity in two seconds. Set connection state to Disconnected.");
-                                State.SetValue(EditorState.Disconnected);
+                                myState = EditorState.Disconnected;
                             }
                         }, locks.Tasks.GuardedMainThreadScheduler);
                     }
 
-                    logger.Trace($"Sending connection state. State: {State.Value}");
-                    frontendBackendHost.Do(m => m.EditorState.Value = State.Value);
+                    logger.Trace($"Sending connection state. State: {myState}");
+                    frontendBackendHost.Do(m => m.EditorState.Value = myState);
                 });
 
                 lifetime.StartAsync(locks.Tasks.GuardedMainThreadScheduler, async () =>
@@ -86,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
         public bool IsConnectionEstablished()
         {
-            return State.Value != EditorState.Refresh && State.Value != EditorState.Disconnected;
+            return myState != EditorState.Refresh && myState != EditorState.Disconnected;
         }
     }
 }
