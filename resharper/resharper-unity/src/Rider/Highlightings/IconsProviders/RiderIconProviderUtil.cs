@@ -31,10 +31,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             return true;
         }
 
-        public static List<CodeLensEntryExtraActionModel> GetExtraActions(UnitySolutionTracker solutionTracker, UnityEditorStateHost unityEditorStateHost)
+        public static List<CodeLensEntryExtraActionModel> GetExtraActions(UnitySolutionTracker solutionTracker,
+                                                                          BackendUnityHost backendUnityHost)
         {
             var extraActions = new List<CodeLensEntryExtraActionModel>();
-            if (solutionTracker.IsUnityProject.HasTrueValue() && !unityEditorStateHost.IsConnectionEstablished())
+            if (solutionTracker.IsUnityProject.HasTrueValue() && !backendUnityHost.IsConnectionEstablished())
             {
                 extraActions.Add(new CodeLensEntryExtraActionModel("Unity is not running", null));
                 extraActions.Add(new CodeLensEntryExtraActionModel("Start Unity Editor",

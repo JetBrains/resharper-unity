@@ -33,13 +33,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
-        private readonly UnityEditorStateHost myUnityEditorStateHost;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
                               BackendUnityHost backendUnityHost,
                               IApplicationWideContextBoundSettingStore settingsStore,
-                              ILogger logger, UnityVersion unityVersion, UnityEditorStateHost unityEditorStateHost)
+                              ILogger logger, UnityVersion unityVersion)
         {
             myLocks = locks;
             myLifetime = lifetime;
@@ -47,7 +46,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBackendUnityHost = backendUnityHost;
             myLogger = logger;
             myUnityVersion = unityVersion;
-            myUnityEditorStateHost = unityEditorStateHost;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -101,7 +99,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (myBackendUnityHost.BackendUnityModel.Value == null)
                 return;
 
-            if (!myUnityEditorStateHost.IsConnectionEstablished())
+            if (!myBackendUnityHost.IsConnectionEstablished())
                 return;
 
             var lifetimeDef = Lifetime.Define(lifetime);

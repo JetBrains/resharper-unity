@@ -24,7 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                                          FrontendBackendHost frontendBackendHost,
                                          BackendUnityHost backendUnityHost,
                                          UnitySolutionTracker solutionTracker,
-                                         UnityEditorStateHost unityEditorStateHost,
                                          ISolution solution,
                                          AsmDefNameCache asmDefNameCache,
                                          [CanBeNull] TextControlHost textControlHost = null,

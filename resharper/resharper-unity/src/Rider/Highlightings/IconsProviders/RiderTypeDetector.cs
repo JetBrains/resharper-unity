@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly UnityEditorStateHost myUnityEditorStateHost;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                  UnityCodeInsightProvider codeInsightProvider,
                                  AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
                                  DeferredCacheController deferredCacheController, UnitySolutionTracker solutionTracker,
-                                 UnityEditorStateHost unityEditorStateHost,
+                                 BackendUnityHost backendUnityHost,
                                  IconHost iconHost, AssetSerializationMode assetSerializationMode,
                                  IElementIdProvider elementIdProvider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, unityApi, marksProvider, elementIdProvider)
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
             myDeferredCacheController = deferredCacheController;
             mySolutionTracker = solutionTracker;
-            myUnityEditorStateHost = unityEditorStateHost;
+            myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
             myAssetSerializationMode = assetSerializationMode;
         }
@@ -81,7 +81,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text,
                         tooltip, text, iconModel, GetActions(declaration),
-                        RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myUnityEditorStateHost));
+                        RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
                 }
                 else
                 {
@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
                 myCodeInsightProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                     tooltip, text, myIconHost.Transform(InsightUnityIcons.InsightUnity.Id), GetActions(element),
-                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myUnityEditorStateHost));
+                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
             }
         }
     }

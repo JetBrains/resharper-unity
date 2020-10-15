@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         public override bool Navigate(ISolution solution, IDeclaredElementPointer<IDeclaredElement> pointer, LocalReference location)
         {
-            if (!solution.GetComponent<UnityEditorStateHost>().IsConnectionEstablished())
+            if (!solution.GetComponent<BackendUnityHost>().IsConnectionEstablished())
             {
                 var textControl = solution.GetComponent<TextControlManager>().LastFocusedTextControl.Value;
                 if (textControl == null)

@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly UnityEditorStateHost myUnityEditorStateHost;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
@@ -40,7 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                          UnityCodeInsightProvider codeInsightProvider,
                                          UnityUsagesCodeVisionProvider usagesCodeVisionProvider,
                                          DeferredCacheController deferredCacheController,
-                                         UnitySolutionTracker solutionTracker, UnityEditorStateHost unityEditorStateHost,
+                                         UnitySolutionTracker solutionTracker,
+                                         BackendUnityHost backendUnityHost,
                                          IconHost iconHost, AssetSerializationMode assetSerializationMode,
                                          IElementIdProvider elementIdProvider)
             : base(solution, settingsStore, callGraphSwaExtensionProvider, unityEventsElementContainer, marksProvider,
@@ -51,7 +52,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
             myDeferredCacheController = deferredCacheController;
             mySolutionTracker = solutionTracker;
-            myUnityEditorStateHost = unityEditorStateHost;
+            myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
             myAssetSerializationMode = assetSerializationMode;
         }
@@ -87,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                         tooltip, text, iconModel, GetActions(element),
-                        RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myUnityEditorStateHost));
+                        RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
                 }
                 else
                 {

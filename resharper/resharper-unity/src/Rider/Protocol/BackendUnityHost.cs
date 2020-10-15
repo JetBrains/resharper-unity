@@ -1,11 +1,17 @@
+using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
+using JetBrains.Application.UI.Components;
 using JetBrains.Collections.Viewable;
+using JetBrains.Core;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Tasks;
+using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 
@@ -15,21 +21,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
     public class BackendUnityHost
     {
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
+        private EditorState myState;
 
         // The property value will be null when the backend/Unity protocol is not available
         [NotNull]
         public readonly ViewableProperty<BackendUnityModel> BackendUnityModel = new ViewableProperty<BackendUnityModel>(null);
 
-        public BackendUnityHost(Lifetime lifetime,
+        public BackendUnityHost(Lifetime lifetime, ILogger logger,
                                 FrontendBackendHost frontendBackendHost,
+                                IThreading threading, IIsApplicationActiveState isApplicationActiveState,
                                 JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics)
         {
             myUsageStatistics = usageStatistics;
+
+            myState = EditorState.Disconnected;
 
             BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, backendUnityModel) =>
             {
                 InitialiseModel(backendUnityModel);
                 AdviseModel(backendUnityModel, modelLifetime);
+                StartPollingUnityEditorState(backendUnityModel, modelLifetime, frontendBackendHost, threading,
+                    isApplicationActiveState, logger);
+            });
+            BackendUnityModel.ViewNull(lifetime, _ =>
+            {
+                myState = EditorState.Disconnected;
+                if (frontendBackendHost.IsAvailable)
+                    UpdateFrontendEditorState(frontendBackendHost, logger);
             });
 
             // Are we testing?
@@ -42,6 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     backendUnityModel => backendUnityModel != null,
                     frontendBackendModel.UnityEditorConnected);
             }
+        }
+
+        public bool IsConnectionEstablished()
+        {
+            return myState != EditorState.Refresh && myState != EditorState.Disconnected;
         }
 
         private static void InitialiseModel(BackendUnityModel backendUnityModel)
@@ -74,10 +97,75 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             TrackActivity(backendUnityModel, modelLifetime);
         }
 
-        private void TrackActivity(BackendUnityModel backendUnityModel, Lifetime lf)
+        private void TrackActivity(BackendUnityModel backendUnityModel, Lifetime modelLifetime)
         {
-            backendUnityModel.UnityApplicationData.AdviseOnce(lf, data => myUsageStatistics.TrackActivity("UnityVersion", data.ApplicationVersion));
-            backendUnityModel.ScriptingRuntime.AdviseOnce(lf, runtime => myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString()));
+            backendUnityModel.UnityApplicationData.AdviseOnce(modelLifetime, data =>
+            {
+                myUsageStatistics.TrackActivity("UnityVersion", data.ApplicationVersion);
+            });
+            backendUnityModel.ScriptingRuntime.AdviseOnce(modelLifetime, runtime =>
+            {
+                myUsageStatistics.TrackActivity("ScriptingRuntime", runtime.ToString());
+            });
+        }
+
+        private void StartPollingUnityEditorState(BackendUnityModel backendUnityModel, Lifetime modelLifetime,
+                                                  FrontendBackendHost frontendBackendHost,
+                                                  IThreading threading,
+                                                  IIsApplicationActiveState isApplicationActiveState,
+                                                  ILogger logger)
+        {
+            modelLifetime.StartAsync(threading.Tasks.GuardedMainThreadScheduler, async () =>
+            {
+                // TODO: This would be much easier with a property
+                // Would have to reset the property when the connection drops
+                while (modelLifetime.IsAlive)
+                {
+                    if (isApplicationActiveState.IsApplicationActive.Value
+                        || frontendBackendHost.Model?.RiderFrontendTests.HasTrueValue() == true)
+                    {
+                        PollEditorState(backendUnityModel, frontendBackendHost, modelLifetime, threading, logger);
+                    }
+
+                    await Task.Delay(1000, modelLifetime);
+                }
+            });
+        }
+
+        private void PollEditorState(BackendUnityModel backendUnityModel, FrontendBackendHost frontendBackendHost,
+                                     Lifetime modelLifetime, IThreading threading, ILogger logger)
+        {
+            if (!backendUnityModel.IsBound)
+            {
+                myState = EditorState.Disconnected;
+                UpdateFrontendEditorState(frontendBackendHost, logger);
+                return;
+            }
+
+            var task = backendUnityModel.GetUnityEditorState.Start(Unit.Instance);
+            task?.Result.AdviseOnce(modelLifetime, result =>
+            {
+                logger.Trace($"Got poll result from Unity editor: {result.Result}");
+                myState = result.Result;
+                UpdateFrontendEditorState(frontendBackendHost, logger);
+            });
+
+            Task.Delay(TimeSpan.FromSeconds(2), modelLifetime).ContinueWith(_ =>
+            {
+                if (task != null && !task.AsTask().IsCompleted)
+                {
+                    logger.Trace(
+                        "There were no response from Unity in two seconds. Set connection state to Disconnected.");
+                    myState = EditorState.Disconnected;
+                    UpdateFrontendEditorState(frontendBackendHost, logger);
+                }
+            }, threading.Tasks.GuardedMainThreadScheduler);
+        }
+
+        private void UpdateFrontendEditorState(FrontendBackendHost frontendBackendHost, ILogger logger)
+        {
+            logger.Trace($"Sending connection state to frontend. State: {myState}");
+            frontendBackendHost.Do(m => m.EditorState.Value = myState);
         }
     }
 }

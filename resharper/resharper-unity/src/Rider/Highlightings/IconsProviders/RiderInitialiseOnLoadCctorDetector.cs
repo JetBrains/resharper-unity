@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
     {
         private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly UnityEditorStateHost myUnityEditorStateHost;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
 
         public RiderInitialiseOnLoadCctorDetector(ISolution solution,
@@ -28,13 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                                   PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
                                                   UnityCodeInsightFieldUsageProvider fieldUsageProvider,
                                                   UnitySolutionTracker solutionTracker,
-                                                  UnityEditorStateHost unityEditorStateHost,
+                                                  BackendUnityHost backendUnityHost,
                                                   IconHost iconHost, IElementIdProvider elementIdProvider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, elementIdProvider)
         {
             myFieldUsageProvider = fieldUsageProvider;
             mySolutionTracker = solutionTracker;
-            myUnityEditorStateHost = unityEditorStateHost;
+            myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
         }
 
@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
                 myFieldUsageProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                     tooltip, text, myIconHost.Transform(iconId), GetActions(element),
-                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myUnityEditorStateHost));
+                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
             }
         }
     }
