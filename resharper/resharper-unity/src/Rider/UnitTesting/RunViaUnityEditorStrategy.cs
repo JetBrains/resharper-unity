@@ -485,20 +485,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         private List<TestFilter> GetFilters(IUnitTestRun run)
         {
-            var filters = new List<TestFilter>();
-
             var unitTestElements = new JetHashSet<IUnitTestElement>();
             unitTestElements.AddRange(run.Elements);
             var elements = unitTestElements
                 .Where(unitTestElement => unitTestElement is NUnitTestElement ||
                                           unitTestElement is NUnitRowTestElement).ToArray();
 
-            var testNames = elements.Where(a => !a.Explicit)
-                .Union(run.Launch.Criterion.Explicit)
-                .Select(p => p.Id.Id).ToList();
-
             var groups = new List<string>();
             var categories = new List<string>();
+            
+            var filters = elements.Where(a => !a.Explicit)
+                .Union(run.Launch.Criterion.Explicit)
+                .GroupBy(
+                    p => p.Id.Project.Name,
+                    p => p.Id.Id,
+                    (key, g) => new TestFilter(key, g.ToList(), groups, categories)).ToList();
+
+
             // https://github.com/JetBrains/resharper-unity/pull/1801#discussion_r472383244
 /*var criterion = run.Launch.Criterion.Criterion;
 if (criterion is ConjunctiveCriterion conjunctiveCriterion)
@@ -512,15 +515,14 @@ else if (criterion is TestAncestorCriterion ancestorCriterion)
    groups.AddRange(ancestorCriterion.AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$"));
 else if (criterion is CategoryCriterion categoryCriterion)
    categories.Add(categoryCriterion.Category.Name);*/
-
-            filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
+            
             return filters;
         }
 
         [CanBeNull]
         private IUnitTestElement GetElementById(IUnitTestRun run, string projectName, string resultTestId)
         {
-            return run.Elements.SingleOrDefault(a => a.Id.Project.Name == projectName && resultTestId == a.Id.Id);
+            return run.Launch.Runs.SelectMany(a=>a.Elements).SingleOrDefault(a => a.Id.Project.Name == projectName && resultTestId == a.Id.Id);
         }
 
         public void Cancel(IUnitTestRun run)
