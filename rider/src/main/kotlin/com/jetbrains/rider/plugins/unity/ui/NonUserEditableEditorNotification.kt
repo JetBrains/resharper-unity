@@ -9,10 +9,9 @@ import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.unity.EditorState
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.plugins.unity.util.isNonEditableUnityFile
 import com.jetbrains.rider.projectDir
@@ -31,7 +30,7 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
 
         if (project.isUnityProject() && isNonEditableUnityFile(file)) {
             val panel = EditorNotificationPanel()
-            panel.setText("This file is internal to Unity and should not be edited manually.")
+            panel.text = "This file is internal to Unity and should not be edited manually."
             addShowInUnityAction(project.lifetime, panel, file, project)
             return panel
         }
@@ -51,11 +50,9 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
             model.showFileInUnity.fire(File(file.path).relativeTo(File(project.projectDir.path)).invariantSeparatorsPath)
         }
 
-        link.isVisible = model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected
+        link.isVisible = project.isConnectedToEditor()
 
-        model.editorState.change.advise(lifetime) {
-            link.isVisible = it != EditorState.Disconnected
-        }
+        model.unityEditorConnected.advise(lifetime) { link.isVisible = it }
     }
 }
 
