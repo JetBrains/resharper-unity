@@ -7,6 +7,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.UnitTesting;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -18,17 +19,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private volatile IDictionary<string, FileSystemPath> myProjectNameToOutputFilePathMap;
 
-        public UnityRiderAlternateProjectOutputProvider(Lifetime lifetime, UnityEditorProtocol editorProtocol, IShellLocks shellLocks) : base(lifetime)
+        public UnityRiderAlternateProjectOutputProvider(Lifetime lifetime, BackendUnityProtocol backendUnityProtocol,
+                                                        IShellLocks shellLocks)
+            : base(lifetime)
         {
             myShellLocks = shellLocks;
 
             myProjectNameToOutputFilePathMap = new ConcurrentDictionary<string, FileSystemPath>();
 
-            editorProtocol.BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, model) =>
+            backendUnityProtocol.BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, model) =>
             {
                 model.CompiledAssemblies.AdviseNotNull(modelLifetime, compiledAssemblies =>
                 {
-                    myProjectNameToOutputFilePathMap = compiledAssemblies.ToDictionary(a => a.Name, a => FileSystemPath.TryParse(a.OutputPath));
+                    myProjectNameToOutputFilePathMap =
+                        compiledAssemblies.ToDictionary(a => a.Name, a => FileSystemPath.TryParse(a.OutputPath));
                     PathsChanged.Fire();
                 });
             });

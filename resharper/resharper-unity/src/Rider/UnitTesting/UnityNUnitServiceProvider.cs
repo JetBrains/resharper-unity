@@ -4,6 +4,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.Modules;
 using JetBrains.ReSharper.UnitTestFramework;
@@ -17,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     [SolutionComponent]
     public class UnityNUnitServiceProvider : NUnitServiceProvider
     {
-        private readonly UnityEditorProtocol myEditorProtocol;
+        private readonly BackendUnityProtocol myBackendUnityProtocol;
         private readonly RunViaUnityEditorStrategy myUnityEditorStrategy;
         private readonly UnitySolutionTracker myUnitySolutionTracker;
         private readonly FrontendBackendModel myFrontendBackendModel;
@@ -34,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             ISettingsCache settingsCache,
             UnitTestingCachingService cachingService,
             INUnitTestParametersProvider testParametersProvider,
-            UnityEditorProtocol editorProtocol,
+            BackendUnityProtocol backendUnityProtocol,
             RunViaUnityEditorStrategy runViaUnityEditorStrategy,
             UnitySolutionTracker unitySolutionTracker)
             : base(solution, psiModules, symbolCache, idFactory, elementManager, provider, settings, settingsStore,
@@ -44,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                 return;
 
             myFrontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
-            myEditorProtocol = editorProtocol;
+            myBackendUnityProtocol = backendUnityProtocol;
             myUnityEditorStrategy = runViaUnityEditorStrategy;
             myUnitySolutionTracker = unitySolutionTracker;
         }
@@ -54,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return IsUnityUnitTestStrategy() ? myUnityEditorStrategy : base.GetRunStrategy(element);
         }
 
-        public static bool IsUnityUnitTestStrategy(UnitySolutionTracker unitySolutionTracker, FrontendBackendModel frontendBackendModel, UnityEditorProtocol editorProtocol)
+        public static bool IsUnityUnitTestStrategy(UnitySolutionTracker unitySolutionTracker, FrontendBackendModel frontendBackendModel, BackendUnityProtocol editorProtocol)
         {
             if (!unitySolutionTracker.IsUnityProjectFolder.HasTrueValue())
                 return false;
@@ -66,7 +67,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
 
         public bool IsUnityUnitTestStrategy()
         {
-            return IsUnityUnitTestStrategy(myUnitySolutionTracker, myFrontendBackendModel, myEditorProtocol);
+            return IsUnityUnitTestStrategy(myUnitySolutionTracker, myFrontendBackendModel, myBackendUnityProtocol);
         }
     }
 }

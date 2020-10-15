@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private readonly ISolution mySolution;
         private readonly IThreading myThreading;
         private readonly IEditorManager myEditorManager;
-        private readonly UnityEditorProtocol myUnityEditorProtocol;
+        private readonly BackendUnityProtocol myBackendUnityProtocol;
         private readonly FrontendBackendHost myFrontendBackendHost;
 
         public PassthroughHost(Lifetime lifetime,
@@ -32,13 +32,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                                IThreading threading,
                                IEditorManager editorManager,
                                UnitySolutionTracker unitySolutionTracker,
-                               UnityEditorProtocol unityEditorProtocol,
+                               BackendUnityProtocol backendUnityProtocol,
                                FrontendBackendHost frontendBackendHost)
         {
             mySolution = solution;
             myThreading = threading;
             myEditorManager = editorManager;
-            myUnityEditorProtocol = unityEditorProtocol;
+            myBackendUnityProtocol = backendUnityProtocol;
             myFrontendBackendHost = frontendBackendHost;
 
             if (!frontendBackendHost.IsAvailable)
@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                     // Advise the backend/Unity model as high priority so we can add our subscriptions first
                     using (Signal.PriorityAdviseCookie.Create())
                     {
-                        unityEditorProtocol.BackendUnityModel.ViewNotNull(unityProjectLifetime,
+                        backendUnityProtocol.BackendUnityModel.ViewNotNull(unityProjectLifetime,
                             AdviseUnityToFrontendModel);
                     }
                 }
@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             // If we flowed the current value of fb.Play into backendUnityModel when it is recreated, we'd set it to
             // false, triggering play mode to end.
             // Step is simply since it's a non-stateful ISource<T>
-            var backendUnityModelProperty = myUnityEditorProtocol.BackendUnityModel;
+            var backendUnityModelProperty = myBackendUnityProtocol.BackendUnityModel;
 
             frontendBackendModel.Play.FlowChangesIntoRdDeferred(lifetime,
                 () => backendUnityModelProperty.Maybe.ValueOrDefault?.Play);

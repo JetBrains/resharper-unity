@@ -35,14 +35,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
         private readonly RiderBackgroundTaskHost myBackgroundTaskHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
-        private readonly UnityEditorProtocol myEditorProtocol;
+        private readonly BackendUnityProtocol myBackendUnityProtocol;
         private readonly IPersistentIndexManager myPersistentIndexManager;
         private readonly FileSystemPath mySolutionDirectoryPath;
 
-        public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution, SearchDomainFactory searchDomainFactory, IShellLocks locks,
-            AssetHierarchyProcessor assetHierarchyProcessor, FrontendBackendHost frontendBackendHost, UnityExternalFilesModuleFactory externalFilesModuleFactory,
-            UnityEditorProtocol editorProtocol, IPersistentIndexManager persistentIndexManager,
-            [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
+        public UnityEditorFindUsageResultCreator(Lifetime lifetime, ISolution solution,
+                                                 SearchDomainFactory searchDomainFactory, IShellLocks locks,
+                                                 AssetHierarchyProcessor assetHierarchyProcessor,
+                                                 FrontendBackendHost frontendBackendHost,
+                                                 UnityExternalFilesModuleFactory externalFilesModuleFactory,
+                                                 BackendUnityProtocol backendUnityProtocol,
+                                                 IPersistentIndexManager persistentIndexManager,
+                                                 [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
             myLifetime = lifetime;
             mySolution = solution;
@@ -51,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBackgroundTaskHost = backgroundTaskHost;
             myYamlSearchDomain = searchDomainFactory.CreateSearchDomain(externalFilesModuleFactory.PsiModule);
             myFrontendBackendHost = frontendBackendHost;
-            myEditorProtocol = editorProtocol;
+            myBackendUnityProtocol = backendUnityProtocol;
             myPersistentIndexManager = persistentIndexManager;
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
@@ -87,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 {
                     finder.FindAsync(new[] {declaredElement}, myYamlSearchDomain,
                         consumer, SearchPattern.FIND_USAGES ,pi,
-                        FinderSearchRoot.Empty, new UnityUsagesAsyncFinderCallback(lifetimeDef, myLifetime, consumer, myFrontendBackendHost, myEditorProtocol, myLocks,
+                        FinderSearchRoot.Empty, new UnityUsagesAsyncFinderCallback(lifetimeDef, myLifetime, consumer, myFrontendBackendHost, myBackendUnityProtocol, myLocks,
                             declaredElement.ShortName, selectRequest, focusUnity));
                 }
             });
@@ -173,12 +177,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             private readonly Lifetime myComponentLifetime;
             private readonly UnityUsagesFinderConsumer myConsumer;
             private readonly FrontendBackendHost myFrontendBackendHost;
-            private readonly UnityEditorProtocol myEditorProtocol;
+            private readonly BackendUnityProtocol myEditorProtocol;
             private readonly IShellLocks myShellLocks;
             private readonly string myDisplayName;
             private readonly AssetFindUsagesResultBase mySelected;
 
-            public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, FrontendBackendHost frontendBackendHost, UnityEditorProtocol editorProtocol, IShellLocks shellLocks,
+            public UnityUsagesAsyncFinderCallback(LifetimeDefinition progressBarLifetimeDefinition, Lifetime componentLifetime, UnityUsagesFinderConsumer consumer, FrontendBackendHost frontendBackendHost, BackendUnityProtocol editorProtocol, IShellLocks shellLocks,
                 string displayName, AssetFindUsagesResultBase selected, bool focusUnity)
             {
                 myProgressBarLifetimeDefinition = progressBarLifetimeDefinition;

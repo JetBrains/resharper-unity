@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
         public GeneratedFileNotification(Lifetime lifetime, FrontendBackendHost frontendBackendHost,
                                          UnitySolutionTracker solutionTracker,
                                          UnityEditorStateHost unityEditorStateHost,
-                                         UnityEditorProtocol editorProtocol,
+                                         BackendUnityProtocol backendUnityProtocol,
                                          ISolution solution,
                                          AsmDefNameCache asmDefNameCache,
                                          [CanBeNull] TextControlHost textControlHost = null,
@@ -72,7 +72,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                                         t.AllowSetForegroundWindow.Start(unityStateLifetime, Unit.Instance)
                                             .Result.Advise(unityStateLifetime, __ =>
                                             {
-                                                editorProtocol.BackendUnityModel.Value?.ShowFileInUnity.Fire(strPath);
+                                                backendUnityProtocol.BackendUnityModel.Value?.ShowFileInUnity.Fire(strPath);
                                             });
                                     });
                                 }));

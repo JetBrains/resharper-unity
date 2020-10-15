@@ -9,25 +9,24 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
 using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Util;
 using Newtonsoft.Json;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 {
     [SolutionComponent]
-    public class UnityEditorProtocol
+    public class BackendUnityProtocol
     {
         private readonly Lifetime myLifetime;
         private readonly SequentialLifetimes mySessionLifetimes;
@@ -47,7 +46,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         [NotNull]
         public readonly ViewableProperty<BackendUnityModel> BackendUnityModel = new ViewableProperty<BackendUnityModel>(null);
 
-        public UnityEditorProtocol(Lifetime lifetime, ILogger logger, FrontendBackendHost host,
+        public BackendUnityProtocol(Lifetime lifetime, ILogger logger, FrontendBackendHost host,
                                    IScheduler dispatcher, IShellLocks locks, ISolution solution,
                                    IApplicationWideContextBoundSettingStore settingsStore,
                                    UnitySolutionTracker unitySolutionTracker,

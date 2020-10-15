@@ -15,13 +15,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
     {
         private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
 
-        public BackendUnityHost(Lifetime lifetime, UnityEditorProtocol unityEditorProtocol,
+        public BackendUnityHost(Lifetime lifetime,
+                                BackendUnityProtocol backendUnityProtocol,
                                 FrontendBackendHost frontendBackendHost,
                                 JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics)
         {
             myUsageStatistics = usageStatistics;
 
-            unityEditorProtocol.BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, backendUnityModel) =>
+            backendUnityProtocol.BackendUnityModel.ViewNotNull(lifetime, (modelLifetime, backendUnityModel) =>
             {
                 InitialiseModel(backendUnityModel);
                 AdviseModel(backendUnityModel, modelLifetime);
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
                 // Tell the frontend if the backend/Unity connection is available
                 // (not actually passthrough)
                 var frontendBackendModel = frontendBackendHost.Model.NotNull("frontendBackendHost.Model != null");
-                unityEditorProtocol.BackendUnityModel.FlowIntoRdSafe(lifetime,
+                backendUnityProtocol.BackendUnityModel.FlowIntoRdSafe(lifetime,
                     backendUnityModel => backendUnityModel != null,
                     frontendBackendModel.SessionInitialized);
             }

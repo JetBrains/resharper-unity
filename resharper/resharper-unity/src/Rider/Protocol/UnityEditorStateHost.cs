@@ -9,7 +9,6 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Tasks;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Unity;
 using JetBrains.Util;
 using ILogger = JetBrains.Util.ILogger;
@@ -22,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         public readonly IProperty<EditorState> State;
 
         public UnityEditorStateHost(Lifetime lifetime, ILogger logger, FrontendBackendHost frontendBackendHost,
-                                    UnityEditorProtocol editorProtocol, IThreading locks,
+                                    BackendUnityProtocol backendUnityProtocol, IThreading locks,
                                     UnitySolutionTracker unitySolutionTracker,
                                     IIsApplicationActiveState isApplicationActiveState)
         {
@@ -38,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 
                 var updateConnectionAction = new Action(() =>
                 {
-                    var model = editorProtocol.BackendUnityModel.Value;
+                    var model = backendUnityProtocol.BackendUnityModel.Value;
                     if (model == null || !model.IsBound)
                     {
                         State.SetValue(EditorState.Disconnected);
