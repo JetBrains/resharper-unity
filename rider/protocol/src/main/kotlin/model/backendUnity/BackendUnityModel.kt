@@ -6,41 +6,41 @@ import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
 import model.lib.Library
 
 // backend <-> Unity Editor model, from point of view of backend, meaning:
-// Sink is a one-way signal the backend subscribes to
-// Source is a one-way signal the backend fires
+// Sink is a one-way signal the backend subscribes to (editor fires)
+// Source is a one-way signal the backend fires (editor subscribes)
 // Property and Signal are two-way and can be updated/fired on both ends. Property is stateful.
 // Call is an RPC method (with return value) that is called by the backend/implemented by the Unity Editor
 // Callback is an RPC method (with return value) that is implemented by the backend/called by the Unity Editor
 @Suppress("unused")
 object BackendUnityModel: Root() {
 
-    var RdOpenFileArgs = structdef {
+    private var RdOpenFileArgs = structdef {
         field("path", string)
         field("line", int)
         field("col", int)
     }
 
-    val FindUsagesSessionResult = structdef {
+    private val FindUsagesSessionResult = structdef {
         field("target", string)
         field("elements", array(AssetFindUsagesResultBase))
     }
 
-    val AssetFindUsagesResultBase = basestruct {
+    private val AssetFindUsagesResultBase = basestruct {
         field("expandInTreeView", bool)
         field("filePath", string)
         field("fileName", string)
         field("extension", string)
     }
 
-    val AssetFindUsagesResult = structdef extends AssetFindUsagesResultBase {
+    private val AssetFindUsagesResult = structdef extends AssetFindUsagesResultBase {
     }
 
-    val HierarchyFindUsagesResult = structdef extends AssetFindUsagesResultBase {
+    private val HierarchyFindUsagesResult = structdef extends AssetFindUsagesResultBase {
         field("pathElements", array(string))
         field("rootIndices", array(int))
     }
 
-    val TestResult = structdef {
+    private val TestResult = structdef {
         field("testId", string)
         field("projectName", string)
         field("output", string)
@@ -56,30 +56,30 @@ object BackendUnityModel: Root() {
         field("parentId", string)
     }
 
-    val RunResult = structdef {
+    private val RunResult = structdef {
         field("passed", bool)
     }
 
-    val TestMode = enum {
+    private val TestMode = enum {
         +"Both"
         +"Edit"
         +"Play"
     }
 
-    val TestFilter = structdef {
+    private val TestFilter = structdef {
         field("assemblyName", string)
         field("testNames", immutableList(string))
         field("groupNames", immutableList(string))
         field("testCategories", immutableList(string))
     }
 
-    val UnitTestLaunchClientControllerInfo = structdef {
+    private val UnitTestLaunchClientControllerInfo = structdef {
         field("codeBase", string)
         field("codeBaseDependencies", immutableList(string).nullable)
         field("typeName", string)
     }
 
-    val UnitTestLaunch = classdef {
+    private val UnitTestLaunch = classdef {
         field("sessionId", string)
         field("testFilters", immutableList(TestFilter))
         field("testMode", TestMode)
@@ -90,18 +90,18 @@ object BackendUnityModel: Root() {
         call("abort", void, bool)
     }
 
-    val RefreshType = enum {
+    private val RefreshType = enum {
         +"ForceRequestScriptReload"
         +"Force"
         +"Normal"
     }
 
-    val CompiledAssembly = structdef {
+    private val CompiledAssembly = structdef {
         field("name", string)
         field("outputPath", string)
     }
 
-    val UnityApplicationData = structdef{
+    val UnityApplicationData = structdef {
         field("applicationPath", string)
         field("applicationContentsPath", string)
         field("applicationVersion", string)
@@ -110,58 +110,81 @@ object BackendUnityModel: Root() {
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
+        // *************************************************************************************************************
+        //
+        // WARNING!
+        //
+        // Be very careful about stateful data, e.g. RD properties or locally cached values
+        //
+        // Properties are stateful, and are not reset to a default value when a connection is closed. This means the
+        // model in the backend will contain stale values when the Unity Editor connection is lost. This will happen
+        // every time the Unity Editor reloads an AppDomain (e.g. enters play mode, script compilation, etc) and of
+        // course when the Unity Editor is closed.
+        //
+        // Properties MUST be set to an initial value every time the Unity Editor model is created (on initial editor
+        // launch, and on every AppDomain reload).
+        //
+        // Take care with stale properties in the backend when the Unity Editor connection is lost. These properties
+        // will contain stale values, and SHOULD be rest if this stale data is dangerous (e.g. process IDs would be
+        // invalid, whereas application paths can be incorrect, but less likely to cause serious issues).
+        //
+        // Also take care with locally cached values. Make sure to update correctly when the protocol is reset, either
+        // using them to set initial values in the protocol, or updated from the protocol.
+        //
+        // *************************************************************************************************************
+
+        // TODO: Is this useful? Can we just try to call openFileLineCol directly?
         callback("isBackendConnected", void, bool).documentation = "Called from Unity to ensure backend is connected before opening a file"
 
         // TODO: This should be a simple property, reset when the protocol is lost
         call("getUnityEditorState", void, Library.UnityEditorState).documentation = "Polled from the backend to get what the editor is currently doing"
 
-        source("step", void)
-        signal("showFileInUnity", string)
-        signal("showUsagesInUnity", AssetFindUsagesResultBase)
-        signal("sendFindUsagesSessionResult", FindUsagesSessionResult)
-        signal("showPreferences", void)
+        callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
 
-        sink("log", Library.LogEvent)
-
-        callback("openFileLineCol", RdOpenFileArgs, bool)
-        call("updateUnityPlugin", string, bool)
-        call("refresh", RefreshType, void)
-        call("getCompilationResult", void, bool)
-        sink("compiledAssemblies", immutableList(CompiledAssembly))
-
-        call("runUnitTestLaunch", void, bool)
-
-        call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
-
-        call("generateUIElementsSchema", void, bool)
-        call("exitUnity", void, bool)
-
-
-        // statefull entities
-        // do not forget, that protocol between Rider and Unity could be destroyed when
-        // 1) Unity reloads AppDomain (e.g enter playmode, script compilation)
-        // 2) Unity lost connection to Rider
-
-        // If your value is not set on protocol initialization or depends on some Unity event,
-        // do not forget to store it outside protocol and restore when protocol is recreated
+        // Play controls. Play and pause are switches, step is an action
         property("play", bool)
         property("pause", bool)
+        source("step", void)
 
-        property("riderProcessId", int)
-        property("unityProcessId", int)
-
-        property("unityApplicationData", UnityApplicationData)
-        property("scriptingRuntime", int)
-
-        property("unitTestLaunch", UnitTestLaunch)
-
-        property("editorLogPath", string)
-        property("playerLogPath", string)
-
-        property("ScriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
+        // Logging
+        sink("log", Library.LogEvent)
         property("lastPlayTime", long)
         property("lastInitTime", long)
 
-        property("buildLocation", string)
+        // Actions called from the backend to Unity
+        // (These should probably be calls rather than signals, as they are definitely RPC calls, not events)
+        signal("showPreferences", void).documentation = "Opens the preferences dialog in Unity"
+        signal("showFileInUnity", string).documentation = "Switches to Unity, focuses the Project view and selects and pings the requested file"
+        signal("showUsagesInUnity", AssetFindUsagesResultBase).documentation = "Switches to Unity, focuses the Project view, select and ping either the selected file (prefab) or Inspector object"
+        signal("sendFindUsagesSessionResult", FindUsagesSessionResult).documentation = "Sends Find Usages results to Unity, to display in a tool window"
+
+        call("updateUnityPlugin", string, bool)
+        call("exitUnity", void, bool)
+        call("refresh", RefreshType, void).documentation = "Refresh the asset database"
+        call("getCompilationResult", void, bool).documentation = "Called after Refresh to get the compilation result before launching unit tests"
+        call("generateUIElementsSchema", void, bool).documentation = "Generates the UIElements schema, if available"
+        call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
+
+        sink("compiledAssemblies", immutableList(CompiledAssembly)).documentation = "Fired from Unity to provide a list of the assemblies compiled by Unity"
+
+        // Unit testing
+        property("unitTestLaunch", UnitTestLaunch).documentation = "Set the details of the current unit test session"
+        call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
+
+        property("riderProcessId", int).documentation = "The process ID of the frontend, set by the backend. Unity uses this in a call to AllowSetForegroundWindow, so that Rider can bring itself to the foreground when opening a file"
+
+        // Unity application data
+        property("unityApplicationData", UnityApplicationData)
+        property("editorLogPath", string)
+        property("playerLogPath", string)
+        property("unityProcessId", int).documentation = "Set from Unity to provide the process ID to the frontend, for the test runner, and so that" +
+                "Unity can bring itself to the foreground when opening a file, e.g. .asmdef"
+
+        // Unity application settings
+        property("scriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
+
+        // Unity project settings
+        property("scriptingRuntime", int).documentation = "Refers to ScriptingRuntimeVersion enum. Obsolete since 2019.3 when legacy Mono was removed"
+        property("buildLocation", string).documentation = "Path to the executable of the last built Standalone player, if it exists. Can be empty"
     }
 }
