@@ -236,9 +236,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                         myLogger.Trace("UnitTestLaunch.SetValue.");
                         model.UnitTestLaunch.SetValue(launch);
-                        SubscribeResults(run, taskLifetime, launch);
+                        SubscribeResults(run, lt, launch);
                         
-                        launch.RunResult.Advise(taskLifetime, result =>
+                        launch.RunResult.Advise(lt, result =>
                         {
                             if (launch.TestMode == TestMode.Play) 
                                 tcs.SetResult(result.Passed);
@@ -246,8 +246,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             {
                                 launch = new UnitTestLaunch(launch.SessionId, launch.TestFilters, TestMode.Play, launch.ClientControllerInfo);
                                 model.UnitTestLaunch.SetValue(launch);
-                                SubscribeResults(run, taskLifetime, launch);
-                                StartTests(run, tcs, taskLifetime);
+                                SubscribeResults(run, lt, launch);
+                                StartTests(run, tcs, lt);
                             }
                         });
                     });
