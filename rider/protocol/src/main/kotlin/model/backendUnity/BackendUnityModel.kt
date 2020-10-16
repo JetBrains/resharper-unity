@@ -56,16 +56,6 @@ object BackendUnityModel: Root() {
         field("parentId", string)
     }
 
-    private val RunResult = structdef {
-        field("passed", bool)
-    }
-
-    private val TestMode = enum {
-        +"Both"
-        +"Edit"
-        +"Play"
-    }
-
     private val TestFilter = structdef {
         field("assemblyName", string)
         field("testNames", immutableList(string))
@@ -82,11 +72,17 @@ object BackendUnityModel: Root() {
     private val UnitTestLaunch = classdef {
         field("sessionId", string)
         field("testFilters", immutableList(TestFilter))
-        field("testMode", TestMode)
+        field("testMode", enum("TestMode") {
+            +"Both"
+            +"Edit"
+            +"Play"
+        })
         field("clientControllerInfo", UnitTestLaunchClientControllerInfo.nullable)
         property("runStarted", bool)
         sink("testResult", TestResult)
-        sink("runResult", RunResult)
+        sink("runResult", structdef("RunResult") {
+            field("passed", bool)
+        })
         call("abort", void, bool)
     }
 
