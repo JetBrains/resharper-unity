@@ -1,10 +1,9 @@
-using JetBrains.Application.Threading;
 using JetBrains.Collections.Viewable;
-using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -33,22 +32,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             var result = new LocalList<IDeclaredElement>();
 
+            // it means we are in functional type member like methodDeclaration
             if (containingFunction == null)
                 return result;
 
             var declaration = currentNode as IDeclaration;
             var declaredElement = declaration?.DeclaredElement;
 
-            if (!ReferenceEquals(containingFunction, declaredElement))
+            if (declaredElement == null || !UnityCallGraphUtil.IsFunctionNode(declaration))
                 return result;
 
-            using (var processor = new ExpensiveCodeProcessor(declaration))
-            {
-                declaration.ProcessThisAndDescendants(processor);
+            var hasComment = UnityCallGraphUtil.HasAnalysisComment(declaration, MarkId, ReSharperControlConstruct.Kind.Restore);
 
-                if (processor.ProcessingIsFinished)
-                    result.Add(declaredElement);
+            if (hasComment == null)
+            {
+                using (var processor = new ExpensiveCodeProcessor(declaration))
+                {
+                    declaration.ProcessThisAndDescendants(processor);
+
+                    if (processor.ProcessingIsFinished)
+                        result.Add(declaredElement);
+                }
             }
+            else
+                result.Add(hasComment);
 
             return result;
         }
@@ -56,7 +63,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            return new LocalList<IDeclaredElement>();
+            var result = new LocalList<IDeclaredElement>();
+
+            // it means we are in functional type member like methodDeclaration
+            if (containingFunction == null)
+                return result;
+            
+            var element = UnityCallGraphUtil.HasAnalysisComment(currentNode, UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
+
+            if (element != null)
+                result.Add(element);
+
+            return result;
         }
 
         private sealed class ExpensiveCodeProcessor : UnityCallGraphCodeProcessor
@@ -74,9 +92,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         PerformanceCriticalCodeStageUtil.IsInvocationExpensive(invocationExpression):
                     case IReferenceExpression referenceExpression when
                         PerformanceCriticalCodeStageUtil.IsCameraMainUsage(referenceExpression):
-                    case IAttributesOwnerDeclaration attributesOwnerDeclaration when
-                        attributesOwnerDeclaration.DeclaredElement is IAttributesOwner attributesOwner &&
-                        PerformanceCriticalCodeStageUtil.HasPerformanceSensitiveAttribute(attributesOwner):
                     {
                         ProcessingIsFinished = true;
                         break;

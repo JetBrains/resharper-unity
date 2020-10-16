@@ -1,15 +1,13 @@
 using System.Collections.Generic;
-using JetBrains.Application.Settings;
-using JetBrains.Application.Settings.Implementation;
+using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis.AddDiscardAttribute;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
@@ -61,11 +59,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return false;
         }
 
-        private List<BulbMenuItem> GetBurstActions(IMethodDeclaration methodDeclaration)
+        private List<BulbMenuItem> GetBurstActions([NotNull] IMethodDeclaration methodDeclaration)
         {
             var result = new List<BulbMenuItem>();
             var textControl = myTextControlManager.LastFocusedTextControl.Value;
-            var bulbAction = new AddDiscardAttributeBulbAction(methodDeclaration);
+            var bulbAction = AddDiscardAttributeBulbAction.Create(methodDeclaration);
             
             result.Add(new BulbMenuItem(new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl),
                 bulbAction.Text, BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems));

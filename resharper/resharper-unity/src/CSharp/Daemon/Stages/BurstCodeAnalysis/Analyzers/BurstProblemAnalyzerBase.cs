@@ -16,11 +16,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             CheckAndAnalyze(t, consumer);
         }
 
-        protected abstract bool CheckAndAnalyze(T t, [CanBeNull] IHighlightingConsumer consumer);
+        protected abstract bool CheckAndAnalyze([NotNull] T t, [CanBeNull] IHighlightingConsumer consumer);
         public bool Check(ITreeNode node)
         {
             if (node is T t)
                 return CheckAndAnalyze(t, null);
+            
             return false;
         }
     }

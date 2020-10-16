@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
@@ -10,6 +9,7 @@ using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.AddExpensiveComment;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     if (declaration is IMethodDeclaration methodDeclaration)
                     {
-                        var bulbAction = new AddExpensiveMethodAttributeBulbAction(methodDeclaration);
+                        var bulbAction = AddExpensiveCommentBulbAction.CreateOrNull(methodDeclaration);
                         var textControl = myTextControlManager.LastFocusedTextControl.Value;
                         var result = FixedList.Of(new BulbMenuItem(
                             new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl), bulbAction.Text,

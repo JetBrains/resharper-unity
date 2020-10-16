@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnaly
                     parameter.OwnerType is IStruct @struct && @struct.GetClrName().Equals(KnownTypes.SharedStatic))
                 .ToList();
 
-            //CGTD can this be 0? 
+            //CGTD overlook. can this be 0? 
             Assertion.Assert(sharedStaticDomain.Count == 1, "SharedStatic should have 1 substitution");
 
             if (sharedStaticDomain.Count != 1)

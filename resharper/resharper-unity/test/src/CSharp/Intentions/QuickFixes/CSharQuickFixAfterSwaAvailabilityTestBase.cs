@@ -126,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
             daemonProcessMock.DoHighlighting(DaemonProcessKind.VISIBLE_DOCUMENT);
             
             // next line is only difference with QuickFixAvailabilityTestBase
-            // CGTD may be we should add virtual method to allow tests with swea?
+            // CGTD overlook. is it even ok?
             daemonProcessMock.DoHighlighting(DaemonProcessKind.GLOBAL_WARNINGS);
 
             return daemonProcessMock.Highlightings;

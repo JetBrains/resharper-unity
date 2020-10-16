@@ -141,44 +141,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             return false;
         }
-
-        public const string RESHARPER = "ReSharper";
-        public const string CHEAP_METHOD = "Cheap.Method";
-
-        public static bool HasPerformanceSensitiveAttribute(IAttributesSet method)
-        {
-            var attributes = method.GetAttributeInstances(DisableBySuppressMessageHelper.SuppressMessageAttributeFqn, AttributesSource.Self);
-
-            foreach (var attribute in attributes)
-            {
-                if (attribute.PositionParameterCount != 2)
-                    continue;
-                
-                var firstValue = attribute.PositionParameter(0);
-                
-                if (!firstValue.ConstantValue.IsString())
-                    continue;
-
-                var secondValue = attribute.PositionParameter(1);
-                
-                if (!secondValue.ConstantValue.IsString())
-                    continue;
-
-                var firstParameter = (string) firstValue.ConstantValue.Value;
-                
-                if (firstParameter != RESHARPER)
-                    continue;
-
-                var secondParameter = (string) secondValue.ConstantValue.Value;
-                
-                if (secondParameter != CHEAP_METHOD)
-                    continue;
-
-                return true;
-            }
-
-            return false;
-        }
         
         public static bool IsPerformanceCriticalRootMethod([CanBeNull] ITreeNode node)
         {

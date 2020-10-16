@@ -9,6 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
     {
         CallGraphContextElement Context { get; }
         CallGraphContextElement ProhibitedContext { get; }
-        void RunInspection(ITreeNode node, IDaemonProcess daemonProcess, DaemonProcessKind kind, [NotNull] IHighlightingConsumer consumer, [NotNull] CallGraphContext context);
+        void RunInspection([NotNull] ITreeNode node, IDaemonProcess daemonProcess, DaemonProcessKind kind, [NotNull] IHighlightingConsumer consumer, [NotNull] CallGraphContext context);
     }
 }

@@ -1,4 +1,4 @@
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis.AddDiscardAttribute;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActions

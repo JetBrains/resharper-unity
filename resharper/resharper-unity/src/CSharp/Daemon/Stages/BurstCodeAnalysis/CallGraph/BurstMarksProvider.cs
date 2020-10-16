@@ -40,6 +40,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             IDeclaredElement containingFunction)
         {
             var result = new HashSet<IDeclaredElement>();
+
+            if (containingFunction != null)
+            {
+                var hasComment =
+                    UnityCallGraphUtil.HasAnalysisComment(currentNode, MarkId, ReSharperControlConstruct.Kind.Restore);
+
+                if (hasComment != null)
+                    result.Add(hasComment);
+            }
+
             switch (currentNode)
             {
                 case IClassLikeDeclaration classLikeDeclaration

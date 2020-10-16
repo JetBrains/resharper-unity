@@ -4,6 +4,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -30,7 +31,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            return new LocalList<IDeclaredElement>();
+            var result = new LocalList<IDeclaredElement>();
+
+            // it means we are in functional type member like methodDeclaration
+            if (containingFunction == null)
+                return result;
+            
+            var element = UnityCallGraphUtil.HasAnalysisComment(currentNode, UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
+            
+            if(element != null)
+                result.Add(element);
+
+            return result;
         }
 
         private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
@@ -105,37 +117,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (coroutineOrInvoke != null)
                 result.Add(coroutineOrInvoke);
 
+            // it means we are in functional type member like methodDeclaration
             if (containingFunction == null)
                 return result;
+            
+            var hasComment = UnityCallGraphUtil.HasAnalysisComment(currentNode, MarkId, ReSharperControlConstruct.Kind.Restore);
 
-            var declaration = currentNode as IDeclaration;
-            var declaredElement = declaration?.DeclaredElement;
-
-            if (!ReferenceEquals(containingFunction, declaredElement))
-                return result;
-
-            using (var processor = new PerformanceCriticalCodeProcessor(declaration))
-            {
-                declaration.ProcessThisAndDescendants(processor);
-
-                if (processor.ProcessingIsFinished)
-                    result.Add(declaredElement);
-            }
+            if (hasComment != null)
+                result.Add(hasComment);
+            
+            var declaration = currentNode as ITypeMemberDeclaration;
+            var typeMember = declaration?.DeclaredElement;
+            
+            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(typeMember))
+                result.Add(typeMember);
 
             return result;
-        }
-
-        private sealed class PerformanceCriticalCodeProcessor : UnityCallGraphCodeProcessor
-        {
-            public PerformanceCriticalCodeProcessor(ITreeNode startTreeNode)
-                : base(startTreeNode)
-            {
-            }
-
-            public override void ProcessBeforeInterior(ITreeNode element)
-            {
-                ProcessingIsFinished = PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(element);
-            }
         }
     }
 }
