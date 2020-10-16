@@ -8,6 +8,7 @@ import model.lib.Library
 // backend <-> Unity Editor model, from point of view of backend, meaning:
 // Sink is a one-way signal the backend subscribes to (editor fires)
 // Source is a one-way signal the backend fires (editor subscribes)
+// Signal is a two-way signal that either end can subscribe to and fire
 // Property and Signal are two-way and can be updated/fired on both ends. Property is stateful.
 // Call is an RPC method (with return value) that is called by the backend/implemented by the Unity Editor
 // Callback is an RPC method (with return value) that is implemented by the backend/called by the Unity Editor
