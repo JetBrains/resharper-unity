@@ -43,7 +43,7 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
         val model = project.solution.frontendBackendModel
 
         val link = panel.createActionLabel("Show in Unity") {
-            val value = model.unityProcessId.valueOrNull
+            val value = model.unityApplicationData.valueOrNull?.unityProcessId
             if (value != null)
                 AllowUnitySetForegroundWindow(value)
 

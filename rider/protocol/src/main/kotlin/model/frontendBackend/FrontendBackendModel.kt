@@ -22,13 +22,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"PlayMode"
     }
 
-    private val UnityApplicationData = structdef {
-        field("applicationPath", string)
-        field("applicationContentsPath", string)
-        field("applicationVersion", string)
-        field("requiresRiderPackage", bool)
-    }
-
     private val shaderInternScope = internScope()
 
     private val shaderContextDataBase = baseclass {}
@@ -48,19 +41,20 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
 
+        // Connection to Unity editor
         property("unityEditorConnected", bool).documentation = "Is the backend/Unity protocol connected?"
         property("unityEditorState", Library.UnityEditorState)
 
+        // Unity application data
+        property("unityApplicationData", Library.UnityApplicationData)
+        property("requiresRiderPackage", bool)
+
+        // Events from the backend
         sink("activateRider", void)
         sink("activateUnityLogView", void)
         sink("showInstallMonoDialog", void)
 
         property("unitTestPreference", UnitTestLaunchPreference.nullable)
-
-        property("unityApplicationData", UnityApplicationData)
-
-        property("editorLogPath", string)
-        property("playerLogPath", string)
 
         property("play", bool)
         property("pause", bool)
@@ -89,7 +83,6 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         source("enableYamlParsing", void)
 
         signal("showFileInUnity", string)
-        property("unityProcessId", int)
 
         sink("onEditorModelOutOfSync", void)
         callback("attachDebuggerToUnityEditor", void, bool).documentation = "Tell the frontend to attach the debugger to the Unity editor. Used for debugging unit tests"

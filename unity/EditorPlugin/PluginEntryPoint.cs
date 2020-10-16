@@ -360,12 +360,14 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseEditorState(model);
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
-          InitEditorLogPath(model);
+          var paths = GetLogPaths();
 
-          model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
           model.UnityApplicationData.SetValue(new UnityApplicationData(
-            EditorApplication.applicationPath,
-            EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
+              EditorApplication.applicationPath,
+              EditorApplication.applicationContentsPath,
+              UnityUtils.UnityApplicationVersion,
+              paths[0], paths[1],
+              Process.GetCurrentProcess().Id));
           model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           var scriptCompilationDuringPlay = UnityUtils.UnityVersion >= new Version(2018, 2)
@@ -693,7 +695,7 @@ namespace JetBrains.Rider.Unity.Editor
       //    }
     }
 
-    private static void InitEditorLogPath(BackendUnityModel backendUnityModel)
+    private static string[] GetLogPaths()
     {
       // https://docs.unity3d.com/Manual/LogFiles.html
       //PlayerSettings.productName;
@@ -740,8 +742,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      backendUnityModel.EditorLogPath.SetValue(editorLogpath);
-      backendUnityModel.PlayerLogPath.SetValue(playerLogPath);
+      return new[] {editorLogpath, playerLogPath};
     }
 
     internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");

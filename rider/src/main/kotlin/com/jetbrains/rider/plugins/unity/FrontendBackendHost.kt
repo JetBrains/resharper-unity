@@ -87,7 +87,7 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
         model.allowSetForegroundWindow.set { _, _ ->
             val task = RdTask<Boolean>()
 
-            val id = model.unityProcessId.valueOrNull
+            val id = model.unityApplicationData.valueOrNull?.unityProcessId
             if (id == null)
                 task.set(false)
             else

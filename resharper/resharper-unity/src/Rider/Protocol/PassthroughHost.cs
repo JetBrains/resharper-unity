@@ -14,8 +14,6 @@ using JetBrains.TextControl;
 using JetBrains.Util;
 using JetBrains.Util.dataStructures.TypedIntrinsics;
 
-using UnityApplicationData = JetBrains.Rider.Model.Unity.FrontendBackend.UnityApplicationData;
-
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
 {
     [SolutionComponent]
@@ -135,6 +133,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             var frontendBackendModel = myFrontendBackendHost.Model.NotNull("frontendBackendModel != null");
             AdviseApplicationData(lifetime, backendUnityModel, frontendBackendModel);
             AdviseApplicationSettings(lifetime, backendUnityModel, frontendBackendModel);
+            AdviseProjectSettings(lifetime, backendUnityModel, frontendBackendModel);
             AdvisePlayControls(lifetime, backendUnityModel, frontendBackendModel);
             AdviseConsoleEvents(lifetime, backendUnityModel, frontendBackendModel);
             AdviseOpenFile(backendUnityModel, frontendBackendModel);
@@ -143,20 +142,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private static void AdviseApplicationData(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                   FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.UnityProcessId.FlowIntoRdSafe(lifetime, frontendBackendModel.UnityProcessId);
-
-            backendUnityModel.EditorLogPath.FlowIntoRdSafe(lifetime, frontendBackendModel.EditorLogPath);
-            backendUnityModel.PlayerLogPath.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayerLogPath);
-
-            // TODO: Is this application data or application settings?
-            backendUnityModel.BuildLocation.FlowIntoRdSafe(lifetime, frontendBackendModel.BuildLocation);
-
+            backendUnityModel.UnityApplicationData.FlowIntoRdSafe(lifetime, frontendBackendModel.UnityApplicationData);
             backendUnityModel.UnityApplicationData.FlowIntoRdSafe(lifetime, data =>
             {
                 var version = UnityVersion.Parse(data.ApplicationVersion);
-                return new UnityApplicationData(data.ApplicationPath, data.ApplicationContentsPath,
-                    data.ApplicationVersion, UnityVersion.RequiresRiderPackage(version));
-            }, frontendBackendModel.UnityApplicationData);
+                return UnityVersion.RequiresRiderPackage(version);
+            }, frontendBackendModel.RequiresRiderPackage);
         }
 
         private static void AdviseApplicationSettings(in Lifetime lifetime, BackendUnityModel backendUnityModel,
@@ -164,6 +155,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         {
             backendUnityModel.ScriptCompilationDuringPlay.FlowIntoRdSafe(lifetime,
                 frontendBackendModel.ScriptCompilationDuringPlay);
+        }
+
+        private static void AdviseProjectSettings(in Lifetime lifetime, BackendUnityModel backendUnityModel,
+                                                  FrontendBackendModel frontendBackendModel)
+        {
+            backendUnityModel.BuildLocation.FlowIntoRdSafe(lifetime, frontendBackendModel.BuildLocation);
         }
 
         private static void AdvisePlayControls(in Lifetime lifetime, BackendUnityModel backendUnityModel,

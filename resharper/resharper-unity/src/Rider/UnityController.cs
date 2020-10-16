@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JetBrains.Application.Components;
@@ -97,9 +98,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var model = myBackendUnityHost.BackendUnityModel.Value;
             if (model != null)
             {
-                if (model.UnityProcessId.HasValue())
+                if (model.UnityApplicationData.HasValue())
                 {
-                    return model.UnityProcessId.Value;
+                    return model.UnityApplicationData.Value.UnityProcessId;
                 }
             }
             // no protocol connection - try to fallback to EditorInstance.json
@@ -115,7 +116,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             myBackendUnityHost.BackendUnityModel.ViewNotNull(
                 lifetimeDef.Lifetime,
-                (lt, model) => model.UnityProcessId.Advise(lt, id => source.TrySetResult(id)));
+                (lt, backendUnityModel) =>
+                {
+                    backendUnityModel.UnityApplicationData.AdviseNotNull(lt, data =>
+                    {
+                        // We will always get a process ID from the Unity model
+                        if (data.UnityProcessId.HasValue)
+                            source.TrySetResult(data.UnityProcessId.Value);
+                        else
+                        {
+                            source.TrySetException(new InvalidDataException(
+                                "UnityApplicationData from Unity does not contain process ID"));
+                        }
+                    });
+                });
 
             // ToDo Replace timeout with CancellationToken
             Task.Delay(ourUnityConnectionTimeout, lifetimeDef.Lifetime).ContinueWith(_ =>

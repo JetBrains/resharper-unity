@@ -3,7 +3,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
-using JetBrains.Rider.Model.Unity.FrontendBackend;
+using JetBrains.Rider.Model.Unity;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
@@ -39,8 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 rd.UnityApplicationData.SetValue(new UnityApplicationData(info.Path.FullPath,
                     contentsPath.FullPath,
                     UnityVersion.VersionToString(info.Version),
-                    UnityVersion.RequiresRiderPackage(info.Version)
-                ));
+                    null, null, null));
+                rd.RequiresRiderPackage.Set(UnityVersion.RequiresRiderPackage(info.Version));
             });
         }
     }

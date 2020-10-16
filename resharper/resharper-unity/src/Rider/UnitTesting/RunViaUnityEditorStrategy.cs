@@ -112,7 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myBackendUnityHost.BackendUnityModel.ViewNotNull(lifetime, (lt, model) =>
             {
                 // This will set the current value, if it exists
-                model.UnityProcessId.FlowInto(lt, myUnityProcessId, id => id);
+                model.UnityApplicationData.FlowInto(lt, myUnityProcessId, data => data.UnityProcessId);
             });
         }
 

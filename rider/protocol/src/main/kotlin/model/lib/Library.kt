@@ -1,11 +1,9 @@
 package model.lib
 
+import com.jetbrains.rd.generator.nova.*
 import com.jetbrains.rd.generator.nova.PredefinedType.*
-import com.jetbrains.rd.generator.nova.Root
 import com.jetbrains.rd.generator.nova.csharp.CSharp50Generator
-import com.jetbrains.rd.generator.nova.field
 import com.jetbrains.rd.generator.nova.kotlin.Kotlin11Generator
-import com.jetbrains.rd.generator.nova.setting
 
 object Library : Root() {
 
@@ -20,6 +18,17 @@ object Library : Root() {
         +"Play"
         +"Pause"
         +"Refresh"
+    }
+
+    val UnityApplicationData = structdef {
+        field("applicationPath", string)
+        field("applicationContentsPath", string)
+        field("applicationVersion", string)
+        field("editorLogPath", string.nullable).documentation = "Editor log path. Will be null when Unity protocol is not connected"
+        field("playerLogPath", string.nullable).documentation = "Player log path. Will be null when Unity protocol is not connected"
+        field("unityProcessId", int.nullable).documentation = "Used by the test runner and the frontend uses it in a call " +
+            "to AllowSetForegroundWindow to allow Unity to bring itself to the foreground, e.g. when opening an .asmdef file." +
+            "Will be null when the Unity protocol is not connected"
     }
 
     val LogEvent = structdef {

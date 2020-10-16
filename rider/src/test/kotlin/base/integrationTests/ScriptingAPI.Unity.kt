@@ -16,7 +16,9 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rd.util.reactive.hasValue
 import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
@@ -145,9 +147,9 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
                 unityInstallationFinder.getApplicationVersion()
             )
             project.solution.dotCoverModel.unityCoverageRequested.fire(unityConfigurationParameters)
-            val unityProcessId = project.solution.frontendBackendModel.unityProcessId
-            waitAndPump(unityDefaultTimeout, { unityProcessId.valueOrNull != null }) { "Can't get unity process id" }
-            ProcessHandle.of(unityProcessId.valueOrNull!!.toLong()).get()
+            val unityApplicationData = project.solution.frontendBackendModel.unityApplicationData
+            waitAndPump(unityDefaultTimeout, { unityApplicationData.hasValue }) { "Can't get unity process id" }
+            ProcessHandle.of(unityApplicationData.valueOrThrow.unityProcessId!!.toLong()).get()
         }
         else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
     }

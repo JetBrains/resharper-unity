@@ -64,7 +64,8 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
                     addPlayModeArguments(args)
                 }
 
-                return ext.executor(UnityAttachConfigurationParametersImpl(project.solution.frontendBackendModel.unityProcessId.valueOrNull ?: pid,
+                val processId = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.unityProcessId ?: pid
+                return ext.executor(UnityAttachConfigurationParametersImpl(processId,
                     finder.getApplicationExecutablePath(), args, finder.getApplicationVersion()), environment)
             }
         }

@@ -101,12 +101,6 @@ object BackendUnityModel: Root() {
         field("outputPath", string)
     }
 
-    val UnityApplicationData = structdef {
-        field("applicationPath", string)
-        field("applicationContentsPath", string)
-        field("applicationVersion", string)
-    }
-
     init {
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.BackendUnity")
 
@@ -139,7 +133,18 @@ object BackendUnityModel: Root() {
         // TODO: This should be a simple property, reset when the protocol is lost
         call("getUnityEditorState", void, Library.UnityEditorState).documentation = "Polled from the backend to get what the editor is currently doing"
 
-        callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
+        // Unity application data. Static for the lifetime of the Unity editor
+        property("unityApplicationData", Library.UnityApplicationData)
+
+        // Unity application settings
+        property("scriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
+
+        // Unity project settings
+        property("scriptingRuntime", int).documentation = "Refers to ScriptingRuntimeVersion enum. Obsolete since 2019.3 when legacy Mono was removed"
+        property("buildLocation", string).documentation = "Path to the executable of the last built Standalone player, if it exists. Can be empty"
+
+        // Rider application settings (frontend)
+        property("riderProcessId", int).documentation = "The process ID of the frontend, set by the backend. Unity uses this in a call to AllowSetForegroundWindow, so that Rider can bring itself to the foreground when opening a file"
 
         // Play controls. Play and pause are switches, step is an action
         property("play", bool)
@@ -165,26 +170,12 @@ object BackendUnityModel: Root() {
         call("generateUIElementsSchema", void, bool).documentation = "Generates the UIElements schema, if available"
         call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
 
+        // Actions called from Unity to the backend
+        callback("openFileLineCol", RdOpenFileArgs, bool).documentation = "Called from Unity to quickly open a file in an existing Rider instance"
         sink("compiledAssemblies", immutableList(CompiledAssembly)).documentation = "Fired from Unity to provide a list of the assemblies compiled by Unity"
 
         // Unit testing
         property("unitTestLaunch", UnitTestLaunch).documentation = "Set the details of the current unit test session"
         call("runUnitTestLaunch", void, bool).documentation = "Start the unit test session. Results are fired via UnitTestLaunch.TestResult"
-
-        property("riderProcessId", int).documentation = "The process ID of the frontend, set by the backend. Unity uses this in a call to AllowSetForegroundWindow, so that Rider can bring itself to the foreground when opening a file"
-
-        // Unity application data
-        property("unityApplicationData", UnityApplicationData)
-        property("editorLogPath", string)
-        property("playerLogPath", string)
-        property("unityProcessId", int).documentation = "Set from Unity to provide the process ID to the frontend, for the test runner, and so that" +
-                "Unity can bring itself to the foreground when opening a file, e.g. .asmdef"
-
-        // Unity application settings
-        property("scriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
-
-        // Unity project settings
-        property("scriptingRuntime", int).documentation = "Refers to ScriptingRuntimeVersion enum. Obsolete since 2019.3 when legacy Mono was removed"
-        property("buildLocation", string).documentation = "Path to the executable of the last built Standalone player, if it exists. Can be empty"
     }
 }
