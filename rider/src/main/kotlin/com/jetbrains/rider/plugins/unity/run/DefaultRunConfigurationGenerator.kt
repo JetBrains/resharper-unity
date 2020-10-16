@@ -53,8 +53,8 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
             }
 
             // create it, if it doesn't exist, to advertise the feature
-            project.solution.frontendBackendModel.buildLocation.adviseNotNull(projectComponentLifetime){
-                if (!runManager.allSettings.any { it.type is UnityExeConfigurationType && it.factory is UnityExeConfigurationFactory }) {
+            project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(projectComponentLifetime) {
+                if (!runManager.allSettings.any { s -> s.type is UnityExeConfigurationType && s.factory is UnityExeConfigurationFactory }) {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
                     val runConfiguration = runManager.createConfiguration(configurationType.displayName, configurationType.factory)
                     val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration

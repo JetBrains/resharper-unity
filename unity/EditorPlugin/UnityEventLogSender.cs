@@ -113,7 +113,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         if (modelWithLifetime.Lifetime.IsAlive)
         {
-          modelWithLifetime.Model.OnConsoleLogEvent(logEvent);
+          modelWithLifetime.Model.ConsoleLogging.OnConsoleLogEvent(logEvent);
         }
       }
     }

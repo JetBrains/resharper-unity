@@ -54,7 +54,7 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
 
     private fun advisePlayModeChanges() {
         // Advise the changes, not the value. We don't want to do anything on the current value
-        unityModel.play.change.advise(debugProcess.sessionLifetime) { playMode ->
+        unityModel.playControls.play.change.advise(debugProcess.sessionLifetime) { playMode ->
             XDebuggerManager.getInstance(debugProcess.project).breakpointManager.getBreakpoints(UnityPausepointBreakpointType::class.java).forEach { breakpoint ->
                 // We're obviously connected
                 if (playMode) {
@@ -77,7 +77,7 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
     }
 
     private fun isInPlayMode(): Boolean {
-        return unityModel.play.valueOrDefault(false)
+        return unityModel.playControls.play.valueOrDefault(false)
     }
 
     private fun doRegisterBreakpoint(breakpoint: XLineBreakpoint<*>) {

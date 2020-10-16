@@ -130,28 +130,15 @@ object BackendUnityModel: Root() {
         // TODO: This should be a simple property, reset when the protocol is lost
         call("getUnityEditorState", void, Library.UnityEditorState).documentation = "Polled from the backend to get what the editor is currently doing"
 
-        // Unity application data. Static for the lifetime of the Unity editor
         property("unityApplicationData", Library.UnityApplicationData)
-
-        // Unity application settings
-        property("scriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
-
-        // Unity project settings
-        property("scriptingRuntime", int).documentation = "Refers to ScriptingRuntimeVersion enum. Obsolete since 2019.3 when legacy Mono was removed"
-        property("buildLocation", string).documentation = "Path to the executable of the last built Standalone player, if it exists. Can be empty"
+        field("unityApplicationSettings", Library.UnityApplicationSettings)
+        field("unityProjectSettings", Library.UnityProjectSettings)
 
         // Rider application settings (frontend)
         property("riderProcessId", int).documentation = "The process ID of the frontend, set by the backend. Unity uses this in a call to AllowSetForegroundWindow, so that Rider can bring itself to the foreground when opening a file"
 
-        // Play controls. Play and pause are switches, step is an action
-        property("play", bool)
-        property("pause", bool)
-        source("step", void)
-
-        // Logging
-        sink("onConsoleLogEvent", Library.LogEvent)
-        property("lastPlayTime", long)
-        property("lastInitTime", long)
+        field("playControls", Library.PlayControls)
+        field("consoleLogging", Library.ConsoleLogging)
 
         // Actions called from the backend to Unity
         // (These should probably be calls rather than signals, as they are definitely RPC calls, not events)

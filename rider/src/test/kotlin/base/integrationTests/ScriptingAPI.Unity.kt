@@ -269,13 +269,13 @@ fun printEditorLogEntry(stream: PrintStream, logEvent: LogEvent) {
 
 fun IntegrationTestWithFrontendBackendModel.play(waitForPlay: Boolean = true) {
     frameworkLogger.info("Start playing in unity editor")
-    frontendBackendModel.play.set(true)
+    frontendBackendModel.playControls.play.set(true)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
 fun IntegrationTestWithFrontendBackendModel.pause(waitForPause: Boolean = true) {
     frameworkLogger.info("Pause unity editor")
-    frontendBackendModel.pause.set(true)
+    frontendBackendModel.playControls.pause.set(true)
     if (waitForPause) waitForUnityEditorPauseMode()
 }
 
@@ -283,21 +283,21 @@ fun IntegrationTestWithFrontendBackendModel.pause(waitForPause: Boolean = true) 
 fun IntegrationTestWithFrontendBackendModel.step(waitForStep: Boolean = true, logMessageAfterStep: String = "2000000") {
     frameworkLogger.info("Make step in unity editor")
     if (waitForStep) {
-        waitForEditorLogsAfterAction(logMessageAfterStep) { frontendBackendModel.step.fire(Unit) }
+        waitForEditorLogsAfterAction(logMessageAfterStep) { frontendBackendModel.playControls.step.fire(Unit) }
     } else {
-        frontendBackendModel.step.fire(Unit)
+        frontendBackendModel.playControls.step.fire(Unit)
     }
 }
 
 fun IntegrationTestWithFrontendBackendModel.stopPlaying(waitForIdle: Boolean = true) {
     frameworkLogger.info("Stop playing in unity editor")
-    frontendBackendModel.play.set(false)
+    frontendBackendModel.playControls.play.set(false)
     if (waitForIdle) waitForUnityEditorIdleMode()
 }
 
 fun IntegrationTestWithFrontendBackendModel.unpause(waitForPlay: Boolean = true) {
     frameworkLogger.info("Unpause unity editor")
-    frontendBackendModel.pause.set(false)
+    frontendBackendModel.playControls.pause.set(false)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
@@ -311,7 +311,7 @@ fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg 
     val logLifetime = Lifetime.Eternal.createNested()
     val setOfMessages = expectedMessages.toHashSet()
     val editorLogEntries = mutableListOf<LogEvent>()
-    frontendBackendModel.onConsoleLogEvent.adviseNotNull(logLifetime) {
+    frontendBackendModel.consoleLogging.onConsoleLogEvent.adviseNotNull(logLifetime) {
         if (setOfMessages.remove(it.message)) {
             editorLogEntries.add(it)
         }

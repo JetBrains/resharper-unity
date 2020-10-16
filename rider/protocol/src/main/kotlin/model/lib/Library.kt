@@ -20,6 +20,8 @@ object Library : Root() {
         +"Refresh"
     }
 
+    // This is a structdef because the values do not change during the lifetime of the application
+    // (Note that the struct might be set and populate via heuristics, not necessarily a running instance of Unity)
     val UnityApplicationData = structdef {
         field("applicationPath", string)
         field("applicationContentsPath", string)
@@ -31,19 +33,17 @@ object Library : Root() {
             "Will be null when the Unity protocol is not connected"
     }
 
-    val LogEvent = structdef {
-        field("time", long)
-        field("type", enum("LogEventType") {
-            +"Error"
-            +"Warning"
-            +"Message"
+    val UnityApplicationSettings = aggregatedef("UnityApplicationSettings") {
+        property("scriptCompilationDuringPlay", enum("ScriptCompilationDuringPlay") {
+            +"RecompileAndContinuePlaying"
+            +"RecompileAfterFinishedPlaying"
+            +"StopPlayingAndRecompile"
         })
-        field("mode", enum("LogEventMode") {
-            +"Edit"
-            +"Play"
-        })
-        field("message", string)
-        field("stackTrace", string)
+    }
+
+    val UnityProjectSettings = aggregatedef("UnityProjectSettings") {
+        property("scriptingRuntime", int).documentation = "Refers to ScriptingRuntimeVersion enum. Obsolete since 2019.3 when legacy Mono was removed"
+        property("buildLocation", string).documentation = "Path to the executable of the last built Standalone player, if it exists. Can be empty"
     }
 
     val RunMethodData = structdef {
@@ -58,9 +58,30 @@ object Library : Root() {
         field("stackTrace", string)
     }
 
-    val ScriptCompilationDuringPlay = enum {
-        +"RecompileAndContinuePlaying"
-        +"RecompileAfterFinishedPlaying"
-        +"StopPlayingAndRecompile"
+    val PlayControls = aggregatedef("PlayControls") {
+        property("play", bool)
+        property("pause", bool)
+        signal("step", void)
+    }
+
+    private val LogEvent = structdef {
+        field("time", long)
+        field("type", enum("LogEventType") {
+            +"Error"
+            +"Warning"
+            +"Message"
+        })
+        field("mode", enum("LogEventMode") {
+            +"Edit"
+            +"Play"
+        })
+        field("message", string)
+        field("stackTrace", string)
+    }
+
+    val ConsoleLogging = aggregatedef("ConsoleLogging") {
+        sink("onConsoleLogEvent", LogEvent)
+        property("lastPlayTime", long)
+        property("lastInitTime", long)
     }
 }

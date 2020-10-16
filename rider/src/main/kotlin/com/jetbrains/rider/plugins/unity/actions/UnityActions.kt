@@ -10,11 +10,11 @@ class PlayInUnityAction : ToggleAction(), DumbAware {
 
     override fun isSelected(e: AnActionEvent):Boolean {
         val model = e.getFrontendBackendModel() ?: return false
-        return model.play.valueOrDefault(false)
+        return model.playControls.play.valueOrDefault(false)
     }
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
-        e.getFrontendBackendModel()?.play?.set(value)
+        e.getFrontendBackendModel()?.playControls?.play?.set(value)
     }
 
     override fun update(e: AnActionEvent) {
@@ -27,16 +27,16 @@ class PauseInUnityAction : ToggleAction(), DumbAware {
 
     override fun isSelected(e: AnActionEvent):Boolean {
         val model = e.getFrontendBackendModel() ?: return false
-        return model.pause.valueOrDefault(false)
+        return model.playControls.pause.valueOrDefault(false)
     }
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
-        e.getFrontendBackendModel()?.pause?.set(value)
+        e.getFrontendBackendModel()?.playControls?.pause?.set(value)
     }
 
     override fun update(e: AnActionEvent) {
         e.handleUpdateForUnityConnection {
-            it.play.valueOrDefault(false)
+            it.playControls.play.valueOrDefault(false)
         }
         super.update(e)
     }
@@ -45,12 +45,12 @@ class PauseInUnityAction : ToggleAction(), DumbAware {
 class StepInUnityAction : AnAction(), DumbAware {
 
     override fun actionPerformed(e: AnActionEvent) {
-        e.getFrontendBackendModel()?.step?.fire(Unit)
+        e.getFrontendBackendModel()?.playControls?.step?.fire(Unit)
     }
 
     override fun update(e: AnActionEvent) {
         e.handleUpdateForUnityConnection {
-            it.play.valueOrDefault(false)
+            it.playControls.play.valueOrDefault(false)
         }
     }
 }

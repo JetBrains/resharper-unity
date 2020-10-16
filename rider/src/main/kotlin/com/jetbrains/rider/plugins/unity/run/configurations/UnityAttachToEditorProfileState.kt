@@ -44,9 +44,9 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                             logger.info("Pass value to backend, which will push Unity to enter play mode.")
                             lt.bracket(opening = {
                                 // pass value to backend, which will push Unity to enter play mode.
-                                executionEnvironment.project.solution.frontendBackendModel.play.set(true)
+                                executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(true)
                             }, terminationAction = {
-                                executionEnvironment.project.solution.frontendBackendModel.play.set(false)
+                                executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(false)
                             })
                         }
                     }

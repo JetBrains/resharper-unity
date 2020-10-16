@@ -76,11 +76,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
             // Step is simply since it's a non-stateful ISource<T>
             var backendUnityModelProperty = myBackendUnityHost.BackendUnityModel;
 
-            frontendBackendModel.Play.FlowChangesIntoRdDeferred(lifetime,
-                () => backendUnityModelProperty.Maybe.ValueOrDefault?.Play);
-            frontendBackendModel.Pause.FlowChangesIntoRdDeferred(lifetime,
-                () => backendUnityModelProperty.Maybe.ValueOrDefault?.Pause);
-            frontendBackendModel.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.Step());
+            frontendBackendModel.PlayControls.Play.FlowChangesIntoRdDeferred(lifetime,
+                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Play);
+            frontendBackendModel.PlayControls.Pause.FlowChangesIntoRdDeferred(lifetime,
+                () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Pause);
+            frontendBackendModel.PlayControls.Step.Advise(lifetime, () => backendUnityModelProperty.Maybe.ValueOrDefault?.PlayControls.Step.Fire());
 
             // Called from frontend to generate the UIElements schema files
             frontendBackendModel.GenerateUIElementsSchema.Set((l, u) =>
@@ -153,30 +153,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private static void AdviseApplicationSettings(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                       FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.ScriptCompilationDuringPlay.FlowIntoRdSafe(lifetime,
-                frontendBackendModel.ScriptCompilationDuringPlay);
+            backendUnityModel.UnityApplicationSettings.ScriptCompilationDuringPlay.FlowIntoRdSafe(lifetime,
+                frontendBackendModel.UnityApplicationSettings.ScriptCompilationDuringPlay);
         }
 
         private static void AdviseProjectSettings(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                   FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.BuildLocation.FlowIntoRdSafe(lifetime, frontendBackendModel.BuildLocation);
+            backendUnityModel.UnityProjectSettings.BuildLocation.FlowIntoRdSafe(lifetime,
+                frontendBackendModel.UnityProjectSettings.BuildLocation);
         }
 
         private static void AdvisePlayControls(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.Play.FlowIntoRdSafe(lifetime, frontendBackendModel.Play);
-            backendUnityModel.Pause.FlowIntoRdSafe(lifetime, frontendBackendModel.Pause);
+            backendUnityModel.PlayControls.Play.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Play);
+            backendUnityModel.PlayControls.Pause.FlowIntoRdSafe(lifetime, frontendBackendModel.PlayControls.Pause);
         }
 
         private static void AdviseConsoleEvents(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                 FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.OnConsoleLogEvent.Advise(lifetime, frontendBackendModel.OnConsoleLogEvent);
+            backendUnityModel.ConsoleLogging.OnConsoleLogEvent.Advise(lifetime, frontendBackendModel.ConsoleLogging.OnConsoleLogEvent.Fire);
 
-            backendUnityModel.LastInitTime.FlowIntoRdSafe(lifetime, frontendBackendModel.LastInitTime);
-            backendUnityModel.LastPlayTime.FlowIntoRdSafe(lifetime, frontendBackendModel.LastPlayTime);
+            backendUnityModel.ConsoleLogging.LastInitTime.FlowIntoRdSafe(lifetime, frontendBackendModel.ConsoleLogging.LastInitTime);
+            backendUnityModel.ConsoleLogging.LastPlayTime.FlowIntoRdSafe(lifetime, frontendBackendModel.ConsoleLogging.LastPlayTime);
         }
 
         private void AdviseOpenFile(BackendUnityModel backendUnityModel, FrontendBackendModel frontendBackendModel)

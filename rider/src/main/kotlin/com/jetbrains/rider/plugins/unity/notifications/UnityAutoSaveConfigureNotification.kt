@@ -49,10 +49,10 @@ class UnityAutoSaveConfigureNotification(project: Project) : ProtocolSubscribedP
                         if (model.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Play)
                             return
 
-                        if (!model.scriptCompilationDuringPlay.hasValue)
+                        if (!model.unityApplicationSettings.scriptCompilationDuringPlay.hasValue)
                             return
 
-                        if (model.scriptCompilationDuringPlay.valueOrThrow != ScriptCompilationDuringPlay.RecompileAndContinuePlaying)
+                        if (model.unityApplicationSettings.scriptCompilationDuringPlay.valueOrThrow != ScriptCompilationDuringPlay.RecompileAndContinuePlaying)
                             return
 
                         if (!lifetimeDefinition.isAlive)

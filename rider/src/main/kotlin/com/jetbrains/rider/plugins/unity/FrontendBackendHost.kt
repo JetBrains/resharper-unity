@@ -41,7 +41,7 @@ class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent
             }
         }
 
-        model.onConsoleLogEvent.adviseNotNull(projectComponentLifetime) {
+        model.consoleLogging.onConsoleLogEvent.adviseNotNull(projectComponentLifetime) {
             logSignal.fire(it)
         }
 

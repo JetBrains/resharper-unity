@@ -368,12 +368,13 @@ namespace JetBrains.Rider.Unity.Editor
               UnityUtils.UnityApplicationVersion,
               paths[0], paths[1],
               Process.GetCurrentProcess().Id));
-          model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           var scriptCompilationDuringPlay = UnityUtils.UnityVersion >= new Version(2018, 2)
               ? EditorPrefsWrapper.ScriptCompilationDuringPlay
               : PluginSettings.AssemblyReloadSettings;
-          model.ScriptCompilationDuringPlay.Set(scriptCompilationDuringPlay);
+          model.UnityApplicationSettings.ScriptCompilationDuringPlay.Set(scriptCompilationDuringPlay);
+
+          model.UnityProjectSettings.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
           AdviseGenerateUISchema(model);
@@ -405,11 +406,11 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void GetInitTime(BackendUnityModel model)
     {
-        model.LastInitTime.SetValue(ourInitTime);
+        model.ConsoleLogging.LastInitTime.SetValue(ourInitTime);
 
 #if !UNITY_4_7 && !UNITY_5_5 && !UNITY_5_6
         var enterPlayTime = long.Parse(SessionState.GetString("Rider_EnterPlayMode_DateTime", "0"));
-        model.LastPlayTime.SetValue(enterPlayTime);
+        model.ConsoleLogging.LastPlayTime.SetValue(enterPlayTime);
 #endif
     }
 
@@ -471,7 +472,7 @@ namespace JetBrains.Rider.Unity.Editor
         if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
             path = Path.Combine(Path.Combine(Path.Combine(path, "Contents"), "MacOS"), PlayerSettings.productName);
         if (!string.IsNullOrEmpty(path) && File.Exists(path))
-            model.BuildLocation.Value = path;
+            model.UnityProjectSettings.BuildLocation.Value = path;
     }
 
     private static void AdviseGenerateUISchema(BackendUnityModel model)
@@ -637,24 +638,24 @@ namespace JetBrains.Rider.Unity.Editor
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
 
-          if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
+          if (!model.PlayControls.Play.HasValue() || model.PlayControls.Play.HasValue() && model.PlayControls.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
-            model.Play.SetValue(isPlaying);
+            model.PlayControls.Play.SetValue(isPlaying);
           }
 
           var isPaused = EditorApplication.isPaused;
-          if (!model.Pause.HasValue() || model.Pause.HasValue() && model.Pause.Value != isPaused)
+          if (!model.PlayControls.Pause.HasValue() || model.PlayControls.Pause.HasValue() && model.PlayControls.Pause.Value != isPaused)
           {
             ourLogger.Verbose("Reporting pause mode change to model: {0}", isPaused);
-            model.Pause.SetValue(isPaused);
+            model.PlayControls.Pause.SetValue(isPaused);
           }
         });
       });
 
       syncPlayState();
 
-      model.Play.Advise(connectionLifetime, play =>
+      model.PlayControls.Play.Advise(connectionLifetime, play =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -667,7 +668,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.Pause.Advise(connectionLifetime, pause =>
+      model.PlayControls.Pause.Advise(connectionLifetime, pause =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -676,7 +677,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.Step.Advise(connectionLifetime, x =>
+      model.PlayControls.Step.Advise(connectionLifetime, x =>
       {
         MainThreadDispatcher.Instance.Queue(EditorApplication.Step);
       });
@@ -791,7 +792,7 @@ namespace JetBrains.Rider.Unity.Editor
     [OnOpenAsset]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (!PluginEntryPoint.IsRiderDefaultEditor())
+      if (!IsRiderDefaultEditor())
         return false;
 
       // if (UnityUtils.UnityVersion >= new Version(2019, 2)
@@ -805,7 +806,7 @@ namespace JetBrains.Rider.Unity.Editor
     //[OnOpenAsset] // todo: restore, when we move this code to package, otherwise when OnOpenedAsset is called, there is a LogError in older Unity
     static bool OnOpenedAsset(int instanceID, int line, int column)
     {
-      if (!PluginEntryPoint.IsRiderDefaultEditor())
+      if (!IsRiderDefaultEditor())
         return false;
 
       if (UnityUtils.UnityVersion < new Version(2019, 2))

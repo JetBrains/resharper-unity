@@ -46,15 +46,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("unityEditorConnected", bool).documentation = "Is the backend/Unity protocol connected?"
         property("unityEditorState", Library.UnityEditorState)
 
-        // Unity application data
         property("unityApplicationData", Library.UnityApplicationData)
         property("requiresRiderPackage", bool)
-
-        // Unity application settings
-        property("scriptCompilationDuringPlay", Library.ScriptCompilationDuringPlay)
-
-        // Unity project settings
-        property("buildLocation", string).documentation = "The path to the last built standalone player. Can be null"
+        field("unityApplicationSettings", Library.UnityApplicationSettings)
+        field("unityProjectSettings", Library.UnityProjectSettings)
 
         // Settings stored in the backend
         field("backendSettings", aggregatedef("BackendSettings") {
@@ -69,15 +64,8 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         property("hasUnityReference", bool).documentation = "True when the current project is a Unity project. Either full Unity project or class library"
         property("externalDocContext", string).documentation = "Fully qualified type or method name at the location of the text caret. Used for external help URL"
 
-        // Play controls. Play and pause are two way switches, step is an action
-        property("play", bool)
-        property("pause", bool)
-        source("step", void)
-
-        // Logging
-        sink("onConsoleLogEvent", Library.LogEvent)
-        property("lastPlayTime", long)
-        property("lastInitTime", long)
+        field("playControls", Library.PlayControls)
+        field("consoleLogging", Library.ConsoleLogging)
 
         // Unit testing
         property("unitTestPreference", UnitTestLaunchPreference.nullable).documentation = "Selected unit testing mode. Everything is handled by the backend, but this setting is from a frontend combobox"
