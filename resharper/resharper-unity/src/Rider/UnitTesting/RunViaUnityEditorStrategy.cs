@@ -511,7 +511,7 @@ else if (criterion is CategoryCriterion categoryCriterion)
         [CanBeNull]
         private IUnitTestElement GetElementById(IUnitTestRun run, string projectName, string resultTestId)
         {
-            return run.Launch.Runs.SelectMany(a=>a.Elements).SingleOrDefault(a => a.Id.Project.Name == projectName && resultTestId == a.Id.Id);
+            return run.Elements.SingleOrDefault(a => a.Id.Project.Name == projectName && resultTestId == a.Id.Id);
         }
 
         public void Cancel(IUnitTestRun run)
