@@ -311,7 +311,7 @@ fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg 
     val logLifetime = Lifetime.Eternal.createNested()
     val setOfMessages = expectedMessages.toHashSet()
     val editorLogEntries = mutableListOf<LogEvent>()
-    frontendBackendModel.onUnityLogEvent.adviseNotNull(logLifetime) {
+    frontendBackendModel.onConsoleLogEvent.adviseNotNull(logLifetime) {
         if (setOfMessages.remove(it.message)) {
             editorLogEntries.add(it)
         }

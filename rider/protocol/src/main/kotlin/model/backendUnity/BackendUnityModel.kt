@@ -152,7 +152,7 @@ object BackendUnityModel: Root() {
         source("step", void)
 
         // Logging
-        sink("log", Library.LogEvent)
+        sink("onConsoleLogEvent", Library.LogEvent)
         property("lastPlayTime", long)
         property("lastInitTime", long)
 

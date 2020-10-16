@@ -68,7 +68,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         // doesn't seem like the best way to do this
         property("externalDocContext", string)
 
-        sink("onUnityLogEvent", Library.LogEvent)
+        sink("onConsoleLogEvent", Library.LogEvent)
 
         source("installEditorPlugin", void)
 

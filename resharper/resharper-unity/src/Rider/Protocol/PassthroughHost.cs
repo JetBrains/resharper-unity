@@ -173,7 +173,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         private static void AdviseConsoleEvents(in Lifetime lifetime, BackendUnityModel backendUnityModel,
                                                 FrontendBackendModel frontendBackendModel)
         {
-            backendUnityModel.Log.Advise(lifetime, frontendBackendModel.OnUnityLogEvent);
+            backendUnityModel.OnConsoleLogEvent.Advise(lifetime, frontendBackendModel.OnConsoleLogEvent);
 
             backendUnityModel.LastInitTime.FlowIntoRdSafe(lifetime, frontendBackendModel.LastInitTime);
             backendUnityModel.LastPlayTime.FlowIntoRdSafe(lifetime, frontendBackendModel.LastPlayTime);
