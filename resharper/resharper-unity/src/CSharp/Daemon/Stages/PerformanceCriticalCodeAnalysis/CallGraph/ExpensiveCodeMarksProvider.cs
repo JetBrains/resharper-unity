@@ -42,9 +42,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (declaredElement == null || !UnityCallGraphUtil.IsFunctionNode(declaration))
                 return result;
 
-            var hasComment = UnityCallGraphUtil.HasAnalysisComment(declaration, MarkId, ReSharperControlConstruct.Kind.Restore);
+            var hasComment = false;
+            
+            if(declaration is IFunctionDeclaration functionDeclaration)
+                hasComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration, MarkId, ReSharperControlConstruct.Kind.Restore);
 
-            if (hasComment == null)
+            if (hasComment)
+                result.Add(declaredElement);
+            else
             {
                 using (var processor = new ExpensiveCodeProcessor(declaration))
                 {
@@ -54,8 +59,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                         result.Add(declaredElement);
                 }
             }
-            else
-                result.Add(hasComment);
 
             return result;
         }
@@ -68,11 +71,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             // it means we are in functional type member like methodDeclaration
             if (containingFunction == null)
                 return result;
-            
-            var element = UnityCallGraphUtil.HasAnalysisComment(currentNode, UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
 
-            if (element != null)
-                result.Add(element);
+            var functionDeclaration = currentNode as IFunctionDeclaration;
+            var element = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration, UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
+
+            if (element)
+                result.Add(functionDeclaration.DeclaredElement);
 
             return result;
         }

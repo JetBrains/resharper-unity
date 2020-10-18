@@ -36,11 +36,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             // it means we are in functional type member like methodDeclaration
             if (containingFunction == null)
                 return result;
+
+            var functionDeclaration = currentNode as IFunctionDeclaration;
+            var element = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration, UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
             
-            var element = UnityCallGraphUtil.HasAnalysisComment(currentNode, UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
-            
-            if(element != null)
-                result.Add(element);
+            if(element)
+                result.Add(functionDeclaration.DeclaredElement);
 
             return result;
         }
@@ -120,11 +121,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             // it means we are in functional type member like methodDeclaration
             if (containingFunction == null)
                 return result;
-            
-            var hasComment = UnityCallGraphUtil.HasAnalysisComment(currentNode, MarkId, ReSharperControlConstruct.Kind.Restore);
 
-            if (hasComment != null)
-                result.Add(hasComment);
+            var functionDeclaration = currentNode as IFunctionDeclaration;
+            var hasComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration, MarkId, ReSharperControlConstruct.Kind.Restore);
+
+            if (hasComment)
+                result.Add(functionDeclaration.DeclaredElement);
             
             var declaration = currentNode as ITypeMemberDeclaration;
             var typeMember = declaration?.DeclaredElement;

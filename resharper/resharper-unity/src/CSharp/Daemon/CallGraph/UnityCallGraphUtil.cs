@@ -38,15 +38,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
 
         public const string PerformanceExpensiveComment = "Unity.CG";
 
-        [CanBeNull] [Pure]
-        public static IDeclaredElement HasAnalysisComment(ITreeNode node, string comment, ReSharperControlConstruct.Kind status)
+        [Pure]
+        [ContractAnnotation("functionDeclaration: null => false")]
+        public static bool HasAnalysisComment([CanBeNull] IFunctionDeclaration functionDeclaration, string comment, ReSharperControlConstruct.Kind status)
         {
-            var methodDeclaration = node as IMethodDeclaration;
+            if (functionDeclaration == null)
+                return false;
 
-            if (methodDeclaration == null)
-                return null;
-
-            var current = methodDeclaration.PrevSibling;
+            var current = functionDeclaration.PrevSibling;
 
             while (current is IWhitespaceNode || current is ICSharpCommentNode)
             {
@@ -63,25 +62,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
                         foreach (var id in configuration.GetControlIds())
                         {
                             if (id == comment)
-                                return methodDeclaration.DeclaredElement;
+                                return true;
                         }
                     }
 
                     current = current.PrevSibling;
                 }
             }
-                    
-            // 1. ban has more respect than not ban
-            // 2. every marks provider should have their respectful comments
-            // 3. every comment should have their at least context actions
-            // how? 
-            // static function that accepts treenode and string analysis name. string should be interned
-            // and overloads for every marks provider with consts
-            // w2d also? like if -> the only thing that came up to my mind is new abstract class that would override
-            // but screw it, too hard no use, someday. stop dealing with tech debt every time you have one
-            // let it accumulate and deal one time, creating new structure that would lessen amount of useless refactoring
 
-            return null;
+            return false;
         }
     }
 }

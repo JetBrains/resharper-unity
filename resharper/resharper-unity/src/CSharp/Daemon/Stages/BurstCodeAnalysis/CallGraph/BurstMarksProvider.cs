@@ -41,13 +41,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var result = new HashSet<IDeclaredElement>();
 
-            if (containingFunction != null)
+            if (containingFunction != null && currentNode is IFunctionDeclaration functionDeclaration)
             {
-                var hasComment =
-                    UnityCallGraphUtil.HasAnalysisComment(currentNode, MarkId, ReSharperControlConstruct.Kind.Restore);
+                var hasComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration, MarkId, ReSharperControlConstruct.Kind.Restore);
 
-                if (hasComment != null)
-                    result.Add(hasComment);
+                if (hasComment)
+                    result.Add(functionDeclaration.DeclaredElement);
             }
 
             switch (currentNode)
