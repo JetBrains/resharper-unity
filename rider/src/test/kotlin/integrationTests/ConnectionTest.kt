@@ -84,7 +84,9 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
         }
     }
 
-    @Test
+    // TODO: test reproduce bug only with dialog with info about wrong unity version,
+    //  but we can't terminate Unity Editor with UI before connection
+    @Test(description = "RIDER-52498",enabled = false)
     fun checkDebuggerStartsAfterAttachDebugger() {
         installPlugin()
         try {
