@@ -4,8 +4,8 @@ using JetBrains.DocumentManagers;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -20,7 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         [CanBeNull] private readonly IMethodDeclaration myMethodDeclaration;
         [CanBeNull] private readonly PerformanceAnalysisDisableByCommentBulbAction myBulbAction;
 
-        public PerformanceAnalysisDisableByCommentQuickFix(UnityPerformanceCriticalCodeLineMarker performanceHighlighting)
+        public PerformanceAnalysisDisableByCommentQuickFix(UnityPerformanceInvocationWarning performanceHighlighting)
         {
             var range = performanceHighlighting.CalculateRange();
             var document = range.Document;
@@ -35,8 +35,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             if (file == null)
                 return;
             
-            var node = file.FindNodeAt(range) as ICSharpIdentifier;
-            myMethodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(node);
+            var node = file.FindNodeAt(range);
+            myMethodDeclaration = node?.GetContainingNode<IMethodDeclaration>();
             
             if (myMethodDeclaration != null)
                 myBulbAction = new PerformanceAnalysisDisableByCommentBulbAction(myMethodDeclaration);
