@@ -1,0 +1,32 @@
+﻿using UnityEngine;
+
+namespace CommentRootsTests
+{
+    public class CommentRootsTests : MonoBehaviour
+    {
+
+        // ReSharper restore Unity.PerformanceCriticalContext
+        public static void |F1|(0)()
+        {
+            |F2|(1)();
+            F3();
+            |GetComponent|(2)<int>();
+        }
+        
+        // ReSharper restore Unity.ExpensiveCode
+        public void |F2|(3)()
+        {
+        }
+
+        // ReSharper disable Unity.PerformanceAnalysis
+        public void F3()
+        {
+            GetComponent<int>();
+        }
+    }
+}
+---------------------------------------------------------
+(0): ReSharper Unity Performance Critical Line Marker: Performance critical context
+(1): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(2): ReSharper Unity Expensive Method Invocation: Expensive method invocation
+(3): ReSharper Unity Performance Critical Line Marker: Performance critical context
