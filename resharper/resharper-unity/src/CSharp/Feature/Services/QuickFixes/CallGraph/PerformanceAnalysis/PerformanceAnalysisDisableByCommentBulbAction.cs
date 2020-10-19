@@ -7,21 +7,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 {
     public class PerformanceAnalysisDisableByCommentBulbAction : AddCommentActionBase
     {
-        private PerformanceAnalysisDisableByCommentBulbAction([NotNull] IMethodDeclaration methodDeclaration)
+        public PerformanceAnalysisDisableByCommentBulbAction([NotNull] IMethodDeclaration methodDeclaration)
             : base(methodDeclaration)
         {
         }
-
-        [ContractAnnotation("null => null")]
-        [ContractAnnotation("notnull => notnull")]
-        public static PerformanceAnalysisDisableByCommentBulbAction Create(
-            [CanBeNull] IMethodDeclaration methodDeclaration)
-        {
-            return methodDeclaration == null
-                ? null
-                : new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
-        }
-
+        
         protected override string Comment => "//" + ReSharperControlConstruct.DisablePrefix + " " +
                                              UnityCallGraphUtil.PerformanceExpensiveComment;
         public override string Text => PerformanceDisableUtil.MESSAGE;

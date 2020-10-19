@@ -36,7 +36,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
             return solutionAnalysisService.Configuration?.Enabled?.Value == true;
         }
 
-        public const string PerformanceExpensiveComment = "Unity.CG";
+        public const string PerformanceExpensiveComment = "Unity.PerformanceAnalysis";
 
         [Pure]
         [ContractAnnotation("functionDeclaration: null => false")]

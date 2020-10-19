@@ -8,8 +8,8 @@ using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.AddExpensiveComment;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -93,11 +93,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     if (declaration is IMethodDeclaration methodDeclaration)
                     {
-                        var bulbAction = AddExpensiveCommentBulbAction.CreateOrNull(methodDeclaration);
+                        // CGTD 1. add check on comment
+                        // CGTD 2. add check on not expensive
+                        var expensiveBulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
+                        var performanceDisableAction = new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
                         var textControl = myTextControlManager.LastFocusedTextControl.Value;
                         var result = FixedList.Of(new BulbMenuItem(
-                            new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl), bulbAction.Text,
-                            BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems));
+                            new IntentionAction.MyExecutableProxi(expensiveBulbAction, mySolution, textControl), expensiveBulbAction.Text,
+                            BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems), 
+                            new BulbMenuItem(
+                                new IntentionAction.MyExecutableProxi(performanceDisableAction, mySolution, textControl), performanceDisableAction.Text,
+                                BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems));
                         actions = result;
                     }
                     else

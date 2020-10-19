@@ -27,18 +27,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         Priority = 1)]
     public class PerformanceAnalysisDisableByCommentContextAction : IContextAction
     {
-        private readonly SolutionAnalysisService mySwa;
-        private readonly PerformanceCriticalContextProvider myPerformanceContextProvider;
-        private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
-        [CanBeNull] private readonly IMethodDeclaration myMethodDeclaration;
-        [CanBeNull] private readonly PerformanceAnalysisDisableByCommentBulbAction myBulbAction;
+        [NotNull] private readonly SolutionAnalysisService mySwa;
+        [NotNull] private readonly PerformanceCriticalContextProvider myPerformanceContextProvider;
+        [NotNull] private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
+        [NotNull] private readonly ICSharpContextActionDataProvider myDataProvider;
 
-        public PerformanceAnalysisDisableByCommentContextAction(ICSharpContextActionDataProvider dataProvider)
+        public PerformanceAnalysisDisableByCommentContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
         {
-            var identifier = dataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
-
-            myMethodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
-            myBulbAction = PerformanceAnalysisDisableByCommentBulbAction.Create(myMethodDeclaration);
+            myDataProvider = dataProvider;
+            
             mySwa = dataProvider.Solution.GetComponent<SolutionAnalysisService>();
             myPerformanceContextProvider = dataProvider.Solution.GetComponent<PerformanceCriticalContextProvider>();
             myExpensiveContextProvider = dataProvider.Solution.GetComponent<ExpensiveInvocationContextProvider>();
@@ -46,33 +43,43 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            if (myMethodDeclaration == null || myBulbAction == null)
-                yield break;
+            var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
+            var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
+            
+            if (methodDeclaration == null)
+                return EmptyList<IntentionAction>.Instance;
 
             if (!UnityCallGraphUtil.IsSweaCompleted(mySwa))
-                yield break;
+                return EmptyList<IntentionAction>.Instance;
 
-            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myMethodDeclaration))
-                yield break;
+            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(methodDeclaration))
+                return EmptyList<IntentionAction>.Instance;
             
+            
+            var bulbAction = new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
             var processKind = UnityCallGraphUtil.GetProcessKindForGraph(mySwa);
-            var isExpensiveContext = myExpensiveContextProvider.HasContext(myMethodDeclaration, processKind);
-            var isPerformanceContext = myPerformanceContextProvider.HasContext(myMethodDeclaration, processKind);
+            var isExpensiveContext = myExpensiveContextProvider.HasContext(methodDeclaration, processKind);
+            var isPerformanceContext = myPerformanceContextProvider.HasContext(methodDeclaration, processKind);
 
             if (isExpensiveContext || isPerformanceContext)
-                yield return myBulbAction.ToContextActionIntention();
+                return bulbAction.ToContextActionIntentions();
+            
+            return EmptyList<IntentionAction>.Instance;
         }
 
         public bool IsAvailable(IUserDataHolder cache)
         {
+            var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
+            var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
+
             // CGTD overlook. performance and validity
-            if (myMethodDeclaration == null)
+            if (methodDeclaration == null)
                 return false;
 
-            var declaredElement = myMethodDeclaration.DeclaredElement;
+            var declaredElement = methodDeclaration.DeclaredElement;
 
-            return declaredElement != null && myMethodDeclaration.IsValid() &&
-                   !PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myMethodDeclaration);
+            return declaredElement != null && methodDeclaration.IsValid() &&
+                   !PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(methodDeclaration);
         }
     }
 }

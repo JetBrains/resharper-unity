@@ -20,8 +20,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
                 Analyze(t, daemonProcess, kind, consumer);
         }
 
-
         protected abstract void Analyze([NotNull] T t, IDaemonProcess daemonProcess, DaemonProcessKind kind,
-            [CanBeNull] IHighlightingConsumer consumer);
+            [NotNull] IHighlightingConsumer consumer);
     }
 }

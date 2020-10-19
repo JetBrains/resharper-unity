@@ -18,6 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             new ClrTypeName("Unity.Collections.FixedString512"),
             new ClrTypeName("Unity.Collections.FixedString4096")
         };
+        
+        public const string BURST_DISPLAY_NAME = BURST_TOOLTIP;
+        public const string BURST_TOOLTIP = "Burst compiled code";
 
         [ContractAnnotation("null => false")]
         public static bool IsBurstPermittedType([CanBeNull] IType type)

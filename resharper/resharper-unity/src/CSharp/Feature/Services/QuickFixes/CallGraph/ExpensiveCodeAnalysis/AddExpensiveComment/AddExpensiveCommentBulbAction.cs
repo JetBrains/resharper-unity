@@ -8,7 +8,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 {
     public class AddExpensiveCommentBulbAction : AddCommentActionBase
     {
-        private AddExpensiveCommentBulbAction([NotNull] IMethodDeclaration methodDeclaration)
+        public AddExpensiveCommentBulbAction([NotNull] IMethodDeclaration methodDeclaration)
             : base(methodDeclaration)
         {
         }
@@ -17,15 +17,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             "//" + ReSharperControlConstruct.RestorePrefix + " " + ExpensiveCodeMarksProvider.MarkId;
 
         public override string Text => ExpensiveCodeActionsUtil.MESSAGE;
-
-        [ContractAnnotation("null => null")]
-        [ContractAnnotation("notnull => notnull")]
-        public static AddExpensiveCommentBulbAction CreateOrNull(
-            [CanBeNull] IMethodDeclaration methodDeclaration)
-        {
-            return methodDeclaration == null
-                ? null
-                : new AddExpensiveCommentBulbAction(methodDeclaration);
-        }
     }
 }

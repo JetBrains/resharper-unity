@@ -30,6 +30,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
             return null;
         }
 
+        public IDomainSpecificSearcher CreateTargetTypedObjectCreationSearcher(IReadOnlyList<IConstructor> constructors, IReadOnlyList<ITypeElement> typeElements,
+            bool findCandidates)
+        {
+            throw new NotImplementedException();
+        }
+
         public IDomainSpecificSearcher CreateMethodsReferencedByDelegateSearcher(IDelegate @delegate)
         {
             return null;

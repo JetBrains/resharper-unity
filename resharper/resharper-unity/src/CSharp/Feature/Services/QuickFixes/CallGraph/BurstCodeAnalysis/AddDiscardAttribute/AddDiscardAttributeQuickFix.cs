@@ -18,17 +18,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         public AddDiscardAttributeQuickFix(IBurstHighlighting burstHighlighting)
         {
             myMethodDeclaration = burstHighlighting?.Node?.GetContainingNode<IMethodDeclaration>();
-            myBulbAction = AddDiscardAttributeBulbAction.Create(myMethodDeclaration);
+
+            if (myMethodDeclaration != null)
+                myBulbAction = new AddDiscardAttributeBulbAction(myMethodDeclaration);
         }
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
             if (myMethodDeclaration == null || myBulbAction == null)
-                yield break;
+                return EmptyList<IntentionAction>.Instance;;
             
             // CGTD overlook. which icons
             // CGTD overlook. isValid?
-            yield return myBulbAction.ToQuickFixIntention();
+            return myBulbAction.ToQuickFixIntentions();
         }
         // null, BulbThemedIcons.YellowBulb.Id);
         // this.ToContextActionIntentions(IntentionsAnchors.ContextActionsAnchor, BulbThemedIcons.YellowBulb.Id);

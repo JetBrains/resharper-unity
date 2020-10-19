@@ -1,7 +1,6 @@
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.DocumentModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp;
@@ -9,7 +8,7 @@ using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.TextControl.DocumentMarkup.LineMarkers;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Highlightings.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Highlightings
 {
     [StaticSeverityHighlighting(Severity.INFO,
         typeof(UnityBurstHighlighting),
@@ -19,7 +18,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         ToolTipFormatString = MESSAGE)]
     public class BurstCodeLineMarker : IBurstHighlighting, IActiveLineMarkerInfo
     {
-        public const string MESSAGE = BurstCodeVisionProvider.BURST_DISPLAY_NAME;
+        public const string MESSAGE = BurstCodeAnalysisUtil.BURST_DISPLAY_NAME;
 
         private readonly DocumentRange myRange;
 
@@ -30,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public bool IsValid() => true;
         public DocumentRange CalculateRange() => myRange;
-        public string ToolTip => BurstCodeVisionProvider.BURST_TOOLTIP;
+        public string ToolTip => BurstCodeAnalysisUtil.BURST_TOOLTIP;
         public string ErrorStripeToolTip => Tooltip;
         public string RendererId => null;
         public int Thickness => 1;

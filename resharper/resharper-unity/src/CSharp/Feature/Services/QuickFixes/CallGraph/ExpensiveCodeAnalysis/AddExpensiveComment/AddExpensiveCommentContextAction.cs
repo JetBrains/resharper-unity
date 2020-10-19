@@ -28,18 +28,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         Priority = 1)]
     public sealed class AddExpensiveCommentContextAction : IContextAction
     {
-        private readonly SolutionAnalysisService mySwa;
-        private readonly PerformanceCriticalContextProvider myPerformanceContextProvider;
-        private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
-        [CanBeNull] private readonly IMethodDeclaration myMethodDeclaration;
-        [CanBeNull] private readonly AddExpensiveCommentBulbAction myBulbAction;
-
+        [NotNull] private readonly SolutionAnalysisService mySwa;
+        [NotNull] private readonly PerformanceCriticalContextProvider myPerformanceContextProvider;
+        [NotNull] private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
+        [NotNull] private readonly ICSharpContextActionDataProvider myDataProvider;
+     
         public AddExpensiveCommentContextAction(ICSharpContextActionDataProvider dataProvider)
         {
-            var identifier = dataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
-
-            myMethodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
-            myBulbAction = AddExpensiveCommentBulbAction.CreateOrNull(myMethodDeclaration);
+            myDataProvider = dataProvider;
             mySwa = dataProvider.Solution.GetComponent<SolutionAnalysisService>();
             myPerformanceContextProvider = dataProvider.Solution.GetComponent<PerformanceCriticalContextProvider>();
             myExpensiveContextProvider = dataProvider.Solution.GetComponent<ExpensiveInvocationContextProvider>();
@@ -47,33 +43,44 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            if (myMethodDeclaration == null || myBulbAction == null)
-                yield break;
+            var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
+            var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
+            
+            // CGTD overlook. performance and validity
+            if (methodDeclaration == null)
+                return EmptyList<IntentionAction>.Instance;
 
             if (!UnityCallGraphUtil.IsSweaCompleted(mySwa))
-                yield break;
+                return EmptyList<IntentionAction>.Instance;;
 
             var processKind = UnityCallGraphUtil.GetProcessKindForGraph(mySwa);
 
-            if (myExpensiveContextProvider.HasContext(myMethodDeclaration, processKind))
-                yield break;
+            if (myExpensiveContextProvider.HasContext(methodDeclaration, processKind))
+                return EmptyList<IntentionAction>.Instance;
 
-            var isPerformanceContext = myPerformanceContextProvider.HasContext(myMethodDeclaration, processKind);
+            var isPerformanceContext = myPerformanceContextProvider.HasContext(methodDeclaration, processKind);
 
-            if (isPerformanceContext)
-                yield return myBulbAction.ToContextActionIntention();
+            if (!isPerformanceContext)
+                return EmptyList<IntentionAction>.Instance;
+            
+            var bulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
+            
+            return bulbAction.ToContextActionIntentions();
         }
 
         public bool IsAvailable(IUserDataHolder cache)
         {
+            var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
+            var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
+            
             // CGTD overlook. performance and validity
-            if (myMethodDeclaration == null)
+            if (methodDeclaration == null)
                 return false;
 
-            var declaredElement = myMethodDeclaration.DeclaredElement;
+            var declaredElement = methodDeclaration.DeclaredElement;
 
-            return declaredElement != null && myMethodDeclaration.IsValid() &&
-                   !PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(myMethodDeclaration);
+            return declaredElement != null && methodDeclaration.IsValid() &&
+                   !PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(methodDeclaration);
         }
     }
 }

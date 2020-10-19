@@ -25,8 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly IconHost myIconHost;
         private readonly ITextControlManager myTextControlManager;
-        public const string BURST_DISPLAY_NAME = BURST_TOOLTIP;
-        public const string BURST_TOOLTIP = "Burst compiled code";
 
         public BurstCodeVisionProvider(ISolution solution,
             IApplicationWideContextBoundSettingStore store,
@@ -49,9 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             var declaredElement = methodDeclaration.DeclaredElement;
 
-            myCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement, BURST_DISPLAY_NAME,
-                BURST_TOOLTIP,
-                BURST_DISPLAY_NAME,
+            myCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement, BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
+                BurstCodeAnalysisUtil.BURST_TOOLTIP,
+                BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
                 myIconHost.Transform(InsightUnityIcons.InsightUnity.Id),
                 GetBurstActions(methodDeclaration),
                 null);
@@ -63,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var result = new List<BulbMenuItem>();
             var textControl = myTextControlManager.LastFocusedTextControl.Value;
-            var bulbAction = AddDiscardAttributeBulbAction.Create(methodDeclaration);
+            var bulbAction = new AddDiscardAttributeBulbAction(methodDeclaration);
             
             result.Add(new BulbMenuItem(new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl),
                 bulbAction.Text, BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems));

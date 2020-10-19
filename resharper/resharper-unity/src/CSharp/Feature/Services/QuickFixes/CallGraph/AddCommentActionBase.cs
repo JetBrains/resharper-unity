@@ -25,19 +25,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         
         public void Execute(ISolution solution, ITextControl textControl)
         {
-            var range = myMethodDeclaration.GetNavigationRange();
-            //CGTD overlook. IsValid?
-            var document = range.Document;
-            
-            Assertion.Assert(document == textControl.Document, "document == textControl.Document");
-
-            var psiServices = solution.GetPsiServices();
-            var file = psiServices.GetPsiFile<CSharpLanguage>(range);
+            var file = myMethodDeclaration.GetContainingFile();
             
             if (file == null) 
                 return;
-
-            var treeRange = file.Translate(range);
+            
+            var treeRange = myMethodDeclaration.GetTreeTextRange();
             var provider = LanguageManager.Instance.GetService<ICommentOrDirectiveInserter>(file.Language);
 
             provider.Insert(treeRange, file, Text, Comment);
