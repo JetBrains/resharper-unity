@@ -4,6 +4,7 @@ using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.CodeInsights.Providers;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
@@ -17,8 +18,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings { get; }
 
-        public UnityCodeInsightProvider(UnityHost host, UnitySolutionTracker solutionTracker, BulbMenuComponent bulbMenu, UnitySolutionTracker tracker)
-            : base(solutionTracker, host, bulbMenu)
+        public UnityCodeInsightProvider(FrontendBackendHost frontendBackendHost, UnitySolutionTracker solutionTracker,
+                                        BulbMenuComponent bulbMenu, UnitySolutionTracker tracker)
+            : base(frontendBackendHost, bulbMenu)
         {
             RelativeOrderings = tracker.IsUnityProject.HasTrueValue()
                 ? new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)}

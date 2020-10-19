@@ -10,6 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -22,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
     {
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly ConnectionTracker myConnectionTracker;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
         private readonly IElementIdProvider myProvider;
 
@@ -31,13 +32,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                             IApplicationWideContextBoundSettingStore settingsStore,
                                             PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi api,
                                             UnityCodeInsightProvider codeInsightProvider,
-                                            UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
+                                            UnitySolutionTracker solutionTracker,
+                                            BackendUnityHost backendUnityHost,
                                             IconHost iconHost, IElementIdProvider provider)
             : base(solution, api, callGraphSwaExtensionProvider, settingsStore, marksProvider, provider)
         {
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;
-            myConnectionTracker = connectionTracker;
+            myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
             myProvider = provider;
         }
@@ -62,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                         }
 
                         myCodeInsightProvider.AddHighlighting(consumer, cSharpDeclaration, method, text, eventFunction.Description ?? string.Empty, text,
-                            myIconHost.Transform(iconId), GetEventFunctionActions(cSharpDeclaration), RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
+                            myIconHost.Transform(iconId), GetEventFunctionActions(cSharpDeclaration), RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
                     }
                 }
             }
@@ -89,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
 
                 myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text, tooltip, text,
-                    myIconHost.Transform(InsightUnityIcons.InsightHot.Id), actions, RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
+                    myIconHost.Transform(InsightUnityIcons.InsightHot.Id), actions, RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
             }
         }
     }

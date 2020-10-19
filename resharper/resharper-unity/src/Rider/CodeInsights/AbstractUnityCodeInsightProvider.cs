@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Controls.GotoByName;
 using JetBrains.Application.UI.PopupLayout;
-using JetBrains.Collections.Viewable;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.TextControls;
-using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -20,15 +19,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
     {
         public static string StartUnityActionId => "startUnity";
 
-        private readonly UnitySolutionTracker myUnitySolutionTracker;
-        private readonly UnityHost myHost;
+        private readonly FrontendBackendHost myFrontendBackendHost;
         private readonly BulbMenuComponent myBulbMenu;
 
-        protected AbstractUnityCodeInsightProvider(UnitySolutionTracker unitySolutionTracker, UnityHost host,
-            BulbMenuComponent bulbMenu)
+        protected AbstractUnityCodeInsightProvider(FrontendBackendHost frontendBackendHost, BulbMenuComponent bulbMenu)
         {
-            myUnitySolutionTracker = unitySolutionTracker;
-            myHost = host;
+            myFrontendBackendHost = frontendBackendHost;
             myBulbMenu = bulbMenu;
         }
 
@@ -49,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         {
             if (actionId.Equals(StartUnityActionId))
             {
-                myHost.PerformModelAction(model => model.StartUnity());
+                myFrontendBackendHost.Do(model => model.StartUnity());
             }
         }
 

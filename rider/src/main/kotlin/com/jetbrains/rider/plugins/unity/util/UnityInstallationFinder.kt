@@ -2,6 +2,7 @@ package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
+import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
@@ -100,6 +101,6 @@ class UnityInstallationFinder(private val project: Project) {
     }
 
     fun requiresRiderPackage(): Boolean {
-        return project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.requiresRiderPackage ?: return false
+        return project.solution.frontendBackendModel.requiresRiderPackage.valueOrDefault(false)
     }
 }

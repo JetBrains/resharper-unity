@@ -26,9 +26,8 @@ import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForeg
 import com.jetbrains.rider.projectView.solution
 import java.awt.Frame
 
-class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
+class FrontendBackendHost(project: Project) : ProtocolSubscribedProjectComponent(project) {
     val model = project.solution.frontendBackendModel
-    val unityState = model.editorState
 
     val logSignal = Signal<LogEvent>()
 
@@ -42,7 +41,7 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
             }
         }
 
-        model.onUnityLogEvent.adviseNotNull(projectComponentLifetime) {
+        model.consoleLogging.onConsoleLogEvent.adviseNotNull(projectComponentLifetime) {
             logSignal.fire(it)
         }
 
@@ -88,7 +87,7 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
         model.allowSetForegroundWindow.set { _, _ ->
             val task = RdTask<Boolean>()
 
-            val id = model.unityProcessId.valueOrNull
+            val id = model.unityApplicationData.valueOrNull?.unityProcessId
             if (id == null)
                 task.set(false)
             else
@@ -96,13 +95,11 @@ class UnityHost(project: Project) : ProtocolSubscribedProjectComponent(project) 
 
             task
         }
-
     }
 
     companion object {
-        fun getInstance(project: Project): UnityHost = project.getComponent(UnityHost::class.java)
+        fun getInstance(project: Project): FrontendBackendHost = project.getComponent(FrontendBackendHost::class.java)
     }
-
 }
 
-fun Project.isConnectedToEditor() = this.solution.frontendBackendModel.sessionInitialized.valueOrDefault(false)
+fun Project?.isConnectedToEditor() = this != null && this.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)

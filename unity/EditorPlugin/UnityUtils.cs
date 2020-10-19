@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Diagnostics;
+using JetBrains.Rider.Model.Unity;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,16 +40,16 @@ namespace JetBrains.Rider.Unity.Editor
 
     public static bool UseRiderTestPath =>
         Environment.GetCommandLineArgs().Contains("-riderTestPath");
-    
+
     private static int ourScriptingRuntimeCached = -1;
-    
+
     internal static int ScriptingRuntime
     {
       get
       {
         if (ourScriptingRuntimeCached >= 0)
           return ourScriptingRuntimeCached;
-        
+
         ourScriptingRuntimeCached = 0; // legacy runtime
         try
         {
@@ -63,6 +64,31 @@ namespace JetBrains.Rider.Unity.Editor
         }
 
         return ourScriptingRuntimeCached;
+      }
+    }
+
+    internal static ScriptCompilationDuringPlay ToScriptCompilationDuringPlay(int value)
+    {
+      switch (value)
+      {
+        case 0: return ScriptCompilationDuringPlay.RecompileAndContinuePlaying;
+        case 1: return ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying;
+        case 2: return ScriptCompilationDuringPlay.StopPlayingAndRecompile;
+        default:
+          Debug.Log($"Unexpected value for ScriptCompilationDuringPlay: {value}");
+          return ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying;
+      }
+    }
+
+    internal static int FromScriptCompilationDuringPlay(ScriptCompilationDuringPlay value)
+    {
+      switch (value)
+      {
+        case ScriptCompilationDuringPlay.RecompileAndContinuePlaying: return 0;
+        case ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying: return 1;
+        case ScriptCompilationDuringPlay.StopPlayingAndRecompile: return 2;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(value), value, null);
       }
     }
   }
