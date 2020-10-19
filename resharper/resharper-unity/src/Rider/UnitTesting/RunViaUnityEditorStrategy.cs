@@ -55,7 +55,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
-        private static readonly Key<string> ourLaunchedInUnityKey = new Key<string>("LaunchedInUnityKey");
 
         private readonly object myCurrentLaunchesTaskAccess = new object();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
@@ -504,7 +503,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             var categories = new List<string>();
 
             var testNames = elements.Where(a => !a.Explicit || run.Launch.Criterion.Explicit.Contains(a))
-                .Select(p => p.Id.Id).ToList();;
+                .Select(p => p.Id.Id).ToList();
             
             filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
             return filters;
