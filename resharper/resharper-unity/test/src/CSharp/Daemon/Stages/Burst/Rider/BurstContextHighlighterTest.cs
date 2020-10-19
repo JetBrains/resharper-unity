@@ -1,7 +1,7 @@
 using JetBrains.ReSharper.TestFramework;
 using NUnit.Framework;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Burst
+namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Burst.Rider
 {
     [TestUnity]
     [TestFileExtension(".cs")]
