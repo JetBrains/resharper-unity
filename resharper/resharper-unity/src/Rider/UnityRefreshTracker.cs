@@ -15,6 +15,7 @@ using JetBrains.ReSharper.Host.Features;
 using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Host.Features.FileSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model;
@@ -29,23 +30,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly IShellLocks myLocks;
         private readonly Lifetime myLifetime;
         private readonly ISolution mySolution;
-        private readonly UnityEditorProtocol myEditorProtocol;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly ILogger myLogger;
         private readonly UnityVersion myUnityVersion;
-        private readonly ConnectionTracker myConnectionTracker;
         private readonly IContextBoundSettingsStoreLive myBoundSettingsStore;
 
         public UnityRefresher(IShellLocks locks, Lifetime lifetime, ISolution solution,
-            UnityEditorProtocol editorProtocol, IApplicationWideContextBoundSettingStore settingsStore,
-            ILogger logger, UnityVersion unityVersion, ConnectionTracker connectionTracker)
+                              BackendUnityHost backendUnityHost,
+                              IApplicationWideContextBoundSettingStore settingsStore,
+                              ILogger logger, UnityVersion unityVersion)
         {
             myLocks = locks;
             myLifetime = lifetime;
             mySolution = solution;
-            myEditorProtocol = editorProtocol;
+            myBackendUnityHost = backendUnityHost;
             myLogger = logger;
             myUnityVersion = unityVersion;
-            myConnectionTracker = connectionTracker;
 
             if (solution.GetData(ProjectModelExtensions.ProtocolSolutionKey) == null)
                 return;
@@ -71,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             myLocks.AssertMainThread();
 
-            if (myEditorProtocol.BackendUnityModel.Value == null)
+            if (myBackendUnityHost.BackendUnityModel.Value == null)
                 return Task.CompletedTask;
 
             if (!myBoundSettingsStore.GetValue((UnitySettings s) => s.AllowAutomaticRefreshInUnity) &&
@@ -96,10 +96,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         {
             myLocks.ReentrancyGuard.AssertGuarded();
 
-            if (myEditorProtocol.BackendUnityModel.Value == null)
+            if (myBackendUnityHost.BackendUnityModel.Value == null)
                 return;
 
-            if (!myConnectionTracker.IsConnectionEstablished())
+            if (!myBackendUnityHost.IsConnectionEstablished())
                 return;
 
             var lifetimeDef = Lifetime.Define(lifetime);
@@ -119,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         {
                             try
                             {
-                                await myEditorProtocol.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                                await myBackendUnityHost.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                             }
                             finally
                             {
@@ -128,7 +128,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         }
                     }
                     else // it is a risk to pause vfs https://github.com/JetBrains/resharper-unity/issues/1601
-                        await myEditorProtocol.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
+                        await myBackendUnityHost.BackendUnityModel.Value.Refresh.Start(lifetimeDef.Lifetime, refreshType).AsTask();
                 }
                 catch (Exception e)
                 {
@@ -169,7 +169,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public UnityRefreshTracker(Lifetime lifetime, ISolution solution, UnityRefresher refresher,
             ILogger logger,
             IFileSystemTracker fileSystemTracker,
-            UnityHost host,
+            FrontendBackendHost host,
             UnitySolutionTracker unitySolutionTracker)
         {
             myLogger = logger;
@@ -188,7 +188,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                         refresher.StartRefresh(RefreshType.Normal);
                     });
 
-                host.PerformModelAction(rd => rd.Refresh.Advise(lifetime, force =>
+                host.Do(rd => rd.Refresh.Advise(lifetime, force =>
                     {
                         if (force)
                             refresher.StartRefresh(RefreshType.ForceRequestScriptReload);

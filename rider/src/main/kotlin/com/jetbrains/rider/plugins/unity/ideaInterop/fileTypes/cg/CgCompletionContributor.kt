@@ -15,7 +15,7 @@ class CgCompletionContributor : WordCompletionContributor() {
     override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
         // TODO: this is temporary solution until we get proper completion up and running on backend
         val project = parameters.editor.project ?: return
-        val isEnabled = project.solution.frontendBackendModel.enableShaderLabHippieCompletion.valueOrDefault(false)
+        val isEnabled = project.solution.frontendBackendModel.backendSettings.enableShaderLabHippieCompletion.valueOrDefault(false)
         if (!(isEnabled && (parameters.completionType == CompletionType.BASIC)))
             return
 

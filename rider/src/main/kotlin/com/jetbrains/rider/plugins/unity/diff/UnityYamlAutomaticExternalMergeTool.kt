@@ -44,7 +44,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
         try {
             settings.isMergeTrustExitCode = true
             settings.mergeExePath = appDataPath.resolve("Tools/UnityYAMLMerge" + extension).toString()
-            val mergeParameters = project.solution.frontendBackendModel.mergeParameters.valueOrThrow
+            val mergeParameters = project.solution.frontendBackendModel.backendSettings.mergeParameters.valueOrThrow
             if (mergeParameters.contains(" -p "))
                 settings.mergeParameters = "$mergeParameters $premergedBase $premergedRight"
             else
@@ -72,7 +72,7 @@ class UnityYamlAutomaticExternalMergeTool: AutomaticExternalMergeTool {
     override fun canShow(project: Project?, request: MergeRequest): Boolean {
         project?: return false
 
-        if (!project.solution.frontendBackendModel.useUnityYamlMerge.hasTrueValue)
+        if (!project.solution.frontendBackendModel.backendSettings.useUnityYamlMerge.hasTrueValue)
             return false
 
         if (request is ThreesideMergeRequest) {

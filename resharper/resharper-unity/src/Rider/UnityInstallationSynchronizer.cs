@@ -2,29 +2,33 @@ using System;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.Rd.Base;
-using JetBrains.Rider.Model.Unity.FrontendBackend;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
+using JetBrains.Rider.Model.Unity;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
     public class UnityInstallationSynchronizer
     {
-        private readonly UnityEditorProtocol myUnityEditorProtocol;
+        private readonly BackendUnityHost myBackendUnityHost;
 
         public UnityInstallationSynchronizer(Lifetime lifetime,
-                                             UnityHost host, UnityVersion unityVersion,
-                                                 UnityEditorProtocol unityEditorProtocol)
+                                             FrontendBackendHost frontendBackendHost,
+                                             BackendUnityHost backendUnityHost,
+                                             UnityVersion unityVersion)
         {
-            myUnityEditorProtocol = unityEditorProtocol;
-            unityVersion.ActualVersionForSolution.Advise(lifetime, version => NotifyFrontend(host, unityVersion, version));
+            myBackendUnityHost = backendUnityHost;
+            unityVersion.ActualVersionForSolution.Advise(lifetime,
+                version => NotifyFrontend(frontendBackendHost, unityVersion, version));
         }
 
-        private void NotifyFrontend(UnityHost host, UnityVersion unityVersion, Version version)
+        private void NotifyFrontend(FrontendBackendHost host, UnityVersion unityVersion, Version version)
         {
-            host.PerformModelAction(rd =>
+            host.Do(rd =>
             {
-                // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more correct than any counted value
-                if (myUnityEditorProtocol.BackendUnityModel.Value != null)
+                // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more
+                // correct than any counted value
+                if (myBackendUnityHost.BackendUnityModel.Value != null)
                     return;
 
                 var info = UnityInstallationFinder.GetApplicationInfo(version, unityVersion);
@@ -35,8 +39,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 rd.UnityApplicationData.SetValue(new UnityApplicationData(info.Path.FullPath,
                     contentsPath.FullPath,
                     UnityVersion.VersionToString(info.Version),
-                    UnityVersion.RequiresRiderPackage(info.Version)
-                ));
+                    null, null, null));
+                rd.RequiresRiderPackage.Set(UnityVersion.RequiresRiderPackage(info.Version));
             });
         }
     }

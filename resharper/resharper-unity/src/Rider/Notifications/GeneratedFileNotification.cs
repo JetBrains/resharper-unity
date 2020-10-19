@@ -1,16 +1,16 @@
 using System;
 using JetBrains.Annotations;
+using JetBrains.Collections.Viewable;
 using JetBrains.Core;
 using JetBrains.Lifetimes;
-using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Features.Inspections.Bookmarks.NumberedBookmarks;
-using JetBrains.ReSharper.Features.XamlRendererHost.Preview;
 using JetBrains.ReSharper.Host.Features.Notifications;
 using JetBrains.ReSharper.Host.Features.ProjectModel;
 using JetBrains.ReSharper.Host.Features.TextControls;
 using JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Extension;
@@ -20,10 +20,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
     [SolutionComponent]
     public class GeneratedFileNotification
     {
-        public GeneratedFileNotification(Lifetime lifetime, UnityHost unityHost, UnitySolutionTracker solutionTracker,
-            ConnectionTracker connectionTracker, UnityEditorProtocol editorProtocol, ISolution solution,
-            AsmDefNameCache asmDefNameCache, [CanBeNull] TextControlHost textControlHost = null,
-            [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,  [CanBeNull] NotificationPanelHost notificationPanelHost = null)
+        public GeneratedFileNotification(Lifetime lifetime,
+                                         FrontendBackendHost frontendBackendHost,
+                                         BackendUnityHost backendUnityHost,
+                                         UnitySolutionTracker solutionTracker,
+                                         ISolution solution,
+                                         AsmDefNameCache asmDefNameCache,
+                                         [CanBeNull] TextControlHost textControlHost = null,
+                                         [CanBeNull] SolutionLifecycleHost solutionLifecycleHost = null,
+                                         [CanBeNull] NotificationPanelHost notificationPanelHost = null)
         {
             if (solutionLifecycleHost == null)
                 return;
@@ -40,37 +45,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Notifications
                     if (projectFile == null)
                         return;
 
-                    if (projectFile.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase))
+                    if (!projectFile.Location.ExtensionNoDot.Equals("csproj", StringComparison.OrdinalIgnoreCase))
+                        return;
+
+                    backendUnityHost.BackendUnityModel.ViewNotNull(lt, (modelLifetime, backendUnityModel) =>
                     {
-                        connectionTracker.State.View(lt, (unityStateLifetime, state) =>
+                        var name = projectFile.Location.NameWithoutExtension;
+
+                        IPath path;
+                        using (ReadLockCookie.Create())
                         {
-                            var name = projectFile.Location.NameWithoutExtension;
+                            path = asmDefNameCache.GetPathFor(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
+                        }
 
-                            IPath path;
-                            using (ReadLockCookie.Create())
-                            {
-                                path = asmDefNameCache.GetPathFor(name)?.TryMakeRelativeTo(solution.SolutionFilePath);
-                            }
-
-                            var elements = new LocalList<INotificationPanelHyperlink>();
-                            if (path != null && state != UnityEditorState.Disconnected)
-                            {
-                                var strPath = path.Components.Join("/").RemoveStart("../");
-                                elements.Add(new NotificationPanelCallbackHyperlink(unityStateLifetime, "Edit corresponding .asmdef in Unity", false,
-                                    () =>
+                        var elements = new LocalList<INotificationPanelHyperlink>();
+                        if (path != null)
+                        {
+                            var strPath = path.Components.Join("/").RemoveStart("../");
+                            elements.Add(new NotificationPanelCallbackHyperlink(modelLifetime,
+                                "Edit corresponding .asmdef in Unity", false,
+                                () =>
+                                {
+                                    frontendBackendHost.Do(t =>
                                     {
-                                        unityHost.PerformModelAction(t => t.AllowSetForegroundWindow.Start(unityStateLifetime, Unit.Instance).Result.Advise(unityStateLifetime,
-                                            __ =>
+                                        t.AllowSetForegroundWindow.Start(modelLifetime, Unit.Instance)
+                                            .Result.AdviseOnce(modelLifetime, __ =>
                                             {
-                                                editorProtocol.BackendUnityModel.Value?.ShowFileInUnity.Fire(strPath);
-                                            }));
-                                    }));
-                            }
+                                                backendUnityHost.BackendUnityModel.Value?.ShowFileInUnity.Fire(strPath);
+                                            });
+                                    });
+                                }));
+                        }
 
-                            notificationPanelHost.AddNotificationPanel(unityStateLifetime, host, new NotificationPanel("This file is generated by Unity. Any changes made will be lost.", "UnityGeneratedFile", elements.ToArray()));
-                        });
-
-                    }
+                        notificationPanelHost.AddNotificationPanel(modelLifetime, host,
+                            new NotificationPanel("This file is generated by Unity. Any changes made will be lost.",
+                                "UnityGeneratedFile", elements.ToArray()));
+                    });
                 });
 
                 fullStartupFinishedLifetimeDefinition.Terminate();

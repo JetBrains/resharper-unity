@@ -14,6 +14,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Util;
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             IApplicationWideContextBoundSettingStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
             UnityVersion unityVersion,
-            UnityHost unityHost,
+            FrontendBackendHost frontendBackendHost,
             UnitySolutionTracker unitySolutionTracker,
             UnityRefresher refresher)
         {
@@ -67,7 +68,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
 
-            unityHost.PerformModelAction(frontendBackendModel =>
+            frontendBackendHost.Do(frontendBackendModel =>
             {
                 frontendBackendModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
                 {

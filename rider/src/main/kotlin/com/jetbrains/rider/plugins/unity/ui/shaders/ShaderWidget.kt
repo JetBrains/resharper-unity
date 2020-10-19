@@ -23,7 +23,7 @@ import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.cpp.fileType.CppFileType
 import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextData
 import com.jetbrains.rider.model.unity.frontendBackend.ShaderContextDataBase
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.FrontendBackendHost
 import icons.UnityIcons
 import java.awt.BorderLayout
 import java.awt.event.MouseEvent
@@ -92,7 +92,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
     private fun updateState(file: VirtualFile?) {
 
         val lifetimeDef = requestLifetime.next()
-        val host = UnityHost.getInstance(project)
+        val host = FrontendBackendHost.getInstance(project)
 
         if (file == null || file.fileType !is CppFileType) {
             statusBarComponent.isVisible = false
@@ -136,7 +136,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
         val id = editor?.document?.getFirstDocumentId(project)
         if (id == null)
             return
-        val host = UnityHost.getInstance(project)
+        val host = FrontendBackendHost.getInstance(project)
         host.model.requestShaderContexts.start(lt, id).result.advise(lt) {
             val items = it.unwrap()
             val actions = createActions(host, id, items)
@@ -149,7 +149,7 @@ class ShaderWidget(project: Project) : EditorBasedWidget(project), CustomStatusB
         }
     }
 
-    private fun createActions(host: UnityHost, id: RdDocumentId, items: List<ShaderContextDataBase>): List<AnAction> {
+    private fun createActions(host: FrontendBackendHost, id: RdDocumentId, items: List<ShaderContextDataBase>): List<AnAction> {
         val result = mutableListOf<AnAction>(ShaderAutoContextSwitchAction(project, id, host, currentContextMode))
         for (item in items) {
             result.add(ShaderContextSwitchAction(project, id, host, item as ShaderContextData, currentContextMode))
