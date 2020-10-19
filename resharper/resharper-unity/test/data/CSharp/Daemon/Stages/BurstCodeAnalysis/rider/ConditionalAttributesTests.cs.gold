@@ -86,11 +86,11 @@ namespace Burst.AttributesTests
         [BurstCompile]
         public struct AttributesTest1 : IJob
         {
-            |[Conditional("this should not be highlighted")]
+            [Conditional("this should not be highlighted")]
             public void Execute()
             {
-                var obj = |new Object()|(1);
-            }|(0)
+                var obj = |new Object()|(0);
+            }
             
             [Conditional("this also should not be highlighted")]
             public void F(){}
@@ -98,5 +98,4 @@ namespace Burst.AttributesTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(1): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
+(0): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported

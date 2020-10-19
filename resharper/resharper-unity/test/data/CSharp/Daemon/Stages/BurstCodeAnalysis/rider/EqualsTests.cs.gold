@@ -85,12 +85,12 @@ namespace EqualsTests
         [BurstCompile]
         private struct EqualsTest1 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 var var1 = new EqualsTest1();
-                if (|Equals(var1)|(1))
+                if (|Equals(var1)|(0))
                     Debug.Log("1");
-            }|(0)
+            }
 
             public override bool Equals(object obj)
             {
@@ -100,5 +100,4 @@ namespace EqualsTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(1): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'EqualsTest1' is not supported
+(0): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'EqualsTest1' is not supported

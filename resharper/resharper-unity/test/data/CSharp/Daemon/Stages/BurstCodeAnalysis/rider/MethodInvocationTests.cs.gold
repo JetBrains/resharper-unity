@@ -99,97 +99,88 @@ namespace MethodInvocationTests
         [BurstCompile]
         struct MethodInvocationTest1 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 SimpleClass.StaticMethod();
-                |GetType()|(1);
-            }|(0)
+                |GetType()|(0);
+            }
         }
 
         [BurstCompile]
         struct MethodInvocationTest2 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |Equals(null, null)|(3);
-            }|(2)
+                |Equals(null, null)|(1);
+            }
         }
 
         [BurstCompile]
         struct MethodInvocationTest3 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |Equals(null)|(5);
-            }|(4)
+                |Equals(null)|(2);
+            }
         }
 
         [BurstCompile]
         struct MethodInvocationTest4 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |ToString()|(7);
-            }|(6)
+                |ToString()|(3);
+            }
         }
 
         [BurstCompile]
         struct MethodInvocationTest5 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                var kek = |myClasss|(9);
-            }|(8)
+                var kek = |myClasss|(4);
+            }
         }
 
         [BurstCompile]
         struct MethodInvocationTest6 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |myClasss|(11).PlainMethod();
-            }|(10)
+                |myClasss|(5).PlainMethod();
+            }
         }
 
         [BurstCompile]
         struct MethodInvocationTest7 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |GetHashCode()|(13);
-            }|(12)
+                |GetHashCode()|(6);
+            }
         }
 
         [BurstCompile]
         struct MethodInvocationTest8 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 GetHashCode();
-            }|(14)
+            }
 
-            |public override int GetHashCode()
+            public override int GetHashCode()
             {
-                return |base.GetHashCode()|(16);
-            }|(15)
+                return |base.GetHashCode()|(7);
+            }
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(1): ReSharper Warning: Burst: Accessing managed method 'GetType' from type 'Object' is not supported
-(2): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(3): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'Object' is not supported
-(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(5): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'ValueType' is not supported
-(6): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(7): ReSharper Warning: Burst: Accessing managed method 'ToString' from type 'ValueType' is not supported
-(8): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(9): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported
-(10): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(11): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported
-(12): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(13): ReSharper Warning: Burst: Accessing managed method 'GetHashCode' from type 'ValueType' is not supported
-(14): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(15): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(16): ReSharper Warning: Burst: Accessing managed method 'GetHashCode' from type 'ValueType' is not supported
+(0): ReSharper Warning: Burst: Accessing managed method 'GetType' from type 'Object' is not supported
+(1): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'Object' is not supported
+(2): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'ValueType' is not supported
+(3): ReSharper Warning: Burst: Accessing managed method 'ToString' from type 'ValueType' is not supported
+(4): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported
+(5): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported
+(6): ReSharper Warning: Burst: Accessing managed method 'GetHashCode' from type 'ValueType' is not supported
+(7): ReSharper Warning: Burst: Accessing managed method 'GetHashCode' from type 'ValueType' is not supported

@@ -185,5 +185,5 @@ namespace Burst.SharedStaticTests
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Warning: `SharedStatic`1` type parameter must be unmanaged, `SharedStaticMixed` is not
-(1): ReSharper Warning: `SharedStatic`1` type parameter must be unmanaged, `SharedStaticUnmanagedUsing` is not
+(0): ReSharper Warning: Type parameter must be unmanaged, 'SharedStaticMixed' is not
+(1): ReSharper Warning: Type parameter must be unmanaged, 'SharedStaticUnmanagedUsing' is not

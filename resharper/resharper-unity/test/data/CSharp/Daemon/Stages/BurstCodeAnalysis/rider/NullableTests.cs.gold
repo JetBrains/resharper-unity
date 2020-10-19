@@ -105,7 +105,7 @@ public class NullableTests
     [BurstCompile]
     public struct NullableTest1 : IJob
     {
-        |public void Execute()
+        public void Execute()
         {
             bool? a = new bool();
             bool? b = null;
@@ -119,14 +119,12 @@ public class NullableTests
                 F(d.Value);
 
             d.GetHashCode();
-        }|(0)
+        }
 
-        |public void F(bool bb)
+        public void F(bool bb)
         {
 
-        }|(1)
+        }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(1): ReSharper Unity Burst Code Line Marker: Burst compiled code

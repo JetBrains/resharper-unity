@@ -114,11 +114,11 @@ namespace FunctionParametersReturnTests
             {
             }
 
-            |public void Execute()
+            public void Execute()
             {
                 FStruct(new Struct());
-                |Fobject(null)|(1); 
-            }|(0)
+                |Fobject(null)|(0); 
+            }
         }
 
         [BurstCompile]
@@ -128,10 +128,10 @@ namespace FunctionParametersReturnTests
             {
             }
 
-            |public void Execute()
+            public void Execute()
             {
-                |FFoo(null)|(3);
-            }|(2)
+                |FFoo(null)|(1);
+            }
         }
 
         [BurstCompile]
@@ -142,33 +142,28 @@ namespace FunctionParametersReturnTests
                 return new Struct();
             }
 
-            |public void Execute()
+            public void Execute()
             {
-                |FReturn()|(5);
-            }|(4)
+                |FReturn()|(2);
+            }
         }
 
         [BurstCompile]
         struct FunctionParametersReturnValueTest4 : IJob
         {
-            |public void GenericF<T>(T a) where T : struct, IFoo
+            public void GenericF<T>(T a) where T : struct, IFoo
             {
                 a.Foo();
-            }|(6)
+            }
 
-            |public void Execute()
+            public void Execute()
             {
                 GenericF(new Struct());
-            }|(7)
+            }
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(1): ReSharper Warning: Burst: 'Fobject' signature contains managed types
-(2): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(3): ReSharper Warning: Burst: 'FFoo' signature contains managed types
-(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(5): ReSharper Warning: Burst: 'FReturn' signature contains managed types
-(6): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(7): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(0): ReSharper Warning: Burst: 'Fobject' signature contains managed types
+(1): ReSharper Warning: Burst: 'FFoo' signature contains managed types
+(2): ReSharper Warning: Burst: 'FReturn' signature contains managed types

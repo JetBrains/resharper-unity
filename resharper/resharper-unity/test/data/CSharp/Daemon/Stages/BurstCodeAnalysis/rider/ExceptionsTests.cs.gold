@@ -85,30 +85,30 @@ namespace ExceptionsTests
         [BurstCompile]
         struct ExceptionsTest1 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 NoWarnings();
                 ContainsWarning();
-            }|(0)
+            }
 
-            |private void NoWarnings()
+            private void NoWarnings()
             {
                 throw new ArgumentException(new object().ToString());
                 throw new ArgumentException("exception");
-            }|(1)
+            }
 
-            |private void ContainsWarning()
+            private void ContainsWarning()
             {
-                |new ArgumentException(nameof(ContainsWarning))|(3);
-            }|(2)
+                |new ArgumentException(nameof(ContainsWarning))|(0);
+            }
         }
 
         [BurstCompile]
         struct ExceptionsTest2 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |try|(5)
+                |try|(1)
                 {
                 }
                 catch (Exception e)
@@ -117,29 +117,29 @@ namespace ExceptionsTests
                 finally
                 {
                 }
-            }|(4)
+            }
         }
 
         [BurstCompile]
         struct ExceptionsTest3 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |try|(7)
+                |try|(2)
                 {
                 }
                 finally
                 {
                 }
-            }|(6)
+            }
         }
 
         [BurstCompile]
         struct ExceptionsTest4 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |try|(9)
+                |try|(3)
                 {
                 }
                 catch (ArgumentException e) 
@@ -151,33 +151,26 @@ namespace ExceptionsTests
                 finally
                 {
                 }
-            }|(8)
+            }
         }
 
         [BurstCompile]
         struct ExceptionsTest5 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                |foreach|(11) (var i in new NativeArray<int>())
+                |foreach|(4) (var i in new NativeArray<int>())
                 {
-                    Debug.Log(|i|(12));
+                    Debug.Log(|i|(5));
                 }
-            }|(10)
+            }
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(1): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(2): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(3): ReSharper Warning: Burst: Creating a managed type 'ArgumentException' is not supported
-(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(5): ReSharper Warning: Burst: Try statement is not supported
-(6): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(7): ReSharper Warning: Burst: Try statement is not supported
-(8): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(9): ReSharper Warning: Burst: Try statement is not supported
-(10): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(11): ReSharper Warning: Burst: The 'foreach' construction is not supported
-(12): ReSharper Warning: Burst: Debug logging functions accepts only strings
+(0): ReSharper Warning: Burst: Creating a managed type 'ArgumentException' is not supported
+(1): ReSharper Warning: Burst: Try statement is not supported
+(2): ReSharper Warning: Burst: Try statement is not supported
+(3): ReSharper Warning: Burst: Try statement is not supported
+(4): ReSharper Warning: Burst: The 'foreach' construction is not supported
+(5): ReSharper Warning: Burst: Debug logging functions accepts only strings

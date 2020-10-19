@@ -20,7 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Burst
         [Test] public void DirectivesTests() { DoNamedTest(); }
         [Test] public void BurstDiscardTests() { DoNamedTest(); }
         [Test] public void DebugStringTests() { DoNamedTest(); }
-        [Test] public void AttributesTests() { DoNamedTest(); }
         [Test] public void TypeofTests() { DoNamedTest(); }
         [Test] public void SharedStaticCreateTests() { DoNamedTest(); }
         [Test] public void NullableTests() { DoNamedTest(); }

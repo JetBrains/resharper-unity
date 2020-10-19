@@ -154,16 +154,16 @@ namespace Burst.ContextActionsTests
 ------------------------------------------------
 0: Burst: Creating a managed type 'Object' is not supported
 QUICKFIXES:
-Add BurstDiscard attribute
+Add `BurstDiscard` attribute
 1: Burst: Creating a managed type 'Object' is not supported
 QUICKFIXES:
-Add BurstDiscard attribute
+Add `BurstDiscard` attribute
 2: Burst: Creating a managed type 'Object' is not supported
 QUICKFIXES:
-Add BurstDiscard attribute
+Add `BurstDiscard` attribute
 3: Burst: Creating a managed type 'Object' is not supported
 QUICKFIXES:
-Add BurstDiscard attribute
+Add `BurstDiscard` attribute
 4: Burst: Creating a managed type 'Object' is not supported
 QUICKFIXES:
-Add BurstDiscard attribute
+Add `BurstDiscard` attribute

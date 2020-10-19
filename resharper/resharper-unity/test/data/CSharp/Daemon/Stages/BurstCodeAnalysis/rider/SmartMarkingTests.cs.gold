@@ -82,16 +82,16 @@ namespace SmartMarkingTests
         [BurstCompile]
         private struct SmartMarkingTest1 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 F();
-            }|(0)
+            }
 
-            |private void F()
+            private void F()
             {
-                var obj = |new object()|(2);
+                var obj = |new object()|(0);
                 D();
-            }|(1)
+            }
 
             private void D()
             {
@@ -102,43 +102,37 @@ namespace SmartMarkingTests
         [BurstCompile]
         private struct SmartMarkingTest2 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 F();
                 D();
-            }|(3)
+            }
 
-            |private void F()
+            private void F()
             {
-                var obj = |new object()|(5);
+                var obj = |new object()|(1);
                 D();
-            }|(4)
+            }
 
-            |private void D()
+            private void D()
             {
-                var obj = |new object()|(7);
-            }|(6)
+                var obj = |new object()|(2);
+            }
         }
 
         [BurstCompile]
         private struct SmartMarkingTest3 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 SimpleClass simpleClass = null;
-                |simpleClass|(9).D();
-            }|(8)
+                |simpleClass|(3).D();
+            }
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(1): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(0): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
+(1): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
 (2): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
-(3): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(5): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
-(6): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(7): ReSharper Warning: Burst: Creating a managed type 'Object' is not supported
-(8): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(9): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported
+(3): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported

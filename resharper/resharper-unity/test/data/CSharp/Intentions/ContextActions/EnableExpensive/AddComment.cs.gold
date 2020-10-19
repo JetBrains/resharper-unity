@@ -11,7 +11,7 @@ namespace Performance
             ManyFixed();
         }
         
-        //ReSharper restore Unity.ExpensiveCode
+        // ReSharper restore Unity.ExpensiveCode
         private void ManyFixe{caret}d()
         {
         }

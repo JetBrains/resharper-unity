@@ -130,10 +130,10 @@ namespace Burst.SharedStaticTests
         [BurstCompile]
         public struct SharedStaticTest1 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(2))|(1);
-            }|(0)
+                var sharedStatic0 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(1))|(0);
+            }
         }
 
         private struct SharedStaticMixed
@@ -145,10 +145,10 @@ namespace Burst.SharedStaticTests
         [BurstCompile]
         public struct SharedStaticTest2 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 var sharedStatic1 = SharedStatic<SharedStaticMixed>.GetOrCreate<double>();
-            }|(3)
+            }
         }
         
         private struct SharedStaticUnmanaged
@@ -160,39 +160,34 @@ namespace Burst.SharedStaticTests
         [BurstCompile]
         public struct SharedStaticTest3 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 var sharedStatic2 = SharedStatic<SharedStaticUnmanaged>.GetOrCreate<float, double>();
-            }|(4)
+            }
         }
 
         [BurstCompile]
         public struct SharedStaticTest4 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
-                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(7), |typeof(int)|(8))|(6);
-            }|(5)
+                var sharedStatic3 = |SharedStatic<int>.GetOrCreate(|typeof(double)|(3), |typeof(int)|(4))|(2);
+            }
         }
 
         [BurstCompile]
         public struct SharedStaticTest5 : IJob
         {
-            |public void Execute()
+            public void Execute()
             {
                 var sharedStatic2 = GetOrCreate<float, double>();
-            }|(9)
+            }
         }
     }
 }
 ---------------------------------------------------------
-(0): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(1): ReSharper Warning: Burst: this method is available in C# only, not HPC#
-(2): ReSharper Warning: Burst: Typeof is prohibited
-(3): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(4): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(5): ReSharper Unity Burst Code Line Marker: Burst compiled code
-(6): ReSharper Warning: Burst: this method is available in C# only, not HPC#
-(7): ReSharper Warning: Burst: Typeof is prohibited
-(8): ReSharper Warning: Burst: Typeof is prohibited
-(9): ReSharper Unity Burst Code Line Marker: Burst compiled code
+(0): ReSharper Warning: Burst: this method is available in C# only, not HPC#
+(1): ReSharper Warning: Burst: Typeof is prohibited
+(2): ReSharper Warning: Burst: this method is available in C# only, not HPC#
+(3): ReSharper Warning: Burst: Typeof is prohibited
+(4): ReSharper Warning: Burst: Typeof is prohibited
