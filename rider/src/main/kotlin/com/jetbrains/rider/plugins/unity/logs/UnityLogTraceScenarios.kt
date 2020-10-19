@@ -1,6 +1,6 @@
 package com.jetbrains.rider.plugins.unity.logs
 
-import com.jetbrains.rdclient.diagnostics.LogTraceScenario
+import com.jetbrains.rd.platform.diagnostics.LogTraceScenario
 
 object UnityLogTraceScenarios {
     object Unity : LogTraceScenario(
