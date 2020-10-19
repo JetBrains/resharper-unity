@@ -19,7 +19,7 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val f = project.solution.frontendBackendModel.editorLogPath.valueOrNull
+        val f = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.editorLogPath
         if (f!=null)
         {
             val vf = VfsUtil.findFileByIoFile(File(f), true)
@@ -31,7 +31,7 @@ class RiderUnityOpenEditorLogAction : RiderUnityLogViewAction() {
             else
             {
                 val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity project open")
-                val title = "Could not open Unity Editor Log"
+                val title = "Could not open Unity Editor log"
                 val message = "$f is not present."
                 val notification = Notification(groupId.displayId, title, message, NotificationType.INFORMATION)
                 Notifications.Bus.notify(notification, project)
@@ -53,7 +53,7 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val f = project.solution.frontendBackendModel.playerLogPath.valueOrNull
+        val f = project.solution.frontendBackendModel.unityApplicationData.valueOrNull?.playerLogPath
         if (f!=null)
         {
             val vf = VfsUtil.findFileByIoFile(File(f), true)
@@ -65,7 +65,7 @@ class RiderUnityOpenPlayerLogAction : RiderUnityLogViewAction() {
             else
             {
                 val groupId = NotificationGroupManager.getInstance().getNotificationGroup("Unity log open")
-                val title = "Could not open Unity Player Log"
+                val title = "Could not open Unity Player log"
                 val message = "$f is not present."
                 val notification = Notification(groupId.displayId, title, message, NotificationType.INFORMATION)
                 Notifications.Bus.notify(notification, project)

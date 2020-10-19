@@ -9,7 +9,6 @@ def hashBaseDir = new File(repoRoot, "rider/build/rdgen")
 
 task generateLibModel(type: tasks.getByName('rdgen').class) {
     // Always store models in their own folder, so the hash is only looking at the files we generate
-    // Note that the generated backend and Unity editor lib models are the same. We could share this somehow? Or move to msbuild?
     def backendCsOutDir = new File(repoRoot, "resharper/build/generated/Model/Lib")
     def unityEditorCsOutDir = new File(repoRoot, "unity/build/generated/Model/Lib")
     def frontendKtOutDir = new File(repoRoot, "rider/src/main/gen/kotlin/com/jetbrains/rider/plugins/unity/model/lib")
@@ -21,20 +20,24 @@ task generateLibModel(type: tasks.getByName('rdgen').class) {
         hashFolder = "$hashBaseDir/lib"
         packages = "model.lib"
 
+        // Library is used as backend in backendUnityModel and backend in frontendBackendModel, so needs to be both
+        // asis and reversed. I.e. symmetric
         generator {
             language = "csharp"
-            transform = "asis"
+            transform = "symmetric"
             root = "model.lib.Library"
             directory = "$backendCsOutDir"
         }
 
+        // Library is used as unity in backendUnityModel, so has reversed perspective
         generator {
             language = "csharp"
-            transform = "asis"
+            transform = "reversed"
             root = "model.lib.Library"
             directory = "$unityEditorCsOutDir"
         }
 
+        // Library is used as frontend in frontendBackendModel, so has same perspective. Generate as-is
         generator {
             language = "kotlin"
             transform = "asis"

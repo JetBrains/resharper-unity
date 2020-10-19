@@ -16,13 +16,14 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
+import com.jetbrains.rd.util.reactive.hasValue
 import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.model.*
-import com.jetbrains.rider.model.unity.LogEvent
-import com.jetbrains.rider.model.unity.LogEventType
+import com.jetbrains.rider.model.unity.*
 import com.jetbrains.rider.model.unity.frontendBackend.*
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
@@ -146,9 +147,9 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
                 unityInstallationFinder.getApplicationVersion()
             )
             project.solution.dotCoverModel.unityCoverageRequested.fire(unityConfigurationParameters)
-            val unityProcessId = project.solution.frontendBackendModel.unityProcessId
-            waitAndPump(unityDefaultTimeout, { unityProcessId.valueOrNull != null }) { "Can't get unity process id" }
-            ProcessHandle.of(unityProcessId.valueOrNull!!.toLong()).get()
+            val unityApplicationData = project.solution.frontendBackendModel.unityApplicationData
+            waitAndPump(unityDefaultTimeout, { unityApplicationData.hasValue }) { "Can't get unity process id" }
+            ProcessHandle.of(unityApplicationData.valueOrThrow.unityProcessId!!.toLong()).get()
         }
         else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
     }
@@ -239,7 +240,7 @@ fun waitConnectionToUnityEditor(project: Project) {
     waitAndPump(project.lifetime,
         {
             project.isConnectedToEditor()
-                && project.solution.frontendBackendModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected
+                && project.solution.frontendBackendModel.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Disconnected
         },
         unityDefaultTimeout) { "unityHost is not initialized." }
     frameworkLogger.info("unityHost is initialized.")
@@ -268,13 +269,13 @@ fun printEditorLogEntry(stream: PrintStream, logEvent: LogEvent) {
 
 fun IntegrationTestWithFrontendBackendModel.play(waitForPlay: Boolean = true) {
     frameworkLogger.info("Start playing in unity editor")
-    frontendBackendModel.play.set(true)
+    frontendBackendModel.playControls.play.set(true)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
 fun IntegrationTestWithFrontendBackendModel.pause(waitForPause: Boolean = true) {
     frameworkLogger.info("Pause unity editor")
-    frontendBackendModel.pause.set(true)
+    frontendBackendModel.playControls.pause.set(true)
     if (waitForPause) waitForUnityEditorPauseMode()
 }
 
@@ -282,35 +283,35 @@ fun IntegrationTestWithFrontendBackendModel.pause(waitForPause: Boolean = true) 
 fun IntegrationTestWithFrontendBackendModel.step(waitForStep: Boolean = true, logMessageAfterStep: String = "2000000") {
     frameworkLogger.info("Make step in unity editor")
     if (waitForStep) {
-        waitForEditorLogsAfterAction(logMessageAfterStep) { frontendBackendModel.step.fire(Unit) }
+        waitForEditorLogsAfterAction(logMessageAfterStep) { frontendBackendModel.playControls.step.fire(Unit) }
     } else {
-        frontendBackendModel.step.fire(Unit)
+        frontendBackendModel.playControls.step.fire(Unit)
     }
 }
 
 fun IntegrationTestWithFrontendBackendModel.stopPlaying(waitForIdle: Boolean = true) {
     frameworkLogger.info("Stop playing in unity editor")
-    frontendBackendModel.play.set(false)
+    frontendBackendModel.playControls.play.set(false)
     if (waitForIdle) waitForUnityEditorIdleMode()
 }
 
 fun IntegrationTestWithFrontendBackendModel.unpause(waitForPlay: Boolean = true) {
     frameworkLogger.info("Unpause unity editor")
-    frontendBackendModel.pause.set(false)
+    frontendBackendModel.playControls.pause.set(false)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(EditorState.ConnectedPlay)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(UnityEditorState.Play)
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(EditorState.ConnectedPause)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(UnityEditorState.Pause)
 
-fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(EditorState.ConnectedIdle)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(UnityEditorState.Idle)
 
 fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<LogEvent> {
     val logLifetime = Lifetime.Eternal.createNested()
     val setOfMessages = expectedMessages.toHashSet()
     val editorLogEntries = mutableListOf<LogEvent>()
-    frontendBackendModel.onUnityLogEvent.adviseNotNull(logLifetime) {
+    frontendBackendModel.consoleLogging.onConsoleLogEvent.adviseNotNull(logLifetime) {
         if (setOfMessages.remove(it.message)) {
             editorLogEntries.add(it)
         }
@@ -326,10 +327,10 @@ fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg 
     return editorLogEntries
 }
 
-private fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorState(editorState: EditorState) {
+private fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorState(editorState: UnityEditorState) {
     frameworkLogger.info("Waiting for unity editor in state '$editorState'")
-    waitAndPump(unityActionsTimeout, { frontendBackendModel.editorState.valueOrNull == editorState })
-    { "Unity editor isn't in state '$editorState', actual state '${frontendBackendModel.editorState.valueOrNull}'" }
+    waitAndPump(unityActionsTimeout, { frontendBackendModel.unityEditorState.valueOrNull == editorState })
+    { "Unity editor isn't in state '$editorState', actual state '${frontendBackendModel.unityEditorState.valueOrNull}'" }
 }
 
 fun IntegrationTestWithFrontendBackendModel.restart() {

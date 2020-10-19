@@ -6,6 +6,7 @@ using JetBrains.Application.Threading.Tasks;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.Documents;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Caches;
 using JetBrains.ReSharper.Psi.Files;
@@ -26,9 +27,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
         private readonly ShaderContextCache myShaderContextCache;
         private readonly ShaderContextDataPresentationCache myShaderContextDataPresentationCache;
 
-        public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles, CppGlobalSymbolCache cppGlobalSymbolCache,
-                                 ShaderContextCache shaderContextCache, ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
-                                 [CanBeNull] UnityHost unityHost = null, [CanBeNull] DocumentHost documentHost = null)
+        public ShaderContextHost(Lifetime lifetime, ISolution solution, IPsiFiles psiFiles,
+                                 CppGlobalSymbolCache cppGlobalSymbolCache,
+                                 ShaderContextCache shaderContextCache,
+                                 ShaderContextDataPresentationCache shaderContextDataPresentationCache, ILogger logger,
+                                 [CanBeNull] FrontendBackendHost frontendBackendHost = null,
+                                 [CanBeNull] DocumentHost documentHost = null)
         {
             mySolution = solution;
             myPsiFiles = psiFiles;
@@ -37,10 +41,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
             myShaderContextCache = shaderContextCache;
             myShaderContextDataPresentationCache = shaderContextDataPresentationCache;
 
-            if (unityHost == null || documentHost == null)
+            if (frontendBackendHost == null || documentHost == null)
                 return;
 
-            unityHost.PerformModelAction(t =>
+            frontendBackendHost.Do(t =>
             {
                 t.RequestShaderContexts.Set((lt, id) =>
                 {
@@ -49,7 +53,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Shaders
                     {
                         var sourceFile = GetSourceFile(id);
                         if (sourceFile == null)
-                            return Rd.Tasks.RdTask<List<ShaderContextDataBase>>.Successful(new List<ShaderContextDataBase>());
+                            return Rd.Tasks.RdTask<List<ShaderContextDataBase>>.Successful(
+                                new List<ShaderContextDataBase>());
                         var task = new Rd.Tasks.RdTask<List<ShaderContextDataBase>>();
                         RequestShaderContexts(lt, sourceFile, task);
 

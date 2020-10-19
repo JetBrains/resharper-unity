@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
@@ -18,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
     {
         private readonly UnityCodeInsightFieldUsageProvider myFieldUsageProvider;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly ConnectionTracker myConnectionTracker;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
 
         public RiderInitialiseOnLoadCctorDetector(ISolution solution,
@@ -27,13 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                                   PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
                                                   UnityCodeInsightFieldUsageProvider fieldUsageProvider,
                                                   UnitySolutionTracker solutionTracker,
-                                                  ConnectionTracker connectionTracker,
+                                                  BackendUnityHost backendUnityHost,
                                                   IconHost iconHost, IElementIdProvider elementIdProvider)
             : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, elementIdProvider)
         {
             myFieldUsageProvider = fieldUsageProvider;
             mySolutionTracker = solutionTracker;
-            myConnectionTracker = connectionTracker;
+            myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
         }
 
@@ -53,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
                 myFieldUsageProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                     tooltip, text, myIconHost.Transform(iconId), GetActions(element),
-                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
+                    RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
             }
         }
     }

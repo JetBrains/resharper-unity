@@ -9,10 +9,9 @@ import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.unity.frontendBackend.EditorState
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.util.Utils.Companion.AllowUnitySetForegroundWindow
 import com.jetbrains.rider.plugins.unity.util.isNonEditableUnityFile
 import com.jetbrains.rider.projectDir
@@ -31,7 +30,7 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
 
         if (project.isUnityProject() && isNonEditableUnityFile(file)) {
             val panel = EditorNotificationPanel()
-            panel.setText("This file is internal to Unity and should not be edited manually.")
+            panel.text = "This file is internal to Unity and should not be edited manually."
             addShowInUnityAction(project.lifetime, panel, file, project)
             return panel
         }
@@ -44,18 +43,16 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
         val model = project.solution.frontendBackendModel
 
         val link = panel.createActionLabel("Show in Unity") {
-            val value = model.unityProcessId.valueOrNull
+            val value = model.unityApplicationData.valueOrNull?.unityProcessId
             if (value != null)
                 AllowUnitySetForegroundWindow(value)
 
             model.showFileInUnity.fire(File(file.path).relativeTo(File(project.projectDir.path)).invariantSeparatorsPath)
         }
 
-        link.isVisible = model.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected
+        link.isVisible = project.isConnectedToEditor()
 
-        model.editorState.change.advise(lifetime) {
-            link.isVisible = it != EditorState.Disconnected
-        }
+        model.unityEditorConnected.advise(lifetime) { link.isVisible = it }
     }
 }
 
