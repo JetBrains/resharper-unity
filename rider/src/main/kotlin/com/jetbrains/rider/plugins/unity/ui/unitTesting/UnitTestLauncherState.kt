@@ -22,6 +22,7 @@ class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Ele
         private const val NUnit = "NUnit"
         private const val EditMode = "EditMode"
         private const val PlayMode = "PlayMode"
+        private const val Both = "EditMode+PlayMode"
     }
 
     init {
@@ -34,7 +35,6 @@ class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Ele
                     propertiesComponent.setValue(discoverLaunchViaUnity, true)
                     nestedLifetime.terminate()
                 }
-
             }
         }
     }
@@ -57,6 +57,7 @@ class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Ele
         return when (preferenceNotNull) {
             UnitTestLaunchPreference.EditMode -> EditMode
             UnitTestLaunchPreference.PlayMode -> PlayMode
+            UnitTestLaunchPreference.Both -> Both
             UnitTestLaunchPreference.NUnit -> NUnit
         }
     }
@@ -66,8 +67,9 @@ class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Ele
             NUnit -> return UnitTestLaunchPreference.NUnit
             EditMode -> return UnitTestLaunchPreference.EditMode
             PlayMode -> return UnitTestLaunchPreference.PlayMode
+            Both -> return UnitTestLaunchPreference.Both
         }
 
-        return UnitTestLaunchPreference.EditMode
+        return UnitTestLaunchPreference.Both
     }
 }

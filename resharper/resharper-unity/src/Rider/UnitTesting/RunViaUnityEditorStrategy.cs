@@ -60,6 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private Task myCurrentLaunchesTask = Task.CompletedTask;
 
         private readonly IProperty<int?> myUnityProcessId;
+        private FrontendBackendModel myFrontendBackendModel;
 
         public RunViaUnityEditorStrategy(ISolution solution,
             IUnitTestResultManager unitTestResultManager,
@@ -87,6 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
+            myFrontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
 
@@ -221,34 +223,56 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         tcs.TrySetCanceled();
                         return;
                     }
-
-                    var launch = SetupLaunch(run);
-
+                    
                     if (myEditorProtocol.BackendUnityModel.Value == null)
                     {
                         tcs.SetException(new Exception("Unity Editor connection unavailable."));
                         return;
                     }
+                    
+                    var filters = GetFilters(run);
 
+                    UnitTestLaunchClientControllerInfo unityClientControllerInfo = null;
+                    var clientControllerInfo = run.HostController.GetClientControllerInfo(run);
+                    if (clientControllerInfo != null)
+                        unityClientControllerInfo = new UnitTestLaunchClientControllerInfo(
+                            clientControllerInfo.AssemblyLocation,
+                            clientControllerInfo.ExtraDependencies?.ToList(),
+                            clientControllerInfo.TypeName);
+
+                    var mode = TestMode.Edit;
+                    if (myFrontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode)
+                        mode = TestMode.Play;
+                    var launch = new UnitTestLaunch(run.Launch.Session.Id, filters, mode, unityClientControllerInfo);
+                    
                     myEditorProtocol.BackendUnityModel.ViewNotNull(taskLifetime, (lt, model) =>
                     {
                         // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                         myLogger.Trace("UnitTestLaunch.SetValue.");
-                        model.UnitTestLaunch.SetValue(launch);
-                        SubscribeResults(run, lt, launch);
-                        
-                        launch.RunResult.Advise(lt, result =>
+
+                        if (myFrontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.Both)
                         {
-                            if (launch.TestMode == TestMode.Play) 
-                                tcs.SetResult(result.Passed);
-                            else
+                            model.UnitTestLaunch.SetValue(launch);
+                            SubscribeResults(run, lt, launch);
+                            launch.RunResult.Advise(lt, result =>
                             {
-                                launch = new UnitTestLaunch(launch.SessionId, launch.TestFilters, TestMode.Play, launch.ClientControllerInfo);
-                                model.UnitTestLaunch.SetValue(launch);
-                                SubscribeResults(run, lt, launch);
-                                StartTests(run, tcs, lt);
-                            }
-                        });
+                                if (launch.TestMode == TestMode.Play) 
+                                    tcs.SetResult(result.Passed);
+                                else
+                                {
+                                    launch = new UnitTestLaunch(launch.SessionId, launch.TestFilters, TestMode.Play, launch.ClientControllerInfo);
+                                    model.UnitTestLaunch.SetValue(launch);
+                                    SubscribeResults(run, lt, launch);
+                                    StartTests(run, tcs, lt);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            model.UnitTestLaunch.SetValue(launch);
+                            SubscribeResults(run, lt, launch);
+                            launch.RunResult.Advise(lt, result => { tcs.SetResult(result.Passed); });
+                        }
                     });
 
                     StartTests(run, tcs, taskLifetime);
@@ -368,32 +392,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             });
 
             return JetTaskEx.While(() => waitingLifetime.IsAlive);
-        }
-
-        private UnitTestLaunch SetupLaunch(IUnitTestRun firstRun)
-        {
-            var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
-            var filters = GetFilters(firstRun);
-
-            var mode = TestMode.Edit;
-            if (frontendBackendModel.UnitTestPreference.HasValue())
-            {
-                mode = frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode
-                    ? TestMode.Play
-                    : TestMode.Edit;
-            }
-
-            UnitTestLaunchClientControllerInfo unityClientControllerInfo = null;
-
-            var clientControllerInfo = firstRun.HostController.GetClientControllerInfo(firstRun);
-            if (clientControllerInfo != null)
-                unityClientControllerInfo = new UnitTestLaunchClientControllerInfo(
-                    clientControllerInfo.AssemblyLocation,
-                    clientControllerInfo.ExtraDependencies?.ToList(),
-                    clientControllerInfo.TypeName);
-
-            var launch = new UnitTestLaunch(firstRun.Launch.Session.Id, filters, mode, unityClientControllerInfo);
-            return launch;
         }
 
         private void SubscribeResults(IUnitTestRun firstRun, Lifetime connectionLifetime, UnitTestLaunch launch)

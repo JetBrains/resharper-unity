@@ -20,6 +20,7 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"NUnit"
         +"EditMode"
         +"PlayMode"
+        +"Both"
     }
 
     private val EditorState = enum {

@@ -19,11 +19,12 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
             UnitTestLaunchPreference.EditMode -> UseUnityEditLauncherAction.EditModeDescription
             UnitTestLaunchPreference.NUnit -> UseNunitLauncherAction.NUnitDescription
             UnitTestLaunchPreference.PlayMode -> UseUnityPlayLauncherAction.PlayModeDescription
+            UnitTestLaunchPreference.Both -> UseUnityBothLauncherAction.BothModeDescription
         }
     }
 
     override fun createPopupActionGroup(p0: JComponent?): DefaultActionGroup {
-        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseNunitLauncherAction()) {
+        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseUnityBothLauncherAction(), UseNunitLauncherAction()) {
             override fun update(e: AnActionEvent) {
                 val project = e.project ?: return
 
