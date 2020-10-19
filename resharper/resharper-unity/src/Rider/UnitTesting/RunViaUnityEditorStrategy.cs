@@ -132,14 +132,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             lock (myCurrentLaunchesTaskAccess)
             {
-                var key = run.Launch.GetData(ourLaunchedInUnityKey);
-                if (key != null)
-                {
-                    return Task.FromResult(false);
-                }
-
-                run.Launch.PutData(ourLaunchedInUnityKey, "smth");
-
                 var cancellationTs = new CancellationTokenSource();
                 run.Lifetime.OnTermination(cancellationTs.Cancel);
                 run.PutData(ourCancellationTokenSourceKey, cancellationTs);
@@ -464,19 +456,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private List<TestFilter> GetFilters(IUnitTestRun run)
         {
             var filters = new List<TestFilter>();
-
             var unitTestElements = new JetHashSet<IUnitTestElement>();
             unitTestElements.AddRange(run.Elements);
             var elements = unitTestElements
                 .Where(unitTestElement => unitTestElement is NUnitTestElement ||
                                           unitTestElement is NUnitRowTestElement).ToArray();
 
-            var testNames = elements.Where(a => !a.Explicit)
-                .Union(run.Launch.Criterion.Explicit)
-                .Select(p => p.Id.Id).ToList();
-
             var groups = new List<string>();
             var categories = new List<string>();
+
+            var testNames = elements.Where(a => !a.Explicit || run.Launch.Criterion.Explicit.Contains(a))
+                .Select(p => p.Id.Id).ToList();;
+            
+            filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
+            return filters;
+
             // https://github.com/JetBrains/resharper-unity/pull/1801#discussion_r472383244
 /*var criterion = run.Launch.Criterion.Criterion;
 if (criterion is ConjunctiveCriterion conjunctiveCriterion)
@@ -490,9 +484,6 @@ else if (criterion is TestAncestorCriterion ancestorCriterion)
    groups.AddRange(ancestorCriterion.AncestorIds.Select(a => $"^{Regex.Escape(a.Id)}$"));
 else if (criterion is CategoryCriterion categoryCriterion)
    categories.Add(categoryCriterion.Category.Name);*/
-
-            filters.Add(new TestFilter(((UnityRuntimeEnvironment) run.RuntimeEnvironment).Project.Name, testNames, groups, categories));
-            return filters;
         }
 
         [CanBeNull]
