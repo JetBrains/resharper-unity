@@ -8,6 +8,7 @@ import com.intellij.openapi.util.Key
 import com.jetbrains.rider.build.tasks.BuildSolutionBeforeRunTask
 import com.jetbrains.rider.build.tasks.BuildSolutionBeforeRunTaskProvider
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityConfigurationFactoryBase
+import com.jetbrains.rider.run.configurations.exe.ExeConfigurationParameters
 import org.jetbrains.annotations.NotNull
 
 class UnityExeConfigurationFactory(type: ConfigurationType) : UnityConfigurationFactoryBase(type) {
@@ -27,20 +28,13 @@ class UnityExeConfigurationFactory(type: ConfigurationType) : UnityConfiguration
         return true
     }
 
-    private fun createParameters(): UnityExeConfigurationParameters {
-        return UnityExeConfigurationParameters(
-            "",
-            "",
-            "",
-            hashMapOf(),
-            true,
-            false
-        )
-    }
-
-    override fun createConfiguration(name: String?, template: RunConfiguration): RunConfiguration =
-        UnityExeConfiguration(name ?: this.name, template.project, this, createParameters())
-
     override fun createTemplateConfiguration(@NotNull project: Project): RunConfiguration =
-        UnityExeConfiguration(this.name, project, this, createParameters())
+        UnityExeConfiguration(this.name, project, this, ExeConfigurationParameters(
+            exePath = "",
+            programParameters = "",
+            workingDirectory = "",
+            envs = hashMapOf(),
+            isPassParentEnvs = true,
+            useExternalConsole = false
+        ))
 }
