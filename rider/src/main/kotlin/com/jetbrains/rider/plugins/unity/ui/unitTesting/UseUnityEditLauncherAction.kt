@@ -8,7 +8,7 @@ import com.jetbrains.rider.projectView.solution
 
 class UseUnityEditLauncherAction : DumbAwareAction(EditModeDescription, "Run with Unity Editor in Edit Mode", null) {
     companion object {
-        const val EditModeDescription = "Unity Editor - Edit Mode"
+        const val EditModeDescription = "Unity - Edit Mode"
     }
 
     override fun actionPerformed(e: AnActionEvent) {

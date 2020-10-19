@@ -8,7 +8,7 @@ import com.jetbrains.rider.projectView.solution
 
 class UseUnityPlayLauncherAction : DumbAwareAction(PlayModeDescription, "Run with Unity Editor in Play Mode", null) {
     companion object {
-        const val PlayModeDescription = "Unity Editor - Play Mode"
+        const val PlayModeDescription = "Unity - Play Mode"
     }
 
     override fun actionPerformed(e: AnActionEvent) {
