@@ -9,7 +9,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public abstract class BurstProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T>, IBurstBannedAnalyzer where T : ITreeNode
     {
         public override CallGraphContextElement Context => CallGraphContextElement.BURST_CONTEXT;
-        public override CallGraphContextElement ProhibitedContext => CallGraphContextElement.NONE;
 
         protected override void Analyze(T t, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
         {

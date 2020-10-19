@@ -46,12 +46,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
             var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
             
-            // CGTD overlook. performance and validity
             if (methodDeclaration == null)
                 return EmptyList<IntentionAction>.Instance;
 
             if (!UnityCallGraphUtil.IsSweaCompleted(mySwa))
-                return EmptyList<IntentionAction>.Instance;;
+                return EmptyList<IntentionAction>.Instance;
 
             var processKind = UnityCallGraphUtil.GetProcessKindForGraph(mySwa);
 
@@ -73,7 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
             var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
             
-            // CGTD overlook. performance and validity
             if (methodDeclaration == null)
                 return false;
 

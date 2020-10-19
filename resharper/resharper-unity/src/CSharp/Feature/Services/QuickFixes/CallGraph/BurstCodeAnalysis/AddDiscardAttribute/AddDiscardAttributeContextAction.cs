@@ -32,7 +32,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         public AddDiscardAttributeContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
         {
             myDataProvider = dataProvider;
-            //CGTD overlook. 2 function to select
 
             mySwa = dataProvider.Solution.GetComponent<SolutionAnalysisService>();
             myBurstContextProvider = dataProvider.Solution.GetComponent<BurstContextProvider>();
@@ -40,17 +39,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            // CGTD overlook getSelectedElement or getSelectedTreeNode
             var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
             var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
 
             if (methodDeclaration == null)
                 return EmptyList<IntentionAction>.Instance;
-            ;
 
             if (!UnityCallGraphUtil.IsSweaCompleted(mySwa))
                 return EmptyList<IntentionAction>.Instance;
-            ;
 
             var bulbAction = new AddDiscardAttributeBulbAction(methodDeclaration);
             var processKind = UnityCallGraphUtil.GetProcessKindForGraph(mySwa);
@@ -63,7 +59,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public bool IsAvailable(IUserDataHolder cache)
         {
-            // CGTD overlook getSelectedElement or getSelectedTreeNode
             var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
             var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
 

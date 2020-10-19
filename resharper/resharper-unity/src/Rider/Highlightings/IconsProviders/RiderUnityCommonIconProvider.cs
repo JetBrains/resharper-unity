@@ -1,13 +1,17 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.AddExpensiveComment;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -18,7 +22,6 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
-using JetBrains.Util.DataStructures.Collections;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
@@ -82,7 +85,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 return;
 
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
-                () => { base.AddFrequentlyCalledMethodHighlighting(consumer, declaration, text, tooltip, kind);}, out var useFallback))
+                () => { base.AddFrequentlyCalledMethodHighlighting(consumer, declaration, text, tooltip, kind);}, out _))
             {
                 IEnumerable<BulbMenuItem> actions;
                 if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
@@ -93,18 +96,29 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     if (declaration is IMethodDeclaration methodDeclaration)
                     {
-                        // CGTD 1. add check on comment
-                        // CGTD 2. add check on not expensive
-                        var expensiveBulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
-                        var performanceDisableAction = new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
                         var textControl = myTextControlManager.LastFocusedTextControl.Value;
-                        var result = FixedList.Of(new BulbMenuItem(
-                            new IntentionAction.MyExecutableProxi(expensiveBulbAction, mySolution, textControl), expensiveBulbAction.Text,
-                            BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems), 
-                            new BulbMenuItem(
-                                new IntentionAction.MyExecutableProxi(performanceDisableAction, mySolution, textControl), performanceDisableAction.Text,
-                                BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems));
-                        actions = result;
+                        var compactList = new CompactList<BulbMenuItem>();
+                        var performanceDisableAction =
+                            new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
+                        var performanceDisableBulbItem = new BulbMenuItem(
+                            new IntentionAction.MyExecutableProxi(performanceDisableAction, mySolution, textControl),
+                            performanceDisableAction.Text,
+                            BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems);
+                        compactList.Add(performanceDisableBulbItem);
+
+                        if (!UnityCallGraphUtil.HasAnalysisComment(methodDeclaration, ExpensiveCodeMarksProvider.MarkId,
+                            ReSharperControlConstruct.Kind.Restore))
+                        {
+                            var expensiveBulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
+                            var expensiveBulbItem = new BulbMenuItem(
+                                new IntentionAction.MyExecutableProxi(expensiveBulbAction, mySolution, textControl),
+                                expensiveBulbAction.Text,
+                                BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems);
+
+                            compactList.Add(expensiveBulbItem);
+                        }
+
+                        actions = compactList;
                     }
                     else
                     {

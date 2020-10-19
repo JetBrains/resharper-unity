@@ -54,7 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         {
             var methodDeclaration = myMethodDeclaration;
             
-            // CGTD overlook. performance and validity
             if (methodDeclaration == null)
                 return false;
 

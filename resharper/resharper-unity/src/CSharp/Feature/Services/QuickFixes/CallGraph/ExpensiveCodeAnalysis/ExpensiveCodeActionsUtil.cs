@@ -2,6 +2,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 {
     public static class ExpensiveCodeActionsUtil
     {
-        public const string MESSAGE = "Enable Expensive Analysis";
+        public const string MESSAGE = "Mark function expensive";
     }
 }

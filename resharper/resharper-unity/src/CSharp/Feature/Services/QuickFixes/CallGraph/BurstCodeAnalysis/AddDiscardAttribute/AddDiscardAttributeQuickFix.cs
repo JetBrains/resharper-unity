@@ -28,12 +28,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             if (myMethodDeclaration == null || myBulbAction == null)
                 return EmptyList<IntentionAction>.Instance;;
             
-            // CGTD overlook. which icons
-            // CGTD overlook. isValid?
             return myBulbAction.ToQuickFixIntentions();
         }
-        // null, BulbThemedIcons.YellowBulb.Id);
-        // this.ToContextActionIntentions(IntentionsAnchors.ContextActionsAnchor, BulbThemedIcons.YellowBulb.Id);
 
 
         public bool IsAvailable(IUserDataHolder cache) => AddDiscardAttributeUtil.IsAvailable(myMethodDeclaration);

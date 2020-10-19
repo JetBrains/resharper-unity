@@ -40,9 +40,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private static readonly Expression<Func<UnitySettings, bool>> ourEnableBurstHighlightingAccessor =
             s => s.EnableBurstCodeHighlighting;
 
-        private static readonly Expression<Func<UnitySettings, bool>> ourEnableBurstVirtualPropagating =
-            s => s.EnableBurstVirtualPropagating;
-
         public UnityOptionsPage(Lifetime lifetime, OptionsPageContext pageContext,
             OptionsSettingsSmartContext settingsStore,
             RunsProducts.ProductConfigurations productConfigurations)
@@ -144,25 +141,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             AddHeader("Burst code analysis");
 
             AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
-            
-            using (Indent())
-            {
-                var option = AddComboOption((UnitySettings s) => s.BurstCodeHighlightingMode,
-                    "Highlight burst code contexts:", string.Empty, string.Empty,
-                    new RadioOptionPoint(BurstCodeHighlightingMode.Always, "Always"),
-                    new RadioOptionPoint(BurstCodeHighlightingMode.CurrentMethod, "Current method only"),
-                    new RadioOptionPoint(BurstCodeHighlightingMode.Never, "Never")
-                );
-                
-                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
-                    enable => enable);
-                
-                option = AddBoolOption((UnitySettings s) => s.EnableIconsForBurstCode,
-                    "Show icons for Burst compiled methods");
-                
-                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
-                    enable => enable);
-            }
         }
 
         private void AddNamingSection(Lifetime lifetime, IContextBoundSettingsStore settingsStore)

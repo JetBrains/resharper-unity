@@ -72,7 +72,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
             var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
 
-            // CGTD overlook. performance and validity
             if (methodDeclaration == null)
                 return false;
 

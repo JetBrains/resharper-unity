@@ -8,12 +8,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 {
     public static class AddDiscardAttributeUtil
     {
-        public const string DiscardActionMessage = "Add BurstDiscard attribute";
+        public const string DiscardActionMessage = "Add `BurstDiscard` attribute";
 
         [ContractAnnotation("null => false")]
         public static bool IsAvailable([CanBeNull] IMethodDeclaration methodDeclaration)
         {
-            // CGTD overlook. performance and validity
             if (methodDeclaration == null)
                 return false;
             

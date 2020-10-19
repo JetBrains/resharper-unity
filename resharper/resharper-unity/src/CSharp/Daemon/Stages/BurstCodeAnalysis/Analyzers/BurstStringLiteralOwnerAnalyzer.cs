@@ -10,10 +10,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstStringLiteralOwnerAnalyzer : BurstProblemAnalyzerBase<IStringLiteralOwner>
     {
-        public static bool CheckAndAnalyze(ITreeNode startNode, IHighlighting highlighting,
+        public static bool CheckAndAnalyze(ICSharpExpression startNode, IHighlighting highlighting,
             IHighlightingConsumer consumer)
         {
             var firstNode = startNode;
+            
             do
             {
                 var parent = startNode.Parent;
@@ -74,8 +75,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     case ITypeMemberDeclaration _:
                         consumer?.AddHighlighting(highlighting);
                         return true;
+                    case ICSharpExpression expression:
+                        startNode = expression;
+                        break;
                     default:
-                        startNode = parent;
+                        startNode = null;
                         break;
                 }
             } while (startNode != null);

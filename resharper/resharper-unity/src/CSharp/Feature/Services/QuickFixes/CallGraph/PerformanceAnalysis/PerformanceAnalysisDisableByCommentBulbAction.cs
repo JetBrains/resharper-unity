@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         {
         }
         
-        protected override string Comment => "//" + ReSharperControlConstruct.DisablePrefix + " " +
+        protected override string Comment => "// " + ReSharperControlConstruct.DisablePrefix + " " +
                                              UnityCallGraphUtil.PerformanceExpensiveComment;
         public override string Text => PerformanceDisableUtil.MESSAGE;
     }

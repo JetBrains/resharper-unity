@@ -25,7 +25,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
         public static DaemonProcessKind GetProcessKindForGraph(
             [NotNull] SolutionAnalysisService solutionAnalysisService)
         {
-            // CGTD overlook. which states of swea is ok
             return IsSweaCompleted(solutionAnalysisService)
                 ? DaemonProcessKind.GLOBAL_WARNINGS
                 : DaemonProcessKind.VISIBLE_DOCUMENT;
@@ -33,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
 
         public static bool IsSweaCompleted([NotNull] SolutionAnalysisService solutionAnalysisService)
         {
-            return solutionAnalysisService.Configuration?.Enabled?.Value == true;
+            return solutionAnalysisService.Configuration?.Completed?.Value == true;
         }
 
         public const string PerformanceExpensiveComment = "Unity.PerformanceAnalysis";

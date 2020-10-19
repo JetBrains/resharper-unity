@@ -21,16 +21,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public void Execute(ISolution solution, ITextControl textControl)
         {
-            var transactions = myMethodDeclaration.GetPsiServices().Transactions;
-
-            transactions.Execute(GetType().Name, () =>
+            using (WriteLockCookie.Create())
             {
-                using (WriteLockCookie.Create())
-                {
-                    AttributeUtil.AddAttributeToSingleDeclaration(myMethodDeclaration, KnownTypes.BurstDiscardAttribute,
-                        myMethodDeclaration.GetPsiModule(), CSharpElementFactory.GetInstance(myMethodDeclaration));
-                }
-            });
+                AttributeUtil.AddAttributeToSingleDeclaration(myMethodDeclaration, KnownTypes.BurstDiscardAttribute,
+                    myMethodDeclaration.GetPsiModule(), CSharpElementFactory.GetInstance(myMethodDeclaration));
+            }
         }
 
         public string Text => AddDiscardAttributeUtil.DiscardActionMessage;

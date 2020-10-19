@@ -7,6 +7,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnaly
     public abstract class CommonProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T> where T : ITreeNode
     {
         public override CallGraphContextElement Context => CallGraphContextElement.NONE;
-        public override CallGraphContextElement ProhibitedContext => CallGraphContextElement.NONE;
     }
 }

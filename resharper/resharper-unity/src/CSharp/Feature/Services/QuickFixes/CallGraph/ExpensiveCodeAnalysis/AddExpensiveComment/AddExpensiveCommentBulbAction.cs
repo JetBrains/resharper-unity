@@ -14,7 +14,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         }
 
         protected override string Comment =>
-            "//" + ReSharperControlConstruct.RestorePrefix + " " + ExpensiveCodeMarksProvider.MarkId;
+            "// " + ReSharperControlConstruct.RestorePrefix + " " + ExpensiveCodeMarksProvider.MarkId;
 
         public override string Text => ExpensiveCodeActionsUtil.MESSAGE;
     }
