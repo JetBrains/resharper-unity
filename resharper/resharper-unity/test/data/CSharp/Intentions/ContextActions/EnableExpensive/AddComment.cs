@@ -1,18 +1,19 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace Performance
 {
     public class Everything : MonoBehaviour
     {
+
         private void Update()
         {
-            Fupdate();
+            ManyFixed();
         }
-
-        [SuppressMessage("ReSharper", "Cheap.Method")]
-        private void Fup{caret}date()
+        
+        private void ManyFixe{caret}d()
         {
         }
+
     }
 }

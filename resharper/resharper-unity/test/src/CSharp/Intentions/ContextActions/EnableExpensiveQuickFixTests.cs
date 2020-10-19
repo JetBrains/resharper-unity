@@ -20,8 +20,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActio
 
         protected override string ExtraPath => "EnableExpensive";
         
-        [Test] public void TransitiveAction() { DoNamedTest(); }
-    
-        [Test] public void SuppressMessageAction() { DoNamedTest(); }
+        [Test] public void AddComment() { DoNamedTest(); }
     }
 }

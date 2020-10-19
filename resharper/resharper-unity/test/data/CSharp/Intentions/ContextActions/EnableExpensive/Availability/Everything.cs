@@ -39,6 +39,7 @@ namespace Performance
             GetComponent<int>();
             DFixed();
             ManyFixed();
+            Cross();
             FFixed();
         }
 
@@ -47,14 +48,23 @@ namespace Performance
             GetComponent<int>();
         }
 
-        [SuppressMessage("ReSharper", "Cheap.Method")]
+        // ReSharper restore Unity.ExpensiveCode
         private void DFi{off}xed()//no
         {
         }
         
         [SuppressMessage("Bla", "Cheap.Method")]
         [SuppressMessage("Resharper", "Cheap.Met111hod")]
+        // 1ReSharper restore Unity.ExpensiveCode
+        // ReSharper 1 restore Unity.ExpensiveCode
+        // ReSharper restore 23 Unity.ExpensiveCode
+        // ReSharper restore Unity.ExpensiveCodee
         private void ManyFixe{on}d()//yes
+        {
+        }
+        
+        // ReSharper disable Unity.PerformanceAnalysis
+        private void Cro{off}ss()//yes
         {
         }
 
