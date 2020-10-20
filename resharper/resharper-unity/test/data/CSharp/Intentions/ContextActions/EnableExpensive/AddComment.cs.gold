@@ -1,0 +1,20 @@
+﻿using System.Diagnostics.CodeAnalysis;
+using UnityEngine;
+
+namespace Performance
+{
+    public class Everything : MonoBehaviour
+    {
+
+        private void Update()
+        {
+            ManyFixed();
+        }
+        
+        // ReSharper restore Unity.ExpensiveCode
+        private void ManyFixe{caret}d()
+        {
+        }
+
+    }
+}

@@ -180,7 +180,7 @@ namespace MethodInvocationTests
 (1): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'Object' is not supported
 (2): ReSharper Warning: Burst: Accessing managed method 'Equals' from type 'ValueType' is not supported
 (3): ReSharper Warning: Burst: Accessing managed method 'ToString' from type 'ValueType' is not supported
-(4): ReSharper Warning: Burst: Loading from a non-readonly static field 'MethodInvocationTests.myClasss' is not supported
-(5): ReSharper Warning: Burst: Loading from a non-readonly static field 'MethodInvocationTests.myClasss' is not supported
+(4): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported
+(5): ReSharper Warning: Burst: Loading managed type 'SimpleClass' is not supported
 (6): ReSharper Warning: Burst: Accessing managed method 'GetHashCode' from type 'ValueType' is not supported
 (7): ReSharper Warning: Burst: Accessing managed method 'GetHashCode' from type 'ValueType' is not supported

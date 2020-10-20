@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         protected override bool CheckAndAnalyze(IForeachStatement foreachStatement, IHighlightingConsumer consumer)
         {
-            consumer?.AddHighlighting(new BurstForeachNotSupportedWarning(foreachStatement.ForeachKeyword.GetDocumentRange()));
+            consumer?.AddHighlighting(new BurstForeachNotSupportedWarning(foreachStatement.ForeachKeyword));
             return true;
         }
     }
