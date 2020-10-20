@@ -23,7 +23,7 @@ open class StartUnityAction : DumbAwareAction() {
         if (version != null)
             e.presentation.text = "Start Unity ($version)"
 
-        e.presentation.isEnabled = version != null && e.project.isConnectedToEditor()
+        e.presentation.isEnabled = version != null && !e.project.isConnectedToEditor()
         super.update(e)
     }
 
