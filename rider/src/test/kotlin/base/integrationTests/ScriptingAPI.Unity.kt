@@ -16,17 +16,15 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rd.util.reactive.hasValue
 import com.jetbrains.rd.util.reactive.valueOrDefault
-import com.jetbrains.rd.util.reactive.valueOrThrow
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
-import com.jetbrains.rider.model.*
+import com.jetbrains.rider.model.dotCoverModel
 import com.jetbrains.rider.model.unity.*
-import com.jetbrains.rider.model.unity.frontendBackend.*
-import com.jetbrains.rider.model.unity.frontendBackend.EditorState
+import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
@@ -142,24 +140,26 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
     val processHandle = when {
         withCoverage -> {
-            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
-                .drop(1)
-                .toMutableList()
-                .apply { addAll(args) }
-                .let {
-                    when {
-                        SystemInfo.isWindows -> it.joinToString(" ")
-                        else -> ParametersList.join(it)
-                    }
-                }
-            val unityInstallationFinder = UnityInstallationFinder.getInstance(project)
-            val unityConfigurationParameters = RdDotCoverUnityConfigurationParameters(
-                unityInstallationFinder.getApplicationExecutablePath().toString(),
-                unityProjectDefaultArgsString,
-                unityInstallationFinder.getApplicationVersion()
-            )
-            project.solution.dotCoverModel.unityCoverageRequested.fire(unityConfigurationParameters)
-            getUnityProcessHandle(project)
+//            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
+//                .drop(1)
+//                .toMutableList()
+//                .apply { addAll(args) }
+//                .let {
+//                    when {
+//                        SystemInfo.isWindows -> it.joinToString(" ")
+//                        else -> ParametersList.join(it)
+//                    }
+//                }
+//            val unityInstallationFinder = UnityInstallationFinder.getInstance(project)
+//            val unityConfigurationParameters = RdDotCoverUnityConfigurationParameters(
+//                unityInstallationFinder.getApplicationExecutablePath().toString(),
+//                unityProjectDefaultArgsString,
+//                unityInstallationFinder.getApplicationVersion()
+//            )
+//
+//            project.solution.dotCoverModel.fire(unityConfigurationParameters)
+//            getUnityProcessHandle(project)
+            throw NotImplementedError()
         }
         else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
     }
@@ -170,9 +170,9 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
 }
 
 fun getUnityProcessHandle(project: Project): ProcessHandle {
-    val unityProcessId = project.solution.frontendBackendModel.unityProcessId
-    waitAndPump(unityDefaultTimeout, { unityProcessId.valueOrNull != null }) { "Can't get unity process id" }
-    return ProcessHandle.of(unityProcessId.valueOrNull!!.toLong()).get()
+    val unityApplicationData = project.solution.frontendBackendModel.unityApplicationData
+    waitAndPump(unityDefaultTimeout, { unityApplicationData.valueOrNull?.unityProcessId != null }) { "Can't get unity process id" }
+    return ProcessHandle.of(unityApplicationData.valueOrNull?.unityProcessId!!.toLong()).get()
 }
 
 fun BaseTestWithSolutionBase.startUnity(project: Project, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
