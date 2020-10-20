@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -17,11 +16,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class InitialiseOnLoadCctorDetector : UnityDeclarationHighlightingProviderBase
     {
         public InitialiseOnLoadCctorDetector(ISolution solution,
-                                             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
                                              IApplicationWideContextBoundSettingStore settingsStore,
-                                             PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
-                                             IElementIdProvider provider)
-            : base(solution, settingsStore, callGraphSwaExtensionProvider, marksProvider, provider)
+                                             PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, contextProvider)
         {
         }
 

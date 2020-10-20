@@ -88,8 +88,8 @@ class UnityLogPanelModel(lifetime: Lifetime, val project: Project) {
         private var showBeforeInit = true
 
         fun getShouldBeShown(time: Long):Boolean {
-            return (showBeforeInit || time > project.solution.frontendBackendModel.lastInitTime.valueOrDefault(0))
-                && (showBeforePlay || time > project.solution.frontendBackendModel.lastPlayTime.valueOrDefault(0))
+            return (showBeforeInit || time > project.solution.frontendBackendModel.consoleLogging.lastInitTime.valueOrDefault(0))
+                && (showBeforePlay || time > project.solution.frontendBackendModel.consoleLogging.lastPlayTime.valueOrDefault(0))
         }
         fun getShouldBeShownBeforeInit():Boolean {
             return showBeforeInit

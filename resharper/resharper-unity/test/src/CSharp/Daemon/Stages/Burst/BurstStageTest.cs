@@ -1,6 +1,6 @@
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
@@ -20,10 +20,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Burst
         [Test] public void DirectivesTests() { DoNamedTest(); }
         [Test] public void BurstDiscardTests() { DoNamedTest(); }
         [Test] public void DebugStringTests() { DoNamedTest(); }
-        [Test] public void AttributesTests() { DoNamedTest(); }
+        [Test] public void TypeofTests() { DoNamedTest(); }
+        [Test] public void SharedStaticCreateTests() { DoNamedTest(); }
+        [Test] public void NullableTests() { DoNamedTest(); }
+        [Test] public void ConditionalAttributesTests() { DoNamedTest(); }
+        [Test] public void CommentRootsTests() { DoNamedTest(); }
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file, IContextBoundSettingsStore settingsStore)
         {
-            return highlighting is BurstHighlighting;
+            return highlighting is IBurstHighlighting;
         }
     }    
 }    

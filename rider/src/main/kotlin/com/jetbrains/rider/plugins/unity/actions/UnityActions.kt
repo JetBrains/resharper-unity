@@ -9,12 +9,12 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 class PlayInUnityAction : ToggleAction(), DumbAware {
 
     override fun isSelected(e: AnActionEvent):Boolean {
-        val model = e.getModel() ?: return false
-        return model.play.valueOrDefault(false)
+        val model = e.getFrontendBackendModel() ?: return false
+        return model.playControls.play.valueOrDefault(false)
     }
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
-        e.getModel()?.play?.set(value)
+        e.getFrontendBackendModel()?.playControls?.play?.set(value)
     }
 
     override fun update(e: AnActionEvent) {
@@ -26,17 +26,17 @@ class PlayInUnityAction : ToggleAction(), DumbAware {
 class PauseInUnityAction : ToggleAction(), DumbAware {
 
     override fun isSelected(e: AnActionEvent):Boolean {
-        val model = e.getModel() ?: return false
-        return model.pause.valueOrDefault(false)
+        val model = e.getFrontendBackendModel() ?: return false
+        return model.playControls.pause.valueOrDefault(false)
     }
 
     override fun setSelected(e: AnActionEvent, value: Boolean) {
-        e.getModel()?.pause?.set(value)
+        e.getFrontendBackendModel()?.playControls?.pause?.set(value)
     }
 
     override fun update(e: AnActionEvent) {
         e.handleUpdateForUnityConnection {
-            it.play.valueOrDefault(false)
+            it.playControls.play.valueOrDefault(false)
         }
         super.update(e)
     }
@@ -45,12 +45,12 @@ class PauseInUnityAction : ToggleAction(), DumbAware {
 class StepInUnityAction : AnAction(), DumbAware {
 
     override fun actionPerformed(e: AnActionEvent) {
-        e.getModel()?.step?.fire(Unit)
+        e.getFrontendBackendModel()?.playControls?.step?.fire(Unit)
     }
 
     override fun update(e: AnActionEvent) {
         e.handleUpdateForUnityConnection {
-            it.play.valueOrDefault(false)
+            it.playControls.play.valueOrDefault(false)
         }
     }
 }

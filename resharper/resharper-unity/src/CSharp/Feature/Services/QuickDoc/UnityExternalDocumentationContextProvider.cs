@@ -3,17 +3,14 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
-using JetBrains.ReSharper.Host.Features;
-using JetBrains.ReSharper.Plugins.Unity.Rider;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.DataContext;
-using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 {
@@ -30,15 +27,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 
         [CanBeNull, AsyncContextConsumer]
         public static Action ProcessDataContext(
-            [NotNull] Lifetime lifetime,
+            Lifetime lifetime,
             [NotNull, ContextKey(typeof(ContextHighlighterPsiFileView.ContextKey))] IPsiDocumentRangeView psiDocumentRangeView,
-            UnityHost host,
+            FrontendBackendHost frontendBackendHost,
             UnityApi unityApi)
         {
             var unityName = GetUnityName(psiDocumentRangeView, unityApi);
 
             // This is called only if the process finished while the context is still valid
-            return () => { host.PerformModelAction(rd => rd.ExternalDocContext.Value = unityName); };
+            return () => frontendBackendHost.Do(rd => rd.ExternalDocContext.Value = unityName);
         }
 
         [NotNull]

@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Analysis
             #if RIDER
             return highlighting is UnityImplicitlyUsedIdentifierHighlighting || highlighting is UnityCodeInsightsHighlighting;
             #else
-            return highlighting is UnityImplicitlyUsedIdentifierHighlighting || highlighting is UnityGutterMarkInfo;
+            return highlighting is UnityImplicitlyUsedIdentifierHighlighting || highlighting is UnityGutterMarkInfo || highlighting is UnityHotGutterMarkInfo;
 
             #endif
         }

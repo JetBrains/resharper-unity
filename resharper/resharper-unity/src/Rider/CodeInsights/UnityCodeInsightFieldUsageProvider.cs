@@ -23,6 +23,7 @@ using JetBrains.ReSharper.Host.Features.Services;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Navigation.GoToUnityUsages;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
@@ -48,6 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly DataContexts myContexts;
         private readonly IActionManager myActionManager;
+
         public override string ProviderId => "Unity serialized field";
         public override string DisplayName => "Unity serialized field";
         public override CodeLensAnchorKind DefaultAnchor => CodeLensAnchorKind.Right;
@@ -55,15 +57,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
         public override ICollection<CodeLensRelativeOrdering> RelativeOrderings =>
             new[] {new CodeLensRelativeOrderingLast()};
 
-        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker, UnityHost host, BulbMenuComponent bulbMenu, DeferredCacheController deferredCacheController,
-            AssetInspectorValuesContainer inspectorValuesContainer, UnityEventsElementContainer unityEventsElementContainer)
-            : base(unitySolutionTracker, host, bulbMenu)
+        public UnityCodeInsightFieldUsageProvider(UnitySolutionTracker unitySolutionTracker,
+                                                  FrontendBackendHost frontendBackendHost, BulbMenuComponent bulbMenu,
+                                                  DeferredCacheController deferredCacheController,
+                                                  AssetInspectorValuesContainer inspectorValuesContainer,
+                                                  UnityEventsElementContainer unityEventsElementContainer)
+            : base(frontendBackendHost, bulbMenu)
         {
             myDeferredCacheController = deferredCacheController;
             myInspectorValuesContainer = inspectorValuesContainer;
             myUnityEventsElementContainer = unityEventsElementContainer;
             myActionManager = Shell.Instance.GetComponent<IActionManager>();
-            myContexts =  Shell.Instance.GetComponent<DataContexts>();
+            myContexts = Shell.Instance.GetComponent<DataContexts>();
         }
 
         private static (Guid? guid, string[] propertyNames) GetAssetGuidAndPropertyName(ISolution solution, IField declaredElement)
