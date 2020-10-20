@@ -6,4 +6,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class UnityPerformanceHighlighting
     {
     }
+    
+    [RegisterStaticHighlightingsGroup("Unity Burst", true)]
+    public class UnityBurstHighlighting
+    {
+    }
 }

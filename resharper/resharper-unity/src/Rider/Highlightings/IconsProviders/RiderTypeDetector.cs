@@ -1,11 +1,10 @@
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
@@ -32,9 +31,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly IconHost myIconHost;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public RiderTypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
+        public RiderTypeDetector(ISolution solution, 
                                  IApplicationWideContextBoundSettingStore settingsStore,
-                                 PerformanceCriticalCodeCallGraphMarksProvider marksProvider, UnityApi unityApi,
+                                 UnityApi unityApi,
                                  AssetIndexingSupport assetIndexingSupport,
                                  UnityUsagesCodeVisionProvider usagesCodeVisionProvider,
                                  UnityCodeInsightProvider codeInsightProvider,
@@ -42,8 +41,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                  DeferredCacheController deferredCacheController, UnitySolutionTracker solutionTracker,
                                  BackendUnityHost backendUnityHost,
                                  IconHost iconHost, AssetSerializationMode assetSerializationMode,
-                                 IElementIdProvider elementIdProvider)
-            : base(solution, callGraphSwaExtensionProvider, settingsStore, unityApi, marksProvider, elementIdProvider)
+                                 PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, unityApi, contextProvider)
         {
             myAssetIndexingSupport = assetIndexingSupport;
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;

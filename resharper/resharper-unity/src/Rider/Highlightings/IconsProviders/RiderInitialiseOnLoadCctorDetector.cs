@@ -1,10 +1,8 @@
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -23,14 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly IconHost myIconHost;
 
         public RiderInitialiseOnLoadCctorDetector(ISolution solution,
-                                                  CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
                                                   IApplicationWideContextBoundSettingStore settingsStore,
-                                                  PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
                                                   UnityCodeInsightFieldUsageProvider fieldUsageProvider,
                                                   UnitySolutionTracker solutionTracker,
                                                   BackendUnityHost backendUnityHost,
-                                                  IconHost iconHost, IElementIdProvider elementIdProvider)
-            : base(solution, callGraphSwaExtensionProvider, settingsStore, marksProvider, elementIdProvider)
+                                                  IconHost iconHost, PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, contextProvider)
         {
             myFieldUsageProvider = fieldUsageProvider;
             mySolutionTracker = solutionTracker;
@@ -41,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
                                                 DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(CallGraphSwaExtensionProvider, SettingsStore.BoundSettingsStore, MarksProvider, kind, ElementIdProvider)
+            var iconId = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
 

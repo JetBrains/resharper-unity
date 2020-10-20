@@ -33,6 +33,14 @@
     <Compile Update="CSharp\Daemon\Errors\CSharpErrors.generated.cs">
       <DependentUpon>CSharpErrors.xml</DependentUpon>
     </Compile>
+    <ErrorsGen Include="CSharp\Daemon\Errors\CommonCodeErrors.xml">
+      <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
+      <OutputFile>CSharp\Daemon\Errors\CommonCodeErrors.generated.cs</OutputFile>
+      <Mode>ERRORS</Mode>
+    </ErrorsGen>
+    <Compile Update="CSharp\Daemon\Errors\CommonCodeErrors.generated.cs">
+      <DependentUpon>CommonCodeErrors.xml</DependentUpon>
+    </Compile>
     <ErrorsGen Include="CSharp\Daemon\Errors\BurstErrors.xml">
       <Namespace>JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors</Namespace>
       <OutputFile>CSharp\Daemon\Errors\BurstErrors.generated.cs</OutputFile>
