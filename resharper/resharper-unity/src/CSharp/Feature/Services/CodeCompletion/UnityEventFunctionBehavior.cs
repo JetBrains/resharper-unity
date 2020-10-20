@@ -45,8 +45,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         {
             var psiServices = solution.GetPsiServices();
             var updateMethodDeclaration = TextControlToPsi.GetElement<IMethodDeclaration>(solution, textControl);
-            if (UpdateExistingMethod(updateMethodDeclaration, psiServices))
+            if (!Info.ShouldGenerateMethod)
+            {
+                UpdateExistingMethod(updateMethodDeclaration, psiServices);
                 return;
+            }
 
             var isCoroutine = updateMethodDeclaration?.TypeUsage is IUserTypeUsage userTypeUsage &&
                               userTypeUsage.ScalarTypeName?.ShortName == "IEnumerator";
@@ -127,14 +130,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
         }
 
-        private bool UpdateExistingMethod([CanBeNull] IMethodDeclaration methodDeclaration, IPsiServices psiServices)
+        private void UpdateExistingMethod([CanBeNull] IDeclaration methodDeclaration, IPsiServices psiServices)
         {
-            if (methodDeclaration?.Body == null)
-                return false;
-
-            var classLikeDeclaration = methodDeclaration.GetContainingTypeDeclaration() as IClassLikeDeclaration;
-            if (classLikeDeclaration == null)
-                return false;
+            if (methodDeclaration == null)
+                return;
 
             using (var cookie = new PsiTransactionCookie(psiServices, DefaultAction.Rollback, "UpdateExistingMethod"))
             using (WriteLockCookie.Create())
@@ -152,8 +151,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
                 cookie.Commit();
             }
-
-            return true;
         }
     }
 }
