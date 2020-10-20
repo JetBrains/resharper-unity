@@ -158,15 +158,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public Version GetUnityVersion() => myUnityVersion.ActualVersionForSolution.Value;
 
-        public string GetPresentableUnityVersion() => myRdUnityModel.UnityApplicationData.Value.ApplicationVersion;
-        }
-
         public string GetPresentableUnityVersion()
         {
             var unityPathData = myFrontendBackendModel.UnityApplicationData;
-            if (!unityPathData.HasValue())
-                return null;
-            return unityPathData.Value.ApplicationVersion;
+            return unityPathData.HasValue() ? unityPathData.Value.ApplicationVersion : null;
+        }
 
         private ExitUnityResult KillProcess()
         {
