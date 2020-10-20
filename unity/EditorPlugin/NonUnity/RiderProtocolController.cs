@@ -34,15 +34,15 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
   }
   
 //  [Serializable]
-  class ProtocolInstance
+  struct ProtocolInstance
   {
-    public int Port;
     public string SolutionName;
+    public int Port;
 
-    public ProtocolInstance(int port, string solutionName)
+    public ProtocolInstance(string solutionName, int port)
     {
-      Port = port;
       SolutionName = solutionName;
+      Port = port;
     }
 
     public static string ToJson(List<ProtocolInstance> connections)

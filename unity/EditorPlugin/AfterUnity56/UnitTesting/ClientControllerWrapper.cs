@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.Util;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
@@ -38,7 +38,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           ourLogger.Error("Type '{0}' not found in assembly '{1}'", clientControllerInfo.TypeName, assembly.FullName);
           return null;
         }
-        
+
         ourLogger.Trace("ClientController type found: {0}", type.AssemblyQualifiedName);
 
         var clientController = Activator.CreateInstance(type, sessionId);

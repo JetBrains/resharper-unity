@@ -136,6 +136,6 @@ namespace ReferenceExpressionTests
 }
 ---------------------------------------------------------
 (0): ReSharper Warning: Burst: Creating a managed type 'SimpleClass' is not supported
-(1): ReSharper Warning: Burst: Writing to a static field 'getSetProp__backing_field' is not supported
+(1): ReSharper Warning: Burst: Writing to a static field 'getSetProp' is not supported
 (2): ReSharper Warning: Burst: Writing to a static field 'field1' is not supported
 (3): ReSharper Warning: Burst: Loading from a non-readonly static field 'ReferenceExpressionTest4.field1' is not supported

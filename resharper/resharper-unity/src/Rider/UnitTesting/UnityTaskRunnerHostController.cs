@@ -76,6 +76,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public void CustomizeConfiguration(IUnitTestRun run, TaskExecutorConfiguration configuration) 
             => myInnerHostController.CustomizeConfiguration(run, configuration);
         
+        public virtual Type[] GetSupplementaryContainerAttributeTypes() => null;
+
         public async Task PrepareForRun(IUnitTestRun run)
         {
             var lifetimeDef = Lifetime.Define();

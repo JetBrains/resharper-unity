@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Collections;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
@@ -33,8 +34,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)> GuidChanged = 
             new Signal<(IPsiSourceFile sourceFile, Guid? oldGuid, Guid? newGuid)>("GuidChanged");
 
-        public MetaFileGuidCache(Lifetime lifetime, IPersistentIndexManager persistentIndexManager, ILogger logger)
-            : base(lifetime, persistentIndexManager, MetaFileCacheItem.Marshaller)
+        public MetaFileGuidCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ILogger logger)
+            : base(lifetime, shellLocks, persistentIndexManager, MetaFileCacheItem.Marshaller)
         {
             myLogger = logger;
         }

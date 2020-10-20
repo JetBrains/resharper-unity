@@ -7,8 +7,9 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rider.model.UnitTestLaunchPreference
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rd.util.reactive.whenTrue
+import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import org.jdom.Element
 
@@ -28,27 +29,24 @@ class UnitTestLauncherState(val project: Project) : PersistentStateComponent<Ele
         val propertiesComponent: PropertiesComponent = PropertiesComponent.getInstance(project)
         if (!propertiesComponent.getBoolean(discoverLaunchViaUnity)) {
             val nestedLifetime = project.lifetime.createNested()
-            project.solution.rdUnityModel.sessionInitialized.advise(nestedLifetime){ isConnected ->
-                if(isConnected ) {
-                    project.solution.rdUnityModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
-                    propertiesComponent.setValue(discoverLaunchViaUnity, true)
-                    nestedLifetime.terminate()
-                }
-
+            project.solution.frontendBackendModel.unityEditorConnected.whenTrue(nestedLifetime) {
+                project.solution.frontendBackendModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
+                propertiesComponent.setValue(discoverLaunchViaUnity, true)
+                nestedLifetime.terminate()
             }
         }
     }
 
     override fun getState(): Element? {
         val element = Element("state")
-        val value = getLauncherId(project.solution.rdUnityModel.unitTestPreference.value)
+        val value = getLauncherId(project.solution.frontendBackendModel.unitTestPreference.value)
         element.setAttribute(currentTestLauncher, value)
         return element
     }
 
     override fun loadState(element: Element) {
         val attributeValue = element.getAttributeValue(currentTestLauncher, "") ?: return
-        project.solution.rdUnityModel.unitTestPreference.value = getLauncherType(attributeValue)
+        project.solution.frontendBackendModel.unitTestPreference.value = getLauncherType(attributeValue)
     }
 
     private fun getLauncherId(currentPreference: UnitTestLaunchPreference?): String {

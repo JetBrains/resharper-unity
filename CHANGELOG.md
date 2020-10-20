@@ -17,13 +17,16 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 - Add smart backspace for shader files ([#1863](https://github.com/JetBrains/resharper-unity/pull/1863))
 - Rider: Run Unity menu item handlers via gutter icon ([RIDER-35911](https://youtrack.jetbrains.com/issue/RIDER-35911), [#1857](https://github.com/JetBrains/resharper-unity/pull/1857))
+- Rider: Add context picker for shader files to work with `#if` directives ([RIDER-49212](https://youtrack.jetbrains.com/issue/RIDER-49212), [#1868](https://github.com/JetBrains/resharper-unity/pull/1868))
 
 ### Changed
 
+- Minor improvements to File Templates ([#1856](https://github.com/JetBrains/resharper-unity/issues/1856), [#1873](https://github.com/JetBrains/resharper-unity/pull/1873))
 - Rider: Add define symbols based on pragmas in shader files, such as `multi_compile`, `shader_feature`, `target`, `geometry`, etc. ([RIDER-49527](https://youtrack.jetbrains.com/issue/RIDER-49527), [#1826](https://github.com/JetBrains/resharper-unity/pull/1826))
 - Rider: Launch Unity if not already running when trying to run, debug or cover unit tests ([#1831](https://github.com/JetBrains/resharper-unity/pull/1831))
 - Rider: Replace Clear on Play option in Unity log view with filters for last play mode and last AppDomain reload ([RIDER-49887](https://youtrack.jetbrains.com/issue/RIDER-49887), [RIDER-15476](https://youtrack.jetbrains.com/issue/RIDER-15476) [#1833](https://github.com/JetBrains/resharper-unity/pull/1831))
 - Rider: Move Open Editor Log and Open Player Log actions to Unity log view main toolbar ([#1833](https://github.com/JetBrains/resharper-unity/pull/1831))
+- Rider: Minor update to icons to match Rider colour scheme
 
 ### Fixed
 
@@ -32,7 +35,10 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Handle parameterized test fixtures with parameterized tests ([RIDER-46658](https://youtrack.jetbrains.com/issue/RIDER-46658), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
 - Rider: Fix infinite "refreshing solution" when no connection to Unity editor plugin ([#1601](https://github.com/JetBrains/resharper-unity/issues/1601), [RIDER-48690](https://youtrack.jetbrains.com/issue/RIDER-48690), [#1828](https://github.com/JetBrains/resharper-unity/pull/1828))
 - Rider: Fix missing animation frame from busy status icon ([#1862](https://github.com/JetBrains/resharper-unity/issues/1862), [#1865](https://github.com/JetBrains/resharper-unity/pull/1865))
+- Rider: Fix exception in Unity run configuration templates with no project loaded ([RIDER-51997](https://youtrack.jetbrains.com/issue/RIDER-51997), [#1882](https://github.com/JetBrains/resharper-unity/pull/1882))
 - Unity editor: Fix losing Console messages before first `EditorApplication.update` ([#1837](https://github.com/JetBrains/resharper-unity/pull/1837))
+- Unity editor: Maintain last play time for log filtering across AppDomain reloads ([#1884](https://github.com/JetBrains/resharper-unity/pull/1884))
+- Unity editor: Fix issues communicating with Rider when Rider is stopped and restarted ([#1881](https://github.com/JetBrains/resharper-unity/pull/1881))
 
 
 

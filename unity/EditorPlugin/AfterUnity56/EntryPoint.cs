@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Diagnostics;
 using UnityEditor;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56

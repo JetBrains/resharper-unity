@@ -12,8 +12,9 @@ using JetBrains.Application.Threading.Tasks;
 using JetBrains.Collections.Viewable;
 using JetBrains.Diagnostics;
 using JetBrains.Lifetimes;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Utils;
 using JetBrains.ReSharper.Psi.Util;
@@ -47,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             IApplicationWideContextBoundSettingStore settingsStore,
             PluginPathsProvider pluginPathsProvider,
             UnityVersion unityVersion,
-            UnityHost unityHost,
+            FrontendBackendHost frontendBackendHost,
             UnitySolutionTracker unitySolutionTracker,
             UnityRefresher refresher)
         {
@@ -67,9 +68,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBoundSettingsStore = settingsStore.BoundSettingsStore;
             myQueue = new ProcessingQueue(myShellLocks, myLifetime);
 
-            unityHost.PerformModelAction(rdUnityModel =>
+            frontendBackendHost.Do(frontendBackendModel =>
             {
-                rdUnityModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
+                frontendBackendModel.InstallEditorPlugin.AdviseNotNull(lifetime, x =>
                 {
                     myShellLocks.ExecuteOrQueueReadLockEx(myLifetime, "UnityPluginInstaller.InstallEditorPlugin", () =>
                     {

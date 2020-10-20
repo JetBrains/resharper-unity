@@ -26,12 +26,12 @@ import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.model.unity.LogEvent
+import com.jetbrains.rider.model.unity.LogEventMode
+import com.jetbrains.rider.model.unity.LogEventType
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenEditorLogAction
 import com.jetbrains.rider.plugins.unity.actions.RiderUnityOpenPlayerLogAction
 import com.jetbrains.rider.plugins.unity.actions.UnityPluginShowSettingsAction
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEvent
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.settings.RiderUnitySettings
 import com.jetbrains.rider.ui.RiderSimpleToolWindowWithTwoToolbarsPanel
 import com.jetbrains.rider.ui.RiderUI
@@ -160,6 +160,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
     }
 
+    @Suppress("SpellCheckingInspection")
     private val listPanel = JPanel(MigLayout("ins 0, gap 0, flowy, novisualpadding, fill", "", "[][min!]")).apply {
         add(JBScrollPane(eventList).apply { horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER }, "grow, wmin 0")
         add(searchTextField, "growx")
@@ -186,7 +187,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         })
     }
 
-    fun getMainSplitterIcon(invert: Boolean = false): Icon? = when (mainSplitterOrientation.value xor invert) {
+    fun getMainSplitterIcon(invert: Boolean = false): Icon = when (mainSplitterOrientation.value xor invert) {
         true -> AllIcons.Actions.SplitHorizontally
         false -> AllIcons.Actions.SplitVertically
     }
@@ -197,20 +198,22 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
 
     val panel = RiderSimpleToolWindowWithTwoToolbarsPanel(leftToolbar, topToolbar, mainSplitter)
 
-    private fun addToList(newEvent: RdLogEvent) {
+    private fun addToList(newEvent: LogEvent) {
         if (logModel.mergeSimilarItems.value) {
             val existing = eventList.riderModel.elements().toList().singleOrNull {
-                it.message == newEvent.message && it.stackTrace == newEvent.stackTrace &&
+                it.message == newEvent.message && it.stackTrace == newEvent.stackTrace
                     it.mode == newEvent.mode && it.type == newEvent.type
             }
-            if (existing == null)
+            if (existing == null) {
                 eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
+            }
             else {
                 val index = eventList.riderModel.indexOf(existing)
                 eventList.riderModel.setElementAt(LogPanelItem(existing.time, existing.type, existing.mode, existing.message, existing.stackTrace, existing.count + 1), index)
             }
-        } else
+        } else {
             eventList.riderModel.addElement(LogPanelItem(newEvent.time, newEvent.type, newEvent.mode, newEvent.message, newEvent.stackTrace, 1))
+        }
 
         // since we do not follow new items which appear, it makes sense to auto-select first one. RIDER-19937
         if (eventList.itemsCount == 1)
@@ -243,19 +246,23 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
         logModel.onAdded.advise(lifetime) { addToList(it) }
         logModel.onChanged.advise(lifetime) { item ->
             data class LogItem(
-                val type: RdLogEventType,
-                val mode: RdLogEventMode,
+                val type: LogEventType,
+                val mode: LogEventMode,
                 val message: String,
                 val stackTrace: String)
 
             if (logModel.mergeSimilarItems.value) {
                 val list = item
-                    .groupBy { LogItem(it.type, it.mode, it.message, it.stackTrace) }
+                    .groupBy {
+                        LogItem(it.type, it.mode, it.message, it.stackTrace)
+                    }
                     .mapValues { LogPanelItem(it.value.first().time, it.key.type, it.key.mode, it.key.message, it.key.stackTrace, it.value.sumBy { 1 }) }
                     .values.toList()
                 refreshList(list)
             } else {
-                val list = item.map { LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace, 1) }
+                val list = item.map {
+                    LogPanelItem(it.time, it.type, it.mode, it.message, it.stackTrace, 1)
+                }
                 refreshList(list)
             }
         }

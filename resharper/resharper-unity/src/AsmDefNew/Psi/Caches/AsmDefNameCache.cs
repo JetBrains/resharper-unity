@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.AsmDefNew.Psi.Caches
         private readonly OneToListMap<string, IPsiSourceFile> myNames = new OneToListMap<string, IPsiSourceFile>();
         
         public AsmDefNameCache(Lifetime lifetime, IShellLocks shellLocks, IPersistentIndexManager persistentIndexManager, ISolution solution)
-            : base(lifetime, persistentIndexManager, AsmDefCacheItem.Marshaller)
+            : base(lifetime, shellLocks, persistentIndexManager, AsmDefCacheItem.Marshaller)
         {
             myShellLocks = shellLocks;
             mySolution = solution;

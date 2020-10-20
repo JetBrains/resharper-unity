@@ -2,19 +2,19 @@ using System;
 using System.Collections;
 using System.Text;
 using JetBrains.Diagnostics;
-using JetBrains.Platform.Unity.EditorPluginModel;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using TestResult = JetBrains.Platform.Unity.EditorPluginModel.TestResult;
+using TestResult = JetBrains.Rider.Model.Unity.BackendUnity.TestResult;
 
 namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
 {
   public class TestEventsSender
   {
     private static readonly ILog ourLogger = Log.GetLog(nameof(TestEventsSender));
-    
+
     internal TestEventsSender(UnitTestLaunch unitTestLaunch)
-    { 
+    {
       var assembly = RiderPackageInterop.GetAssembly();
       if (assembly == null)
       {
@@ -33,7 +33,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     private static void SubscribeToChanged(Type data, UnitTestLaunch unitTestLaunch)
     {
       var eventInfo = data.GetEvent("Changed");
-      
+
       if (eventInfo != null)
       {
         var handler = new EventHandler((sender, e) => { ProcessQueue(data, unitTestLaunch); });
@@ -48,12 +48,12 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         ourLogger.Error("Changed event subscription failed.");
       }
     }
-    
+
     private static void ProcessQueue(Type data, UnitTestLaunch unitTestLaunch)
     {
       if (!unitTestLaunch.IsBound)
         return;
-      
+
       var baseType = data.BaseType;
       if (baseType == null) return;
       var instance = baseType.GetProperty("instance");
@@ -65,7 +65,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
       var list = listField.GetValue(instanceVal);
 
       var events = (IEnumerable) list;
-      
+
       foreach (var ev in events)
       {
         var type = (int)ev.GetType().GetField("type").GetValue(ev);
@@ -75,7 +75,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         var resultState = (int)ev.GetType().GetField("testStatus").GetValue(ev);
         var duration = (double)ev.GetType().GetField("duration").GetValue(ev);
         var parentId = (string)ev.GetType().GetField("parentId").GetValue(ev);
-        
+
         switch (type)
         {
           case 0: // TestStarted
@@ -88,7 +88,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           {
             var status = GetStatus(new ResultState((TestStatus)resultState));
 
-            var testResult = new TestResult(id, assemblyName, output, (int) duration, 
+            var testResult = new TestResult(id, assemblyName, output, (int) duration,
               status, parentId);
             TestFinished(unitTestLaunch, testResult);
             break;
@@ -111,7 +111,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
           }
         }
       }
-      
+
       var clearMethod = data.GetMethod("Clear");
       clearMethod?.Invoke(instanceVal, new object[] {});
     }
@@ -120,7 +120,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
     {
       launch.RunResult(result);
     }
-    
+
     public static void TestStarted(UnitTestLaunch launch, TestResult testResult)
     {
       launch.TestResult(testResult);
@@ -179,7 +179,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         stringBuilder.AppendLine("Stacktrace: ");
         stringBuilder.AppendLine(testResult.StackTrace);
       }
-      
+
       var result = stringBuilder.ToString();
       if (result.Length > 0)
         return result;
@@ -212,7 +212,7 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         if (childIndex >= 0)
           str += childIndex;
       }
-      
+
       return str;
     }
 
