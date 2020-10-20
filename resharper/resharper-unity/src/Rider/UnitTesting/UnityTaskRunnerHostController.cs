@@ -79,14 +79,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     var unityEditorProcessId = myUnityController.TryGetUnityProcessId();
                     return unityEditorProcessId.HasValue
                         ? Task.CompletedTask
-                        : myShellLocks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.FreeThreaded, StartUnityIfNeed);
+                        : myShellLocks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.FreeThreaded,
+                            () => StartUnityIfNeed(lifetimeDef.Lifetime));
                 }, lifetimeDef.Lifetime, TaskContinuationOptions.None, myShellLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
             }
             
             await myStartUnityTask.ConfigureAwait(false);
         }
         
-        private Task StartUnityIfNeed()
+        private Task StartUnityIfNeed(Lifetime lifetime)
         {
             var needStart = MessageBox.ShowYesNo("Unity Editor has not started yet. Run it?", "Unity plugin");
             if (!needStart)
@@ -102,7 +103,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             
             process.Start();
             
-            return myUnityController.WaitConnectedUnityProcessId();
+            return myUnityController.WaitConnectedUnityProcessId(lifetime);
         }
     }
 }
