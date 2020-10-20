@@ -6,14 +6,13 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Help;
 using JetBrains.Application.UI.Icons.CommonThemedIcons;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -26,25 +25,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     [SolutionComponent]
     public class UnityCommonIconProvider
     {
-        protected readonly CallGraphSwaExtensionProvider CallGraphSwaExtensionProvider;
-        protected readonly PerformanceCriticalCodeCallGraphMarksProvider MarksProvider;
         protected readonly IApplicationWideContextBoundSettingStore SettingsStore;
         protected readonly UnityApi UnityApi;
+        protected readonly PerformanceCriticalContextProvider ContextProvider;
         private readonly ISolution mySolution;
-        private readonly IElementIdProvider myProvider;
-
+       
         public UnityCommonIconProvider(ISolution solution, UnityApi unityApi,
-                                       CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
                                        IApplicationWideContextBoundSettingStore settingsStore,
-                                       PerformanceCriticalCodeCallGraphMarksProvider marksProvider,
-                                       IElementIdProvider provider)
+                                       PerformanceCriticalContextProvider contextProvider)
         {
             mySolution = solution;
-            CallGraphSwaExtensionProvider = callGraphSwaExtensionProvider;
-            MarksProvider = marksProvider;
             UnityApi = unityApi;
             SettingsStore = settingsStore;
-            myProvider = provider;
+            ContextProvider = contextProvider;
         }
 
         public virtual void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method,
@@ -55,10 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
                 {
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
-                    consumer.AddHotHighlighting(CallGraphSwaExtensionProvider, cSharpDeclaration, MarksProvider,
+                    consumer.AddHotHighlighting(ContextProvider, cSharpDeclaration,
                         SettingsStore.BoundSettingsStore, text,
-                        GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration),
-                        myProvider);
+                        GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration));
                 }
             }
         }
@@ -67,9 +59,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             ICSharpDeclaration declaration,
             string text, string tooltip, DaemonProcessKind kind)
         {
-            consumer.AddHotHighlighting(CallGraphSwaExtensionProvider, declaration, MarksProvider,
-                SettingsStore.BoundSettingsStore, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty,
-                myProvider, true);
+            consumer.AddHotHighlighting(ContextProvider, declaration,
+                SettingsStore.BoundSettingsStore, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
 
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)

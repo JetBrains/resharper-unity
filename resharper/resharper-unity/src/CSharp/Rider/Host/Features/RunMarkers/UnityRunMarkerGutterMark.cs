@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
-using JetBrains.Rider.Model.Unity.BackendUnity;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.RunMarkers;
-using JetBrains.ReSharper.Plugins.Unity.Rider;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model.Notifications;
+using JetBrains.Rider.Model.Unity;
 using JetBrains.TextControl.DocumentMarkup;
 using JetBrains.UI.RichText;
 using JetBrains.UI.ThemedIcons;
@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
 
         private IEnumerable<BulbMenuItem> GetRunMethodItems(ISolution solution, UnityRunMarkerHighlighting runMarker)
         {
-            var editorProtocol = solution.GetComponent<UnityEditorProtocol>();
+            var backendUnityHost = solution.GetComponent<BackendUnityHost>();
             var notificationsModel = solution.GetComponent<NotificationsModel>();
 
             var methodFqn = DeclaredElementPresenter.Format(runMarker.Method.PresentationLanguage,
@@ -50,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
             var iconId = RunMarkersThemedIcons.RunThis.Id;
             yield return new BulbMenuItem(new ExecutableItem(() =>
                 {
-                    var model = editorProtocol.BackendUnityModel.Value;
+                    var model = backendUnityHost.BackendUnityModel.Value;
                     if (model == null)
                     {
                         var notification = new NotificationModel("No connection to Unity", "Make sure Unity is running.",

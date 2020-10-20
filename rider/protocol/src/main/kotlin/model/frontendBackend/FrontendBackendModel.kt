@@ -11,7 +11,8 @@ import model.lib.Library
 // frontend <-> backend model, from point of view of frontend, meaning:
 // Sink is a one-way signal the frontend subscribes to
 // Source is a one-way signal the frontend fires
-// Property and Signal are two-way and can be updated/fired on both ends
+// Signal is a two-way signal that either end can subscribe to and fire
+// Property and Signal are two-way and can be updated/fired on both ends. Property is stateful.
 // Call is an RPC method (with return value) that is called by the frontend/implemented by the backend
 // Callback is an RPC method (with return value) that is implemented by the frontend/called by the backend
 @Suppress("unused")
@@ -22,48 +23,10 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         +"PlayMode"
     }
 
-    private val EditorState = enum {
-        +"Disconnected"
-        +"ConnectedIdle"
-        +"ConnectedPlay"
-        +"ConnectedPause"
-        +"ConnectedRefresh"
-    }
-
-    private val ScriptCompilationDuringPlay = enum {
-        +"RecompileAndContinuePlaying"
-        +"RecompileAfterFinishedPlaying"
-        +"StopPlayingAndRecompile"
-    }
-
-    private val UnityApplicationData = structdef {
-        field("applicationPath", string)
-        field("applicationContentsPath", string)
-        field("applicationVersion", string)
-        field("requiresRiderPackage", bool)
-    }
-
-    val RunMethodData = structdef{
-        field("assemblyName", string)
-        field("typeName", string)
-        field("methodName", string)
-    }
-
-    val RunMethodResult =  classdef{
-        field("success", bool)
-        field("message", string)
-        field("stackTrace", string)
-    }
-
     private val shaderInternScope = internScope()
 
-    private val shaderContextDataBase = baseclass {
-
-    }
-
-    private val autoShaderContextData = classdef extends shaderContextDataBase {
-
-    }
+    private val shaderContextDataBase = baseclass {}
+    private val autoShaderContextData = classdef extends shaderContextDataBase {}
 
     private val shaderContextData = classdef extends shaderContextDataBase {
         field("path", string.interned(shaderInternScope))
@@ -79,73 +42,35 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
         setting(Kotlin11Generator.Namespace, "com.jetbrains.rider.model.unity.frontendBackend")
         setting(CSharp50Generator.Namespace, "JetBrains.Rider.Model.Unity.FrontendBackend")
 
-        sink("activateRider", void)
-        sink("activateUnityLogView", void)
-        sink("showInstallMonoDialog", void)
+        // Connection to Unity editor
+        property("unityEditorConnected", bool).documentation = "Is the backend/Unity protocol connected?"
+        property("unityEditorState", Library.UnityEditorState)
 
-        property("editorState", EditorState)
-        property("unitTestPreference", UnitTestLaunchPreference.nullable)
-        property("hideSolutionConfiguration", bool)
+        property("unityApplicationData", Library.UnityApplicationData)
+        property("requiresRiderPackage", bool)
+        field("unityApplicationSettings", Library.UnityApplicationSettings)
+        field("unityProjectSettings", Library.UnityProjectSettings)
 
-        property("unityApplicationData", UnityApplicationData)
-
-        call("runMethodInUnity", RunMethodData, RunMethodResult)
-
-        property("editorLogPath", string)
-        property("playerLogPath", string)
-
-        property("play", bool)
-        property("pause", bool)
-        source("step", void)
-        source("refresh", bool)
-        source("showPreferences", void)
-
-        property("lastPlayTime", long)
-        property("lastInitTime", long)
-
-        property("sessionInitialized", bool)
-
-        property("enableShaderLabHippieCompletion", bool)
-
-        // doesn't seem like the best way to do this
-        property("externalDocContext", string)
-
-        sink("onUnityLogEvent", Library.LogEvent)
-
-        source("installEditorPlugin", void)
-
-        property("hasUnityReference", bool)
-
-        sink("startUnity", void)
-        sink("notifyYamlHugeFiles", void)
-        sink("notifyAssetModeForceText", void)
-        sink("showDeferredCachesProgressNotification", void)
-        property("isDeferredCachesCompletedOnce", bool)
-
-        property("ScriptCompilationDuringPlay", ScriptCompilationDuringPlay)
-        source("enableYamlParsing", void)
-
-        signal("showFileInUnity", string)
-        property("unityProcessId", int)
-
-        sink("onEditorModelOutOfSync", void)
-        callback("attachDebuggerToUnityEditor", void, bool)
-        callback("allowSetForegroundWindow", void, bool)
-
-        call("generateUIElementsSchema", void, bool)
-
-        property("useUnityYamlMerge", bool)
-        property("mergeParameters", string)
-
-        property("buildLocation", string)
-
+        // Settings stored in the backend
         field("backendSettings", aggregatedef("BackendSettings") {
+            property("enableShaderLabHippieCompletion", bool)
             property("enableDebuggerExtensions", bool)
+
+            property("useUnityYamlMerge", bool)
+            property("mergeParameters", string)
         })
 
-        property("riderFrontendTests", bool)
+        // Misc backend/fronted context
+        property("hasUnityReference", bool).documentation = "True when the current project is a Unity project. Either full Unity project or class library"
+        property("externalDocContext", string).documentation = "Fully qualified type or method name at the location of the text caret. Used for external help URL"
 
+        field("playControls", Library.PlayControls)
+        field("consoleLogging", Library.ConsoleLogging)
 
+        // Unit testing
+        property("unitTestPreference", UnitTestLaunchPreference.nullable).documentation = "Selected unit testing mode. Everything is handled by the backend, but this setting is from a frontend combobox"
+
+        // Shader contexts
         call("requestShaderContexts", RdDocumentId, immutableList(shaderContextDataBase))
         call("requestCurrentContext", RdDocumentId, shaderContextDataBase)
         source("setAutoShaderContext", RdDocumentId)
@@ -155,5 +80,31 @@ object FrontendBackendModel : Ext(SolutionModel.Solution) {
             field("start", int)
             field("end", int)
         })
+
+        // Actions called from the frontend to the backend (and/or indirectly, Unity)
+        // (These should probably be calls, rather than signal/source/sink, as they are RPC, and not events)
+        source("refresh", bool).documentation = "Refresh the asset database. Pass true to force a refresh. False will queue a refresh"
+        source("showPreferences", void).documentation = "Tell the Unity model to show the preferences window"
+        source("installEditorPlugin", void)
+        source("enableYamlParsing", void).documentation = "Override the heuristic to re-enable YAML parsing on large projects"
+        source("showFileInUnity", string).documentation = "Focus Unity, focus the Project window and select and ping the given file path"
+        call("generateUIElementsSchema", void, bool).documentation = "Tell the Unity backend to generate UIElement schema"
+
+        // Actions called from the backend to the frontend
+        sink("activateRider", void).documentation = "Tell Rider to bring itself to the foreground. Called when opening a file from Unity"
+        sink("activateUnityLogView", void).documentation = "Show the Unity log tool window. E.g. in response to compilation failure"
+        sink("showInstallMonoDialog", void)
+        sink("startUnity", void)
+        sink("notifyYamlHugeFiles", void)
+        sink("notifyAssetModeForceText", void)
+        sink("showDeferredCachesProgressNotification", void)
+        sink("onEditorModelOutOfSync", void)
+        callback("attachDebuggerToUnityEditor", void, bool).documentation = "Tell the frontend to attach the debugger to the Unity editor. Used for debugging unit tests"
+        callback("allowSetForegroundWindow", void, bool).documentation = "Tell the frontend to call AllowSetForegroundWindow for the current Unity editor process ID. Called before the backend tells Unity to show itself"
+
+        // Only used in integration tests
+        property("riderFrontendTests", bool)
+        call("runMethodInUnity", Library.RunMethodData, Library.RunMethodResult)
+        property("isDeferredCachesCompletedOnce", bool)
     }
 }

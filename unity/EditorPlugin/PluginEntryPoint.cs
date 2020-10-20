@@ -14,6 +14,7 @@ using JetBrains.Rd;
 using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
 using JetBrains.Rd.Tasks;
+using JetBrains.Rider.Model.Unity;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
@@ -135,7 +136,7 @@ namespace JetBrains.Rider.Unity.Editor
         ourLogger.Verbose("lifetimeDefinition.Terminate");
         lifetimeDefinition.Terminate();
       });
-      
+
 #if !UNITY_4_7 && !UNITY_5_5 && !UNITY_5_6
         EditorApplication.playModeStateChanged += state =>
         {
@@ -156,7 +157,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
       InitializeProtocol(Lifetime, protocolInstanceJsonPath);
-      
+
       OpenAssetHandler = new OnOpenAssetHandler(ourRiderPathProvider, ourPluginSettings, SlnFile);
       ourLogger.Verbose("Writing Library/ProtocolInstance.json");
 
@@ -175,7 +176,7 @@ namespace JetBrains.Rider.Unity.Editor
     {
         var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         var solutionNames = new List<string>() { currentDirectory.Name};
-        
+
         var solutionFiles = currentDirectory.GetFiles("*.sln", SearchOption.TopDirectoryOnly);
         foreach (var solutionFile in solutionFiles)
         {
@@ -187,7 +188,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
 
         var protocols = new List<ProtocolInstance>();
-        
+
         // if any protocol connection losts, we will drop all protocol and recreate them
         var allProtocolsLifetimeDefinition = lifetime.CreateNested();
         foreach (var solutionName in solutionNames)
@@ -196,10 +197,10 @@ namespace JetBrains.Rider.Unity.Editor
             {
                 allProtocolsLifetimeDefinition.Terminate();
             });
-            
+
             if (port == -1)
                 continue;
-            
+
             protocols.Add(new ProtocolInstance(solutionName, port));
         }
 
@@ -215,7 +216,7 @@ namespace JetBrains.Rider.Unity.Editor
                 ourLogger.Verbose("Protocol will be recreating on next domain load, project lifetime is not alive");
             }
         });
-        
+
 
         var result = ProtocolInstance.ToJson(protocols);
         File.WriteAllText(protocolInstancePath, result);
@@ -296,7 +297,7 @@ namespace JetBrains.Rider.Unity.Editor
       EditorApplication.playmodeStateChanged += () =>
 #pragma warning restore 618
       {
-        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.RecompileAfterFinishedPlaying)
+        if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.RecompileAfterFinishedPlaying)
         {
           MainThreadDispatcher.Instance.Queue(() =>
           {
@@ -321,7 +322,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       AppDomain.CurrentDomain.DomainUnload += (sender, args) =>
       {
-        if (PluginSettings.AssemblyReloadSettings == AssemblyReloadSettings.StopPlayingAndRecompile)
+        if (PluginSettings.AssemblyReloadSettings == ScriptCompilationDuringPlay.StopPlayingAndRecompile)
         {
           if (EditorApplication.isPlaying)
           {
@@ -339,7 +340,7 @@ namespace JetBrains.Rider.Unity.Editor
         var currentWireAndProtocolLifetimeDef = lifetime.CreateNested();
         var currentWireAndProtocolLifetime = currentWireAndProtocolLifetimeDef.Lifetime;
 
-        
+
         var riderProtocolController = new RiderProtocolController(dispatcher, currentWireAndProtocolLifetime);
 
 #if !NET35
@@ -359,18 +360,21 @@ namespace JetBrains.Rider.Unity.Editor
           AdviseEditorState(model);
           OnModelInitialization(new UnityModelAndLifetime(model, connectionLifetime));
           AdviseRefresh(model);
-          InitEditorLogPath(model);
+          var paths = GetLogPaths();
 
-          model.UnityProcessId.SetValue(Process.GetCurrentProcess().Id);
           model.UnityApplicationData.SetValue(new UnityApplicationData(
-            EditorApplication.applicationPath,
-            EditorApplication.applicationContentsPath, UnityUtils.UnityApplicationVersion));
-          model.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
+              EditorApplication.applicationPath,
+              EditorApplication.applicationContentsPath,
+              UnityUtils.UnityApplicationVersion,
+              paths[0], paths[1],
+              Process.GetCurrentProcess().Id));
 
-          if (UnityUtils.UnityVersion >= new Version(2018, 2))
-            model.ScriptCompilationDuringPlay.Set(EditorPrefsWrapper.ScriptChangesDuringPlayOptions);
-          else
-            model.ScriptCompilationDuringPlay.Set((int)PluginSettings.AssemblyReloadSettings);
+          var scriptCompilationDuringPlay = UnityUtils.UnityVersion >= new Version(2018, 2)
+              ? EditorPrefsWrapper.ScriptCompilationDuringPlay
+              : PluginSettings.AssemblyReloadSettings;
+          model.UnityApplicationSettings.ScriptCompilationDuringPlay.Set(scriptCompilationDuringPlay);
+
+          model.UnityProjectSettings.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
           AdviseShowPreferences(model, connectionLifetime, ourLogger);
           AdviseGenerateUISchema(model);
@@ -383,7 +387,7 @@ namespace JetBrains.Rider.Unity.Editor
           var pair = new ModelWithLifetime(model, connectionLifetime);
           connectionLifetime.OnTermination(() => { UnityModels.Remove(pair); });
           UnityModels.Add(pair);
-          
+
           connectionLifetime.OnTermination(() =>
           {
               ourLogger.Verbose($"Connection lifetime is not alive for {solutionName}, destroying protocol");
@@ -402,11 +406,11 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void GetInitTime(BackendUnityModel model)
     {
-        model.LastInitTime.SetValue(ourInitTime);
+        model.ConsoleLogging.LastInitTime.SetValue(ourInitTime);
 
 #if !UNITY_4_7 && !UNITY_5_5 && !UNITY_5_6
         var enterPlayTime = long.Parse(SessionState.GetString("Rider_EnterPlayMode_DateTime", "0"));
-        model.LastPlayTime.SetValue(enterPlayTime);
+        model.ConsoleLogging.LastPlayTime.SetValue(enterPlayTime);
 #endif
     }
 
@@ -468,7 +472,7 @@ namespace JetBrains.Rider.Unity.Editor
         if (PluginSettings.SystemInfoRiderPlugin.operatingSystemFamily == OperatingSystemFamilyRider.MacOSX)
             path = Path.Combine(Path.Combine(Path.Combine(path, "Contents"), "MacOS"), PlayerSettings.productName);
         if (!string.IsNullOrEmpty(path) && File.Exists(path))
-            model.BuildLocation.Value = path;
+            model.UnityProjectSettings.BuildLocation.Value = path;
     }
 
     private static void AdviseGenerateUISchema(BackendUnityModel model)
@@ -634,24 +638,24 @@ namespace JetBrains.Rider.Unity.Editor
         {
           var isPlaying = EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying;
 
-          if (!model.Play.HasValue() || model.Play.HasValue() && model.Play.Value != isPlaying)
+          if (!model.PlayControls.Play.HasValue() || model.PlayControls.Play.HasValue() && model.PlayControls.Play.Value != isPlaying)
           {
             ourLogger.Verbose("Reporting play mode change to model: {0}", isPlaying);
-            model.Play.SetValue(isPlaying);
+            model.PlayControls.Play.SetValue(isPlaying);
           }
 
           var isPaused = EditorApplication.isPaused;
-          if (!model.Pause.HasValue() || model.Pause.HasValue() && model.Pause.Value != isPaused)
+          if (!model.PlayControls.Pause.HasValue() || model.PlayControls.Pause.HasValue() && model.PlayControls.Pause.Value != isPaused)
           {
             ourLogger.Verbose("Reporting pause mode change to model: {0}", isPaused);
-            model.Pause.SetValue(isPaused);
+            model.PlayControls.Pause.SetValue(isPaused);
           }
         });
       });
 
       syncPlayState();
 
-      model.Play.Advise(connectionLifetime, play =>
+      model.PlayControls.Play.Advise(connectionLifetime, play =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -664,7 +668,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.Pause.Advise(connectionLifetime, pause =>
+      model.PlayControls.Pause.Advise(connectionLifetime, pause =>
       {
         MainThreadDispatcher.Instance.Queue(() =>
         {
@@ -673,7 +677,7 @@ namespace JetBrains.Rider.Unity.Editor
         });
       });
 
-      model.Step.Advise(connectionLifetime, x =>
+      model.PlayControls.Step.Advise(connectionLifetime, x =>
       {
         MainThreadDispatcher.Instance.Queue(EditorApplication.Step);
       });
@@ -692,7 +696,7 @@ namespace JetBrains.Rider.Unity.Editor
       //    }
     }
 
-    private static void InitEditorLogPath(BackendUnityModel backendUnityModel)
+    private static string[] GetLogPaths()
     {
       // https://docs.unity3d.com/Manual/LogFiles.html
       //PlayerSettings.productName;
@@ -739,8 +743,7 @@ namespace JetBrains.Rider.Unity.Editor
         }
       }
 
-      backendUnityModel.EditorLogPath.SetValue(editorLogpath);
-      backendUnityModel.PlayerLogPath.SetValue(playerLogPath);
+      return new[] {editorLogpath, playerLogPath};
     }
 
     internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
@@ -789,7 +792,7 @@ namespace JetBrains.Rider.Unity.Editor
     [OnOpenAsset]
     static bool OnOpenedAsset(int instanceID, int line)
     {
-      if (!PluginEntryPoint.IsRiderDefaultEditor())
+      if (!IsRiderDefaultEditor())
         return false;
 
       // if (UnityUtils.UnityVersion >= new Version(2019, 2)
@@ -803,7 +806,7 @@ namespace JetBrains.Rider.Unity.Editor
     //[OnOpenAsset] // todo: restore, when we move this code to package, otherwise when OnOpenedAsset is called, there is a LogError in older Unity
     static bool OnOpenedAsset(int instanceID, int line, int column)
     {
-      if (!PluginEntryPoint.IsRiderDefaultEditor())
+      if (!IsRiderDefaultEditor())
         return false;
 
       if (UnityUtils.UnityVersion < new Version(2019, 2))

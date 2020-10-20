@@ -1,23 +1,17 @@
 package com.jetbrains.rider.plugins.unity.actions
 
-
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.isUnityProjectFolder
 import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.UnityHost
+import com.jetbrains.rider.plugins.unity.FrontendBackendHost
+import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.projectView.solution
 
-fun AnActionEvent.getModel(): FrontendBackendModel? {
+fun AnActionEvent.getFrontendBackendModel(): FrontendBackendModel? {
     val project = project ?: return null
     return project.solution.frontendBackendModel
-}
-
-fun AnActionEvent.getHost(): UnityHost? {
-    val project = project ?: return null
-    return UnityHost.getInstance(project)
 }
 
 fun AnActionEvent.isUnityProject(): Boolean {
@@ -30,7 +24,7 @@ fun AnActionEvent.isUnityProjectFolder(): Boolean {
     return project.isUnityProjectFolder()
 }
 
-fun AnActionEvent.handleUpdateForUnityConnection(fn: ((FrontendBackendModel) -> Boolean)? = null) {
+fun AnActionEvent.handleUpdateForUnityConnection(update: ((FrontendBackendModel) -> Boolean)? = null) {
     if (!isUnityProject()) {
         presentation.isVisible = false
         return
@@ -38,7 +32,7 @@ fun AnActionEvent.handleUpdateForUnityConnection(fn: ((FrontendBackendModel) -> 
 
     presentation.isVisible = true
 
-    val model = getModel() ?: return
-    val connectedProperty = fn?.invoke(model) ?: true
-    presentation.isEnabled = connectedProperty && model.sessionInitialized.valueOrDefault(false)
+    val model = getFrontendBackendModel() ?: return
+    val updateResult = update?.invoke(model) ?: true
+    presentation.isEnabled = project.isConnectedToEditor() && updateResult
 }

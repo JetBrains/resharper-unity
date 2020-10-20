@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -22,10 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         private readonly UnityApi myUnityApi;
 
-        public TypeDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-                            IApplicationWideContextBoundSettingStore settingsStore, UnityApi unityApi,
-                            PerformanceCriticalCodeCallGraphMarksProvider marksProvider, IElementIdProvider provider)
-            : base(solution, settingsStore, callGraphSwaExtensionProvider, marksProvider, provider)
+        public TypeDetector(ISolution solution, IApplicationWideContextBoundSettingStore settingsStore, UnityApi unityApi, PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, contextProvider)
         {
             myUnityApi = unityApi;
         }
