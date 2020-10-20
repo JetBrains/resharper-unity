@@ -96,6 +96,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     return unityEditorProcessId.HasValue
                         ? Task.CompletedTask
                         : myShellLocks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.FreeThreaded, () => StartUnityIfNeed(lifetimeDef.Lifetime));
+                            () => StartUnityIfNeed(lifetimeDef.Lifetime));
                 }, lifetimeDef.Lifetime, TaskContinuationOptions.None, myShellLocks.Tasks.GuardedMainThreadScheduler).Unwrap();
             }
             

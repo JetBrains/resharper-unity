@@ -100,7 +100,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var processIdString = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "process_id");
             return processIdString == null ? (int?) null : Convert.ToInt32(processIdString);
         }
-
+        
         public Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
         {
             var source = new TaskCompletionSource<int>();
@@ -159,6 +159,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public Version GetUnityVersion() => myUnityVersion.ActualVersionForSolution.Value;
 
         public string GetPresentableUnityVersion() => myRdUnityModel.UnityApplicationData.Value.ApplicationVersion;
+        }
+
+        public string GetPresentableUnityVersion()
+        {
+            var unityPathData = myFrontendBackendModel.UnityApplicationData;
+            if (!unityPathData.HasValue())
+                return null;
+            return unityPathData.Value.ApplicationVersion;
 
         private ExitUnityResult KillProcess()
         {
