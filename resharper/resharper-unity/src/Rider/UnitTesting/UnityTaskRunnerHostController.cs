@@ -106,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         {
             var message = string.Format(StartUnityEditorQuestionMessage, 
                                               TaskRunnerName, 
-                                              myUnityController.GetUnityVersion());
+                                              myUnityController.GetPresentableUnityVersion());
             var needStart = MessageBox.ShowYesNo(message, PluginName);
             if (!needStart)
                 throw new Exception(string.Format(NotAvailableUnityEditorMessage, TaskRunnerName));
@@ -125,6 +125,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         }
 
         private static void CancelPrepareForRun(IUnitTestRun run) => run.GetData(ourLifetimeDefinitionKey)?.Terminate();
-        
     }
 }
