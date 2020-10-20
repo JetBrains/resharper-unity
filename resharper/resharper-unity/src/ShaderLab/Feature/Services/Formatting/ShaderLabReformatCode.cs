@@ -49,6 +49,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Formattin
       return sourceFile.IsLanguageSupported<ShaderLabLanguage>();
     }
 
+    public bool IsAvailable(CodeCleanupProfile profile)
+    {
+        return profile.GetSetting(ourDescriptor);
+    }
+
     public void Process(IPsiSourceFile sourceFile, IRangeMarker rangeMarker, CodeCleanupProfile profile,
         IProgressIndicator progressIndicator, IUserDataHolder cache)
     {
