@@ -49,18 +49,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myFrontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
         }
 
-        public Task<ExitUnityResult> ExitUnityAsync(bool force)
+        public Task<ExitUnityResult> ExitUnityAsync(Lifetime lifetime, bool force)
         {
-            var lifetimeDef = myLifetime.CreateNested();
+            var lifetimeDef = Lifetime.DefineIntersection(myLifetime, lifetime);
             if (myBackendUnityHost.BackendUnityModel.Value == null) // no connection
-            {
-                if (force)
-                {
-                    return Task.FromResult(KillProcess());
-                }
-
-                return Task.FromResult(new ExitUnityResult(false, "No connection to Unity Editor.", null));
-            }
+                return Task.FromResult(force ? KillProcess() : new ExitUnityResult(false, "No connection to Unity Editor.", null));
 
             var protocolTaskSource = new TaskCompletionSource<bool>();
             mySolution.Locks.Tasks.StartNew(lifetimeDef.Lifetime, Scheduling.MainGuard, () => myBackendUnityHost.BackendUnityModel.Value.ExitUnity.Start(lifetimeDef.Lifetime, Unit.Instance)
@@ -107,11 +100,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var processIdString = EditorInstanceJson.TryGetValue(EditorInstanceJsonPath, "process_id");
             return processIdString == null ? (int?) null : Convert.ToInt32(processIdString);
         }
-
-        public Task<int> WaitConnectedUnityProcessId()
+        
+        public Task<int> WaitConnectedUnityProcessId(Lifetime lifetime)
         {
             var source = new TaskCompletionSource<int>();
-            var lifetimeDef = myLifetime.CreateNested();
+            var lifetimeDef = Lifetime.DefineIntersection(myLifetime, lifetime);
             lifetimeDef.SynchronizeWith(source);
 
             myBackendUnityHost.BackendUnityModel.ViewNotNull(
@@ -153,7 +146,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             return unityPath == null
                 ? null
-                : new[] { CommandLineUtil.QuoteIfNeeded(unityPath), "-projectPath", CommandLineUtil.QuoteIfNeeded(mySolution.SolutionDirectory.FullPath) };
+                : new[] { unityPath, "-projectPath", CommandLineUtil.QuoteIfNeeded(mySolution.SolutionDirectory.FullPath) };
         }
 
         public bool IsUnityGeneratedProject(IProject project)
@@ -163,9 +156,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         public bool IsUnityEditorUnitTestRunStrategy(IUnitTestRunStrategy strategy) => strategy is RunViaUnityEditorStrategy;
 
-        public Version GetUnityVersion()
+        public Version GetUnityVersion() => myUnityVersion.ActualVersionForSolution.Value;
+
+        public string GetPresentableUnityVersion()
         {
-            return myUnityVersion.ActualVersionForSolution.Value;
+            var unityPathData = myFrontendBackendModel.UnityApplicationData;
+            return unityPathData.HasValue() ? unityPathData.Value.ApplicationVersion : null;
         }
 
         private ExitUnityResult KillProcess()
