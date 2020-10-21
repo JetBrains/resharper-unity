@@ -21,6 +21,7 @@ using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -89,7 +90,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var thisMethods = typeElement.Methods.ToList();
             var inheritedMethods = baseTypeElement.GetAllClassMembers<IMethod>().ToList();
             var shouldFunctionGenerateMethod = ShouldGenerateMethod(context);
-
+            var knownTypesCache = context.BasicContext.Solution.GetComponent<KnownTypesCache>();
+            
             var addedFunctions = new HashSet<string>();
 
             foreach (var function in unityApi.GetEventFunctions(typeElement, actualVersion))
@@ -103,6 +105,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 if (addedFunctions.Contains(function.Name))
                     continue;
 
+                if (HasDifferentArgumentList(function, context, knownTypesCache))
+                    continue;
+
                 var item = CreateMethodItem(context, function, classDeclaration, hasReturnType, shouldFunctionGenerateMethod, accessRights, generationContext);
                 if (item == null) continue;
 
@@ -114,6 +119,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
 
             return true;
+        }
+
+        private static bool HasDifferentArgumentList(
+            [NotNull] UnityEventFunction function,
+            [NotNull] CSharpCodeCompletionContext context, 
+            [NotNull] KnownTypesCache knownTypesCache)
+        {
+            var unterminatedContext = context.UnterminatedContext;
+            var methodDeclaration = unterminatedContext.TreeNode?.GetContainingNode<IMethodDeclaration>();
+
+            if (methodDeclaration == null) return false;
+
+            var functionParameters = function.Parameters;
+            var currentMethodParameters = methodDeclaration.Params;
+            if (currentMethodParameters == null) return false;
+            
+            if (functionParameters.Length != currentMethodParameters.ParameterDeclarations.Count) return true;
+
+            var typeConversionRule = currentMethodParameters.GetTypeConversionRule();
+            var module = methodDeclaration.GetPsiModule();
+            for (var paramIndex = 0; paramIndex < functionParameters.Length; paramIndex++)
+            {
+                var functionParameter = functionParameters[paramIndex];
+                var currentMethodParameter = currentMethodParameters.ParameterDeclarations[paramIndex];
+
+                var conversion = typeConversionRule.ClassifyImplicitConversion(currentMethodParameter.Type, functionParameter.TypeSpec.AsIType(knownTypesCache, module));
+                if (conversion.Kind != ConversionKind.Identity) return true;
+            }
+            return false;
         }
 
         private static bool ShouldGenerateMethod([NotNull] CSharpCodeCompletionContext context)

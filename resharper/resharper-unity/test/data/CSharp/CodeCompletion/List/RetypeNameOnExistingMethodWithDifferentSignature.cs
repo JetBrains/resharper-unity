@@ -1,4 +1,3 @@
-// ${COMPLETE_ITEM:OnApplicationFocus(bool) { ... \}}
 using UnityEngine;
 
 public class A : MonoBehaviour

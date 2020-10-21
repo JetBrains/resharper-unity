@@ -51,9 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
 
         [Test] public void GeneratedCodeResolvesNamespaceGlobally() { DoNamedTest(); }
         [Test] public void RetypeNameOnExistingMethod() { DoNamedTest(); }
-        [Test] public void RetypeNameOnExistingMethodWithDifferentSignature() { DoNamedTest(); }
         [Test] public void RetypeNameOnExistingBrokenMethod() { DoNamedTest(); }
-        [Test] public void RetypeNameOnExistingMethodWithDifferentArgs() { DoNamedTest(); }
         [Test] public void DoNotRenameNextDeclaration() { DoNamedTest(); }
         [Test] public void EmptyPrefix() { DoNamedTest(); }
     }
