@@ -105,7 +105,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 if (addedFunctions.Contains(function.Name))
                     continue;
 
-                if (HasDifferentArgumentList(function, context, knownTypesCache))
+                if (HasDifferentParameterLists(function, context, knownTypesCache))
                     continue;
 
                 var item = CreateMethodItem(context, function, classDeclaration, hasReturnType, shouldFunctionGenerateMethod, accessRights, generationContext);
@@ -121,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             return true;
         }
 
-        private static bool HasDifferentArgumentList(
+        private static bool HasDifferentParameterLists(
             [NotNull] UnityEventFunction function,
             [NotNull] CSharpCodeCompletionContext context, 
             [NotNull] KnownTypesCache knownTypesCache)
@@ -147,6 +147,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var conversion = typeConversionRule.ClassifyImplicitConversion(currentMethodParameter.Type, functionParameter.TypeSpec.AsIType(knownTypesCache, module));
                 if (conversion.Kind != ConversionKind.Identity) return true;
             }
+            
             return false;
         }
 
@@ -159,8 +160,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
             if (!(methodDeclaration.GetContainingTypeDeclaration() is IClassLikeDeclaration))
                 return true;
-            
-            //todo check parameters
             
             return false;
         }
