@@ -56,7 +56,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
-        private readonly FrontendBackendModel myFrontendBackendModel;
 
         private readonly object myCurrentLaunchesTaskAccess = new object();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
@@ -88,7 +87,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
-            myFrontendBackendModel = solution.GetProtocolSolution().GetFrontendBackendModel();
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
 
@@ -228,7 +226,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             clientControllerInfo.TypeName);
 
                     var mode = TestMode.Edit;
-                    if (myFrontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode)
+                    var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
+                    if (frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode)
                         mode = TestMode.Play;
                     var launch = new UnitTestLaunch(run.Launch.Session.Id, filters, mode, unityClientControllerInfo);
 
@@ -236,7 +235,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     {
                         // recreate UnitTestLaunch in case of AppDomain.Reload, which is the case with PlayMode tests
                         myLogger.Trace("UnitTestLaunch.SetValue.");
-                        if (myFrontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.Both)
+                        if (frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.Both)
                         {
                             model.UnitTestLaunch.SetValue(launch);
                             SubscribeResults(run, lt, launch);
