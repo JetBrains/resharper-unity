@@ -19,6 +19,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+
+  <Target Name="WriteRiderDev" AfterTargets="CopyFilesToOutputDirectory">
+    <PropertyGroup>
+      <Cmd>
+        $(OutputPath)$(AssemblyName).dll
+      </Cmd>
+    </PropertyGroup>
+
+    <WriteLinesToFile File="$(OutputPath)/rider-dev.app/rider-dev.bat" Overwrite="true" Lines="$(Cmd)" />
+  </Target>
+  
   <ItemGroup>
     <!-- This one should be the first - it provides version to resulting assembly-->
     <ILRepackInputAssemblies Include="$(OutputPath)$(AssemblyName).dll"><Visible>false</Visible></ILRepackInputAssemblies>
