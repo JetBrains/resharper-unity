@@ -64,9 +64,7 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
                 myProject = null
                 oldSolutionDirectory.deleteRecursively()
             }
-            myProject = openSolution(solution, openSolutionParams) {
-                notificationList.add(it)
-            }
+            myProject = openSolution(solution, openSolutionParams)
             installPlugin(project)
             activateRiderFrontendTest()
         }

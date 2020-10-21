@@ -1,7 +1,6 @@
 package base.integrationTests
 
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithConsoleBuild
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 
@@ -22,7 +21,7 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestWithSolutionBase()
 
     @AfterMethod(alwaysRun = true)
     fun killUnityAndCheckSwea() {
-        killUnity(unityProcessHandle)
+        killUnity(project, unityProcessHandle)
         checkSweaInSolution()
     }
 
