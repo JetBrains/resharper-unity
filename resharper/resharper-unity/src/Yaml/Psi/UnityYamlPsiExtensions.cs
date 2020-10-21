@@ -5,9 +5,6 @@ using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.R
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
 using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Tree;
-using JetBrains.Serialization;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
 {
@@ -20,34 +17,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         [CanBeNull]
-        public static IHierarchyReference ToHierarchyReference([CanBeNull] this INode node, IPsiSourceFile assetSourceFile)
+        public static IHierarchyReference ToHierarchyReference([CanBeNull] this INode node, [NotNull] IPsiSourceFile assetSourceFile)
         {
-            if (node is IFlowMappingNode flowMappingNode)
-            {
-                var localDocumentAnchor = flowMappingNode.FindMapEntryBySimpleKey("fileID")?.Value.AsString();
-                if (localDocumentAnchor == null || !long.TryParse(localDocumentAnchor, out var result))
-                    return new LocalReference(0, 0);
+            var (anchor, guid) = node.ExtractAnchorAndGuid();
+            if (anchor is null || anchor == 0) return LocalReference.Null;
+            if (guid != null) return new ExternalReference(guid.Value, anchor.Value);
+            var persistentIndex = assetSourceFile
+                .PsiStorage
+                .PersistentIndex
+                .NotNull("owningPsiPersistentIndex != null");
+            return new LocalReference(persistentIndex, anchor.Value);
+        }
+        
+        public static (long?, Guid?) ExtractAnchorAndGuid([CanBeNull] this INode node)
+        {
+            if (!(node is IFlowMappingNode flowMappingNode)) return (null, null);
+            var anchor = flowMappingNode.FindMapEntryBySimpleKey("fileID")?.Value.AsString();
+            if (anchor == null || !long.TryParse(anchor, out var result)) return (null, null);
+            if (result == 0) return (0, null);
+            var scriptGuid = flowMappingNode.FindMapEntryBySimpleKey("guid")?.Value.AsString();
+            if (scriptGuid == null || !Guid.TryParse(scriptGuid, out var guid)) return (result, null);
+            return (result, guid);
 
-                if (result == 0)
-                    return LocalReference.Null;
-                
-                var externalAssetGuid = flowMappingNode.FindMapEntryBySimpleKey("guid")?.Value.AsString();
-
-                if (externalAssetGuid == null)
-                {
-                    if (result == 0)
-                        return new LocalReference(0, 0);
-                
-                    return new LocalReference(assetSourceFile.PsiStorage.PersistentIndex.NotNull("owningPsiPersistentIndex != null"), result);
-                }
-
-                if (Guid.TryParse(externalAssetGuid, out var guid))
-                    return new ExternalReference(guid, result);
-            
-                return LocalReference.Null;
-            }
-
-            return null;
         }
 
         // This will open the Body chameleon
