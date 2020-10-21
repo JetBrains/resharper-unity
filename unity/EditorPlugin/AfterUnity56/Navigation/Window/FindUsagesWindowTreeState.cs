@@ -20,6 +20,9 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 
     [SerializeField]
     public List<ScriptableObjectElement> ScriptableObjectElements = new List<ScriptableObjectElement>();
+    
+    [SerializeField]
+    public List<AnimatorElement> AnimatorElements = new List<AnimatorElement>();
 
     public FindUsagesWindowTreeState()
     {
@@ -42,6 +45,11 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
             SceneElements.Add(new SceneElement(request.FilePath, request.FileName, hierarchyFindUsagesResult.PathElements,
               hierarchyFindUsagesResult.RootIndices));
           }
+        }
+        else if (request is AnimatorFindUsagesResult animatorUsage)
+        {
+            AnimatorElements.Add(new AnimatorElement(animatorUsage.FilePath, animatorUsage.FileName,
+                animatorUsage.PathElements, EmptyArray<int>.Instance));
         }
         else
         {

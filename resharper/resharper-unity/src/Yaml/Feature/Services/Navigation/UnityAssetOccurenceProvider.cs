@@ -1,6 +1,8 @@
+using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Occurrences;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search;
-using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
@@ -17,13 +19,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                     unityEventFindResult.AttachedElementLocation, unityEventFindResult.IsPrefabModification);
             }
             
-            if (findResult is UnityScriptsFindResults unityScriptsFindResults)
-            {
-                var guid = unityScriptsFindResults.ScriptUsage.UsageTarget.ExternalAssetGuid;
-                return new UnityScriptsOccurrence(unityScriptsFindResults.SourceFile, unityScriptsFindResults.DeclaredElementPointer,
-                    unityScriptsFindResults.OwningElemetLocation, guid); 
-            }
-            
+            if (findResult is UnityScriptsFindResults scriptFindResult) return CreateScriptOccurence(scriptFindResult);
+
             if (findResult is UnityInspectorFindResult unityInspectorFindResults)
             {
                 return new UnityInspectorValuesOccurrence(unityInspectorFindResults.SourceFile, unityInspectorFindResults.InspectorVariableUsage,
@@ -36,6 +33,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                     unityMethodsFindResult.OwningElemetLocation, unityMethodsFindResult.AssetMethodUsages, unityMethodsFindResult.IsPrefabModification); 
             }
             
+            return null;
+        }
+
+        [CanBeNull]
+        private static IOccurrence CreateScriptOccurence([NotNull] UnityScriptsFindResults unityScriptsFindResults)
+        {
+            var file = unityScriptsFindResults.SourceFile;
+            if (file is null) return null;
+            var declaredElementPointer = unityScriptsFindResults.DeclaredElementPointer;
+            if (declaredElementPointer is null) return null;
+            switch (unityScriptsFindResults.ScriptUsage)
+            {
+                case AssetScriptUsages assetScriptUsage:
+                    var guid = assetScriptUsage.UsageTarget.ExternalAssetGuid;
+                    var owningElementLocation = unityScriptsFindResults.OwningElemetLocation;
+                    return new UnityScriptsOccurrence(file, declaredElementPointer, owningElementLocation, guid);
+                case AnimatorStateScriptUsage animatorStateUsage:
+                    return new UnityAnimatorScriptOccurence(file, declaredElementPointer, animatorStateUsage);
+                case AnimatorStateMachineScriptUsage animatorStateMachineUsage:
+                    return new UnityAnimatorScriptOccurence(file, declaredElementPointer, animatorStateMachineUsage);
+            }
             return null;
         }
     }

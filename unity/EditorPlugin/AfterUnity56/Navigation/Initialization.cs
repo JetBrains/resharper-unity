@@ -25,23 +25,21 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
             ExpandMinimizedUnityWindow();
 
             EditorUtility.FocusProjectWindow();
-
-            if (findUsagesResult is HierarchyFindUsagesResult hierarchyFindUsagesResult)
+            switch (findUsagesResult)
             {
-              if (findUsagesResult.Extension.Equals(".prefab", StringComparison.OrdinalIgnoreCase))
-              {
-                ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
-              }
-              else
-              {
-                ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, hierarchyFindUsagesResult.PathElements, hierarchyFindUsagesResult.RootIndices);
-              }
+                case AnimatorFindUsagesResult animatorUsage:
+                    ShowUtil.ShowAnimatorUsage(animatorUsage.PathElements, animatorUsage.FilePath);
+                    return;
+                case HierarchyFindUsagesResult _ when findUsagesResult.Extension.Equals(".prefab", StringComparison.OrdinalIgnoreCase):
+                    ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
+                    break;
+                case HierarchyFindUsagesResult hierarchyFindUsagesResult:
+                    ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, hierarchyFindUsagesResult.PathElements, hierarchyFindUsagesResult.RootIndices);
+                    break;
+                default:
+                    ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
+                    break;
             }
-            else
-            {
-              ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
-            }
-
           });
         }
       });

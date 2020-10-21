@@ -33,6 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         private static readonly StringSearcher ourTransformSearcher = new StringSearcher("!u!4 ", true);
         private static readonly StringSearcher ourRectTransformSearcher = new StringSearcher("!u!224 ", true);
         private static readonly StringSearcher ourGameObjectSearcher = new StringSearcher("!u!1 ", true);
+        private static readonly StringSearcher ourAnimatorStateSearcher = new StringSearcher("!u!1102", true);
+        private static readonly StringSearcher ourAnimatorStateMachineSearcher = new StringSearcher("!u!1107", true);
         private static readonly StringSearcher ourStrippedSearcher = new StringSearcher(" stripped", true);
         private static readonly StringSearcher ourGameObjectFieldSearcher = new StringSearcher("m_GameObject:", true);
         private static readonly StringSearcher ourGameObjectNameSearcher = new StringSearcher("m_Name:", true);
@@ -67,6 +69,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public static bool IsStripped(IBuffer buffer) =>
             ourStrippedSearcher.Find(buffer, 0, Math.Min(buffer.Length, 150)) >= 0;
+
+        public static bool IsAnimatorState(IBuffer buffer) => 
+            ourAnimatorStateSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
+
+        public static bool IsAnimatorStateMachine(IBuffer buffer) => 
+            ourAnimatorStateMachineSearcher.Find(buffer, 0, Math.Min(buffer.Length, 30)) >= 0;
 
         public static long? GetAnchorFromBuffer(IBuffer buffer)
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
@@ -39,7 +40,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             // TODO: deps for other assets
-            if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
+            if (!currentAssetSourceFile.GetLocation().IsControllerFile() &&
+                AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {                
                 var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
                 bool stripped = AssetUtils.IsStripped(assetDocument.Buffer);

@@ -12,10 +12,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
         public const string AssetFileExtensionWithDot = ".asset";
         public const string PrefabFileExtensionWithDot = ".prefab";
         public const string SceneFileExtensionWithDot = ".unity";
+        public const string ControllerFileExtensionWithDot = ".controller";
 
         public static readonly string[] AssetFileExtensionsWithDot =
         {
-            SceneFileExtensionWithDot, AssetFileExtensionWithDot, PrefabFileExtensionWithDot
+            SceneFileExtensionWithDot,
+            AssetFileExtensionWithDot,
+            PrefabFileExtensionWithDot,
+            ControllerFileExtensionWithDot
         };
         public static readonly string[] AllFileExtensionsWithDot;
 
@@ -56,6 +60,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml
             }
 
             return false;
+        }
+        
+        public static bool IsControllerFile([NotNull] this IPath path)
+        {
+            return SimplePathEndsWith(path, ControllerFileExtensionWithDot);
         }
 
         public static bool IsMeta([NotNull] this IPath path)

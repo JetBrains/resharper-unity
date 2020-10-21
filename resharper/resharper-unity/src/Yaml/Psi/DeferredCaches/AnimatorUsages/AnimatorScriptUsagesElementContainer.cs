@@ -1,0 +1,358 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
+using JetBrains.Application.Threading;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
+using JetBrains.ReSharper.Plugins.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
+using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Psi.Caches;
+using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.Util;
+using JetBrains.Util.Collections;
+using JetBrains.Util.dataStructures;
+
+namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages
+{
+    [SolutionComponent]
+    public class AnimatorScriptUsagesElementContainer : IScriptUsagesElementContainer
+    {
+        [NotNull] private readonly IPersistentIndexManager myManager;
+        [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
+
+        [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers =
+            new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
+
+        [NotNull] private readonly IShellLocks myShellLocks;
+
+        [NotNull] private readonly CountingSet<Guid> myUsagesCount = new CountingSet<Guid>();
+
+        [NotNull] private readonly OneToCompactCountingSet<Guid, IPsiSourceFile> myUsageToSourceFiles =
+            new OneToCompactCountingSet<Guid, IPsiSourceFile>();
+
+        public AnimatorScriptUsagesElementContainer([NotNull] IPersistentIndexManager manager,
+                                                    [NotNull] IShellLocks shellLocks,
+                                                    [NotNull] MetaFileGuidCache metaFileGuidCache)
+        {
+            myManager = manager;
+            myShellLocks = shellLocks;
+            myMetaFileGuidCache = metaFileGuidCache;
+        }
+
+        public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
+        {
+            return new AnimatorUsagesDataElement();
+        }
+
+        public object Build(SeldomInterruptChecker checker, IPsiSourceFile file, AssetDocument document)
+        {
+            if (!file.GetLocation().IsControllerFile()) return null;
+            if (IsAnimatorStateMachineBehaviour(document)) return ExtractStateMachineBehaviour(document);
+            var animatorExtractor = new AnimatorExtractor(file, document);
+            if (IsAnimatorStateMachine(document)) return animatorExtractor.TryExtractStateMachine();
+            return IsAnimatorState(document) ? animatorExtractor.TryExtractUsage() : null;
+        }
+
+        public void Drop(IPsiSourceFile currentAssetSourceFile,
+                         AssetDocumentHierarchyElement assetDocumentHierarchyElement,
+                         IUnityAssetDataElement element)
+        {
+            if (!(element is AnimatorUsagesDataElement animatorElement)) return;
+            var usagesCount = myUsagesCount;
+            var usageToSourceFiles = myUsageToSourceFiles;
+            foreach (var script in animatorElement.Scripts)
+            {
+                usagesCount.Remove(script.Guid);
+                usageToSourceFiles.Remove(script.Guid, currentAssetSourceFile);
+            }
+            myPointers.Remove(currentAssetSourceFile);
+        }
+        
+        public void Merge(IPsiSourceFile currentAssetSourceFile,
+                          AssetDocumentHierarchyElement assetDocumentHierarchyElement,
+                          IUnityAssetDataElementPointer unityAssetDataElementPointer,
+                          IUnityAssetDataElement unityAssetDataElement)
+        {
+            myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
+            if (!(unityAssetDataElement is AnimatorUsagesDataElement animatorDataElement)) return;
+            AddGuidToUsagesEntriesFor(animatorDataElement);
+            foreach (var script in animatorDataElement.Scripts)
+            {
+                myUsagesCount.Add(script.Guid);
+                myUsageToSourceFiles.Add(script.Guid, currentAssetSourceFile);
+            }
+        }
+
+        public string Id => nameof(AnimatorScriptUsagesElementContainer);
+
+        public int Order => 0;
+        
+        public void Invalidate()
+        {
+            myUsageToSourceFiles.Clear();
+            myUsagesCount.Clear();
+            myPointers.Clear();
+        }
+
+        public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
+        {
+            using (ReadLockCookie.Create())
+            {
+                var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, scriptClass);
+                return guid != null
+                    ? GetPossibleFilesWithScriptUsages(myUsageToSourceFiles.GetValues(guid.Value))
+                    : new LocalList<IPsiSourceFile>();
+            }
+        }
+        
+        public int GetScriptUsagesCount(IClassLikeDeclaration classLikeDeclaration, out bool estimatedResult)
+        {
+            AssertShellLocks();
+            estimatedResult = false;
+            var sourceFile = classLikeDeclaration.GetSourceFile();
+            if (sourceFile == null) return 0;
+            var declaredElement = classLikeDeclaration.DeclaredElement;
+            if (declaredElement == null) return 0;
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
+            return guid != null ? myUsagesCount.GetCount(guid.Value) : 0;
+        }
+        
+        public IEnumerable<IScriptUsage> GetScriptUsagesFor(IPsiSourceFile sourceFile,
+                                                            ITypeElement declaredElement)
+        {
+            AssertShellLocks();
+            var boxedGuid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
+            if (!boxedGuid.HasValue) return Enumerable.Empty<IScriptUsage>();
+            var unityAssetDataElementPointer = myPointers[sourceFile];
+            if (unityAssetDataElementPointer is null) return Enumerable.Empty<IScriptUsage>();
+            var element = unityAssetDataElementPointer.GetElement(sourceFile, Id);
+            if (!(element is AnimatorUsagesDataElement animatorElement)) return Enumerable.Empty<IScriptUsage>();
+            return GetScriptUsagesFor(animatorElement, boxedGuid.Value);
+        }
+
+        private static LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IEnumerable<IPsiSourceFile> files)
+        {
+            return files?.Aggregate(new LocalList<IPsiSourceFile>(), AddFile) ?? new LocalList<IPsiSourceFile>();
+        }
+
+        private static LocalList<IPsiSourceFile> AddFile(LocalList<IPsiSourceFile> files, [NotNull] IPsiSourceFile file)
+        {
+            files.Add(file);
+            return files;
+        }
+
+        [NotNull]
+        [ItemNotNull]
+        private static IEnumerable<IScriptUsage> GetScriptUsagesFor([NotNull] AnimatorUsagesDataElement element,
+                                                                    Guid guid)
+        {
+            var foundStateUsages = element.GuidToStateUsages.TryGetValue(guid, out var stateUsages);
+            var foundStateMachineUsages = element.GuidToStateMachineUsages.TryGetValue(guid, out var stateMachineUsages);
+            if (!foundStateUsages && !foundStateMachineUsages) return Enumerable.Empty<IScriptUsage>();
+                return ConcatUsages(stateUsages, stateMachineUsages);
+            
+        }
+
+        [CanBeNull]
+        public string GetStateMachinePathFor(LocalReference location)
+        {
+            AssertShellLocks();
+            var animatorElement = GetDataElement(location);
+            if (animatorElement is null) return null;
+            var namesConsumer = new PathConsumer<string>(usage => usage.Name);
+            ProcessPath(animatorElement, namesConsumer, location.LocalDocumentAnchor);
+            var names = namesConsumer.Elements;
+            names.Reverse();
+            return names.Join("/");
+        }
+        
+        public bool GetElementsNames(LocalReference location,
+                                   [NotNull] IDeclaredElement declaredElement, 
+                                   [CanBeNull] out string[] names)
+        {
+            AssertShellLocks();
+            var animatorElement = GetDataElement(location);
+            if (animatorElement is null)
+            {
+                names = null;
+                return false;
+            }
+            var namesConsumer = new PathConsumer<string>(usage => usage.Name);
+            var anchor = location.LocalDocumentAnchor;
+            var namesAndAnchors = namesConsumer.Elements;
+            AddBottomElement(animatorElement, namesConsumer, anchor, declaredElement);
+            ProcessPath(animatorElement, namesConsumer, anchor);
+            namesAndAnchors.Reverse();
+            names = namesAndAnchors.ToArray();
+            return true;
+        }
+
+        private void AddBottomElement([NotNull] AnimatorUsagesDataElement animatorElement, 
+                                      [NotNull] PathConsumer<string> namesConsumer,
+                                      long anchor,
+                                      [NotNull] IDeclaredElement declaredElement)
+        {
+            if (TryAddBottomStateMachine(animatorElement, namesConsumer, anchor)) return;
+            AddBottomStateElement(animatorElement, namesConsumer, anchor, declaredElement);
+        }
+
+        private static bool TryAddBottomStateMachine([NotNull] AnimatorUsagesDataElement animatorElement,
+                                                     [NotNull] PathConsumer<string> namesConsumer,
+                                                     long anchor)
+        {
+            using (ReadLockCookie.Create())
+            {
+                if (!animatorElement.StateMachineAnchorToUsage.TryGetValue(anchor, out var bottomElement) ||
+                    bottomElement is null) return false;
+                namesConsumer.Elements.Add(bottomElement.Name);
+                return true;
+            }
+        }
+
+        private void AddBottomStateElement([NotNull] AnimatorUsagesDataElement animatorElement,
+                                           [NotNull] PathConsumer<string> namesConsumer,
+                                           long anchor,
+                                           [NotNull] IDeclaredElement declaredElement)
+        {
+            if (!(declaredElement is ITypeElement typeElement)) return;
+            var boxedGuid = AssetUtils.GetGuidFor(myMetaFileGuidCache, typeElement);
+            using (ReadLockCookie.Create())
+            {
+                if (!boxedGuid.HasValue ||
+                    !animatorElement.GuidToStateUsages.TryGetValue(boxedGuid.Value, out var usages)) return; 
+                var name = usages
+                    .Where(usage => usage != null && usage.Location.LocalDocumentAnchor == anchor)
+                    .Select(usage => usage.Name)
+                    .FirstOrDefault();
+                namesConsumer.Elements.Add(name);
+            }
+        }
+
+        private class PathConsumer<T>
+        {
+            [NotNull] public delegate T Extract([NotNull] IAnimatorScriptUsage usage);
+            [NotNull, ItemNotNull] public readonly List<T> Elements;
+            
+            [NotNull] private readonly Extract myExtractFrom;
+            
+            public PathConsumer([NotNull] Extract extractor)
+            {
+                Elements = new List<T>();
+                myExtractFrom = extractor;
+            }
+
+            public void Consume([NotNull] IAnimatorScriptUsage usage)
+            {
+                Elements.Add(myExtractFrom(usage));
+            }
+        }
+
+        [CanBeNull]
+        private AnimatorUsagesDataElement GetDataElement(LocalReference location)
+        {
+            var sourceFile = myManager[location.OwningPsiPersistentIndex];
+            if (sourceFile == null) return null;
+            var pointer = myPointers[sourceFile];
+            if (pointer == null) return null;
+            using (ReadLockCookie.Create())
+            {
+                return pointer.GetElement(sourceFile, Id) as AnimatorUsagesDataElement;
+            }
+        }
+        
+        private static void ProcessPath<T>([NotNull] AnimatorUsagesDataElement element,
+                                           [NotNull] PathConsumer<T> consumer,
+                                           long currentAnchor)
+        {
+            using (ReadLockCookie.Create())
+            {
+                var childToParent = element.ChildToParent;
+                var anchorToStateMachineUsage = element.StateMachineAnchorToUsage;
+                while (childToParent.TryGetValue(currentAnchor, out var parent) &&
+                       anchorToStateMachineUsage.TryGetValue(parent, out var usage) &&
+                       usage != null)
+                {
+                    consumer.Consume(usage);
+                    currentAnchor = parent;
+                }
+            }
+        }
+
+        [NotNull]
+        [ItemNotNull]
+        private static IEnumerable<IScriptUsage> ConcatUsages(
+            [NotNull] IEnumerable<AnimatorStateScriptUsage> stateUsages,
+            [NotNull] IEnumerable<AnimatorStateMachineScriptUsage> stateMachineUsages)
+        {
+            var usages = stateUsages.Cast<IScriptUsage>().ToList();
+            usages.AddRange(stateMachineUsages);
+            return usages;
+        }
+
+        private static bool IsAnimatorStateMachine([NotNull] AssetDocument document)
+        {
+            return AssetUtils.IsAnimatorStateMachine(document.Buffer);
+        }
+
+        private static AnimatorScript? ExtractStateMachineBehaviour([NotNull] AssetDocument document)
+        {
+            var anchorRaw = AssetUtils.GetAnchorFromBuffer(document.Buffer);
+            if (!anchorRaw.HasValue) return null;
+            var entries = document.Document.FindRootBlockMapEntries()?.Entries;
+            if (entries == null) return null;
+            var (_, guid) =
+                (from IBlockMappingEntry entry in entries
+                where entry.Key.MatchesPlainScalarText("m_Script") && entry.Content != null
+                select entry.Content.Value.ExtractAnchorAndGuid()).FirstOrDefault();
+            return guid != null ? new AnimatorScript(guid.Value, anchorRaw.Value) : (AnimatorScript?)null;
+        }
+
+        private static bool IsAnimatorStateMachineBehaviour([NotNull] AssetDocument document)
+        {
+            return AssetUtils.IsMonoBehaviourDocument(document.Buffer);
+        }
+
+        private static void AddGuidToUsagesEntriesFor([NotNull] AnimatorUsagesDataElement element)
+        {
+            var scripts = element.Scripts;
+            AddGuidToUsagesEntries(element.ScriptAnchorToStateUsages, element.GuidToStateUsages, scripts);
+            AddGuidToUsagesEntries(element.ScriptAnchorToStateMachineUsages, element.GuidToStateMachineUsages, scripts);
+        }
+
+        private static void AddGuidToUsagesEntries<T>([NotNull] OneToListMultimap<long, T> anchorToUsages,
+                                                      [NotNull] OneToListMultimap<Guid, T> guidToUsages,
+                                                      [NotNull] IEnumerable<AnimatorScript> scripts)
+            where T : IAnimatorScriptUsage
+        {
+            foreach (var stateMachineBehaviour in scripts)
+            {
+                if (!anchorToUsages.TryGetValue(stateMachineBehaviour.Anchor, out var usages)) continue;
+                AddGuidToUsagesEntry(guidToUsages, usages, stateMachineBehaviour);
+            }
+        }
+
+        private static void AddGuidToUsagesEntry<T>([NotNull] OneToListMultimap<Guid, T> guidToUsages,
+                                                    MultimapValueCollection<long, T> usages,
+                                                    AnimatorScript behaviour)
+            where T : IAnimatorScriptUsage
+        {
+            foreach (var usage in usages) guidToUsages.Add(behaviour.Guid, usage);
+        }
+
+        private static bool IsAnimatorState([NotNull] AssetDocument assetDocument)
+        {
+            return AssetUtils.IsAnimatorState(assetDocument.Buffer);
+        }
+
+        private void AssertShellLocks()
+        {
+            myShellLocks.AssertReadAccessAllowed();
+        }
+    }
+}

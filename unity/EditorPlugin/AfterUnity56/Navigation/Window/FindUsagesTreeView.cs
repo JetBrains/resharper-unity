@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using JetBrains.Annotations;
+using JetBrains.Rider.Model.Unity.BackendUnity;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -10,6 +13,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
   {
     
     private Dictionary<int, FindUsagesTreeViewItem> findResultItems = new Dictionary<int, FindUsagesTreeViewItem>();
+    private readonly Dictionary<int, int> myAnimatorItemIdToPathElementsCount = new Dictionary<int, int>();
     
     private readonly FindUsagesWindowTreeState myState;
 
@@ -31,6 +35,9 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       
       var scriptableObjectNode = CreateScriptableObjectSubTree();
       root.AddChild(scriptableObjectNode);
+
+      var animatorSubTree = CreateAnimatorSubTree();
+      root.AddChild(animatorSubTree);
       
       SetupDepthsFromParentsAndChildren(root);
       return root;
@@ -39,7 +46,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
     private TreeViewItem CreateSceneSubTree()
     {
       var scenes = new FindUsagePathElement(0) {id = 1, displayName = "Scenes"};
-      CreateSubTree(scenes, myState.SceneElements.ToArray(), 4);
+      CreateSubTree(scenes, myState.SceneElements.ToArray(), 500000);
       return scenes;
     }
     
@@ -70,6 +77,47 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       return scriptableObject;
     }
     
+    private TreeViewItem CreateAnimatorSubTree()
+    {
+        var animator = new FindUsagePathElement(3) {id = 4, displayName = "Animator"};
+        // TODO: Investigate
+        var startId = 2_050_000_000;
+        foreach (var animatorElement in myState.AnimatorElements.ToArray())
+        {
+            // var id = startId++;
+            CreateAnimatorSubTree(animator, animatorElement, ref startId);
+            // animator.AddChild(findResultItems[id]);
+        }
+        return animator;
+    }
+
+    private void CreateAnimatorSubTree([NotNull] FindUsagePathElement findUsagePathElement,
+                                              [NotNull] AnimatorElement animatorElement, ref int id)
+    {
+        var currentParent = findUsagePathElement;
+        for (int i = 0, pathElementsLength = animatorElement.PathElements.Length; i < pathElementsLength; i++)
+        {
+            var findUsagesTreeViewItem = new FindUsagesTreeViewItem(id, animatorElement)
+            {
+                id = id,
+                displayName = animatorElement.PathElements[i],
+                icon = (Texture2D) EditorGUIUtility.IconContent(animatorElement.TerminalNodeImage).image
+            };
+            findResultItems[id] = findUsagesTreeViewItem;
+            myAnimatorItemIdToPathElementsCount[id] = i + 1;
+                currentParent.AddChild(findUsagesTreeViewItem);
+            currentParent = findUsagesTreeViewItem;
+            //
+            // var parentId = id;
+            // findResultItems[id] = new FindUsagesTreeViewItem(id, animatorElement)
+            // {
+            //     id = parentId,
+            //     displayName = pathElement,
+            //     icon = (Texture2D) EditorGUIUtility.IconContent(animatorElement.TerminalNodeImage).image
+            // };
+            id++;
+        }
+    }
 
     private void CreateSubTree(FindUsagePathElement element, IEnumerable<AbstractUsageElement> data, int startId)
     {
@@ -139,11 +187,21 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       }
 
       var request = findResultItems[id].UsageElement;
-      if (request is SceneElement sceneElement)
-        ShowUtil.ShowUsageOnScene(sceneElement.FilePath, sceneElement.FileName, sceneElement.Path, sceneElement.RootIndices);
-      
-      if (request is PrefabElement || request is ScriptableObjectElement)
-        ShowUtil.ShowFileUsage(request.FilePath);
+      switch (request)
+      {
+          case SceneElement sceneElement:
+              ShowUtil.ShowUsageOnScene(sceneElement.FilePath, sceneElement.FileName, sceneElement.Path, sceneElement.RootIndices);
+              break;
+          case PrefabElement _:
+          case ScriptableObjectElement _:
+              ShowUtil.ShowFileUsage(request.FilePath);
+              break;
+          case AnimatorElement animatorElement:
+              var elements = animatorElement.PathElements;
+              var range = elements.ToList().GetRange(0, myAnimatorItemIdToPathElementsCount[id]);
+              ShowUtil.ShowAnimatorUsage(range.ToArray(), animatorElement.FilePath);
+              break;
+      }
     }
   }
 }
