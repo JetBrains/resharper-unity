@@ -35,7 +35,8 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
 
     @Test
     fun checkExternalEditorWithExecutingMethod() = checkExternalEditor(false) {
-        executeIntegrationTestMethod("DumpExternalEditor") }
+        executeIntegrationTestMethod("DumpExternalEditor")
+    }
 
     @Test(enabled = false)
     fun checkExternalEditorWithUnityModelRefresh() = checkExternalEditor(true) { executeScript("DumpExternalEditor.cs") }
@@ -79,6 +80,29 @@ class ConnectionTest : IntegrationTestWithSolutionBase() {
                 printEditorLogEntry(it, editorLogEntry)
             }
 
+            checkSweaInSolution()
+        }
+    }
+
+    // TODO: test reproduce bug only with dialog with info about wrong unity version,
+    //  but we can't terminate Unity Editor with UI before connection
+    @Test(description = "RIDER-52498",enabled = false)
+    fun checkDebuggerStartsAfterAttachDebugger() {
+        installPlugin()
+        try {
+//            startUnity(false, false, false ,true)
+//            waitFirstScriptCompilation(project)
+//            waitConnectionToUnityEditor(project)
+            attachDebuggerToUnityEditor(
+                {
+                //    replaceUnityVersionOnCurrent(project)
+                },
+                {
+                    waitConnectionToUnityEditor(project)
+                }
+            )
+        } finally {
+            killUnity(project)
             checkSweaInSolution()
         }
     }
