@@ -6,14 +6,14 @@ import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 
-class UseUnityEditLauncherAction : DumbAwareAction(EditModeDescription, "Run with Unity Editor in Edit Mode", null) {
+class UseUnityBothLauncherAction : DumbAwareAction(BothModeDescription, "Run with Unity Editor", null) {
     companion object {
-        const val EditModeDescription = "Unity - Edit Mode"
+        const val BothModeDescription = "Unity - Edit && Play Mode"
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        project.solution.frontendBackendModel.unitTestPreference.value = UnitTestLaunchPreference.EditMode
+        project.solution.frontendBackendModel.unitTestPreference.value = UnitTestLaunchPreference.Both
     }
 
     override fun update(e: AnActionEvent) {
