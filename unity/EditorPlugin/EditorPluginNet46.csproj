@@ -23,11 +23,11 @@
   <Target Name="WriteRiderDev" AfterTargets="CopyFilesToOutputDirectory">
     <PropertyGroup>
       <Cmd>
-        Generated file, mocks rider executable. Can be selected as External Editor in Unity
+        $(OutputPath)$(AssemblyName).dll
       </Cmd>
     </PropertyGroup>
 
-    <WriteLinesToFile File="$(OutputPath)/rider-dev.app/rider-dev.bat" Overwrite="false" Lines="$(Cmd)" />
+    <WriteLinesToFile File="$(OutputPath)/rider-dev.app/rider-dev.bat" Overwrite="true" Lines="$(Cmd)" />
   </Target>
   
   <ItemGroup>
