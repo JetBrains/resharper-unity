@@ -19,7 +19,7 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
 
     @DataProvider(name = "findUsagesGrouping")
     fun test1() = arrayOf(
-        arrayOf("allGroupsEnabled", arrayOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
+        arrayOf("allGroupsEnabled", listOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
     )
 
     override fun preprocessTempDirectory(tempDir: File) {
@@ -29,7 +29,7 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
         copyUnityDll(unityDll!!, activeSolutionDirectory)
     }
 
-    protected fun doTest(line : Int, column : Int, groups: Array<String>?) {
+    protected fun doTest(line : Int, column : Int, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
         doTest(line, column)
