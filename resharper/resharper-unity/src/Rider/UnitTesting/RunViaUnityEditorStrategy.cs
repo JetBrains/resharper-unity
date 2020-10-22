@@ -56,6 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private readonly ILogger myLogger;
         private readonly Lifetime myLifetime;
         private readonly PackageValidator myPackageValidator;
+        private readonly JetBrains.Application.ActivityTrackingNew.UsageStatistics myUsageStatistics;
 
         private readonly object myCurrentLaunchesTaskAccess = new object();
         private Task myCurrentLaunchesTask = Task.CompletedTask;
@@ -73,7 +74,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                          FrontendBackendHost frontendBackendHost,
                                          ILogger logger,
                                          Lifetime lifetime,
-                                         PackageValidator packageValidator)
+                                         PackageValidator packageValidator,
+                                         JetBrains.Application.ActivityTrackingNew.UsageStatistics usageStatistics)
         {
             mySolution = solution;
             myUnitTestResultManager = unitTestResultManager;
@@ -87,6 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             myLogger = logger;
             myLifetime = lifetime;
             myPackageValidator = packageValidator;
+            myUsageStatistics = usageStatistics;
 
             myUnityProcessId = new Property<int?>(lifetime, "RunViaUnityEditorStrategy.UnityProcessId");
 
@@ -225,8 +228,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             clientControllerInfo.ExtraDependencies?.ToList(),
                             clientControllerInfo.TypeName);
 
-                    var mode = TestMode.Edit;
                     var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
+                    myUsageStatistics.TrackActivity("UnitTestPreference", frontendBackendModel.UnitTestPreference.Value.ToString());
+                    var mode = TestMode.Edit;
                     if (frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode)
                         mode = TestMode.Play;
                     var launch = new UnitTestLaunch(run.Launch.Session.Id, filters, mode, unityClientControllerInfo);
