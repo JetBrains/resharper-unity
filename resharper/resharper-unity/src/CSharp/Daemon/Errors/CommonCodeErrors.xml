@@ -14,9 +14,9 @@
   <SeverityConfiguration>
     <Group name="UnityHighlightingGroupIds.Burst">
       <Tag externalName="SharedStaticUnmanagedTypeWarning.HIGHLIGHTING_ID" default="WARNING">
-        <Title>Shared static type parameter can only be an unmanaged type</Title>
+        <Title>Shared static type parameter requires the unmanaged constraint</Title>
         <Description>
-          Shared static type parameter can only be an unmanaged type
+          Shared static type parameter requires the unmanaged constraint
         </Description>
       </Tag>
     </Group>
