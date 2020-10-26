@@ -229,7 +229,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             clientControllerInfo.TypeName);
 
                     var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
-                    myUsageStatistics.TrackActivity("UnitTestPreference", frontendBackendModel.UnitTestPreference.Value.ToString());
+                    myUsageStatistics.TrackActivity("UnityUnitTestPreference", frontendBackendModel.UnitTestPreference.Value.ToString());
                     var mode = TestMode.Edit;
                     if (frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode)
                         mode = TestMode.Play;
