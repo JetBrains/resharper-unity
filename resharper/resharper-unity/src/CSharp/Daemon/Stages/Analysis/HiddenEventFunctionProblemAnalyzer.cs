@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
 
                 if (eventFunction.Match(baseMethod) == MethodSignatureMatch.ExactMatch)
                 {
-                    (mark ?? (mark = new UnityEventFunctionInheritanceMarkOnGutter(element))).AddHiddenMember(
+                    (mark ?? (mark = new UnityEventFunctionInheritanceMarkOnGutter(element, method))).AddHiddenMember(
                         instance.Member);
                 }
             }
@@ -62,8 +62,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             OverlapResolve = OverlapResolveKind.NONE, ShowToolTipInStatusBar = false)]
         private class UnityEventFunctionInheritanceMarkOnGutter : InheritanceMarkOnGutter, IUnityHighlighting
         {
-            public UnityEventFunctionInheritanceMarkOnGutter(IDeclaration inheritor)
-                : base(inheritor)
+            public UnityEventFunctionInheritanceMarkOnGutter(IDeclaration inheritor, ITypeMember typeMember)
+                : base(inheritor, typeMember)
             {
             }
 
