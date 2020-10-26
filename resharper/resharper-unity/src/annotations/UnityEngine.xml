@@ -29,7 +29,7 @@
   </member>
   <member name="M:UnityEngine.Object.op_Implicit(UnityEngine.Object)~System.Boolean">
     <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
-      <argument>null =&gt; false; notnull =&gt; true</argument>
+      <argument>null =&gt; false;</argument>
     </attribute>
   </member>
 
