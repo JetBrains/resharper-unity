@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.DeclaredElements
             return substr.Length == 0 ? TextRange.InvalidRange : new TextRange(s, sb.Length);
         }
 
-        private static string GetEntityKind(IDeclaredElement element)
+        public string GetEntityKind(IDeclaredElement element)
         {
             return element is IPropertyDeclaredElement ? "property" : string.Empty;
         }
