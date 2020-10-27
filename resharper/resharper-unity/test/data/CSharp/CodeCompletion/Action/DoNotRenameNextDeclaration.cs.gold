@@ -1,0 +1,17 @@
+﻿// ${COMPLETE_ITEM:Reset() { ... \}}
+
+using System;
+using UnityEngine;
+
+public class A : MonoBehaviour
+{
+  private void Reset()
+  {
+    throw new NotImplementedException();{caret}
+  }
+
+  private static void Еуые()
+    {
+        throw new System.NotImplementedException();
+    }\
+}
