@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.JsonNew.Psi.DeclaredElements
         public string Format(ParameterKind parameterKind) => string.Empty;
         public string Format(AccessRights accessRights) => string.Empty;
 
-        string GetEntityKind(IDeclaredElement declaredElement)
+        public string GetEntityKind(IDeclaredElement declaredElement)
         {
             var elementType = declaredElement.GetElementType() as JsonNewDeclaredElementType;
             if (elementType != null)
