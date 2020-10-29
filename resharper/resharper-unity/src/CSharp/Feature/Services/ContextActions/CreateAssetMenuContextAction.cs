@@ -50,9 +50,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var classLikeDeclaration = ClassLikeDeclarationNavigator.GetByNameIdentifier(identifier);
             if (classLikeDeclaration == null)
                 return false;
+            
+            ITypeElement declaredElement = classLikeDeclaration.DeclaredElement;
+            
+            if (declaredElement.DerivesFrom(KnownTypes.EditorWindow))
+                return false;
+            
+            if (declaredElement.DerivesFrom(KnownTypes.Editor))
+                return false;
 
             var existingAttribute = classLikeDeclaration.GetAttribute(KnownTypes.CreateAssetMenuAttribute);
-            return existingAttribute == null && classLikeDeclaration.DeclaredElement.DerivesFromScriptableObject();
+            return existingAttribute == null && declaredElement.DerivesFromScriptableObject();
         }
 
         private class CreateAssetMenuAction : BulbActionBase
