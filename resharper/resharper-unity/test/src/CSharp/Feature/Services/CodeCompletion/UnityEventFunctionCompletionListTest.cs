@@ -51,6 +51,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.CodeCo
                 mySorting = LookupListSorting.ByRelevance;
             }
         }
+        
+        [Test] public void RetypeNameOnExistingMethodWithDifferentSignature() { DoNamedTest(); }
+        [Test] public void RetypeNameOnExistingMethodWithDifferentSignature2() { DoNamedTest(); }
 
         // Really useful for debugging ordering!
 //        protected override void PresentLookupItem(TextWriter writer, ILookupItem lookupItem, bool showTypes)

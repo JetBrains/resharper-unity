@@ -10,6 +10,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ProjectModel.DataContext;
 using JetBrains.ReSharper.Feature.Services.QuickDoc;
 using JetBrains.ReSharper.Feature.Services.QuickDoc.Providers;
+using JetBrains.ReSharper.Feature.Services.QuickDoc.Render;
 using JetBrains.ReSharper.Feature.Services.Util;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -27,18 +28,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
         private readonly DocumentManager myDocumentManager;
         private readonly QuickDocTypeMemberProvider myQuickDocTypeMemberProvider;
         private readonly HelpSystem myHelpSystem;
-        private readonly ITheming myTheming;
+        private readonly XmlDocHtmlPresenter myPresenter;
 
         public UnityEventFunctionQuickDocProvider(ISolution solution, UnityApi unityApi,
                                                   DocumentManager documentManager, QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                                  HelpSystem helpSystem, ITheming theming)
+                                                  HelpSystem helpSystem, XmlDocHtmlPresenter presenter)
         {
             mySolution = solution;
             myUnityApi = unityApi;
             myDocumentManager = documentManager;
             myQuickDocTypeMemberProvider = quickDocTypeMemberProvider;
             myHelpSystem = helpSystem;
-            myTheming = theming;
+            myPresenter = presenter;
         }
 
         public bool CanNavigate(IDataContext context)
@@ -68,7 +69,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 if (eventFunction != null)
                 {
                     var presenter = new UnityEventFunctionQuickDocPresenter(eventFunction, element, myQuickDocTypeMemberProvider,
-                        myTheming, myHelpSystem);
+                        myPresenter, myHelpSystem);
                     resolved(presenter, defaultLanguage);
                     return;
                 }
@@ -77,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
                 if (eventFunctionForParameter != null)
                 {
                     var presenter = new UnityEventFunctionQuickDocPresenter(eventFunctionForParameter, element.ShortName, element,
-                        myQuickDocTypeMemberProvider, myTheming, myHelpSystem);
+                        myQuickDocTypeMemberProvider, myPresenter, myHelpSystem);
                     resolved(presenter, defaultLanguage);
                     return;
                 }

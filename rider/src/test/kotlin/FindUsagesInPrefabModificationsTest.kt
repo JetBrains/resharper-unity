@@ -22,7 +22,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test01(caseName: String, groups: Array<String>?) {
+    fun test01(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -30,7 +30,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test02(caseName: String, groups: Array<String>?) {
+    fun test02(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -38,7 +38,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test03(caseName: String, groups: Array<String>?) {
+    fun test03(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -46,7 +46,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test04(caseName: String, groups: Array<String>?) {
+    fun test04(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -54,7 +54,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test05(caseName: String, groups: Array<String>?) {
+    fun test05(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -62,7 +62,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test06(caseName: String, groups: Array<String>?) {
+    fun test06(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -70,7 +70,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test07(caseName: String, groups: Array<String>?) {
+    fun test07(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -78,7 +78,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test08(caseName: String, groups: Array<String>?) {
+    fun test08(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -86,7 +86,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test09(caseName: String, groups: Array<String>?) {
+    fun test09(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -94,7 +94,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test10(caseName: String, groups: Array<String>?) {
+    fun test10(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -102,7 +102,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test11(caseName: String, groups: Array<String>?) {
+    fun test11(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -110,7 +110,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test12(caseName: String, groups: Array<String>?) {
+    fun test12(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -118,7 +118,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test13(caseName: String, groups: Array<String>?) {
+    fun test13(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -126,7 +126,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test14(caseName: String, groups: Array<String>?) {
+    fun test14(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -134,7 +134,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test15(caseName: String, groups: Array<String>?) {
+    fun test15(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -142,7 +142,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test16(caseName: String, groups: Array<String>?) {
+    fun test16(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -150,7 +150,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test17(caseName: String, groups: Array<String>?) {
+    fun test17(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -158,7 +158,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test18(caseName: String, groups: Array<String>?) {
+    fun test18(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -166,7 +166,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test19(caseName: String, groups: Array<String>?) {
+    fun test19(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -174,7 +174,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test20(caseName: String, groups: Array<String>?) {
+    fun test20(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
@@ -182,7 +182,7 @@ class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun test21(caseName: String, groups: Array<String>?) {
+    fun test21(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
 
