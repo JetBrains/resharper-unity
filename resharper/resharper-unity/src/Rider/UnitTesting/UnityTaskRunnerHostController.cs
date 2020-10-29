@@ -73,9 +73,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         public IPreparedProcess StartProcess(ProcessStartInfo startInfo, IUnitTestRun run, ILogger logger) 
             => myInnerHostController.StartProcess(startInfo, run, logger);
 
-        public void CustomizeConfiguration(IUnitTestRun run, TaskExecutorConfiguration configuration) 
-            => myInnerHostController.CustomizeConfiguration(run, configuration);
-        
         public virtual Type[] GetSupplementaryContainerAttributeTypes() => null;
 
         public async Task PrepareForRun(IUnitTestRun run)
