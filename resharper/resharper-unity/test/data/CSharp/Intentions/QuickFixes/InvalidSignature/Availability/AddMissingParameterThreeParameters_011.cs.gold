@@ -13,10 +13,10 @@ QUICKFIXES:
 Remove unused directives in file
 --Remove unused directives in project
 --Remove unused directives in solution
-1: Method 'OnPostprocessGameObjectWithUserProperties' is never used
+1: Event function 'OnPostprocessGameObjectWithUserProperties' is never used
 QUICKFIXES:
-Remove unused method
---Comment unused method
+Remove unused event function
+--Comment unused event function
 Used implicitly
 2: Incorrect method parameters. Expected '(GameObject go, string[] propNames, object[] values)'
 QUICKFIXES:
