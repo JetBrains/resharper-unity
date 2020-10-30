@@ -10,12 +10,18 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.executeWithGold
 import com.jetbrains.rider.test.scriptingApi.*
+import org.testng.annotations.BeforeSuite
 import org.testng.annotations.DataProvider
 import java.io.File
 import java.time.Duration
 
 abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
     protected var unityDll : File? = null
+
+    @BeforeSuite(alwaysRun = true)
+    fun getUnityDll() {
+        unityDll = downloadUnityDll()
+    }
 
     @DataProvider(name = "findUsagesGrouping")
     fun test1() = arrayOf(
