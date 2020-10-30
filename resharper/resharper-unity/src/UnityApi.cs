@@ -69,10 +69,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(type).Any();
         }
 
-        public bool IsUnityECSType([CanBeNull] ITypeElement typeElement)
+        public bool IsComponentSystemType([CanBeNull] ITypeElement typeElement)
         {
-            return typeElement.DerivesFrom(KnownTypes.JobComponentSystem) ||
-                   typeElement.DerivesFrom(KnownTypes.ComponentSystem);
+            // This covers ComponentSystem, JobComponentSystem and SystemBase
+            return typeElement.DerivesFrom(KnownTypes.ComponentSystemBase);
         }
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This

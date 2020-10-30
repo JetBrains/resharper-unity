@@ -41,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             switch (element)
             {
-                case IClass cls when unityApi.IsUnityType(cls) || unityApi.IsUnityECSType(cls):
+                case IClass cls when unityApi.IsUnityType(cls) || unityApi.IsComponentSystemType(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 

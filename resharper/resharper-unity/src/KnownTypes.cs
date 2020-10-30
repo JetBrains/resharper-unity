@@ -92,8 +92,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName SceneManager = new ClrTypeName("UnityEngine.SceneManagement.SceneManager");
 
         // ECS/DOTS
+        public static readonly IClrTypeName ComponentSystemBase = new ClrTypeName("Unity.Entities.ComponentSystemBase");
         public static readonly IClrTypeName JobComponentSystem = new ClrTypeName("Unity.Entities.JobComponentSystem");
-        public static readonly IClrTypeName ComponentSystem = new ClrTypeName("Unity.Entities.ComponentSystem");
 
         // Burst
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");
