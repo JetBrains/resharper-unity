@@ -193,18 +193,6 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return false;
         }
 
-        public bool IsInjectedField([CanBeNull] IField field)
-        {
-            if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
-                return false;
-
-            var containingType = field.GetContainingType();
-            if (containingType == null || !IsUnityECSType(containingType))
-                return false;
-
-            return field.HasAttributeInstance(KnownTypes.InjectAttribute, false);
-        }
-
         // Best effort attempt at preventing false positives for type members that are actually being used inside a
         // scene. We don't have enough information to do this by name, so we'll mark all potential event handlers as
         // implicitly used by Unity

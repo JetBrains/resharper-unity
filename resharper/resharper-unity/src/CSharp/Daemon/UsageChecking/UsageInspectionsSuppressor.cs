@@ -55,10 +55,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 
-                case IMethod method when IsImplicitlyUsedInterfaceMethod(method):
-                    flags = ImplicitUseKindFlags.Access;
-                    return true;
-
                 case IMethod method:
                     var function = unityApi.GetUnityEventFunction(method, out var match);
                     if (function != null)
@@ -74,14 +70,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                         return false;
                     }
 
-                    if (IsEventHandler(unityApi, method) || IsRequiredSignatureMethod(method))
+                    if (IsEventHandler(unityApi, method) || IsRequiredSignatureMethod(method) ||
+                        IsImplicitlyUsedInterfaceMethod(method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
                     }
                     break;
 
-                case IField field when unityApi.IsSerialisedField(field) || unityApi.IsInjectedField(field):
+                case IField field when unityApi.IsSerialisedField(field):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
 
