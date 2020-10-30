@@ -31,22 +31,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
         private readonly IPredefinedTypeCache myPredefinedTypeCache;
         private readonly UnityApi myUnityApi;
 
-        public CustomCodeAnnotationProvider(ExternalAnnotationsModuleFactory externalAnnotationsModuleFactory, IPredefinedTypeCache predefinedTypeCache, UnityApi unityApi)
+        public CustomCodeAnnotationProvider(ExternalAnnotationsModuleFactory externalAnnotationsModuleFactory,
+            IPredefinedTypeCache predefinedTypeCache, UnityApi unityApi)
         {
             myPredefinedTypeCache = predefinedTypeCache;
             myUnityApi = unityApi;
             myExternalAnnotationsModuleFactory = externalAnnotationsModuleFactory;
         }
 
-        public CodeAnnotationNullableValue? GetNullableAttribute(IDeclaredElement element)
-        {
-            return null;
-        }
-
-        public CodeAnnotationNullableValue? GetContainerElementNullableAttribute(IDeclaredElement element)
-        {
-            return null;
-        }
+        public CodeAnnotationNullableValue? GetNullableAttribute(IDeclaredElement element) => null;
+        public CodeAnnotationNullableValue? GetContainerElementNullableAttribute(IDeclaredElement element) => null;
 
         public ICollection<IAttributeInstance> GetSpecialAttributeInstances(IClrDeclaredElement element)
         {
@@ -118,9 +112,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             return false;
         }
 
-        // TODO: Handle Unity's MinAttribute
-
-
         // Treat Unity's RangeAttribute as ReSharper's ValueRangeAttribute annotation
         private bool GetValueRangeAttribute(IClrDeclaredElement element,
                                             out ICollection<IAttributeInstance> collection)
@@ -183,22 +174,123 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.CodeAnnotations
             return false;
         }
 
-        private SpecialAttributeInstance[] CreateRangeAttributeInstance(IClrDeclaredElement element,
-                                                                        PredefinedType predefinedType,
-                                                                        long from, long to)
+        [NotNull]
+        private IAttributeInstance[] CreateRangeAttributeInstance(IClrDeclaredElement element,
+                                                                  PredefinedType predefinedType,
+                                                                  long from, long to)
         {
             var args = new[]
             {
                 new AttributeValue(new ConstantValue(from, predefinedType.Long)),
                 new AttributeValue(new ConstantValue(to, predefinedType.Long))
             };
+            
+            // We need a project for the resolve context. It's not actually used, but we still need it. The requested
+            // element will be a source element, so it will definitely have a project
+            if (!(element.Module.ContainingProjectModule is IProject project))
+                return EmptyArray<IAttributeInstance>.Instance;
 
-            return new[] {new SpecialAttributeInstance(ourValueRangeAttributeFullName, GetModule(element), () => args)};
+            return new IAttributeInstance[]
+            {
+                new AnnotationAttributeInstance(ourValueRangeAttributeFullName, GetModule(element), project, args)
+            };
         }
 
         private IPsiModule GetModule(IClrDeclaredElement element)
         {
             return myExternalAnnotationsModuleFactory.GetPsiModule(element.Module.TargetFrameworkId) ?? element.Module;
+        }
+
+        // We can't always use SpecialAttributeInstance because it resolves the IClrTypeName against the default
+        // (project) context. As luck would have it, Unity ship *some* annotations, so it will work for some
+        // annotations. However, if we need to use any annotations that aren't shipped (e.g. ValueRangeAttribute) then
+        // it will fail to resolve. We need to resolve first against the project, and then fallback to the
+        // ExternalAnnotations PsiModule.
+        private class AnnotationAttributeInstance : IAttributeInstance
+        {
+            private readonly IClrTypeName myClrTypeName;
+            private readonly IPsiModule myExternalAnnotationsModule;
+            private readonly IProject myProject;
+            private readonly AttributeValue[] myCtorArguments;
+
+            public AnnotationAttributeInstance(IClrTypeName clrTypeName, IPsiModule externalAnnotationsModule,
+                IProject project, AttributeValue[] ctorArguments)
+            {
+                myClrTypeName = clrTypeName;
+                myExternalAnnotationsModule = externalAnnotationsModule;
+                myProject = project;
+                myCtorArguments = ctorArguments;
+            }
+
+            public IClrTypeName GetClrName() => myClrTypeName;
+            public string GetAttributeShortName() => myClrTypeName.ShortName;
+
+            public IDeclaredType GetAttributeType()
+            {
+                return TypeFactory.CreateTypeByCLRName(myClrTypeName, NullableAnnotation.NotNullable,
+                    myExternalAnnotationsModule);
+            }
+
+            public IConstructor Constructor
+            {
+                get
+                {
+                    var typeElement = GetAttributeType().GetTypeElement();
+                    if (typeElement == null)
+                    {
+                        using (CompilationContextCookie.OverrideOrCreate(
+                            myExternalAnnotationsModule.GetResolveContextEx(myProject)))
+                        {
+                            typeElement = GetAttributeType().GetTypeElement();
+                        }
+
+                        if (typeElement == null)
+                            return null;
+                    }
+
+                    foreach (var constructor in typeElement.Constructors)
+                    {
+                        if (myCtorArguments.Length == 0)
+                        {
+                            if (constructor.IsDefault) return constructor;
+
+                            continue;
+                        }
+
+                        var parameters = constructor.Parameters;
+                        if (parameters.Count == myCtorArguments.Length)
+                        {
+                            var typesMatch = true;
+                            for (var index = 0; index < myCtorArguments.Length; index++)
+                            {
+                                var parameterType = parameters[index].Type;
+                                var argumentType = myCtorArguments[index].GetType(myExternalAnnotationsModule);
+                                if (!parameterType.Equals(argumentType))
+                                {
+                                    typesMatch = false;
+                                    break;
+                                }
+                            }
+
+                            if (typesMatch) return constructor;
+                        }
+                    }
+
+                    return null;
+                }
+            }
+
+            public int PositionParameterCount => myCtorArguments.Length;
+            public IEnumerable<AttributeValue> PositionParameters() => myCtorArguments;
+            public AttributeValue PositionParameter(int paramIndex)
+            {
+                return paramIndex < myCtorArguments.Length ? myCtorArguments[paramIndex] : AttributeValue.BAD_VALUE;
+            }
+            
+            public int NamedParameterCount => 0;
+            public IEnumerable<Pair<string, AttributeValue>> NamedParameters() =>
+                EmptyList<Pair<string, AttributeValue>>.Enumerable;
+            public AttributeValue NamedParameter(string name) => AttributeValue.BAD_VALUE;
         }
     }
 }
