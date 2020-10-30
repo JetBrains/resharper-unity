@@ -414,11 +414,6 @@
       <argument>UnityEngine.MonoBehaviour</argument>
     </attribute>
   </member>
-  <member name="T:UnityEngine.HelpURLAttribute">
-    <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
-      <argument>UnityEngine.MonoBehaviour</argument>
-    </attribute>
-  </member>
   <member name="T:UnityEngine.ImageEffectAllowedInSceneView">
     <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor" />
     <attribute ctor="M:JetBrains.Annotations.BaseTypeRequiredAttribute.#ctor(System.Type)">
