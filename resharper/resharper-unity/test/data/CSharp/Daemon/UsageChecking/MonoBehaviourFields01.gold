@@ -31,10 +31,10 @@ public class A : MonoBehaviour
 }
 
 ---------------------------------------------------------
-(0): ReSharper Dead Code: Field 'implicitlyAssignedField' is assigned but its value is never used
-(1): ReSharper Dead Code: Field 'implicitlyAssignedMultiField1' is assigned but its value is never used
-(2): ReSharper Dead Code: Field 'implicitlyAssignedMultiField2' is assigned but its value is never used
-(3): ReSharper Dead Code: Field 'implicitlyAssignedPrivateField' is assigned but its value is never used
+(0): ReSharper Dead Code: Serialised field 'implicitlyAssignedField' is assigned but its value is never used
+(1): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField1' is assigned but its value is never used
+(2): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField2' is assigned but its value is never used
+(3): ReSharper Dead Code: Serialised field 'implicitlyAssignedPrivateField' is assigned but its value is never used
 (4): ReSharper Dead Code: Field 'UnusedAction' is never used
 (5): ReSharper Dead Code: Constant 'UnusedConst' is never used
 (6): ReSharper Dead Code: Constant 'UnusedPrivateConst' is never used
