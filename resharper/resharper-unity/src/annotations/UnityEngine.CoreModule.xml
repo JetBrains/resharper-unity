@@ -378,6 +378,14 @@
 
 
   <!-- Attribute usage. Grouped by namespace -->
+  
+  <!-- N:Unity (note that this namespace does not exist in UnityEngine.dll) -->
+  <member name="T:Unity.Collections.LowLevel.Unsafe.NativeSetThreadIndexAttribute">
+    <attribute ctor="M:JetBrains.Annotations.MeansImplicitUseAttribute.#ctor(JetBrains.Annotations.ImplicitUseKindFlags)">
+      <!-- ImplicitUseKindFlags.Assign = 2 -->
+      <argument>2</argument>
+    </attribute>
+  </member>
 
   <!-- N:UnityEngine -->
   <member name="T:UnityEngine.AddComponentMenu">
