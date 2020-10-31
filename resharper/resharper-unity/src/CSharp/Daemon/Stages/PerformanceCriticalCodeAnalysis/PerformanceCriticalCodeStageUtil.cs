@@ -165,16 +165,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (typeElement == null)
                 return false;
 
-            if (!typeElement.DerivesFromMonoBehaviour() && declaration.DeclaredElement is IClrDeclaredElement monoBehaviorCLRDeclaredElement)
+            if (typeElement.DerivesFromMonoBehaviour() && declaration.DeclaredElement is IClrDeclaredElement monoBehaviorCLRDeclaredElement)
                 return ourKnownHotMonoBehaviourMethods.Contains(monoBehaviorCLRDeclaredElement.ShortName);
 
-            if (!typeElement.DerivesFrom(KnownTypes.Editor) && declaration.DeclaredElement is IClrDeclaredElement editorCLRDeclaredElement)
+            if (typeElement.DerivesFrom(KnownTypes.Editor) && declaration.DeclaredElement is IClrDeclaredElement editorCLRDeclaredElement)
                 return ourKnownHotEditorMethods.Contains(editorCLRDeclaredElement.ShortName);
             
-            if (!typeElement.DerivesFrom(KnownTypes.EditorWindow) && declaration.DeclaredElement is IClrDeclaredElement editorWindowCLRDeclaredElement)
+            if (typeElement.DerivesFrom(KnownTypes.EditorWindow) && declaration.DeclaredElement is IClrDeclaredElement editorWindowCLRDeclaredElement)
                 return ourKnownHotEditorWindowMethods.Contains(editorWindowCLRDeclaredElement.ShortName);
             
-            if (!typeElement.DerivesFrom(KnownTypes.PropertyDrawer) && declaration.DeclaredElement is IClrDeclaredElement propertyDrawerCLRDeclaredElement)
+            if (typeElement.DerivesFrom(KnownTypes.PropertyDrawer) && declaration.DeclaredElement is IClrDeclaredElement propertyDrawerCLRDeclaredElement)
                 return ourKnownHotPropertyDrawerMethods.Contains(propertyDrawerCLRDeclaredElement.ShortName);
 
             return false;
