@@ -1,0 +1,11 @@
+﻿# 3 ITEMS #
+
++ OnApplicationFocus(bool) { ... }
+OnApplicationPause(bool) { ... }
+myOnA
+# AUTOMATIC #
+# 3 ITEMS #
+
++ OnApplicationFocus(bool) { ... }
+OnApplicationPause(bool) { ... }
+myOnA

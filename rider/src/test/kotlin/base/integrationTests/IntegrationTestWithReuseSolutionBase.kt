@@ -2,8 +2,8 @@ package base.integrationTests
 
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
-import com.jetbrains.rider.model.RdUnityModel
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolutionBase
 import com.jetbrains.rider.test.scriptingApi.buildSolutionWithConsoleBuild
@@ -12,7 +12,7 @@ import org.testng.annotations.AfterClass
 import org.testng.annotations.BeforeMethod
 import java.time.Duration
 
-abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase(), IntegrationTestWithRdUnityModel {
+abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase(), IntegrationTestWithFrontendBackendModel {
     protected open val withCoverage: Boolean
         get() = false
 
@@ -51,8 +51,8 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
     val project: Project
         get() = myProject!!
 
-    override val rdUnityModel: RdUnityModel
-        get() = project.solution.rdUnityModel
+    override val frontendBackendModel: FrontendBackendModel
+        get() = project.solution.frontendBackendModel
 
     @BeforeMethod(alwaysRun = true)
     fun openSolutionIfNeeded() {
@@ -64,9 +64,7 @@ abstract class IntegrationTestWithReuseSolutionBase : BaseTestWithSolutionBase()
                 myProject = null
                 oldSolutionDirectory.deleteRecursively()
             }
-            myProject = openSolution(solution, openSolutionParams) {
-                notificationList.add(it)
-            }
+            myProject = openSolution(solution, openSolutionParams)
             installPlugin(project)
             activateRiderFrontendTest()
         }

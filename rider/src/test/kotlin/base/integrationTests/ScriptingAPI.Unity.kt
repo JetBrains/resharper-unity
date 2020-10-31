@@ -20,12 +20,14 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
-import com.jetbrains.rider.model.*
+import com.jetbrains.rider.model.dotCoverModel
+import com.jetbrains.rider.model.unity.*
+import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
+import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.UnityPausepointBreakpointType
 import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoint
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
@@ -84,10 +86,20 @@ fun createLibraryFolderIfNotExist(solutionDirectory: File) {
     }
 }
 
-fun IntegrationTestWithRdUnityModel.activateRiderFrontendTest() {
-    frameworkLogger.info("Set rdUnityModel.riderFrontendTests = true")
-    if (!rdUnityModel.riderFrontendTests.valueOrDefault(false)) {
-        rdUnityModel.riderFrontendTests.set(true)
+fun replaceUnityVersionOnCurrent(project: Project) {
+    val projectVersionFile = File(project.basePath, "ProjectSettings").resolve("ProjectVersion.txt")
+    val oldVersion = projectVersionFile.readText().split(Regex("\\s+"))[1]
+
+    val newVersion = UnityInstallationFinder.getInstance(project).getApplicationVersion()
+
+    frameworkLogger.info("Replace unity project version '$oldVersion' by '$newVersion'")
+    projectVersionFile.writeText("m_EditorVersion: $newVersion")
+}
+
+fun IntegrationTestWithFrontendBackendModel.activateRiderFrontendTest() {
+    frameworkLogger.info("Set frontendBackendModel.riderFrontendTests = true")
+    if (!frontendBackendModel.riderFrontendTests.valueOrDefault(false)) {
+        frontendBackendModel.riderFrontendTests.set(true)
     }
 }
 
@@ -128,26 +140,26 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
     val processHandle = when {
         withCoverage -> {
-            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
-                .drop(1)
-                .toMutableList()
-                .apply { addAll(args) }
-                .let {
-                    when {
-                        SystemInfo.isWindows -> it.joinToString(" ")
-                        else -> ParametersList.join(it)
-                    }
-                }
-            val unityInstallationFinder = UnityInstallationFinder.getInstance(project)
-            val unityConfigurationParameters = RdDotCoverUnityConfigurationParameters(
-                unityInstallationFinder.getApplicationExecutablePath().toString(),
-                unityProjectDefaultArgsString,
-                unityInstallationFinder.getApplicationVersion()
-            )
-            project.solution.dotCoverModel.unityCoverageRequested.fire(unityConfigurationParameters)
-            val unityProcessId = project.solution.rdUnityModel.unityProcessId
-            waitAndPump(unityDefaultTimeout, { unityProcessId.valueOrNull != null }) { "Can't get unity process id" }
-            ProcessHandle.of(unityProcessId.valueOrNull!!.toLong()).get()
+//            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
+//                .drop(1)
+//                .toMutableList()
+//                .apply { addAll(args) }
+//                .let {
+//                    when {
+//                        SystemInfo.isWindows -> it.joinToString(" ")
+//                        else -> ParametersList.join(it)
+//                    }
+//                }
+//            val unityInstallationFinder = UnityInstallationFinder.getInstance(project)
+//            val unityConfigurationParameters = RdDotCoverUnityConfigurationParameters(
+//                unityInstallationFinder.getApplicationExecutablePath().toString(),
+//                unityProjectDefaultArgsString,
+//                unityInstallationFinder.getApplicationVersion()
+//            )
+//
+//            project.solution.dotCoverModel.fire(unityConfigurationParameters)
+//            getUnityProcessHandle(project)
+            throw NotImplementedError()
         }
         else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
     }
@@ -155,6 +167,12 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     frameworkLogger.info("Unity process started [pid: ${processHandle.pid()}]")
 
     return processHandle
+}
+
+fun getUnityProcessHandle(project: Project): ProcessHandle {
+    val unityApplicationData = project.solution.frontendBackendModel.unityApplicationData
+    waitAndPump(unityDefaultTimeout, { unityApplicationData.valueOrNull?.unityProcessId != null }) { "Can't get unity process id" }
+    return ProcessHandle.of(unityApplicationData.valueOrNull?.unityProcessId!!.toLong()).get()
 }
 
 fun BaseTestWithSolutionBase.startUnity(project: Project, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean) =
@@ -174,7 +192,7 @@ fun killUnity(project: Project, processHandle: ProcessHandle) {
     frameworkLogger.info("Unity process killed")
 }
 
-fun BaseTestWithSolution.killUnity(processHandle: ProcessHandle) = killUnity(project, processHandle)
+fun killUnity(project: Project) = killUnity(project, getUnityProcessHandle(project))
 
 fun BaseTestWithSolution.withUnityProcess(
     withCoverage: Boolean = false,
@@ -193,7 +211,7 @@ fun BaseTestWithSolution.withUnityProcess(
 
 fun installPlugin(project: Project) {
     frameworkLogger.info("Trying to install editor plugin")
-    project.solution.rdUnityModel.installEditorPlugin.fire(Unit)
+    project.solution.frontendBackendModel.installEditorPlugin.fire(Unit)
 
     val editorPluginPath = Paths.get(project.basePath!!)
         .resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
@@ -208,19 +226,19 @@ fun BaseTestWithSolution.executeScript(file: String) {
     script.copyTo(activeSolutionDirectory.combine("Assets", file))
 
     frameworkLogger.info("Executing script '$file'")
-    project.solution.rdUnityModel.refreshUnityModel()
+    project.solution.frontendBackendModel.refreshUnityModel()
 }
 
-fun RdUnityModel.refreshUnityModel() {
+fun FrontendBackendModel.refreshUnityModel() {
     frameworkLogger.info("Refreshing unity model")
     refresh.fire(true)
 }
 
-fun IntegrationTestWithRdUnityModel.refreshUnityModel() = rdUnityModel.refreshUnityModel()
+fun IntegrationTestWithFrontendBackendModel.refreshUnityModel() = frontendBackendModel.refreshUnityModel()
 
-private fun IntegrationTestWithRdUnityModel.executeMethod(runMethodData: RunMethodData): RunMethodResult {
+private fun IntegrationTestWithFrontendBackendModel.executeMethod(runMethodData: RunMethodData): RunMethodResult {
     frameworkLogger.info("Executing method ${runMethodData.methodName} from ${runMethodData.typeName} (assembly: ${runMethodData.assemblyName})")
-    val runMethodResult = rdUnityModel.runMethodInUnity.callSynchronously(runMethodData, rdUnityModel.protocol)!!
+    val runMethodResult = frontendBackendModel.runMethodInUnity.callSynchronously(runMethodData, frontendBackendModel.protocol)!!
     assertTrue(runMethodResult.success, "runMethodResult.success is false \n${runMethodResult.message} \n${runMethodResult.stackTrace}")
     frameworkLogger.info("Method was executed")
     return runMethodResult
@@ -238,7 +256,7 @@ fun waitConnectionToUnityEditor(project: Project) {
     waitAndPump(project.lifetime,
         {
             project.isConnectedToEditor()
-                && project.solution.rdUnityModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected
+                && project.solution.frontendBackendModel.unityEditorState.valueOrDefault(UnityEditorState.Disconnected) != UnityEditorState.Disconnected
         },
         unityDefaultTimeout) { "unityHost is not initialized." }
     frameworkLogger.info("unityHost is initialized.")
@@ -251,15 +269,13 @@ fun BaseTestWithSolutionBase.checkSweaInSolution(project: Project) {
 
 fun BaseTestWithSolution.checkSweaInSolution() = checkSweaInSolution(project)
 
-fun IntegrationTestWithRdUnityModel.executeIntegrationTestMethod(methodName: String) =
+fun IntegrationTestWithFrontendBackendModel.executeIntegrationTestMethod(methodName: String) =
     executeMethod(RunMethodData("Assembly-CSharp-Editor", "Editor.IntegrationTestHelper", methodName))
 
-fun printEditorLogEntry(stream: PrintStream, editorLogEntry: EditorLogEntry) {
-    val type = RdLogEventType.values()[editorLogEntry.type]
-    val mode = RdLogEventMode.values()[editorLogEntry.mode]
-    if (type == RdLogEventType.Message) {
-        stream.println("$type, $mode, ${editorLogEntry.message}\n " +
-            editorLogEntry.stackTrace.replace(Regex(" \\(at .+\\)"), ""))
+fun printEditorLogEntry(stream: PrintStream, logEvent: LogEvent) {
+    if (logEvent.type == LogEventType.Message) {
+        stream.println("${logEvent.type}, ${logEvent.mode}, ${logEvent.message}\n " +
+            logEvent.stackTrace.replace(Regex(" \\(at .+\\)"), ""))
     }
 }
 
@@ -267,51 +283,51 @@ fun printEditorLogEntry(stream: PrintStream, editorLogEntry: EditorLogEntry) {
 
 //region Playing
 
-fun IntegrationTestWithRdUnityModel.play(waitForPlay: Boolean = true) {
+fun IntegrationTestWithFrontendBackendModel.play(waitForPlay: Boolean = true) {
     frameworkLogger.info("Start playing in unity editor")
-    rdUnityModel.play.set(true)
+    frontendBackendModel.playControls.play.set(true)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
-fun IntegrationTestWithRdUnityModel.pause(waitForPause: Boolean = true) {
+fun IntegrationTestWithFrontendBackendModel.pause(waitForPause: Boolean = true) {
     frameworkLogger.info("Pause unity editor")
-    rdUnityModel.pause.set(true)
+    frontendBackendModel.playControls.pause.set(true)
     if (waitForPause) waitForUnityEditorPauseMode()
 }
 
 // "2000000" is default log message in NewBehaviourScript.Update() in test solutions
-fun IntegrationTestWithRdUnityModel.step(waitForStep: Boolean = true, logMessageAfterStep: String = "2000000") {
+fun IntegrationTestWithFrontendBackendModel.step(waitForStep: Boolean = true, logMessageAfterStep: String = "2000000") {
     frameworkLogger.info("Make step in unity editor")
     if (waitForStep) {
-        waitForEditorLogsAfterAction(logMessageAfterStep) { rdUnityModel.step.fire(Unit) }
+        waitForEditorLogsAfterAction(logMessageAfterStep) { frontendBackendModel.playControls.step.fire(Unit) }
     } else {
-        rdUnityModel.step.fire(Unit)
+        frontendBackendModel.playControls.step.fire(Unit)
     }
 }
 
-fun IntegrationTestWithRdUnityModel.stopPlaying(waitForIdle: Boolean = true) {
+fun IntegrationTestWithFrontendBackendModel.stopPlaying(waitForIdle: Boolean = true) {
     frameworkLogger.info("Stop playing in unity editor")
-    rdUnityModel.play.set(false)
+    frontendBackendModel.playControls.play.set(false)
     if (waitForIdle) waitForUnityEditorIdleMode()
 }
 
-fun IntegrationTestWithRdUnityModel.unpause(waitForPlay: Boolean = true) {
+fun IntegrationTestWithFrontendBackendModel.unpause(waitForPlay: Boolean = true) {
     frameworkLogger.info("Unpause unity editor")
-    rdUnityModel.pause.set(false)
+    frontendBackendModel.playControls.pause.set(false)
     if (waitForPlay) waitForUnityEditorPlayMode()
 }
 
-fun IntegrationTestWithRdUnityModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(EditorState.ConnectedPlay)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPlayMode() = waitForUnityEditorState(UnityEditorState.Play)
 
-fun IntegrationTestWithRdUnityModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(EditorState.ConnectedPause)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorPauseMode() = waitForUnityEditorState(UnityEditorState.Pause)
 
-fun IntegrationTestWithRdUnityModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(EditorState.ConnectedIdle)
+fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorIdleMode() = waitForUnityEditorState(UnityEditorState.Idle)
 
-fun IntegrationTestWithRdUnityModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<EditorLogEntry> {
+fun IntegrationTestWithFrontendBackendModel.waitForEditorLogsAfterAction(vararg expectedMessages: String, action: () -> Unit): List<LogEvent> {
     val logLifetime = Lifetime.Eternal.createNested()
     val setOfMessages = expectedMessages.toHashSet()
-    val editorLogEntries = mutableListOf<EditorLogEntry>()
-    rdUnityModel.onUnityLogEvent.adviseNotNull(logLifetime) {
+    val editorLogEntries = mutableListOf<LogEvent>()
+    frontendBackendModel.consoleLogging.onConsoleLogEvent.adviseNotNull(logLifetime) {
         if (setOfMessages.remove(it.message)) {
             editorLogEntries.add(it)
         }
@@ -327,13 +343,13 @@ fun IntegrationTestWithRdUnityModel.waitForEditorLogsAfterAction(vararg expected
     return editorLogEntries
 }
 
-private fun IntegrationTestWithRdUnityModel.waitForUnityEditorState(editorState: EditorState) {
+private fun IntegrationTestWithFrontendBackendModel.waitForUnityEditorState(editorState: UnityEditorState) {
     frameworkLogger.info("Waiting for unity editor in state '$editorState'")
-    waitAndPump(unityActionsTimeout, { rdUnityModel.editorState.valueOrNull == editorState })
-    { "Unity editor isn't in state '$editorState', actual state '${rdUnityModel.editorState.valueOrNull}'" }
+    waitAndPump(unityActionsTimeout, { frontendBackendModel.unityEditorState.valueOrNull == editorState })
+    { "Unity editor isn't in state '$editorState', actual state '${frontendBackendModel.unityEditorState.valueOrNull}'" }
 }
 
-fun IntegrationTestWithRdUnityModel.restart() {
+fun IntegrationTestWithFrontendBackendModel.restart() {
     stopPlaying()
     play()
 }
@@ -442,18 +458,18 @@ fun BaseTestWithSolutionBase.toggleUnityPausepoint(project: Project, projectFile
 
 //region UnitTesting
 
-fun IntegrationTestWithRdUnityModel.preferStandaloneNUnitLauncherInTests() =
+fun IntegrationTestWithFrontendBackendModel.preferStandaloneNUnitLauncherInTests() =
     selectUnitTestLaunchPreference(UnitTestLaunchPreference.NUnit)
 
-fun IntegrationTestWithRdUnityModel.preferEditModeInTests() =
+fun IntegrationTestWithFrontendBackendModel.preferEditModeInTests() =
     selectUnitTestLaunchPreference(UnitTestLaunchPreference.EditMode)
 
-fun IntegrationTestWithRdUnityModel.preferPlayModeInTests() =
+fun IntegrationTestWithFrontendBackendModel.preferPlayModeInTests() =
     selectUnitTestLaunchPreference(UnitTestLaunchPreference.PlayMode)
 
-private fun IntegrationTestWithRdUnityModel.selectUnitTestLaunchPreference(preference: UnitTestLaunchPreference) {
+private fun IntegrationTestWithFrontendBackendModel.selectUnitTestLaunchPreference(preference: UnitTestLaunchPreference) {
     frameworkLogger.info("Selecting unit test launch preference '$preference'")
-    rdUnityModel.unitTestPreference.set(preference)
+    frontendBackendModel.unitTestPreference.set(preference)
 }
 
 //endregion
@@ -461,8 +477,8 @@ private fun IntegrationTestWithRdUnityModel.selectUnitTestLaunchPreference(prefe
 //region Interface
 
 //Needed to use extensions in all base classes
-interface IntegrationTestWithRdUnityModel {
-    val rdUnityModel: RdUnityModel
+interface IntegrationTestWithFrontendBackendModel {
+    val frontendBackendModel: FrontendBackendModel
 }
 
 //endregion

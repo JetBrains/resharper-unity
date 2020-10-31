@@ -4,9 +4,7 @@ import com.intellij.ui.ColoredListCellRenderer
 import com.intellij.ui.RowIcon
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.speedSearch.SpeedSearchUtil
-import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import com.jetbrains.rd.util.lifetime.Lifetime
 import net.miginfocom.swing.MigLayout
 import java.awt.Color
 import java.awt.Component
@@ -28,15 +26,15 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), List
 
     override fun getListCellRendererComponent(list: JList<out LogPanelItem>, item: LogPanelItem, index: Int, selected: Boolean, hasFocus: Boolean): Component {
         this.clear()
-        this.font = list.getFont()
+        this.font = list.font
         this.mySelected = selected
-        this.myForeground = if (this.isEnabled) list.getForeground() else UIUtil.getLabelDisabledForeground()
-        this.mySelectionForeground = list.getSelectionForeground()
+        this.myForeground = if (this.isEnabled) list.foreground else UIUtil.getLabelDisabledForeground()
+        this.mySelectionForeground = list.selectionForeground
         val bg =
             if (UIUtil.isUnderWin10LookAndFeel()) {
-                if (selected) list.getSelectionBackground() else list.getBackground()
+                if (selected) list.selectionBackground else list.background
             } else {
-                if (selected) list.getSelectionBackground() else null
+                if (selected) list.selectionBackground else null
             }
         this.background = bg
         countLabel.background = bg
@@ -64,20 +62,24 @@ class UnityLogPanelEventRenderer : ColoredListCellRenderer<LogPanelItem>(), List
                 if (!token.used) {
                     var style = SimpleTextAttributes.REGULAR_ATTRIBUTES
 
-                    if (token.bold && token.italic)
+                    if (token.bold && token.italic) {
                         style = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD or SimpleTextAttributes.STYLE_ITALIC, token.color)
-                    else if (token.bold)
-                        if (token.color == null)
-                            style = SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES
+                    }
+                    else if (token.bold) {
+                        style = if (token.color == null)
+                            SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES
                         else
-                            style = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, token.color)
-                    else if (token.italic)
-                        if (token.color == null)
-                            style = SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES
+                            SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, token.color)
+                    }
+                    else if (token.italic) {
+                        style = if (token.color == null)
+                            SimpleTextAttributes.REGULAR_ITALIC_ATTRIBUTES
                         else
-                            style = SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, token.color)
-                    else if(token.color != null)
+                            SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, token.color)
+                    }
+                    else if(token.color != null) {
                         style = SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, token.color)
+                    }
 
                     append(token.token, style)
                 }

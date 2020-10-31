@@ -5,10 +5,6 @@ import com.jetbrains.rider.plugins.gradle.tasks.*
 
 ext.backend = new BackendPaths(project, logger, ext.repoRoot, ext.productVersion)
 
-nuget {
-    version = "4.9.4"
-}
-
 task prepareRiderBuildProps(type: GenerateDotNetSdkPathPropsTask) {
     dotNetSdkPath { backend.getDotNetSdkPath() }
 }
@@ -21,7 +17,7 @@ task prepareNuGetConfig(type: GenerateNuGetConfig) {
 task buildReSharperHostPlugin(type: DotNetBuildTask) {
     group backendGroup
     description 'Builds the full ReSharper backend plugin solution'
-    dependsOn prepareNuGetConfig, generateModel
+    dependsOn prepareNuGetConfig, generateModels
 
     buildFile = backend.resharperHostPluginSolution
 }
@@ -29,7 +25,7 @@ task buildReSharperHostPlugin(type: DotNetBuildTask) {
 task buildUnityEditorPlugin(type: DotNetBuildTask) {
     group backendGroup
     description 'Builds the Unity editor plugin'
-    dependsOn prepareNuGetConfig, generateModel
+    dependsOn prepareNuGetConfig, generateModels
 
     buildFile = backend.unityPluginSolution
 }
@@ -70,13 +66,9 @@ See CHANGELOG.md in the JetBrains/resharper-unity GitHub repo for more details a
             'ReleaseNotes': ReleaseNotes
     ]
 
-    def nuPkgFile = file(new File(destinationDir as String, "JetBrains.Unity.${version}.nupkg"))
-    outputs.files(nuPkgFile)
-
     doFirst {
         buildServer.progress("Packing: $nuspecFile.name")
     }
-    outputs.upToDateWhen { false }
 }
 
 task nunitReSharperYaml(type: nunit.class) {
@@ -84,7 +76,7 @@ task nunitReSharperYaml(type: nunit.class) {
     outputs.upToDateWhen { false }
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    def testDll = new File(buildDir, "tests.resharper-yaml/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.Tests.ReSharper.dll")
+    def testDll = new File(buildDir, "resharper-yaml/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.Tests.ReSharper.dll")
     testAssemblies = [ testDll ]
 }
 
@@ -93,7 +85,7 @@ task nunitRiderYaml(type: nunit.class) {
     outputs.upToDateWhen { false }
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    def testDll = new File(buildDir, "tests.rider-yaml/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.Tests.Rider.dll")
+    def testDll = new File(buildDir, "rider-yaml/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Yaml.Tests.Rider.dll")
     testAssemblies = [ testDll ]
 }
 
@@ -102,7 +94,7 @@ task nunitReSharperUnity(type: nunit.class) {
     outputs.upToDateWhen { false }
     useX86 true
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    def testDll = new File(buildDir, "tests.resharper-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
+    def testDll = new File(buildDir, "resharper-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.ReSharper.dll")
     testAssemblies = [ testDll ]
 }
 
@@ -112,7 +104,7 @@ task nunitRiderUnity(type: nunit.class) {
     useX86 true
 
     def buildDir = new File(backend.repositoryRoot, "resharper/build")
-    def testDll = new File(buildDir, "tests.rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
+    def testDll = new File(buildDir, "rider-unity/bin/$BuildConfiguration/net461/JetBrains.ReSharper.Plugins.Unity.Tests.Rider.dll")
     testAssemblies = [ testDll ]
 }
 
@@ -126,6 +118,6 @@ task publishCiBackendArtifacts {
     inputs.files(packReSharperPlugin.outputs)
 
     doLast {
-        buildServer.publishArtifact(packReSharperPlugin.outputs.files.singleFile)
+        buildServer.publishArtifact(packReSharperPlugin.packageFile)
     }
 }

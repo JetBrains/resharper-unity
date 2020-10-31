@@ -1,27 +1,19 @@
 using System;
 using UnityEngine;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DefaultNamespace
 {
-    public class AttributesNames : MonoBehaviour
+    public class AttributesNamesTest : MonoBehaviour
     {
-        [FrequentlyCalledMethod]
-        private void FirstMethod()
+        private void LateUpdate()
         {
             SecondMethod();
         }
 
-        [PerformanceCharacteristicsHint]
+        [SuppressMessage("ReSharper", "Cheap.Method")]
         private void SecondMethod()
         {
         }
     }
-}
-
-internal class PerformanceCharacteristicsHintAttribute : Attribute
-{
-}
-
-internal class FrequentlyCalledMethodAttribute : Attribute
-{
 }

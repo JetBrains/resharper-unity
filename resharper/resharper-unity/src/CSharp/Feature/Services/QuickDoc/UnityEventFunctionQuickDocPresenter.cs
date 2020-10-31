@@ -15,14 +15,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
         private readonly UnityEventFunction myEventFunction;
         private readonly string myParameterName;
         private readonly QuickDocTypeMemberProvider myQuickDocTypeMemberProvider;
-        private readonly ITheming myTheming;
+        private readonly XmlDocHtmlPresenter myXMLDocHtmlPresenter;
         private readonly HelpSystem myHelpSystem;
         private readonly DeclaredElementEnvoy<IClrDeclaredElement> myEnvoy;
 
         public UnityEventFunctionQuickDocPresenter(UnityEventFunction eventFunction, IClrDeclaredElement element,
                                                    QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                                   ITheming theming, HelpSystem helpSystem)
-            : this(eventFunction, null, element, quickDocTypeMemberProvider, theming, helpSystem)
+                                                   XmlDocHtmlPresenter xmlDocHtmlPresenter, HelpSystem helpSystem)
+            : this(eventFunction, null, element, quickDocTypeMemberProvider, xmlDocHtmlPresenter, helpSystem)
         {
             myQuickDocTypeMemberProvider = quickDocTypeMemberProvider;
         }
@@ -30,12 +30,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
         public UnityEventFunctionQuickDocPresenter(UnityEventFunction eventFunction, string parameterName,
                                                    IClrDeclaredElement element,
                                                    QuickDocTypeMemberProvider quickDocTypeMemberProvider,
-                                                   ITheming theming, HelpSystem helpSystem)
+                                                   XmlDocHtmlPresenter xmlDocHtmlPresenter, HelpSystem helpSystem)
         {
             myEventFunction = eventFunction;
             myParameterName = parameterName;
             myQuickDocTypeMemberProvider = quickDocTypeMemberProvider;
-            myTheming = theming;
+            myXMLDocHtmlPresenter = xmlDocHtmlPresenter;
             myHelpSystem = helpSystem;
             myEnvoy = new DeclaredElementEnvoy<IClrDeclaredElement>(element);
         }
@@ -47,9 +47,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickDoc
 
             // Present in the standard fashion
             var details = GetDetails(element);
-            var text = XmlDocHtmlPresenter.Run(details, element.Module,
+            var text = myXMLDocHtmlPresenter.Run(details, element.Module,
                 element, presentationLanguage, XmlDocHtmlUtil.NavigationStyle.All,
-                XmlDocHtmlUtil.CrefManager, myTheming);
+                XmlDocHtmlUtil.CrefManager);
             var title = DeclaredElementPresenter.Format(presentationLanguage,
                 DeclaredElementPresenter.FULL_NESTED_NAME_PRESENTER, element).Text;
 

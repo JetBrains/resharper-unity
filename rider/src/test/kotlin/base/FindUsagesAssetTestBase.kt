@@ -5,7 +5,7 @@ import base.integrationTests.downloadUnityDll
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.waitAndPump
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.test.base.BaseTestWithSolution
 import com.jetbrains.rider.test.framework.executeWithGold
@@ -19,7 +19,7 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
 
     @DataProvider(name = "findUsagesGrouping")
     fun test1() = arrayOf(
-        arrayOf("allGroupsEnabled", arrayOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
+        arrayOf("allGroupsEnabled", listOf("SolutionFolder", "Project", "Directory", "File", "Namespace", "Type", "Member", "UnityComponent", "UnityGameObject"))
     )
 
     override fun preprocessTempDirectory(tempDir: File) {
@@ -29,14 +29,14 @@ abstract class FindUsagesAssetTestBase : BaseTestWithSolution() {
         copyUnityDll(unityDll!!, activeSolutionDirectory)
     }
 
-    protected fun doTest(line : Int, column : Int, groups: Array<String>?) {
+    protected fun doTest(line : Int, column : Int, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
         doTest(line, column)
     }
 
     protected fun doTest(line : Int, column : Int, fileName : String = "NewBehaviourScript.cs") {
-        waitAndPump(project.lifetime, { project.solution.rdUnityModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
+        waitAndPump(project.lifetime, { project.solution.frontendBackendModel.isDeferredCachesCompletedOnce.valueOrDefault(false)}, Duration.ofSeconds(10), { "Deferred caches are not completed" })
 
         withOpenedEditor("Assets/$fileName") {
             setCaretToPosition(line, column)

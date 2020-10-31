@@ -1,17 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.DocumentManagers;
 using JetBrains.DocumentManagers.Transactions;
 using JetBrains.DocumentModel;
 using JetBrains.DocumentModel.Impl;
-using JetBrains.IDE;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Host.Features.Documents;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
-using JetBrains.ReSharper.Psi;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -38,7 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myDocumentToProjectFileMappingStorage = documentToProjectFileMappingStorage;
             myLogger = logger;
         }
-        
 
         public bool ShouldSuppress(IDocument document, bool forceSaveOpenDocuments)
         {
@@ -52,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             if (isUnitySharedProjectFile)
             {
                 if (!IsFileAssociatedWithOpenedEditor(document)) return true;
-                
+
                 mySolution.Locks.ExecuteOrQueueWithWriteLockWhenAvailableEx(Lifetime.Eternal, "Sync Unity shared files", () =>
                 {
                     using (mySolution.CreateTransactionCookie(DefaultAction.Commit, "Sync Unity shared files"))
@@ -72,15 +67,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             return false;
         }
-        
+
         private bool IsFileAssociatedWithOpenedEditor(IDocument document)
         {
             var modifiedProjectFile = myDocumentToProjectFileMappingStorage.TryGetProjectFile(document);
             if (modifiedProjectFile == null)
                 return false;
 
-            var editableEntity = modifiedProjectFile.GetData(DocumentHost.EditableEntityKey);
-            return editableEntity != null && !editableEntity.TextControls.IsEmpty();
+            var documentModel = modifiedProjectFile.GetData(DocumentHost.DocumentModelKey);
+            return documentModel != null && !documentModel.TextControls.IsEmpty();
         }
     }
 }

@@ -6,7 +6,7 @@ import com.intellij.notification.*
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
 import com.jetbrains.rd.util.reactive.adviseNotNullOnce
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import javax.swing.event.HyperlinkEvent
 
@@ -18,7 +18,7 @@ class AssetModeForceTextNotification(project: Project): ProtocolSubscribedProjec
     }
 
     init {
-        project.solution.rdUnityModel.notifyAssetModeForceText.adviseNotNullOnce(projectComponentLifetime){
+        project.solution.frontendBackendModel.notifyAssetModeForceText.adviseNotNullOnce(projectComponentLifetime){
             showNotificationIfNeeded()
         }
     }

@@ -5,8 +5,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.UnitTestLaunchPreference
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.projectView.solution
 import javax.swing.JComponent
 
@@ -19,15 +19,16 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
             UnitTestLaunchPreference.EditMode -> UseUnityEditLauncherAction.EditModeDescription
             UnitTestLaunchPreference.NUnit -> UseNunitLauncherAction.NUnitDescription
             UnitTestLaunchPreference.PlayMode -> UseUnityPlayLauncherAction.PlayModeDescription
+            UnitTestLaunchPreference.Both -> UseUnityBothLauncherAction.BothModeDescription
         }
     }
 
     override fun createPopupActionGroup(p0: JComponent?): DefaultActionGroup {
-        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseNunitLauncherAction()) {
+        return object : DefaultActionGroup(UseUnityEditLauncherAction(), UseUnityPlayLauncherAction(), UseUnityBothLauncherAction(), UseNunitLauncherAction()) {
             override fun update(e: AnActionEvent) {
                 val project = e.project ?: return
 
-                val currentPreference = project.solution.rdUnityModel.unitTestPreference.value
+                val currentPreference = project.solution.frontendBackendModel.unitTestPreference.value
                 e.presentation.text = getLauncherDescription(currentPreference)
 
                 e.presentation.description = getLauncherDescription(currentPreference)
@@ -46,7 +47,7 @@ class SwitchUnitTestLauncherComboBoxAction : ComboBoxAction() {
     override fun update(e: AnActionEvent) {
 
         val project = e.project ?: return
-        val currentPreference = project.solution.rdUnityModel.unitTestPreference.value
+        val currentPreference = project.solution.frontendBackendModel.unitTestPreference.value
         e.presentation.text = getLauncherDescription(currentPreference)
 
         e.presentation.description = getLauncherDescription(currentPreference)

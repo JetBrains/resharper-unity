@@ -40,7 +40,7 @@ class NullBuildServer: BuildServer {
     override fun closeBlock(name: String) { }
 
     override fun publishArtifact(path: File) {
-        println("Publish: $path.absolutePath")
+        println("Publish: $path")
     }
 
     override fun setBuildNumber(version: String) {

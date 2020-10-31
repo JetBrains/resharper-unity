@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
+using JetBrains.ReSharper.Intentions.CSharp.DisableWarning;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Resolve;
@@ -12,22 +14,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 {
     internal static class PerformanceCriticalCodeStageUtil
     {
-        public static bool IsInvocationExpensive([NotNull] IInvocationExpression invocationExpression)
+        public static bool IsInvokedElementExpensive([CanBeNull] IMethod method)
         {
-            invocationExpression.GetPsiServices().Locks.AssertReadAccessAllowed();
+            var containingType = method?.GetContainingType();
 
-            var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
-            if (reference == null)
-                return false;
-
-            var declaredElement = reference.Resolve().DeclaredElement as IMethod;
-
-            var containingType = declaredElement?.GetContainingType();
             if (containingType == null)
                 return false;
 
             ISet<string> knownCostlyMethods = null;
             var clrTypeName = containingType.GetClrName();
+
             if (clrTypeName.Equals(KnownTypes.Component))
                 knownCostlyMethods = ourKnownComponentCostlyMethods;
 
@@ -49,12 +45,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (clrTypeName.Equals(KnownTypes.Debug))
                 knownCostlyMethods = ourKnownDebugCostlyMethods;
 
-            var shortName = declaredElement.ShortName;
+            var shortName = method.ShortName;
 
             if (knownCostlyMethods != null && knownCostlyMethods.Contains(shortName))
                 return true;
 
             return clrTypeName.Equals(KnownTypes.GameObject) && shortName.Equals("AddComponent");
+        }
+
+        public static bool IsInvocationExpensive([NotNull] IInvocationExpression invocationExpression)
+        {
+            invocationExpression.GetPsiServices().Locks.AssertReadAccessAllowed();
+
+            var reference = (invocationExpression.InvokedExpression as IReferenceExpression)?.Reference;
+
+            if (reference == null)
+                return false;
+
+            var declaredElement = reference.Resolve().DeclaredElement as IMethod;
+
+            return IsInvokedElementExpensive(declaredElement);
         }
 
         public static bool IsCameraMainUsage(IReferenceExpression referenceExpression)
@@ -131,50 +141,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
             return false;
         }
-
-        public static bool HasPerformanceSensitiveAttribute(IAttributesOwner attributesOwner)
+        
+        public static bool IsPerformanceCriticalRootMethod([CanBeNull] ITreeNode node)
         {
-            return HasSpecificAttribute(attributesOwner, "PerformanceCharacteristicsHintAttribute");
-        }
-
-        public static bool HasFrequentlyCalledMethodAttribute(IAttributesOwner attributesOwner)
-        {
-            return HasSpecificAttribute(attributesOwner, "FrequentlyCalledMethodAttribute");
-        }
-
-        public static bool HasSpecificAttribute(IAttributesOwner attributesOwner, string name)
-        {
-            return attributesOwner.GetAttributeInstances(true)
-                .Any(t => t.GetClrName().ShortName.Equals(name));
-        }
-
-        public static bool IsPerformanceCriticalRootMethod(ITreeNode node)
-        {
-            if (!(node is ICSharpDeclaration declaration))
+            if (node == null)
                 return false;
+            
+            var typeMemberDeclaration = node as ITypeMemberDeclaration;
+            return IsPerformanceCriticalRootMethod(typeMemberDeclaration?.DeclaredElement);
+        }
 
-            // TODO: 20.1, support lambda
-            if (declaration.DeclaredElement is IAttributesOwner attributesOwner && HasFrequentlyCalledMethodAttribute(attributesOwner))
-                return true;
-
-            if (!(declaration is ITypeMemberDeclaration typeMemberDeclaration))
-                return false;
-
-            var typeElement = typeMemberDeclaration.DeclaredElement?.GetContainingType();
+        public static bool IsPerformanceCriticalRootMethod([CanBeNull] IDeclaredElement declaredElement)
+        {
+            var typeMember = declaredElement as ITypeMember;
+            var typeElement = typeMember?.GetContainingType();
 
             if (typeElement == null)
                 return false;
 
-            if (typeElement.DerivesFromMonoBehaviour() && declaration.DeclaredElement is IClrDeclaredElement monoBehaviorCLRDeclaredElement)
+            if (typeElement.DerivesFromMonoBehaviour() && declaredElement is IClrDeclaredElement monoBehaviorCLRDeclaredElement)
                 return ourKnownHotMonoBehaviourMethods.Contains(monoBehaviorCLRDeclaredElement.ShortName);
 
-            if (typeElement.DerivesFrom(KnownTypes.Editor) && declaration.DeclaredElement is IClrDeclaredElement editorCLRDeclaredElement)
+            if (typeElement.DerivesFrom(KnownTypes.Editor) && declaredElement is IClrDeclaredElement editorCLRDeclaredElement)
                 return ourKnownHotEditorMethods.Contains(editorCLRDeclaredElement.ShortName);
             
-            if (typeElement.DerivesFrom(KnownTypes.EditorWindow) && declaration.DeclaredElement is IClrDeclaredElement editorWindowCLRDeclaredElement)
+            if (typeElement.DerivesFrom(KnownTypes.EditorWindow) && declaredElement is IClrDeclaredElement editorWindowCLRDeclaredElement)
                 return ourKnownHotEditorWindowMethods.Contains(editorWindowCLRDeclaredElement.ShortName);
             
-            if (typeElement.DerivesFrom(KnownTypes.PropertyDrawer) && declaration.DeclaredElement is IClrDeclaredElement propertyDrawerCLRDeclaredElement)
+            if (typeElement.DerivesFrom(KnownTypes.PropertyDrawer) && declaredElement is IClrDeclaredElement propertyDrawerCLRDeclaredElement)
                 return ourKnownHotPropertyDrawerMethods.Contains(propertyDrawerCLRDeclaredElement.ShortName);
 
             return false;

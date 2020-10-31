@@ -8,15 +8,15 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rider.debugger.DotNetDebugProcess
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
 import com.jetbrains.rider.debugger.breakpoint.IDotNetSupportedBreakpointHandlerFactory
-import com.jetbrains.rider.model.EditorState
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachProfileState
 import com.jetbrains.rider.plugins.unity.run.configurations.UnityAttachToEditorRunConfiguration
 import com.jetbrains.rider.projectView.solution
 
 class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBreakpointHandler<XLineBreakpoint<DotNetLineBreakpointProperties>>(UnityPausepointBreakpointType::class.java) {
 
-    private val unityModel = debugProcess.project.solution.rdUnityModel
+    private val unityModel = debugProcess.project.solution.frontendBackendModel
     private val registeredBreakpoints = mutableSetOf<XBreakpoint<*>>()
 
     init {
@@ -38,7 +38,7 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
 
         // If we can guarantee that we're not in play mode, don't register the breakpoint, but mark it as unavailable.
         // We'll register all pausepoints when play mode changes. If we're not connected, we can't tell, so register it.
-        if (isUnityEditorConnected() && !isInPlayMode()) {
+        if (debugProcess.project.isConnectedToEditor() && !isInPlayMode()) {
             markBreakpointDisabledInSession(breakpoint, UnityPausepointConstants.unavailableWhenNotPlayingMessage)
         }
         else {
@@ -54,7 +54,7 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
 
     private fun advisePlayModeChanges() {
         // Advise the changes, not the value. We don't want to do anything on the current value
-        unityModel.play.change.advise(debugProcess.sessionLifetime) { playMode ->
+        unityModel.playControls.play.change.advise(debugProcess.sessionLifetime) { playMode ->
             XDebuggerManager.getInstance(debugProcess.project).breakpointManager.getBreakpoints(UnityPausepointBreakpointType::class.java).forEach { breakpoint ->
                 // We're obviously connected
                 if (playMode) {
@@ -76,12 +76,8 @@ class UnityPausepointHandler(private val debugProcess: DotNetDebugProcess) : XBr
             || (runProfile is UnityAttachProfileState && runProfile.isEditor)
     }
 
-    private fun isUnityEditorConnected(): Boolean {
-        return unityModel.editorState.valueOrDefault(EditorState.Disconnected) != EditorState.Disconnected
-    }
-
     private fun isInPlayMode(): Boolean {
-        return unityModel.play.valueOrDefault(false)
+        return unityModel.playControls.play.valueOrDefault(false)
     }
 
     private fun doRegisterBreakpoint(breakpoint: XLineBreakpoint<*>) {

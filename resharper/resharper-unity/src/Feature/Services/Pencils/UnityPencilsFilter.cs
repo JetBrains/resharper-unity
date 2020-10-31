@@ -11,10 +11,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Pencils
 {
     public class UnityPencilsFilter : PencilsFilterSettingsBase<UnitySettings>
     {
-        public UnityPencilsFilter(Lifetime lifetime, UnitySolutionTracker solutionTracker, UnityReferencesTracker referencesTracker, ISettingsStore store)
-            : base("Unity", "Plugins", "Unity", "", solutionTracker.IsUnityProject.HasTrueValue(), store, s => s.EnablePerformanceCriticalCodeHighlighting)
+        public UnityPencilsFilter(Lifetime lifetime, UnitySolutionTracker solutionTracker,
+                                  UnityReferencesTracker referencesTracker, ISettingsStore store)
+            : base("Unity", "Plugins", "Unity", "", solutionTracker.IsUnityProject.HasTrueValue(), store,
+                s => s.EnablePerformanceCriticalCodeHighlighting)
         {
-            referencesTracker.HasUnityReference.Advise(lifetime, b => IsVisible.Value = solutionTracker.IsUnityProject.HasTrueValue() || b);
+            referencesTracker.HasUnityReference.Advise(lifetime,
+                b => IsVisible.Value = solutionTracker.IsUnityProject.HasTrueValue() || b);
         }
 
         public override string Kind => PencilsGroupKind.UnityPerformanceKind;
@@ -23,9 +26,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Feature.Services.Pencils
     [SolutionComponent]
     public class UnityPencilsFilterProvider : IPencilsFiltersProvider
     {
+        private readonly UnitySolutionTracker mySolutionTracker;
+        private readonly UnityReferencesTracker myReferencesTracker;
+
+        public UnityPencilsFilterProvider(UnitySolutionTracker solutionTracker, UnityReferencesTracker referencesTracker)
+        {
+            mySolutionTracker = solutionTracker;
+            myReferencesTracker = referencesTracker;
+        }
+
         public IEnumerable<IPencilsFilter> GetFilters(Lifetime lifetime, ISolution solution, ISettingsStore store)
         {
-            return new IPencilsFilter[] {new UnityPencilsFilter(lifetime, solution.GetComponent<UnitySolutionTracker>(), solution.GetComponent<UnityReferencesTracker>(), store)};
+            return new IPencilsFilter[] {new UnityPencilsFilter(lifetime, mySolutionTracker, myReferencesTracker, store)};
         }
     }
 }

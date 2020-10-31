@@ -1,19 +1,19 @@
-using JetBrains.Application.Settings.Implementation;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.CodeInsights;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
@@ -22,43 +22,45 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
     public class RiderEventHandlerDetector : EventHandlerDetector
     {
         private readonly AssetIndexingSupport myAssetIndexingSupport;
-        private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly UnitySolutionTracker mySolutionTracker;
-        private readonly ConnectionTracker myConnectionTracker;
+        private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
-        private readonly IElementIdProvider myProvider;
         private readonly AssetSerializationMode myAssetSerializationMode;
 
-        public RiderEventHandlerDetector(ISolution solution, CallGraphSwaExtensionProvider callGraphSwaExtensionProvider, 
-            SettingsStore settingsStore, AssetIndexingSupport assetIndexingSupport, PerformanceCriticalCodeCallGraphMarksProvider marksProvider,UnityEventsElementContainer unityEventsElementContainer,
-            UnityCodeInsightProvider codeInsightProvider, UnityUsagesCodeVisionProvider usagesCodeVisionProvider, DeferredCacheController deferredCacheController,
-            UnitySolutionTracker solutionTracker, ConnectionTracker connectionTracker,
-            IconHost iconHost, AssetSerializationMode assetSerializationMode, IElementIdProvider provider)
-            : base(solution, settingsStore, callGraphSwaExtensionProvider, unityEventsElementContainer, marksProvider, provider)
+        public RiderEventHandlerDetector(ISolution solution,
+                                         IApplicationWideContextBoundSettingStore settingsStore,
+                                         AssetIndexingSupport assetIndexingSupport,
+                                         UnityEventsElementContainer unityEventsElementContainer,
+                                         UnityCodeInsightProvider codeInsightProvider,
+                                         UnityUsagesCodeVisionProvider usagesCodeVisionProvider,
+                                         DeferredCacheController deferredCacheController,
+                                         UnitySolutionTracker solutionTracker,
+                                         BackendUnityHost backendUnityHost,
+                                         IconHost iconHost, AssetSerializationMode assetSerializationMode,
+                                         PerformanceCriticalContextProvider contextProvider)
+            : base(solution, settingsStore, unityEventsElementContainer, contextProvider)
         {
             myAssetIndexingSupport = assetIndexingSupport;
-            myUnityEventsElementContainer = unityEventsElementContainer;
             myCodeInsightProvider = codeInsightProvider;
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
             myDeferredCacheController = deferredCacheController;
             mySolutionTracker = solutionTracker;
-            myConnectionTracker = connectionTracker;
+            myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
-            myProvider = provider;
             myAssetSerializationMode = assetSerializationMode;
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            DaemonProcessKind kind)
+                                                DaemonProcessKind kind)
         {
-            var iconId = element.HasHotIcon(CallGraphSwaExtensionProvider, Settings, MarksProvider, kind, myProvider)
+            var iconId = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
-            
-            if (RiderIconProviderUtil.IsCodeVisionEnabled(Settings, myCodeInsightProvider.ProviderId,
+
+            if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
             {
                 if (!useFallback)
@@ -71,21 +73,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 {
                     if (myDeferredCacheController.IsProcessingFiles())
                         iconModel = myIconHost.Transform(CodeInsightsThemedIcons.InsightWait.Id);
-                    
+
                     if (!myDeferredCacheController.CompletedOnce.Value)
                         tooltip = "Usages in assets are not available during asset indexing";
 
                 }
-                
+
                 if (!myAssetIndexingSupport.IsEnabled.Value || !myDeferredCacheController.CompletedOnce.Value|| !myAssetSerializationMode.IsForceText)
                 {
                     myCodeInsightProvider.AddHighlighting(consumer, element, element.DeclaredElement, text,
                         tooltip, text, iconModel, GetActions(element),
-                        RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myConnectionTracker));
+                        RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
                 }
                 else
                 {
-                    var count = myUnityEventsElementContainer.GetAssetUsagesCount(element.DeclaredElement, out var estimate);
+                    var count = UnityEventsElementContainer.GetAssetUsagesCount(element.DeclaredElement, out var estimate);
                     myUsagesCodeVisionProvider.AddHighlighting(consumer, element, element.DeclaredElement, count,
                         "Click to view usages in assets", "Assets usages",estimate, iconModel);
                 }

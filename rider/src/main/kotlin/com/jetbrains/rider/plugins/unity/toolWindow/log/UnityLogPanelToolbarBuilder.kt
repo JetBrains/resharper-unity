@@ -2,10 +2,11 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.*
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventMode
-import com.jetbrains.rider.plugins.unity.editorPlugin.model.RdLogEventType
+import com.jetbrains.rider.model.unity.LogEventMode
+import com.jetbrains.rider.model.unity.LogEventType
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
 import com.jetbrains.rider.ui.RiderAction
+import icons.UnityIcons
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
@@ -23,7 +24,7 @@ object UnityLogPanelToolbarBuilder {
     }
 
     fun createLeftToolbar(model: UnityLogPanelModel): JPanel {
-        fun createType(type: RdLogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
+        fun createType(type: LogEventType) = object : ToggleAction("Show/Hide ${type}s", "", type.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.typeFilters.getShouldBeShown(type)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.typeFilters.setShouldBeShown(type, value)
 
@@ -36,7 +37,7 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createMode(mode: RdLogEventMode) = object : ToggleAction("Show/Hide '$mode' mode", "", mode.getIcon()) {
+        fun createMode(mode: LogEventMode) = object : ToggleAction("Show/Hide '$mode' mode", "", mode.getIcon()) {
             override fun isSelected(e: AnActionEvent) = model.modeFilters.getShouldBeShown(mode)
             override fun setSelected(e: AnActionEvent, value: Boolean) = model.modeFilters.setShouldBeShown(mode, value)
 
@@ -49,7 +50,7 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun collapseAll() = object : ToggleAction("Collapse similar items", "", AllIcons.Actions.Collapseall) {
+        fun collapseAll() = object : ToggleAction("Collapse Similar Items", "", AllIcons.Actions.Collapseall) {
             override fun isSelected(e: AnActionEvent) = model.mergeSimilarItems.value
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.mergeSimilarItems.set(value)
@@ -64,45 +65,29 @@ object UnityLogPanelToolbarBuilder {
             }
         }
 
-        fun createBeforePlay() = object : ToggleAction("Show/Hide messages before last Play", "", null) {
+        fun createBeforePlay() = object : ToggleAction("Messages Before Last Play in Unity", "", UnityIcons.LogView.FilterBeforePlay) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforePlay()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforePlay(value)
             }
-
-            override fun update(e: AnActionEvent) {
-                if (isSelected(e))
-                    e.presentation.text = "Hide messages before last Play"
-                else
-                    e.presentation.text = "Show messages before last Play"
-                super.update(e)
-            }
         }
 
-        fun createBeforeInit() = object : ToggleAction("Show/Hide messages before last [InitializeOnLoad] execution", "", null) {
+        fun createBeforeInit() = object : ToggleAction("Messages Before Last Domain Reload", "",  UnityIcons.LogView.FilterBeforeRefresh) {
             override fun isSelected(e: AnActionEvent) = model.timeFilters.getShouldBeShownBeforeInit()
             override fun setSelected(e: AnActionEvent, value: Boolean) {
                 model.timeFilters.setShowBeforeLastBuild(value)
             }
-
-            override fun update(e: AnActionEvent) {
-                if (isSelected(e))
-                    e.presentation.text = "Hide messages before last [InitializeOnLoad] execution"
-                else
-                    e.presentation.text = "Show messages before last [InitializeOnLoad] execution"
-                super.update(e)
-            }
         }
 
         val actionGroup = DefaultActionGroup().apply {
-            addSeparator("Mode filters")
-            add(createMode(RdLogEventMode.Edit))
-            add(createMode(RdLogEventMode.Play))
-            addSeparator("Type filters")
-            add(createType(RdLogEventType.Error))
-            add(createType(RdLogEventType.Warning))
-            add(createType(RdLogEventType.Message))
-            addSeparator("Time filters")
+            addSeparator("Mode Filters")
+            add(createMode(LogEventMode.Edit))
+            add(createMode(LogEventMode.Play))
+            addSeparator("Type Filters")
+            add(createType(LogEventType.Error))
+            add(createType(LogEventType.Warning))
+            add(createType(LogEventType.Message))
+            addSeparator("Time Filters")
             add(createBeforePlay())
             add(createBeforeInit())
             addSeparator("Other")

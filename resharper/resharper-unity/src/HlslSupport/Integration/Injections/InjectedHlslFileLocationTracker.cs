@@ -52,6 +52,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.HlslSupport.Integration.Injections
             return new HashSet<InjectedHlslLocationInfo>(injections);
         }
 
+        public bool Exists(CppFileLocation cppFileLocation)
+        {
+            return Exists(cppFileLocation.GetRandomSourceFile(mySolution), cppFileLocation);
+        }
+        
         protected override bool Exists(IPsiSourceFile sourceFile, CppFileLocation cppFileLocation)
         {
             if (Map.TryGetValue(sourceFile, out var result)

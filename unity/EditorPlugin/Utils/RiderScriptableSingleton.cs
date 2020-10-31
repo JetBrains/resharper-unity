@@ -8,6 +8,7 @@ namespace JetBrains.Rider.Unity.Editor.Utils
   {
     [SerializeField] 
     private bool myCsprojProcessedOnce;
+    
     public bool CsprojProcessedOnce
     {
       get => myCsprojProcessedOnce;

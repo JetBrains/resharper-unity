@@ -27,7 +27,11 @@
       <argument>x: null, y: null =&gt; false</argument>
     </attribute>
   </member>
-
+  <member name="M:UnityEngine.Object.op_Implicit(UnityEngine.Object)~System.Boolean">
+    <attribute ctor="M:JetBrains.Annotations.ContractAnnotationAttribute.#ctor(System.String)">
+      <argument>null =&gt; false;</argument>
+    </attribute>
+  </member>
 
   <!-- UnityEngine.Camera -->
   <member name="P:UnityEngine.Camera.main">

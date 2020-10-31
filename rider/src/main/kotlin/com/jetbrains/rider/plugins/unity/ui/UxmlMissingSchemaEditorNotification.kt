@@ -19,7 +19,7 @@ import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.toolWindow.UnityToolWindowFactory
@@ -93,11 +93,9 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
                         panel.text("Starting Unity. Please wait.")
 
                         val lifetimeDefinition = project.defineNestedLifetime()
-                        project.solution.rdUnityModel.sessionInitialized.advise(lifetimeDefinition.lifetime) {
-                            if (project.isConnectedToEditor()) {
-                                generateSchema(project, panel, link)
-                                lifetimeDefinition.terminate()
-                            }
+                        project.solution.frontendBackendModel.unityEditorConnected.whenTrue(lifetimeDefinition.lifetime) {
+                            generateSchema(project, panel, link)
+                            lifetimeDefinition.terminate()
                         }
 
                         link?.isVisible = false
@@ -116,7 +114,7 @@ class UxmlMissingSchemaEditorNotification: EditorNotifications.Provider<EditorNo
         panel.text("Generating. Please wait.")
         link?.isVisible = false
 
-        project.solution.rdUnityModel.generateUIElementsSchema.start(project.lifetime, Unit).result.adviseOnce(project.lifetime) {
+        project.solution.frontendBackendModel.generateUIElementsSchema.start(project.lifetime, Unit).result.adviseOnce(project.lifetime) {
             if (it is RdTaskResult.Success && it.value) {
                 EditorNotifications.getInstance(project).updateAllNotifications()
 

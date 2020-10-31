@@ -1,7 +1,8 @@
+using JetBrains.Application.UI.PopupLayout;
 using JetBrains.Application.UI.Tooltips;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
@@ -14,15 +15,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
     {
         public override bool Navigate(ISolution solution, IDeclaredElementPointer<IDeclaredElement> pointer, LocalReference location)
         {
-            if (!solution.GetComponent<ConnectionTracker>().IsConnectionEstablished())
+            if (!solution.GetComponent<BackendUnityHost>().IsConnectionEstablished())
             {
-                
                 var textControl = solution.GetComponent<TextControlManager>().LastFocusedTextControl.Value;
                 if (textControl == null)
                     return true;
 
                 var tooltipManager = solution.GetComponent<ITooltipManager>();
-                tooltipManager.Show("Start the Unity Editor to view results", lifetime => textControl.PopupWindowContextFactory.CreatePopupWindowContext(lifetime));
+                tooltipManager.Show("Start the Unity Editor to view results",
+                    new PopupWindowContextSource(lifetime =>
+                        textControl.PopupWindowContextFactory.CreatePopupWindowContext(lifetime)));
                 return true;
             }
 
@@ -30,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             var declaredElement = pointer.FindDeclaredElement();
             if (declaredElement == null)
                 return true;
-            
+
             findRequestCreator.CreateRequestToUnity(declaredElement, location, true);
             return false;
         }

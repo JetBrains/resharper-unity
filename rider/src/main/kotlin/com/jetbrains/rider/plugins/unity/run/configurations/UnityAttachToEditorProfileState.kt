@@ -15,7 +15,7 @@ import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.isUnityProject
-import com.jetbrains.rider.model.rdUnityModel
+import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
@@ -44,9 +44,9 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                             logger.info("Pass value to backend, which will push Unity to enter play mode.")
                             lt.bracket(opening = {
                                 // pass value to backend, which will push Unity to enter play mode.
-                                executionEnvironment.project.solution.rdUnityModel.play.set(true)
+                                executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(true)
                             }, terminationAction = {
-                                executionEnvironment.project.solution.rdUnityModel.play.set(false)
+                                executionEnvironment.project.solution.frontendBackendModel.playControls.play.set(false)
                             })
                         }
                     }
@@ -73,7 +73,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
             if (!remoteConfiguration.updatePidAndPort()) {
                 logger.trace("Do not found Unity, starting new Unity Editor")
 
-                val model = project.solution.rdUnityModel
+                val model = project.solution.frontendBackendModel
                 if (UnityInstallationFinder.getInstance(project).getApplicationExecutablePath() == null ||
                     model.hasUnityReference.hasTrueValue && !project.isUnityProject()) {
                     throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")

@@ -18,5 +18,6 @@
     <PackageReference Include="JetBrains.Unity.Libs.Ref.5.5.0f3" Version="2020.6.10" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>
+  <Import Project="Model.targets" />
   <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props')" />
 </Project>

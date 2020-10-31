@@ -4,9 +4,8 @@ plugins {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
-    compile name: "rd-gen"
-    compile name: "rider-model"
+    implementation name: "rd-gen"
+    implementation name: "rider-model"
 }
 
 repositories {

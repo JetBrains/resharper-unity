@@ -4,9 +4,11 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
+using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Settings
@@ -16,11 +18,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
     {
         private readonly ISettingsSchema mySettingsSchema;
         private readonly ILogger myLogger;
+        private readonly UnitySolutionTracker myUnitySolutionTracker;
 
-        public NamespaceProviderProjectSettingsProvider(ISettingsSchema settingsSchema, ILogger logger)
+        public NamespaceProviderProjectSettingsProvider(ISettingsSchema settingsSchema, ILogger logger, UnitySolutionTracker unitySolutionTracker)
         {
             mySettingsSchema = settingsSchema;
             myLogger = logger;
+            myUnitySolutionTracker = unitySolutionTracker;
         }
 
         // The reasoning behind this is fairly simple:
@@ -63,6 +67,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
         public void InitialiseProjectSettings(Lifetime projectLifetime, IProject project,
                                               ISettingsStorageMountPoint mountPoint)
         {
+            if (!myUnitySolutionTracker.IsUnityProject.HasTrueValue())
+                return;
+            
             ExcludeFolderFromNamespace(mountPoint, "Assets");
             ExcludeFolderFromNamespace(mountPoint, @"Assets\Scripts");
 

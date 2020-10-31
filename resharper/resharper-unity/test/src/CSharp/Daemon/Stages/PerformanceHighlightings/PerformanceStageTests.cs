@@ -22,6 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.Stages.Performan
         [Test] public void DisabledWarningTest() {DoNamedTest();}
         [Test] public void LambdasTest() {DoNamedTest();}
         [Test] public void LocalFunctionsTest() {DoNamedTest();}
+        [Test] public void CommentRootsTest() { DoNamedTest(); }
         [Test] public void AttributesTest() {DoNamedTest();}
         [Test] public void EditorClassesTest() {DoNamedTest();}
         protected override bool HighlightingPredicate(IHighlighting highlighting, IPsiSourceFile file, IContextBoundSettingsStore settingsStore)

@@ -1,48 +1,57 @@
-﻿using JetBrains.Application.Settings;
+﻿using System;
+using System.Linq.Expressions;
+using JetBrains.Application.Settings;
 using JetBrains.Application.Threading;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DataContext;
+using JetBrains.Reflection;
+using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
+using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Rider.Model.Unity.FrontendBackend;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
 {
     [SolutionComponent]
     public class UnitySettingsSynchronizer
     {
-        public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, UnityHost host,
-                                         ISettingsStore settingsStore)
+        public UnitySettingsSynchronizer(Lifetime lifetime, ISolution solution, FrontendBackendHost host,
+                                         IApplicationWideContextBoundSettingStore settingsStore)
         {
-            var boundStore = settingsStore.BindToContextLive(lifetime, ContextRange.Smart(solution.ToDataContext()));
-            var entry = boundStore.Schema.GetScalarEntry((UnitySettings s) => s.EnableShaderLabHippieCompletion);
-            boundStore.GetValueProperty<bool>(lifetime, entry, null).Change.Advise_HasNew(lifetime, args =>
-            {
-                solution.Locks.ExecuteOrQueueEx(lifetime, "EnableShaderLabHippieCompletion", () =>
-                    host.PerformModelAction(rd => rd.EnableShaderLabHippieCompletion.Value = args.New));
-            });
+            var boundStore = settingsStore.BoundSettingsStore;
+            BindSettingToProperty(lifetime, solution, host, boundStore,
+                (UnitySettings s) => s.EnableShaderLabHippieCompletion,
+                (model, args) => model.BackendSettings.EnableShaderLabHippieCompletion.Value = args.New);
 
-            var useYamlMergeSetting = boundStore.Schema.GetScalarEntry((UnitySettings s) => s.UseUnityYamlMerge);
-            boundStore.GetValueProperty<bool>(lifetime, useYamlMergeSetting, null).Change.Advise_HasNew(lifetime, args =>
-            {
-                solution.Locks.ExecuteOrQueueEx(lifetime, "UseUnityYamlMerge", () =>
-                    host.PerformModelAction(rd => rd.UseUnityYamlMerge.Value = args.New));
-            });
+            BindSettingToProperty(lifetime, solution, host, boundStore,
+                (UnitySettings s) => s.UseUnityYamlMerge,
+                (model, args) => model.BackendSettings.UseUnityYamlMerge.Value = args.New);
+            BindSettingToProperty(lifetime, solution, host, boundStore,
+                (UnitySettings s) => s.MergeParameters,
+                (model, args) => model.BackendSettings.MergeParameters.Value = args.New);
 
-            var mergeParametersSetting = boundStore.Schema.GetScalarEntry((UnitySettings s) => s.MergeParameters);
-            boundStore.GetValueProperty<string>(lifetime, mergeParametersSetting, null).Change.Advise_HasNew(lifetime, args =>
-            {
-                solution.Locks.ExecuteOrQueueEx(lifetime, "MergeParameters", () =>
-                    host.PerformModelAction(rd => rd.MergeParameters.Value = args.New));
-            });
+            BindSettingToProperty(lifetime, solution, host, boundStore,
+                (UnitySettings s) => s.EnableDebuggerExtensions,
+                (model, args) => model.BackendSettings.EnableDebuggerExtensions.Value = args.New);
+        }
 
-            var debuggerExtensionsEnabledSetting =
-                boundStore.Schema.GetScalarEntry((UnitySettings s) => s.EnableDebuggerExtensions);
-            boundStore.GetValueProperty<bool>(lifetime, debuggerExtensionsEnabledSetting, null).Change.Advise_HasNew(lifetime, args =>
-            {
-                solution.Locks.ExecuteOrQueueEx(lifetime, "DebuggerExtensionsEnabled", () =>
-                    host.PerformModelAction(rd => rd.BackendSettings.EnableDebuggerExtensions.Value = args.New));
-            });
+        private static void BindSettingToProperty<TKeyClass, TEntryMemberType>(
+            Lifetime lifetime, ISolution solution, FrontendBackendHost frontendBackendHost,
+            IContextBoundSettingsStoreLive boundStore,
+            Expression<Func<TKeyClass, TEntryMemberType>> entry,
+            Action<FrontendBackendModel, PropertyChangedEventArgs<TEntryMemberType>> action)
+        {
+            var name = entry.GetInstanceMemberName();
+            var setting = boundStore.Schema.GetScalarEntry(entry);
+            boundStore.GetValueProperty<TEntryMemberType>(lifetime, setting, null).Change.Advise_HasNew(lifetime,
+                args =>
+                {
+                    solution.Locks.ExecuteOrQueueEx(lifetime, name, () =>
+                    {
+                        frontendBackendHost.Do(m => action(m, args));
+                    });
+                });
         }
     }
 }

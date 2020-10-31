@@ -1,5 +1,3 @@
-import java.net.URI
-
 // Note: The `buildscript` block affects the dependencies ONLY for the build scripts of the buildSrc projects
 // (i.e. buildSrc/build.gradle.kts et al)
 // Use top level `repositories` and `dependencies` for the buildSrc project itself. Also note that the dependencies of
@@ -11,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    "compile"("gradle.plugin.org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "0.4.21")
+    implementation("org.jetbrains.intellij.plugins", "gradle-intellij-plugin", "0.5.1")
 }
 
 plugins {

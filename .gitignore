@@ -25,6 +25,7 @@
 # See https://youtrack.jetbrains.com/issue/IDEA-55923 for some more information
 .gradle/
 rider/.idea/**/libraries
+rider/.idea/**/jarRepositories.xml
 
 # NOTE: We normally include *.iml for JetBrains IDEs, but Gradle based projects auto generate
 # this on import, so we can happily ignore them. Don't do this for the Rider controlled project!
@@ -34,8 +35,7 @@ rider/.idea/**/compiler.xml
 
 rider/dependencies
 
-# This file is copied from common/dictionaries
-rider/src/main/resources/com/jetbrains/rider/plugins/unity/spellchecker/
+rider/src/main/gen/
 
 
 # C# solutions (Rider excludes)

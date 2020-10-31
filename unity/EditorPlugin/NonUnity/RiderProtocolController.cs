@@ -34,15 +34,15 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
   }
   
 //  [Serializable]
-  class ProtocolInstance
+  struct ProtocolInstance
   {
-    public int Port;
     public string SolutionName;
+    public int Port;
 
-    public ProtocolInstance(int port, string solutionName)
+    public ProtocolInstance(string solutionName, int port)
     {
-      Port = port;
       SolutionName = solutionName;
+      Port = port;
     }
 
     public static string ToJson(List<ProtocolInstance> connections)
@@ -51,7 +51,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       var sb = new StringBuilder("[");
 
       sb.Append(connections
-        .Select(connection=> "{" + $"\"Port\":{connection.Port},\"SolutionName\":\"{connection.SolutionName}\"" + "}")
+        .Select(connection=> "{" + $"\"Port\":{connection.Port},\"SolutionName\":\"{connection.SolutionName}\",\"ProtocolGuid\":\"{ProtocolCompatibility.ProtocolGuid}\"" + "}")
         .Aggregate((a, b) => a + "," + b));
 
       sb.Append("]");

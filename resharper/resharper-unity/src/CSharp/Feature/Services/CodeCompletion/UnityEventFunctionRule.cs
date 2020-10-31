@@ -21,6 +21,7 @@ using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
+using JetBrains.ReSharper.Psi.CSharp.Conversions;
 using JetBrains.ReSharper.Psi.CSharp.Impl;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -88,7 +89,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             var actualVersion = unityVersionApi.GetActualVersion(project);
             var thisMethods = typeElement.Methods.ToList();
             var inheritedMethods = baseTypeElement.GetAllClassMembers<IMethod>().ToList();
-
+            var shouldFunctionGenerateMethod = ShouldGenerateMethod(context);
+            var knownTypesCache = context.BasicContext.Solution.GetComponent<KnownTypesCache>();
+            
             var addedFunctions = new HashSet<string>();
 
             foreach (var function in unityApi.GetEventFunctions(typeElement, actualVersion))
@@ -102,7 +105,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 if (addedFunctions.Contains(function.Name))
                     continue;
 
-                var item = CreateMethodItem(context, function, classDeclaration, hasReturnType, accessRights, generationContext);
+                if (HasDifferentParameterLists(function, context, knownTypesCache))
+                    continue;
+
+                var item = CreateMethodItem(context, function, classDeclaration, hasReturnType, shouldFunctionGenerateMethod, accessRights, generationContext);
                 if (item == null) continue;
 
                 item = SetRelevanceSortPriority(item, function);
@@ -113,6 +119,49 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             }
 
             return true;
+        }
+
+        private static bool HasDifferentParameterLists(
+            [NotNull] UnityEventFunction function,
+            [NotNull] CSharpCodeCompletionContext context, 
+            [NotNull] KnownTypesCache knownTypesCache)
+        {
+            var unterminatedContext = context.UnterminatedContext;
+            var methodDeclaration = unterminatedContext.TreeNode?.GetContainingNode<IMethodDeclaration>();
+
+            if (methodDeclaration == null) return false;
+
+            var functionParameters = function.Parameters;
+            var currentMethodParameters = methodDeclaration.Params;
+            if (currentMethodParameters == null) return false;
+            
+            if (functionParameters.Length != currentMethodParameters.ParameterDeclarations.Count) return true;
+
+            var typeConversionRule = currentMethodParameters.GetTypeConversionRule();
+            var module = methodDeclaration.GetPsiModule();
+            for (var paramIndex = 0; paramIndex < functionParameters.Length; paramIndex++)
+            {
+                var functionParameter = functionParameters[paramIndex];
+                var currentMethodParameter = currentMethodParameters.ParameterDeclarations[paramIndex];
+
+                var conversion = typeConversionRule.ClassifyImplicitConversion(currentMethodParameter.Type, functionParameter.TypeSpec.AsIType(knownTypesCache, module));
+                if (conversion.Kind != ConversionKind.Identity) return true;
+            }
+            
+            return false;
+        }
+
+        private static bool ShouldGenerateMethod([NotNull] CSharpCodeCompletionContext context)
+        {
+            var unterminatedContext = context.UnterminatedContext;
+            var methodDeclaration = unterminatedContext.TreeNode?.GetContainingNode<IMethodDeclaration>();
+
+            if (methodDeclaration?.Body == null) return true;
+
+            if (!(methodDeclaration.GetContainingTypeDeclaration() is IClassLikeDeclaration))
+                return true;
+            
+            return false;
         }
 
         private bool HasAnyPartiallyMatchingExistingMethods(IEnumerable<IMethod> existingMethods,
@@ -180,8 +229,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
 
         private ILookupItem CreateMethodItem(CSharpCodeCompletionContext context,
                                              UnityEventFunction eventFunction, IClassLikeDeclaration declaration,
-                                             bool hasReturnType, AccessRights accessRights,
-                                             MemberGenerationContext generationContext)
+                                             bool hasReturnType, bool shouldGenerateMethod,
+                                             AccessRights accessRights, MemberGenerationContext generationContext)
         {
             if (CSharpLanguage.Instance == null)
                 return null;
@@ -236,8 +285,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
             // filter is applied. We can't make it a method based lookup item because the DeclaredElement isn't valid in
             // this situation - it's not a real method, and a DeclaredElementInfo would try to store a pointer to it,
             // and be unable to recreate it when it's needed.
-            var textualInfo = new UnityEventFunctionTextualInfo(generationContext.MemberReplaceRanges, text, text) {Ranges = context.CompletionRanges};
-
+            var textualInfo = new UnityEventFunctionTextualInfo(generationContext.MemberReplaceRanges, shouldGenerateMethod, text, text) {Ranges = context.CompletionRanges};
+            
             var lookupItem = LookupItemFactory.CreateLookupItem(textualInfo)
                 .WithPresentation(item =>
                 {
@@ -857,12 +906,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
     public class UnityEventFunctionTextualInfo : TextualInfo
     {
         public TextLookupRanges MemberReplaceRanges { get; }
+        public bool ShouldGenerateMethod { get; }
 
-        public UnityEventFunctionTextualInfo(TextLookupRanges memberReplaceRanges, [NotNull] string text,
-                                             [NotNull] string identity)
+        public UnityEventFunctionTextualInfo(
+            TextLookupRanges memberReplaceRanges, 
+            bool shouldGenerateMethod, 
+            [NotNull] string text,
+            [NotNull] string identity)
             : base(text, identity)
         {
             MemberReplaceRanges = memberReplaceRanges;
+            ShouldGenerateMethod = shouldGenerateMethod;
         }
     }
 }
