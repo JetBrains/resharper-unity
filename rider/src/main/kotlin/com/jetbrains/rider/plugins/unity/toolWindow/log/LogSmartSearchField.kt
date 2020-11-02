@@ -1,22 +1,17 @@
 package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.ui.SearchTextField
-import com.intellij.util.ui.JBUI
 import com.jetbrains.rider.ui.RiderUI
-import java.awt.Dimension
+import java.awt.Font
 import java.awt.event.KeyEvent
 
-class LogSmartSearchField() : SearchTextField(false) { //val viewModel: RiderNuGetFacade
+class LogSmartSearchField : SearchTextField(false) {
     init {
-        // TODO: consult aakinshin or grann when this inevitably breaks
-        RiderUI.setHeight(this, 25)
-        minimumSize = Dimension(JBUI.scale(100), minimumSize.height)
-
         font = RiderUI.BigFont
         textEditor.emptyText.isShowAboveCenter = true
 
-        RiderUI.overrideKeyStroke(textEditor, "shift ENTER", { transferFocusBackward() })
-        RiderUI.overrideKeyStroke(textEditor, "ENTER", { goToList() })
+        RiderUI.overrideKeyStroke(textEditor, "shift ENTER") { transferFocusBackward() }
+        RiderUI.overrideKeyStroke(textEditor, "ENTER") { goToList() }
     }
 
     /**

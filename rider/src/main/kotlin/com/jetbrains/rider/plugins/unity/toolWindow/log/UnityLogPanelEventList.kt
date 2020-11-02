@@ -2,6 +2,8 @@ package com.jetbrains.rider.plugins.unity.toolWindow.log
 
 import com.intellij.application.subscribe
 import com.intellij.ide.CopyProvider
+import com.intellij.ide.ui.UISettings
+import com.intellij.ide.ui.UISettingsListener
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformDataKeys
@@ -14,6 +16,7 @@ import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.pom.Navigatable
 import com.intellij.ui.TreeUIHelper
 import com.intellij.ui.components.JBList
+import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rdclient.util.idea.toVirtualFile
 import java.awt.Font
@@ -32,17 +35,26 @@ class UnityLogPanelEventList(lifetime: Lifetime) : JBList<LogPanelItem>(emptyLis
         emptyText.text = "Log is empty"
         TreeUIHelper.getInstance().installListSpeedSearch(this)
 
-        EditorColorsManager.TOPIC.subscribe(lifetime.createNestedDisposable(), EditorColorsListener { updateFont() })
+        val disposable = lifetime.createNestedDisposable()
+        EditorColorsManager.TOPIC.subscribe(disposable, EditorColorsListener { updateFont() })
+        UISettingsListener.TOPIC.subscribe(disposable, UISettingsListener { updateFont() })
+
         updateFont()
     }
 
     private fun updateFont() {
         val sc = EditorColorsManager.getInstance().globalScheme
-        font = Font(sc.consoleFontName, Font.PLAIN, sc.consoleFontSize)
+        font = if (UISettings.instance.presentationMode) {
+            Font(sc.consoleFontName, Font.PLAIN, UISettings.instance.presentationModeFontSize)
+        }
+        else {
+            Font(sc.consoleFontName, Font.PLAIN, sc.consoleFontSize)
+        }
+        emptyText.setFont(UIUtil.getLabelFont())
     }
 
-    fun getNavigatableForSelected(list: UnityLogPanelEventList, project: Project): Navigatable? {
-        val node = list.selectedValue ?: return null
+    fun getNavigatableForSelected(project: Project): Navigatable? {
+        val node = selectedValue ?: return null
 
         val match: MatchResult?
         var col = 0
