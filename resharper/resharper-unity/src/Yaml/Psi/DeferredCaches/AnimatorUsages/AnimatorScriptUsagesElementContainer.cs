@@ -13,6 +13,7 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
@@ -57,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile file, AssetDocument document)
         {
-            if (IsAnimatorStateMachineBehaviour(document)) return ExtractStateMachineBehaviour(document);
+            if (IsAnimatorStateMachineBehaviour(document)) return ExtractStateMachineBehaviour(document, file);
             var animatorExtractor = new AnimatorExtractor(file, document);
             if (IsAnimatorStateMachine(document)) return animatorExtractor.TryExtractStateMachine();
             return IsAnimatorState(document) ? animatorExtractor.TryExtractUsage() : null;
@@ -304,17 +305,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             return AssetUtils.IsAnimatorStateMachine(document.Buffer);
         }
 
-        private static AnimatorScript? ExtractStateMachineBehaviour([NotNull] AssetDocument document)
+        private static AnimatorScript? ExtractStateMachineBehaviour([NotNull] AssetDocument document,
+                                                                    [NotNull] IPsiSourceFile file)
         {
             var anchorRaw = AssetUtils.GetAnchorFromBuffer(document.Buffer);
             if (!anchorRaw.HasValue) return null;
-            var entries = document.Document.FindRootBlockMapEntries()?.Entries;
-            if (entries == null) return null;
-            var (_, guid) =
-                (from IBlockMappingEntry entry in entries
-                where entry.Key.MatchesPlainScalarText("m_Script") && entry.Content != null
-                select entry.Content.Value.ExtractAnchorAndGuid()).FirstOrDefault();
-            return guid != null ? new AnimatorScript(guid.Value, anchorRaw.Value) : (AnimatorScript?)null;
+            var guid = (document.Document.FindRootBlockMapEntries()?.Entries)?
+                .Cast<IBlockMappingEntry>()
+                .Where(entry => entry != null && entry.Key.MatchesPlainScalarText("m_Script") && entry.Content != null)
+                .Select(entry => entry.Content.Value.ToHierarchyReference(file) as ExternalReference?)
+                .FirstOrDefault()?
+                .ExternalAssetGuid;
+            return guid != null ? new AnimatorScript(guid.Value, anchorRaw.Value) : (AnimatorScript?) null;
         }
 
         private static bool IsAnimatorStateMachineBehaviour([NotNull] AssetDocument document)
