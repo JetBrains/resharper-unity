@@ -24,6 +24,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Add inspection for correct constraint on type parameter of `SharedStatic` for Burst context ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
 - Add inspections for correct usage of `SharedStatic` in Burst code ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
 - Add option to disable Burst analysis ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Use Unity terminology to describe event functions and serialised fields in identifier tooltips and inspections ([#1914](https://github.com/JetBrains/resharper-unity/pull/1914))
 - Rider: Highlight methods from a Burst compiled context with line marker and Code Vision links ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
 - Rider: Execute both edit and play mode tests in the same run ([#1894](https://github.com/JetBrains/resharper-unity/pull/1894))
 - Rider: Run Unity menu item handlers via gutter icon ([RIDER-35911](https://youtrack.jetbrains.com/issue/RIDER-35911), [#1857](https://github.com/JetBrains/resharper-unity/pull/1857))
