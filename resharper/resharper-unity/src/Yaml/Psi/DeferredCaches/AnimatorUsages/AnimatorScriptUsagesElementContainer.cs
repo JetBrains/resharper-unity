@@ -50,9 +50,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             return new AnimatorUsagesDataElement();
         }
 
+        public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
+        {
+            return currentAssetSourceFile.GetLocation().IsControllerFile();
+        }
+
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile file, AssetDocument document)
         {
-            if (!file.GetLocation().IsControllerFile()) return null;
             if (IsAnimatorStateMachineBehaviour(document)) return ExtractStateMachineBehaviour(document);
             var animatorExtractor = new AnimatorExtractor(file, document);
             if (IsAnimatorStateMachine(document)) return animatorExtractor.TryExtractStateMachine();

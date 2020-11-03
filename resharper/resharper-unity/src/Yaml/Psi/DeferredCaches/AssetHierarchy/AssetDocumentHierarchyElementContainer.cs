@@ -51,6 +51,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarc
             return new AssetDocumentHierarchyElement();
         }
 
+        public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
+        {
+            return true;
+        }
+
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);

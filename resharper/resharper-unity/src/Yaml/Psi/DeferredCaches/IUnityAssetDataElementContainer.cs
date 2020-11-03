@@ -16,6 +16,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
         [NotNull]
         IUnityAssetDataElement CreateDataElement([NotNull] IPsiSourceFile sourceFile);
 
+        bool IsApplicable([NotNull] IPsiSourceFile currentAssetSourceFile);
+        
         [CanBeNull]
         object Build([NotNull] SeldomInterruptChecker checker,
                      [NotNull] IPsiSourceFile currentAssetSourceFile,

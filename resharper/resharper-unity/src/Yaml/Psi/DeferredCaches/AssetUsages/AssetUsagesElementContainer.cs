@@ -37,11 +37,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             return new AssetUsagesDataElement();
         }
 
+        public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
+        {
+            return !currentAssetSourceFile.GetLocation().IsControllerFile();
+        }
+
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             // TODO: deps for other assets
-            if (!currentAssetSourceFile.GetLocation().IsControllerFile() &&
-                AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
+            if (AssetUtils.IsMonoBehaviourDocument(assetDocument.Buffer))
             {                
                 var anchorRaw = AssetUtils.GetAnchorFromBuffer(assetDocument.Buffer);
                 bool stripped = AssetUtils.IsStripped(assetDocument.Buffer);
