@@ -17,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         }
 
         [CanBeNull]
-        public static IHierarchyReference ToHierarchyReference([CanBeNull] this INode node, [NotNull] IPsiSourceFile assetSourceFile)
+        public static IHierarchyReference ToHierarchyReference([CanBeNull] this INode node, IPsiSourceFile assetSourceFile)
         {
             var (anchor, guid) = node.ExtractAnchorAndGuid();
             if (anchor is null || anchor == 0) return LocalReference.Null;
