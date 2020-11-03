@@ -44,14 +44,14 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
     private TreeViewItem CreateSceneSubTree()
     {
       var scenes = new FindUsagePathElement(0) {id = 1, displayName = "Scenes"};
-      CreateSubTree(scenes, myState.SceneElements.ToArray(), 500000);
+      CreateSubTree(scenes, myState.SceneElements.ToArray(), 50_000);
       return scenes;
     }
     
     private TreeViewItem CreatePrefabSubTree()
     {
       var prefabs = new FindUsagePathElement(1) {id = 2, displayName = "Prefabs"};
-      CreateSubTree(prefabs, myState.PrefabElements.ToArray(), 1_000_000_000);
+      CreateSubTree(prefabs, myState.PrefabElements.ToArray(), 100_000);
       return prefabs;
     }
     
@@ -59,7 +59,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
     {
       var scriptableObject = new FindUsagePathElement(2) {id = 3, displayName = "Scriptable Objects"};
 
-      var startId = 2_000_000_000;
+      var startId = 150_000;
       foreach (var usageElement in myState.ScriptableObjectElements.ToArray())
       {
         var id = startId++;
@@ -78,7 +78,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
     private TreeViewItem CreateAnimatorSubTree()
     {
         var animator = new FindUsagePathElement(3) {id = 4, displayName = "Animator"};
-        var startId = 2_050_000_000;
+        var startId = 200_000;
         foreach (var animatorElement in myState.AnimatorElements.ToArray())
         {
             CreateAnimatorSubTree(animator, animatorElement, ref startId);
