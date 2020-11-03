@@ -37,8 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public override string GetRelatedFilePresentation()
         {
-            var filePathWithoutExtension = SourceFile?.Name.SubstringBeforeLast(".");
-            return filePathWithoutExtension?.SubstringAfterLast("/");
+            return SourceFile.NotNull().Name.SubstringBeforeLast(".")?.SubstringAfterLast("/");
         }
         
         public override bool Navigate([NotNull] ISolution solution,
