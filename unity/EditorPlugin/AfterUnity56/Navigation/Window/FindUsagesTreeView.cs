@@ -87,7 +87,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
     }
 
     private void CreateAnimatorSubTree([NotNull] FindUsagePathElement findUsagePathElement,
-                                              [NotNull] AnimatorElement animatorElement, ref int id)
+                                       [NotNull] AnimatorElement animatorElement, ref int id)
     {
         var currentParent = findUsagePathElement;
         for (int i = 0, pathElementsLength = animatorElement.PathElements.Length; i < pathElementsLength; i++)
