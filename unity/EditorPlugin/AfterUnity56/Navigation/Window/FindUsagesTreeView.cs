@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using JetBrains.Annotations;
-using JetBrains.Rider.Model.Unity.BackendUnity;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -80,13 +78,10 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
     private TreeViewItem CreateAnimatorSubTree()
     {
         var animator = new FindUsagePathElement(3) {id = 4, displayName = "Animator"};
-        // TODO: Investigate
         var startId = 2_050_000_000;
         foreach (var animatorElement in myState.AnimatorElements.ToArray())
         {
-            // var id = startId++;
             CreateAnimatorSubTree(animator, animatorElement, ref startId);
-            // animator.AddChild(findResultItems[id]);
         }
         return animator;
     }
@@ -105,16 +100,8 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
             };
             findResultItems[id] = findUsagesTreeViewItem;
             myAnimatorItemIdToPathElementsCount[id] = i + 1;
-                currentParent.AddChild(findUsagesTreeViewItem);
+            currentParent.AddChild(findUsagesTreeViewItem);
             currentParent = findUsagesTreeViewItem;
-            //
-            // var parentId = id;
-            // findResultItems[id] = new FindUsagesTreeViewItem(id, animatorElement)
-            // {
-            //     id = parentId,
-            //     displayName = pathElement,
-            //     icon = (Texture2D) EditorGUIUtility.IconContent(animatorElement.TerminalNodeImage).image
-            // };
             id++;
         }
     }
