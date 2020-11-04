@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
+using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
@@ -13,11 +14,9 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
-using JetBrains.Util.dataStructures;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages
 {
@@ -71,33 +70,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             if (!(element is AnimatorUsagesDataElement animatorElement)) return;
             var usagesCount = myUsagesCount;
             var usageToSourceFiles = myUsageToSourceFiles;
-            foreach (var script in animatorElement.Scripts)
+            foreach (var (guid, anchors) in animatorElement.GuidToAnchors)
             {
-                usagesCount.Remove(script.Guid);
-                usageToSourceFiles.Remove(script.Guid, currentAssetSourceFile);
+                if (anchors is null) continue;
+                for (var i = 0; i < anchors.Count; i++)
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    usagesCount.Remove(guid);
+                usageToSourceFiles.Remove(guid, currentAssetSourceFile);
             }
+
             myPointers.Remove(currentAssetSourceFile);
         }
-        
+
         public void Merge(IPsiSourceFile currentAssetSourceFile,
                           AssetDocumentHierarchyElement assetDocumentHierarchyElement,
                           IUnityAssetDataElementPointer unityAssetDataElementPointer,
                           IUnityAssetDataElement unityAssetDataElement)
         {
             myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
-            if (!(unityAssetDataElement is AnimatorUsagesDataElement animatorDataElement)) return;
-            AddGuidToUsagesEntriesFor(animatorDataElement);
-            foreach (var script in animatorDataElement.Scripts)
+            if (!(unityAssetDataElement is AnimatorUsagesDataElement animatorElement)) return;
+            foreach (var (guid, anchors) in animatorElement.GuidToAnchors)
             {
-                myUsagesCount.Add(script.Guid);
-                myUsageToSourceFiles.Add(script.Guid, currentAssetSourceFile);
+                if (anchors is null) continue;
+                // ReSharper disable once AssignNullToNotNullAttribute
+                myUsagesCount.Add(guid, anchors.Count);
+                myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
             }
         }
 
         public string Id => nameof(AnimatorScriptUsagesElementContainer);
 
         public int Order => 0;
-        
+
         public void Invalidate()
         {
             myUsageToSourceFiles.Clear();
@@ -115,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                     : new LocalList<IPsiSourceFile>();
             }
         }
-        
+
         public int GetScriptUsagesCount(IClassLikeDeclaration classLikeDeclaration, out bool estimatedResult)
         {
             AssertShellLocks();
@@ -127,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
             return guid != null ? myUsagesCount.GetCount(guid.Value) : 0;
         }
-        
+
         public IEnumerable<IScriptUsage> GetScriptUsagesFor(IPsiSourceFile sourceFile,
                                                             ITypeElement declaredElement)
         {
@@ -157,70 +161,69 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         private static IEnumerable<IScriptUsage> GetScriptUsagesFor([NotNull] AnimatorUsagesDataElement element,
                                                                     Guid guid)
         {
-            var foundStateUsages = element.GuidToStateUsages.TryGetValue(guid, out var stateUsages);
-            var foundStateMachineUsages = element.GuidToStateMachineUsages.TryGetValue(guid, out var stateMachineUsages);
-            if (!foundStateUsages && !foundStateMachineUsages) return Enumerable.Empty<IScriptUsage>();
-                return ConcatUsages(stateUsages, stateMachineUsages);
-            
+            var stateUsages = GetUsages(element, guid, element.ScriptAnchorToStateUsages);
+            var stateMachineUsages = GetUsages(element, guid, element.ScriptAnchorToStateMachineUsages);
+            return ConcatUsages(stateUsages, stateMachineUsages);
         }
 
         [CanBeNull]
         public string GetStateMachinePathFor(LocalReference location)
         {
             AssertShellLocks();
-            var animatorElement = GetDataElement(location);
-            if (animatorElement is null) return null;
+            var element = GetDataElement(location);
+            if (element is null) return null;
             var namesConsumer = new PathConsumer<string>(usage => usage.Name);
-            ProcessPath(animatorElement, namesConsumer, location.LocalDocumentAnchor);
+            ProcessPath(element, namesConsumer, location.LocalDocumentAnchor);
             var names = namesConsumer.Elements;
             names.Reverse();
             return names.Join("/");
         }
-        
+
         public bool GetElementsNames(LocalReference location,
-                                   [NotNull] IDeclaredElement declaredElement, 
-                                   [CanBeNull] out string[] names)
+                                     [NotNull] IDeclaredElement declaredElement,
+                                     [CanBeNull] out string[] names)
         {
             AssertShellLocks();
-            var animatorElement = GetDataElement(location);
-            if (animatorElement is null)
+            var element = GetDataElement(location);
+            if (element is null)
             {
                 names = null;
                 return false;
             }
+
             var namesConsumer = new PathConsumer<string>(usage => usage.Name);
             var anchor = location.LocalDocumentAnchor;
             var namesAndAnchors = namesConsumer.Elements;
-            AddBottomElement(animatorElement, namesConsumer, anchor, declaredElement);
-            ProcessPath(animatorElement, namesConsumer, anchor);
+            AddBottomElement(element, namesConsumer, anchor, declaredElement);
+            ProcessPath(element, namesConsumer, anchor);
             namesAndAnchors.Reverse();
             names = namesAndAnchors.ToArray();
             return true;
         }
 
-        private void AddBottomElement([NotNull] AnimatorUsagesDataElement animatorElement, 
+        private void AddBottomElement([NotNull] AnimatorUsagesDataElement element,
                                       [NotNull] PathConsumer<string> namesConsumer,
                                       long anchor,
                                       [NotNull] IDeclaredElement declaredElement)
         {
-            if (TryAddBottomStateMachine(animatorElement, namesConsumer, anchor)) return;
-            AddBottomStateElement(animatorElement, namesConsumer, anchor, declaredElement);
+            if (TryAddBottomStateMachine(element, namesConsumer, anchor)) return;
+            AddBottomStateElement(element, namesConsumer, anchor, declaredElement);
         }
 
-        private static bool TryAddBottomStateMachine([NotNull] AnimatorUsagesDataElement animatorElement,
+        private static bool TryAddBottomStateMachine([NotNull] AnimatorUsagesDataElement element,
                                                      [NotNull] PathConsumer<string> namesConsumer,
                                                      long anchor)
         {
             using (ReadLockCookie.Create())
             {
-                if (!animatorElement.StateMachineAnchorToUsage.TryGetValue(anchor, out var bottomElement) ||
+                if (!element.StateMachineAnchorToUsage.TryGetValue(anchor, out var bottomElement) ||
                     bottomElement is null) return false;
                 namesConsumer.Elements.Add(bottomElement.Name);
                 return true;
             }
         }
 
-        private void AddBottomStateElement([NotNull] AnimatorUsagesDataElement animatorElement,
+        private void AddBottomStateElement([NotNull] AnimatorUsagesDataElement element,
                                            [NotNull] PathConsumer<string> namesConsumer,
                                            long anchor,
                                            [NotNull] IDeclaredElement declaredElement)
@@ -229,33 +232,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var boxedGuid = AssetUtils.GetGuidFor(myMetaFileGuidCache, typeElement);
             using (ReadLockCookie.Create())
             {
-                if (!boxedGuid.HasValue ||
-                    !animatorElement.GuidToStateUsages.TryGetValue(boxedGuid.Value, out var usages)) return; 
-                var name = usages
-                    .Where(usage => usage != null && usage.Location.LocalDocumentAnchor == anchor)
+                if (!boxedGuid.HasValue) return;
+                var name = GetUsages(element, boxedGuid.Value, element.ScriptAnchorToStateUsages)
+                    .Where(usage => usage.Location.LocalDocumentAnchor == anchor)
                     .Select(usage => usage.Name)
                     .FirstOrDefault();
                 namesConsumer.Elements.Add(name);
             }
         }
 
-        private class PathConsumer<T>
+        [NotNull]
+        [ItemNotNull]
+        private static IEnumerable<T> GetUsages<T>(
+            [NotNull] AnimatorUsagesDataElement element,
+            Guid boxedGuid,
+            [NotNull] OneToListMap<long, T> d) where T : IScriptUsage
         {
-            [NotNull] public delegate T Extract([NotNull] IAnimatorScriptUsage usage);
-            [NotNull, ItemNotNull] public readonly List<T> Elements;
-            
-            [NotNull] private readonly Extract myExtractFrom;
-            
-            public PathConsumer([NotNull] Extract extractor)
-            {
-                Elements = new List<T>();
-                myExtractFrom = extractor;
-            }
-
-            public void Consume([NotNull] IAnimatorScriptUsage usage)
-            {
-                Elements.Add(myExtractFrom(usage));
-            }
+            var stateUsages = new List<T>();
+            foreach (var scriptAnchor in element.GuidToAnchors.GetValuesSafe(boxedGuid))
+                stateUsages.AddRange(d.GetValuesSafe(scriptAnchor));
+            return stateUsages;
         }
 
         [CanBeNull]
@@ -270,7 +266,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 return pointer.GetElement(sourceFile, Id) as AnimatorUsagesDataElement;
             }
         }
-        
+
         private static void ProcessPath<T>([NotNull] AnimatorUsagesDataElement element,
                                            [NotNull] PathConsumer<T> consumer,
                                            long currentAnchor)
@@ -324,33 +320,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             return AssetUtils.IsMonoBehaviourDocument(document.Buffer);
         }
 
-        private static void AddGuidToUsagesEntriesFor([NotNull] AnimatorUsagesDataElement element)
-        {
-            var scripts = element.Scripts;
-            AddGuidToUsagesEntries(element.ScriptAnchorToStateUsages, element.GuidToStateUsages, scripts);
-            AddGuidToUsagesEntries(element.ScriptAnchorToStateMachineUsages, element.GuidToStateMachineUsages, scripts);
-        }
-
-        private static void AddGuidToUsagesEntries<T>([NotNull] OneToListMultimap<long, T> anchorToUsages,
-                                                      [NotNull] OneToListMultimap<Guid, T> guidToUsages,
-                                                      [NotNull] IEnumerable<AnimatorScript> scripts)
-            where T : IAnimatorScriptUsage
-        {
-            foreach (var stateMachineBehaviour in scripts)
-            {
-                if (!anchorToUsages.TryGetValue(stateMachineBehaviour.Anchor, out var usages)) continue;
-                AddGuidToUsagesEntry(guidToUsages, usages, stateMachineBehaviour);
-            }
-        }
-
-        private static void AddGuidToUsagesEntry<T>([NotNull] OneToListMultimap<Guid, T> guidToUsages,
-                                                    MultimapValueCollection<long, T> usages,
-                                                    AnimatorScript behaviour)
-            where T : IAnimatorScriptUsage
-        {
-            foreach (var usage in usages) guidToUsages.Add(behaviour.Guid, usage);
-        }
-
         private static bool IsAnimatorState([NotNull] AssetDocument assetDocument)
         {
             return AssetUtils.IsAnimatorState(assetDocument.Buffer);
@@ -359,6 +328,27 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         private void AssertShellLocks()
         {
             myShellLocks.AssertReadAccessAllowed();
+        }
+
+        private class PathConsumer<T>
+        {
+            [NotNull]
+            public delegate T Extract([NotNull] IAnimatorScriptUsage usage);
+
+            [NotNull] [ItemNotNull] public readonly List<T> Elements;
+
+            [NotNull] private readonly Extract myExtractFrom;
+
+            public PathConsumer([NotNull] Extract extractor)
+            {
+                Elements = new List<T>();
+                myExtractFrom = extractor;
+            }
+
+            public void Consume([NotNull] IAnimatorScriptUsage usage)
+            {
+                Elements.Add(myExtractFrom(usage));
+            }
         }
     }
 }

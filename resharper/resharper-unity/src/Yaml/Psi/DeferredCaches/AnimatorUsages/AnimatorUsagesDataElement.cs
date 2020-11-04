@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Collections;
 using JetBrains.Serialization;
-using JetBrains.Util.dataStructures;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages
 {
@@ -12,41 +12,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
     public class AnimatorUsagesDataElement : IUnityAssetDataElement
     {
         [UsedImplicitly] public static UnsafeReader.ReadDelegate<object> ReadDelegate = Read;
+
         [UsedImplicitly] public static UnsafeWriter.WriteDelegate<object> WriteDelegate =
             (writer, element) => Write(writer, element as AnimatorUsagesDataElement);
-        [NotNull] public readonly OneToListMultimap<long, AnimatorStateScriptUsage> ScriptAnchorToStateUsages;
-        [NotNull] public readonly OneToListMultimap<long, AnimatorStateMachineScriptUsage> ScriptAnchorToStateMachineUsages;
-        [NotNull] public readonly OneToListMultimap<Guid, AnimatorStateScriptUsage> GuidToStateUsages;
-        [NotNull] public readonly OneToListMultimap<Guid, AnimatorStateMachineScriptUsage> GuidToStateMachineUsages;
-        [NotNull] public readonly IDictionary<long, AnimatorStateMachineScriptUsage> StateMachineAnchorToUsage;
+
         [NotNull] public readonly IDictionary<long, long> ChildToParent;
-        [NotNull] public readonly List<AnimatorScript> Scripts;
+        [NotNull] public readonly OneToListMap<Guid, long> GuidToAnchors;
+        [NotNull] public readonly OneToListMap<long, AnimatorStateMachineScriptUsage> ScriptAnchorToStateMachineUsages;
+        [NotNull] public readonly OneToListMap<long, AnimatorStateScriptUsage> ScriptAnchorToStateUsages;
+        [NotNull] public readonly IDictionary<long, AnimatorStateMachineScriptUsage> StateMachineAnchorToUsage;
 
         public AnimatorUsagesDataElement()
         {
-            Scripts = new List<AnimatorScript>(1);
-            ScriptAnchorToStateUsages = new OneToListMultimap<long, AnimatorStateScriptUsage>();
-            ScriptAnchorToStateMachineUsages = new OneToListMultimap<long, AnimatorStateMachineScriptUsage>();
+            GuidToAnchors = new OneToListMap<Guid, long>();
+            ScriptAnchorToStateUsages = new OneToListMap<long, AnimatorStateScriptUsage>();
+            ScriptAnchorToStateMachineUsages = new OneToListMap<long, AnimatorStateMachineScriptUsage>();
             StateMachineAnchorToUsage = new Dictionary<long, AnimatorStateMachineScriptUsage>();
-            GuidToStateUsages = new OneToListMultimap<Guid, AnimatorStateScriptUsage>();
-            GuidToStateMachineUsages = new OneToListMultimap<Guid, AnimatorStateMachineScriptUsage>();
             ChildToParent = new Dictionary<long, long>();
         }
-        
-        private AnimatorUsagesDataElement([NotNull] List<AnimatorScript> scripts,
-                                          [NotNull] OneToListMultimap<long, AnimatorStateScriptUsage> scriptAnchorToStateUsages,
-                                          [NotNull] OneToListMultimap<long, AnimatorStateMachineScriptUsage> scriptAnchorToStateMachineUsages,
-                                          [NotNull] IDictionary<long, AnimatorStateMachineScriptUsage> stateMachineAnchorToUsage,
-                                          [NotNull] OneToListMultimap<Guid, AnimatorStateScriptUsage> guidToStateUsages,
-                                          [NotNull] OneToListMultimap<Guid, AnimatorStateMachineScriptUsage> guidToStateMachineUsages,
+
+        private AnimatorUsagesDataElement([NotNull] OneToListMap<Guid, long> guidToAnchors,
+                                          [NotNull]
+                                          OneToListMap<long, AnimatorStateScriptUsage> scriptAnchorToStateUsages,
+                                          [NotNull] OneToListMap<long, AnimatorStateMachineScriptUsage>
+                                              scriptAnchorToStateMachineUsages,
+                                          [NotNull]
+                                          IDictionary<long, AnimatorStateMachineScriptUsage> stateMachineAnchorToUsage,
                                           [NotNull] IDictionary<long, long> childToParent)
         {
-            Scripts = scripts;
+            GuidToAnchors = guidToAnchors;
             ScriptAnchorToStateUsages = scriptAnchorToStateUsages;
             ScriptAnchorToStateMachineUsages = scriptAnchorToStateMachineUsages;
             StateMachineAnchorToUsage = stateMachineAnchorToUsage;
-            GuidToStateUsages = guidToStateUsages;
-            GuidToStateMachineUsages = guidToStateMachineUsages;
             ChildToParent = childToParent;
         }
 
@@ -77,7 +74,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         private void AddScriptInfos(AnimatorScript script)
         {
-            Scripts.Add(script);
+            GuidToAnchors.Add(script.Guid, script.Anchor);
         }
 
         private void AddStateMachineUsageInfosFor([NotNull] AnimatorStateMachineScriptUsage stateMachineScriptUsage)
@@ -101,8 +98,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             AddChildStateMachineToParentEntries(stateMachineScriptUsage, stateMachineAnchor);
         }
 
-        private void AddChildStateMachineToParentEntries([NotNull] AnimatorStateMachineScriptUsage stateMachineScriptUsage,
-                                                         long stateMachineAnchor)
+        private void AddChildStateMachineToParentEntries(
+            [NotNull] AnimatorStateMachineScriptUsage stateMachineScriptUsage,
+            long stateMachineAnchor)
         {
             foreach (var childStateAnchor in stateMachineScriptUsage.ChildStateMachinesAnchors)
             {
@@ -123,29 +121,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         private static object Read([NotNull] UnsafeReader reader)
         {
-            var scripts = ReadScripts(reader);
+            var guidToAnchor = ReadGuidToAnchorsMap(reader);
             var anchorToStateUsagesMap = ReadAnchorToUsagesMap(reader, AnimatorStateScriptUsage.ReadFrom);
             var anchorToStateMachineUsagesMap = ReadAnchorToUsagesMap(reader, AnimatorStateMachineScriptUsage.ReadFrom);
             var stateMachineAnchorToUsageMap = ReadStateMachineAnchorToUsageMap(reader);
-            var guidToStateUsages = ReadGuidToUsagesMap(reader, AnimatorStateScriptUsage.ReadFrom);
-            var guidToStateMachineUsages = ReadGuidToUsagesMap(reader, AnimatorStateMachineScriptUsage.ReadFrom);
             var childToParent = ReadChildToParentMap(reader);
-            return new AnimatorUsagesDataElement(scripts, anchorToStateUsagesMap, anchorToStateMachineUsagesMap,
-                stateMachineAnchorToUsageMap, guidToStateUsages, guidToStateMachineUsages, childToParent);
-        }
-
-        [NotNull]
-        private static List<AnimatorScript> ReadScripts([NotNull] UnsafeReader reader)
-        {
-            var count = reader.ReadInt32();
-            var scripts = new List<AnimatorScript>(count);
-            for (var i = 0; i < count; i++)
-            {
-                var anchor = reader.ReadLong();
-                var guid = reader.ReadGuid();
-                scripts.Add(new AnimatorScript(guid, anchor));
-            }
-            return scripts;
+            return new AnimatorUsagesDataElement(guidToAnchor, anchorToStateUsagesMap, anchorToStateMachineUsagesMap,
+                stateMachineAnchorToUsageMap, childToParent);
         }
 
         [NotNull]
@@ -160,24 +142,42 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 var usage = AnimatorStateMachineScriptUsage.ReadFrom(reader);
                 stateMachineAnchorToUsage.Add(anchor, usage);
             }
+
             return stateMachineAnchorToUsage;
         }
 
         [NotNull]
-        private static OneToListMultimap<long, T> ReadAnchorToUsagesMap<T>([NotNull] UnsafeReader reader,
-                                                                           [NotNull] Func<UnsafeReader, T> read)
-                                                                           where T : IAnimatorScriptUsage
+        private static OneToListMap<Guid, long> ReadGuidToAnchorsMap([NotNull] UnsafeReader reader)
+        {
+            var guidToAnchorsCount = reader.ReadInt32();
+            var anchorToUsages = new OneToListMap<Guid, long>(guidToAnchorsCount);
+            for (var i = 0; i < guidToAnchorsCount; i++) ReadGuidToAnchors(reader, anchorToUsages);
+            return anchorToUsages;
+        }
+
+        private static void ReadGuidToAnchors([NotNull] UnsafeReader reader,
+                                              [NotNull] OneToListMap<Guid, long> guidToAnchors)
+        {
+            var guid = reader.ReadGuid();
+            var usagesCount = reader.ReadInt32();
+            for (var i = 0; i < usagesCount; i++) guidToAnchors.Add(guid, reader.ReadLong());
+        }
+
+        [NotNull]
+        private static OneToListMap<long, T> ReadAnchorToUsagesMap<T>([NotNull] UnsafeReader reader,
+                                                                      [NotNull] Func<UnsafeReader, T> read)
+            where T : IAnimatorScriptUsage
         {
             var anchorToUsagesCount = reader.ReadInt32();
-            var anchorToUsages = new OneToListMultimap<long, T>(anchorToUsagesCount);
+            var anchorToUsages = new OneToListMap<long, T>(anchorToUsagesCount);
             for (var i = 0; i < anchorToUsagesCount; i++) ReadAnchorToUsagesEntry(reader, anchorToUsages, read);
             return anchorToUsages;
         }
 
-        private static void ReadAnchorToUsagesEntry<T>([NotNull] UnsafeReader reader, 
-                                                       [NotNull] OneToListMultimap<long, T> anchorToUsages,
+        private static void ReadAnchorToUsagesEntry<T>([NotNull] UnsafeReader reader,
+                                                       [NotNull] OneToListMap<long, T> anchorToUsages,
                                                        [NotNull] Func<UnsafeReader, T> read)
-        where T : IAnimatorScriptUsage
+            where T : IAnimatorScriptUsage
         {
             var anchor = reader.ReadLong();
             var usagesCount = reader.ReadInt32();
@@ -195,51 +195,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 var parent = reader.ReadLong();
                 childToParent[child] = parent;
             }
+
             return childToParent;
-        }
-
-        [NotNull]
-        private static OneToListMultimap<Guid, T> ReadGuidToUsagesMap<T>(
-            [NotNull] UnsafeReader reader,
-            [NotNull] Func<UnsafeReader, T> read)
-            where T : IAnimatorScriptUsage
-        {
-            var guidToUsagesCount = reader.ReadInt32();
-            var guidToUsages = new OneToListMultimap<Guid, T>(guidToUsagesCount);
-            for (var i = 0; i < guidToUsagesCount; i++) ReadGuidToUsagesEntry(reader, guidToUsages, read);
-            return guidToUsages;
-        }
-
-        private static void ReadGuidToUsagesEntry<T>([NotNull] UnsafeReader reader,
-                                                     [NotNull] OneToListMultimap<Guid, T> guidToUsages,
-                                                     [NotNull] Func<UnsafeReader, T> read)
-            where T : IAnimatorScriptUsage
-        {
-            var guid = reader.ReadGuid();
-            var usagesCount = reader.ReadInt32();
-            for (var i = 0; i < usagesCount; i++) guidToUsages.Add(guid, read(reader));
         }
 
         private static void Write([CanBeNull] UnsafeWriter writer, [CanBeNull] AnimatorUsagesDataElement value)
         {
             if (writer is null || value is null) return;
-            WriteScripts(writer, value.Scripts);
+            WriteGuidToAnchorsMap(writer, value.GuidToAnchors);
             WriteAnchorToUsagesMap(writer, value.ScriptAnchorToStateUsages);
             WriteAnchorToUsagesMap(writer, value.ScriptAnchorToStateMachineUsages);
             WriteStateMachineAnchorToUsageMap(writer, value.StateMachineAnchorToUsage);
-            WriteGuidToUsagesMap(writer, value.GuidToStateUsages);
-            WriteGuidToUsagesMap(writer, value.GuidToStateMachineUsages);
             WriteChildToParentMap(writer, value.ChildToParent);
         }
 
-        private static void WriteScripts([NotNull] UnsafeWriter writer,
-                                         [NotNull] IReadOnlyCollection<AnimatorScript> scripts)
+        private static void WriteGuidToAnchorsMap([NotNull] UnsafeWriter writer,
+                                                  [NotNull] OneToListMap<Guid, long> guidToAnchors)
         {
-            writer.Write(scripts.Count);
-            foreach (var script in scripts)
+            writer.Write(guidToAnchors.Count);
+            foreach (var (guid, anchors) in guidToAnchors)
             {
-                writer.Write(script.Anchor);
-                writer.Write(script.Guid);
+                if (anchors is null) continue;
+                WriteGuidToAnchorsEntry(writer, guid, anchors);
             }
         }
 
@@ -253,21 +230,31 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 writer.Write(parent);
             }
         }
-        
-        
+
+        private static void WriteGuidToAnchorsEntry([NotNull] UnsafeWriter writer,
+                                                    Guid guid,
+                                                    [NotNull] ICollection<long> anchors)
+        {
+            writer.Write(guid);
+            writer.Write(anchors.Count);
+            foreach (var anchor in anchors) writer.Write(anchor);
+        }
+
+
         private static void WriteAnchorToUsagesMap<T>([NotNull] UnsafeWriter writer,
-                                                      [NotNull] OneToListMultimap<long, T> anchorToUsages)
+                                                      [NotNull] OneToListMap<long, T> anchorToUsages)
             where T : IAnimatorScriptUsage
         {
             writer.Write(anchorToUsages.Count);
             foreach (var (anchor, usages) in anchorToUsages)
             {
+                if (usages is null) continue;
                 WriteAnchorToUsagesEntry(writer, anchor, usages);
             }
         }
-        
-        private static void WriteStateMachineAnchorToUsageMap<T>([NotNull] UnsafeWriter writer, 
-                                                         [NotNull] IDictionary<long, T> anchorToUsages)
+
+        private static void WriteStateMachineAnchorToUsageMap<T>([NotNull] UnsafeWriter writer,
+                                                                 [NotNull] IDictionary<long, T> anchorToUsages)
             where T : class, IAnimatorScriptUsage
         {
             writer.Write(anchorToUsages.Count);
@@ -288,28 +275,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         private static void WriteAnchorToUsagesEntry<T>([NotNull] UnsafeWriter writer,
                                                         long anchor,
-                                                        [ItemNotNull] MultimapValueCollection<long, T> usages)
+                                                        [NotNull] [ItemNotNull] ICollection<T> usages)
             where T : IAnimatorScriptUsage
         {
             writer.Write(anchor);
-            writer.Write(usages.Count);
-            foreach (var usage in usages) usage.WriteTo(writer);
-        }
-
-        private static void WriteGuidToUsagesMap<T>([NotNull] UnsafeWriter writer,
-                                                    [NotNull] OneToListMultimap<Guid, T> guidToUsages)
-            where T : IAnimatorScriptUsage
-        {
-            writer.Write(guidToUsages.Count);
-            foreach (var (guid, usages) in guidToUsages) WriteGuidToUsagesEntry(writer, guid, usages);
-        }
-
-        private static void WriteGuidToUsagesEntry<T>([NotNull] UnsafeWriter writer,
-                                                      Guid guid,
-                                                      [ItemNotNull] MultimapValueCollection<Guid, T> usages)
-            where T : IAnimatorScriptUsage
-        {
-            writer.Write(guid);
             writer.Write(usages.Count);
             foreach (var usage in usages) usage.WriteTo(writer);
         }
