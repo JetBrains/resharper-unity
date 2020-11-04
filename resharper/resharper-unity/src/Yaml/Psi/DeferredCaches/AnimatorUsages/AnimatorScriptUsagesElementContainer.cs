@@ -232,8 +232,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             namesConsumer.Elements.Add(name);
         }
 
-        [NotNull]
-        [ItemNotNull]
+        [NotNull, ItemNotNull]
         private static IEnumerable<T> GetUsages<T>(
             [NotNull] AnimatorUsagesDataElement element,
             Guid boxedGuid,
@@ -268,8 +267,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             }
         }
 
-        [NotNull]
-        [ItemNotNull]
+        [NotNull, ItemNotNull]
         private static IEnumerable<IScriptUsage> ConcatUsages(
             [NotNull] IEnumerable<AnimatorStateScriptUsage> stateUsages,
             [NotNull] IEnumerable<AnimatorStateMachineScriptUsage> stateMachineUsages)
