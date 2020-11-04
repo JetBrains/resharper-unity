@@ -14,7 +14,6 @@ using JetBrains.ReSharper.Plugins.Yaml.Psi.Tree;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Caches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Util;
 using JetBrains.Util.Collections;
 
@@ -111,13 +110,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
         {
-            using (ReadLockCookie.Create())
-            {
-                var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, scriptClass);
-                return guid != null
-                    ? GetPossibleFilesWithScriptUsages(myUsageToSourceFiles.GetValues(guid.Value))
-                    : new LocalList<IPsiSourceFile>();
-            }
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, scriptClass);
+            return guid != null
+                ? GetPossibleFilesWithScriptUsages(myUsageToSourceFiles.GetValues(guid.Value))
+                : new LocalList<IPsiSourceFile>();
         }
 
         public int GetScriptUsagesCount(IClassLikeDeclaration classLikeDeclaration, out bool estimatedResult)
@@ -214,13 +210,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                                                      [NotNull] PathConsumer<string> namesConsumer,
                                                      long anchor)
         {
-            using (ReadLockCookie.Create())
-            {
-                if (!element.StateMachineAnchorToUsage.TryGetValue(anchor, out var bottomElement) ||
-                    bottomElement is null) return false;
-                namesConsumer.Elements.Add(bottomElement.Name);
-                return true;
-            }
+            if (!element.StateMachineAnchorToUsage.TryGetValue(anchor, out var bottomElement) ||
+                bottomElement is null) return false;
+            namesConsumer.Elements.Add(bottomElement.Name);
+            return true;
         }
 
         private void AddBottomStateElement([NotNull] AnimatorUsagesDataElement element,
@@ -230,15 +223,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         {
             if (!(declaredElement is ITypeElement typeElement)) return;
             var boxedGuid = AssetUtils.GetGuidFor(myMetaFileGuidCache, typeElement);
-            using (ReadLockCookie.Create())
-            {
-                if (!boxedGuid.HasValue) return;
-                var name = GetUsages(element, boxedGuid.Value, element.ScriptAnchorToStateUsages)
-                    .Where(usage => usage.Location.LocalDocumentAnchor == anchor)
-                    .Select(usage => usage.Name)
-                    .FirstOrDefault();
-                namesConsumer.Elements.Add(name);
-            }
+
+            if (!boxedGuid.HasValue) return;
+            var name = GetUsages(element, boxedGuid.Value, element.ScriptAnchorToStateUsages)
+                .Where(usage => usage.Location.LocalDocumentAnchor == anchor)
+                .Select(usage => usage.Name)
+                .FirstOrDefault();
+            namesConsumer.Elements.Add(name);
         }
 
         [NotNull]
@@ -259,29 +250,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         {
             var sourceFile = myManager[location.OwningPsiPersistentIndex];
             if (sourceFile == null) return null;
-            var pointer = myPointers[sourceFile];
-            if (pointer == null) return null;
-            using (ReadLockCookie.Create())
-            {
-                return pointer.GetElement(sourceFile, Id) as AnimatorUsagesDataElement;
-            }
+            return myPointers[sourceFile]?.GetElement(sourceFile, Id) as AnimatorUsagesDataElement;
         }
 
         private static void ProcessPath<T>([NotNull] AnimatorUsagesDataElement element,
                                            [NotNull] PathConsumer<T> consumer,
                                            long currentAnchor)
         {
-            using (ReadLockCookie.Create())
+            var childToParent = element.ChildToParent;
+            var anchorToStateMachineUsage = element.StateMachineAnchorToUsage;
+            while (childToParent.TryGetValue(currentAnchor, out var parent) &&
+                   anchorToStateMachineUsage.TryGetValue(parent, out var usage) &&
+                   usage != null)
             {
-                var childToParent = element.ChildToParent;
-                var anchorToStateMachineUsage = element.StateMachineAnchorToUsage;
-                while (childToParent.TryGetValue(currentAnchor, out var parent) &&
-                       anchorToStateMachineUsage.TryGetValue(parent, out var usage) &&
-                       usage != null)
-                {
-                    consumer.Consume(usage);
-                    currentAnchor = parent;
-                }
+                consumer.Consume(usage);
+                currentAnchor = parent;
             }
         }
 
