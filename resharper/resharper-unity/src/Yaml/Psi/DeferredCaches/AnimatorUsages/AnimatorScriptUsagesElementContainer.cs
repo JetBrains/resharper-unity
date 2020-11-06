@@ -59,7 +59,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             if (AssetUtils.IsMonoBehaviourDocument(document.Buffer)) return ExtractStateMachineBehaviour(document, file);
             var animatorExtractor = new AnimatorExtractor(file, document);
             if (IsAnimatorStateMachine(document)) return animatorExtractor.TryExtractStateMachine();
-            return IsAnimatorState(document) ? animatorExtractor.TryExtractUsage() : null;
+            return AssetUtils.IsAnimatorState(document.Buffer) ? animatorExtractor.TryExtractUsage() : null;
         }
 
         public void Drop(IPsiSourceFile currentAssetSourceFile,
@@ -294,11 +294,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 .FirstOrDefault()?
                 .ExternalAssetGuid;
             return guid != null ? new AnimatorScript(guid.Value, anchorRaw.Value) : (AnimatorScript?) null;
-        }
-
-        private static bool IsAnimatorState([NotNull] AssetDocument assetDocument)
-        {
-            return AssetUtils.IsAnimatorState(assetDocument.Buffer);
         }
 
         private void AssertShellLocks()
