@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Diagnostics;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.Utils;
 using JetBrains.ReSharper.Plugins.Yaml.Psi;
@@ -118,9 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         private OWORD FindPersistentIndexInPsiStorageOfFile()
         {
-            var psiStoragePersistentIndex = myFile.PsiStorage.PersistentIndex;
-            if (psiStoragePersistentIndex is null) throw new AnimatorExtractorException();
-            return psiStoragePersistentIndex.Value;
+            return myFile.PsiStorage.PersistentIndex.NotNull();
         }
         
         [NotNull]
