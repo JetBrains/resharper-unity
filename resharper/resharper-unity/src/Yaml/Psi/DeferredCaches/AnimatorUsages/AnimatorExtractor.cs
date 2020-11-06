@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 .SelectNotNull(t => t?.Value as IBlockMappingNode)
                 .SelectNotNull(t => t.FindMapEntryBySimpleKey(innerRecordKey)?.Content?.Value as IFlowMappingNode)
                 .SelectNotNull(t => t.FindMapEntryBySimpleKey("fileID")?.Value as IPlainScalarNode)
-                .SelectNotNull(t => long.TryParse(t?.GetText(), out var anchor) ? anchor : (long?) null);
+                .SelectNotNull(t => long.TryParse(t?.GetPlainScalarText(), out var anchor) ? anchor : (long?) null);
             var list = new LocalList<long>();
             if (anchors is null) return list;
             foreach (var anchor in anchors) list.Add(anchor);
@@ -125,7 +125,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         [NotNull]
         private static string ExtractAnimatorStateNameFrom([NotNull] IBlockMappingNode root)
         {
-            var name = root.FindMapEntryBySimpleKey("m_Name")?.Content?.Value?.GetText();
+            var name = root.FindMapEntryBySimpleKey("m_Name")?.Content?.Value?.GetPlainScalarText();
             if (name is null) throw new AnimatorExtractorException();
             return name;
         }
@@ -142,8 +142,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         {
             if (!(record.Value is IFlowMappingNode node)) throw new AnimatorExtractorException();
             var entries = node.Entries;
-            if (entries.Count != 1 ||
-                !long.TryParse(entries[0]?.Value?.GetText(), out var anchor)) throw new AnimatorExtractorException();
+            if (entries.Count != 1 || !long.TryParse(entries[0]?.Value?.GetPlainScalarText(), out var anchor))
+                throw new AnimatorExtractorException();
             anchors.Add(anchor);
             return anchors;
         }
