@@ -111,17 +111,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         private LocalReference CreateReferenceToAnimatorState()
         {
-            var fileStoragePersistentIndex = FindPersistentIndexInPsiStorageOfFile();
+            var fileStoragePersistentIndex = myFile.PsiStorage.PersistentIndex.NotNull();
             var boxedAnchor = AssetUtils.GetAnchorFromBuffer(myDocument.Buffer);
             if (!boxedAnchor.HasValue) throw new AnimatorExtractorException();
             return new LocalReference(fileStoragePersistentIndex, boxedAnchor.Value);
         }
 
-        private OWORD FindPersistentIndexInPsiStorageOfFile()
-        {
-            return myFile.PsiStorage.PersistentIndex.NotNull();
-        }
-        
         [NotNull]
         private IBlockMappingNode ExtractRoot()
         {
