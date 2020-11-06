@@ -144,7 +144,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             if (guid == null) return Enumerable.Empty<IScriptUsage>();
             return element
                 .EnumerateAssetUsages()
-                .Cast<AssetScriptUsages>()
                 .Where(t => t.UsageTarget.ExternalAssetGuid == guid)
                 .Cast<IScriptUsage>();
         }
