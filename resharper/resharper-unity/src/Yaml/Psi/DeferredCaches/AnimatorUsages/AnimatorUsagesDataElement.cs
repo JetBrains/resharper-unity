@@ -77,25 +77,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             GuidToAnchors.Add(script.Guid, script.Anchor);
         }
 
-        private void AddStateMachineUsageInfosFor([NotNull] AnimatorStateMachineScriptUsage stateMachineScriptUsage)
+        private void AddStateMachineUsageInfosFor([NotNull] AnimatorStateMachineScriptUsage usage)
         {
-            StateMachineAnchorToUsage[stateMachineScriptUsage.Location.LocalDocumentAnchor] = stateMachineScriptUsage;
-            AddScriptToStateMachineUsagesFor(stateMachineScriptUsage);
-            AddChildToParentEntriesFor(stateMachineScriptUsage);
+            StateMachineAnchorToUsage[usage.Location.LocalDocumentAnchor] = usage;
+            AddScriptToStateMachineUsagesFor(usage);
+            AddChildToParentEntriesFor(usage);
         }
 
-        private void AddScriptToStateMachineUsagesFor([NotNull] AnimatorStateMachineScriptUsage stateMachineScriptUsage)
+        private void AddScriptToStateMachineUsagesFor([NotNull] AnimatorStateMachineScriptUsage usage)
         {
             var scriptToStateMachineUsages = ScriptAnchorToStateMachineUsages;
-            foreach (var anchor in stateMachineScriptUsage.ScriptsAnchors)
-                scriptToStateMachineUsages.Add(anchor, stateMachineScriptUsage);
+            foreach (var anchor in usage.ScriptsAnchors)
+                scriptToStateMachineUsages.Add(anchor, usage);
         }
 
-        private void AddChildToParentEntriesFor([NotNull] AnimatorStateMachineScriptUsage stateMachineScriptUsage)
+        private void AddChildToParentEntriesFor([NotNull] AnimatorStateMachineScriptUsage usage)
         {
-            var stateMachineAnchor = stateMachineScriptUsage.Location.LocalDocumentAnchor;
-            AddChildStateToParentEntries(stateMachineScriptUsage, stateMachineAnchor);
-            AddChildStateMachineToParentEntries(stateMachineScriptUsage, stateMachineAnchor);
+            var stateMachineAnchor = usage.Location.LocalDocumentAnchor;
+            AddChildStateToParentEntries(usage, stateMachineAnchor);
+            AddChildStateMachineToParentEntries(usage, stateMachineAnchor);
         }
 
         private void AddChildStateMachineToParentEntries(
@@ -109,10 +109,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             }
         }
 
-        private void AddChildStateToParentEntries([NotNull] AnimatorStateMachineScriptUsage stateMachineScriptUsage,
+        private void AddChildStateToParentEntries([NotNull] AnimatorStateMachineScriptUsage usage,
                                                   long stateMachineAnchor)
         {
-            foreach (var childStateAnchor in stateMachineScriptUsage.ChildStatesAnchors)
+            foreach (var childStateAnchor in usage.ChildStatesAnchors)
             {
                 if (ChildToParent.ContainsKey(childStateAnchor)) continue;
                 ChildToParent[childStateAnchor] = stateMachineAnchor;
