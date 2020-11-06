@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
         {
         }
 
-        public override IAnchor Anchor => BulbMenuAnchors.PermanentBackgroundItems;
+        public override IAnchor Priority => BulbMenuAnchors.PermanentBackgroundItems;
 
         public override IEnumerable<BulbMenuItem> GetBulbMenuItems(IHighlighter highlighter)
         {
