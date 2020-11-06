@@ -58,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         {
             if (AssetUtils.IsMonoBehaviourDocument(document.Buffer)) return ExtractStateMachineBehaviour(document, file);
             var animatorExtractor = new AnimatorExtractor(file, document);
-            if (IsAnimatorStateMachine(document)) return animatorExtractor.TryExtractStateMachine();
+            if (AssetUtils.IsAnimatorStateMachine(document.Buffer)) return animatorExtractor.TryExtractStateMachine();
             return AssetUtils.IsAnimatorState(document.Buffer) ? animatorExtractor.TryExtractUsage() : null;
         }
 
@@ -275,11 +275,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var usages = stateUsages.Cast<IScriptUsage>().ToList();
             usages.AddRange(stateMachineUsages);
             return usages;
-        }
-
-        private static bool IsAnimatorStateMachine([NotNull] AssetDocument document)
-        {
-            return AssetUtils.IsAnimatorStateMachine(document.Buffer);
         }
 
         private static AnimatorScript? ExtractStateMachineBehaviour([NotNull] AssetDocument document,
