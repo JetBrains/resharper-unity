@@ -91,4 +91,4 @@ public class Derived : Base
 (0): ReSharper Dead Code: Redundant Unity event function
 (1): ReSharper Dead Code: Redundant Unity event function
 (2): ReSharper Dead Code: Redundant Unity event function
-(3): ReSharper Dead Code: Redundant method override
+(3): ReSharper Dead Code: Redundant event function override

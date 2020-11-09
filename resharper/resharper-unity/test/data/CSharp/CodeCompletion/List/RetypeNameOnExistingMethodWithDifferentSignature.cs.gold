@@ -1,0 +1,89 @@
+﻿# 42 ITEMS #
+
++ Awake() { ... }
+FixedUpdate() { ... }
+LateUpdate() { ... }
+OnAnimatorMove() { ... }
+OnApplicationQuit() { ... }
+OnBecameInvisible() { ... }
+OnBecameVisible() { ... }
+OnConnectedToServer() { ... }
+OnDestroy() { ... }
+OnDisable() { ... }
+OnDrawGizmos() { ... }
+OnDrawGizmosSelected() { ... }
+OnEnable() { ... }
+OnGUI() { ... }
+OnMouseDown() { ... }
+OnMouseDrag() { ... }
+OnMouseEnter() { ... }
+OnMouseExit() { ... }
+OnMouseOver() { ... }
+OnMouseUp() { ... }
+OnMouseUpAsButton() { ... }
+OnParticleSystemStopped() { ... }
+OnParticleTrigger() { ... }
+OnParticleUpdateJobScheduled() { ... }
+OnPostRender() { ... }
+OnPreCull() { ... }
+OnPreRender() { ... }
+OnRenderObject() { ... }
+OnServerInitialized() { ... }
+OnTransformChildrenChanged() { ... }
+OnTransformParentChanged() { ... }
+OnValidate() { ... }
+OnWillRenderObject() { ... }
+Reset() { ... }
+Start() { ... }
+OnBeforeTransformParentChanged() { ... }
+OnCanvasGroupChanged() { ... }
+OnCanvasHierarchyChanged() { ... }
+OnDidApplyAnimationProperties() { ... }
+OnRectTransformDimensionsChange() { ... }
+operator
+this
+# AUTOMATIC #
+# 42 ITEMS #
+
++ Awake() { ... }
+FixedUpdate() { ... }
+LateUpdate() { ... }
+OnAnimatorMove() { ... }
+OnApplicationQuit() { ... }
+OnBecameInvisible() { ... }
+OnBecameVisible() { ... }
+OnConnectedToServer() { ... }
+OnDestroy() { ... }
+OnDisable() { ... }
+OnDrawGizmos() { ... }
+OnDrawGizmosSelected() { ... }
+OnEnable() { ... }
+OnGUI() { ... }
+OnMouseDown() { ... }
+OnMouseDrag() { ... }
+OnMouseEnter() { ... }
+OnMouseExit() { ... }
+OnMouseOver() { ... }
+OnMouseUp() { ... }
+OnMouseUpAsButton() { ... }
+OnParticleSystemStopped() { ... }
+OnParticleTrigger() { ... }
+OnParticleUpdateJobScheduled() { ... }
+OnPostRender() { ... }
+OnPreCull() { ... }
+OnPreRender() { ... }
+OnRenderObject() { ... }
+OnServerInitialized() { ... }
+OnTransformChildrenChanged() { ... }
+OnTransformParentChanged() { ... }
+OnValidate() { ... }
+OnWillRenderObject() { ... }
+Reset() { ... }
+Start() { ... }
+OnBeforeTransformParentChanged() { ... }
+OnCanvasGroupChanged() { ... }
+OnCanvasHierarchyChanged() { ... }
+OnDidApplyAnimationProperties() { ... }
+OnRectTransformDimensionsChange() { ... }
+operator
+this

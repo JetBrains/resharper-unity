@@ -229,7 +229,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                             clientControllerInfo.TypeName);
 
                     var frontendBackendModel = mySolution.GetProtocolSolution().GetFrontendBackendModel();
-                    myUsageStatistics.TrackActivity("UnitTestPreference", frontendBackendModel.UnitTestPreference.Value.ToString());
+                    myUsageStatistics.TrackActivity("UnityUnitTestPreference", frontendBackendModel.UnitTestPreference.Value.ToString());
                     var mode = TestMode.Edit;
                     if (frontendBackendModel.UnitTestPreference.Value == UnitTestLaunchPreference.PlayMode)
                         mode = TestMode.Play;
@@ -517,7 +517,8 @@ else if (criterion is CategoryCriterion categoryCriterion)
                 var launch = launchProperty?.Maybe.ValueOrDefault;
                 if (launch != null && launch.SessionId == run.Launch.Session.Id)
                     launch.Abort.Start(Unit.Instance);
-                run.GetData(ourCancellationTokenSourceKey).NotNull().Cancel();
+                // Operation Cancel can be called before Run by design.
+                run.GetData(ourCancellationTokenSourceKey)?.Cancel();
             });
         }
 

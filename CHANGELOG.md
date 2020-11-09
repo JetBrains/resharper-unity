@@ -16,6 +16,17 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Added
 
 - Add smart backspace for shader files ([#1863](https://github.com/JetBrains/resharper-unity/pull/1863))
+- Add context actions to mark arbitrary methods as the start of a performance critical context ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Add context actions to suppress performance critical context for a method ([#1183](https://github.com/JetBrains/resharper-unity/issues/1183), [RIDER-27955](https://youtrack.jetbrains.com/issue/RIDER-27955), [#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Add context actions to suppress expensive method highlighting when used in a performance critical context ([#1248](https://github.com/JetBrains/resharper-unity/issues/1248), [#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Add context actions to highlight a method as expensive when used in a performance critical context ([#1030](https://github.com/JetBrains/resharper-unity/issues/1030), [#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Add context action to add `[BurstDiscard]` attribute to Burst compiled methods ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Add inspection for correct constraint on type parameter of `SharedStatic` for Burst context ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Add inspections for correct usage of `SharedStatic` in Burst code ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Add option to disable Burst analysis ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Use Unity terminology to describe event functions and serialised fields in identifier tooltips and inspections ([#1914](https://github.com/JetBrains/resharper-unity/pull/1914))
+- Rider: Highlight methods from a Burst compiled context with line marker and Code Vision links ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
+- Rider: Execute both edit and play mode tests in the same run ([#1894](https://github.com/JetBrains/resharper-unity/pull/1894))
 - Rider: Run Unity menu item handlers via gutter icon ([RIDER-35911](https://youtrack.jetbrains.com/issue/RIDER-35911), [#1857](https://github.com/JetBrains/resharper-unity/pull/1857))
 - Rider: Add context picker for shader files to work with `#if` directives ([RIDER-49212](https://youtrack.jetbrains.com/issue/RIDER-49212), [#1868](https://github.com/JetBrains/resharper-unity/pull/1868))
 
@@ -31,14 +42,21 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ### Fixed
 
 - Fix missing remove redundant event function quick fix ([#1860](https://github.com/JetBrains/resharper-unity/issues/1860), [#1864](https://github.com/JetBrains/resharper-unity/pull/1864))
+- Fix incorrect C# language version features suggested for player projects ([RIDER-52210](https://youtrack.jetbrains.com/issue/RIDER-52210), [#1890](https://github.com/JetBrains/resharper-unity/pull/1890))
+- Fix incorrect namespace suggestions for Unity class libraries ([RIDER-51858](https://youtrack.jetbrains.com/issue/RIDER-51858), [#1898](https://github.com/JetBrains/resharper-unity/pull/1898))
+- Fix changing name of wrong method while trying to override a new method ([RIDER-52404](https://youtrack.jetbrains.com/issue/RIDER-52404), [#1904](https://github.com/JetBrains/resharper-unity/pull/1904))
 - Rider: Fix ignoring `[Explicit]` attribute on unit tests ([#1731](https://github.com/JetBrains/resharper-unity/issues/1731), [RIDER-48686](https://youtrack.jetbrains.com/issue/RIDER-48686), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
 - Rider: Handle parameterized test fixtures with parameterized tests ([RIDER-46658](https://youtrack.jetbrains.com/issue/RIDER-46658), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
+- Rider: Fix inconclusive result when explicitly running tests from two projects ([#1892](https://github.com/JetBrains/resharper-unity/pull/1892))
 - Rider: Fix infinite "refreshing solution" when no connection to Unity editor plugin ([#1601](https://github.com/JetBrains/resharper-unity/issues/1601), [RIDER-48690](https://youtrack.jetbrains.com/issue/RIDER-48690), [#1828](https://github.com/JetBrains/resharper-unity/pull/1828))
 - Rider: Fix missing animation frame from busy status icon ([#1862](https://github.com/JetBrains/resharper-unity/issues/1862), [#1865](https://github.com/JetBrains/resharper-unity/pull/1865))
 - Rider: Fix exception in Unity run configuration templates with no project loaded ([RIDER-51997](https://youtrack.jetbrains.com/issue/RIDER-51997), [#1882](https://github.com/JetBrains/resharper-unity/pull/1882))
+- Rider: Fix exception when trying to reconnect to Unity plugin ([DEXP-545880](https://youtrack.jetbrains.com/issue/DEXP-545880), [#1891](https://github.com/JetBrains/resharper-unity/pull/1891))
+- Rider: Fix ability to cancel unit tests while preparing to run ([#1886](https://github.com/JetBrains/resharper-unity/pull/1886))
 - Unity editor: Fix losing Console messages before first `EditorApplication.update` ([#1837](https://github.com/JetBrains/resharper-unity/pull/1837))
 - Unity editor: Maintain last play time for log filtering across AppDomain reloads ([#1884](https://github.com/JetBrains/resharper-unity/pull/1884))
 - Unity editor: Fix issues communicating with Rider when Rider is stopped and restarted ([#1881](https://github.com/JetBrains/resharper-unity/pull/1881))
+- Unity editor: Fix crash in editor ([RIDER-52020](https://youtrack.jetbrains.com/issue/RIDER-52020), [#1889](https://github.com/JetBrains/resharper-unity/pull/1889))
 
 
 

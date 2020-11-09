@@ -3,7 +3,6 @@ using JetBrains.ReSharper.Feature.Services.Comment;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Parsing;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Parsing;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
@@ -12,16 +11,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.Comment
     [Language(typeof(ShaderLabLanguage))]
     public class ShaderLabBlockCommentActionProvider : IBlockCommentActionProvider
     {
-        public TextRange GetBlockComment(CachingLexer lexer)
+        public TextRange GetBlockComment(ITokenNode tokenNode)
         {
-            return lexer.TokenType == ShaderLabTokenType.MULTI_LINE_COMMENT
-                ? new TextRange(lexer.TokenStart, lexer.TokenEnd)
+            return tokenNode.GetTokenType() == ShaderLabTokenType.MULTI_LINE_COMMENT
+                ? new TextRange(tokenNode.GetDocumentStartOffset().Offset, tokenNode.GetDocumentEndOffset().Offset)
                 : TextRange.InvalidRange;
         }
 
-        public int InsertBlockCommentPosition(ILexer lexer, int position)
+        public int InsertBlockCommentPosition(ITokenNode tokenNode, int position)
         {
-            return position == lexer.TokenStart ? position : lexer.TokenEnd;
+            return position == tokenNode.GetDocumentStartOffset().Offset ? position : tokenNode.GetDocumentEndOffset().Offset;
         }
 
         public bool IsAvailable(IFile file, DocumentRange range, out bool disableAllProviders)

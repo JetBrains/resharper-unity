@@ -2,6 +2,7 @@ using JetBrains.ReSharper.Feature.Services.TypingAssist;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi.Cpp.Parsing;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAssist
 {
@@ -11,9 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAss
             : base(assist)
         {
         }
-
+        
         // smart backspaces expecteed that GetExtraStub return not null value, "foo " is typical value
-        protected override string GetExtraStub(CachingLexer lexer, int offset)
+        protected override string GetExtraStub(CachingLexer lexer, int offset, ITextControl textControl)
         {
             using (LexerStateCookie.Create(lexer))
             {
@@ -21,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Feature.Services.TypingAss
                 if (!(lexer.TokenType is CppTokenNodeType))
                     return "foo ";
             }
-            return base.GetExtraStub(lexer, offset);
+            return base.GetExtraStub(lexer, offset, textControl);
         }
     }
 }

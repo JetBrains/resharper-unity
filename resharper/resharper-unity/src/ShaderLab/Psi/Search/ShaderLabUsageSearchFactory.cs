@@ -88,14 +88,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi.Search
             return EmptyList<FindResult>.InstanceList;
         }
 
-        public Tuple<ICollection<IDeclaredElement>, Predicate<IFindResultReference>, bool> GetDerivedFindRequest(IFindResultReference result)
+        public DerivedFindRequest GetDerivedFindRequest(IFindResultReference result)
         {
             return null;
         }
 
-        public Tuple<ICollection<IDeclaredElement>, bool> GetNavigateToTargets(IDeclaredElement element)
+        public NavigateTargets GetNavigateToTargets(IDeclaredElement element)
         {
-            return null;
+            return NavigateTargets.Empty;
         }
 
         public ICollection<FindResult> TransformNavigationTargets(ICollection<FindResult> targets)
