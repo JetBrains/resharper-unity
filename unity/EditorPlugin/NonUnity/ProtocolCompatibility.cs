@@ -4,6 +4,6 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
 {
   public static class ProtocolCompatibility
   {
-    public static Guid ProtocolGuid = new Guid("B9B8F668-4798-4535-914C-793DD1653BD7");
+    public static Guid ProtocolGuid = new Guid("CA1BA338-CCA4-4E4D-8A49-B08F8E521651");
   }
 }
