@@ -47,6 +47,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             }
         }
 
+        public static bool IsQualifierOpenType(IInvocationExpression invocationExpression)
+        {
+            var result =
+                ((invocationExpression.InvokedExpression as IReferenceExpression)?.QualifierExpression as
+                    IReferenceExpression)?.Reference.Resolve().DeclaredElement.Type()?.IsOpenType;
+
+            return result == true;
+        }
+
         [ContractAnnotation("null => false")]
         public static bool IsFixedString([CanBeNull] IType type)
         {
@@ -155,21 +164,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public static bool IsBurstProhibitedObjectMethod([NotNull] IMethod method)
         {
-            var containingType = method.GetContainingType();
+            var containingTypeElement = method.GetContainingType();
 
             // GetHashCode permitted in burst only if no boxing happens i.e. calling base.GetHashCode
             // Equals is prohibited because it works through System.Object and require boxing, which 
             // Burst does not support
-            if (containingType is IStruct && method.IsOverridesObjectGetHashCode())
+            if (containingTypeElement is IStruct && method.IsOverridesObjectGetHashCode())
                 return false;
 
             // it means object method is called, only GetHashCode allowed
-            if (containingType is IStruct && method.IsOverride)
+            if (containingTypeElement is IStruct && method.IsOverride)
                 return true;
             
             // NOTE: this method checks that it is EXACTLY object/valueType method, 
             // for common inheritance it would return false!
-            return containingType is IClass @class &&
+            return containingTypeElement is IClass @class &&
                    (@class.IsSystemValueTypeClass() || @class.IsObjectClass());
         }
 
