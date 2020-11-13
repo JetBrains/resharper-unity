@@ -128,6 +128,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             {
                 return new AssetFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
             }
+            
+            if (path.IsAnimFile())
+            {
+                return new AnimationFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
+            }
 
             var consumer = new UnityScenePathGameObjectConsumer();
             assetDocumentHierarchy.ProcessSceneHierarchyFromComponentToRoot(location, consumer, true, true);

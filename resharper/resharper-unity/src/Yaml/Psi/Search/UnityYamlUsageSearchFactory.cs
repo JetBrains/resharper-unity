@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
@@ -51,10 +52,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var methodsContainer = solution.GetComponent<UnityEventsElementContainer>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
             var scriptsUsagesContainers = solution.GetComponent<IEnumerable<IScriptUsagesElementContainer>>();
+            var animationEventUsagesContainer = solution.GetComponent<AnimationEventUsagesContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
             
-            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, scriptsUsagesContainers, methodsContainer, assetValuesContainer, metaFileGuidCache, elements, findCandidates);
+            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, scriptsUsagesContainers,
+                methodsContainer, animationEventUsagesContainer, assetValuesContainer, metaFileGuidCache, elements,
+                findCandidates);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An
@@ -109,7 +113,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     return unityApi.IsUnityType(c);
                 case IProperty _:
                 case IMethod _:
-                    return solution.GetComponent<UnityEventsElementContainer>().GetAssetUsagesCount(element, out var estimatedResult) > 0 || estimatedResult;
+                {
+                    var eventsCount = solution
+                        .GetComponent<UnityEventsElementContainer>()
+                        .GetAssetUsagesCount(element, out var estimatedResult);
+                    var animationEventsCount = solution
+                        .GetComponent<AnimationEventUsagesContainer>()
+                        .GetEventUsagesCountFor(element);
+                    return eventsCount + animationEventsCount > 0 || estimatedResult;
+                }
                 case IField field:
                     return unityApi.IsSerialisedField(field);
             }

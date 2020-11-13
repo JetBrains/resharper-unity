@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
@@ -23,11 +25,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
         private readonly AssetInspectorValuesContainer myAssetInspectorValuesContainer;
         private readonly IDeclaredElementsSet myElements;
+        private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
 
         public UnityAssetReferenceSearcher(DeferredCacheController deferredCacheController,
                                            AssetDocumentHierarchyElementContainer assetDocumentHierarchyElementContainer,
                                            [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
                                            UnityEventsElementContainer unityEventsElementContainer,
+                                           [NotNull] AnimationEventUsagesContainer animationEventUsagesContainer,
                                            AssetInspectorValuesContainer assetInspectorValuesContainer,
                                            MetaFileGuidCache metaFileGuidCache,
                                            IDeclaredElementsSet elements,
@@ -37,6 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             myAssetDocumentHierarchyElementContainer = assetDocumentHierarchyElementContainer;
             myScriptsUsagesElementContainers = scriptsUsagesElementContainers;
             myUnityEventsElementContainer = unityEventsElementContainer;
+            myAnimationEventUsagesContainer = animationEventUsagesContainer;
             myAssetInspectorValuesContainer = assetInspectorValuesContainer;
             myElements = elements;
         }
@@ -48,6 +53,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
             foreach (var element in myElements)
             {
+                if (element is IMethod method)
+                {
+                    var animationEventUsages = myAnimationEventUsagesContainer.GetEventUsagesFor(sourceFile, method);
+                    foreach (var usage in animationEventUsages)
+                    {
+                        var occurence = new UnityAnimationEventFindResults(sourceFile, element, usage, usage.Location);
+                        consumer.Accept(occurence);
+                    }
+                }
+                
                 if (element is IMethod || element is IProperty)
                 {
                     var usages = myUnityEventsElementContainer.GetAssetUsagesFor(sourceFile, element);

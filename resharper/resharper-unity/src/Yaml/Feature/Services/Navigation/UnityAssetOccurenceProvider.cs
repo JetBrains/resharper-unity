@@ -18,6 +18,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                 return new UnityEventSubscriptionOccurrence(unityEventFindResult.SourceFile, unityEventFindResult.DeclaredElement,
                     unityEventFindResult.AttachedElementLocation, unityEventFindResult.IsPrefabModification);
             }
+
+            if (findResult is UnityAnimationEventFindResults animationEventFindResult)
+            {
+                return new UnityAnimationEventOccurence(animationEventFindResult.SourceFile,
+                    animationEventFindResult.DeclaredElementPointer, animationEventFindResult.Usage);
+            }
             
             if (findResult is UnityScriptsFindResults scriptFindResult) return CreateScriptOccurence(scriptFindResult);
 

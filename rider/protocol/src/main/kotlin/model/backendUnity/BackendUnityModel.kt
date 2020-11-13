@@ -49,6 +49,8 @@ object BackendUnityModel: Root() {
         })
     }
 
+    private val AnimationFindUsagesResult = structdef extends AssetFindUsagesResultBase {}
+
     private val TestResult = structdef {
         field("testId", string)
         field("projectName", string)
