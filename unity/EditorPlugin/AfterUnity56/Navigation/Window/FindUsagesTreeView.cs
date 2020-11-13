@@ -92,11 +92,14 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
         var currentParent = findUsagePathElement;
         for (int i = 0, pathElementsLength = animatorElement.PathElements.Length; i < pathElementsLength; i++)
         {
+            var icon = i == pathElementsLength - 1 
+                ? animatorElement.TerminalNodeImage 
+                : AnimatorElement.AnimatorStateMachineIcon;
             var findUsagesTreeViewItem = new FindUsagesTreeViewItem(id, animatorElement)
             {
                 id = id,
                 displayName = animatorElement.PathElements[i],
-                icon = (Texture2D) EditorGUIUtility.IconContent(animatorElement.TerminalNodeImage).image
+                icon = (Texture2D) EditorGUIUtility.IconContent(icon).image
             };
             findResultItems[id] = findUsagesTreeViewItem;
             myAnimatorItemIdToPathElementsCount[id] = i + 1;

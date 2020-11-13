@@ -117,9 +117,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
             var path = sourceFile.GetLocation();
             if (path.IsControllerFile() &&
-                animatorContainer.GetElementsNames(location, declaredElement, out var names) && names != null)
+                animatorContainer.GetElementsNames(location, declaredElement, out var names, out var isStateMachine) &&
+                names != null)
             {
-                return new AnimatorFindUsagesResult(names, needExpand, pathFromAsset, fileName, extension);
+                return new AnimatorFindUsagesResult(names, 
+                    isStateMachine ? AnimatorUsageType.StateMachine : AnimatorUsageType.State, needExpand, 
+                    pathFromAsset, fileName, extension);
             }
             if (path.ExtensionWithDot.EndsWith(UnityYamlFileExtensions.AssetFileExtensionWithDot))
             {

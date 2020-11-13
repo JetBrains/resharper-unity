@@ -177,20 +177,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         public bool GetElementsNames(LocalReference location,
                                      [NotNull] IDeclaredElement declaredElement,
-                                     [CanBeNull] out string[] names)
+                                     [CanBeNull] out string[] names,
+                                     out bool isStateMachine)
         {
             AssertShellLocks();
             var element = GetDataElement(location);
             if (element is null)
             {
                 names = null;
+                isStateMachine = false;
                 return false;
             }
 
             var namesConsumer = new PathConsumer<string>(usage => usage.Name);
             var anchor = location.LocalDocumentAnchor;
             var namesAndAnchors = namesConsumer.Elements;
-            AddBottomElement(element, namesConsumer, anchor, declaredElement);
+            AddBottomElement(element, namesConsumer, anchor, declaredElement, out isStateMachine);
             ProcessPath(element, namesConsumer, anchor);
             namesAndAnchors.Reverse();
             names = namesAndAnchors.ToArray();
@@ -200,9 +202,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         private void AddBottomElement([NotNull] AnimatorUsagesDataElement element,
                                       [NotNull] PathConsumer<string> namesConsumer,
                                       long anchor,
-                                      [NotNull] IDeclaredElement declaredElement)
+                                      [NotNull] IDeclaredElement declaredElement,
+                                      out bool isStateMachine)
         {
-            if (TryAddBottomStateMachine(element, namesConsumer, anchor)) return;
+            if (TryAddBottomStateMachine(element, namesConsumer, anchor))
+            {
+                isStateMachine = true;
+                return;
+            }
+            isStateMachine = false;
             AddBottomStateElement(element, namesConsumer, anchor, declaredElement);
         }
 

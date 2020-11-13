@@ -48,7 +48,7 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
         }
         else if (request is AnimatorFindUsagesResult animatorUsage)
         {
-            AnimatorElements.Add(new AnimatorElement(animatorUsage.FilePath, animatorUsage.FileName,
+            AnimatorElements.Add(new AnimatorElement(animatorUsage.Type, animatorUsage.FilePath, animatorUsage.FileName,
                 animatorUsage.PathElements, EmptyArray<int>.Instance));
         }
         else
