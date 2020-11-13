@@ -14,6 +14,8 @@ import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurat
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
+import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
+import com.jetbrains.rider.plugins.unity.util.getRawProjectArgsAndDebugCodeOptimization
 import com.jetbrains.rider.projectView.solution
 import java.io.File
 
@@ -22,6 +24,8 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
     companion object {
         const val ATTACH_CONFIGURATION_NAME = "Attach to Unity Editor"
         const val ATTACH_AND_PLAY_CONFIGURATION_NAME = "Attach to Unity Editor & Play"
+        const val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = "Standalone Player"
+        const val RUN_DEBUG_EDITOR_CONFIGURATION_NAME = "UnityEditor"
     }
 
     init {
@@ -54,15 +58,28 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
 
             // create it, if it doesn't exist, to advertise the feature
             project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(projectComponentLifetime) {
-                if (!runManager.allSettings.any { s -> s.type is UnityExeConfigurationType && s.factory is UnityExeConfigurationFactory }) {
+                if (!runManager.allSettings.any { s -> s.type is UnityExeConfigurationType
+                        && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_STANDALONE_CONFIGURATION_NAME }) {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
-                    val runConfiguration = runManager.createConfiguration(configurationType.displayName, configurationType.factory)
+                    val runConfiguration = runManager.createConfiguration(RUN_DEBUG_STANDALONE_CONFIGURATION_NAME, configurationType.factory)
                     val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
                     unityExeConfiguration.parameters.exePath = it
                     unityExeConfiguration.parameters.workingDirectory = File(it).parent!!
                     runConfiguration.storeInLocalWorkspace()
                     runManager.addConfiguration(runConfiguration)
                 }
+            }
+
+            if (!runManager.allSettings.any { s -> s.type is UnityExeConfigurationType
+                    && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_EDITOR_CONFIGURATION_NAME }) {
+                val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
+                val runConfiguration = runManager.createConfiguration(RUN_DEBUG_EDITOR_CONFIGURATION_NAME, configurationType.factory)
+                val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
+                unityExeConfiguration.parameters.exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString()
+                unityExeConfiguration.parameters.workingDirectory = project.basePath!!
+                unityExeConfiguration.parameters.programParameters = getRawProjectArgsAndDebugCodeOptimization(project)
+                runConfiguration.storeInLocalWorkspace()
+                runManager.addConfiguration(runConfiguration)
             }
 
             // make Attach Unity Editor configuration selected if nothing is selected

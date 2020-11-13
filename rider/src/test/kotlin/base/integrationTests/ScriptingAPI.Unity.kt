@@ -31,7 +31,6 @@ import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoin
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
