@@ -26,12 +26,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
     public class UnityEventTargetAtomicRename : AtomicRenameBase
     {
         private readonly ISolution mySolution;
+        private readonly bool myIsRenameShouldBeSilent;
         private readonly IDeclaredElementPointer<IDeclaredElement> myPointer;
         private List<UnityEventHandlerOccurrence> myElementsToRename;
         private bool myIsProperty;
-        public UnityEventTargetAtomicRename(ISolution solution, IDeclaredElement declaredElement, string newName)
+        public UnityEventTargetAtomicRename(ISolution solution, IDeclaredElement declaredElement, string newName,
+            bool isRenameShouldBeSilent)
         {
             mySolution = solution;
+            myIsRenameShouldBeSilent = isRenameShouldBeSilent;
             myPointer = declaredElement.CreateElementPointer();
             OldName = declaredElement.ShortName;
             NewName = newName;
@@ -39,6 +42,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
 
         public override IRefactoringPage CreateRenamesConfirmationPage(IRenameWorkflow renameWorkflow, IProgressIndicator pi)
         {
+            // do not run find usages too, silent == true for player projects and misc project(misc could happen due to RIDER-53753)
+            // If we run find usages for player/misc declared element, find usages will return empty result, because
+            // guid is resolved to psiSourceFile from real projects only (GetTypeElementFromScriptAssetGuid in AssetUtils)
+            
+            // NOTE: find usages under the hood uses cache which stores TextRanges, cache will not be updated between several atomic renames.
+            // That means that only one atomic rename should exist or only one atomic rename should return non-empty result from find usages below
+            if (myIsRenameShouldBeSilent)
+                return null;
+            
             var de = myPointer.FindDeclaredElement();
             if (de == null)
                 return null;
@@ -77,7 +89,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
             return results;
         }
 
-        // ReSharper disable once IdentifierTypo
         public override void Rename(IRenameRefactoring executer, IProgressIndicator pi, bool hasConflictsWithDeclarations,
                                     IRefactoringDriver driver)
         {
