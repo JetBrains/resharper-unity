@@ -52,10 +52,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
             if (!UnityCallGraphUtil.IsSweaCompleted(mySwa))
                 return EmptyList<IntentionAction>.Instance;
 
-            if (PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(methodDeclaration))
-                return EmptyList<IntentionAction>.Instance;
-            
-            
             var bulbAction = new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
             var processKind = UnityCallGraphUtil.GetProcessKindForGraph(mySwa);
             var isExpensiveContext = myExpensiveContextProvider.HasContext(methodDeclaration, processKind);

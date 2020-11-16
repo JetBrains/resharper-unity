@@ -1,0 +1,67 @@
+﻿using UnityEngine;
+
+namespace ContextActionsTests
+{
+    public class ContextActionsTests : MonoBehaviour
+    {
+        private void Update()
+        {
+            ||GetComponent|(0)|(1)<int>();
+            |PlainExpensiveMethod|(2)();
+            |CommentExpensiveMethod|(3)();
+            |TransitiveExpensiveeMethod|(4)();
+        } 
+
+        private void TransitiveExpensiveeMethod()
+        {
+            |PlainExpensiveMethod|(5)();
+            |CommentExpensiveMethod|(6)();
+        }
+
+        private void PlainExpensiveMethod()
+        {
+            |GetComponent|(7)<int>();
+        }
+
+        // ReSharper restore Unity.ExpensiveCode
+        private void CommentExpensiveMethod()
+        {
+        }
+    }
+}
+------------------------------------------------
+0: Expensive method invocation
+QUICKFIXES:
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+1: Expensive method invocation
+QUICKFIXES:
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+2: Expensive method invocation
+QUICKFIXES:
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+3: Expensive method invocation
+QUICKFIXES:
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+4: Expensive method invocation
+QUICKFIXES:
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+5: Expensive method invocation
+QUICKFIXES:
+Disable performance analysis for method
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+6: Expensive method invocation
+QUICKFIXES:
+Disable performance analysis for method
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+7: Expensive method invocation
+QUICKFIXES:
+Disable performance analysis for method
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'

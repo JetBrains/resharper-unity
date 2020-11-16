@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
@@ -36,62 +37,90 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             myBurstBannedAnalyzers = prohibitedContextAnalyzers.ToList();
         }
 
+        private static LocalList<IDeclaredElement> GetMarksFromStruct([NotNull] IStruct @struct)
+        {
+            var result = new LocalList<IDeclaredElement>();
+            var superTypes = @struct.GetAllSuperTypes();
+            var interfaces = new LocalList<ITypeElement>();
+
+            foreach (var super in superTypes)
+            {
+                if (!super.IsInterfaceType())
+                    continue;
+
+                var superElement = super.GetTypeElement();
+
+                if (superElement == null)
+                    continue;
+
+                if (superElement.HasAttributeInstance(KnownTypes.JobProducerAttribute, AttributesSource.Self))
+                    interfaces.Add(superElement);
+            }
+
+            if (interfaces.Count == 0)
+                return result;
+
+            var canBeOverridenByInterfaceMethods = new LocalList<IMethod>();
+
+            foreach (var method in @struct.Methods)
+            {
+                if (!method.IsOverride && method.HasImmediateSuperMembers())
+                    canBeOverridenByInterfaceMethods.Add(method);
+            }
+
+            foreach (var @interface in interfaces)
+            {
+                foreach (var interfaceMethod in @interface.Methods)
+                {
+                    foreach (var structMethod in canBeOverridenByInterfaceMethods)
+                    {
+                        if (structMethod.OverridesOrImplements(interfaceMethod))
+                            result.Add(structMethod);
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            var result = new HashSet<IDeclaredElement>();
-
-            if (containingFunction != null && currentNode is IFunctionDeclaration functionDeclaration)
-            {
-                var hasComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration, MarkId, ReSharperControlConstruct.Kind.Restore);
-
-                if (hasComment)
-                    result.Add(functionDeclaration.DeclaredElement);
-            }
+            var result = new LocalList<IDeclaredElement>();
 
             switch (currentNode)
             {
-                case IClassLikeDeclaration classLikeDeclaration
-                    when classLikeDeclaration.DeclaredElement is ITypeElement typeElement &&
-                         typeElement.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self):
+                case IFunctionDeclaration functionDeclaration when containingFunction != null:
                 {
+                    if (UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
+                        MarkId, ReSharperControlConstruct.Kind.Restore))
+                        result.Add(functionDeclaration.DeclaredElement);
+
+                    break;
+                }
+                case IClassLikeDeclaration classLikeDeclaration:
+                {
+                    var typeElement = classLikeDeclaration.DeclaredElement;
+
+                    if (typeElement == null
+                        || !typeElement.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self))
+                        break;
+
                     if (typeElement is IStruct @struct)
+                        result = GetMarksFromStruct(@struct);
+
+                    foreach (var method in typeElement.Methods)
                     {
-                        var superTypes = @struct.GetAllSuperTypes();
-                        var interfaces = superTypes
-                            .Where(declaredType => declaredType.IsInterfaceType())
-                            .Select(declaredType => declaredType.GetTypeElement())
-                            .WhereNotNull()
-                            .Where(currentTypeElement =>
-                                currentTypeElement.HasAttributeInstance(KnownTypes.JobProducerAttribute,
-                                    AttributesSource.Self))
-                            .ToList();
-                        var structMethods = @struct.Methods.ToList();
-
-                        foreach (var @interface in interfaces)
-                        {
-                            var interfaceMethods = @interface.Methods.ToList();
-                            var overridenMethods = structMethods
-                                .Where(m => interfaceMethods.Any(m.OverridesOrImplements))
-                                .ToList();
-
-                            foreach (var overridenMethod in overridenMethods)
-                                result.Add(overridenMethod);
-                        }
+                        if (method.IsStatic
+                            && method.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self))
+                            result.Add(method);
                     }
-
-                    var staticMethods = typeElement.Methods.Where(method => method.IsStatic).ToList();
-                    var staticMethodsWithAttribute = staticMethods.Where(method => method.HasAttributeInstance(
-                        KnownTypes.BurstCompileAttribute, AttributesSource.Self)).ToList();
-
-                    foreach (var burstMethod in staticMethodsWithAttribute)
-                        result.Add(burstMethod);
 
                     break;
                 }
             }
 
-            return new LocalList<IDeclaredElement>(result.WhereNotNull());
+            return result;
         }
 
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
