@@ -31,6 +31,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             return referenceTracker.IsUnityProject(project);
         }
 
+        public static bool IsPlayerProject([CanBeNull] this IProject project)
+        {
+            if (project == null || !project.IsValid())
+                return false;
+            return project.Name.EndsWith(".Player");
+        }
+        
         public static bool IsUnityGeneratedProject([CanBeNull] this IProject project)
         {
             if (project == null)

@@ -7,6 +7,7 @@ using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.UsageChecking;
+using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
@@ -260,7 +261,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
             if (assetPaths.Count != 1)
                 return null;
 
-            var projectItems = solution.FindProjectItemsByLocation(assetPaths[0]);
+            var projectItems = solution.FindProjectItemsByLocation(assetPaths[0]).Where(t => !t.IsMiscProjectItem() && !t.GetProject().IsPlayerProject());
             var assetFile = projectItems.FirstOrDefault() as IProjectFile;
             var expectedClassName = assetPaths[0].NameWithoutExtension;
             var psiSourceFiles = assetFile?.ToSourceFiles();
