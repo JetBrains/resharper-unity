@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class ExpensiveCodeMarksProvider : CallGraphRootMarksProviderBase
     {
         public const string MarkId = "Unity.ExpensiveCode";
-        public static readonly CallGraphRootMarksProviderId ProviderId = new CallGraphRootMarksProviderId(MarkId);
+        public readonly CallGraphRootMarksProviderId ProviderId = new CallGraphRootMarksProviderId(MarkId);
 
         public ExpensiveCodeMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker,
