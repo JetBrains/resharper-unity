@@ -81,6 +81,7 @@ rider/**/out/*
 # Generated files
 **/*.generated.dotSettings
 **/*.generated.cs
+**/*.Generated.cs
 **/*.generated.kt
 **/*.generated.xaml
 **/*.generated.props
