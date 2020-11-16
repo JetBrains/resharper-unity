@@ -47,15 +47,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             }
         }
 
-        public static bool IsQualifierOpenType(IInvocationExpression invocationExpression)
-        {
-            var result =
-                ((invocationExpression.InvokedExpression as IReferenceExpression)?.QualifierExpression as
-                    IReferenceExpression)?.Reference.Resolve().DeclaredElement.Type()?.IsOpenType;
-
-            return result == true;
-        }
-
         [ContractAnnotation("null => false")]
         public static bool IsFixedString([CanBeNull] IType type)
         {
