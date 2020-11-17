@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Refactorings
         public IEnumerable<AtomicRenameBase> CreateAtomicRenames(IDeclaredElement declaredElement, string newName,
                                                                  bool doNotAddBindingConflicts)
         {
-            return new[] {new UnityEventTargetAtomicRename(declaredElement.GetSolution(), declaredElement, newName)};
+            return new[] {new UnityEventTargetAtomicRename(declaredElement.GetSolution(), declaredElement, newName, UnityRenameUtil.IsRenameShouldBeSilent(declaredElement))};
         }
 
         private static bool IsPossibleEventHandler(IDeclaredElement declaredElement)
