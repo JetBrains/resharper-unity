@@ -91,7 +91,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
-        private bool IsSerializableType([CanBeNull] ITypeElement type, [NotNull] IProject project, bool isTypeUsage)
+        private bool IsSerializableType([CanBeNull] ITypeElement type, [NotNull] IProject project, bool isTypeUsage,
+            bool hasSerializeReference = false)
         {
             if (!(type is IStruct || type is IClass))
                 return false;
@@ -99,8 +100,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (isTypeUsage)
             {
                 // Type usage (e.g. field declaration) is stricter. Means it must be a concrete type with no type
-                // parameters
-                if (type is IModifiersOwner modifiersOwner && modifiersOwner.IsAbstract)
+                // parameters, unless the type usage is for [SerializeReference], which allows abstract types
+                if (type is IModifiersOwner modifiersOwner && modifiersOwner.IsAbstract && !hasSerializeReference)
                     return false;
 
                 // Unity 2020.1 allows fields to have generic types. It's currently undocumented, but there are no
@@ -147,8 +148,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
                 return false;
 
-            if (field.GetAccessRights() != AccessRights.PUBLIC &&
-                !field.HasAttributeInstance(KnownTypes.SerializeField, false))
+            var hasSerializeReference = field.HasAttributeInstance(KnownTypes.SerializeReference, false);
+            if (field.GetAccessRights() != AccessRights.PUBLIC
+                && !field.HasAttributeInstance(KnownTypes.SerializeField, false)
+                && !hasSerializeReference)
             {
                 return false;
             }
@@ -159,11 +162,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             // Rules for what field types can be serialised.
             // See https://docs.unity3d.com/ScriptReference/SerializeField.html
-            return project != null && 
-                   (IsSimpleSerialisedFieldType(field.Type, project) || IsSerialisedFieldContainerType(field.Type, project));
+            return project != null &&
+                   (IsSimpleSerialisedFieldType(field.Type, project, hasSerializeReference) ||
+                    IsSerialisedFieldContainerType(field.Type, project, hasSerializeReference));
         }
 
-        private bool IsSimpleSerialisedFieldType([CanBeNull] IType type, [NotNull] IProject project)
+        private bool IsSimpleSerialisedFieldType([CanBeNull] IType type, [NotNull] IProject project, bool hasSerializeReference)
         {
             // We include type parameter types (T) in this test, which Unity obviously won't. We treat them as
             // serialised fields rather than show false positive redundant attribute warnings, etc. Adding the test
@@ -172,14 +176,14 @@ namespace JetBrains.ReSharper.Plugins.Unity
                                     || type.IsEnumType()
                                     || IsUnityBuiltinType(type as IDeclaredType)
                                     || type.GetTypeElement().DerivesFrom(KnownTypes.Object)
-                                    || IsSerializableType(type.GetTypeElement(), project, true)
+                                    || IsSerializableType(type.GetTypeElement(), project, true, hasSerializeReference)
                                     || type.IsTypeParameterType());
         }
 
-        private bool IsSerialisedFieldContainerType([CanBeNull] IType type, [NotNull] IProject project)
+        private bool IsSerialisedFieldContainerType([CanBeNull] IType type, [NotNull] IProject project, bool hasSerializeReference)
         {
             if (type is IArrayType arrayType && arrayType.Rank == 1 &&
-                IsSimpleSerialisedFieldType(arrayType.ElementType, project))
+                IsSimpleSerialisedFieldType(arrayType.ElementType, project, hasSerializeReference))
             {
                 return true;
             }
@@ -192,7 +196,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 if (typeParameter != null)
                 {
                     var substitutedType = substitution.Apply(typeParameter);
-                    return substitutedType.IsTypeParameterType() || IsSimpleSerialisedFieldType(substitutedType, project);
+                    return substitutedType.IsTypeParameterType() ||
+                           IsSimpleSerialisedFieldType(substitutedType, project, hasSerializeReference);
                 }
             }
 

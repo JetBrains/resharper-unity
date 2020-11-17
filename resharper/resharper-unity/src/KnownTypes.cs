@@ -47,6 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
         public static readonly IClrTypeName ScriptableObject = new ClrTypeName("UnityEngine.ScriptableObject");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");
+        public static readonly IClrTypeName SerializeReference = new ClrTypeName("UnityEngine.SerializeReference");
         public static readonly IClrTypeName Shader = new ClrTypeName("UnityEngine.Shader");
         public static readonly IClrTypeName SpaceAttribute = new ClrTypeName("UnityEngine.SpaceAttribute");
         public static readonly IClrTypeName TooltipAttribute = new ClrTypeName("UnityEngine.TooltipAttribute");

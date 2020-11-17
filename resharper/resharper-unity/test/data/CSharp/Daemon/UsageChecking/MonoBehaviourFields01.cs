@@ -8,11 +8,15 @@ public class A : MonoBehaviour
     public string implicitlyAssignedField;
     public string implicitlyAssignedMultiField1, implicitlyAssignedMultiField2;
     [SerializeField] private int implicitlyAssignedPrivateField;
+    [SerializeReference] private string implicitlyAssignedPrviateField2;
 
     // Assigned + used - no warning
     public string implicitlyAssignedAndUsedField;
 
     public List<string> implicitlyAssignedList;
+
+    [SerializeReference] private Track implicityAssignedAbstractField;
+    private Track myUnusedAbstractField;
 
     // Not serialized by Unity
     public Action UnusedAction;
@@ -44,4 +48,10 @@ public class B<T> : MonoBehaviour
 
     public List<T> possiblySerialisedList;
     [SerializeField] private List<T> possiblySerialisedList2;
+}
+
+[Serializable]
+public abstract class Track
+{
+    public string name;
 }
