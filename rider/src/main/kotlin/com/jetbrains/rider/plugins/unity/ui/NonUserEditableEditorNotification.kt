@@ -7,6 +7,7 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
+import com.intellij.util.ui.UIUtil
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.isUnityProject
@@ -31,7 +32,9 @@ class NonUserEditableEditorNotification : EditorNotifications.Provider<EditorNot
         if (project.isUnityProject() && isNonEditableUnityFile(file)) {
             val panel = EditorNotificationPanel()
             panel.text = "This file is internal to Unity and should not be edited manually."
-            addShowInUnityAction(project.lifetime, panel, file, project)
+            UIUtil.invokeLaterIfNeeded {
+                addShowInUnityAction(project.lifetime, panel, file, project)
+            }
             return panel
         }
 

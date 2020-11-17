@@ -7,6 +7,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
@@ -54,6 +55,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             
             if (declaration == null || IsBurstProhibitedNode(declaration))
                 return false;
+            
+            var functionDeclaration = declaration as IFunctionDeclaration;
+
+            if (UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
+                BurstMarksProvider.MarkId, ReSharperControlConstruct.Kind.Restore))
+                return true;
 
             return base.HasContext(declaration, processKind);
         }

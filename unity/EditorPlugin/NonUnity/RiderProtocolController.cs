@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -21,7 +22,7 @@ namespace JetBrains.Rider.Unity.Editor.NonUnity
       {
         ourLogger.Verbose("Start ControllerTask...");
 
-        Wire = new SocketWire.Server(lifetime, mainThreadScheduler, null, "UnityServer");
+        Wire = new SocketWire.Server(lifetime, mainThreadScheduler, (IPEndPoint) null, "UnityServer");
         Wire.BackwardsCompatibleWireFormat = true;
         
         ourLogger.Verbose($"Created SocketWire with port = {Wire.Port}");
