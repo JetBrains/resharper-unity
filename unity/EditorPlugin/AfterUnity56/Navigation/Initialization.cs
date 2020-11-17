@@ -36,6 +36,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.Navigation
                 case HierarchyFindUsagesResult hierarchyFindUsagesResult:
                     ShowUtil.ShowUsageOnScene(findUsagesResult.FilePath,  findUsagesResult.FileName, hierarchyFindUsagesResult.PathElements, hierarchyFindUsagesResult.RootIndices);
                     break;
+                case AnimationFindUsagesResult animationEventUsage:
+                    ShowUtil.ShowAnimationEventUsage(animationEventUsage.FilePath);
+                    break;
                 default:
                     ShowUtil.ShowFileUsage(findUsagesResult.FilePath);
                     break;

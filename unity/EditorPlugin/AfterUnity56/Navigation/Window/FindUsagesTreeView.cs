@@ -37,6 +37,9 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
       var animatorSubTree = CreateAnimatorSubTree();
       root.AddChild(animatorSubTree);
       
+      var animationSubTree = CreateAnimationEventsSubTree();
+      root.AddChild(animationSubTree);
+      
       SetupDepthsFromParentsAndChildren(root);
       return root;
     }
@@ -107,6 +110,32 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
             currentParent = findUsagesTreeViewItem;
             id++;
         }
+    }
+
+    private TreeViewItem CreateAnimationEventsSubTree()
+    {
+        var animationTreeRoot = new FindUsagePathElement(4) {id = 5, displayName = "Animations"};
+        var startId = 250_000;
+        foreach (var animationEventElement in myState.AnimationElements.ToArray())
+        {
+            CreateAnimationEventItem(animationTreeRoot, animationEventElement, ref startId);
+        }
+        return animationTreeRoot;
+    }
+
+    private void CreateAnimationEventItem([NotNull] TreeViewItem animationTreeRoot,
+                                          [NotNull] AbstractUsageElement animationElement,
+                                          ref int id)
+    {
+        var findUsagesTreeViewItem = new FindUsagesTreeViewItem(id, animationElement)
+        {
+            id = id,
+            displayName = animationElement.FileName,
+            icon = (Texture2D) EditorGUIUtility.IconContent(animationElement.TerminalNodeImage)?.image
+        };
+        findResultItems[id] = findUsagesTreeViewItem;
+        animationTreeRoot.AddChild(findUsagesTreeViewItem);
+        id++;
     }
 
     private void CreateSubTree(FindUsagePathElement element, IEnumerable<AbstractUsageElement> data, int startId)
@@ -190,6 +219,9 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
               var elements = animatorElement.PathElements;
               var range = elements.ToList().GetRange(0, myAnimatorItemIdToPathElementsCount[id]);
               ShowUtil.ShowAnimatorUsage(range.ToArray(), animatorElement.FilePath);
+              break;
+          case AnimationElement animationElement:
+              ShowUtil.ShowAnimationEventUsage(animationElement.FilePath);
               break;
       }
     }

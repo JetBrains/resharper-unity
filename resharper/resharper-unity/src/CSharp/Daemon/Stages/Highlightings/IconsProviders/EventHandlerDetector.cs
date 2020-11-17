@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -18,13 +20,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     public class EventHandlerDetector : UnityDeclarationHighlightingProviderBase
     {
         protected readonly UnityEventsElementContainer UnityEventsElementContainer;
-
+        private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
+        
         public EventHandlerDetector(ISolution solution, IApplicationWideContextBoundSettingStore settingsStore,
                                     UnityEventsElementContainer unityEventsElementContainer,
-                                    PerformanceCriticalContextProvider contextProvider)
+                                    PerformanceCriticalContextProvider contextProvider,
+                                    [NotNull] AnimationEventUsagesContainer animationEventUsagesContainer)
             : base(solution, settingsStore, contextProvider)
         {
             UnityEventsElementContainer = unityEventsElementContainer;
+            myAnimationEventUsagesContainer = animationEventUsagesContainer;
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
@@ -38,7 +43,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (declaredElement is IProperty property)
                 method = property.Setter;
 
-            if (method != null && UnityEventsElementContainer.GetAssetUsagesCount(method, out _) > 0)
+            if (method != null && UnityEventsElementContainer.GetAssetUsagesCount(method, out _) +
+                myAnimationEventUsagesContainer.GetEventUsagesCountFor(method)> 0)
             {
                 AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
                 return true;

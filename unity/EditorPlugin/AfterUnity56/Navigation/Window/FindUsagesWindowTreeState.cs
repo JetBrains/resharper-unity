@@ -20,9 +20,12 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
 
     [SerializeField]
     public List<ScriptableObjectElement> ScriptableObjectElements = new List<ScriptableObjectElement>();
-    
+
     [SerializeField]
     public List<AnimatorElement> AnimatorElements = new List<AnimatorElement>();
+    
+    [SerializeField]
+    public List<AnimationElement> AnimationElements = new List<AnimationElement>();
 
     public FindUsagesWindowTreeState()
     {
@@ -33,28 +36,29 @@ namespace JetBrains.Rider.Unity.Editor.Navigation.Window
     {
       foreach (var request in requests)
       {
-        if (request is HierarchyFindUsagesResult hierarchyFindUsagesResult)
-        {
-          if (request.FilePath.EndsWith(".prefab"))
+          switch (request)
           {
-            PrefabElements.Add(new PrefabElement(request.FilePath, request.FileName, hierarchyFindUsagesResult.PathElements,
-              hierarchyFindUsagesResult.RootIndices));
+              case HierarchyFindUsagesResult hierarchyFindUsagesResult when request.FilePath.EndsWith(".prefab"):
+                  PrefabElements.Add(new PrefabElement(request.FilePath, request.FileName, hierarchyFindUsagesResult.PathElements,
+                      hierarchyFindUsagesResult.RootIndices));
+                  break;
+              case HierarchyFindUsagesResult hierarchyFindUsagesResult:
+                  SceneElements.Add(new SceneElement(request.FilePath, request.FileName, hierarchyFindUsagesResult.PathElements,
+                      hierarchyFindUsagesResult.RootIndices));
+                  break;
+              case AnimatorFindUsagesResult animatorUsage:
+                  AnimatorElements.Add(new AnimatorElement(animatorUsage.Type, animatorUsage.FilePath,
+                      animatorUsage.FileName, animatorUsage.PathElements, EmptyArray<int>.Instance));
+                  break;
+              case AnimationFindUsagesResult animationEventUsage:
+                  AnimationElements.Add(new AnimationElement(
+                      animationEventUsage.FilePath, animationEventUsage.FileName, EmptyArray<string>.Instance,
+                      EmptyArray<int>.Instance));
+                  break;
+              default:
+                  ScriptableObjectElements.Add(new ScriptableObjectElement(request.FilePath, request.FileName, EmptyArray<string>.Instance, EmptyArray<int>.Instance));
+                  break;
           }
-          else
-          {
-            SceneElements.Add(new SceneElement(request.FilePath, request.FileName, hierarchyFindUsagesResult.PathElements,
-              hierarchyFindUsagesResult.RootIndices));
-          }
-        }
-        else if (request is AnimatorFindUsagesResult animatorUsage)
-        {
-            AnimatorElements.Add(new AnimatorElement(animatorUsage.Type, animatorUsage.FilePath, animatorUsage.FileName,
-                animatorUsage.PathElements, EmptyArray<int>.Instance));
-        }
-        else
-        {
-          ScriptableObjectElements.Add(new ScriptableObjectElement(request.FilePath, request.FileName, EmptyArray<string>.Instance, EmptyArray<int>.Instance));
-        }
       }
     }
   }

@@ -1,0 +1,29 @@
+Search target
+    Behaviour.F12231():void
+Found usages  (19 usages found)
+    Assets  (19 usages found)
+        AttackIn.anim  (5 usages found)
+            ...  (5 usages found)
+                AttackIn at 0:03
+                AttackIn at 0:07
+                AttackIn at 0:13
+                AttackIn at 0:17
+                AttackIn at 0:20
+        AttackLoop.anim  (4 usages found)
+            ...  (4 usages found)
+                AttackLoop at 0:05
+                AttackLoop at 0:06
+                AttackLoop at 1:00
+                AttackLoop at 1:02
+        Idle.anim  (10 usages found)
+            ...  (10 usages found)
+                Idle at 0:00
+                Idle at 0:05
+                Idle at 0:10
+                Idle at 0:20
+                Idle at 1:00
+                Idle at 1:12
+                Idle at 2:05
+                Idle at 2:15
+                Idle at 2:25
+                Idle at 2:28

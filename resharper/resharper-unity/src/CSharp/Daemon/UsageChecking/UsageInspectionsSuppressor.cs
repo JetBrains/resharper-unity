@@ -7,6 +7,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
 
@@ -60,6 +61,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     return true;
 
                 case IMethod method:
+                    // flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
+                    // return true;
                     var function = unityApi.GetUnityEventFunction(method, out var match);
                     if (function != null)
                     {
@@ -70,10 +73,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                                 : ImplicitUseKindFlags.Access;
                             return true;
                         }
-
+                        
                         return false;
                     }
-
+                    
                     if (IsEventHandler(unityApi, method) || IsRequiredSignatureMethod(method))
                     {
                         flags = ImplicitUseKindFlags.Access;
@@ -155,7 +158,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             if (!yamlParsingEnabled.Value || !assetSerializationMode.IsForceText || !solution.GetComponent<DeferredCacheController>().CompletedOnce.Value)
                 return unityApi.IsPotentialEventHandler(method, false); // if yaml parsing is disabled, we will consider private methods as unused
 
-            return solution.GetComponent<UnityEventsElementContainer>().GetAssetUsagesCount(method, out bool estimatedResult) > 0 || estimatedResult;
+            var eventsCount = solution
+                .GetComponent<UnityEventsElementContainer>()
+                .GetAssetUsagesCount(method, out bool estimatedResult);
+            var animationEventsCount = solution
+                .GetComponent<AnimationEventUsagesContainer>()
+                .GetEventUsagesCountFor(method);
+            return eventsCount + animationEventsCount > 0 || estimatedResult;
         }
 
         // If the method is marked with an attribute that has a method that is itself marked with RequiredSignature,

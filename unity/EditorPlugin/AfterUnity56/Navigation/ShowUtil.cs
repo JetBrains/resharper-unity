@@ -106,6 +106,14 @@ namespace JetBrains.Rider.Unity.Editor.Navigation
         EditorGUIUtility.PingObject(elementToSelect);
         Selection.activeObject = elementToSelect;
     }
+    
+    public static void ShowAnimationEventUsage([NotNull] string animFilePath)
+    {
+        var asset = AssetDatabase.LoadAssetAtPath(animFilePath, typeof(Object));
+        if (!(asset is AnimationClip clip)) return;
+        EditorGUIUtility.PingObject(clip);
+        Selection.activeObject = clip;
+    }
 
     [CanBeNull]
     private static AnimatorStateMachine FindParentForElementToSelect([NotNull] IList<string> pathElements,

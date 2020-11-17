@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi;
@@ -15,15 +16,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
     {
         [NotNull, ItemNotNull] private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
         private readonly UnityEventsElementContainer myUnityEventsElementContainer;
+        private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
         private readonly AssetInspectorValuesContainer myInspectorValuesContainer;
 
         public UnityYamlSearchGuru(UnityApi unityApi,
                                    [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
                                    UnityEventsElementContainer unityEventsElementContainer,
+                                   AnimationEventUsagesContainer animationEventUsagesContainer,
                                    AssetInspectorValuesContainer container)
         {
             myScriptsUsagesElementContainers = scriptsUsagesElementContainers;
             myUnityEventsElementContainer = unityEventsElementContainer;
+            myAnimationEventUsagesContainer = animationEventUsagesContainer;
             myInspectorValuesContainer = container;
         }
 
@@ -50,6 +54,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     break;
                 case IProperty _:
                 case IMethod _:
+                    foreach (var file in myAnimationEventUsagesContainer.GetPossibleFilesWithUsage(element))
+                        set.Add(file);
                     foreach (var sourceFile in myUnityEventsElementContainer.GetPossibleFilesWithUsage(element))
                         set.Add(sourceFile);
                     break;

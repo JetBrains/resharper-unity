@@ -111,7 +111,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                                     tag.Equals("!u!114") ||
                                     tag.Equals("!u!224") ||
                                     tag.Equals("!u!1102") ||
-                                    tag.Equals("!u!1107"))
+                                    tag.Equals("!u!1107") ||
+                                    tag.Equals("!u!74"))
                                 {
                                     isInteresting = true;
                                 }
