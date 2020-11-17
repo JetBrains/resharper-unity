@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class A : MonoBehaviour
@@ -10,6 +11,8 @@ public class A : MonoBehaviour
 
     // Assigned + used - no warning
     public string implicitlyAssignedAndUsedField;
+
+    public List<string> implicitlyAssignedList;
 
     // Not serialized by Unity
     public Action UnusedAction;
@@ -28,4 +31,17 @@ public class A : MonoBehaviour
     {
         Console.WriteLine(implicitlyAssignedAndUsedField);
     }
+}
+
+public class B<T> : MonoBehaviour
+{
+    // We don't know if T is serialisable or not. It's better to assume it is
+    public T possiblySerialisedField;
+    [SerializeField] private T possiblySerialisedField2;
+
+    public T[] possiblySerialisedArray;
+    [SerializeField] private T[] possiblySerialisedArray2;
+
+    public List<T> possiblySerialisedList;
+    [SerializeField] private List<T> possiblySerialisedList2;
 }

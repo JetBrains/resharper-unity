@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class A : MonoBehaviour
@@ -11,18 +12,20 @@ public class A : MonoBehaviour
     // Assigned + used - no warning
     public string implicitlyAssignedAndUsedField;
 
+    public List<string> |implicitlyAssignedList|(4);
+
     // Not serialized by Unity
-    public Action |UnusedAction|(4);
-    public const string |UnusedConst|(5) = "hello";
-    private const string |UnusedPrivateConst|(6) = "hello";
-    [|SerializeField|(7)] private const string |UnusedPrivateConst2|(8) = "hello";
-    private string |myUnusedField|(9);
-    public readonly string ||UnusedReadonlyField|(10)|(11);
-    [NonSerialized] public string |ExplicitlyUnusedField|(12);
-    [NonSerialized, |SerializeField|(13)] public string |ExplicitlyUnusedField2|(14);
-    [NonSerialized, |SerializeField|(15)] private string |myExplicitlyUnusedField3|(16);
-    public static string |UnusedStaticField|(17);
-    [|SerializeField|(18)] private static string |ourUnusedPrivateStaticField|(19);
+    public Action |UnusedAction|(5);
+    public const string |UnusedConst|(6) = "hello";
+    private const string |UnusedPrivateConst|(7) = "hello";
+    [|SerializeField|(8)] private const string |UnusedPrivateConst2|(9) = "hello";
+    private string |myUnusedField|(10);
+    public readonly string ||UnusedReadonlyField|(11)|(12);
+    [NonSerialized] public string |ExplicitlyUnusedField|(13);
+    [NonSerialized, |SerializeField|(14)] public string |ExplicitlyUnusedField2|(15);
+    [NonSerialized, |SerializeField|(16)] private string |myExplicitlyUnusedField3|(17);
+    public static string |UnusedStaticField|(18);
+    [|SerializeField|(19)] private static string |ourUnusedPrivateStaticField|(20);
 
     public void OnDestroy()
     {
@@ -30,25 +33,45 @@ public class A : MonoBehaviour
     }
 }
 
+public class B<T> : MonoBehaviour
+{
+    // We don't know if T is serialisable or not. It's better to assume it is
+    public T |possiblySerialisedField|(21);
+    [SerializeField] private T |possiblySerialisedField2|(22);
+
+    public T[] |possiblySerialisedArray|(23);
+    [SerializeField] private T[] |possiblySerialisedArray2|(24);
+
+    public List<T> |possiblySerialisedList|(25);
+    [SerializeField] private List<T> |possiblySerialisedList2|(26);
+}
+
 ---------------------------------------------------------
 (0): ReSharper Dead Code: Serialised field 'implicitlyAssignedField' is assigned but its value is never used
 (1): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField1' is assigned but its value is never used
 (2): ReSharper Dead Code: Serialised field 'implicitlyAssignedMultiField2' is assigned but its value is never used
 (3): ReSharper Dead Code: Serialised field 'implicitlyAssignedPrivateField' is assigned but its value is never used
-(4): ReSharper Dead Code: Field 'UnusedAction' is never used
-(5): ReSharper Dead Code: Constant 'UnusedConst' is never used
-(6): ReSharper Dead Code: Constant 'UnusedPrivateConst' is never used
-(7): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(8): ReSharper Dead Code: Constant 'UnusedPrivateConst2' is never used
-(9): ReSharper Warning [CS0169]: Field 'myUnusedField' is never used
-(10): ReSharper Dead Code: Field 'UnusedReadonlyField' is never used
-(11): ReSharper Warning: Readonly field 'UnusedReadonlyField' is never assigned
-(12): ReSharper Dead Code: Field 'ExplicitlyUnusedField' is never used
-(13): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(14): ReSharper Dead Code: Field 'ExplicitlyUnusedField2' is never used
-(15): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(16): ReSharper Warning [CS0169]: Field 'myExplicitlyUnusedField3' is never used
-(17): ReSharper Dead Code: Field 'UnusedStaticField' is never used
-(18): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(19): ReSharper Warning [CS0169]: Field 'ourUnusedPrivateStaticField' is never used
+(4): ReSharper Dead Code: Serialised field 'implicitlyAssignedList' is assigned but its value is never used
+(5): ReSharper Dead Code: Field 'UnusedAction' is never used
+(6): ReSharper Dead Code: Constant 'UnusedConst' is never used
+(7): ReSharper Dead Code: Constant 'UnusedPrivateConst' is never used
+(8): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(9): ReSharper Dead Code: Constant 'UnusedPrivateConst2' is never used
+(10): ReSharper Warning [CS0169]: Field 'myUnusedField' is never used
+(11): ReSharper Dead Code: Field 'UnusedReadonlyField' is never used
+(12): ReSharper Warning: Readonly field 'UnusedReadonlyField' is never assigned
+(13): ReSharper Dead Code: Field 'ExplicitlyUnusedField' is never used
+(14): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(15): ReSharper Dead Code: Field 'ExplicitlyUnusedField2' is never used
+(16): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(17): ReSharper Warning [CS0169]: Field 'myExplicitlyUnusedField3' is never used
+(18): ReSharper Dead Code: Field 'UnusedStaticField' is never used
+(19): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(20): ReSharper Warning [CS0169]: Field 'ourUnusedPrivateStaticField' is never used
+(21): ReSharper Dead Code: Serialised field 'possiblySerialisedField' is assigned but its value is never used
+(22): ReSharper Dead Code: Serialised field 'possiblySerialisedField2' is assigned but its value is never used
+(23): ReSharper Dead Code: Serialised field 'possiblySerialisedArray' is assigned but its value is never used
+(24): ReSharper Dead Code: Serialised field 'possiblySerialisedArray2' is assigned but its value is never used
+(25): ReSharper Dead Code: Serialised field 'possiblySerialisedList' is assigned but its value is never used
+(26): ReSharper Dead Code: Serialised field 'possiblySerialisedList2' is assigned but its value is never used
 

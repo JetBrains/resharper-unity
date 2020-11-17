@@ -159,19 +159,24 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             // Rules for what field types can be serialised.
             // See https://docs.unity3d.com/ScriptReference/SerializeField.html
-            return project != null && IsSimpleSerialisedFieldType(field.Type, project) || IsSerialisedFieldContainerType(field.Type, project);
+            return project != null && 
+                   (IsSimpleSerialisedFieldType(field.Type, project) || IsSerialisedFieldContainerType(field.Type, project));
         }
 
         private bool IsSimpleSerialisedFieldType([CanBeNull] IType type, [NotNull] IProject project)
         {
+            // We include type parameter types (T) in this test, which Unity obviously won't. We treat them as
+            // serialised fields rather than show false positive redundant attribute warnings, etc. Adding the test
+            // here allows us to support T[] and List<T>
             return type != null && (type.IsSimplePredefined()
                                     || type.IsEnumType()
                                     || IsUnityBuiltinType(type as IDeclaredType)
                                     || type.GetTypeElement().DerivesFrom(KnownTypes.Object)
-                                    || IsSerializableType(type.GetTypeElement(), project, true));
+                                    || IsSerializableType(type.GetTypeElement(), project, true)
+                                    || type.IsTypeParameterType());
         }
 
-        private bool IsSerialisedFieldContainerType(IType type, IProject project)
+        private bool IsSerialisedFieldContainerType([CanBeNull] IType type, [NotNull] IProject project)
         {
             if (type is IArrayType arrayType && arrayType.Rank == 1 &&
                 IsSimpleSerialisedFieldType(arrayType.ElementType, project))
@@ -186,7 +191,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var typeParameter = declaredType.GetTypeElement()?.TypeParameters[0];
                 if (typeParameter != null)
                 {
-                    return IsSimpleSerialisedFieldType(substitution.Apply(typeParameter), project);
+                    var substitutedType = substitution.Apply(typeParameter);
+                    return substitutedType.IsTypeParameterType() || IsSimpleSerialisedFieldType(substitutedType, project);
                 }
             }
 
