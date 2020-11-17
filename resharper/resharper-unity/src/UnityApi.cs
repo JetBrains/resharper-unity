@@ -120,11 +120,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (type is IClass @class && @class.IsStaticClass())
                 return false;
 
-            // System.Version seems to be special cased. In Mono, it's marked as [Serializable], but in netstandard,
-            // it's not. Which means that depending on what runtime you're using, you could potentially get different
-            // fields serialised. However, it never shows up in Inspector, so it's a good indication that it's handled
-            // specially.
-            if (Equals(type.GetClrName(), KnownTypes.SystemVersion))
+            // System.Dictionary is special cased and excluded. We can see this in UnitySerializationLogic.cs in the
+            // reference source repo. It also excludes anything with a full name beginning "System.", which includes
+            // "System.Version" (which is marked [Serializable]). However, it doesn't exclude string, int, etc.
+            // TODO: Rewrite this whole section to properly mimic UnitySerializationLogic.cs
+            var name = type.GetClrName();
+            if (Equals(name, KnownTypes.SystemVersion) || Equals(name, PredefinedType.GENERIC_DICTIONARY_FQN))
                 return false;
 
             return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);

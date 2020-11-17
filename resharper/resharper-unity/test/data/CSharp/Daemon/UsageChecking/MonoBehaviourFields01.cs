@@ -31,6 +31,9 @@ public class A : MonoBehaviour
     public static string UnusedStaticField;
     [SerializeField] private static string ourUnusedPrivateStaticField;
 
+    // Unity 2020.1 supports serialising generics, but not dictionaries
+    public Dictionary<string, string> UnusedDictionary;
+
     public void OnDestroy()
     {
         Console.WriteLine(implicitlyAssignedAndUsedField);
