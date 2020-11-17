@@ -12,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName AddComponentMenu = new ClrTypeName("UnityEngine.AddComponentMenu");
         public static readonly IClrTypeName AnimationCurve = new ClrTypeName("UnityEngine.AnimationCurve");
         public static readonly IClrTypeName Animator = new ClrTypeName("UnityEngine.Animator");
+        public static readonly IClrTypeName Bounds = new ClrTypeName("UnityEngine.Bounds");
+        public static readonly IClrTypeName BoundsInt = new ClrTypeName("UnityEngine.BoundsInt");
         public static readonly IClrTypeName Camera = new ClrTypeName("UnityEngine.Camera");
         public static readonly IClrTypeName Color = new ClrTypeName("UnityEngine.Color");
         public static readonly IClrTypeName Color32 = new ClrTypeName("UnityEngine.Color32");
@@ -42,6 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName RangeAttribute = new ClrTypeName("UnityEngine.RangeAttribute");
         public static readonly IClrTypeName RequireComponent = new ClrTypeName("UnityEngine.RequireComponent");
         public static readonly IClrTypeName Rect = new ClrTypeName("UnityEngine.Rect");
+        public static readonly IClrTypeName RectInt = new ClrTypeName("UnityEngine.RectInt");
         public static readonly IClrTypeName RectOffset = new ClrTypeName("UnityEngine.RectOffset");
         public static readonly IClrTypeName Resources = new ClrTypeName("UnityEngine.Resources");
         public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");

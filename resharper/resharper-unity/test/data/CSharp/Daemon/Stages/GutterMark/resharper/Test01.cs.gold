@@ -11,26 +11,41 @@ public class ||A|(0)|(1) : MonoBehaviour
     public string ||ImplicitlyAssignedMultiField1|(4)|(5), ||ImplicitlyAssignedMultiField2|(6)|(7);
     [SerializeField] private int ||myImplicitlyAssignedPrivateField|(8)|(9);
     public Vector2 ||ImplicitlyAssignedBuiltinType|(10)|(11);
-    public Vector3 ||ImplicitlyAssignedBuiltinType2|(12)|(13);
-    public Vector4 ||ImplicitlyAssignedBuiltinType3|(14)|(15);
-    public List<string> ||ImplicitlyAssignedList|(16)|(17);
-    public string[] ||ImplicitlyAssignedArray|(18)|(19);
-    public SerialisableClass ||ImplicitlyAssignedCustomSerialisableClass|(20)|(21);
-    public SerialisableStruct ||ImplicitlyAssignedCustomSerialisableStruct|(22)|(23);
-    public SerialisableClass[] ||ImplicitlyAssignedCustomSerialisableClassArray|(24)|(25);
-    public SerialisableStruct[] ||ImplicitlyAssignedCustomSerialisableStructArray|(26)|(27);
+    public Vector2Int ||ImplicitlyAssignedBuiltinType2|(12)|(13);
+    public Vector3 ||ImplicitlyAssignedBuiltinType3|(14)|(15);
+    public Vector3Int ||ImplicitlyAssignedBuiltinType4|(16)|(17);
+    public Vector4 ||ImplicitlyAssignedBuiltinType5|(18)|(19);
+    public Rect ||ImplicitlyAssignedBuiltinType6|(20)|(21);
+    public RectInt ||ImplicitlyAssignedBuiltinType7|(22)|(23);
+    public RectOffset ||ImplicitlyAssignedBuiltinType8|(24)|(25);
+    public Quaternion ||ImplicitlyAssignedBuiltinType9|(26)|(27);
+    public Matrix4x4 ||ImplicitlyAssignedBuiltinType10|(28)|(29);
+    public Color ||ImplicitlyAssignedBuiltinType11|(30)|(31);
+    public Color32 ||ImplicitlyAssignedBuiltinType12|(32)|(33);
+    public LayerMask ||ImplicitlyAssignedBuiltinType13|(34)|(35);
+    public Bounds ||ImplicitlyAssignedBuiltinType14|(36)|(37);
+    public BoundsInt ||ImplicitlyAssignedBuiltinType15|(38)|(39);
+    public AnimationCurve ||ImplicitlyAssignedBuiltinType16|(40)|(41);
+    public Gradient ||ImplicitlyAssignedBuiltinType17|(42)|(43);
+    public GUIStyle ||ImplicitlyAssignedBuiltinType18|(44)|(45);
+    public List<string> ||ImplicitlyAssignedList|(46)|(47);
+    public string[] ||ImplicitlyAssignedArray|(48)|(49);
+    public SerialisableClass ||ImplicitlyAssignedCustomSerialisableClass|(50)|(51);
+    public SerialisableStruct ||ImplicitlyAssignedCustomSerialisableStruct|(52)|(53);
+    public SerialisableClass[] ||ImplicitlyAssignedCustomSerialisableClassArray|(54)|(55);
+    public SerialisableStruct[] ||ImplicitlyAssignedCustomSerialisableStructArray|(56)|(57);
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
     private const string UnusedPrivateConst = "hello";
-    [|SerializeField|(28)] private const string UnusedPrivateConst2 = "hello";
+    [|SerializeField|(58)] private const string UnusedPrivateConst2 = "hello";
     private string myUnusedField;
     public readonly string UnusedReadonlyField;
     [NonSerialized] public string ExplicitlyUnusedField;
-    [NonSerialized, |SerializeField|(29)] public string ExplicitlyUnusedField2;
-    [NonSerialized, |SerializeField|(30)] private string myExplicitlyUnusedField3;
+    [NonSerialized, |SerializeField|(59)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(60)] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
-    [|SerializeField|(31)] private static string ourUnusedPrivateStaticField;
+    [|SerializeField|(61)] private static string ourUnusedPrivateStaticField;
     public Version NotSerialisedStruct;
     public Dictionary<string, string> NotSerialisedDictionary;
     public NotSerialisableClass NotSerialisedClass;
@@ -39,9 +54,9 @@ public class ||A|(0)|(1) : MonoBehaviour
     public string[][] NotSerialisedJaggedArray;
 
     // Unity function
-    |private void ||OnDestroy|(33)|(34)()
+    |private void ||OnDestroy|(63)|(64)()
     {
-    }|(32)
+    }|(62)
 
     // Not a Unity function
     private void NotMessage()
@@ -49,21 +64,21 @@ public class ||A|(0)|(1) : MonoBehaviour
     }
 
     // Unity message as coroutine
-    private IEnumerator ||Start|(35)|(36)()
+    private IEnumerator ||Start|(65)|(66)()
     {
         return null;
     }
 
     // Optional parameter
-    |private void ||OnCollisionStay|(38)|(39)()
+    |private void ||OnCollisionStay|(68)|(69)()
     {
-    }|(37)
+    }|(67)
 }
 
 [InitializeOnLoad]
 public class Startup
 {
-    static |Startup|(40)()
+    static |Startup|(70)()
     {
         Debug.Log("Up and running");
     }
@@ -89,7 +104,7 @@ class MyClass
     }
 
     [RuntimeInitializeOnLoadMethod]
-    public void |NotAppliedToInstanceMethods|(41)()
+    public void |NotAppliedToInstanceMethods|(71)()
     {
     }
 
@@ -106,7 +121,7 @@ class MyClass
     }
 
     [InitializeOnLoadMethod]
-    public void |NotAppliedToInstanceMethod|(42)()
+    public void |NotAppliedToInstanceMethod|(72)()
     {
         Debug.Log("Project loaded in Unity Editor");
     }
@@ -116,30 +131,45 @@ class MyClass
 public class SerialisableClass
 {
     // All serialised by Unity - gutter icons
-    public string ||ImplicitlyAssignedField|(43)|(44);
-    public string ||ImplicitlyAssignedMultiField1|(45)|(46), ||ImplicitlyAssignedMultiField2|(47)|(48);
-    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(49)|(50);
-    public Vector2 ||ImplicitlyAssignedBuiltinType|(51)|(52);
-    public Vector3 ||ImplicitlyAssignedBuiltinType2|(53)|(54);
-    public Vector4 ||ImplicitlyAssignedBuiltinType3|(55)|(56);
-    public List<string> ||ImplicitlyAssignedList|(57)|(58);
-    public string[] ||ImplicitlyAssignedArray|(59)|(60);
-    public SerialisableClass ||ImplicitlyAssignedCustomSerialisableClass|(61)|(62);
-    public SerialisableStruct ||ImplicitlyAssignedCustomSerialisableStruct|(63)|(64);
-    public SerialisableClass[] ||ImplicitlyAssignedCustomSerialisableClassArray|(65)|(66);
-    public SerialisableStruct[] ||ImplicitlyAssignedCustomSerialisableStructArray|(67)|(68);
+    public string ||ImplicitlyAssignedField|(73)|(74);
+    public string ||ImplicitlyAssignedMultiField1|(75)|(76), ||ImplicitlyAssignedMultiField2|(77)|(78);
+    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(79)|(80);
+    public Vector2 ||ImplicitlyAssignedBuiltinType|(81)|(82);
+    public Vector2Int ||ImplicitlyAssignedBuiltinType2|(83)|(84);
+    public Vector3 ||ImplicitlyAssignedBuiltinType3|(85)|(86);
+    public Vector3Int ||ImplicitlyAssignedBuiltinType4|(87)|(88);
+    public Vector4 ||ImplicitlyAssignedBuiltinType5|(89)|(90);
+    public Rect ||ImplicitlyAssignedBuiltinType6|(91)|(92);
+    public RectInt ||ImplicitlyAssignedBuiltinType7|(93)|(94);
+    public RectOffset ||ImplicitlyAssignedBuiltinType8|(95)|(96);
+    public Quaternion ||ImplicitlyAssignedBuiltinType9|(97)|(98);
+    public Matrix4x4 ||ImplicitlyAssignedBuiltinType10|(99)|(100);
+    public Color ||ImplicitlyAssignedBuiltinType11|(101)|(102);
+    public Color32 ||ImplicitlyAssignedBuiltinType12|(103)|(104);
+    public LayerMask ||ImplicitlyAssignedBuiltinType13|(105)|(106);
+    public Bounds ||ImplicitlyAssignedBuiltinType14|(107)|(108);
+    public BoundsInt ||ImplicitlyAssignedBuiltinType15|(109)|(110);
+    public AnimationCurve ||ImplicitlyAssignedBuiltinType16|(111)|(112);
+    public Gradient ||ImplicitlyAssignedBuiltinType17|(113)|(114);
+    public GUIStyle ||ImplicitlyAssignedBuiltinType18|(115)|(116);
+    public List<string> ||ImplicitlyAssignedList|(117)|(118);
+    public string[] ||ImplicitlyAssignedArray|(119)|(120);
+    public SerialisableClass ||ImplicitlyAssignedCustomSerialisableClass|(121)|(122);
+    public SerialisableStruct ||ImplicitlyAssignedCustomSerialisableStruct|(123)|(124);
+    public SerialisableClass[] ||ImplicitlyAssignedCustomSerialisableClassArray|(125)|(126);
+    public SerialisableStruct[] ||ImplicitlyAssignedCustomSerialisableStructArray|(127)|(128);
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
     private const string UnusedPrivateConst = "hello";
-    [|SerializeField|(69)] private const string UnusedPrivateConst2 = "hello";
+    [|SerializeField|(129)] private const string UnusedPrivateConst2 = "hello";
     private string myUnusedField;
     public readonly string UnusedReadonlyField;
     [NonSerialized] public string ExplicitlyUnusedField;
-    [NonSerialized, |SerializeField|(70)] public string ExplicitlyUnusedField2;
-    [NonSerialized, |SerializeField|(71)] private string myExplicitlyUnusedField3;
+    [NonSerialized, |SerializeField|(130)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(131)] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
-    [|SerializeField|(72)] private static string ourUnusedPrivateStaticField;
+    [|SerializeField|(132)] private static string ourUnusedPrivateStaticField;
     public Version NotSerialisedStruct;
     public Dictionary<string, string> NotSerialisedDictionary;
     public NotSerialisableClass NotSerialisedClass;
@@ -152,40 +182,64 @@ public class SerialisableClass
 public struct SerialisableStruct
 {
     // All serialised by Unity - gutter icons
-    public string ||ImplicitlyAssignedField|(73)|(74);
-    public string ||ImplicitlyAssignedMultiField1|(75)|(76), ||ImplicitlyAssignedMultiField2|(77)|(78);
-    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(79)|(80);
+    public string ||ImplicitlyAssignedField|(133)|(134);
+    public string ||ImplicitlyAssignedMultiField1|(135)|(136), ||ImplicitlyAssignedMultiField2|(137)|(138);
+    [SerializeField] private int ||myImplicitlyAssignedPrivateField|(139)|(140);
+    public Vector2 ||ImplicitlyAssignedBuiltinType|(141)|(142);
+    public Vector2Int ||ImplicitlyAssignedBuiltinType2|(143)|(144);
+    public Vector3 ||ImplicitlyAssignedBuiltinType3|(145)|(146);
+    public Vector3Int ||ImplicitlyAssignedBuiltinType4|(147)|(148);
+    public Vector4 ||ImplicitlyAssignedBuiltinType5|(149)|(150);
+    public Rect ||ImplicitlyAssignedBuiltinType6|(151)|(152);
+    public RectInt ||ImplicitlyAssignedBuiltinType7|(153)|(154);
+    public RectOffset ||ImplicitlyAssignedBuiltinType8|(155)|(156);
+    public Quaternion ||ImplicitlyAssignedBuiltinType9|(157)|(158);
+    public Matrix4x4 ||ImplicitlyAssignedBuiltinType10|(159)|(160);
+    public Color ||ImplicitlyAssignedBuiltinType11|(161)|(162);
+    public Color32 ||ImplicitlyAssignedBuiltinType12|(163)|(164);
+    public LayerMask ||ImplicitlyAssignedBuiltinType13|(165)|(166);
+    public Bounds ||ImplicitlyAssignedBuiltinType14|(167)|(168);
+    public BoundsInt ||ImplicitlyAssignedBuiltinType15|(169)|(170);
+    public AnimationCurve ||ImplicitlyAssignedBuiltinType16|(171)|(172);
+    public Gradient ||ImplicitlyAssignedBuiltinType17|(173)|(174);
+    public GUIStyle ||ImplicitlyAssignedBuiltinType18|(175)|(176);
+    public List<string> ||ImplicitlyAssignedList|(177)|(178);
+    public string[] ||ImplicitlyAssignedArray|(179)|(180);
+    public SerialisableClass ||ImplicitlyAssignedCustomSerialisableClass|(181)|(182);
+    public SerialisableStruct ||ImplicitlyAssignedCustomSerialisableStruct|(183)|(184);
+    public SerialisableClass[] ||ImplicitlyAssignedCustomSerialisableClassArray|(185)|(186);
+    public SerialisableStruct[] ||ImplicitlyAssignedCustomSerialisableStructArray|(187)|(188);
 
     // Not serialized by Unity
     public const string UnusedConst = "hello";
     private const string UnusedPrivateConst = "hello";
-    [|SerializeField|(81)] private const string UnusedPrivateConst2 = "hello";
+    [|SerializeField|(189)] private const string UnusedPrivateConst2 = "hello";
     private string myUnusedField;
     public readonly string UnusedReadonlyField;
     [NonSerialized] public string ExplicitlyUnusedField;
-    [NonSerialized, |SerializeField|(82)] public string ExplicitlyUnusedField2;
-    [NonSerialized, |SerializeField|(83)] private string myExplicitlyUnusedField3;
+    [NonSerialized, |SerializeField|(190)] public string ExplicitlyUnusedField2;
+    [NonSerialized, |SerializeField|(191)] private string myExplicitlyUnusedField3;
     public static string UnusedStaticField;
-    [|SerializeField|(84)] private static string ourUnusedPrivateStaticField;
+    [|SerializeField|(192)] private static string ourUnusedPrivateStaticField;
 }
 
 public class NotSerialisableClass
 {
     public string NotSerialised1;
-    [|SerializeField|(85)] public string NotSerialised2;
+    [|SerializeField|(193)] public string NotSerialised2;
 }
 
 struct NotSerialisableStruct
 {
     public string NotSerialised1;
-    [|SerializeField|(86)] public string NotSerialised2;
+    [|SerializeField|(194)] public string NotSerialised2;
 }
 
 [Serializable]
 static class NotSerialisableStaticClass
 {
     public static string NotSerialised1;
-    [|SerializeField|(87)] public static string NotSerialised2;
+    [|SerializeField|(195)] public static string NotSerialised2;
 }
 
 ---------------------------------------------------------
@@ -217,59 +271,59 @@ static class NotSerialisableStaticClass
 (25): Unity Gutter Icon: This field is initialized from Inspector
 (26): ReSharper Unity Implicitly Used Identifier: 
 (27): Unity Gutter Icon: This field is initialized from Inspector
-(28): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(29): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(30): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(31): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(32): ReSharper Dead Code: Redundant Unity event function
-(33): ReSharper Unity Implicitly Used Identifier: 
-(34): Unity Gutter Icon: Unity event function
+(28): ReSharper Unity Implicitly Used Identifier: 
+(29): Unity Gutter Icon: This field is initialized from Inspector
+(30): ReSharper Unity Implicitly Used Identifier: 
+(31): Unity Gutter Icon: This field is initialized from Inspector
+(32): ReSharper Unity Implicitly Used Identifier: 
+(33): Unity Gutter Icon: This field is initialized from Inspector
+(34): ReSharper Unity Implicitly Used Identifier: 
+(35): Unity Gutter Icon: This field is initialized from Inspector
+(36): ReSharper Unity Implicitly Used Identifier: 
+(37): Unity Gutter Icon: This field is initialized from Inspector
+(38): ReSharper Unity Implicitly Used Identifier: 
+(39): Unity Gutter Icon: This field is initialized from Inspector
+(40): ReSharper Unity Implicitly Used Identifier: 
+(41): Unity Gutter Icon: This field is initialized from Inspector
+(42): ReSharper Unity Implicitly Used Identifier: 
+(43): Unity Gutter Icon: This field is initialized from Inspector
+(44): ReSharper Unity Implicitly Used Identifier: 
+(45): Unity Gutter Icon: This field is initialized from Inspector
+(46): ReSharper Unity Implicitly Used Identifier: 
+(47): Unity Gutter Icon: This field is initialized from Inspector
+(48): ReSharper Unity Implicitly Used Identifier: 
+(49): Unity Gutter Icon: This field is initialized from Inspector
+(50): ReSharper Unity Implicitly Used Identifier: 
+(51): Unity Gutter Icon: This field is initialized from Inspector
+(52): ReSharper Unity Implicitly Used Identifier: 
+(53): Unity Gutter Icon: This field is initialized from Inspector
+(54): ReSharper Unity Implicitly Used Identifier: 
+(55): Unity Gutter Icon: This field is initialized from Inspector
+(56): ReSharper Unity Implicitly Used Identifier: 
+(57): Unity Gutter Icon: This field is initialized from Inspector
+(58): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(59): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(60): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(61): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(62): ReSharper Dead Code: Redundant Unity event function
+(63): ReSharper Unity Implicitly Used Identifier: 
+(64): Unity Gutter Icon: Unity event function
 
 Destroying the attached Behaviour will result in the game or Scene receiving OnDestroy.
-(35): ReSharper Unity Implicitly Used Identifier: 
-(36): Unity Gutter Icon: Unity event function
+(65): ReSharper Unity Implicitly Used Identifier: 
+(66): Unity Gutter Icon: Unity event function
 
 Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
 This function can be a coroutine.
-(37): ReSharper Dead Code: Redundant Unity event function
-(38): ReSharper Unity Implicitly Used Identifier: 
-(39): Unity Gutter Icon: Unity event function
+(67): ReSharper Dead Code: Redundant Unity event function
+(68): ReSharper Unity Implicitly Used Identifier: 
+(69): Unity Gutter Icon: Unity event function
 
 OnCollisionStay is called once per frame for every collider/rigidbody that is touching rigidbody/collider.
 This function can be a coroutine.
-(40): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
-(41): ReSharper Warning: Missing static modifier
-(42): ReSharper Warning: Missing static modifier
-(43): ReSharper Unity Implicitly Used Identifier: 
-(44): Unity Gutter Icon: This field is serialized by Unity
-(45): ReSharper Unity Implicitly Used Identifier: 
-(46): Unity Gutter Icon: This field is serialized by Unity
-(47): ReSharper Unity Implicitly Used Identifier: 
-(48): Unity Gutter Icon: This field is serialized by Unity
-(49): ReSharper Unity Implicitly Used Identifier: 
-(50): Unity Gutter Icon: This field is serialized by Unity
-(51): ReSharper Unity Implicitly Used Identifier: 
-(52): Unity Gutter Icon: This field is serialized by Unity
-(53): ReSharper Unity Implicitly Used Identifier: 
-(54): Unity Gutter Icon: This field is serialized by Unity
-(55): ReSharper Unity Implicitly Used Identifier: 
-(56): Unity Gutter Icon: This field is serialized by Unity
-(57): ReSharper Unity Implicitly Used Identifier: 
-(58): Unity Gutter Icon: This field is serialized by Unity
-(59): ReSharper Unity Implicitly Used Identifier: 
-(60): Unity Gutter Icon: This field is serialized by Unity
-(61): ReSharper Unity Implicitly Used Identifier: 
-(62): Unity Gutter Icon: This field is serialized by Unity
-(63): ReSharper Unity Implicitly Used Identifier: 
-(64): Unity Gutter Icon: This field is serialized by Unity
-(65): ReSharper Unity Implicitly Used Identifier: 
-(66): Unity Gutter Icon: This field is serialized by Unity
-(67): ReSharper Unity Implicitly Used Identifier: 
-(68): Unity Gutter Icon: This field is serialized by Unity
-(69): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(70): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(71): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(72): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(70): Unity Gutter Icon: Called when Unity first launches the editor, the player, or recompiles scripts
+(71): ReSharper Warning: Missing static modifier
+(72): ReSharper Warning: Missing static modifier
 (73): ReSharper Unity Implicitly Used Identifier: 
 (74): Unity Gutter Icon: This field is serialized by Unity
 (75): ReSharper Unity Implicitly Used Identifier: 
@@ -278,10 +332,118 @@ This function can be a coroutine.
 (78): Unity Gutter Icon: This field is serialized by Unity
 (79): ReSharper Unity Implicitly Used Identifier: 
 (80): Unity Gutter Icon: This field is serialized by Unity
-(81): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(82): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(83): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(84): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(85): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(86): ReSharper Dead Code: Redundant 'SerializeField' attribute
-(87): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(81): ReSharper Unity Implicitly Used Identifier: 
+(82): Unity Gutter Icon: This field is serialized by Unity
+(83): ReSharper Unity Implicitly Used Identifier: 
+(84): Unity Gutter Icon: This field is serialized by Unity
+(85): ReSharper Unity Implicitly Used Identifier: 
+(86): Unity Gutter Icon: This field is serialized by Unity
+(87): ReSharper Unity Implicitly Used Identifier: 
+(88): Unity Gutter Icon: This field is serialized by Unity
+(89): ReSharper Unity Implicitly Used Identifier: 
+(90): Unity Gutter Icon: This field is serialized by Unity
+(91): ReSharper Unity Implicitly Used Identifier: 
+(92): Unity Gutter Icon: This field is serialized by Unity
+(93): ReSharper Unity Implicitly Used Identifier: 
+(94): Unity Gutter Icon: This field is serialized by Unity
+(95): ReSharper Unity Implicitly Used Identifier: 
+(96): Unity Gutter Icon: This field is serialized by Unity
+(97): ReSharper Unity Implicitly Used Identifier: 
+(98): Unity Gutter Icon: This field is serialized by Unity
+(99): ReSharper Unity Implicitly Used Identifier: 
+(100): Unity Gutter Icon: This field is serialized by Unity
+(101): ReSharper Unity Implicitly Used Identifier: 
+(102): Unity Gutter Icon: This field is serialized by Unity
+(103): ReSharper Unity Implicitly Used Identifier: 
+(104): Unity Gutter Icon: This field is serialized by Unity
+(105): ReSharper Unity Implicitly Used Identifier: 
+(106): Unity Gutter Icon: This field is serialized by Unity
+(107): ReSharper Unity Implicitly Used Identifier: 
+(108): Unity Gutter Icon: This field is serialized by Unity
+(109): ReSharper Unity Implicitly Used Identifier: 
+(110): Unity Gutter Icon: This field is serialized by Unity
+(111): ReSharper Unity Implicitly Used Identifier: 
+(112): Unity Gutter Icon: This field is serialized by Unity
+(113): ReSharper Unity Implicitly Used Identifier: 
+(114): Unity Gutter Icon: This field is serialized by Unity
+(115): ReSharper Unity Implicitly Used Identifier: 
+(116): Unity Gutter Icon: This field is serialized by Unity
+(117): ReSharper Unity Implicitly Used Identifier: 
+(118): Unity Gutter Icon: This field is serialized by Unity
+(119): ReSharper Unity Implicitly Used Identifier: 
+(120): Unity Gutter Icon: This field is serialized by Unity
+(121): ReSharper Unity Implicitly Used Identifier: 
+(122): Unity Gutter Icon: This field is serialized by Unity
+(123): ReSharper Unity Implicitly Used Identifier: 
+(124): Unity Gutter Icon: This field is serialized by Unity
+(125): ReSharper Unity Implicitly Used Identifier: 
+(126): Unity Gutter Icon: This field is serialized by Unity
+(127): ReSharper Unity Implicitly Used Identifier: 
+(128): Unity Gutter Icon: This field is serialized by Unity
+(129): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(130): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(131): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(132): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(133): ReSharper Unity Implicitly Used Identifier: 
+(134): Unity Gutter Icon: This field is serialized by Unity
+(135): ReSharper Unity Implicitly Used Identifier: 
+(136): Unity Gutter Icon: This field is serialized by Unity
+(137): ReSharper Unity Implicitly Used Identifier: 
+(138): Unity Gutter Icon: This field is serialized by Unity
+(139): ReSharper Unity Implicitly Used Identifier: 
+(140): Unity Gutter Icon: This field is serialized by Unity
+(141): ReSharper Unity Implicitly Used Identifier: 
+(142): Unity Gutter Icon: This field is serialized by Unity
+(143): ReSharper Unity Implicitly Used Identifier: 
+(144): Unity Gutter Icon: This field is serialized by Unity
+(145): ReSharper Unity Implicitly Used Identifier: 
+(146): Unity Gutter Icon: This field is serialized by Unity
+(147): ReSharper Unity Implicitly Used Identifier: 
+(148): Unity Gutter Icon: This field is serialized by Unity
+(149): ReSharper Unity Implicitly Used Identifier: 
+(150): Unity Gutter Icon: This field is serialized by Unity
+(151): ReSharper Unity Implicitly Used Identifier: 
+(152): Unity Gutter Icon: This field is serialized by Unity
+(153): ReSharper Unity Implicitly Used Identifier: 
+(154): Unity Gutter Icon: This field is serialized by Unity
+(155): ReSharper Unity Implicitly Used Identifier: 
+(156): Unity Gutter Icon: This field is serialized by Unity
+(157): ReSharper Unity Implicitly Used Identifier: 
+(158): Unity Gutter Icon: This field is serialized by Unity
+(159): ReSharper Unity Implicitly Used Identifier: 
+(160): Unity Gutter Icon: This field is serialized by Unity
+(161): ReSharper Unity Implicitly Used Identifier: 
+(162): Unity Gutter Icon: This field is serialized by Unity
+(163): ReSharper Unity Implicitly Used Identifier: 
+(164): Unity Gutter Icon: This field is serialized by Unity
+(165): ReSharper Unity Implicitly Used Identifier: 
+(166): Unity Gutter Icon: This field is serialized by Unity
+(167): ReSharper Unity Implicitly Used Identifier: 
+(168): Unity Gutter Icon: This field is serialized by Unity
+(169): ReSharper Unity Implicitly Used Identifier: 
+(170): Unity Gutter Icon: This field is serialized by Unity
+(171): ReSharper Unity Implicitly Used Identifier: 
+(172): Unity Gutter Icon: This field is serialized by Unity
+(173): ReSharper Unity Implicitly Used Identifier: 
+(174): Unity Gutter Icon: This field is serialized by Unity
+(175): ReSharper Unity Implicitly Used Identifier: 
+(176): Unity Gutter Icon: This field is serialized by Unity
+(177): ReSharper Unity Implicitly Used Identifier: 
+(178): Unity Gutter Icon: This field is serialized by Unity
+(179): ReSharper Unity Implicitly Used Identifier: 
+(180): Unity Gutter Icon: This field is serialized by Unity
+(181): ReSharper Unity Implicitly Used Identifier: 
+(182): Unity Gutter Icon: This field is serialized by Unity
+(183): ReSharper Unity Implicitly Used Identifier: 
+(184): Unity Gutter Icon: This field is serialized by Unity
+(185): ReSharper Unity Implicitly Used Identifier: 
+(186): Unity Gutter Icon: This field is serialized by Unity
+(187): ReSharper Unity Implicitly Used Identifier: 
+(188): Unity Gutter Icon: This field is serialized by Unity
+(189): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(190): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(191): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(192): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(193): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(194): ReSharper Dead Code: Redundant 'SerializeField' attribute
+(195): ReSharper Dead Code: Redundant 'SerializeField' attribute

@@ -20,11 +20,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static readonly JetHashSet<IClrTypeName> ourUnityBuiltinSerializedFieldTypes = new JetHashSet<IClrTypeName>
         {
             KnownTypes.Vector2, KnownTypes.Vector3, KnownTypes.Vector4,
-            KnownTypes.Rect, KnownTypes.RectOffset,
+            KnownTypes.Vector2Int, KnownTypes.Vector3Int,
+            KnownTypes.Rect, KnownTypes.RectInt, KnownTypes.RectOffset,
             KnownTypes.Quaternion,
             KnownTypes.Matrix4x4,
             KnownTypes.Color, KnownTypes.Color32,
             KnownTypes.LayerMask,
+            KnownTypes.Bounds, KnownTypes.BoundsInt,
             KnownTypes.AnimationCurve,
             KnownTypes.Gradient,
             KnownTypes.GUIStyle
