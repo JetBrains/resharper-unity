@@ -4,9 +4,11 @@ using JetBrains.Application.UI.PopupLayout;
 using JetBrains.Diagnostics;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Presentation;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
+using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.UI.RichText;
 using JetBrains.Util.Extension;
 
@@ -49,7 +51,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
 
         public override string ToString()
         {
-            return GetDisplayText()?.Text ?? "Animation event";
+            var pointer = DeclaredElementPointer;
+            if (pointer is null) return "Invalid";
+            using (ReadLockCookie.Create())
+            {
+                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                {
+                    var element = pointer.FindDeclaredElement();
+                    if (element == null) return "Invalid";
+                    var language = element.PresentationLanguage;
+                    return DeclaredElementMenuItemFormatter.FormatText(element, language, out _)?.Text ?? "Invalid";
+                }
+            }
         }
     }
 }
