@@ -49,11 +49,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
             var navigator = solution.GetComponent<UnityAssetOccurrenceNavigator>();
             return navigator.Navigate(solution, DeclaredElementPointer, OwningElementLocation);
         }
-
-        public override string ToString()
-        {
-            return GetDisplayText()?.Text ??
-                   (Usage is AnimatorStateScriptUsage ? "Animator state" : "Animator state machine");
-        }
     }
 }
