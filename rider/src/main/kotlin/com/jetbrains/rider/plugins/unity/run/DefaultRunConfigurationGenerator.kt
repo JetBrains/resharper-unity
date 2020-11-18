@@ -70,18 +70,6 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
                 }
             }
 
-            if (!runManager.allSettings.any { s -> s.type is UnityExeConfigurationType
-                    && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_EDITOR_CONFIGURATION_NAME }) {
-                val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
-                val runConfiguration = runManager.createConfiguration(RUN_DEBUG_EDITOR_CONFIGURATION_NAME, configurationType.factory)
-                val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
-                unityExeConfiguration.parameters.exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString()
-                unityExeConfiguration.parameters.workingDirectory = project.basePath!!
-                unityExeConfiguration.parameters.programParameters = getRawProjectArgsAndDebugCodeOptimization(project)
-                runConfiguration.storeInLocalWorkspace()
-                runManager.addConfiguration(runConfiguration)
-            }
-
             // make Attach Unity Editor configuration selected if nothing is selected
             if (runManager.selectedConfiguration == null) {
                 val runConfiguration = runManager.findConfigurationByName(ATTACH_CONFIGURATION_NAME)

@@ -2,34 +2,37 @@ package com.jetbrains.rider.plugins.unity.run.configurations
 
 import com.intellij.execution.ExecutionResult
 import com.intellij.execution.Executor
-import com.intellij.execution.configurations.RuntimeConfigurationError
-import com.intellij.execution.process.OSProcessUtil
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.AddRemove
-import com.jetbrains.rd.util.reactive.hasTrueValue
 import com.jetbrains.rider.debugger.DebuggerHelperHost
 import com.jetbrains.rider.debugger.DebuggerInitializingState
 import com.jetbrains.rider.debugger.DebuggerWorkerProcessHandler
 import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
-import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
-import com.jetbrains.rider.plugins.unity.util.*
+import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
 import com.jetbrains.rider.run.configurations.remote.MonoConnectRemoteProfileState
+import com.jetbrains.rider.util.NetUtils
 import com.jetbrains.rider.util.startLongBackgroundAsync
-import kotlinx.coroutines.delay
 
-class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAttachToEditorRunConfiguration, executionEnvironment: ExecutionEnvironment)
+class UnityAttachToEditorProfileState(private val exeDebugProfileState : UnityExeDebugProfileState, private val remoteConfiguration: UnityAttachToEditorRunConfiguration, executionEnvironment: ExecutionEnvironment)
     : MonoConnectRemoteProfileState(remoteConfiguration, executionEnvironment) {
     private val logger = Logger.getInstance(UnityAttachToEditorProfileState::class.java)
     private val project = executionEnvironment.project
 
+    override fun execute(executor: Executor?, runner: ProgramRunner<*>): ExecutionResult? {
+        throw UnsupportedOperationException("Should use overload with session")
+    }
+
+    override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler): ExecutionResult {
+        throw UnsupportedOperationException("Should use overload with session")
+    }
     override fun execute(executor: Executor, runner: ProgramRunner<*>, workerProcessHandler: DebuggerWorkerProcessHandler, lifetime: Lifetime): ExecutionResult {
         if (remoteConfiguration.play) {
             val lt = lifetime.createNested().lifetime
@@ -51,47 +54,22 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
             }
         }
 
+        if (remoteConfiguration.listenPortForConnections)
+            return exeDebugProfileState.execute(executor, runner, workerProcessHandler, lifetime)
         return super.execute(executor, runner, workerProcessHandler)
     }
 
     override suspend fun createWorkerRunInfo(lifetime: Lifetime, helper: DebuggerHelperHost, port: Int): WorkerRunInfo {
-        // alternative approach
-        // it is better because mono waits for attach, so rider would not miss any frames,
-        // but if you disconnect and try to attach again it fails, because updatePidAndPort would try different port
-        // val actualPort = com.jetbrains.rider.util.NetUtils.findFreePort(500013, setOf(port))
-        // val processBuilder = ProcessBuilder(args)
-        // processBuilder.environment().set("MONO_ARGUMENTS", "--debugger-agent=transport=dt_socket,address=${remoteConfiguration.address}:$actualPort,embedding=1,server=y,suspend=y")
-        // val process = processBuilder.start()
-        // val actualPid = OSProcessUtil.getProcessID(process)
-        // remoteConfiguration.pid = actualPid
-        // remoteConfiguration.port = actualPort
-
         lifetime.startLongBackgroundAsync {
             if (!remoteConfiguration.updatePidAndPort()) {
-                logger.trace("Do not found Unity, starting new Unity Editor")
+                logger.trace("Have not found Unity, would start a new Unity Editor instead.")
 
-                val model = project.solution.frontendBackendModel
-                if (UnityInstallationFinder.getInstance(project).getApplicationExecutablePath() == null ||
-                    model.hasUnityReference.hasTrueValue && !project.isUnityProject()) {
-                    throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")
-                }
-
-                val args = getUnityWithProjectArgsAndDebugCodeOptimization(project)
-                if (remoteConfiguration.play) {
-                    addPlayModeArguments(args)
-                }
-
-                val process = ProcessBuilder(args).start()
-                val actualPid = OSProcessUtil.getProcessID(process)
-                remoteConfiguration.pid = actualPid
-                remoteConfiguration.port = convertPidToDebuggerPort(actualPid)
-
-                delay(2000)
+                remoteConfiguration.listenPortForConnections = true
+                remoteConfiguration.port = NetUtils.findFreePort(500013, setOf(port))
+                remoteConfiguration.address = "127.0.0.1"
             }
         }.await()
 
-        logger.trace("DebuggerWorker port: $port")
-        logger.trace("Connecting to Unity Editor with port: ${remoteConfiguration.port}")
         val cmd = super.createWorkerRunInfo(lifetime, helper, port)
         cmd.commandLine.withUnityExtensionsEnabledEnvironment(project)
         return cmd

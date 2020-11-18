@@ -16,9 +16,13 @@ import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.isUnityProjectFolder
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityRunUtil
+import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
+import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
+import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeDebugProfileState
 import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.solution
+import com.jetbrains.rider.run.configurations.exe.ExeConfigurationParameters
 import com.jetbrains.rider.run.configurations.remote.DotNetRemoteConfiguration
 import com.jetbrains.rider.run.configurations.remote.RemoteConfiguration
 import com.jetbrains.rider.run.configurations.unity.UnityAttachConfigurationExtension
@@ -40,6 +44,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
     @Transient override var port: Int = -1
     @Transient override var address: String = "127.0.0.1"
     @Transient var pid: Int? = null
+    @Transient override var listenPortForConnections: Boolean = false
 
     override fun clone(): RunConfiguration {
         val configuration = super.clone() as UnityAttachToEditorRunConfiguration
@@ -70,13 +75,22 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
             }
         }
 
-        if (executorId == DefaultDebugExecutor.EXECUTOR_ID)
-            return UnityAttachToEditorProfileState(this, environment)
-
+        if (executorId == DefaultDebugExecutor.EXECUTOR_ID) {
+            val params = ExeConfigurationParameters(
+                exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString(),
+                programParameters = getRawProjectArgsAndDebugCodeOptimization(project),
+                workingDirectory = project.basePath!!,
+                envs = hashMapOf(),
+                isPassParentEnvs = true,
+                useExternalConsole = false
+            )
+            val exeConfiguration = UnityExeConfiguration(name, project,
+                ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java).factory, params)
+            return UnityAttachToEditorProfileState(
+                UnityExeDebugProfileState(exeConfiguration, this, environment), this, environment)
+        }
         return null
     }
-
-    override var listenPortForConnections: Boolean = false
 
     override fun checkSettingsBeforeRun() {
         // This method lets us check settings before run. If we throw an instance of RuntimeConfigurationError, the Run
@@ -179,6 +193,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         pid = null
         port = -1
         address = "127.0.0.1"
+        listenPortForConnections = false
     }
 
     override fun writeExternal(element: Element) {
