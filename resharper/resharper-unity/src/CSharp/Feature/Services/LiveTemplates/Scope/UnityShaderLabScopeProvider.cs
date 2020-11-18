@@ -3,13 +3,13 @@ using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.LiveTemplates;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.ShaderLab.Psi;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Files;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
+    // TODO: Move this to ShaderLab folder hierarchy
     [ShellComponent]
     public class UnityShaderLabScopeProvider : ScopeProvider
     {

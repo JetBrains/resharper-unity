@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
     [ScopeCategoryUIProvider(Priority = Priority)]
     public class UnityScopeCategoryUIProvider : ScopeCategoryUIProvider
@@ -21,8 +20,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
         public override IEnumerable<ITemplateScopePoint> BuildAllPoints()
         {
             yield return new InUnityCSharpProject();
+            yield return new MustBeInUnitySerializableType();
             yield return new MustBeInUnityType();
             yield return new MustBeInUnityCSharpFile();
+            
+            // TODO: Should this be part of this category provider? Everything else is C#
             yield return new InUnityShaderLabFile();
         }
 
@@ -30,15 +32,21 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
         public override string Present(ITemplateScopePoint point)
         {
-            if (point is InUnityCSharpProject)
-                return "In Unity project";
-            if (point is MustBeInUnityCSharpFile)
-                return "In Unity C# file";
-            if (point is MustBeInUnityType)
-                return "In Unity type where type members are allowed";
-            if (point is InUnityShaderLabFile)
-                return "In Unity ShaderLab file";
-            return base.Present(point);
+            switch (point)
+            {
+                case InUnityCSharpProject _:
+                    return "In Unity project";
+                case MustBeInUnityCSharpFile _:
+                    return "In Unity C# file";
+                case MustBeInUnityType _:
+                    return "In Unity type where type members are allowed";
+                case MustBeInUnitySerializableType _:
+                    return "In Unity serializable type where type members are allowed";
+                case InUnityShaderLabFile _:
+                    return "In Unity ShaderLab file";
+                default:
+                    return base.Present(point);
+            }
         }
     }
 }

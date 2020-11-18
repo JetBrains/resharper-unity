@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using JetBrains.Application;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
@@ -28,20 +27,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 yield return new MustBeInProjectWithUnityVersion(version);
         }
 
-        public ITemplateScopePoint ReadFromXml(XmlElement scopeElement)
-        {
-            return scopeElement.GetAttribute(TemplateScopePoint.AttrType) != MustBeInProjectWithUnityVersion.TypeName
-                ? null
-                : new MustBeInProjectWithUnityVersion(Version.Parse(scopeElement.GetAttribute(MustBeInProjectWithUnityVersion.VersionProperty)));
-        }
-
         public ITemplateScopePoint CreateScope(Guid scopeGuid, string typeName,
             IEnumerable<Pair<string, string>> customProperties)
         {
             if (typeName != MustBeInProjectWithUnityVersion.TypeName)
                 return null;
 
-            var versionString = customProperties.Where(p => p.First == MustBeInProjectWithUnityVersion.VersionProperty).Select(p => p.Second)
+            var versionString = customProperties.Where(p => p.First == MustBeInProjectWithUnityVersion.VersionProperty)
+                .Select(p => p.Second)
                 .FirstOrDefault();
             if (versionString == null)
                 return null;

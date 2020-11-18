@@ -5,11 +5,10 @@ using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
     // Provides the scope points that are valid for the given context
     [ShellComponent]
@@ -57,14 +56,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                     yield return new InUnityCSharpFirstpassFolder();
                     if (isEditor)
                         yield return new InUnityCSharpFirstpassEditorFolder();
-                    if (!isEditor)
+                    else
                         yield return new InUnityCSharpFirstpassRuntimeFolder();
                 }
                 else
                 {
                     if (isEditor)
                         yield return new InUnityCSharpEditorFolder();
-                    if (!isEditor)
+                    else
                         yield return new InUnityCSharpRuntimeFolder();
                 }
             }
