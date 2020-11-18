@@ -29,6 +29,9 @@ fun MutableList<String>.withRiderPath() : MutableList<String> {
     return this
 }
 
+/**
+ * Undocumented commandline argument, which forces Unity to enable `Debug Code Optimization`, even if it has `Release Code Optimization` in its settings.
+ */
 fun MutableList<String>.withDebugCodeOptimization() : MutableList<String> {
     this.add("-debugCodeOptimization")
     return this
