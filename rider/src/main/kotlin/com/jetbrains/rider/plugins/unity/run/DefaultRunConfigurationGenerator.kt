@@ -14,8 +14,6 @@ import com.jetbrains.rider.plugins.unity.run.configurations.UnityDebugConfigurat
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfiguration
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationFactory
 import com.jetbrains.rider.plugins.unity.run.configurations.unityExe.UnityExeConfigurationType
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.plugins.unity.util.getRawProjectArgsAndDebugCodeOptimization
 import com.jetbrains.rider.projectView.solution
 import java.io.File
 
@@ -25,7 +23,6 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
         const val ATTACH_CONFIGURATION_NAME = "Attach to Unity Editor"
         const val ATTACH_AND_PLAY_CONFIGURATION_NAME = "Attach to Unity Editor & Play"
         const val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = "Standalone Player"
-        const val RUN_DEBUG_EDITOR_CONFIGURATION_NAME = "UnityEditor"
     }
 
     init {

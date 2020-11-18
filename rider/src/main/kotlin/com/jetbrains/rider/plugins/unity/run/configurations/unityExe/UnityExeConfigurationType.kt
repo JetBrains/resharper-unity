@@ -1,11 +1,10 @@
 package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 
 import com.intellij.execution.configurations.ConfigurationTypeBase
-import com.intellij.util.IconUtil
 import icons.UnityIcons
 
 class UnityExeConfigurationType : ConfigurationTypeBase("RunUnityExe", "Unity Executable", // "RunUnityExe" preserved for compatibility
-    "Unity Executable configuration", UnityIcons.RunConfigurations.UnityExe) {
+    "Either UnityEditor or Unity Standalone Player", UnityIcons.RunConfigurations.UnityExe) {
 
     val factory: UnityExeConfigurationFactory = UnityExeConfigurationFactory(this)
 
