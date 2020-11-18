@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.util
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.util.Restarter
 
 fun convertPidToDebuggerPort(port: Int) = convertPidToDebuggerPort(port.toLong())
@@ -14,20 +15,30 @@ fun addPlayModeArguments(args : MutableList<String>) {
     args.add("JetBrains.Rider.Unity.Editor.StartUpMethodExecutor.EnterPlayMode")
 }
 
-fun getUnityWithProjectArgs(project: Project) : MutableList<String> {
-    val finder = UnityInstallationFinder.getInstance(project)
-    val args = mutableListOf(finder.getApplicationExecutablePath().toString(), "-projectPath", project.basePath.toString())
-    val riderPath = Restarter.getIdeStarter()?.path
-    if (riderPath!=null)
-    {
-        val originArgs = mutableListOf("-riderPath", riderPath)
-        args.addAll(originArgs)
-    }
-    return args
+fun getUnityArgs(project: Project):MutableList<String>
+{
+    val executable = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString()
+    return mutableListOf<String>(executable)
 }
 
-fun getUnityWithProjectArgsAndDebugCodeOptimization(project: Project) : MutableList<String> {
-    val args = getUnityWithProjectArgs(project)
-    args.add("-debugCodeOptimization")
-    return args
+fun MutableList<String>.withRiderPath() : MutableList<String> {
+    val riderPath = Restarter.getIdeStarter()?.path
+    if (riderPath != null) {
+        this.addAll(mutableListOf("-riderPath", riderPath))
+    }
+    return this
+}
+
+fun MutableList<String>.withDebugCodeOptimization() : MutableList<String> {
+    this.add("-debugCodeOptimization")
+    return this
+}
+
+fun MutableList<String>.withProjectPath(project: Project) : MutableList<String> {
+    this.addAll(mutableListOf("-projectPath", project.basePath.toString()))
+    return this
+}
+
+fun MutableList<String>.toProgramParameters() : String {
+    return StringUtil.join(this, "\n")
 }

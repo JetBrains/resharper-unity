@@ -64,7 +64,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         for (ext in EP_NAME.getExtensions(project)) {
             if (ext.canExecute(executorId)) {
                 val finder = UnityInstallationFinder.getInstance(project)
-                val args = getUnityWithProjectArgsAndDebugCodeOptimization(project)
+                val args = getUnityArgs(project).withProjectPath(project).withDebugCodeOptimization().withRiderPath()
                 if (play) {
                     addPlayModeArguments(args)
                 }
@@ -78,7 +78,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         if (executorId == DefaultDebugExecutor.EXECUTOR_ID) {
             val params = ExeConfigurationParameters(
                 exePath = UnityInstallationFinder.getInstance(project).getApplicationExecutablePath().toString(),
-                programParameters = getRawProjectArgsAndDebugCodeOptimization(project),
+                programParameters = mutableListOf<String>().withProjectPath(project).withDebugCodeOptimization().withRiderPath().toProgramParameters(),
                 workingDirectory = project.basePath!!,
                 envs = hashMapOf(),
                 isPassParentEnvs = true,
