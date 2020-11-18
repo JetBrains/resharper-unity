@@ -19,10 +19,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                 yield break;
 
             var project = context.GetProject();
-            if (project != null && !project.IsUnityProject())
-                yield break;
+            var version = project != null
+                ? context.Solution.GetComponent<UnityVersion>().GetActualVersion(project)
+                : context.Solution.GetComponent<UnityVersion>().ActualVersionForSolution.Value;
 
-            var version = context.Solution.GetComponent<UnityVersion>().GetActualVersion(project);
             if (version.Major != 0)
                 yield return new MustBeInProjectWithUnityVersion(version);
         }
