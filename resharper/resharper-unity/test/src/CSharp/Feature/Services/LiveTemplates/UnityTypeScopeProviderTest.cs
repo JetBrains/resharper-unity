@@ -13,7 +13,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Feature.Services.LiveTe
         
         [Test] public void TestInMonoBehaviour() { DoNamedTest2(); }
         [Test] public void TestInScriptableObject() { DoNamedTest2(); }
-        [Test] public void TestInSerializableClass() { DoNamedTest2(); }
         [Test] public void TestInUnityCSharpFile01() { DoNamedTest2(); }
         [Test] public void TestInUnityCSharpFile02() { DoNamedTest2(); }
     }
