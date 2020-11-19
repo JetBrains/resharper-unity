@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings
     // RegisterConfigurableHighlightingsGroup registers a group in Inspection Severity
     [RegisterConfigurableHighlightingsGroup(Unity, "Unity")]
     [RegisterConfigurableHighlightingsGroup(UnityPerformance, "Unity Performance Inspections", PencilsGroupKind.UnityPerformanceKind)]
-    [RegisterConfigurableHighlightingsGroup(Burst, "Unity Burst Compiler Warning")]
+    [RegisterConfigurableHighlightingsGroup(Burst, "Unity Burst Compiler Warnings")]
     public static class UnityHighlightingGroupIds
     {
         public const string Unity = "UNITY";
