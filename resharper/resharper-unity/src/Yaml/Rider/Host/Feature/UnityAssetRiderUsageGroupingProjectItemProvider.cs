@@ -58,7 +58,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 return UnityFileTypeThemedIcons.FileUnityPrefab.Id;
             if (location.IsMeta())
                 return UnityFileTypeThemedIcons.FileUnityMeta.Id;
-
+            if (location.IsControllerFile())
+                return UnityFileTypeThemedIcons.FileAnimatorController.Id;
+            
             return UnityFileTypeThemedIcons.FileUnity.Id;
         }
 

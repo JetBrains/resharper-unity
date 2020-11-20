@@ -87,7 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class AnimatorGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         public AnimatorGroupingRule([NotNull] IconHost iconHost) 
-            : base("Animator", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 10.0)
+            : base("Animator", UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
         {
         }
     

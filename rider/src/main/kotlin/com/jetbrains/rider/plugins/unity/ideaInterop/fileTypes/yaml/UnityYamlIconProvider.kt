@@ -21,6 +21,8 @@ class UnityYamlIconProvider : IconProvider(), DumbAware {
                 return UnityIcons.FileTypes.Prefab
             if (fileElement.name.endsWith(".asset", true))
                 return UnityIcons.FileTypes.Asset
+            if (fileElement.name.endsWith(".controller", true))
+                return UnityIcons.FileTypes.Controller
         }
         return null
     }
