@@ -17,6 +17,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         }
         
         [Test]
+        public void CustomUnityVersionConversionTest()
+        {
+            var marketingVersion = "2017.2.1f1-CustomPostfix";
+            var realVersion = Version.Parse("2017.2.1.118001");
+            Assert.AreEqual(realVersion, Unity.UnityVersion.Parse(marketingVersion));
+            Assert.AreEqual("2017.2.1f1", Unity.UnityVersion.VersionToString(realVersion));
+        }
+        
+        [Test]
         public void VersionToStringTest()
         {
             var marketingVersion = "2018.2.13";
