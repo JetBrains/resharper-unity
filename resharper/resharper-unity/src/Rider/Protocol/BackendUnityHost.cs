@@ -102,7 +102,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         {
             backendUnityModel.UnityApplicationData.AdviseOnce(modelLifetime, data =>
             {
-                myUsageStatistics.TrackActivity("UnityVersion", UnityVersion.VersionToString(UnityVersion.Parse(data.ApplicationVersion)));
+                // ApplicationVersion may look like `2017.2.1f1-CustomPostfix`
+                var unityVersion = UnityVersion.VersionToString(UnityVersion.Parse(data.ApplicationVersion));
+                myUsageStatistics.TrackActivity("UnityVersion", unityVersion);
+                if (data.ApplicationVersion.StartsWith(unityVersion) && unityVersion != data.ApplicationVersion)
+                    myUsageStatistics.TrackActivity("UnityIsCustomBuild", unityVersion);
             });
             backendUnityModel.UnityProjectSettings.ScriptingRuntime.AdviseOnce(modelLifetime, runtime =>
             {
