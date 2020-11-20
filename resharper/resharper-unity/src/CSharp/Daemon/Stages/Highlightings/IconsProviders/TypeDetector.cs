@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 {
                     AddUnityTypeHighlighting(consumer, element, "Unity type", "Custom Unity type", kind);
                 }
-                else if (myUnityApi.IsUnityECSType(typeElement))
+                else if (myUnityApi.IsComponentSystemType(typeElement))
                 {
                     AddUnityECSHighlighting(consumer, element, "Unity ECS", "Unity entity component system object",
                         kind);

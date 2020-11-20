@@ -14,17 +14,23 @@ public class ||A|(0)|(1) : MonoBehaviour
 [Serializable]
 public class SerialisableClass1<T>
 {
-    public T one;
+    public T ||one|(2)|(3);
 }
 
 [Serializable]
 public class SerialisableClass2<T1, T2>
 {
-    public T1 one;
-    public T2 two;
+    public T1 ||one|(4)|(5);
+    public T2 ||two|(6)|(7);
 }
 
 
 ---------------------------------------------------------
 (0): ReSharper Unity Implicitly Used Identifier: 
 (1): Unity Gutter Icon: Unity script
+(2): ReSharper Unity Implicitly Used Identifier: 
+(3): Unity Gutter Icon: This field is serialized by Unity
+(4): ReSharper Unity Implicitly Used Identifier: 
+(5): Unity Gutter Icon: This field is serialized by Unity
+(6): ReSharper Unity Implicitly Used Identifier: 
+(7): Unity Gutter Icon: This field is serialized by Unity

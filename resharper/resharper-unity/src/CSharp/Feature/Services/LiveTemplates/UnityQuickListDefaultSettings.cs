@@ -5,6 +5,7 @@ using JetBrains.Application.Settings;
 using JetBrains.Application.Settings.Implementation;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Settings;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates

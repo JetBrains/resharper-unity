@@ -12,6 +12,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName AddComponentMenu = new ClrTypeName("UnityEngine.AddComponentMenu");
         public static readonly IClrTypeName AnimationCurve = new ClrTypeName("UnityEngine.AnimationCurve");
         public static readonly IClrTypeName Animator = new ClrTypeName("UnityEngine.Animator");
+        public static readonly IClrTypeName Bounds = new ClrTypeName("UnityEngine.Bounds");
+        public static readonly IClrTypeName BoundsInt = new ClrTypeName("UnityEngine.BoundsInt");
         public static readonly IClrTypeName Camera = new ClrTypeName("UnityEngine.Camera");
         public static readonly IClrTypeName Color = new ClrTypeName("UnityEngine.Color");
         public static readonly IClrTypeName Color32 = new ClrTypeName("UnityEngine.Color32");
@@ -42,11 +44,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName RangeAttribute = new ClrTypeName("UnityEngine.RangeAttribute");
         public static readonly IClrTypeName RequireComponent = new ClrTypeName("UnityEngine.RequireComponent");
         public static readonly IClrTypeName Rect = new ClrTypeName("UnityEngine.Rect");
+        public static readonly IClrTypeName RectInt = new ClrTypeName("UnityEngine.RectInt");
         public static readonly IClrTypeName RectOffset = new ClrTypeName("UnityEngine.RectOffset");
         public static readonly IClrTypeName Resources = new ClrTypeName("UnityEngine.Resources");
         public static readonly IClrTypeName RuntimeInitializeOnLoadMethodAttribute = new ClrTypeName("UnityEngine.RuntimeInitializeOnLoadMethodAttribute");
         public static readonly IClrTypeName ScriptableObject = new ClrTypeName("UnityEngine.ScriptableObject");
         public static readonly IClrTypeName SerializeField = new ClrTypeName("UnityEngine.SerializeField");
+        public static readonly IClrTypeName SerializeReference = new ClrTypeName("UnityEngine.SerializeReference");
         public static readonly IClrTypeName Shader = new ClrTypeName("UnityEngine.Shader");
         public static readonly IClrTypeName SpaceAttribute = new ClrTypeName("UnityEngine.SpaceAttribute");
         public static readonly IClrTypeName TooltipAttribute = new ClrTypeName("UnityEngine.TooltipAttribute");
@@ -92,9 +96,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         public static readonly IClrTypeName SceneManager = new ClrTypeName("UnityEngine.SceneManagement.SceneManager");
 
         // ECS/DOTS
+        public static readonly IClrTypeName ComponentSystemBase = new ClrTypeName("Unity.Entities.ComponentSystemBase");
         public static readonly IClrTypeName JobComponentSystem = new ClrTypeName("Unity.Entities.JobComponentSystem");
-        public static readonly IClrTypeName ComponentSystem = new ClrTypeName("Unity.Entities.ComponentSystem");
-        public static readonly IClrTypeName InjectAttribute = new ClrTypeName("Unity.Entities.InjectAttribute");
 
         // Burst
         public static readonly IClrTypeName BurstCompiler = new ClrTypeName("Unity.Burst.BurstCompiler");

@@ -6,6 +6,7 @@ using JetBrains.Lifetimes;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Settings;
 using JetBrains.ReSharper.LiveTemplates.UI;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.Rider.Model;
 

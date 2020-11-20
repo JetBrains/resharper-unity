@@ -20,11 +20,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private static readonly JetHashSet<IClrTypeName> ourUnityBuiltinSerializedFieldTypes = new JetHashSet<IClrTypeName>
         {
             KnownTypes.Vector2, KnownTypes.Vector3, KnownTypes.Vector4,
-            KnownTypes.Rect, KnownTypes.RectOffset,
+            KnownTypes.Vector2Int, KnownTypes.Vector3Int,
+            KnownTypes.Rect, KnownTypes.RectInt, KnownTypes.RectOffset,
             KnownTypes.Quaternion,
             KnownTypes.Matrix4x4,
             KnownTypes.Color, KnownTypes.Color32,
             KnownTypes.LayerMask,
+            KnownTypes.Bounds, KnownTypes.BoundsInt,
             KnownTypes.AnimationCurve,
             KnownTypes.Gradient,
             KnownTypes.GUIStyle
@@ -69,10 +71,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return GetBaseUnityTypes(type).Any();
         }
 
-        public bool IsUnityECSType([CanBeNull] ITypeElement typeElement)
+        public bool IsComponentSystemType([CanBeNull] ITypeElement typeElement)
         {
-            return typeElement.DerivesFrom(KnownTypes.JobComponentSystem) ||
-                   typeElement.DerivesFrom(KnownTypes.ComponentSystem);
+            // This covers ComponentSystem, JobComponentSystem and SystemBase
+            return typeElement.DerivesFrom(KnownTypes.ComponentSystemBase);
         }
 
         // A serialised field cannot be abstract or generic, but a type declaration that will be serialised can be. This
@@ -91,7 +93,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         // NOTE: This method assumes that the type is not a descendant of UnityEngine.Object!
-        private bool IsSerializableType([CanBeNull] ITypeElement type, [NotNull] IProject project, bool isTypeUsage)
+        private bool IsSerializableType([CanBeNull] ITypeElement type, [NotNull] IProject project, bool isTypeUsage,
+            bool hasSerializeReference = false)
         {
             if (!(type is IStruct || type is IClass))
                 return false;
@@ -99,8 +102,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (isTypeUsage)
             {
                 // Type usage (e.g. field declaration) is stricter. Means it must be a concrete type with no type
-                // parameters
-                if (type is IModifiersOwner modifiersOwner && modifiersOwner.IsAbstract)
+                // parameters, unless the type usage is for [SerializeReference], which allows abstract types
+                if (type is IModifiersOwner modifiersOwner && modifiersOwner.IsAbstract && !hasSerializeReference)
                     return false;
 
                 // Unity 2020.1 allows fields to have generic types. It's currently undocumented, but there are no
@@ -119,11 +122,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (type is IClass @class && @class.IsStaticClass())
                 return false;
 
-            // System.Version seems to be special cased. In Mono, it's marked as [Serializable], but in netstandard,
-            // it's not. Which means that depending on what runtime you're using, you could potentially get different
-            // fields serialised. However, it never shows up in Inspector, so it's a good indication that it's handled
-            // specially.
-            if (Equals(type.GetClrName(), KnownTypes.SystemVersion))
+            // System.Dictionary is special cased and excluded. We can see this in UnitySerializationLogic.cs in the
+            // reference source repo. It also excludes anything with a full name beginning "System.", which includes
+            // "System.Version" (which is marked [Serializable]). However, it doesn't exclude string, int, etc.
+            // TODO: Rewrite this whole section to properly mimic UnitySerializationLogic.cs
+            var name = type.GetClrName();
+            if (Equals(name, KnownTypes.SystemVersion) || Equals(name, PredefinedType.GENERIC_DICTIONARY_FQN))
                 return false;
 
             return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
@@ -147,8 +151,10 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (field.HasAttributeInstance(PredefinedType.NONSERIALIZED_ATTRIBUTE_CLASS, false))
                 return false;
 
-            if (field.GetAccessRights() != AccessRights.PUBLIC &&
-                !field.HasAttributeInstance(KnownTypes.SerializeField, false))
+            var hasSerializeReference = field.HasAttributeInstance(KnownTypes.SerializeReference, false);
+            if (field.GetAccessRights() != AccessRights.PUBLIC
+                && !field.HasAttributeInstance(KnownTypes.SerializeField, false)
+                && !hasSerializeReference)
             {
                 return false;
             }
@@ -159,22 +165,28 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
             // Rules for what field types can be serialised.
             // See https://docs.unity3d.com/ScriptReference/SerializeField.html
-            return project != null && IsSimpleSerialisedFieldType(field.Type, project) || IsSerialisedFieldContainerType(field.Type, project);
+            return project != null &&
+                   (IsSimpleSerialisedFieldType(field.Type, project, hasSerializeReference) ||
+                    IsSerialisedFieldContainerType(field.Type, project, hasSerializeReference));
         }
 
-        private bool IsSimpleSerialisedFieldType([CanBeNull] IType type, [NotNull] IProject project)
+        private bool IsSimpleSerialisedFieldType([CanBeNull] IType type, [NotNull] IProject project, bool hasSerializeReference)
         {
+            // We include type parameter types (T) in this test, which Unity obviously won't. We treat them as
+            // serialised fields rather than show false positive redundant attribute warnings, etc. Adding the test
+            // here allows us to support T[] and List<T>
             return type != null && (type.IsSimplePredefined()
                                     || type.IsEnumType()
                                     || IsUnityBuiltinType(type as IDeclaredType)
                                     || type.GetTypeElement().DerivesFrom(KnownTypes.Object)
-                                    || IsSerializableType(type.GetTypeElement(), project, true));
+                                    || IsSerializableType(type.GetTypeElement(), project, true, hasSerializeReference)
+                                    || type.IsTypeParameterType());
         }
 
-        private bool IsSerialisedFieldContainerType(IType type, IProject project)
+        private bool IsSerialisedFieldContainerType([CanBeNull] IType type, [NotNull] IProject project, bool hasSerializeReference)
         {
             if (type is IArrayType arrayType && arrayType.Rank == 1 &&
-                IsSimpleSerialisedFieldType(arrayType.ElementType, project))
+                IsSimpleSerialisedFieldType(arrayType.ElementType, project, hasSerializeReference))
             {
                 return true;
             }
@@ -186,23 +198,13 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 var typeParameter = declaredType.GetTypeElement()?.TypeParameters[0];
                 if (typeParameter != null)
                 {
-                    return IsSimpleSerialisedFieldType(substitution.Apply(typeParameter), project);
+                    var substitutedType = substitution.Apply(typeParameter);
+                    return substitutedType.IsTypeParameterType() ||
+                           IsSimpleSerialisedFieldType(substitutedType, project, hasSerializeReference);
                 }
             }
 
             return false;
-        }
-
-        public bool IsInjectedField([CanBeNull] IField field)
-        {
-            if (field == null || field.IsStatic || field.IsConstant || field.IsReadonly)
-                return false;
-
-            var containingType = field.GetContainingType();
-            if (containingType == null || !IsUnityECSType(containingType))
-                return false;
-
-            return field.HasAttributeInstance(KnownTypes.InjectAttribute, false);
         }
 
         // Best effort attempt at preventing false positives for type members that are actually being used inside a

@@ -5,13 +5,11 @@ using JetBrains.Annotations;
 using JetBrains.Application;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Context;
 using JetBrains.ReSharper.Feature.Services.LiveTemplates.Scope;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
-    // Provides the scope points that are valid for the given context
     [ShellComponent]
     public class UnityProjectScopeProvider : ScopeProvider
     {
@@ -36,13 +34,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             if (project != null && !project.IsUnityProject())
                 yield break;
 
-            // We could check for C# here, like InRazorCSharpProject, but we only really support C# Unity projects
-            // Are there any other types?
+            // TODO: This returns the C# Unity project scope even if there's no project!
+            // E.g. current context is a folder under Assets or Packages that isn't part of a PSI project
             yield return new InUnityCSharpProject();
 
             var folders = GetFoldersFromProjectFolder(context) ?? GetFoldersFromPath(context);
             if (folders == null || folders.IsEmpty())
                 yield break;
+
+            // TODO: Review all scope points
+            // See JetBrains/resharper-unity#1922
 
             var rootFolder = folders[folders.Count - 1];
             if (rootFolder.Equals(ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase))
@@ -57,14 +58,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
                     yield return new InUnityCSharpFirstpassFolder();
                     if (isEditor)
                         yield return new InUnityCSharpFirstpassEditorFolder();
-                    if (!isEditor)
+                    else
                         yield return new InUnityCSharpFirstpassRuntimeFolder();
                 }
                 else
                 {
                     if (isEditor)
                         yield return new InUnityCSharpEditorFolder();
-                    if (!isEditor)
+                    else
                         yield return new InUnityCSharpRuntimeFolder();
                 }
             }

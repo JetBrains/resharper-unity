@@ -14,14 +14,14 @@ public class ||A|(0)|(1) : MonoBehaviour
 [Serializable]
 public class SerialisableClass1<T>
 {
-    public T one;
+    public T ||one|(8)|(9);
 }
 
 [Serializable]
 public class SerialisableClass2<T1, T2>
 {
-    public T1 one;
-    public T2 two;
+    public T1 ||one|(10)|(11);
+    public T2 ||two|(12)|(13);
 }
 
 
@@ -34,3 +34,9 @@ public class SerialisableClass2<T1, T2>
 (5): UnityCodeInsights: 
 (6): ReSharper Unity Implicitly Used Identifier: 
 (7): UnityCodeInsights: 
+(8): ReSharper Unity Implicitly Used Identifier: 
+(9): UnityCodeInsights: 
+(10): ReSharper Unity Implicitly Used Identifier: 
+(11): UnityCodeInsights: 
+(12): ReSharper Unity Implicitly Used Identifier: 
+(13): UnityCodeInsights: 

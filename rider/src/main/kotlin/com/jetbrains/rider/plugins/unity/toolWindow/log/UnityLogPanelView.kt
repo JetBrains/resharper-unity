@@ -21,11 +21,13 @@ import com.intellij.ui.DoubleClickListener
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.scale.JBUIScale
 import com.intellij.unscramble.AnalyzeStacktraceUtil
 import com.intellij.util.ui.update.MergingUpdateQueue
 import com.intellij.util.ui.update.Update
 import com.jetbrains.rd.platform.util.application
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rd.util.lifetime.onTermination
 import com.jetbrains.rider.model.unity.LogEvent
 import com.jetbrains.rider.model.unity.LogEventMode
 import com.jetbrains.rider.model.unity.LogEventType
@@ -42,6 +44,7 @@ import java.awt.Font
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.MouseEvent
+import java.beans.PropertyChangeListener
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.swing.*
@@ -95,26 +98,26 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
             }
         }
 
-        val eventList1 = this
         addKeyListener(object : KeyAdapter() {
             override fun keyPressed(e: KeyEvent?) {
                 if (e?.keyCode == KeyEvent.VK_ENTER) {
                     e.consume()
-                    getNavigatableForSelected(eventList1, project)?.navigate(true)
+                    getNavigatableForSelected(project)?.navigate(true)
                 }
             }
         })
 
         object : DoubleClickListener() {
             override fun onDoubleClick(event: MouseEvent): Boolean {
-                getNavigatableForSelected(eventList1, project)?.navigate(true)
+                getNavigatableForSelected(project)?.navigate(true)
                 return true
             }
         }.installOn(this)
 
         logModel.events.onAutoscrollChanged.advise(lifetime){
-            if (it)
-                eventList1.ensureIndexIsVisible(eventList1.itemsCount - 1)
+            if (it) {
+                ensureIndexIsVisible(itemsCount - 1)
+            }
         }
     }
 
@@ -163,7 +166,7 @@ class UnityLogPanelView(lifetime: Lifetime, project: Project, private val logMod
     @Suppress("SpellCheckingInspection")
     private val listPanel = JPanel(MigLayout("ins 0, gap 0, flowy, novisualpadding, fill", "", "[][min!]")).apply {
         add(JBScrollPane(eventList).apply { horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER }, "grow, wmin 0")
-        add(searchTextField, "growx")
+        add(searchTextField, "grow")
     }
 
     private val mainSplitter = JBSplitter().apply {
