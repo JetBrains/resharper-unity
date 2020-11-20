@@ -133,9 +133,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         private static LocalList<long> ExtractStateMachineBehavioursAnchorsFrom([NotNull] IBlockMappingNode root)
         {
             var node = root.FindMapEntryBySimpleKey("m_StateMachineBehaviours")?.Content?.Value;
-            if (!(node is IBlockSequenceNode record)) throw new AnimatorExtractorException();
-            var anchors = record.Entries.Aggregate(new LocalList<long>(), AddAnchor);
-            return !anchors.IsEmpty() ? anchors : throw new AnimatorExtractorException();
+            if (!(node is IBlockSequenceNode record)) return new LocalList<long>();
+            return record.Entries.Aggregate(new LocalList<long>(), AddAnchor);
         }
 
         private static LocalList<long> AddAnchor(LocalList<long> anchors, [NotNull] ISequenceEntry record)

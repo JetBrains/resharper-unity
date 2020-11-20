@@ -22,6 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
     [SolutionComponent]
     public class AnimatorScriptUsagesElementContainer : IScriptUsagesElementContainer
     {
+        [NotNull] private readonly OneToListMap<IPsiSourceFile, string> myFileToStateNames =
+            new OneToListMap<IPsiSourceFile, string>();
+
         [NotNull] private readonly IPersistentIndexManager myManager;
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
 
@@ -79,6 +82,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             }
 
             myPointers.Remove(currentAssetSourceFile);
+            myFileToStateNames.RemoveKey(currentAssetSourceFile);
         }
 
         public void Merge(IPsiSourceFile currentAssetSourceFile,
@@ -95,6 +99,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 myUsagesCount.Add(guid, anchors.Count);
                 myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
             }
+
+            myFileToStateNames.AddValueRange(currentAssetSourceFile, animatorElement.StateNames.Distinct());
         }
 
         public string Id => nameof(AnimatorScriptUsagesElementContainer);
@@ -106,6 +112,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             myUsageToSourceFiles.Clear();
             myUsagesCount.Clear();
             myPointers.Clear();
+            myFileToStateNames.Clear();
         }
 
         public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
@@ -139,6 +146,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var element = unityAssetDataElementPointer.GetElement(sourceFile, Id);
             if (!(element is AnimatorUsagesDataElement animatorElement)) return Enumerable.Empty<IScriptUsage>();
             return GetScriptUsagesFor(animatorElement, boxedGuid.Value);
+        }
+
+        [NotNull]
+        [ItemNotNull]
+        public IEnumerable<string> GetStateNames()
+        {
+            AssertShellLocks();
+            return myFileToStateNames.Values.Distinct();
         }
 
         private static LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IEnumerable<IPsiSourceFile> files)

@@ -73,15 +73,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
 
         public static bool IsSceneManagerSceneRelatedMethod(this IInvocationExpressionReference reference)
         {
-            return IsSceneRelatedMethod(reference, IsSceneManagerLoadScene);
+            return IsRelatedMethod(reference, IsSceneManagerLoadScene);
         }
 
         public static bool IsEditorSceneManagerSceneRelatedMethod(this IInvocationExpressionReference reference)
         {
-            return IsSceneRelatedMethod(reference, IsEditorSceneManagerLoadScene);
+            return IsRelatedMethod(reference, IsEditorSceneManagerLoadScene);
+        }
+        
+        public static bool IsAnimatorPlayMethod(this IInvocationExpressionReference reference)
+        {
+            return IsRelatedMethod(reference, IsAnimatorPlay);
         }
 
-        private static bool IsSceneRelatedMethod(IInvocationExpressionReference reference, Func<IMethod, bool> checker)
+        private static bool IsRelatedMethod(IInvocationExpressionReference reference, Func<IMethod, bool> checker)
         {
             var result = reference.Resolve();
             if (checker(result.DeclaredElement as IMethod))
@@ -116,6 +121,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp
             }
 
             return false;
+        }
+        
+        private static bool IsAnimatorPlay(IMethod method)
+        {
+            return method != null &&
+                   method.ShortName.StartsWith("Play") &&
+                   method.GetContainingType()?.GetClrName().Equals(KnownTypes.Animator) == true;
         }
     }
 }
