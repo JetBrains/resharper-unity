@@ -102,7 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Protocol
         {
             backendUnityModel.UnityApplicationData.AdviseOnce(modelLifetime, data =>
             {
-                myUsageStatistics.TrackActivity("UnityVersion", data.ApplicationVersion);
+                myUsageStatistics.TrackActivity("UnityVersion", UnityVersion.VersionToString(UnityVersion.Parse(data.ApplicationVersion)));
             });
             backendUnityModel.UnityProjectSettings.ScriptingRuntime.AdviseOnce(modelLifetime, runtime =>
             {
