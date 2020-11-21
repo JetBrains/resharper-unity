@@ -4,23 +4,23 @@ using UnityEditor;
 
 public class TestEditor : Editor
 {
-    public void |DrawHeader|(0)() { Debug.|Log|(1)("test"); }
-    public void |OnInspectorGUI|(2)() { Debug.|Log|(3)("test"); }
-    public void |OnInteractivePreviewGUI|(4)() { Debug.|Log|(5)("test"); }
-    public void |OnPreviewGUI|(6)() { Debug.|Log|(7)("test"); }
-    public void |OnSceneGUI|(8)() { Debug.|Log|(9)("test"); }
+    |public void DrawHeader() { Debug.|Log|(1)("test"); }|(0)
+    |public void OnInspectorGUI() { Debug.|Log|(3)("test"); }|(2)
+    |public void OnInteractivePreviewGUI() { Debug.|Log|(5)("test"); }|(4)
+    |public void OnPreviewGUI() { Debug.|Log|(7)("test"); }|(6)
+    |public void OnSceneGUI() { Debug.|Log|(9)("test"); }|(8)
 }
 
 public class TestEditorWindow : EditorWindow
 {
-    public void |OnGUI|(10)() { Debug.|Log|(11)("test"); }
-    public void |OnInspectorUpdate|(12)() { Debug.|Log|(13)("test"); }
+    |public void OnGUI() { Debug.|Log|(11)("test"); }|(10)
+    |public void OnInspectorUpdate() { Debug.|Log|(13)("test"); }|(12)
 }
 
 public class TestPropertyDrawer : PropertyDrawer
 {
-    public override void |OnGUI|(14)(Rect position, SerializedProperty property, GUIContent label) { Debug.|Log|(15)("test"); }
-    public override float |GetPropertyHeight|(16)(SerializedProperty property, GUIContent label) { Debug.|Log|(17)("test"); }
+    |public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) { Debug.|Log|(15)("test"); }|(14)
+    |public override float GetPropertyHeight(SerializedProperty property, GUIContent label) { Debug.|Log|(17)("test"); }|(16)
 }
 ---------------------------------------------------------
 (0): ReSharper Unity Performance Critical Line Marker: Performance critical context
