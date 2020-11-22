@@ -1,6 +1,6 @@
 package base.integrationTests
 
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithConsoleBuild
+import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.BeforeMethod
 
@@ -19,13 +19,7 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestWithSolutionBase()
 
     private lateinit var unityProcessHandle: ProcessHandle
 
-    @AfterMethod(alwaysRun = true)
-    fun killUnityAndCheckSwea() {
-        killUnity(project, unityProcessHandle)
-        checkSweaInSolution()
-    }
-
-    @BeforeMethod(alwaysRun = true)
+    @BeforeMethod
     fun startUnityProcessAndWait() {
         installPlugin()
         val unityTestEnvironment = testMethod.unityEnvironment
@@ -45,13 +39,20 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestWithSolutionBase()
         waitConnectionToUnityEditor(project)
     }
 
-    @BeforeMethod(alwaysRun = true, dependsOnMethods = ["startUnityProcessAndWait"])
-    fun buildSolutionAfterUnityStarts() {
-        buildSolutionWithConsoleBuild()
+    @BeforeMethod(dependsOnMethods = ["startUnityProcessAndWait"])
+    fun waitForUnityRunConfigurations() {
+        refreshUnityModel()
+        waitForUnityRunConfigurations(project)
     }
 
-    @BeforeMethod(alwaysRun = true, dependsOnMethods = ["buildSolutionAfterUnityStarts"])
-    fun waitForUnityRunConfigurations() {
-        waitForUnityRunConfigurations(project)
+    @BeforeMethod(dependsOnMethods = ["buildSolutionAfterUnityStarts"])
+    fun buildSolutionAfterUnityStarts() {
+        buildSolutionWithReSharperBuild(project, ignoreReferencesResolve = true)
+    }
+
+    @AfterMethod(alwaysRun = true)
+    fun killUnityAndCheckSwea() {
+        killUnity(project, unityProcessHandle)
+        checkSweaInSolution()
     }
 }
