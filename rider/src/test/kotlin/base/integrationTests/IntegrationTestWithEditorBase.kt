@@ -45,7 +45,7 @@ abstract class IntegrationTestWithEditorBase : IntegrationTestWithSolutionBase()
         waitForUnityRunConfigurations(project)
     }
 
-    @BeforeMethod(dependsOnMethods = ["buildSolutionAfterUnityStarts"])
+    @BeforeMethod(dependsOnMethods = ["waitForUnityRunConfigurations"])
     fun buildSolutionAfterUnityStarts() {
         buildSolutionWithReSharperBuild(project, ignoreReferencesResolve = true)
     }
