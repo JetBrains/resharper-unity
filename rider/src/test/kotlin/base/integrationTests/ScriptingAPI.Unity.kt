@@ -1,7 +1,6 @@
 package base.integrationTests
 
 import com.intellij.execution.RunManager
-import com.intellij.execution.configurations.ParametersList
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
@@ -20,7 +19,6 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
-import com.jetbrains.rider.model.dotCoverModel
 import com.jetbrains.rider.model.unity.*
 import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
@@ -31,7 +29,6 @@ import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoin
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull

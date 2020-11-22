@@ -5,7 +5,6 @@ import base.integrationTests.preferStandaloneNUnitLauncherInTests
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
 import com.jetbrains.rider.test.scriptingApi.withUtFacade
 import org.testng.annotations.Test
 import java.io.File
@@ -38,7 +37,6 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
 
     @Test
     fun checkRunAllTestsFromProject() {
-        buildSolutionWithReSharperBuild()
         withUtFacade(project) {
             it.waitForDiscovering(5)
             val session = it.runAllTestsInProject(
@@ -52,7 +50,6 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     }
 
     private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTests: Int = sessionElements) {
-        buildSolutionWithReSharperBuild()
         withUtFacade(project) {
             it.waitForDiscovering(discoveringElements)
             val session = it.runAllTestsInSolution(
