@@ -267,6 +267,13 @@
           The same shortcut is defined for another menu item
         </Description>
       </Tag>
+      
+      <Tag externalName="UnknownAnimatorStateNameWarning.HIGHLIGHTING_ID" default="WARNING">
+        <Title>There is no animator state with the same name in the project.</Title>
+        <Description>
+          There is no animator state with the same name in the project.
+        </Description>
+      </Tag>
     </Group>
   </SeverityConfiguration>
 
@@ -289,6 +296,13 @@
          to use ERROR mode)
        -->
 
+  <Warning name="UnknownAnimatorStateName" configurableSeverity="Unity.UnknownAnimatorStateName">
+    <Parameter type="IArgument" name="argument" />
+    <Message value="There is no animator state with the same name in the project." />
+    <Range>Argument.GetDocumentRange()</Range>
+    <Behavour overlapResolvePolicy="WARNING" />
+  </Warning>
+  
   <Warning name="UnknownInputAxes" configurableSeverity="Unity.UnknownInputAxes">
     <Parameter type="ITreeNode" name="node" />
     <Message value="The name is not defined in the Input manager. The call is likely to fail at runtime." />
