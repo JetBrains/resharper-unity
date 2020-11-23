@@ -110,7 +110,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
     public class AnimationEventGroupingRule : UnityYamlUsageGroupingRuleBase
     {
         public AnimationEventGroupingRule([NotNull] IconHost iconHost) 
-            : base("AnimationEvent", UnityObjectTypeThemedIcons.UnityGameObject.Id, iconHost, 9.0)
+            : base("AnimationEvent", UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
         {
         }
         

@@ -5,10 +5,12 @@ using JetBrains.Diagnostics;
 using JetBrains.IDE;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Presentation;
+using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Resources.Shell;
+using JetBrains.UI.Icons;
 using JetBrains.UI.RichText;
 using JetBrains.Util.Extension;
 
@@ -63,6 +65,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Feature.Services.Navigation
                     return DeclaredElementMenuItemFormatter.FormatText(element, language, out _)?.Text ?? "Invalid";
                 }
             }
+        }
+
+        public override IconId GetIcon()
+        {
+            return UnityObjectTypeThemedIcons.UsageAnimationClip.Id;
         }
     }
 }
