@@ -22,7 +22,7 @@ class DotCoverTest : IntegrationTestWithEditorBase() {
         }
     }
 
-    @Test(enabled = false) // Disabled until merge changes in "Start Unity with Coverage" action
+    @Test(enabled = true) // Disabled until merge changes in "Start Unity with Coverage" action
     fun checkCoverAllTestsFromSolution() {
         buildSolutionWithReSharperBuild()
         withDcFacade(project) { ut, dc ->

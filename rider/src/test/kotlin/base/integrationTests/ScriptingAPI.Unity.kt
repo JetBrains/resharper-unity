@@ -10,6 +10,7 @@ import com.intellij.util.io.exists
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
+import com.jetbrains.dotCover.RiderDotCoverService
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
@@ -156,7 +157,8 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
 //
 //            project.solution.dotCoverModel.fire(unityConfigurationParameters)
 //            getUnityProcessHandle(project)
-            throw NotImplementedError()
+            RiderDotCoverService.getInstance(project)
+            getUnityProcessHandle(project)
         }
         else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
     }
