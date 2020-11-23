@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.
     AddExpensiveComment
 {
-    public class AddExpensiveCommentBulbAction : AddCommentActionBase
+    public sealed class AddExpensiveCommentBulbAction : AddCommentActionBulbBase
     {
         public AddExpensiveCommentBulbAction([NotNull] IMethodDeclaration methodDeclaration)
             : base(methodDeclaration)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
@@ -7,8 +8,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.H
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis.
-    AddDiscardAttribute
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
     [QuickFix]
     public sealed class AddDiscardAttributeQuickFix : IQuickFix
@@ -26,12 +26,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
             if (myMethodDeclaration == null || myBulbAction == null)
-                return EmptyList<IntentionAction>.Instance;;
+                return EmptyList<IntentionAction>.Instance;
+            
+            myMethodDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
             
             return myBulbAction.ToQuickFixIntentions();
         }
-
-
-        public bool IsAvailable(IUserDataHolder cache) => AddDiscardAttributeUtil.IsAvailable(myMethodDeclaration);
+        
+        public bool IsAvailable(IUserDataHolder cache)
+        {
+            return BurstActionsUtil.IsAvailable(myMethodDeclaration);
+        }
     }
 }

@@ -1,17 +1,15 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
+using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.
     ExpensiveCodeActionsUtil;
@@ -26,57 +24,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class AddExpensiveCommentContextAction : IContextAction
+    public sealed class AddExpensiveCommentContextAction : SimpleMethodContextActionBase, IContextAction
     {
-        [NotNull] private readonly SolutionAnalysisService mySwa;
         [NotNull] private readonly PerformanceCriticalContextProvider myPerformanceContextProvider;
         [NotNull] private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
-        [NotNull] private readonly ICSharpContextActionDataProvider myDataProvider;
-     
+
         public AddExpensiveCommentContextAction(ICSharpContextActionDataProvider dataProvider)
+            : base(dataProvider)
         {
-            myDataProvider = dataProvider;
-            mySwa = dataProvider.Solution.GetComponent<SolutionAnalysisService>();
             myPerformanceContextProvider = dataProvider.Solution.GetComponent<PerformanceCriticalContextProvider>();
             myExpensiveContextProvider = dataProvider.Solution.GetComponent<ExpensiveInvocationContextProvider>();
         }
 
-        public IEnumerable<IntentionAction> CreateBulbItems()
-        {
-            var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
-
-            if (methodDeclaration == null)
-                return EmptyList<IntentionAction>.Instance;
-
-            if (!UnityCallGraphUtil.IsSweaCompleted(mySwa))
-                return EmptyList<IntentionAction>.Instance;
-
-            var processKind = UnityCallGraphUtil.GetProcessKindForGraph(mySwa);
-
-            if (myExpensiveContextProvider.HasContext(methodDeclaration, processKind))
-                return EmptyList<IntentionAction>.Instance;
-
-            var isPerformanceContext = myPerformanceContextProvider.HasContext(methodDeclaration, processKind);
-
-            if (!isPerformanceContext)
-                return EmptyList<IntentionAction>.Instance;
-            
-            var bulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
-            
-            return bulbAction.ToContextActionIntentions();
-        }
-
         public bool IsAvailable(IUserDataHolder cache)
         {
-            var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
+            var methodDeclaration = CurrentMethodDeclaration;
             
-            if (methodDeclaration == null)
-                return false;
+            return PerformanceDisableUtil.IsAvailable(methodDeclaration);
+        }
 
-            var declaredElement = methodDeclaration.DeclaredElement;
+        protected override bool ShouldCreate(IMethodDeclaration methodDeclaration, DaemonProcessKind processKind)
+        {
+            var isExpensiveContext = myExpensiveContextProvider.HasContext(methodDeclaration, processKind);
+            var isPerformanceContext = myPerformanceContextProvider.HasContext(methodDeclaration, processKind);
 
-            return declaredElement != null && methodDeclaration.IsValid() &&
-                   !PerformanceCriticalCodeStageUtil.IsPerformanceCriticalRootMethod(methodDeclaration);
+            return isPerformanceContext && !isExpensiveContext;
+        }
+
+        protected override IEnumerable<IntentionAction> GetActions(IMethodDeclaration methodDeclaration)
+        {
+            return new AddExpensiveCommentBulbAction(methodDeclaration).ToContextActionIntentions();
         }
     }
 }
