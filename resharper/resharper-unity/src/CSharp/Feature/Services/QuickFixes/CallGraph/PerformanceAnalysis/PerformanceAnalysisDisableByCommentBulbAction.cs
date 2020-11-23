@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis
 {
-    public class PerformanceAnalysisDisableByCommentBulbAction : AddCommentActionBase
+    public sealed class PerformanceAnalysisDisableByCommentBulbAction : AddCommentActionBulbBase
     {
         public PerformanceAnalysisDisableByCommentBulbAction([NotNull] IMethodDeclaration methodDeclaration)
             : base(methodDeclaration)
