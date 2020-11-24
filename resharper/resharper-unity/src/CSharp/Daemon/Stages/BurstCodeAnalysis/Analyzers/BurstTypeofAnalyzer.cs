@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
     [SolutionComponent]
-    public class BurstTypeofAnalyzer : BurstProblemAnalyzerBase<ITypeofExpression>
+    public sealed class BurstTypeofAnalyzer : BurstProblemAnalyzerBase<ITypeofExpression>
     {
         protected override bool CheckAndAnalyze(ITypeofExpression typeofExpression, IHighlightingConsumer consumer)
         {

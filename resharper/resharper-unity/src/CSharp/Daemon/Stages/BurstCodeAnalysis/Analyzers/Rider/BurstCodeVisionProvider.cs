@@ -18,7 +18,7 @@ using JetBrains.TextControl;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
     [SolutionComponent]
-    public class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
+    public sealed class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
         private readonly ISolution mySolution;
