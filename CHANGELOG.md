@@ -10,7 +10,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 ## 2020.3.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202...net203)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202...net203-rtm-2020.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/41?closed=1)
 
 ### Added
@@ -30,6 +30,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Change defaults for implicit conversion hints to always show instead of push-to-hint ([#1923](https://github.com/JetBrains/resharper-unity/pull/1923))
 - Use Unity terminology to describe event functions and serialised fields in identifier tooltips and inspections ([#1914](https://github.com/JetBrains/resharper-unity/pull/1914))
 - Add annotation for `[NativeSetThreadIndex]` to mean implicit usage ([#1619](https://github.com/JetBrains/resharper-unity/issues/1619), [#1923](https://github.com/JetBrains/resharper-unity/pull/1923))
+- Update API information to 2019.4.15f1, 2020.1.14f1 and 2020.2.0b12. Adds missing `EditorWindow.CreateGUI` message ([1937](https://github.com/JetBrains/resharper-unity/pull/1937))
 - Rider: Highlight methods from a Burst compiled context with line marker and Code Vision links ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
 - Rider: Execute both edit and play mode tests in the same run ([#1894](https://github.com/JetBrains/resharper-unity/pull/1894))
 - Rider: Run Unity menu item handlers via gutter icon ([RIDER-35911](https://youtrack.jetbrains.com/issue/RIDER-35911), [#1857](https://github.com/JetBrains/resharper-unity/pull/1857))
