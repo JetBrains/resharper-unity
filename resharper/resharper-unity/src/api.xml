@@ -369,6 +369,9 @@
     <message name="Awake" static="False" minimumVersion="5.5" description="Called as the new window is opened." path="Documentation/en/ScriptReference/EditorWindow.Awake.html">
       <returns type="System.Void" array="False" />
     </message>
+    <message name="CreateGUI" static="False" minimumVersion="2019.4" description="CreateGUI is called when the EditorWindow's rootVisualElement is ready to be populated." path="Documentation/en/ScriptReference/EditorWindow.CreateGUI.html">
+      <returns type="System.Void" array="False" />
+    </message>
     <message name="OnDestroy" static="False" description="OnDestroy is called to close the EditorWindow window." path="Documentation/en/ScriptReference/EditorWindow.OnDestroy.html">
       <returns type="System.Void" array="False" />
     </message>
@@ -485,7 +488,7 @@
       </parameters>
       <returns type="System.Void" array="False" />
     </message>
-    <message name="OnApplicationQuit" static="False" description="Sent to all game objects before the application quits." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationQuit.html">
+    <message name="OnApplicationQuit" static="False" description="Sent to all GameObjects before the application quits." path="Documentation/en/ScriptReference/MonoBehaviour.OnApplicationQuit.html">
       <returns type="System.Void" array="False" />
     </message>
     <message name="OnAudioFilterRead" static="False" description="If OnAudioFilterRead is implemented, Unity will insert a custom filter into the audio DSP chain." path="Documentation/en/ScriptReference/MonoBehaviour.OnAudioFilterRead.html">
