@@ -437,7 +437,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         if (result.Status == Status.Failure)
                             taskResult = UnitTestStatus.Failed;
                         else if (result.Status == Status.Ignored)
-                            taskResult = UnitTestStatus.Aborted;
+                            taskResult = UnitTestStatus.Ignored;
+                        else if (result.Status == Status.Inconclusive)
+                            taskResult = UnitTestStatus.Inconclusive;
                         else if (result.Status == Status.Success)
                             taskResult = UnitTestStatus.Success;
 
