@@ -1,3 +1,4 @@
+using System;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
@@ -9,11 +10,15 @@ using JetBrains.ReSharper.Psi.ExtensionsAPI;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
+using JetBrains.Util.Logging;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
     public class UnityAssetReferenceSearcher : IDomainSpecificSearcher
     {
+        private static readonly ILogger ourLogger = Logger.GetLogger(nameof(UnityAssetReferenceSearcher));
+        
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly AssetDocumentHierarchyElementContainer myAssetDocumentHierarchyElementContainer;
         private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
@@ -34,50 +39,64 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
         public bool ProcessProjectItem<TResult>(IPsiSourceFile sourceFile, IFindResultConsumer<TResult> consumer)
         {
-            if (!myDeferredCacheController.CompletedOnce.Value)
-                return false;
-
-            foreach (var element in myElements)
+            try
             {
-                if (element is IMethod || element is IProperty)
-                {
-                    var usages = myUnityEventsElementContainer.GetAssetUsagesFor(sourceFile, element);
-                    foreach (var findResult in usages)
-                    {
-                        consumer.Accept(findResult);
-                    }
-                }
+                if (!myDeferredCacheController.CompletedOnce.Value)
+                    return false;
 
-                if (element is ITypeElement typeElement)
+                foreach (var element in myElements)
                 {
-                    var usages = myAssetScriptUsagesElementContainer.GetAssetUsagesFor(sourceFile, typeElement);
-
-                    foreach (var assetUsage in usages)
+                    if (element is IMethod || element is IProperty)
                     {
-                        consumer.Accept(new UnityScriptsFindResults(sourceFile, element, assetUsage, assetUsage.Location));
-                    }
-                }
-
-                if (element is IField field)
-                {
-                    if (field.Type.GetTypeElement().DerivesFromUnityEvent())
-                    {
-                        foreach (var findResult in myUnityEventsElementContainer.GetMethodsForUnityEvent(sourceFile, field))
-                        {
-                            consumer.Accept(findResult);
-                        }
-                    }
-                    else
-                    {
-                        var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
+                        var usages = myUnityEventsElementContainer.GetAssetUsagesFor(sourceFile, element);
                         foreach (var findResult in usages)
                         {
                             consumer.Accept(findResult);
                         }
                     }
-                }
-            }
 
+                    if (element is ITypeElement typeElement)
+                    {
+                        var usages = myAssetScriptUsagesElementContainer.GetAssetUsagesFor(sourceFile, typeElement);
+
+                        foreach (var assetUsage in usages)
+                        {
+                            consumer.Accept(new UnityScriptsFindResults(sourceFile, element, assetUsage,
+                                assetUsage.Location));
+                        }
+                    }
+
+                    if (element is IField field)
+                    {
+                        if (field.Type.GetTypeElement().DerivesFromUnityEvent())
+                        {
+                            foreach (var findResult in myUnityEventsElementContainer.GetMethodsForUnityEvent(sourceFile,
+                                field))
+                            {
+                                consumer.Accept(findResult);
+                            }
+                        }
+                        else
+                        {
+                            var usages = myAssetInspectorValuesContainer.GetAssetUsagesFor(sourceFile, field);
+                            foreach (var findResult in usages)
+                            {
+                                consumer.Accept(findResult);
+                            }
+                        }
+                    }
+                }
+
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                ourLogger.Error(e, $"An error occurred while searching assets in: {sourceFile.GetPersistentIdForLogging()}");
+            }
+            
             return false;
         }
 
