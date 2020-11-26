@@ -8,6 +8,8 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2021.1.0
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211)
 
 ## 2020.3.0
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net202...net203-rtm-2020.3.0)
