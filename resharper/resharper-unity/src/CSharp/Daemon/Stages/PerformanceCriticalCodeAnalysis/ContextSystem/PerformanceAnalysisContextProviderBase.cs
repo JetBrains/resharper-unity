@@ -37,10 +37,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override bool HasContext(IDeclaration declaration, DaemonProcessKind processKind)
         {
             var functionDeclaration = declaration as IFunctionDeclaration;
-            var hasComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
+
+            var hasBanComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
+                UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
+            
+            if (hasBanComment)
+                return false;
+            
+            var hasRestoreComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
                 MarkId, ReSharperControlConstruct.Kind.Restore);
 
-            return hasComment || base.HasContext(declaration, processKind);
+            return hasRestoreComment || base.HasContext(declaration, processKind);
         }
 
         public override bool IsMarked(IDeclaredElement declaredElement, DaemonProcessKind processKind)
