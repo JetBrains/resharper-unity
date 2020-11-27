@@ -432,7 +432,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     case Status.Failure:
                     case Status.Ignored:
                     case Status.Inconclusive:
-                        string message = result.Status.ToString();
+                        var message = string.Empty;
+                        var messageHeader = "Message: " + Environment.NewLine; // header is hardcoded in Rider package
+                        if (result.Output.StartsWith(messageHeader))
+                            message = result.Output.Substring(messageHeader.Length);
                         var taskResult = UnitTestStatus.Inconclusive;
                         if (result.Status == Status.Failure)
                             taskResult = UnitTestStatus.Failed;
