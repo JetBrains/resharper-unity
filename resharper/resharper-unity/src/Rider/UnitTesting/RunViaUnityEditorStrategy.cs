@@ -265,14 +265,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                         }
                     });
 
+                    StartTests(run, tcs, taskLifetime);
+                    
                     // set results for explicit tests
                     var explicitTests = run.Elements.Where(a => a.Explicit && !run.Launch.Criterion.Explicit.Contains(a));
                     foreach (var element in explicitTests)
                     {
                         myUnitTestResultManager.TestFinishing(element, run.Launch.Session, element.ExplicitReason, UnitTestStatus.Ignored);
                     }
-                    
-                    StartTests(run, tcs, taskLifetime);
                 });
             }, cancellationToken);
         }
