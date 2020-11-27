@@ -485,7 +485,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
         private List<TestFilter> GetFilters(IUnitTestRun run)
         {
             var filters = new List<TestFilter>();
-            var elements = run.Elements
+            var unitTestElements = new JetHashSet<IUnitTestElement>();
+            unitTestElements.AddRange(run.Elements);
+            var elements = unitTestElements
                 .Where(unitTestElement => unitTestElement is NUnitTestElement ||
                                           unitTestElement is NUnitRowTestElement).ToArray();
 
