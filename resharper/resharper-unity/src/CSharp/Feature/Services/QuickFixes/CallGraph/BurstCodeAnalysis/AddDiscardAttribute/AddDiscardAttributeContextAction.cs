@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         public bool IsAvailable(IUserDataHolder cache)
         {
             var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
-
+            
             return AddDiscardAttributeUtil.IsAvailable(methodDeclaration);
         }
     }
