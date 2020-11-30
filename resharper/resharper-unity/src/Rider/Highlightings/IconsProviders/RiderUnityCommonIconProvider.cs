@@ -34,6 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
+        private readonly ExpensiveInvocationContextProvider myExpensiveInvocationContextProvider;
         private readonly ITextControlManager myTextControlManager;
 
         public RiderUnityCommonIconProvider(ISolution solution,
@@ -42,7 +43,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                             UnityCodeInsightProvider codeInsightProvider,
                                             UnitySolutionTracker solutionTracker,
                                             BackendUnityHost backendUnityHost,
-                                            IconHost iconHost, PerformanceCriticalContextProvider contextProvider)
+                                            IconHost iconHost, PerformanceCriticalContextProvider contextProvider,
+                                            ExpensiveInvocationContextProvider expensiveInvocationContextProvider)
             : base(solution, api, settingsStore, contextProvider)
         {
             mySolution = solution;
@@ -51,6 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             mySolutionTracker = solutionTracker;
             myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
+            myExpensiveInvocationContextProvider = expensiveInvocationContextProvider;
         }
 
         public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method, UnityEventFunction eventFunction,
@@ -108,8 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                             BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems);
                         compactList.Add(performanceDisableBulbItem);
 
-                        if (!UnityCallGraphUtil.HasAnalysisComment(methodDeclaration, ExpensiveCodeMarksProvider.MarkId,
-                            ReSharperControlConstruct.Kind.Restore))
+                        if (!myExpensiveInvocationContextProvider.HasContext(methodDeclaration, kind))
                         {
                             var expensiveBulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
                             var expensiveBulbItem = new BulbMenuItem(
