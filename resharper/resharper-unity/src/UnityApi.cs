@@ -130,7 +130,8 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (Equals(name, KnownTypes.SystemVersion) || Equals(name, PredefinedType.GENERIC_DICTIONARY_FQN))
                 return false;
 
-            return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
+            using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                return type.HasAttributeInstance(PredefinedType.SERIALIZABLE_ATTRIBUTE_CLASS, true);
         }
 
         public bool IsEventFunction([CanBeNull] IMethod method)
