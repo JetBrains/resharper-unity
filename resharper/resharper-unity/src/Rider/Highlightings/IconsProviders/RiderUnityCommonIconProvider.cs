@@ -1,17 +1,13 @@
 using System.Collections.Generic;
-using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.AddExpensiveComment;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -23,18 +19,19 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
+using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph.UnityCallGraphUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
     [SolutionComponent]
-    public class RiderUnityCommonIconProvider : UnityCommonIconProvider
+    public sealed class RiderUnityCommonIconProvider : UnityCommonIconProvider
     {
         private readonly ISolution mySolution;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
-        private readonly ExpensiveInvocationContextProvider myExpensiveInvocationContextProvider;
+        private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
         private readonly ITextControlManager myTextControlManager;
 
         public RiderUnityCommonIconProvider(ISolution solution,
@@ -44,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                             UnitySolutionTracker solutionTracker,
                                             BackendUnityHost backendUnityHost,
                                             IconHost iconHost, PerformanceCriticalContextProvider contextProvider,
-                                            ExpensiveInvocationContextProvider expensiveInvocationContextProvider)
+                                            ExpensiveInvocationContextProvider expensiveContextProvider)
             : base(solution, api, settingsStore, contextProvider)
         {
             mySolution = solution;
@@ -53,85 +50,97 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             mySolutionTracker = solutionTracker;
             myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
-            myExpensiveInvocationContextProvider = expensiveInvocationContextProvider;
+            myExpensiveContextProvider = expensiveContextProvider;
         }
 
-        public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method, UnityEventFunction eventFunction,
-                                                          string text,DaemonProcessKind kind)
+        public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, 
+                                                          IMethod method, 
+                                                          UnityEventFunction eventFunction,
+                                                          string text, 
+                                                          DaemonProcessKind kind)
         {
-            var iconId = method.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind)
+            var boundStore = SettingsStore.BoundSettingsStore;
+            var providerId = myCodeInsightProvider.ProviderId;
+            void Fallback() => base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, kind);
+            
+            if (!RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out var useFallback))
+                return;
+
+            var iconId = method.HasHotIcon(PerformanceContextProvider, boundStore, kind)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
-
-            if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
-                () => { base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, kind);}, out var useFallback))
+            var iconModel = myIconHost.Transform(iconId);
+            var extraActions = RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost);
+            
+            foreach (var declaration in method.GetDeclarations())
             {
-                foreach (var declaration in method.GetDeclarations())
-                {
-                    if (declaration is ICSharpDeclaration cSharpDeclaration)
-                    {
-                        if (!useFallback)
-                        {
-                            consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
-                        }
+                if (!(declaration is ICSharpDeclaration cSharpDeclaration))
+                    continue;
+                
+                if (!useFallback)
+                    consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
 
-                        myCodeInsightProvider.AddHighlighting(consumer, cSharpDeclaration, method, text, eventFunction.Description ?? string.Empty, text,
-                            myIconHost.Transform(iconId), GetEventFunctionActions(cSharpDeclaration), RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
-                    }
-                }
+                var actions = GetEventFunctionActions(cSharpDeclaration);
+                
+                myCodeInsightProvider.AddHighlighting(consumer, cSharpDeclaration, method, text, 
+                    eventFunction.Description ?? string.Empty, text, iconModel, actions, extraActions);
             }
         }
 
-        public override void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration declaration, string text,
-            string tooltip, DaemonProcessKind kind)
-        {
-            var isHot = declaration.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind);
-            if (!isHot)
+        public override void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer,
+            ICSharpDeclaration cSharpDeclaration, string text, string tooltip, DaemonProcessKind processKind)
+        { 
+            var boundStore = SettingsStore.BoundSettingsStore;
+            
+            if (!cSharpDeclaration.HasHotIcon(PerformanceContextProvider, boundStore, processKind))
                 return;
 
-            if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
-                () => { base.AddFrequentlyCalledMethodHighlighting(consumer, declaration, text, tooltip, kind);}, out _))
+            void Fallback() => base.AddFrequentlyCalledMethodHighlighting(consumer, cSharpDeclaration, text, tooltip, processKind);
+            var providerId = myCodeInsightProvider.ProviderId;
+            
+            if (!RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out _))
+                return;
+
+            var actions = GetActions(cSharpDeclaration, processKind);
+            var extraActions = RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost);
+            var iconModel = myIconHost.Transform(InsightUnityIcons.InsightHot.Id);
+
+            myCodeInsightProvider.AddHighlighting(consumer, cSharpDeclaration, cSharpDeclaration.DeclaredElement, 
+                text, tooltip, text, iconModel, actions, extraActions);
+        }
+        
+        private IEnumerable<BulbMenuItem> GetActions(ICSharpDeclaration declaration, DaemonProcessKind kind)
+        {
+            if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
+                return GetEventFunctionActions(declaration);
+                
+            if (!(declaration is IMethodDeclaration methodDeclaration))
+                return EmptyList<BulbMenuItem>.Instance;
+                    
+            var textControl = myTextControlManager.LastFocusedTextControl.Value;
+            var result = new CompactList<BulbMenuItem>();
+            var performanceDisableAction = new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
+            
+            AddAction(performanceDisableAction);
+            TryAddAdditionalActions();
+
+            return result;
+            
+            void AddAction(IBulbAction action)
             {
-                IEnumerable<BulbMenuItem> actions;
-                if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
-                {
-                    actions = GetEventFunctionActions(declaration);
-                }
-                else
-                {
-                    if (declaration is IMethodDeclaration methodDeclaration)
-                    {
-                        var textControl = myTextControlManager.LastFocusedTextControl.Value;
-                        var compactList = new CompactList<BulbMenuItem>();
-                        var performanceDisableAction =
-                            new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
-                        var performanceDisableBulbItem = new BulbMenuItem(
-                            new IntentionAction.MyExecutableProxi(performanceDisableAction, mySolution, textControl),
-                            performanceDisableAction.Text,
-                            BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems);
-                        compactList.Add(performanceDisableBulbItem);
+                var menuItem = BulbActionToMenuItem(action, textControl, mySolution, BulbThemedIcons.ContextAction.Id);
+                
+                result.Add(menuItem);
+            }
 
-                        if (!myExpensiveInvocationContextProvider.HasContext(methodDeclaration, kind))
-                        {
-                            var expensiveBulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
-                            var expensiveBulbItem = new BulbMenuItem(
-                                new IntentionAction.MyExecutableProxi(expensiveBulbAction, mySolution, textControl),
-                                expensiveBulbAction.Text,
-                                BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems);
-
-                            compactList.Add(expensiveBulbItem);
-                        }
-
-                        actions = compactList;
-                    }
-                    else
-                    {
-                        actions = EmptyList<BulbMenuItem>.Instance;
-                    }
-                }
-
-                myCodeInsightProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, text, tooltip, text,
-                    myIconHost.Transform(InsightUnityIcons.InsightHot.Id), actions, RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost));
+            void TryAddAdditionalActions()
+            {
+                if (myExpensiveContextProvider.HasContext(methodDeclaration, kind)) 
+                    return;
+                
+                var expensiveBulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
+                
+                AddAction(expensiveBulbAction);
             }
         }
     }
