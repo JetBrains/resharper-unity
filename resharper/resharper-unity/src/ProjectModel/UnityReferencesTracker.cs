@@ -96,6 +96,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             // files on every startup
             scheduler.EnqueueTask(new SolutionLoadTask("Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
                 OnSolutionPreparePsiModules));
+            
+            HasUnityReference.WhenTrue(lifetime, lt => solution.GetComponent<UnitySolutionTracker>().IsRelatedToUnity.SetValue(true));
         }
 
         private void OnSolutionPreparePsiModules()

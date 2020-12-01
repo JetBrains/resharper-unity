@@ -21,9 +21,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
             var project = context.GetProject();
             var version = project != null
                 ? context.Solution.GetComponent<UnityVersion>().GetActualVersion(project)
-                : context.Solution.GetComponent<UnityVersion>().ActualVersionForSolution.Maybe.ValueOrDefault;
+                : context.Solution.GetComponent<UnityVersion>().ActualVersionForSolution.Value;
 
-            if (version != null && version.Major != 0)
+            if (version.Major != 0)
                 yield return new MustBeInProjectWithUnityVersion(version);
         }
 

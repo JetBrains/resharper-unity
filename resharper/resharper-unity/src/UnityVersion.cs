@@ -28,6 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
     {
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private readonly ISolution mySolution;
+        private readonly IFileSystemTracker myFileSystemTracker;
         private Version myVersionFromProjectVersionTxt;
         private Version myVersionFromEditorInstanceJson;
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
@@ -40,37 +41,37 @@ namespace JetBrains.ReSharper.Plugins.Unity
         {
             myUnityProjectFileCache = unityProjectFileCache;
             mySolution = solution;
+            myFileSystemTracker = fileSystemTracker;
+            
+            unitySolutionTracker.IsRelatedToUnity.WhenTrue(lifetime, SetActualVersionForSolution);
+        }
 
-            unitySolutionTracker.IsUnityProjectFolder.AdviseOnce(lifetime, args =>
-            {
-                if (!args)
-                    return;
+        private void SetActualVersionForSolution(Lifetime lt)
+        {
+            var projectVersionTxtPath =
+                mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+            myFileSystemTracker.AdviseFileChanges(lt,
+                projectVersionTxtPath,
+                _ =>
+                {
+                    myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
+                    ActualVersionForSolution.SetValue(GetActualVersionForSolution());
+                });
+            myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
 
-                var projectVersionTxtPath =
-                    mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
-                fileSystemTracker.AdviseFileChanges(lifetime,
-                    projectVersionTxtPath,
-                    _ =>
-                    {
-                        myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
-                        ActualVersionForSolution.SetValue(myVersionFromProjectVersionTxt ??
-                                                          GetActualVersionForSolution());
-                    });
-                myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
+            var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
+            myFileSystemTracker.AdviseFileChanges(lt,
+                editorInstanceJsonPath,
+                _ =>
+                {
+                    myVersionFromEditorInstanceJson =
+                        TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
+                    ActualVersionForSolution.SetValue(GetActualVersionForSolution());
+                });
+            myVersionFromEditorInstanceJson =
+                TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
 
-                var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
-                fileSystemTracker.AdviseFileChanges(lifetime,
-                    editorInstanceJsonPath,
-                    _ =>
-                    {
-                        myVersionFromEditorInstanceJson =
-                            TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
-                    });
-                myVersionFromEditorInstanceJson =
-                    TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
-
-                ActualVersionForSolution.SetValue(GetActualVersionForSolution());
-            });
+            ActualVersionForSolution.SetValue(GetActualVersionForSolution());
         }
 
         [NotNull]
