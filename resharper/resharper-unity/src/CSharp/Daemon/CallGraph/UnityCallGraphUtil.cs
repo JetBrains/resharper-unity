@@ -1,10 +1,20 @@
+using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.Intentions;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.TextControl;
+using JetBrains.UI.Icons;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
 {
@@ -13,6 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
         [ContractAnnotation("null => false")]
         public static bool IsFunctionNode(ITreeNode node)
         {
+            // CGTD use ICallHierarchyLanguageSpecific
             switch (node)
             {
                 case IFunctionDeclaration _:
@@ -46,6 +57,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
             return qualifierType?.IsOpenType == true;
         }
 
+        /// <summary>
+        /// This function is intended to be used at <see cref="CallGraphRootMarksProviderBase"/> and <see cref="CallGraphContextProviderBase"/>.
+        /// If you use this function in other scope then you definitely doing something wrong.
+        /// Consider using corresponding <see cref="CallGraphContextProviderBase"/>.
+        /// </summary>
+        /// <param name="functionDeclaration"></param>
+        /// <param name="comment"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
         [Pure]
         [ContractAnnotation("functionDeclaration: null => false")]
         public static bool HasAnalysisComment([CanBeNull] IFunctionDeclaration functionDeclaration, string comment,
@@ -63,17 +83,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
 
                 while (current is ICSharpCommentNode commentNode)
                 {
-                    var str = commentNode.CommentText;
-                    var configuration = ReSharperControlConstruct.ParseCommentText(str);
+                    var commentText = commentNode.CommentText;
+                    var configuration = ReSharperControlConstruct.ParseCommentText(commentText);
+                    var kind = configuration.Kind;
 
-                    if (configuration.Kind == status)
-                    {
-                        foreach (var id in configuration.GetControlIds())
-                        {
-                            if (id == comment)
-                                return true;
-                        }
-                    }
+                    if (kind == status && configuration.GetControlIds().Any(id => id == comment))
+                        return true;
 
                     current = current.PrevSibling;
                 }
@@ -96,6 +111,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
 
                 return methodDeclaration;
             }
+        }
+
+        public static BulbMenuItem BulbActionToMenuItem(IBulbAction bulbAction, ITextControl textControl, ISolution solution, IconId iconId)
+        {
+            var proxi = new IntentionAction.MyExecutableProxi(bulbAction, solution, textControl);
+            var menuText = bulbAction.Text;
+            var anchor = BulbMenuAnchors.FirstClassContextItems;
+            var bulbMenuItem = new BulbMenuItem(proxi, menuText, iconId, anchor);
+
+            return bulbMenuItem;
         }
     }
 }

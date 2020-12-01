@@ -27,17 +27,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
     {
         protected readonly IApplicationWideContextBoundSettingStore SettingsStore;
         protected readonly UnityApi UnityApi;
-        protected readonly PerformanceCriticalContextProvider ContextProvider;
+        protected readonly PerformanceCriticalContextProvider PerformanceContextProvider;
         private readonly ISolution mySolution;
        
         public UnityCommonIconProvider(ISolution solution, UnityApi unityApi,
                                        IApplicationWideContextBoundSettingStore settingsStore,
-                                       PerformanceCriticalContextProvider contextProvider)
+                                       PerformanceCriticalContextProvider performanceContextProvider)
         {
             mySolution = solution;
             UnityApi = unityApi;
             SettingsStore = settingsStore;
-            ContextProvider = contextProvider;
+            PerformanceContextProvider = performanceContextProvider;
         }
 
         public virtual void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method,
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 if (declaration is ICSharpDeclaration cSharpDeclaration)
                 {
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
-                    consumer.AddHotHighlighting(ContextProvider, cSharpDeclaration,
+                    consumer.AddHotHighlighting(PerformanceContextProvider, cSharpDeclaration,
                         SettingsStore.BoundSettingsStore, text,
                         GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration));
                 }
@@ -56,11 +56,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer,
-            ICSharpDeclaration declaration,
-            string text, string tooltip, DaemonProcessKind kind)
+            ICSharpDeclaration cSharpDeclaration,
+            string text, string tooltip, DaemonProcessKind processKind)
         {
-            consumer.AddHotHighlighting(ContextProvider, declaration,
-                SettingsStore.BoundSettingsStore, text, tooltip, kind, EnumerableCollection<BulbMenuItem>.Empty, true);
+            consumer.AddHotHighlighting(PerformanceContextProvider, cSharpDeclaration,
+                SettingsStore.BoundSettingsStore, text, tooltip, processKind, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
 
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)
