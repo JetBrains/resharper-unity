@@ -1,5 +1,6 @@
 using System.Linq;
 using JetBrains.Annotations;
+using JetBrains.DataFlow;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
@@ -31,9 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
                                         ElementProblemAnalyzerData data,
                                         [NotNull] IHighlightingConsumer consumer)
         {
-            if (!myAssetSerializationMode.IsForceText) return;
-            var boxedIsParsingEnabled = myUnityYamlSupport.IsParsingEnabled;
-            if (boxedIsParsingEnabled is null || !boxedIsParsingEnabled.Value) return;
+            if (!myAssetSerializationMode.IsForceText || !myUnityYamlSupport.IsParsingEnabled.Value) return;
             var argument = GetStateNameArgumentFrom(invocation);
             if (!(argument?.Value is ICSharpLiteralExpression literal) ||
                 !invocation.InvocationExpressionReference.IsAnimatorPlayMethod()) return;
