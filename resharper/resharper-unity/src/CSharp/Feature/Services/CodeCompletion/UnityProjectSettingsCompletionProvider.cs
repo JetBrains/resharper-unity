@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Feature.Services.CSharp.CodeCompletion.Infrastructure;
 using JetBrains.ReSharper.Feature.Services.Lookup;
 using JetBrains.ReSharper.Features.Intellisense.CodeCompletion.CSharp.Rules;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -41,6 +42,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
                 var cache = context.NodeInFile.GetSolution().GetComponent<UnityProjectSettingsCache>();
                 completionItems = cache.GetAllPossibleSceneNames();
 
+            } // animator state completion
+            else if (IsSpecificArgumentInSpecificMethod(context, out argumentLiteral, IsPlayAnimationMethod, IsCorrespondingArgument("stateName")))
+            {
+                var container = context.NodeInFile.GetSolution().GetComponent<AnimatorScriptUsagesElementContainer>();
+                completionItems = container.GetStateNames();
             } // tag completion, tag == "..."
             else if (IsTagEquality(context, out argumentLiteral))
             {
@@ -136,6 +142,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CodeCompleti
         {
             return invocationExpression.InvocationExpressionReference.IsSceneManagerSceneRelatedMethod() ||
                    invocationExpression.InvocationExpressionReference.IsEditorSceneManagerSceneRelatedMethod();
+        }
+        
+        private static bool IsPlayAnimationMethod([NotNull] IInvocationExpression invocationExpression)
+        {
+            return invocationExpression.InvocationExpressionReference.IsAnimatorPlayMethod();
         }
 
         private bool IsTagEquality(CSharpCodeCompletionContext context, out ICSharpLiteralExpression stringLiteral)

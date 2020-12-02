@@ -21,6 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         [NotNull] public readonly OneToListMap<long, AnimatorStateMachineScriptUsage> ScriptAnchorToStateMachineUsages;
         [NotNull] public readonly OneToListMap<long, AnimatorStateScriptUsage> ScriptAnchorToStateUsages;
         [NotNull] public readonly IDictionary<long, AnimatorStateMachineScriptUsage> StateMachineAnchorToUsage;
+        [NotNull] public readonly ICollection<string> StateNames;
 
         public AnimatorUsagesDataElement()
         {
@@ -29,6 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             ScriptAnchorToStateMachineUsages = new OneToListMap<long, AnimatorStateMachineScriptUsage>();
             StateMachineAnchorToUsage = new Dictionary<long, AnimatorStateMachineScriptUsage>();
             ChildToParent = new Dictionary<long, long>();
+            StateNames = new List<string>();
         }
 
         private AnimatorUsagesDataElement([NotNull] OneToListMap<Guid, long> guidToAnchors,
@@ -38,13 +40,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                                               scriptAnchorToStateMachineUsages,
                                           [NotNull]
                                           IDictionary<long, AnimatorStateMachineScriptUsage> stateMachineAnchorToUsage,
-                                          [NotNull] IDictionary<long, long> childToParent)
+                                          [NotNull] IDictionary<long, long> childToParent,
+                                          [NotNull] ICollection<string> stateNames)
         {
             GuidToAnchors = guidToAnchors;
             ScriptAnchorToStateUsages = scriptAnchorToStateUsages;
             ScriptAnchorToStateMachineUsages = scriptAnchorToStateMachineUsages;
             StateMachineAnchorToUsage = stateMachineAnchorToUsage;
             ChildToParent = childToParent;
+            StateNames = stateNames;
         }
 
         public string ContainerId => nameof(AnimatorScriptUsagesElementContainer);
@@ -54,7 +58,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             switch (data)
             {
                 case AnimatorStateScriptUsage animatorStateScriptUsage:
-                    AddScriptToStateUsagesFor(animatorStateScriptUsage);
+                    AddStateUsageInfoFor(animatorStateScriptUsage);
                     break;
                 case AnimatorScript script:
                     AddScriptInfos(script);
@@ -63,6 +67,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                     AddStateMachineUsageInfosFor(stateMachineScriptUsage);
                     break;
             }
+        }
+
+        private void AddStateUsageInfoFor([NotNull] AnimatorStateScriptUsage usage)
+        {
+            StateNames.Add(usage.Name);
+            AddScriptToStateUsagesFor(usage);
         }
 
         private void AddScriptToStateUsagesFor([NotNull] AnimatorStateScriptUsage animatorStateScriptUsage)
@@ -126,8 +136,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             var anchorToStateMachineUsagesMap = ReadAnchorToUsagesMap(reader, AnimatorStateMachineScriptUsage.ReadFrom);
             var stateMachineAnchorToUsageMap = ReadStateMachineAnchorToUsageMap(reader);
             var childToParent = ReadChildToParentMap(reader);
+            var stateNames = ReadStateNames(reader);
             return new AnimatorUsagesDataElement(guidToAnchor, anchorToStateUsagesMap, anchorToStateMachineUsagesMap,
-                stateMachineAnchorToUsageMap, childToParent);
+                stateMachineAnchorToUsageMap, childToParent, stateNames);
         }
 
         [NotNull]
@@ -198,6 +209,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
             return childToParent;
         }
+        
+        [NotNull]
+        private static ICollection<string> ReadStateNames([NotNull] UnsafeReader reader)
+        {
+            var count = reader.ReadInt32();
+            var stateNames = new List<string>(count);
+            for (var i = 0; i < count; i++) stateNames.Add(reader.ReadString());
+            return stateNames;
+        }
 
         private static void Write([CanBeNull] UnsafeWriter writer, [CanBeNull] AnimatorUsagesDataElement value)
         {
@@ -207,6 +227,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             WriteAnchorToUsagesMap(writer, value.ScriptAnchorToStateMachineUsages);
             WriteStateMachineAnchorToUsageMap(writer, value.StateMachineAnchorToUsage);
             WriteChildToParentMap(writer, value.ChildToParent);
+            WriteStateNames(writer, value.StateNames);
         }
 
         private static void WriteGuidToAnchorsMap([NotNull] UnsafeWriter writer,
@@ -281,6 +302,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             writer.Write(anchor);
             writer.Write(usages.Count);
             foreach (var usage in usages) usage.WriteTo(writer);
+        }
+
+        private static void WriteStateNames([NotNull] UnsafeWriter writer,
+                                            [NotNull, ItemNotNull] ICollection<string> stateNames)
+        {
+            writer.Write(stateNames.Count);
+            foreach (var stateName in stateNames)
+            {
+                writer.Write(stateName);
+            }
         }
     }
 }
