@@ -74,9 +74,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             foreach (var (guid, anchors) in animatorElement.GuidToAnchors)
             {
                 if (anchors is null) continue;
-                for (var i = 0; i < anchors.Count; i++)
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    usagesCount.Remove(guid);
+                var currentCount = usagesCount.GetCount(guid);
+                var anchorsCount = anchors.Count;
+                usagesCount.Add(guid, anchorsCount <= currentCount ? -anchorsCount : -currentCount);
                 usageToSourceFiles.Remove(guid, currentAssetSourceFile);
             }
 
