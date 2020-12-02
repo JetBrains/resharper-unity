@@ -7,14 +7,13 @@ using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
-using static JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.
-    ExpensiveCodeActionsUtil;
+using static JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.ExpensiveCodeAnalysis.ExpensiveCodeActionsUtil;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.ExpensiveCodeAnalysis.
     AddExpensiveComment
 {
     [ContextAction(

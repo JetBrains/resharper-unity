@@ -4,24 +4,23 @@ using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.QuickFixes;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
     [QuickFix]
-    public sealed class PerformanceAnalysisDisableByCommentQuickFix : IQuickFix
+    public sealed class AddDiscardAttributeQuickFix : IQuickFix
     {
         [CanBeNull] private readonly IMethodDeclaration myMethodDeclaration;
-        [CanBeNull] private readonly PerformanceAnalysisDisableByCommentBulbAction myBulbAction;
-
-        public PerformanceAnalysisDisableByCommentQuickFix(UnityPerformanceInvocationWarning performanceHighlighting)
+        [CanBeNull] private readonly AddDiscardAttributeBulbAction myBulbAction;
+        public AddDiscardAttributeQuickFix(IBurstHighlighting burstHighlighting)
         {
-            myMethodDeclaration = performanceHighlighting.InvocationExpression?.GetContainingNode<IMethodDeclaration>();
-            
+            myMethodDeclaration = burstHighlighting?.Node?.GetContainingNode<IMethodDeclaration>();
+
             if (myMethodDeclaration != null)
-                myBulbAction = new PerformanceAnalysisDisableByCommentBulbAction(myMethodDeclaration);
+                myBulbAction = new AddDiscardAttributeBulbAction(myMethodDeclaration);
         }
 
         public IEnumerable<IntentionAction> CreateBulbItems()
@@ -30,13 +29,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
                 return EmptyList<IntentionAction>.Instance;
             
             myMethodDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
-
+            
             return myBulbAction.ToQuickFixIntentions();
         }
-
+        
         public bool IsAvailable(IUserDataHolder cache)
         {
-            return PerformanceDisableUtil.IsAvailable(myMethodDeclaration);
+            return BurstActionsUtil.IsAvailable(myMethodDeclaration);
         }
     }
 }
