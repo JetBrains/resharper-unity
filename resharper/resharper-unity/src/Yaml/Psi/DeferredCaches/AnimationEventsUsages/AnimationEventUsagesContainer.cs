@@ -65,11 +65,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
                          IUnityAssetDataElement element)
         {
             if (!(element is AnimationUsagesDataElement animationElement)) return;
+            var usagesCount = myUsagesCount;
             foreach (var (functionNameAndGuid, events) in animationElement.FunctionNameAndGuidToEvents)
             {
                 if (events is null) continue;
-                // ReSharper disable once AssignNullToNotNullAttribute
-                for (var i = 0; i < events.Count; i++) myUsagesCount.Remove(functionNameAndGuid);
+                var currentCount = usagesCount.GetCount(functionNameAndGuid);
+                var eventsCount = events.Count;
+                usagesCount.Add(functionNameAndGuid, eventsCount <= currentCount ? -eventsCount : -currentCount);
                 myUsageToSourceFiles.Remove(functionNameAndGuid, currentAssetSourceFile);
             }
 
