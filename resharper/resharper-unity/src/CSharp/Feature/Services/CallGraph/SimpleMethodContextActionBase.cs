@@ -10,7 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
     public abstract class SimpleMethodContextActionBase
     {

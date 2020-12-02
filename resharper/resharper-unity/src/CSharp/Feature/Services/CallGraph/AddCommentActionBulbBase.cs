@@ -7,7 +7,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
     public abstract class AddCommentActionBulbBase : IBulbAction
     {

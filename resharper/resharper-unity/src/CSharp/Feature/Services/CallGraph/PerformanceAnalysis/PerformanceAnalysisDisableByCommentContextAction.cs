@@ -8,14 +8,11 @@ using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
-using static JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.
-    ExpensiveCodeActionsUtil;
+using static JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.PerformanceDisableUtil;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.
-    AddExpensiveComment
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
@@ -24,12 +21,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class AddExpensiveCommentContextAction : SimpleMethodContextActionBase, IContextAction
+    public sealed class PerformanceAnalysisDisableByCommentContextAction : SimpleMethodContextActionBase, IContextAction
     {
         [NotNull] private readonly PerformanceCriticalContextProvider myPerformanceContextProvider;
         [NotNull] private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
-
-        public AddExpensiveCommentContextAction(ICSharpContextActionDataProvider dataProvider)
+        
+        public PerformanceAnalysisDisableByCommentContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
             myPerformanceContextProvider = dataProvider.Solution.GetComponent<PerformanceCriticalContextProvider>();
@@ -46,14 +43,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         protected override bool ShouldCreate(IMethodDeclaration methodDeclaration, DaemonProcessKind processKind)
         {
             var isExpensiveContext = myExpensiveContextProvider.HasContext(methodDeclaration, processKind);
-            var isPerformanceContext = myPerformanceContextProvider.HasContext(methodDeclaration, processKind);
 
-            return isPerformanceContext && !isExpensiveContext;
+            return isExpensiveContext || myPerformanceContextProvider.HasContext(methodDeclaration, processKind);
         }
 
         protected override IEnumerable<IntentionAction> GetActions(IMethodDeclaration methodDeclaration)
         {
-            return new AddExpensiveCommentBulbAction(methodDeclaration).ToContextActionIntentions();
+            return new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration).ToContextActionIntentions();
         }
     }
 }

@@ -3,7 +3,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCritical
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.ExpensiveCodeAnalysis.
     AddExpensiveComment
 {
     public sealed class AddExpensiveCommentBulbAction : AddCommentActionBulbBase

@@ -1,4 +1,4 @@
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.AddExpensiveComment;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.ExpensiveCodeAnalysis.AddExpensiveComment;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActions
