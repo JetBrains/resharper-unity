@@ -24,7 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
     {
         [NotNull] private readonly OneToSetMap<IPsiSourceFile, string> myFileToStateNames =
             new OneToSetMap<IPsiSourceFile, string>();
-        [NotNull] private readonly ISet<string> myStateNames = new HashSet<string>();
+
         [NotNull] private readonly IPersistentIndexManager myManager;
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
 
@@ -32,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
 
         [NotNull] private readonly IShellLocks myShellLocks;
+        [NotNull] private readonly ISet<string> myStateNames = new HashSet<string>();
 
         [NotNull] private readonly CountingSet<Guid> myUsagesCount = new CountingSet<Guid>();
 
@@ -59,7 +60,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile file, AssetDocument document)
         {
-            if (AssetUtils.IsMonoBehaviourDocument(document.Buffer)) return ExtractStateMachineBehaviour(document, file);
+            if (AssetUtils.IsMonoBehaviourDocument(document.Buffer))
+                return ExtractStateMachineBehaviour(document, file);
             var animatorExtractor = new AnimatorExtractor(file, document);
             if (AssetUtils.IsAnimatorStateMachine(document.Buffer)) return animatorExtractor.TryExtractStateMachine();
             return AssetUtils.IsAnimatorState(document.Buffer) ? animatorExtractor.TryExtractUsage() : null;
@@ -100,6 +102,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 myUsagesCount.Add(guid, anchors.Count);
                 myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
             }
+
             var stateNames = animatorElement.StateNames;
             if (stateNames.Count == 0) return;
             myFileToStateNames.AddRange(currentAssetSourceFile, stateNames);
@@ -159,7 +162,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             AssertShellLocks();
             return myStateNames;
         }
-        
+
         public bool ContainsStateName([NotNull] string stateName)
         {
             AssertShellLocks();
@@ -235,6 +238,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 isStateMachine = true;
                 return;
             }
+
             isStateMachine = false;
             AddBottomStateElement(element, namesConsumer, anchor, declaredElement);
         }
@@ -265,7 +269,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             namesConsumer.Elements.Add(name);
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull]
+        [ItemNotNull]
         private static IEnumerable<T> GetUsages<T>(
             [NotNull] AnimatorUsagesDataElement element,
             Guid boxedGuid,
@@ -300,7 +305,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             }
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull]
+        [ItemNotNull]
         private static IEnumerable<IScriptUsage> ConcatUsages(
             [NotNull] IEnumerable<AnimatorStateScriptUsage> stateUsages,
             [NotNull] IEnumerable<AnimatorStateMachineScriptUsage> stateMachineUsages)
