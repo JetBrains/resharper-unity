@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
-
+//CGTD check consistency in 211
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
     public abstract class SimpleMethodContextActionBase
@@ -31,6 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
         {
             get
             {
+                // CGTD check consistency in 211
                 var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
 
                 return methodDeclaration;

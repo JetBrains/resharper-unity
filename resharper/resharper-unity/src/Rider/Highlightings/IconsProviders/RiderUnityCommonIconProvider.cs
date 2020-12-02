@@ -135,6 +135,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
             void TryAddAdditionalActions()
             {
+                // CGTD check consistency in 211
                 if (myExpensiveContextProvider.HasContext(methodDeclaration, kind)) 
                     return;
                 

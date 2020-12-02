@@ -38,6 +38,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             var functionDeclaration = declaration as IFunctionDeclaration;
 
+            // CGTD check consistency in 211
             var hasBanComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
                 UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
             
