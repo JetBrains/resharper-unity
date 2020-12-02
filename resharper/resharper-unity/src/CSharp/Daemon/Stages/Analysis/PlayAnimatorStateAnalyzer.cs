@@ -37,7 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (!(argument?.Value is ICSharpLiteralExpression literal) ||
                 !invocation.InvocationExpressionReference.IsAnimatorPlayMethod()) return;
             var container = invocation.GetSolution().TryGetComponent<AnimatorScriptUsagesElementContainer>();
-            if (container == null || container.GetStateNames().Contains(literal.ConstantValue.Value)) return;
+            if (container == null ||
+                !(literal.ConstantValue.Value is string stateName) || 
+                container.ContainsStateName(stateName)) return;
             consumer.AddHighlighting(new UnknownAnimatorStateNameWarning(argument));
         }
 

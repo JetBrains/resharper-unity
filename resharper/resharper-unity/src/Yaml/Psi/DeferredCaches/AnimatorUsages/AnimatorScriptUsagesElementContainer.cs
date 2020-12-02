@@ -22,9 +22,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
     [SolutionComponent]
     public class AnimatorScriptUsagesElementContainer : IScriptUsagesElementContainer
     {
-        [NotNull] private readonly OneToListMap<IPsiSourceFile, string> myFileToStateNames =
-            new OneToListMap<IPsiSourceFile, string>();
-
+        [NotNull] private readonly OneToSetMap<IPsiSourceFile, string> myFileToStateNames =
+            new OneToSetMap<IPsiSourceFile, string>();
+        [NotNull] private readonly ISet<string> myStateNames = new HashSet<string>();
         [NotNull] private readonly IPersistentIndexManager myManager;
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
 
@@ -83,6 +83,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
 
             myPointers.Remove(currentAssetSourceFile);
             myFileToStateNames.RemoveKey(currentAssetSourceFile);
+            myStateNames.Clear();
         }
 
         public void Merge(IPsiSourceFile currentAssetSourceFile,
@@ -100,7 +101,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
             }
 
-            myFileToStateNames.AddValueRange(currentAssetSourceFile, animatorElement.StateNames.Distinct());
+            myFileToStateNames.AddRange(currentAssetSourceFile, animatorElement.StateNames);
+            myStateNames.AddRange(myFileToStateNames.Values);
         }
 
         public string Id => nameof(AnimatorScriptUsagesElementContainer);
@@ -113,6 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
             myUsagesCount.Clear();
             myPointers.Clear();
             myFileToStateNames.Clear();
+            myStateNames.Clear();
         }
 
         public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
@@ -153,7 +156,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
         public IEnumerable<string> GetStateNames()
         {
             AssertShellLocks();
-            return myFileToStateNames.Values.Distinct();
+            return myStateNames;
+        }
+        
+        public bool ContainsStateName([NotNull] string stateName)
+        {
+            AssertShellLocks();
+            return myStateNames.Contains(stateName);
         }
 
         private static LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IEnumerable<IPsiSourceFile> files)
