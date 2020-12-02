@@ -8,11 +8,11 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis
 {
-    public abstract class SimpleBurstContextAction : SimpleMethodContextActionBase, IContextAction
+    public abstract class BurstSimpleMethodContextAction : SimpleMethodSingleContextActionBase, IContextAction
     {
         private readonly BurstContextProvider myBurstContextProvider;
         
-        protected SimpleBurstContextAction(ICSharpContextActionDataProvider dataProvider)
+        protected BurstSimpleMethodContextAction(ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
             myBurstContextProvider = dataProvider.Solution.GetComponent<BurstContextProvider>();
