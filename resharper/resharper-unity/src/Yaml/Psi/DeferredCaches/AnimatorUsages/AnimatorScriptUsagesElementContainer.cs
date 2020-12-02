@@ -100,8 +100,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsag
                 myUsagesCount.Add(guid, anchors.Count);
                 myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
             }
-
-            myFileToStateNames.AddRange(currentAssetSourceFile, animatorElement.StateNames);
+            var stateNames = animatorElement.StateNames;
+            if (stateNames.Count == 0) return;
+            myFileToStateNames.AddRange(currentAssetSourceFile, stateNames);
             myStateNames.AddRange(myFileToStateNames.Values);
         }
 
