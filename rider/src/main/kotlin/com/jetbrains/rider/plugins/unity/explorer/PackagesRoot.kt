@@ -12,10 +12,7 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageData
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.projectView.views.FileSystemNodeBase
-import com.jetbrains.rider.projectView.views.SolutionViewNode
-import com.jetbrains.rider.projectView.views.addNonIndexedMark
-import com.jetbrains.rider.projectView.views.navigateToSolutionView
+import com.jetbrains.rider.projectView.views.*
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
 
@@ -73,7 +70,7 @@ class PackagesRoot(project: Project, private val packageManager: PackageManager)
         return children
     }
 
-    override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
+    override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
         if (virtualFile.isDirectory) {
             packageManager.getPackageData(virtualFile)?.let {
                 val embeddedPackageData = PackageData(it.name, virtualFile, it.details, PackageSource.Embedded)
@@ -327,7 +324,7 @@ class BuiltinPackageNode(project: Project, private val packageData: PackageData)
         return super.calculateChildren()
     }
 
-    override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
+    override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
         return UnityExplorerNode(project!!, virtualFile, nestedFiles, descendentOf)
     }
 
