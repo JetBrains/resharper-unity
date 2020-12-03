@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
 using JetBrains.Collections;
+using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
 using JetBrains.Util;
 
@@ -18,12 +21,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         [NotNull] public readonly OneToListMap<Pair<string, Guid>, AnimationUsage> FunctionNameAndGuidToEvents;
 
-        public AnimationUsagesDataElement()
+        [CanBeNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
+
+        [CanBeNull] private readonly ISolution mySolution;
+
+        public AnimationUsagesDataElement([NotNull] ISolution solution, [NotNull] MetaFileGuidCache metaFileGuidCache)
         {
             FunctionNameAndGuidToEvents = new OneToListMap<Pair<string, Guid>, AnimationUsage>();
+            mySolution = solution;
+            myMetaFileGuidCache = metaFileGuidCache;
         }
 
-        public AnimationUsagesDataElement([NotNull] OneToListMap<Pair<string, Guid>, AnimationUsage> functionNameAndGuidToEvents)
+        public AnimationUsagesDataElement(
+            [NotNull] OneToListMap<Pair<string, Guid>, AnimationUsage> functionNameAndGuidToEvents)
         {
             FunctionNameAndGuidToEvents = functionNameAndGuidToEvents;
         }
@@ -37,6 +47,35 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
             {
                 if (usage is null) continue;
                 FunctionNameAndGuidToEvents.Add(Pair.Of(usage.FunctionName, usage.Guid), usage);
+                AddParentTypesFunctionNameAndGuidToUsageEntries(usage);
+            }
+        }
+
+        private void AddParentTypesFunctionNameAndGuidToUsageEntries([NotNull] AnimationUsage usage)
+        {
+            if (myMetaFileGuidCache is null) return;
+            var typeElement = AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, usage.Guid);
+            if (!(typeElement is IClass @class)) return;
+            foreach (var guid in GetParentNonUnityTypesGuidsFor(@class, myMetaFileGuidCache))
+                FunctionNameAndGuidToEvents.Add(Pair.Of(usage.FunctionName, guid), usage);
+        }
+
+        [NotNull]
+        private static IEnumerable<Guid> GetParentNonUnityTypesGuidsFor([NotNull] IClass script,
+                                                                        [NotNull] MetaFileGuidCache metaFileGuidCache)
+        {
+            while (true)
+            {
+                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
+                {
+                    script = script.GetBaseClassType()?.GetTypeElement() as IClass;
+                }
+
+                if (script is null || script.IsBuiltInUnityClass()) yield break;
+                var currentBoxedGuid = AssetUtils.GetGuidFor(metaFileGuidCache, script);
+                if (!currentBoxedGuid.HasValue) yield break;
+                var currentGuid = currentBoxedGuid.Value;
+                yield return currentGuid;
             }
         }
 

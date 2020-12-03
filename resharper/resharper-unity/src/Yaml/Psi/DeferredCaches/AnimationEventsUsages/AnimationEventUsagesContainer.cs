@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
-            return new AnimationUsagesDataElement();
+            return new AnimationUsagesDataElement(sourceFile.GetSolution(), myMetaFileGuidCache);
         }
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)

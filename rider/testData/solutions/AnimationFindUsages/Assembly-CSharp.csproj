@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets/Behaviour.cs"/>
+    <Compile Include="Assets/Base.cs"/>
+    <Compile Include="Assets/Subtype.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

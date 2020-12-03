@@ -16,4 +16,11 @@ open class AnimationFindUsagesTest : FindUsagesAssetTestBase() {
         groups?.forEach { group -> setGroupingEnabled(group, true) }
         doTest(5, 20, "Behaviour.cs")
     }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    fun animationFindUsagesInBaseClass(caseName: String, groups: List<String>?) {
+        disableAllGroups()
+        groups?.forEach { group -> setGroupingEnabled(group, true) }
+        doTest(7, 17, "Base.cs")
+    }
 }
