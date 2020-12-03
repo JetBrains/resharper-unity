@@ -106,9 +106,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
             myShellLocks.AssertReadAccessAllowed();
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull]
+        [ItemNotNull]
         public IEnumerable<AnimationUsage> GetEventUsagesFor([NotNull] IPsiSourceFile sourceFile,
-                                                                  [NotNull] IMethod declaredElement)
+                                                             [NotNull] IMethod declaredElement)
         {
             AssertShellLocks();
             var boxedGuid = FindGuidOf(declaredElement);
@@ -116,31 +117,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
             var pointer = myPointers[sourceFile];
             if (pointer is null) return Enumerable.Empty<AnimationUsage>();
             var element = pointer.GetElement(sourceFile, Id);
-            if (!(element is AnimationUsagesDataElement animatorElement))
-                return Enumerable.Empty<AnimationUsage>();
+            if (!(element is AnimationUsagesDataElement animatorElement)) return Enumerable.Empty<AnimationUsage>();
             return GetEventUsagesFor(animatorElement, declaredElement.ShortName, boxedGuid.Value);
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull]
+        [ItemNotNull]
         private static IEnumerable<AnimationUsage> GetEventUsagesFor([NotNull] AnimationUsagesDataElement element,
-                                                                          [NotNull] string functionName,
-                                                                          Guid guid)
+                                                                     [NotNull] string functionName,
+                                                                     Guid guid)
         {
             return element.FunctionNameAndGuidToEvents.GetValuesSafe(Pair.Of(functionName, guid));
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull]
+        [ItemNotNull]
         public IEnumerable<IPsiSourceFile> GetPossibleFilesWithUsage([NotNull] IDeclaredElement element)
         {
             AssertShellLocks();
             if (!(element is IMethod method)) return EmptyList<IPsiSourceFile>.Enumerable;
             var guid = FindGuidOf(method);
             if (guid == null) return EmptyList<IPsiSourceFile>.Enumerable;
-            return myUsageToSourceFiles.GetValues(Pair.Of(method.ShortName, guid.Value)) ?? 
+            return myUsageToSourceFiles.GetValues(Pair.Of(method.ShortName, guid.Value)) ??
                    EmptyList<IPsiSourceFile>.Enumerable;
         }
 
-        
+
         public int GetEventUsagesCountFor([NotNull] IDeclaredElement element)
         {
             AssertShellLocks();
