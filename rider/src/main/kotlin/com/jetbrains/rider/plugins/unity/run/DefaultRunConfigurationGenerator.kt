@@ -22,6 +22,7 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
     companion object {
         const val ATTACH_CONFIGURATION_NAME = "Attach to Unity Editor"
         const val ATTACH_AND_PLAY_CONFIGURATION_NAME = "Attach to Unity Editor & Play"
+        const val RUN_DEBUG_STANDALONE_CONFIGURATION_NAME = "Standalone Player"
     }
 
     init {
@@ -54,9 +55,10 @@ class DefaultRunConfigurationGenerator(project: Project) : ProtocolSubscribedPro
 
             // create it, if it doesn't exist, to advertise the feature
             project.solution.frontendBackendModel.unityProjectSettings.buildLocation.adviseNotNull(projectComponentLifetime) {
-                if (!runManager.allSettings.any { s -> s.type is UnityExeConfigurationType && s.factory is UnityExeConfigurationFactory }) {
+                if (!runManager.allSettings.any { s -> s.type is UnityExeConfigurationType
+                        && s.factory is UnityExeConfigurationFactory && s.name == RUN_DEBUG_STANDALONE_CONFIGURATION_NAME }) {
                     val configurationType = ConfigurationTypeUtil.findConfigurationType(UnityExeConfigurationType::class.java)
-                    val runConfiguration = runManager.createConfiguration(configurationType.displayName, configurationType.factory)
+                    val runConfiguration = runManager.createConfiguration(RUN_DEBUG_STANDALONE_CONFIGURATION_NAME, configurationType.factory)
                     val unityExeConfiguration = runConfiguration.configuration as UnityExeConfiguration
                     unityExeConfiguration.parameters.exePath = it
                     unityExeConfiguration.parameters.workingDirectory = File(it).parent!!
