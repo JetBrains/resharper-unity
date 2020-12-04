@@ -59,7 +59,7 @@ class UnityAttachToEditorRunConfiguration(project: Project, factory: Configurati
         for (ext in EP_NAME.getExtensions(project)) {
             if (ext.canExecute(executorId)) {
                 val finder = UnityInstallationFinder.getInstance(project)
-                val args = getUnityWithProjectArgsAndDebugCodeOptimization(project)
+                val args = getUnityWithProjectArgs(project)
                 if (play) {
                     addPlayModeArguments(args)
                 }

@@ -5,7 +5,7 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
-import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
+import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgsAndDebugCodeOptimization
 import com.jetbrains.rider.projectView.solution
 
 
@@ -29,7 +29,7 @@ open class StartUnityAction : DumbAwareAction() {
 
     companion object {
         fun startUnity(project: Project, vararg args: String): Process? {
-            val processBuilderArgs = getUnityWithProjectArgs(project)
+            val processBuilderArgs = getUnityWithProjectArgsAndDebugCodeOptimization(project)
             processBuilderArgs.addAll(args)
             return startUnity(processBuilderArgs)
         }
