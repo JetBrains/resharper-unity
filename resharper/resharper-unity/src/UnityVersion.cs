@@ -29,6 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private readonly UnityProjectFileCacheProvider myUnityProjectFileCache;
         private readonly ISolution mySolution;
         private readonly IFileSystemTracker myFileSystemTracker;
+        private readonly FileSystemPath mySolutionDirectory;
         private Version myVersionFromProjectVersionTxt;
         private Version myVersionFromEditorInstanceJson;
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
@@ -43,13 +44,18 @@ namespace JetBrains.ReSharper.Plugins.Unity
             mySolution = solution;
             myFileSystemTracker = fileSystemTracker;
             
+            // SolutionDirectory isn't absolute in tests, and will throw if used with FileSystemTracker
+            mySolutionDirectory = solution.SolutionDirectory;
+            if (!mySolutionDirectory.IsAbsolute)
+                mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory());
+            
             unitySolutionTracker.IsRelatedToUnity.WhenTrue(lifetime, SetActualVersionForSolution);
         }
 
         private void SetActualVersionForSolution(Lifetime lt)
         {
             var projectVersionTxtPath =
-                mySolution.SolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
+                mySolutionDirectory.Combine("ProjectSettings/ProjectVersion.txt");
             myFileSystemTracker.AdviseFileChanges(lt,
                 projectVersionTxtPath,
                 _ =>
@@ -59,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 });
             myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
 
-            var editorInstanceJsonPath = mySolution.SolutionDirectory.Combine("Library/EditorInstance.json");
+            var editorInstanceJsonPath = mySolutionDirectory.Combine("Library/EditorInstance.json");
             myFileSystemTracker.AdviseFileChanges(lt,
                 editorInstanceJsonPath,
                 _ =>
