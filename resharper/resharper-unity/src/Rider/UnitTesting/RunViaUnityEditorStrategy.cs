@@ -355,7 +355,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                 {
                                     var notification = new NotificationModel("Compilation failed",
                                         "Script compilation in Unity failed, so tests were not started.", true,
-                                        RdNotificationEntryType.INFO);
+                                        RdNotificationEntryType.INFO, new List<NotificationHyperlink>());
                                     myNotificationsModel.Notification(notification);
                                 });
                             myFrontendBackendHost.Do(model => model.ActivateUnityLogView());
