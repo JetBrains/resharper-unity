@@ -17,10 +17,7 @@ import com.jetbrains.rider.debugger.RiderDebugActiveDotNetSessionsTracker
 import com.jetbrains.rider.isUnityProject
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.run.UnityDebuggerOutputListener
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.plugins.unity.util.addPlayModeArguments
-import com.jetbrains.rider.plugins.unity.util.convertPidToDebuggerPort
-import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
+import com.jetbrains.rider.plugins.unity.util.*
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.run.IDebuggerOutputListener
 import com.jetbrains.rider.run.WorkerRunInfo
@@ -79,7 +76,7 @@ class UnityAttachToEditorProfileState(private val remoteConfiguration: UnityAtta
                     throw RuntimeConfigurationError("Cannot automatically determine Unity Editor instance. Please open the project in Unity and try again.")
                 }
 
-                val args = getUnityWithProjectArgs(project)
+                val args = getUnityWithProjectArgsAndDebugCodeOptimization(project)
                 if (remoteConfiguration.play) {
                     addPlayModeArguments(args)
                 }
