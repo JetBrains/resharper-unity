@@ -287,21 +287,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
 
         public static Guid? GetGuidFor(MetaFileGuidCache metaFileGuidCache, ITypeElement typeElement)
         {
-            var sourceFile = typeElement.GetDeclarations().FirstOrDefault()?.GetSourceFile();
-            if (sourceFile == null || !sourceFile.IsValid())
-                return null;
+            // partial classes
+            var declarations = typeElement.GetDeclarations();
+            foreach (var declaration in declarations)
+            {
+                var sourceFile = declaration.GetSourceFile();
+                if (sourceFile == null || !sourceFile.IsValid())
+                    continue;
+                        
+                if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
+                    continue;
 
-            if (typeElement.TypeParameters.Count != 0)
-                return null;
+                if (typeElement.TypeParameters.Count != 0)
+                    continue;
 
-            if (typeElement.GetContainingType() != null)
-                return null;
+                if (typeElement.GetContainingType() != null)
+                    continue;
 
-            if (!typeElement.ShortName.Equals(sourceFile.GetLocation().NameWithoutExtension))
-                return null;
+                var guid = metaFileGuidCache.GetAssetGuid(sourceFile);
+                return guid;
+            }
 
-            var guid = metaFileGuidCache.GetAssetGuid(sourceFile);
-            return guid;
+            return null;
         }
 
         public static bool HasPossibleDerivedTypesWithMember(Guid ownerGuid, ITypeElement containingType, IEnumerable<string> memberNames, OneToCompactCountingSet<int, Guid> nameHashToGuids)

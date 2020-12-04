@@ -41,7 +41,8 @@ class ProtocolInstanceWatcher(project: Project) : LifetimedProjectComponent(proj
                     try {
                         while (watchService.take().also { key = it } != null && it.isAlive) {
                             for (event in key.pollEvents()) {
-                                if (event.context().toString() == watchedFileName) {
+                                val context = event.context() ?: continue
+                                if (context.toString() == watchedFileName) {
                                     application.invokeLater {
                                         project.solution.fileSystemModel.change.fire(RdDeltaBatch(listOf(delta)))
                                     }

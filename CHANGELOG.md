@@ -8,9 +8,11 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
+## 2021.1.0
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211)
 
 ## 2020.3.0
-* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202...net203)
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net202...net203-rtm-2020.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/41?closed=1)
 
 ### Added
@@ -30,6 +32,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Change defaults for implicit conversion hints to always show instead of push-to-hint ([#1923](https://github.com/JetBrains/resharper-unity/pull/1923))
 - Use Unity terminology to describe event functions and serialised fields in identifier tooltips and inspections ([#1914](https://github.com/JetBrains/resharper-unity/pull/1914))
 - Add annotation for `[NativeSetThreadIndex]` to mean implicit usage ([#1619](https://github.com/JetBrains/resharper-unity/issues/1619), [#1923](https://github.com/JetBrains/resharper-unity/pull/1923))
+- Update API information to 2019.4.15f1, 2020.1.14f1 and 2020.2.0b12. Adds missing `EditorWindow.CreateGUI` message ([1937](https://github.com/JetBrains/resharper-unity/pull/1937))
 - Rider: Highlight methods from a Burst compiled context with line marker and Code Vision links ([#1852](https://github.com/JetBrains/resharper-unity/pull/1852))
 - Rider: Execute both edit and play mode tests in the same run ([#1894](https://github.com/JetBrains/resharper-unity/pull/1894))
 - Rider: Run Unity menu item handlers via gutter icon ([RIDER-35911](https://youtrack.jetbrains.com/issue/RIDER-35911), [#1857](https://github.com/JetBrains/resharper-unity/pull/1857))
@@ -62,6 +65,9 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Fix `Dictionary` fields being treated as serialised fields ([#1776](https://github.com/JetBrains/resharper-unity/issues/1776), [#1923](https://github.com/JetBrains/resharper-unity/pull/1923))
 - Fix `sfield` and `sprop` live templates being unavailable in `[Serializable]` types ([#1662](https://github.com/JetBrains/resharper-unity/issues/1662), [#1923](https://github.com/JetBrains/resharper-unity/pull/1923))
 - Fix `.asmdef` file template missing under `Packages` folder ([#780](https://github.com/JetBrains/resharper-unity/issues/780), [#1923](https://github.com/JetBrains/resharper-unity/pull/1923))
+- Fix asset usages not working with partial classes ([RIDER-50125](https://youtrack.jetbrains.com/issue/RIDER-50125), [#1935](https://github.com/JetBrains/resharper-unity/pull/1935))
+- Fix exceptions when running plugin as part of ReSharper command line tools ([RIDER-53968](https://youtrack.jetbrains.com/issue/RIDER-53968), [#1935](https://github.com/JetBrains/resharper-unity/pull/1935))
+- Fix false positive reports of repeated property access warnings with `MonoBehaviour` based components ([#1544](https://github.com/JetBrains/resharper-unity/issues/1544), [#1935](https://github.com/JetBrains/resharper-unity/pull/1935))
 - Rider: Fix ignoring `[Explicit]` attribute on unit tests ([#1731](https://github.com/JetBrains/resharper-unity/issues/1731), [RIDER-48686](https://youtrack.jetbrains.com/issue/RIDER-48686), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
 - Rider: Handle parameterized test fixtures with parameterized tests ([RIDER-46658](https://youtrack.jetbrains.com/issue/RIDER-46658), [#1825](https://github.com/JetBrains/resharper-unity/pull/1825))
 - Rider: Fix inconclusive result when explicitly running tests from two projects ([#1892](https://github.com/JetBrains/resharper-unity/pull/1892))

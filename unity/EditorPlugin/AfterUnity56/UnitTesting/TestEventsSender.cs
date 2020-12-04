@@ -151,8 +151,9 @@ namespace JetBrains.Rider.Unity.Editor.AfterUnity56.UnitTesting
         status = Status.Success;
       else if (Equals(resultState, ResultState.Ignored))
         status = Status.Ignored;
-      else if (Equals(resultState, ResultState.Inconclusive) ||
-               Equals(resultState, ResultState.Skipped))
+      else if (Equals(resultState, ResultState.Skipped))
+          status = Status.Ignored;
+      else if (Equals(resultState, ResultState.Inconclusive))
         status = Status.Inconclusive;
       else
         status = Status.Failure;

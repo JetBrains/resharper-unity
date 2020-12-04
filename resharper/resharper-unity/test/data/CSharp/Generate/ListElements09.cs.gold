@@ -6,20 +6,21 @@
  4: OnDisable():System.Void
  5: OnDestroy():System.Void
  6: OnGUI():System.Void
- 7: ModifierKeysChanged():System.Void
- 8: OnAddedAsTab():System.Void
- 9: OnBecameInvisible():System.Void
- 10: OnBecameVisible():System.Void
- 11: OnDidOpenScene():System.Void
- 12: OnFocus():System.Void
- 13: OnHierarchyChange():System.Void
- 14: OnInspectorUpdate():System.Void
- 15: OnLostFocus():System.Void
- 16: OnProjectChange():System.Void
- 17: OnSelectionChange():System.Void
- 18: OnTabDetached():System.Void
- 19: OnValidate():System.Void
- 20: ShowButton(UnityEngine.Rect):System.Void
+ 7: CreateGUI():System.Void
+ 8: ModifierKeysChanged():System.Void
+ 9: OnAddedAsTab():System.Void
+ 10: OnBecameInvisible():System.Void
+ 11: OnBecameVisible():System.Void
+ 12: OnDidOpenScene():System.Void
+ 13: OnFocus():System.Void
+ 14: OnHierarchyChange():System.Void
+ 15: OnInspectorUpdate():System.Void
+ 16: OnLostFocus():System.Void
+ 17: OnProjectChange():System.Void
+ 18: OnSelectionChange():System.Void
+ 19: OnTabDetached():System.Void
+ 20: OnValidate():System.Void
+ 21: ShowButton(UnityEngine.Rect):System.Void
 
 // ${KIND:Unity.EventFunctions}
 using UnityEditor;

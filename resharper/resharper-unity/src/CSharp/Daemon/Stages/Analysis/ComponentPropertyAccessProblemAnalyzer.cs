@@ -104,7 +104,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis
             if (containingType == null) 
                 return false;
 
-            return containingType.IsBuiltInUnityClass() && containingType.DerivesFrom(KnownTypes.Component);
+            return containingType.IsBuiltInUnityClass() && !containingType.DerivesFromMonoBehaviour() && containingType.DerivesFrom(KnownTypes.Component);
         }
         
         private static bool IsReferenceExpressionOnly(IReferenceExpression referenceExpression)
