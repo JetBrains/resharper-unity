@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Rider.Host.Features.RunMarker
                     if (model == null)
                     {
                         var notification = new NotificationModel("No connection to Unity", "Make sure Unity is running.",
-                            true, RdNotificationEntryType.WARN);
+                            true, RdNotificationEntryType.WARN, new List<NotificationHyperlink>());
                         notificationsModel.Notification(notification);
                         return;
                     }
