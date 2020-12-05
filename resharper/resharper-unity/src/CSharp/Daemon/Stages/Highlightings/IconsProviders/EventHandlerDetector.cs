@@ -37,20 +37,74 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
             var declaredElement = treeNode.DeclaredElement;
             var method = declaredElement as IMethod;
-            if (method is IAccessor)
-                return false;
+            if (method is IAccessor) 
+                return TryAddAnimationEventHighlightingForAccessorMethod(treeNode, consumer, kind, method);
 
             if (declaredElement is IProperty property)
-                method = property.Setter;
-
-            if (method != null && UnityEventsElementContainer.GetAssetUsagesCount(method, out _) +
-                myAnimationEventUsagesContainer.GetEventUsagesCountFor(method)> 0)
             {
-                AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
-                return true;
+                TryAddAnimationEventHighlightingForPropertyGetter(treeNode, consumer, kind, property);
+                method = property.Setter;
             }
+            
+            return method != null && TryAddMethodHighlighting(treeNode, consumer, kind, method);
+        }
 
-            return false;
+        private bool TryAddAnimationEventHighlightingForAccessorMethod(ITreeNode treeNode,
+                                                                       IHighlightingConsumer consumer,
+                                                                       DaemonProcessKind kind,
+                                                                       IDeclaredElement method)
+        {
+            var isAnimationEvent = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method) > 0;
+            if (isAnimationEvent) AddAnimationEventHighlighting(treeNode, consumer, kind);
+            return isAnimationEvent;
+        }
+
+        private void TryAddAnimationEventHighlightingForPropertyGetter(ITreeNode treeNode,
+                                                                       IHighlightingConsumer consumer,
+                                                                       DaemonProcessKind kind,
+                                                                       IProperty property)
+        {
+            var getter = property.Getter;
+            if (getter != null && myAnimationEventUsagesContainer.GetEventUsagesCountFor(getter) > 0)
+            {
+                AddAnimationEventHighlighting(treeNode, consumer, kind);
+            }
+        }
+
+        private bool TryAddMethodHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, DaemonProcessKind kind,
+                                              IMethod method)
+        {
+            var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out _);
+            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method);
+            if (eventHandlersCount + animationEventsCount <= 0) return false;
+            if (eventHandlersCount != 0 && animationEventsCount == 0)
+                AddEventHandlerHighlighting(treeNode, consumer, kind);
+            if (eventHandlersCount == 0 && animationEventsCount != 0)
+                AddAnimationEventHighlighting(treeNode, consumer, kind);
+            AddAnimationEventAndEventHandlerHighlighting(treeNode, consumer, kind);
+            return true;
+        }
+
+        private void AddEventHandlerHighlighting([NotNull] ITreeNode treeNode,
+                                                 [NotNull] IHighlightingConsumer consumer,
+                                                 DaemonProcessKind kind)
+        {
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
+        }
+
+        private void AddAnimationEventHighlighting([NotNull] ITreeNode treeNode,
+                                                   [NotNull] IHighlightingConsumer consumer,
+                                                   DaemonProcessKind kind)
+        {
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event", "Unity animation event", kind);
+        }
+        
+        private void AddAnimationEventAndEventHandlerHighlighting([NotNull] ITreeNode treeNode,
+                                                                  [NotNull] IHighlightingConsumer consumer,
+                                                                  DaemonProcessKind kind)
+        {
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event and event handler",
+                "Unity animation event and Unity animation event", kind);
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,

@@ -41,7 +41,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/Behaviour.cs"/>
+    <Compile Include="Assets/BehaviourWithMethod.cs"/>
+    <Compile Include="Assets/BehaviourWithProperty.cs"/>
     <Compile Include="Assets/Base.cs"/>
     <Compile Include="Assets/Subtype.cs"/>
   </ItemGroup>

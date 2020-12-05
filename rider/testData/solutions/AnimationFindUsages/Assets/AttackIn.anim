@@ -5555,3 +5555,35 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.26666668
+    functionName: set_T
+    data:
+    objectReferenceParameter: {fileID: 11500000, guid: 8159ead72d384408b9365769c4ecee65,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.3
+    functionName: set_T
+    data:
+    objectReferenceParameter: {fileID: 11500000, guid: 8159ead72d384408b9365769c4ecee65,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.33333334
+    functionName: get_T
+    data:
+    objectReferenceParameter: {fileID: 11500000, guid: 8159ead72d384408b9365769c4ecee65,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.36666667
+    functionName: get_T
+    data:
+    objectReferenceParameter: {fileID: 11500000, guid: 8159ead72d384408b9365769c4ecee65,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

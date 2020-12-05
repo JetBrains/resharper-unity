@@ -11,10 +11,10 @@ open class AnimationFindUsagesTest : FindUsagesAssetTestBase() {
     }
 
     @Test(dataProvider = "findUsagesGrouping")
-    fun animationFindUsages(caseName: String, groups: List<String>?) {
+    fun animationFindUsagesForMethod(caseName: String, groups: List<String>?) {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
-        doTest(5, 20, "Behaviour.cs")
+        doTest(5, 20, "BehaviourWithMethod.cs")
     }
 
     @Test(dataProvider = "findUsagesGrouping")
@@ -22,5 +22,19 @@ open class AnimationFindUsagesTest : FindUsagesAssetTestBase() {
         disableAllGroups()
         groups?.forEach { group -> setGroupingEnabled(group, true) }
         doTest(7, 17, "Base.cs")
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    fun animationFindUsagesForPropertyGetter(caseName: String, groups: List<String>?) {
+        disableAllGroups()
+        groups?.forEach { group -> setGroupingEnabled(group, true) }
+        doTest(7, 14, "BehaviourWithProperty.cs")
+    }
+
+    @Test(dataProvider = "findUsagesGrouping")
+    fun animationFindUsagesForPropertySetter(caseName: String, groups: List<String>?) {
+        disableAllGroups()
+        groups?.forEach { group -> setGroupingEnabled(group, true) }
+        doTest(8, 14, "BehaviourWithProperty.cs")
     }
 }

@@ -108,10 +108,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         [NotNull]
         [ItemNotNull]
         public IEnumerable<AnimationUsage> GetEventUsagesFor([NotNull] IPsiSourceFile sourceFile,
-                                                             [NotNull] IMethod declaredElement)
+                                                             [NotNull] IDeclaredElement declaredElement)
         {
             AssertShellLocks();
-            var boxedGuid = FindGuidOf(declaredElement);
+            if (!(declaredElement is IClrDeclaredElement clrDeclaredElement)) 
+                return EmptyList<AnimationUsage>.Enumerable;
+            var boxedGuid = FindGuidOf(clrDeclaredElement);
             if (!boxedGuid.HasValue) return Enumerable.Empty<AnimationUsage>();
             var pointer = myPointers[sourceFile];
             if (pointer is null) return Enumerable.Empty<AnimationUsage>();
@@ -134,20 +136,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         public IEnumerable<IPsiSourceFile> GetPossibleFilesWithUsage([NotNull] IDeclaredElement element)
         {
             AssertShellLocks();
-            if (!(element is IMethod method)) return EmptyList<IPsiSourceFile>.Enumerable;
-            var guid = FindGuidOf(method);
+            if (!(element is IClrDeclaredElement clrDeclaredElement)) return EmptyList<IPsiSourceFile>.Enumerable;
+            var guid = FindGuidOf(clrDeclaredElement);
             if (guid == null) return EmptyList<IPsiSourceFile>.Enumerable;
-            return myUsageToSourceFiles.GetValues(Pair.Of(method.ShortName, guid.Value)) ??
+            return myUsageToSourceFiles.GetValues(Pair.Of(clrDeclaredElement.ShortName, guid.Value)) ??
                    EmptyList<IPsiSourceFile>.Enumerable;
         }
-
 
         public int GetEventUsagesCountFor([NotNull] IDeclaredElement element)
         {
             AssertShellLocks();
-            if (!(element is IMethod method)) return 0;
-            var guid = FindGuidOf(method);
-            return guid != null ? myUsagesCount.GetCount(Pair.Of(method.ShortName, guid.Value)) : 0;
+            if (!(element is IClrDeclaredElement clrDeclaredElement)) return 0;
+            var boxedGuid = FindGuidOf(clrDeclaredElement);
+            if (boxedGuid == null) return 0;
+            switch (element)
+            {
+                case IMethod method:
+                    return myUsagesCount.GetCount(Pair.Of(method.ShortName, boxedGuid.Value));
+                case IProperty property:
+                    var guid = boxedGuid.Value;
+                    var getterUsagesCount = myUsagesCount.GetCount(Pair.Of(property.Getter?.ShortName, guid));
+                    var setterUsagesCount = myUsagesCount.GetCount(Pair.Of(property.Setter?.ShortName, guid));
+                    return getterUsagesCount + setterUsagesCount;
+            }
+            return 0;
         }
 
         private Guid? FindGuidOf([NotNull] IClrDeclaredElement declaredElement)
