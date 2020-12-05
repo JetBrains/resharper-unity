@@ -61,8 +61,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     return true;
 
                 case IMethod method:
-                    // flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                    // return true;
                     var function = unityApi.GetUnityEventFunction(method, out var match);
                     if (function != null)
                     {
@@ -73,10 +71,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                                 : ImplicitUseKindFlags.Access;
                             return true;
                         }
-                        
+
                         return false;
                     }
-                    
+
                     if (IsEventHandler(unityApi, method) || IsRequiredSignatureMethod(method))
                     {
                         flags = ImplicitUseKindFlags.Access;
