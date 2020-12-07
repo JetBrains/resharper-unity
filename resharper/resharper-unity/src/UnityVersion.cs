@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (!mySolutionDirectory.IsAbsolute)
                 mySolutionDirectory = solution.SolutionDirectory.ToAbsolutePath(FileSystemUtil.GetCurrentDirectory());
             
-            unitySolutionTracker.IsRelatedToUnity.WhenTrue(lifetime, SetActualVersionForSolution);
+            unitySolutionTracker.IsUnityProjectFolder.WhenTrue(lifetime, SetActualVersionForSolution);
         }
 
         private void SetActualVersionForSolution(Lifetime lt)
@@ -91,7 +91,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         }
 
         [NotNull]
-        private Version GetActualVersionForSolution()
+        public Version GetActualVersionForSolution()
         {
             if (myVersionFromEditorInstanceJson != null)
                 return myVersionFromEditorInstanceJson;

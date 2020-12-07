@@ -77,7 +77,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             ModuleReferenceResolveSync moduleReferenceResolveSync,
             ChangeManager changeManager,
             IViewableProjectsCollection projects,
-            ILogger logger)
+            ILogger logger,
+            UnityVersion unityVersion)
         {
             myAllProjectLifetimes = new Dictionary<IProject, Lifetime>();
             myUnityProjects = new HashSet<IProject>();
@@ -97,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             scheduler.EnqueueTask(new SolutionLoadTask("Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
                 OnSolutionPreparePsiModules));
             
-            HasUnityReference.WhenTrue(lifetime, lt => solution.GetComponent<UnitySolutionTracker>().IsRelatedToUnity.SetValue(true));
+            HasUnityReference.WhenTrue(lifetime, lt => unityVersion.ActualVersionForSolution.Set(unityVersion.GetActualVersionForSolution()));
         }
 
         private void OnSolutionPreparePsiModules()

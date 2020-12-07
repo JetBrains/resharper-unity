@@ -15,7 +15,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
         public readonly ViewableProperty<bool> IsUnityProjectFolder = new ViewableProperty<bool>();
         public readonly ViewableProperty<bool> IsUnityGeneratedProject = new ViewableProperty<bool>();
         public readonly ViewableProperty<bool> IsUnityProject = new ViewableProperty<bool>();
-        public readonly ViewableProperty<bool> IsRelatedToUnity = new ViewableProperty<bool>(false); // either has Unity folders structure or has reference to Unity
 
         public UnitySolutionTracker(ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime, bool inTests = false)
         {
@@ -35,8 +34,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             // track not only folder itself, but also files inside
             fileSystemTracker.AdviseDirectoryChanges(lifetime, mySolution.SolutionDirectory.Combine(ProjectExtensions.ProjectSettingsFolder), true,
                 OnChangeActionProjectSettingsFolder);
-            
-            IsUnityProjectFolder.WhenTrue(lifetime, _ => IsRelatedToUnity.SetValue(true));
         }
 
         private void SetValues()
