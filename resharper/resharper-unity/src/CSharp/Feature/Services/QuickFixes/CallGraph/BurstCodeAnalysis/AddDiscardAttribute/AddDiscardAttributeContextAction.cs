@@ -39,8 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
-            var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
+            var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
 
             if (methodDeclaration == null)
                 return EmptyList<IntentionAction>.Instance;
@@ -59,9 +58,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public bool IsAvailable(IUserDataHolder cache)
         {
-            var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
-            var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
-
+            var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
+            
             return AddDiscardAttributeUtil.IsAvailable(methodDeclaration);
         }
     }
