@@ -11,9 +11,10 @@ import com.intellij.util.ui.EdtInvocationManager
 import com.jetbrains.rd.ide.model.RdExistingSolution
 import com.jetbrains.rd.ide.model.RdVirtualSolution
 import com.jetbrains.rd.platform.util.idea.ProtocolSubscribedProjectComponent
+import com.jetbrains.rd.util.reactive.valueOrDefault
+import com.jetbrains.rd.util.reactive.whenTrue
 import com.jetbrains.rider.UnityProjectDiscoverer
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
-import com.jetbrains.rider.plugins.unity.actions.StartUnityAction
 import com.jetbrains.rider.plugins.unity.explorer.UnityExplorer
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.util.EditorInstanceJson
@@ -23,6 +24,9 @@ import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
+import com.jetbrains.rider.util.noAwait
+import com.jetbrains.rider.util.startOnUiAsync
+import kotlinx.coroutines.delay
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
@@ -32,26 +36,30 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
     }
 
     init {
-        project.solution.frontendBackendModel.unityApplicationData.advise(projectComponentLifetime) {
+        project.solution.isLoaded.whenTrue(projectComponentLifetime) {
             if (!UnityProjectDiscoverer.getInstance(project).isUnityProjectFolder)
-                return@advise
+                return@whenTrue
 
             val solutionDescription = project.solutionDescription
             val title = "Unity features unavailable"
-            val content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and  Rider is set as the External Editor. Reopen Rider from Unity."
-            if (solutionDescription is RdExistingSolution){ // proper solution
-                if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
-                    val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
-                    Notifications.Bus.notify(notification, project)
-                }
+            var content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and Rider is set as the External Editor."
+            if (solutionDescription is RdExistingSolution) { // proper solution
+                projectComponentLifetime.startOnUiAsync {
+                    delay(1000) // `unityEditorConnected` is not instantly ready
+                    if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)) {
+                        if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage()) {
+                            content = "Make sure Rider is set as the External Editor in Unity preferences."
+                        }
+                        val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
+                        Notifications.Bus.notify(notification, project)
+                        project.solution.frontendBackendModel.unityEditorConnected.whenTrue(projectComponentLifetime) { notification.expire() }
+                    }
+                }.noAwait()
             }
             else if (solutionDescription is RdVirtualSolution) { // opened as folder
-                var adviceText = " Please <a href=\"reopen\">click here</a> to start Unity, generate a solution file and reopen the project."
-                val editorInstanceJson = EditorInstanceJson.getInstance(project)
-                if (editorInstanceJson.status == EditorInstanceJsonStatus.Valid) {
-                    adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
-                }
+                val adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
                 val contentWoSolution =
+                    // todo: hasPackage might be unreliable, if PackageManager is still in progress
                     if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
                         content
                     }
@@ -67,11 +75,6 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                     if (hyperlinkEvent.eventType != HyperlinkEvent.EventType.ACTIVATED) return@setListener
 
                     if (hyperlinkEvent.description == "close") {
-                        ProjectManagerEx.getInstanceEx().closeAndDispose(project)
-                        WelcomeFrame.showIfNoProjectOpened()
-                    }
-                    if (hyperlinkEvent.description == "reopen") {
-                        StartUnityAction.startUnityAndRider(project)
                         ProjectManagerEx.getInstanceEx().closeAndDispose(project)
                         WelcomeFrame.showIfNoProjectOpened()
                     }
