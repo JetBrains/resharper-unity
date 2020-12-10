@@ -386,7 +386,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                                 waitingLifetimeDefinition.Terminate();
                             }, waitingLifetime);
                     }
-                }, waitingLifetime, TaskContinuationOptions.None, mySolution.Locks.Tasks.UnguardedMainThreadScheduler);
+                }, waitingLifetime, TaskContinuationOptions.None, mySolution.Locks.Tasks.GuardedMainThreadScheduler);
             });
 
             return JetTaskEx.While(() => waitingLifetime.IsAlive);
