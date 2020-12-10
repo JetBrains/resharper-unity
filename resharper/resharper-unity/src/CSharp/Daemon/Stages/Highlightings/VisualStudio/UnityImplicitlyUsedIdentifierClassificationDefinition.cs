@@ -1,5 +1,5 @@
 using System.ComponentModel.Composition;
-using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
+// using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
@@ -10,8 +10,8 @@ using Microsoft.VisualStudio.Utilities;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.VisualStudio
 {
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
-        Before = VsHighlightPriorityClassificationDefinition.Name)]
+    // [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
+    //     Before = VsHighlightPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]

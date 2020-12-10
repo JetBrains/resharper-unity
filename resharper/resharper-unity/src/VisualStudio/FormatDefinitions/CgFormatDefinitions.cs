@@ -4,7 +4,7 @@
 
 using System.ComponentModel.Composition;
 using System.Windows.Media;
-using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
+// using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using JetBrains.ReSharper.Plugins.Unity.Cg.Daemon;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
 {
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -57,7 +57,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -77,7 +77,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -97,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -117,7 +117,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -137,7 +137,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -157,7 +157,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -177,7 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio.FormatDefinitions
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
+    // [Order(After = VsSyntaxPriorityClassificationDefinition.Name, Before = VsAnalysisPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
