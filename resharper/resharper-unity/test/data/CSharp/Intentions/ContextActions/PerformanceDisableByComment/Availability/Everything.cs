@@ -20,12 +20,12 @@ namespace ContextActionsTests
 
         }
 
-        private void FF{on}F2()
+        private void {on}FFF2()
         {
             GetComponent<int>();
         }
 
-        private void F{on}FF3()
+        private void FFF3{on}()
         {
             GetComponent<int>();
         }
