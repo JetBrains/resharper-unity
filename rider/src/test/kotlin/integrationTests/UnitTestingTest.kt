@@ -2,11 +2,10 @@ package integrationTests
 
 import base.integrationTests.IntegrationTestWithEditorBase
 import base.integrationTests.preferStandaloneNUnitLauncherInTests
+import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
-import com.jetbrains.rider.test.scriptingApi.changeFileContent
-import com.jetbrains.rider.test.scriptingApi.withUtFacade
+import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 import java.io.File
 
@@ -53,18 +52,34 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     @Test(description = "RIDER-54359")
     fun checkRefreshBeforeTest() {
         withUtFacade(project) {
+
             it.waitForDiscovering(5)
-            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-            changeFileContent(project, file) {
-                it.replace("NewTestScriptSimplePasses", "NewTestScriptSimplePasses2")
-            }
+
             val session = it.runAllTestsInProject(
                 "Tests",
                 5,
                 RiderUnitTestScriptingFacade.defaultTimeout,
                 5
             )
-            it.compareSessionTreeWithGold(session, testGoldFile)
+
+            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
+            withOpenedEditor(file.absolutePath){
+                changeFileContent(project, file) {
+                    it.replace("NewTestScriptSimplePasses", "NewTestScriptSimplePasses2")
+                    //it.replace("IntegrationTestHelper.WriteToLog();", "throw new System.Exception();")
+                }
+                FrontendTextControlHost.getInstance(project!!)
+                waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
+            }
+            it.waitForDiscovering(5)
+            val session2 = it.runAllTestsInProject(
+                "Tests",
+                5,
+                RiderUnitTestScriptingFacade.defaultTimeout,
+                5
+            )
+
+            it.compareSessionTreeWithGold(session2, testGoldFile)
         }
     }
 
