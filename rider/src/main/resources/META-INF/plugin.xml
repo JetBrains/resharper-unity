@@ -113,7 +113,7 @@
     <rider.android.project.validator implementation="com.jetbrains.rider.plugins.unity.android.UnityCustomAndroidProjectValidator"/>
 
     <!-- Logging and feedback -->
-    <rdclient.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
+    <rd.platform.traceScenarioHolder implementation="com.jetbrains.rider.plugins.unity.logs.UnityLogTraceScenarios"/>
     <feedbackDescriptionProvider implementation="com.jetbrains.rider.plugins.unity.UnityFeedbackDescriptionProvider" />
 
     <!-- TODO: Fix up ordering once Rider's own status bar widgets have been migrated to StatusBarWidgetFactory
