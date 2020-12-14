@@ -46,29 +46,11 @@
      <Reference Include="UnityEngine">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEngine.AIModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.ARModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ARModule.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.AccessibilityModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AccessibilityModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.AndroidJNIModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AndroidJNIModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.AnimationModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AnimationModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.AssetBundleModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AssetBundleModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.AudioModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AudioModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.ClothModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ClothModule.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.ClusterInputModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ClusterInputModule.dll</HintPath>
@@ -85,9 +67,6 @@
      <Reference Include="UnityEngine.DSPGraphModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.DSPGraphModule.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEngine.DirectorModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.DirectorModule.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.GIModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.GIModule.dll</HintPath>
      </Reference>
@@ -103,9 +82,6 @@
      <Reference Include="UnityEngine.IMGUIModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.IMGUIModule.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEngine.ImageConversionModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ImageConversionModule.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.InputModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.InputModule.dll</HintPath>
      </Reference>
@@ -118,26 +94,14 @@
      <Reference Include="UnityEngine.LocalizationModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.LocalizationModule.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEngine.ParticleSystemModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ParticleSystemModule.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.PerformanceReportingModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.PerformanceReportingModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.PhysicsModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.PhysicsModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.Physics2DModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.Physics2DModule.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.ProfilerModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ProfilerModule.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.ScreenCaptureModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ScreenCaptureModule.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.SharedInternalsModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.SharedInternalsModule.dll</HintPath>
@@ -154,17 +118,8 @@
      <Reference Include="UnityEngine.SubstanceModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.SubstanceModule.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEngine.SubsystemsModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.SubsystemsModule.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.TLSModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TLSModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.TerrainModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TerrainModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.TerrainPhysicsModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TerrainPhysicsModule.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.TextCoreModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TextCoreModule.dll</HintPath>
@@ -172,26 +127,8 @@
      <Reference Include="UnityEngine.TextRenderingModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TextRenderingModule.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEngine.TilemapModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.TilemapModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UIModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UIModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UIElementsModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UIElementsModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UIElementsNativeModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UIElementsNativeModule.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.UNETModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UNETModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UmbraModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UmbraModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UnityAnalyticsModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityAnalyticsModule.dll</HintPath>
      </Reference>
      <Reference Include="UnityEngine.UnityConnectModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityConnectModule.dll</HintPath>
@@ -202,41 +139,11 @@
      <Reference Include="UnityEngine.UnityTestProtocolModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityTestProtocolModule.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEngine.UnityWebRequestModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.VFXModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VFXModule.dll</HintPath>
      </Reference>
-     <Reference Include="UnityEngine.VRModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VRModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.VehiclesModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VehiclesModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.VideoModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VideoModule.dll</HintPath>
-     </Reference>
      <Reference Include="UnityEngine.VirtualTexturingModule">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VirtualTexturingModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.WindModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.WindModule.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.XRModule">
-     <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.XRModule.dll</HintPath>
      </Reference>
      <Reference Include="UnityEditor">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEditor.dll</HintPath>
@@ -610,26 +517,8 @@
      <Reference Include="mscorlib">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/NetStandard/compat/2.0.0/shims/netfx/mscorlib.dll</HintPath>
      </Reference>
-     <Reference Include="Unity.TextMeshPro.Editor">
-     <HintPath>/Users/user/Work/resharper-unity/rider/testData/solutions/UnitTesting/Project2020/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Timeline.Editor">
-     <HintPath>/Users/user/Work/resharper-unity/rider/testData/solutions/UnitTesting/Project2020/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.Timeline">
-     <HintPath>/Users/user/Work/resharper-unity/rider/testData/solutions/UnitTesting/Project2020/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.TextMeshPro">
-     <HintPath>/Users/user/Work/resharper-unity/rider/testData/solutions/UnitTesting/Project2020/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEditor.UI">
-     <HintPath>/Users/user/Work/resharper-unity/rider/testData/solutions/UnitTesting/Project2020/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
-     </Reference>
      <Reference Include="Unity.Rider.Editor">
      <HintPath>/Users/user/Work/resharper-unity/rider/testData/solutions/UnitTesting/Project2020/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
-     </Reference>
-     <Reference Include="UnityEngine.UI">
-     <HintPath>/Users/user/Work/resharper-unity/rider/testData/solutions/UnitTesting/Project2020/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
      </Reference>
   </ItemGroup>
   <ItemGroup>
