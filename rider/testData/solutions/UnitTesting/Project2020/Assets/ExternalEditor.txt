@@ -1,0 +1,1 @@
+/Users/user/Work/resharper-unity/unity/build/EditorPluginNet46/bin/Debug/net461/rider-dev.app
