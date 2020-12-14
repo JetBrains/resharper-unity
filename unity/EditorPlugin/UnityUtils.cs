@@ -41,6 +41,21 @@ namespace JetBrains.Rider.Unity.Editor
     public static bool UseRiderTestPath =>
         Environment.GetCommandLineArgs().Contains("-riderTestPath");
 
+    public static string UnityEditorLogPath
+    {
+        get
+        {
+            var args = Environment.GetCommandLineArgs();
+            var commandlineParser = new CommandLineParser(args);
+            if (commandlineParser.Options.ContainsKey("-logfile"))
+            {
+                return commandlineParser.Options["-logfile"];
+            }
+
+            return string.Empty;
+        }
+    }
+
     private static int ourScriptingRuntimeCached = -1;
 
     internal static int ScriptingRuntime
