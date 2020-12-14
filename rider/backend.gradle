@@ -18,6 +18,9 @@ task buildReSharperHostPlugin(type: DotNetBuildTask) {
     group backendGroup
     description 'Builds the full ReSharper backend plugin solution'
     dependsOn prepareNuGetConfig, generateModels
+    onlyIf {
+        !skipDotnet.equalsIgnoreCase("true")
+    }
 
     buildFile = backend.resharperHostPluginSolution
 }
@@ -26,6 +29,9 @@ task buildUnityEditorPlugin(type: DotNetBuildTask) {
     group backendGroup
     description 'Builds the Unity editor plugin'
     dependsOn prepareNuGetConfig, generateModels
+    onlyIf {
+        !skipDotnet.equalsIgnoreCase("true")
+    }
 
     buildFile = backend.unityPluginSolution
 }
