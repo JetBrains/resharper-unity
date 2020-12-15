@@ -8,19 +8,14 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowExpensiveCalls
 {
-    public abstract class ShowExpensiveCallsBulbActionBase : ShowCallsBulbActionBase
+    public abstract class ShowExpensiveCallsBulbActionBase : ShowMethodCallsBulbActionBase
     {
-        private readonly DeclaredElementInstance<IClrDeclaredElement> myMethod;
         protected ShowExpensiveCallsBulbActionBase(IMethodDeclaration methodDeclaration)
+            : base(methodDeclaration)
         {
-            var declaredElement = methodDeclaration.DeclaredElement;
-            Assertion.AssertNotNull(declaredElement, "declared is null, should be impossible");
-            myMethod = new DeclaredElementInstance<IClrDeclaredElement>(declaredElement);
         }
 
-        protected override DeclaredElementInstance<IClrDeclaredElement> GetStartElement() => myMethod;
-
-        protected override Func<CallHierarchyFindResult, bool> GetFilter(ISolution solution)
+        protected sealed override Func<CallHierarchyFindResult, bool> GetFilter(ISolution solution)
         {
             var expensiveContextProvider = solution.GetComponent<ExpensiveInvocationContextProvider>();
 
