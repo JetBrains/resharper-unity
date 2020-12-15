@@ -5,6 +5,7 @@ using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -15,10 +16,8 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
-    public interface IBurstCodeVisionMenuItemProvider
+    public interface IBurstCodeVisionMenuItemProvider : ICallGraphCodeVisionMenuItemProvider
     {
-        [NotNull]
-        BulbMenuItem GetMenuItem([NotNull] IMethodDeclaration methodDeclaration, [NotNull] ITextControl textControl);
     }
     
     [SolutionComponent]
@@ -56,7 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             var declaredElement = methodDeclaration.DeclaredElement;
             var iconModel = myIconHost.Transform(InsightUnityIcons.InsightUnity.Id);
-            var actions = GetBurstActions(methodDeclaration);
+            var actions = GetBurstActions(methodDeclaration, kind);
 
             myCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement,
                 BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
@@ -73,16 +72,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return false;
         }
 
-        private IEnumerable<BulbMenuItem> GetBurstActions([NotNull] IMethodDeclaration methodDeclaration)
+        [NotNull]
+        [ItemNotNull]
+        private IEnumerable<BulbMenuItem> GetBurstActions([NotNull] IMethodDeclaration methodDeclaration, DaemonProcessKind processKind)
         {
             var result = new CompactList<BulbMenuItem>();
             var textControl = myTextControlManager.LastFocusedTextControl.Value;
             
             foreach (var bulbProvider in myBulbProviders)
             {
-                var menuItem = bulbProvider.GetMenuItem(methodDeclaration, textControl);
+                var menuItem = bulbProvider.GetMenuItem(methodDeclaration, textControl, processKind);
                 
-                result.Add(menuItem);
+                if (menuItem != null)
+                    result.Add(menuItem);
             } 
             
             return result;
