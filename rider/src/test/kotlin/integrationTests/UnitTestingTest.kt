@@ -8,6 +8,7 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 import java.io.File
+import java.time.Duration
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
 class UnitTestingTest : IntegrationTestWithEditorBase() {
@@ -38,7 +39,7 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     @Test
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
-            it.waitForDiscovering(5)
+            it.waitForDiscovering(5, Duration.ofMinutes(1))
             val session = it.runAllTestsInProject(
                 "Tests",
                 5,
@@ -51,7 +52,7 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
 
     private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTests: Int = sessionElements) {
         withUtFacade(project) {
-            it.waitForDiscovering(discoveringElements)
+            it.waitForDiscovering(discoveringElements, Duration.ofMinutes(1))
             val session = it.runAllTestsInSolution(
                 sessionElements,
                 RiderUnitTestScriptingFacade.defaultTimeout,
