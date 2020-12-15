@@ -33,7 +33,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
                 var referenceElement = result.ReferenceElement;
                 var containing = (referenceElement as ICSharpTreeNode)?.GetContainingFunctionLikeDeclarationOrClosure();
 
-                return burstContextProvider.IsMarkedSwea(containing);
+                // CGTD filter
+                
+                return burstContextProvider.IsMarkedSync(containing);
             };
         }
     }

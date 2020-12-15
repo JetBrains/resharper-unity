@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class AddExpensiveCommentContextAction: ExpensiveOnlyContextActionBase
+    public sealed class AddExpensiveCommentContextAction: PerformanceOnlyContextActionBase
     {
         public AddExpensiveCommentContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
