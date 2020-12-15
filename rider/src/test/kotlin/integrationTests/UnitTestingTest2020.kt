@@ -21,18 +21,6 @@ class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
     }
 
     @Test
-    fun checkRunAllTestsFromSolution() = testWithAllTestsInSolution(5)
-
-    @Test(description = "RIDER-46658", enabled = false)
-    fun checkTestFixtureAndValueSourceTests() = testWithAllTestsInSolution(14, 16)
-
-    @Test(description = "RIDER-49891", enabled = false)
-    fun checkStandaloneNUnitLauncher() {
-        preferStandaloneNUnitLauncherInTests()
-        testWithAllTestsInSolution(5)
-    }
-
-    @Test
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
             it.waitForDiscovering(5)
@@ -52,12 +40,14 @@ class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
 
             it.waitForDiscovering(5)
 
-            val session = it.runAllTestsInProject(
+            it.runAllTestsInProject(
                 "Tests",
                 5,
                 RiderUnitTestScriptingFacade.defaultTimeout,
                 5
             )
+
+            it.closeAllSessions()
 
             val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
             withOpenedEditor(file.absolutePath){
@@ -76,19 +66,6 @@ class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
             )
 
             it.compareSessionTreeWithGold(session2, testGoldFile)
-        }
-    }
-
-    private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTests: Int = sessionElements) {
-        withUtFacade(project) {
-            it.waitForDiscovering(discoveringElements)
-            val session = it.runAllTestsInSolution(
-                sessionElements,
-                RiderUnitTestScriptingFacade.defaultTimeout,
-                successfulTests,
-                testGoldFile
-            )
-            it.compareSessionTreeWithGold(session, testGoldFile)
         }
     }
 }
