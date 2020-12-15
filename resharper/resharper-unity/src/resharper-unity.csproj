@@ -165,8 +165,9 @@
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_src.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props')" />
   <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Web_Core.Props')" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_VisualStudio.Props')" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_VisualStudio.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.Platform.VisualStudio.SinceVs10.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.Platform.VisualStudio.SinceVs10.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.Psi.Features_VisualStudio_SinceVs10.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.Psi.Features_VisualStudio_SinceVs10.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.Psi.Features.VisualStudio.ReSpeller.Props" Condition="Exists('$(DotNetSdkPath)\Build\PackageReference.JetBrains.Psi.Features.VisualStudio.ReSpeller.Props')" />
   <Target Name="CppHack" AfterTargets="PrepareForRun">
     <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
   </Target>
