@@ -59,6 +59,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 
         protected abstract bool IsAvailable([NotNull] IUserDataHolder holder, [NotNull] IMethodDeclaration methodDeclaration);
         protected abstract bool ShouldCreate([NotNull] IMethodDeclaration containingMethod);
-        protected abstract IEnumerable<IntentionAction> GetIntentions(IMethodDeclaration containingMethod);
+        protected abstract IEnumerable<IntentionAction> GetIntentions([NotNull] IMethodDeclaration containingMethod);
     }
 }
