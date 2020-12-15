@@ -14,21 +14,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
         }
 
-        public override bool PropagateIfUnmarked(CallGraphStructure structure, IReadonlyCountingSet<ElementId> rootMarks, IReadonlyCountingSet<ElementId> banMarks,
-            bool isGlobalStage, ElementId vertex)
+        public override bool PropagateIfUnmarked(CallGraphStructure structure, IReadonlyCountingSet<ElementId> rootMarks, IReadonlyCountingSet<ElementId> banMarks, ElementId vertex)
         {
             if (rootMarks.Contains(vertex))
                 return true;
 
-            if(banMarks.Contains(vertex) == false)
-                return base.PropagateIfUnmarked(structure, rootMarks, banMarks, isGlobalStage, vertex);
+            if (banMarks.Contains(vertex) == false)
+                return base.PropagateIfUnmarked(structure, rootMarks, banMarks, vertex);
 
             foreach (var (parent, _) in structure.InvertedEdges.GetOrEmpty(vertex))
             {
                 if (banMarks.Contains(parent))
                     continue;
 
-                if (base.PropagateIfUnmarked(structure, rootMarks, banMarks, isGlobalStage, parent))
+                if (base.PropagateIfUnmarked(structure, rootMarks, banMarks, parent))
                     return true;
             }
 

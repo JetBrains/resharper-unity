@@ -1,14 +1,12 @@
-using JetBrains.Annotations;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
+using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
@@ -16,56 +14,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 {
     public abstract class PerformanceAnalysisContextProviderBase : CallGraphContextProviderBase
     {
-        protected readonly IProperty<bool> IsPerformanceAnalysisEnabledProperty;
-        protected readonly string MarkId;
+        private readonly IProperty<bool> myIsPerformanceAnalysisEnabledProperty;
 
         protected PerformanceAnalysisContextProviderBase(
             Lifetime lifetime,
             IElementIdProvider elementIdProvider,
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            CallGraphRootMarksProviderBase marksProvider,
-            string markId)
-            : base(elementIdProvider, callGraphSwaExtensionProvider, marksProvider)
+            PerformanceAnalysisRootMarksProviderBase marksProvider,
+            SolutionAnalysisService service)
+            : base(elementIdProvider, callGraphSwaExtensionProvider, marksProvider, service)
         {
-            MarkId = markId;
-            IsPerformanceAnalysisEnabledProperty =
+            myIsPerformanceAnalysisEnabledProperty =
                 applicationWideContextBoundSettingStore.BoundSettingsStore.GetValueProperty(lifetime,
                     (UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
         }
-        
-        public override bool HasContext(IDeclaration declaration, DaemonProcessKind processKind)
+
+        protected override bool CheckDeclaration(IDeclaration declaration, out bool isMarked)
         {
-            var functionDeclaration = declaration as IFunctionDeclaration;
-
-            // CGTD check consistency in 211
-            var hasBanComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
-                UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
+            if (PerformanceAnalysisRootMarksProviderBase.HasPerformanceBanComment(declaration))
+            {
+                isMarked = false;
+                return true;
+            }
             
-            if (hasBanComment)
-                return false;
-            
-            var hasRestoreComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
-                MarkId, ReSharperControlConstruct.Kind.Restore);
-
-            return hasRestoreComment || base.HasContext(declaration, processKind);
+            return base.CheckDeclaration(declaration, out isMarked);
         }
 
-        public override bool IsMarked(IDeclaredElement declaredElement, DaemonProcessKind processKind)
-        {
-            if (IsContextAvailable == false)
-                return false;
-            
-            return IsMarkedFast(declaredElement) || base.IsMarked(declaredElement, processKind);
-        }
-
-        /// <summary>
-        /// Method for checking declared element on local stage
-        /// </summary>
-        /// <param name="declaredElement"></param>
-        /// <returns></returns>
-        protected virtual bool IsMarkedFast([CanBeNull] IDeclaredElement declaredElement) => false;
-
-        public override bool IsContextAvailable => IsPerformanceAnalysisEnabledProperty.Value;
+        public override bool IsContextAvailable => myIsPerformanceAnalysisEnabledProperty.Value;
     }
 }

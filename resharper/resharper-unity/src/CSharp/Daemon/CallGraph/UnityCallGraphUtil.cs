@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
             return solutionAnalysisService.Configuration?.Completed?.Value == true;
         }
 
-        public const string PerformanceExpensiveComment = "Unity.PerformanceAnalysis";
+        public const string PerformanceAnalysisComment = "Unity.PerformanceAnalysis";
 
         public static bool IsQualifierOpenType(IInvocationExpression invocationExpression)
         {
@@ -62,19 +62,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
         /// If you use this function in other scope then you definitely doing something wrong.
         /// Consider using corresponding <see cref="CallGraphContextProviderBase"/>.
         /// </summary>
-        /// <param name="functionDeclaration"></param>
+        /// <param name="methodDeclaration"></param>
         /// <param name="comment"></param>
         /// <param name="status"></param>
         /// <returns></returns>
         [Pure]
-        [ContractAnnotation("functionDeclaration: null => false")]
-        public static bool HasAnalysisComment([CanBeNull] IFunctionDeclaration functionDeclaration, string comment,
+        [ContractAnnotation("methodDeclaration: null => false")]
+        public static bool HasAnalysisComment([CanBeNull] IMethodDeclaration methodDeclaration, string comment,
             ReSharperControlConstruct.Kind status)
         {
-            if (functionDeclaration == null)
+            if (methodDeclaration == null)
                 return false;
 
-            var current = functionDeclaration.PrevSibling;
+            var current = methodDeclaration.PrevSibling;
 
             while (current is IWhitespaceNode || current is ICSharpCommentNode)
             {
@@ -97,8 +97,33 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
             return false;
         }
 
+        public static bool HasAnalysisComment(string markName, ITreeNode node, out bool isMarked)
+        {
+            if (node is IMethodDeclaration methodDeclaration)
+            {
+                const ReSharperControlConstruct.Kind restore = ReSharperControlConstruct.Kind.Restore;
+                const ReSharperControlConstruct.Kind disable = ReSharperControlConstruct.Kind.Disable;
+
+                if (HasAnalysisComment(methodDeclaration, markName, disable))
+                {
+                    isMarked = false;
+                    return true;
+                }
+
+
+                if (HasAnalysisComment(methodDeclaration, markName, restore))
+                {
+                    isMarked = true;
+                    return true;
+                }
+            }
+
+            isMarked = false;
+            return false;
+        }
+
         [CanBeNull]
-        public static IMethodDeclaration GetMethodDeclarationByCaret([NotNull] ICSharpContextActionDataProvider dataProvider)
+        public static IMethodDeclaration GetMethodDeclarationByIdentifierOnBothSides([NotNull] ICSharpContextActionDataProvider dataProvider)
         {
             var result = MethodDeclarationByTreeNode(dataProvider.TokenAfterCaret);
 
@@ -113,7 +138,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
             }
         }
 
-        public static BulbMenuItem BulbActionToMenuItem(IBulbAction bulbAction, ITextControl textControl, ISolution solution, IconId iconId)
+        [NotNull]
+        public static BulbMenuItem BulbActionToMenuItem([NotNull] IBulbAction bulbAction,
+                                                        [NotNull] ITextControl textControl,
+                                                        [NotNull] ISolution solution,
+                                                        [NotNull] IconId iconId)
         {
             var proxi = new IntentionAction.MyExecutableProxi(bulbAction, solution, textControl);
             var menuText = bulbAction.Text;

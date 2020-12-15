@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
@@ -15,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             mySubAnalyzers.Sort((analyzer1, analyzer2) => analyzer1.Priority - analyzer2.Priority);
         }
         
-        protected sealed override bool CheckAndAnalyze(T t, IHighlightingConsumer consumer)
+        protected sealed override bool CheckAndAnalyze(T t, IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             var warningPlaced = false;
             

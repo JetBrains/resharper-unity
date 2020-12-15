@@ -7,20 +7,19 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
-    public abstract class AddCommentActionBulbBase : IBulbAction
+    public abstract class AddCommentBulbActionBase : IBulbAction
     {
         [NotNull] private readonly IMethodDeclaration myMethodDeclaration;
-        [NotNull] private readonly string myComment;
-        public string Text { get; }
-
-        protected AddCommentActionBulbBase([NotNull] IMethodDeclaration methodDeclaration, [NotNull] string comment, [NotNull] string text)
+        
+        protected AddCommentBulbActionBase([NotNull] IMethodDeclaration methodDeclaration)
         {
-            Text = text;
             myMethodDeclaration = methodDeclaration;
-            myComment = comment;
         }
+        
+        public abstract string Text { get; }
+        [NotNull] protected abstract string Comment { get; }
         
         public void Execute(ISolution solution, ITextControl textControl)
         {
@@ -32,7 +31,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
             var treeRange = myMethodDeclaration.GetTreeTextRange();
             var inserter = LanguageManager.Instance.GetService<ICommentOrDirectiveInserter>(file.Language);
 
-            inserter.Insert(treeRange, file, Text, myComment);
+            inserter.Insert(treeRange, file, Text, Comment);
         }
     }
 }

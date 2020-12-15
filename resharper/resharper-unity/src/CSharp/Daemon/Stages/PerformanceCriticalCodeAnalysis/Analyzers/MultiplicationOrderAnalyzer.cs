@@ -4,6 +4,7 @@ using JetBrains.Metadata.Reader.Impl;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Parsing;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -26,7 +27,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             KnownTypes.Matrix4x4
         };
 
-        protected override void Analyze(IMultiplicativeExpression expression, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
+        protected override void Analyze(IMultiplicativeExpression expression, IDaemonProcess daemonProcess, DaemonProcessKind kind,
+            IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             if (IsStartPoint(expression))
             {

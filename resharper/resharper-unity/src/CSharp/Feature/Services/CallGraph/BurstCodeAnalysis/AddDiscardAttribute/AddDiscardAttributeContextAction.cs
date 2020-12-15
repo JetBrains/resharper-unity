@@ -17,16 +17,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class AddDiscardAttributeContextAction : BurstSimpleMethodContextAction
+    public sealed class AddDiscardAttributeContextAction : BurstContextActionBase
     {
         public AddDiscardAttributeContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
-        
-        protected override IBulbAction GetBulbAction(IMethodDeclaration methodDeclaration)
+
+        protected override IEnumerable<IntentionAction> GetIntentions(IMethodDeclaration containingMethod)
         {
-            return new AddDiscardAttributeBulbAction(methodDeclaration);
+            return new AddDiscardAttributeBulbAction(containingMethod).ToContextActionIntentions();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
+    // enum only because changing context with strings is VERY expensive
     [Flags]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum CallGraphContextElement : byte

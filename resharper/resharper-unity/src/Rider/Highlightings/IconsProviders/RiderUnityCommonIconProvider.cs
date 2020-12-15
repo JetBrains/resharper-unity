@@ -1,15 +1,12 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.PerformanceAnalysisDisableByComment;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
@@ -19,20 +16,24 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
 using JetBrains.Util;
-using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph.UnityCallGraphUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
+    public interface IPerformanceAnalysisCodeVisionMenuItemProvider
+    {
+        [CanBeNull]
+        BulbMenuItem GetMenuItem([NotNull] IMethodDeclaration methodDeclaration, [NotNull] ITextControl textControl, DaemonProcessKind processKind);
+    }
+    
     [SolutionComponent]
     public sealed class RiderUnityCommonIconProvider : UnityCommonIconProvider
     {
-        private readonly ISolution mySolution;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
-        private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
         private readonly ITextControlManager myTextControlManager;
+        private readonly IEnumerable<IPerformanceAnalysisCodeVisionMenuItemProvider> myMenuItemProviders;
 
         public RiderUnityCommonIconProvider(ISolution solution,
                                             IApplicationWideContextBoundSettingStore settingsStore,
@@ -41,16 +42,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                             UnitySolutionTracker solutionTracker,
                                             BackendUnityHost backendUnityHost,
                                             IconHost iconHost, PerformanceCriticalContextProvider contextProvider,
-                                            ExpensiveInvocationContextProvider expensiveContextProvider)
+                                            IEnumerable<IPerformanceAnalysisCodeVisionMenuItemProvider> menuItemProviders)
             : base(solution, api, settingsStore, contextProvider)
         {
-            mySolution = solution;
-            myTextControlManager = mySolution.GetComponent<ITextControlManager>();
+            myTextControlManager = solution.GetComponent<ITextControlManager>();
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;
             myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
-            myExpensiveContextProvider = expensiveContextProvider;
+            myMenuItemProviders = menuItemProviders;
         }
 
         public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, 
@@ -119,30 +119,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                     
             var textControl = myTextControlManager.LastFocusedTextControl.Value;
             var result = new CompactList<BulbMenuItem>();
-            var performanceDisableAction = new PerformanceAnalysisDisableByCommentBulbAction(methodDeclaration);
-            
-            AddAction(performanceDisableAction);
-            TryAddAdditionalActions();
+
+            foreach (var provider in myMenuItemProviders)
+            {
+                var item = provider.GetMenuItem(methodDeclaration, textControl, kind);    
+                
+                if (item != null)
+                    result.Add(item);
+            }
 
             return result;
-            
-            void AddAction(IBulbAction action)
-            {
-                var menuItem = BulbActionToMenuItem(action, textControl, mySolution, BulbThemedIcons.ContextAction.Id);
-                
-                result.Add(menuItem);
-            }
-
-            void TryAddAdditionalActions()
-            {
-                // CGTD check consistency in 211
-                if (myExpensiveContextProvider.HasContext(methodDeclaration, kind)) 
-                    return;
-                
-                var expensiveBulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
-                
-                AddAction(expensiveBulbAction);
-            }
         }
     }
 }

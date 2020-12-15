@@ -46,24 +46,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 return;
             
             var solution = psiDocumentRangeView.Solution;
-            var swa = solution.GetComponent<SolutionAnalysisService>();
-            
-            if (!UnityCallGraphUtil.IsSweaCompleted(swa))
-                return;
-            
             var contextProvider = solution.GetComponent<PerformanceCriticalContextProvider>();
             var settingsStore = psiDocumentRangeView.GetSettingsStore();
-
-            if (contextProvider.IsContextAvailable == false) 
-                return;
 
             if (settingsStore.GetValue((UnitySettings key) => key.PerformanceHighlightingMode) !=
                 PerformanceHighlightingMode.CurrentMethod)
                 return;
-            
-            var kind = UnityCallGraphUtil.GetProcessKindForGraph(swa);
 
-            if (contextProvider.HasContext(node, kind))
+            if (contextProvider.IsMarkedSwea(node))
                 consumer.ConsumeHighlighting(new UnityPerformanceContextHighlightInfo(node.GetDocumentRange()));
         }
     }

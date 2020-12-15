@@ -4,6 +4,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Pointers;
@@ -16,7 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class MultidimensionalArraysAccessAnalyzer : PerformanceProblemAnalyzerBase<IElementAccessExpression>
     {
-        protected override void Analyze(IElementAccessExpression element, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer)
+        protected override void Analyze(IElementAccessExpression element, IDaemonProcess daemonProcess, DaemonProcessKind kind,
+            IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             var sourceFile = element.GetSourceFile();
             if (sourceFile == null)
