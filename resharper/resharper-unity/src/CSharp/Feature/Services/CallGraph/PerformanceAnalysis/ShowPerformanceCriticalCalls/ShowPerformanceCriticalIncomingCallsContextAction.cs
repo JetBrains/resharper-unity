@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
@@ -8,27 +9,27 @@ using JetBrains.ReSharper.Features.Inspections.CallHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.ShowBurstCalls.Outgoing
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowPerformanceCriticalCalls
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = ShowBurstCallsUtil.OUTGOING_MESSAGE,
-        Description = ShowBurstCallsUtil.OUTGOING_MESSAGE,
+        Name = ShowPerformanceCriticalCallsUtil.INCOMING_CALLS_MESSAGE,
+        Description = ShowPerformanceCriticalCallsUtil.INCOMING_CALLS_MESSAGE,
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class ShowBurstOutgoingCallsContextAction : BurstContextActionBase
+    public class ShowPerformanceCriticalIncomingCallsContextAction : PerformanceOnlyContextActionBase
     {
-        public ShowBurstOutgoingCallsContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
+        public ShowPerformanceCriticalIncomingCallsContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
 
         protected override IEnumerable<IntentionAction> GetIntentions(IMethodDeclaration containingMethod)
         {
-            return new ShowBurstOutgoingCallsBulbAction(containingMethod).ToContextActionIntentions(
-                IntentionsAnchors.ContextActionsAnchor,
-                CallHierarchyIcons.CalledArrow);
+            var actions = ShowPerformanceCriticalIncomingCallsBulbAction.GetAllCalls(containingMethod);
+            return actions.Select(action =>
+                action.ToContextActionIntention(IntentionsAnchors.ConfigureActionsAnchor, action.Icon)).ToArray();
         }
     }
 }
