@@ -37,7 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (!settingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode))
                 return false;
 
-            return contextProvider.IsMarked(element, kind);
+            return contextProvider.IsMarkedStage(element, kind);
         }
         
         public static void AddHotHighlighting(this IHighlightingConsumer consumer,

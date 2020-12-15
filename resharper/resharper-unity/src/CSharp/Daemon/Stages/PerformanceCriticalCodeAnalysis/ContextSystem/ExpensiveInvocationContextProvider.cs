@@ -1,12 +1,11 @@
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem
@@ -19,15 +18,24 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             IElementIdProvider elementIdProvider,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            ExpensiveCodeMarksProvider marksProviderBase)
+            ExpensiveCodeMarksProvider marksProviderBase,
+            SolutionAnalysisService service)
             : base(lifetime, elementIdProvider, applicationWideContextBoundSettingStore, callGraphSwaExtensionProvider,
-                marksProviderBase, ExpensiveCodeMarksProvider.MarkId)
+                marksProviderBase, service)
         {
         }
 
         public override CallGraphContextElement Context => CallGraphContextElement.EXPENSIVE_CONTEXT;
 
-        protected override bool IsMarkedFast(IDeclaredElement declaredElement) =>
-            PerformanceCriticalCodeStageUtil.IsInvokedElementExpensive(declaredElement as IMethod);
+        protected override bool CheckDeclaredElement(IDeclaredElement element, out bool isMarked)
+        {
+            if (element is IMethod method && PerformanceCriticalCodeStageUtil.IsInvokedElementExpensive(method))
+            {
+                isMarked = true;
+                return true;
+            }
+
+            return base.CheckDeclaredElement(element, out isMarked);
+        }
     }
 }

@@ -3,48 +3,50 @@ using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.Resources;
-using JetBrains.ReSharper.Features.Inspections.CallHierarchy;
 using JetBrains.ReSharper.Host.Platform.Icons;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.TextControl;
-using JetBrains.UI.Icons;
-using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph.UnityCallGraphUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
+    public interface IBurstCodeVisionMenuItemProvider
+    {
+        [NotNull]
+        BulbMenuItem GetMenuItem([NotNull] IMethodDeclaration methodDeclaration, [NotNull] ITextControl textControl);
+    }
+    
     [SolutionComponent]
     public sealed class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
-        private readonly ISolution mySolution;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
         private readonly IconHost myIconHost;
+        private readonly IEnumerable<IBurstCodeVisionMenuItemProvider> myBulbProviders;
         private readonly ITextControlManager myTextControlManager;
 
-        public BurstCodeVisionProvider(ISolution solution,
+        public BurstCodeVisionProvider(ITextControlManager textControlManager,
                                        IApplicationWideContextBoundSettingStore store,
                                        UnityCodeInsightProvider codeInsightProvider,
-                                       IconHost iconHost)
+                                       IconHost iconHost,
+                                       IEnumerable<IBurstCodeVisionMenuItemProvider> bulbProviders)
         {
-            mySolution = solution;
-            myTextControlManager = mySolution.GetComponent<ITextControlManager>();
+            myTextControlManager = textControlManager;
             mySettingsStore = store;
             myCodeInsightProvider = codeInsightProvider;
             myIconHost = iconHost;
+            myBulbProviders = bulbProviders;
         }
 
         protected override void Analyze(IMethodDeclaration methodDeclaration,
-                                                IDaemonProcess daemonProcess,
-                                                DaemonProcessKind kind,
-                                        IHighlightingConsumer consumer)
+            IDaemonProcess daemonProcess,
+            DaemonProcessKind kind,
+            IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             var boundStore = mySettingsStore.BoundSettingsStore;
             var providerId = myCodeInsightProvider.ProviderId;
@@ -65,7 +67,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 extraActions: null);
         }
 
-        protected override bool CheckAndAnalyze(IMethodDeclaration methodDeclaration, IHighlightingConsumer consumer)
+        protected override bool CheckAndAnalyze(IMethodDeclaration methodDeclaration, IHighlightingConsumer consumer,
+            IReadOnlyContext context)
         {
             return false;
         }
@@ -74,18 +77,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var result = new CompactList<BulbMenuItem>();
             var textControl = myTextControlManager.LastFocusedTextControl.Value;
-            var addDiscardAttributeAction = new AddDiscardAttributeBulbAction(methodDeclaration);
-
-            AddAction(addDiscardAttributeAction, BulbThemedIcons.ContextAction.Id);
-
-            return result;
-
-            void AddAction(IBulbAction action, IconId iconId)
+            
+            foreach (var bulbProvider in myBulbProviders)
             {
-                var menuItem = BulbActionToMenuItem(action, textControl, mySolution, iconId);
-
+                var menuItem = bulbProvider.GetMenuItem(methodDeclaration, textControl);
+                
                 result.Add(menuItem);
-            }
+            } 
+            
+            return result;
         }
     }
 }

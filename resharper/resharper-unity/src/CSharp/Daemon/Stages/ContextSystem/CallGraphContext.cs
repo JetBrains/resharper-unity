@@ -5,7 +5,14 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
-    public sealed class CallGraphContext
+    public interface IReadOnlyContext
+    {
+        CallGraphContextElement CurrentContext { get; }
+        bool ContainAny(CallGraphContextElement another);
+        bool IsSuperSetOf(CallGraphContextElement another);
+    }
+
+    public sealed class CallGraphContext : IReadOnlyContext
     {
         private readonly struct BoundContextElement
         {
@@ -56,18 +63,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
                 myStack.Push(new BoundContextElement(newContext, node));
         }
 
+        public CallGraphContextElement CurrentContext => myStack.Peek().Context;
+
         public bool ContainAny(CallGraphContextElement another)
         {
-            var context = myStack.Peek().Context;
+            var context = CurrentContext;
             
             return (context & another) != CallGraphContextElement.NONE;
         }
 
         public bool IsSuperSetOf(CallGraphContextElement another)
         {
-            var context = myStack.Peek().Context;
+            var context = CurrentContext;
             
-            // this byte trick check if subContext is subset of myContext
+            // this byte trick checks if `context` is superset of `another`
+            // context - we have only `context` bits
+            // context & another - `context` bits which are present at `another`
+            // (context & another) ^ another - `context` bits which are present at `another` became 0,
+            // if `another` have any bits that are not present in `context` then expression won't be 0
+            // it means that `context` is not superset of `another`
             return ((context & another) ^ another) == CallGraphContextElement.NONE;
         }
     }

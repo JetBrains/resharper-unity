@@ -7,25 +7,25 @@ using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = AddExpensiveCommentUtil.MESSAGE,
-        Description = AddExpensiveCommentUtil.MESSAGE,
+        Name = AddPerformanceAnalysisDisableCommentUtil.MESSAGE,
+        Description = AddPerformanceAnalysisDisableCommentUtil.MESSAGE,
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public sealed class AddExpensiveCommentContextAction: ExpensiveOnlyContextActionBase
+    public sealed class AddPerformanceAnalysisDisableCommentContextAction : PerformanceExpensiveContextActionBase
     {
-        public AddExpensiveCommentContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
+        public AddPerformanceAnalysisDisableCommentContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
 
         protected override IEnumerable<IntentionAction> GetIntentions(IMethodDeclaration containingMethod)
         {
-            return new AddExpensiveCommentBulbAction(containingMethod).ToQuickFixIntentions();
+            return new AddPerformanceAnalysisDisableCommentBulbAction(containingMethod).ToContextActionIntentions();
         }
     }
 }

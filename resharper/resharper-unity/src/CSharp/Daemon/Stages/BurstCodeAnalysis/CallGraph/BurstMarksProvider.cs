@@ -4,27 +4,24 @@ using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CallGraph;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Util;
-using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph
 {
     [SolutionComponent]
-    public class BurstMarksProvider : CallGraphRootMarksProviderBase
+    public class BurstMarksProvider : CallGraphCommentMarksProvider
     {
         private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
 
         public const string MarkId = "Unity.BurstContext";
-        public static CallGraphRootMarksProviderId ProviderId = new CallGraphRootMarksProviderId(MarkId);
 
         public BurstMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker,
@@ -86,18 +83,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            var result = new LocalList<IDeclaredElement>();
+            var result = base.GetRootMarksFromNode(currentNode, containingFunction);
 
             switch (currentNode)
             {
-                case IFunctionDeclaration functionDeclaration when containingFunction != null:
-                {
-                    if (UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
-                        MarkId, ReSharperControlConstruct.Kind.Restore))
-                        result.Add(functionDeclaration.DeclaredElement);
-
-                    break;
-                }
                 case IClassLikeDeclaration classLikeDeclaration:
                 {
                     var typeElement = classLikeDeclaration.DeclaredElement;
@@ -126,7 +115,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            var result = new LocalList<IDeclaredElement>();
+            var result = base.GetBanMarksFromNode(currentNode, containingFunction);
 
             if (containingFunction == null)
                 return result;
@@ -137,7 +126,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (function == null)
                 return result;
 
-            if (IsBurstProhibitedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
+            if (BurstCodeAnalysisUtil.IsBurstProhibitedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
                 result.Add(function);
 
             return result;
@@ -169,7 +158,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 if (element == StartTreeNode)
                     return true;
 
-                return !UnityCallGraphUtil.IsFunctionNode(element) && !IsBurstProhibitedNode(element);
+                return !UnityCallGraphUtil.IsFunctionNode(element) && !BurstCodeAnalysisUtil.IsBurstProhibitedNode(element);
             }
 
             public override void ProcessBeforeInterior(ITreeNode element)

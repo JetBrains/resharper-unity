@@ -7,7 +7,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
     public interface ICallGraphProblemAnalyzer
     {
-        CallGraphContextElement Context { get; }
-        void RunInspection([NotNull] ITreeNode node, IDaemonProcess daemonProcess, DaemonProcessKind kind, [NotNull] IHighlightingConsumer consumer, [NotNull] CallGraphContext context);
+        void RunInspection([NotNull] ITreeNode node, IDaemonProcess daemonProcess, DaemonProcessKind kind, [NotNull] IHighlightingConsumer consumer, [NotNull] IReadOnlyContext context);
     }
 }

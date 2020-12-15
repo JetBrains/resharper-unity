@@ -1,18 +1,12 @@
 using JetBrains.Annotations;
 using JetBrains.Application.Threading;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
-using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.PerformanceAnalysisDisableByComment
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis
 {
-    public static class PerformanceDisableUtil
+    public static class PerformanceAnalysisUtil
     {
-        public const string MESSAGE = "Disable performance analysis for method";
-        public const string COMMENT = "// " + ReSharperControlConstruct.DisablePrefix + " " +
-                                      UnityCallGraphUtil.PerformanceExpensiveComment;
-
         [ContractAnnotation("null => false")]
         public static bool IsAvailable([CanBeNull] IMethodDeclaration methodDeclaration)
         {

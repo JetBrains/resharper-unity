@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Application.Settings;
-using JetBrains.Collections;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -17,15 +16,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
     public abstract class CallGraphAbstractStage : CSharpDaemonStageBase
     {
+        private readonly CallGraphSwaExtensionProvider mySwaExtensionProvider;
         private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
         private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
         private readonly ILogger myLogger;
 
         protected CallGraphAbstractStage(
+            CallGraphSwaExtensionProvider swaExtensionProvider,
             IEnumerable<ICallGraphContextProvider> contextProviders,
             IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers,
             ILogger logger)
         {
+            mySwaExtensionProvider = swaExtensionProvider;
             myContextProviders = contextProviders;
             myProblemAnalyzers = problemAnalyzers;
             myLogger = logger;
@@ -35,7 +37,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            if (!file.GetProject().IsUnityProject())
+            var sourceFile = file.GetSourceFile();
+
+            if (!file.GetProject().IsUnityProject() || !mySwaExtensionProvider.IsApplicable(sourceFile))
                 return null;
 
             return new CallGraphProcess(process, processKind, file, myLogger, myContextProviders, myProblemAnalyzers);
@@ -47,13 +51,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
         private readonly DaemonProcessKind myProcessKind;
         private readonly ILogger myLogger;
         private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
-        private readonly Dictionary<CallGraphContextElement,List<ICallGraphProblemAnalyzer>> myProblemAnalyzersByContext;
+        private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
         private readonly CallGraphContext myContext = new CallGraphContext();
 
         public CallGraphProcess(
             IDaemonProcess process,
-            DaemonProcessKind processKind, 
-            ICSharpFile file, 
+            DaemonProcessKind processKind,
+            ICSharpFile file,
             ILogger logger,
             IEnumerable<ICallGraphContextProvider> contextProviders,
             IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers)
@@ -62,18 +66,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             myProcessKind = processKind;
             myLogger = logger;
             myContextProviders = contextProviders;
-
-            myProblemAnalyzersByContext = problemAnalyzers.GroupBy(t => t.Context)
-                .ToDictionary(t => t.Key, t => t.ToList());
+            myProblemAnalyzers = problemAnalyzers;
         }
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
                 DaemonProcess.ContextBoundSettingsStore);
-            
+
             File.ProcessThisAndDescendants(this, highlightingConsumer);
-            
+
             committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
@@ -83,14 +85,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
             try
             {
-                foreach (var (problemAnalyzerContext, problemAnalyzers) in myProblemAnalyzersByContext)
-                {
-                    if (!myContext.IsSuperSetOf(problemAnalyzerContext))
-                        continue;
-
-                    foreach (var problemAnalyzer in problemAnalyzers)
-                        problemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer, myContext);
-                }
+                foreach (var problemAnalyzer in myProblemAnalyzers)
+                    problemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer, myContext);
             }
             catch (OperationCanceledException)
             {
