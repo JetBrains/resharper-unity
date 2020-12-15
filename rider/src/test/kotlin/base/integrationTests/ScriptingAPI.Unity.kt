@@ -154,7 +154,6 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
     val processBuilderArgs = getUnityArgs(project).withProjectPath(project).withRiderPath()
     processBuilderArgs.addAll(args)
-    frameworkLogger.info("{${processBuilderArgs.joinToString(" ")}}")
     val processHandle = when {
         withCoverage -> {
 //            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
