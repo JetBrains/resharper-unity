@@ -1,36 +1,31 @@
-using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.Resources;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment.Rider
 {  
     [SolutionComponent]
-    public class PerformanceAnalysisCodeVisionAddExpensiveProvider : IPerformanceAnalysisCodeVisionMenuItemProvider
+    public class PerformanceAnalysisCodeVisionAddExpensiveProvider : SimpleCodeVisionMenuItemProviderBase, IPerformanceAnalysisCodeVisionMenuItemProvider
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
-        private readonly ISolution mySolution;
 
-        public PerformanceAnalysisCodeVisionAddExpensiveProvider(ExpensiveInvocationContextProvider expensiveContextProvider, ISolution solution)
+        public PerformanceAnalysisCodeVisionAddExpensiveProvider(ExpensiveInvocationContextProvider expensiveContextProvider, ISolution solution) : base(solution)
         {
             myExpensiveContextProvider = expensiveContextProvider;
-            mySolution = solution;
         }
 
-        public BulbMenuItem GetMenuItem(IMethodDeclaration methodDeclaration, ITextControl textControl, DaemonProcessKind processKind)
+        protected override bool CheckCallGraph(IMethodDeclaration methodDeclaration, DaemonProcessKind processKind)
         {
-            if (myExpensiveContextProvider.IsMarkedStage(methodDeclaration, processKind))
-                return null;
-            
-            var bulb = new AddExpensiveCommentBulbAction(methodDeclaration);
-            var item = UnityCallGraphUtil.BulbActionToMenuItem(bulb, textControl, mySolution, BulbThemedIcons.ContextAction.Id);
+            return myExpensiveContextProvider.IsMarkedStage(methodDeclaration, processKind);
+        }
 
-            return item;
+        protected override IBulbAction GetAction(IMethodDeclaration methodDeclaration)
+        {
+            return new AddExpensiveCommentBulbAction(methodDeclaration);
         }
     }
 }
