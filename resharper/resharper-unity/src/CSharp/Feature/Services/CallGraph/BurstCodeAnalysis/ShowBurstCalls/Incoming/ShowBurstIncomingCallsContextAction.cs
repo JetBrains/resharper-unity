@@ -28,7 +28,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
         {
             return new ShowBurstIncomingCallsBulbAction(containingMethod)
                 .ToContextActionIntentions(IntentionsAnchors.ContextActionsAnchor, CallHierarchyIcons.CalledByArrow);
-
         }
     }
 }
