@@ -16,7 +16,6 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.lifetime.LifetimeDefinition
 import com.jetbrains.rd.util.lifetime.isNotAlive
 import com.jetbrains.rd.util.reactive.adviseNotNull
-import com.jetbrains.rd.util.reactive.adviseOnce
 import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
@@ -47,7 +46,6 @@ import com.jetbrains.rider.test.scriptingApi.*
 import java.io.File
 import java.io.PrintStream
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
 import kotlin.test.assertNotNull
