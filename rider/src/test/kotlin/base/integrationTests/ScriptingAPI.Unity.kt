@@ -114,7 +114,8 @@ fun allowUnityPathVfsRootAccess(lifetimeDefinition: LifetimeDefinition) {
 }
 
 fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): ProcessHandle {
-    val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests")
+    val args = getUnityArgs(project).withProjectPath(project)
+    args.addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests"))
     if (batchMode) {
         args.add("-batchMode")
     }
@@ -139,7 +140,7 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     val riderPath = Paths.get(UnityTestEnvironment::class.java.getProtectionDomain().getCodeSource().getLocation().toURI())
         .parent.parent.parent.parent.parent.resolve(relPath)
         .toString()
-    args.addAll(mutableListOf("-riderPath", riderPath))
+    args.addAll(arrayOf("-riderPath", riderPath))
 
     if (TeamCityHelper.isUnderTeamCity) {
         val login = System.getenv("unity.login")
@@ -150,8 +151,6 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     }
 
     frameworkLogger.info("Starting unity process${if (withCoverage) " with Coverage" else ""}")
-    val processBuilderArgs = getUnityArgs(project).withProjectPath(project)
-    processBuilderArgs.addAll(args)
     val processHandle = when {
         withCoverage -> {
 //            val unityProjectDefaultArgsString = getUnityWithProjectArgs(project)
@@ -175,7 +174,7 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
 //            getUnityProcessHandle(project)
             throw NotImplementedError()
         }
-        else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
+        else -> StartUnityAction.startUnity(args)?.toHandle()
     }
     assertNotNull(processHandle, "Unity process wasn't started")
     frameworkLogger.info("Unity process started [pid: ${processHandle.pid()}]")
