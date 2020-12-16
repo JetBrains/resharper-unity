@@ -43,6 +43,7 @@
   <ItemGroup>
      <Compile Include="Assets\Editor\CommandLineParser.cs" />
      <Compile Include="Assets\Editor\IntegrationTestHelper.cs" />
+     <None Include="Assets\Editor\Editor.asmdef" />
      <Reference Include="UnityEngine">
      <HintPath>/Applications/Unity/Hub/Editor/2020.2.0b5/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
      </Reference>
