@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.CallHierarchy.FindResults;
@@ -16,7 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
     {
         public void Execute(ISolution solution, ITextControl textControl)
         {
-            //CGTD assert read lock
+            solution.Locks.AssertReadAccessAllowed();
 
             var text = Text;
 

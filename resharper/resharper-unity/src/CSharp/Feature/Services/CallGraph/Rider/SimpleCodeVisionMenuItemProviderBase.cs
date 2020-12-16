@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
@@ -24,6 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Ri
 
         public IEnumerable<BulbMenuItem> GetMenuItems(IMethodDeclaration methodDeclaration, ITextControl textControl, DaemonProcessKind processKind)
         {
+            methodDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
             if (!CheckCallGraph(methodDeclaration, processKind))
                 return EmptyList<BulbMenuItem>.Enumerable;
             
