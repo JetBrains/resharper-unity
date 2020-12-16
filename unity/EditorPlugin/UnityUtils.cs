@@ -67,6 +67,11 @@ namespace JetBrains.Rider.Unity.Editor
       }
     }
 
+    internal static ScriptCompilationDuringPlay SafeScriptCompilationDuringPlay =>
+        UnityVersion >= new Version(2018, 2)
+            ? EditorPrefsWrapper.ScriptCompilationDuringPlay
+            : PluginSettings.AssemblyReloadSettings;
+
     internal static ScriptCompilationDuringPlay ToScriptCompilationDuringPlay(int value)
     {
       switch (value)

@@ -9,9 +9,31 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
 
+## 2020.3.1
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203-rtm-2020.3.0...net203-rtm-2020.3.1)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/43?closed=1)
+
+# Changed
+
+- Disable performance and Burst context with comment ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
+
+# Fixed
+
+- Fix performance context and Burst actions not showing if caret was on first character of method declaration ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
+- Rider: Fix showing incorrect Code Vision link for expensive code ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
+- Rider: Fix automatically refreshing assets before running unit tests ([RIDER-54359](https://youtrack.jetbrains.com/issue/RIDER-54359), [#1960](https://github.com/JetBrains/resharper-unity/pull/1960))
+- Rider: Fix missing trace scenario in Diagnostic Tools dialog ([#1962](https://github.com/JetBrains/resharper-unity/pull/1962))
+- Unity editor: Fix log message on incorrect access of deprecated settings ([RIDER-55362](https://youtrack.jetbrains.com/issue/RIDER-55362), [#1967](https://github.com/JetBrains/resharper-unity/pull/1967))
+
+
+
 ## 2020.3.0
+* Released: [2020-12-14](https://blog.jetbrains.com/dotnet/2020/12/14/rider-2020-3-release/)
+* Build: 2020.3.0.5061
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net202...net203-rtm-2020.3.0)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/41?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net203-rtm-2020.3.0)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.3.0.125)
 
 ### Added
 
