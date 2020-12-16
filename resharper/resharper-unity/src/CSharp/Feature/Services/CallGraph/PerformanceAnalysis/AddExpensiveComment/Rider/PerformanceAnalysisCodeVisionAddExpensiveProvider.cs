@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -22,10 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         {
             return myExpensiveContextProvider.IsMarkedStage(methodDeclaration, processKind);
         }
-
-        protected override IBulbAction GetAction(IMethodDeclaration methodDeclaration)
+        
+        protected override IEnumerable<IBulbAction> GetActions(IMethodDeclaration methodDeclaration)
         {
-            return new AddExpensiveCommentBulbAction(methodDeclaration);
+            var action = new AddExpensiveCommentBulbAction(methodDeclaration);
+            return new[] {action};
         }
     }
 }

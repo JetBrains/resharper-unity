@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Rider;
@@ -9,14 +10,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
     [SolutionComponent]
     public sealed class PerformanceAnalysisCodeVisionAddDisableCommentProvider : SimpleCodeVisionMenuItemProviderBase, IPerformanceAnalysisCodeVisionMenuItemProvider
     {
-
         public PerformanceAnalysisCodeVisionAddDisableCommentProvider(ISolution solution) : base(solution)
         {
         }
         
-        protected override IBulbAction GetAction(IMethodDeclaration methodDeclaration)
+        protected override IEnumerable<IBulbAction> GetActions(IMethodDeclaration methodDeclaration)
         {
-            return new AddPerformanceAnalysisDisableCommentBulbAction(methodDeclaration);
+            var action = new AddPerformanceAnalysisDisableCommentBulbAction(methodDeclaration);
+
+            return new[] {action};
         }
     }
 }

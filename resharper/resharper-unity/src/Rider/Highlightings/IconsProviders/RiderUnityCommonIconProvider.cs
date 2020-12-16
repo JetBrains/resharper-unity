@@ -121,9 +121,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
             foreach (var provider in myMenuItemProviders)
             {
-                var item = provider.GetMenuItem(methodDeclaration, textControl, kind);    
-                
-                if (item != null)
+                var menuItems = provider.GetMenuItems(methodDeclaration, textControl, kind);
+
+                foreach (var item in menuItems)
                     result.Add(item);
             }
 

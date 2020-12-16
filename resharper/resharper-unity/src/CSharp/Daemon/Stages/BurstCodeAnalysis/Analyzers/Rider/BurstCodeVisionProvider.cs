@@ -81,10 +81,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             
             foreach (var bulbProvider in myBulbProviders)
             {
-                var menuItem = bulbProvider.GetMenuItem(methodDeclaration, textControl, processKind);
+                var menuItems = bulbProvider.GetMenuItems(methodDeclaration, textControl, processKind);
                 
-                if (menuItem != null)
-                    result.Add(menuItem);
+                foreach(var item in menuItems)
+                    result.Add(item);
             } 
             
             return result;
