@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -8,7 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
     public interface ICallGraphCodeVisionMenuItemProvider
     {
-        [CanBeNull]
-        BulbMenuItem GetMenuItem([NotNull] IMethodDeclaration methodDeclaration, [NotNull] ITextControl textControl, DaemonProcessKind processKind);
+        [NotNull]
+        [ItemNotNull]
+        IEnumerable<BulbMenuItem> GetMenuItems([NotNull] IMethodDeclaration methodDeclaration, [NotNull] ITextControl textControl, DaemonProcessKind processKind);
     }
 }
