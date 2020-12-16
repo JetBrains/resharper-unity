@@ -17,8 +17,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
 
         public static bool HasPerformanceBanComment(ITreeNode node)
         {
-            return UnityCallGraphUtil.HasAnalysisComment(UnityCallGraphUtil.PerformanceAnalysisComment, node, out var isBanned) 
-                   && isBanned;
+            return UnityCallGraphUtil.HasAnalysisComment(UnityCallGraphUtil.PerformanceAnalysisComment, node, out var isMarked) 
+                   && !isMarked;
         }
 
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode, IDeclaredElement containingFunction)

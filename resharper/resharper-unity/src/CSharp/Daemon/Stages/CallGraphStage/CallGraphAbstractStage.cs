@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Application.Settings;
+using JetBrains.Application.Threading;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
@@ -71,6 +72,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
+            File.GetPsiServices().Locks.AssertReadAccessAllowed();
+            
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
                 DaemonProcess.ContextBoundSettingsStore);
 

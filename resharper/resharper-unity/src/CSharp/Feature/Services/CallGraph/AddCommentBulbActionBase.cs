@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Comment;
@@ -23,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
         
         public void Execute(ISolution solution, ITextControl textControl)
         {
+            solution.Locks.AssertReadAccessAllowed();
             var file = myMethodDeclaration.GetContainingFile();
             
             if (file == null) 

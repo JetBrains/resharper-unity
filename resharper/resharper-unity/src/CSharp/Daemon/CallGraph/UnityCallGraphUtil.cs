@@ -23,7 +23,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
         [ContractAnnotation("null => false")]
         public static bool IsFunctionNode(ITreeNode node)
         {
-            // CGTD use ICallHierarchyLanguageSpecific
             switch (node)
             {
                 case IFunctionDeclaration _:
