@@ -53,7 +53,7 @@ import kotlin.test.assertTrue
 
 //region Timeouts
 
-val unityDefaultTimeout: Duration = Duration.ofSeconds(220)
+val unityDefaultTimeout: Duration = Duration.ofSeconds(520)
 
 val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
