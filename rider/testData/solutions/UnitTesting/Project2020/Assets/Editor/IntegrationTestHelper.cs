@@ -2,10 +2,10 @@
 using System.IO;
 using JetBrains.Annotations;
 using Packages.Rider.Editor.Util;
+using Unity.CodeEditor;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Editor
@@ -22,8 +22,8 @@ namespace Editor
             if (commandlineParser.Options.ContainsKey("-riderPath"))
             {
                 var originRiderPath = commandlineParser.Options["-riderPath"];
-                Debug.Log($"EditorPrefs.SetString(kScriptsDefaultApp, ${originRiderPath});");
-                EditorPrefs.SetString("kScriptsDefaultApp", originRiderPath);
+                Debug.Log($"CodeEditor.SetExternalScriptEditor({originRiderPath});");
+                CodeEditor.SetExternalScriptEditor(originRiderPath);
             }
 
             File.WriteAllText(".start", string.Empty);
