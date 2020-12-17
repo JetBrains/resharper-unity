@@ -11,7 +11,7 @@ namespace JetBrains.Rider.Unity.Editor
   public static class UnityUtils
   {
     private static readonly ILog ourLogger = Log.GetLog("UnityUtils");
-    internal static readonly string UnityApplicationVersion = Application.unityVersion;
+    internal static string UnityApplicationVersion => Application.unityVersion;
 
     /// <summary>
     /// Force Unity To Write Project File
