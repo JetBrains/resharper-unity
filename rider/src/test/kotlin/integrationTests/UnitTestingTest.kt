@@ -8,7 +8,6 @@ import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 import java.io.File
-import java.time.Duration
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
 class UnitTestingTest : IntegrationTestWithEditorBase() {
@@ -39,7 +38,16 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     @Test
     fun checkRunAllTestsFromProject() {
         withUtFacade(project) {
-            it.waitForDiscovering(5, Duration.ofMinutes(1))
+            // workaround the situation, when at first assenblies are not compiled, so discovery returns nothing
+            // later Unity compiles assemblies, but discovery would not start again, till solution reload
+            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
+            withOpenedEditor(file.absolutePath){
+                FrontendTextControlHost.getInstance(project!!)
+                waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
+
+                it.waitForDiscovering(5)
+            }
+
             val session = it.runAllTestsInProject(
                 "Tests",
                 5,
@@ -52,7 +60,16 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
 
     private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTests: Int = sessionElements) {
         withUtFacade(project) {
-            it.waitForDiscovering(discoveringElements, Duration.ofMinutes(1))
+            // workaround the situation, when at first assenblies are not compiled, so discovery returns nothing
+            // later Unity compiles assemblies, but discovery would not start again, till solution reload
+            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
+            withOpenedEditor(file.absolutePath){
+                FrontendTextControlHost.getInstance(project!!)
+                waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
+
+                it.waitForDiscovering(discoveringElements)
+            }
+
             val session = it.runAllTestsInSolution(
                 sessionElements,
                 RiderUnitTestScriptingFacade.defaultTimeout,

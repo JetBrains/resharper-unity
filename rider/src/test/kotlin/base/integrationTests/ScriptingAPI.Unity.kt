@@ -32,7 +32,6 @@ import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityArgs
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
-import com.jetbrains.rider.plugins.unity.util.withRiderPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
@@ -53,7 +52,7 @@ import kotlin.test.assertTrue
 
 //region Timeouts
 
-val unityDefaultTimeout: Duration = Duration.ofSeconds(520)
+val unityDefaultTimeout: Duration = Duration.ofSeconds(120)
 
 val unityActionsTimeout: Duration = Duration.ofSeconds(30)
 
