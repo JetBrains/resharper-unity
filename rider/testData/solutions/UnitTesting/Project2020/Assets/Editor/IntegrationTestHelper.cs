@@ -18,6 +18,7 @@ namespace Editor
 
         public static void Start()
         {
+            EditorPrefs.SetInt("Rider_SelectedLoggingLevel", 6); // trace
             var commandlineParser = new CommandLineParser(Environment.GetCommandLineArgs());
             if (commandlineParser.Options.ContainsKey("-riderPath"))
             {
