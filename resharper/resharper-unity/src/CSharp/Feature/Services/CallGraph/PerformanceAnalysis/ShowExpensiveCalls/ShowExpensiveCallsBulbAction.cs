@@ -29,7 +29,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
                 var referenceElement = result.ReferenceElement;
                 var containing = (referenceElement as ICSharpTreeNode)?.GetContainingFunctionLikeDeclarationOrClosure();
 
-                // CGTD filter reference
                 return expensiveContextProvider.IsMarkedSync(containing);
             };
         }
