@@ -230,12 +230,9 @@ fun installPlugin(project: Project) {
     frameworkLogger.info("Trying to install editor plugin")
     project.solution.frontendBackendModel.installEditorPlugin.fire(Unit)
 
-    val editorPluginPath = Paths.get(project.basePath!!).resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
-    waitAndPump(
-        project.lifetime,
-        { editorPluginPath.exists() },
-        unityActionsTimeout
-    ) { "EditorPlugin was not installed." }
+    val editorPluginPath = Paths.get(project.basePath!!)
+        .resolve("Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll")
+    waitAndPump(project.lifetime, { editorPluginPath.exists() }, unityActionsTimeout) { "EditorPlugin was not installed." }
     frameworkLogger.info("Editor plugin was installed")
 }
 
