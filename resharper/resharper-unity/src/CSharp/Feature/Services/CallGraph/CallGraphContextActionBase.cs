@@ -33,7 +33,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            //CGTD check if backend thread
             var containingMethod = ContainingMethod;
 
             containingMethod?.GetPsiServices().Locks.AssertReadAccessAllowed();
@@ -53,7 +52,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
             if (containingMethod == null)
                 return false;
 
-            // CGTD check if frontend thread
             return IsAvailable(cache, containingMethod);
         }
 
