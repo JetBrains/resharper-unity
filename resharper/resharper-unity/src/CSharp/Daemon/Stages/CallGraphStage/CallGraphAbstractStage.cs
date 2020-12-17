@@ -54,6 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
         private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
         private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
         private readonly CallGraphContext myContext = new CallGraphContext();
+        private int myInterruptCounter;
 
         public CallGraphProcess(
             IDaemonProcess process,
@@ -82,6 +83,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
+        private void CheckForInterrupt(IHighlightingConsumer consumer)
+        {
+            var counter = ++myInterruptCounter;
+            
+            if (counter == 10)
+            {
+                myInterruptCounter = 0;
+                IsProcessingFinished(consumer);
+            }
+        }
+
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
             myContext.AdvanceContext(element, myProcessKind, myContextProviders);
@@ -89,7 +101,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             try
             {
                 foreach (var problemAnalyzer in myProblemAnalyzers)
+                {
+                    CheckForInterrupt(consumer);
                     problemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer, myContext);
+                }
             }
             catch (OperationCanceledException)
             {
