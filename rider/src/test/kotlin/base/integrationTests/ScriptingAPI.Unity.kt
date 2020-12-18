@@ -131,13 +131,14 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     }
 
     val relPath = when {
-        SystemInfo.isWindows -> "unity/build/EditorPluginNet46/bin/Debug/net461/rider-dev.app/rider-dev.bat"
-        SystemInfo.isMac -> "unity/build/EditorPluginNet46/bin/Debug/net461/rider-dev.app"
+        SystemInfo.isWindows -> "net461/rider-dev.app/rider-dev.bat"
+        SystemInfo.isMac -> "net461/rider-dev.app"
         else -> throw Exception("Not implemented")
     }
 
     val riderPath = Paths.get(UnityTestEnvironment::class.java.getProtectionDomain().getCodeSource().getLocation().toURI())
-        .parent.parent.parent.parent.parent.resolve(relPath)
+        .parent.parent.parent.parent.parent.resolve("unity/build/EditorPluginNet46/bin").toFile().listFiles()
+        .filter { a-> (a.name=="Debug"|| a.name=="Release") && a.exists() && a.isDirectory }.single().toPath().resolve(relPath)
         .toString()
     args.addAll(arrayOf("-riderPath", riderPath))
 
