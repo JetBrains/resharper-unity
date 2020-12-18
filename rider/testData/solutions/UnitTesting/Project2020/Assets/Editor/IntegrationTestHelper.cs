@@ -28,7 +28,8 @@ namespace Editor
             }
 
             File.WriteAllText(".start", string.Empty);
-            EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity", OpenSceneMode.Single);
+            //EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity", OpenSceneMode.Single);
+            EditorUtility.RequestScriptReload(); // EditorPlugin would get loaded // todo: it must be reloaded itself, but for some reason it doesn't make it during te test
         }
 
         public static void ResetAndStart()

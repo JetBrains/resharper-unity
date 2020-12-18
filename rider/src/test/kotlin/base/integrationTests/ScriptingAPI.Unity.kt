@@ -202,6 +202,14 @@ fun killUnity(project: Project, processHandle: ProcessHandle) {
     processHandle.destroy()
     waitAndPump(project.lifetime, { !processHandle.isAlive }, unityDefaultTimeout) { "Process should have existed." }
     frameworkLogger.info("Unity process killed")
+
+    // clean up Unity Preferences https://docs.unity3d.com/ScriptReference/EditorPrefs.html#:~:text=Stores%20and%20accesses%20Unity%20editor,unity3d.
+    if (SystemInfo.isMac) // remove ~/Library/Preferences/com.unity3d.UnityEditor5.x.plist
+    {
+        val home = System.getProperty("user.home")
+        // not really needed right now - need to find a better way
+        // Paths.get(home).resolve("Library/Preferences/com.unity3d.UnityEditor5.x.plist").toFile().deleteRecursively()
+    }
 }
 
 fun killUnity(project: Project) = killUnity(project, getUnityProcessHandle(project))
