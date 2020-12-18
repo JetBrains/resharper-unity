@@ -115,5 +115,5 @@ task generateModels {
     dependsOn generateFrontendBackendModel, generateBackendUnityModel
 }
 
-jar.dependsOn generateModels
+compileKotlin.dependsOn generateModels
 // Make sure the dotnet build tasks depend on model, too
