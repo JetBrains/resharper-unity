@@ -29,6 +29,8 @@ namespace Editor
             if (commandlineParser.Options.ContainsKey("-riderPath"))
             {
                 var originRiderPath = commandlineParser.Options["-riderPath"];
+                Console.WriteLine($"originRiderPath file exists {File.Exists(originRiderPath)}");
+                Console.WriteLine($"originRiderPath directory exists {Directory.Exists(originRiderPath)}");
                 Debug.Log($"CodeEditor.SetExternalScriptEditor({originRiderPath});");
                 CodeEditor.SetExternalScriptEditor(originRiderPath);
             }
