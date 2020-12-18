@@ -13,14 +13,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
-        Name = ShowPerformanceCriticalCallsUtil.INCOMING_CALLS_MESSAGE,
-        Description = ShowPerformanceCriticalCallsUtil.INCOMING_CALLS_MESSAGE,
+        Name = ShowPerformanceCriticalCallsUtil.CONTEXT_ACTION_DESCRIPTION,
+        Description = ShowPerformanceCriticalCallsUtil.CONTEXT_ACTION_DESCRIPTION,
         Disabled = false,
         AllowedInNonUserFiles = false,
         Priority = 1)]
-    public class ShowPerformanceCriticalIncomingCallsContextAction : PerformanceOnlyContextActionBase
+    public class ShowPerformanceCriticalCallsContextAction : PerformanceContextActionBase
     {
-        public ShowPerformanceCriticalIncomingCallsContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
+        public ShowPerformanceCriticalCallsContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }

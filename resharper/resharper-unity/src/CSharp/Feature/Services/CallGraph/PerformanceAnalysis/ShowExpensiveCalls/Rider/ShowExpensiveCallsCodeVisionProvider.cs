@@ -14,15 +14,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
 
-        public ShowExpensiveCallsCodeVisionProvider(ISolution solution)
-            : base(solution)
+        public ShowExpensiveCallsCodeVisionProvider(ExpensiveInvocationContextProvider expensiveContextProvider, ISolution solution) : base(solution)
         {
-            myExpensiveContextProvider = solution.GetComponent<ExpensiveInvocationContextProvider>();
+            myExpensiveContextProvider = expensiveContextProvider;
         }
 
         protected override bool CheckCallGraph(IMethodDeclaration methodDeclaration, DaemonProcessKind processKind)
         {
-            return myExpensiveContextProvider.IsMarkedStage(methodDeclaration, processKind) == false;
+            return myExpensiveContextProvider.IsMarkedStage(methodDeclaration, processKind);
         }
 
         protected override IEnumerable<IBulbAction> GetActions(IMethodDeclaration methodDeclaration)
