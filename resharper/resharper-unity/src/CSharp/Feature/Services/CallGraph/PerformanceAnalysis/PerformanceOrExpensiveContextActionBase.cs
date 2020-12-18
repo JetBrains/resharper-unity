@@ -4,9 +4,9 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis
 {
-    public abstract class PerformanceExpensiveContextActionBase : PerformanceAnalysisContextActionBase
+    public abstract class PerformanceOrExpensiveContextActionBase : PerformanceAnalysisContextActionBase
     {
-        protected PerformanceExpensiveContextActionBase([NotNull] ICSharpContextActionDataProvider dataProvider)
+        protected PerformanceOrExpensiveContextActionBase([NotNull] ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
         }
