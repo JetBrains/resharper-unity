@@ -1,7 +1,7 @@
 ﻿#if !RIDER
 
 using JetBrains.Application.BuildScript.Application.Zones;
-// using JetBrains.VsIntegration.Shell.Zones;
+using JetBrains.VsIntegration.Shell.Zones;
 
 // It would be nice to use zones properly here, but
 // a) it's really hard :(
@@ -9,12 +9,12 @@ using JetBrains.Application.BuildScript.Application.Zones;
 //    to resolve all types causing problems for Rider, which doesn't have
 //    any VS libraries, such as VS.Platform.Core
 
-// namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio
-// {
-//     [ZoneMarker]
-//     public class ZoneMarker : IRequire<IVisualStudioEnvZone>
-//     {
-//     }
-// }
+namespace JetBrains.ReSharper.Plugins.Unity.VisualStudio
+{
+    [ZoneMarker]
+    public class ZoneMarker : IRequire<IVisualStudioEnvZone>
+    {
+    }
+}
 
 #endif
