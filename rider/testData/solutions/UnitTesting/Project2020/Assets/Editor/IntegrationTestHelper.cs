@@ -11,8 +11,14 @@ using Object = UnityEngine.Object;
 namespace Editor
 {
     [UsedImplicitly]
+    [InitializeOnLoad]
     public static class IntegrationTestHelper
     {
+        static IntegrationTestHelper()
+        {
+            Console.WriteLine("IntegrationTestHelper.ctor");
+        }
+
         private static bool myChanged;
         private static object myLockObject = new Object();
 
