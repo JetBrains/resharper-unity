@@ -37,13 +37,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
             DeclaredElementInstance<IClrDeclaredElement> start, 
             ShowCallsType callType)
         {
+            var text = Text;
+            
             switch (callType)
             {
                 case ShowCallsType.INCOMING:
-                    manager.ShowIncoming(start, filter);
+                    manager.ShowIncomingWithFilter(start, text, filter);
                     break;
                 case ShowCallsType.OUTGOING:
-                    manager.ShowOutgoing(start, filter);
+                    manager.ShowOutgoingWithFilter(start, text, filter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
