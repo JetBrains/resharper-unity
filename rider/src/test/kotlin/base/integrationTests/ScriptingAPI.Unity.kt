@@ -135,10 +135,9 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
         SystemInfo.isMac -> "net461/rider-dev.app"
         else -> throw Exception("Not implemented")
     }
-
-    val riderPath = Paths.get(UnityTestEnvironment::class.java.getProtectionDomain().getCodeSource().getLocation().toURI())
-        .parent.parent.parent.parent.parent.resolve("unity/build/EditorPluginNet46/bin").toFile().listFiles()
-        .filter { a-> (a.name=="Debug"|| a.name=="Release") && a.exists() && a.isDirectory }.single().toPath().resolve(relPath)
+    val cwd = File(System.getProperty("user.dir"))
+    val riderPath = cwd.parentFile.resolve("unity/build/EditorPluginNet46/bin").listFiles()
+        .filter { a-> (a.name=="Debug"|| a.name=="Release") && a.isDirectory }.single().toPath().resolve(relPath)
         .toString()
     args.addAll(arrayOf("-riderPath", riderPath))
 
@@ -203,14 +202,6 @@ fun killUnity(project: Project, processHandle: ProcessHandle) {
     processHandle.destroy()
     waitAndPump(project.lifetime, { !processHandle.isAlive }, unityDefaultTimeout) { "Process should have existed." }
     frameworkLogger.info("Unity process killed")
-
-    // clean up Unity Preferences https://docs.unity3d.com/ScriptReference/EditorPrefs.html#:~:text=Stores%20and%20accesses%20Unity%20editor,unity3d.
-    if (SystemInfo.isMac) // remove ~/Library/Preferences/com.unity3d.UnityEditor5.x.plist
-    {
-        val home = System.getProperty("user.home")
-        // not really needed right now - need to find a better way
-        // Paths.get(home).resolve("Library/Preferences/com.unity3d.UnityEditor5.x.plist").toFile().deleteRecursively()
-    }
 }
 
 fun killUnity(project: Project) = killUnity(project, getUnityProcessHandle(project))
