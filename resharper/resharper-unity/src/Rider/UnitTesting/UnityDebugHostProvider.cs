@@ -1,6 +1,5 @@
 using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
-using JetBrains.ProjectModel.DotNetCore;
 using JetBrains.ReSharper.Feature.Services.DebuggerFacade;
 using JetBrains.ReSharper.Host.Features.UnitTesting;
 using JetBrains.ReSharper.Host.Features.Unity;
@@ -14,9 +13,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
     public class UnityDebugHostProvider : RiderDebugHostProvider
     {
         public UnityDebugHostProvider(IDebuggerFacade debuggerFacade, 
-                                      ILogger logger, 
-                                      DotNetCorePlatformSelector dotNetCorePlatformSelector)
-            : base(debuggerFacade, logger, dotNetCorePlatformSelector)
+                                      ILogger logger)
+            : base(debuggerFacade, logger)
         {
         }
 
