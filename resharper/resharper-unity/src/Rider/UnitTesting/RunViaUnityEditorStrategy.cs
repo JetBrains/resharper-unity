@@ -325,7 +325,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             WaitForUnityEditorConnectedAndIdle(refreshLifetime)
                 .ContinueWith(_ =>
                 {
-                    return RefreshTask(refreshLifetime)
+                    return RefreshTask(refreshLifetime, tcs)
                         .ContinueWith(__ =>
                             WaitForUnityEditorConnectedAndIdle(refreshLifetime), refreshLifetime)
                         .Unwrap();
@@ -367,7 +367,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
             return JetTaskEx.While(() => refreshLifetime.IsAlive);
         }
 
-        private Task RefreshTask(Lifetime lifetime)
+        private Task RefreshTask(Lifetime lifetime, TaskCompletionSource<bool> tcs)
         {
             var waitingLifetimeDefinition = Lifetime.Define(lifetime);
             var waitingLifetime = waitingLifetimeDefinition.Lifetime;
@@ -380,8 +380,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.UnitTesting
                     if (waitingLifetime.IsAlive)
                     {
                         myUnityRefresher.Refresh(waitingLifetime, RefreshType.Force)
-                            .ContinueWith(__ =>
+                            .ContinueWith(result =>
                             {
+                                if (result.Exception != null ) 
+                                    tcs.SetException(result.Exception);
                                 myLogger.Trace("After myUnityRefresher.Refresh");
                                 waitingLifetimeDefinition.Terminate();
                             }, waitingLifetime);
