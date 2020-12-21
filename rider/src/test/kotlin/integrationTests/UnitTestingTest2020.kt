@@ -13,12 +13,6 @@ import java.time.Duration
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
 class UnitTestingTest2020 : IntegrationTestWithEditorBase() {
     override fun getSolutionDirectoryName() = "UnitTesting/Project2020"
-    override fun preprocessTempDirectory(tempDir: File) {
-        super.preprocessTempDirectory(tempDir)
-
-        val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-        file.writeText(file.readText().replace("NewTestScriptSimplePasses2(", "NewTestScriptSimplePasses("))
-    }
 
     @Test
     fun checkRunAllTestsFromProject() {
