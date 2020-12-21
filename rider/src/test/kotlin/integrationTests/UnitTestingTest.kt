@@ -2,7 +2,6 @@ package integrationTests
 
 import base.integrationTests.IntegrationTestWithEditorBase
 import base.integrationTests.preferStandaloneNUnitLauncherInTests
-import com.jetbrains.rdclient.editors.FrontendTextControlHost
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.*
@@ -41,12 +40,7 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
             // workaround the situation, when at first assenblies are not compiled, so discovery returns nothing
             // later Unity compiles assemblies, but discovery would not start again, till solution reload
             val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-            withOpenedEditor(file.absolutePath){
-                FrontendTextControlHost.getInstance(project!!)
-                waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
-
-                it.waitForDiscovering(5)
-            }
+            waitForDiscoveringWorkaround(file, 5, it)
 
             val session = it.runAllTestsInProject(
                 "Tests",
@@ -60,15 +54,8 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
 
     private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTests: Int = sessionElements) {
         withUtFacade(project) {
-            // workaround the situation, when at first assenblies are not compiled, so discovery returns nothing
-            // later Unity compiles assemblies, but discovery would not start again, till solution reload
             val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
-            withOpenedEditor(file.absolutePath){
-                FrontendTextControlHost.getInstance(project!!)
-                waitBackendDocumentChange(project!!, arrayListOf(this.virtualFile))
-
-                it.waitForDiscovering(discoveringElements)
-            }
+            waitForDiscoveringWorkaround(file, 5, it)
 
             val session = it.runAllTestsInSolution(
                 sessionElements,
