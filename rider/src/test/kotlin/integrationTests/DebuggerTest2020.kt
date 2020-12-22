@@ -38,6 +38,9 @@ class DebuggerTest2020 : IntegrationTestWithEditorBase() {
                 waitForPause()
                 dumpFullCurrentData()
                 resumeSession()
+                waitForPause()
+                dumpFullCurrentData()
+                resumeSession()
             }, testGoldFile)
     }
 
