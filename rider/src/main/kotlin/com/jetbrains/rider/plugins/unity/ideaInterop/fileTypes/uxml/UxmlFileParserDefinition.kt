@@ -9,6 +9,6 @@ class UxmlFileParserDefinition: XMLParserDefinition() {
         val UXML_FILE = IFileElementType("UXML_FILE", UxmlLanguage)
     }
 
-    override fun createFile(viewProvider: FileViewProvider?) = UxmlFile(viewProvider)
+    override fun createFile(viewProvider: FileViewProvider) = UxmlFile(viewProvider)
     override fun getFileNodeType() = UXML_FILE
 }
