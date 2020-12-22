@@ -1,12 +1,13 @@
-Search target
-    Behaviour
-Found usages  (6 usages found)
-    Assets  (6 usages found)
-        Controller.controller  (6 usages found)
-            ...  (6 usages found)
-                Base Layer
-                Base Layer/NestedStateMachine
-                Base Layer/NestedStateMachine/DoublyNestedStateMachine
-                Base Layer/NestedStateMachine/DoublyNestedStateMachine/DoublyNestedState
-                Base Layer/NestedStateMachine/InnerState
-                Base Layer/State
+... found)
+            [Base Layer  (6 usages found)
+                NestedStateMachine  (4 usages found)
+                    DoublyNestedStateMachine  (2 usages found)
+                        DoublyNestedState  (1 usage found)
+                            Component (id = 7552538816858878161)
+                        Component (id = 160634142025387182)
+                    InnerState  (1 usage found)
+                        Component (id = 1943398072196956748)
+                    Component (id = 1642256547328104888)
+                State  (1 usage found)
+                    Component (id = -7663563424110097132)
+                Component (id = 3831111527505710517)]
