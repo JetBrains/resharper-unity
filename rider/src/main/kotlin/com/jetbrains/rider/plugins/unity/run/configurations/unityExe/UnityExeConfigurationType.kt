@@ -1,7 +1,6 @@
 package com.jetbrains.rider.plugins.unity.run.configurations.unityExe
 
 import com.intellij.execution.configurations.ConfigurationTypeBase
-import com.intellij.util.IconUtil
 import icons.UnityIcons
 
 class UnityExeConfigurationType : ConfigurationTypeBase("RunUnityExe", "Standalone Player", // "RunUnityExe" preserved for compatibility

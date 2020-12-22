@@ -105,12 +105,13 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
     }
 
     override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
-        val referenceNames = hashMapOf<String, ArrayList<ProjectModelNodeKey>>()
+        val referenceNames = hashMapOf<String, ReferenceItem>()
         val visitor = object : ProjectModelNodeVisitor() {
             override fun visitReference(node: ProjectModelNode): Result {
                 if (node.isAssemblyReference()) {
-                    val keys = referenceNames.getOrCreate(node.name) { arrayListOf() }
-                    keys.add(node.key)
+                    val item = referenceNames.getOrCreate(node.location.toString(),
+                        { ReferenceItem(project!!, node.name, node.location.toString(), arrayListOf()) })
+                    item.keys.add(node.key)
                 }
                 return Result.Stop
             }
@@ -118,15 +119,19 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
         visitor.visit(project!!)
 
         val children = arrayListOf<AbstractTreeNode<*>>()
-        for ((referenceName, keys) in referenceNames) {
-            children.add(ReferenceItem(project!!, referenceName, keys))
+        for ((_, item) in referenceNames) {
+            children.add(item)
         }
         return children
     }
 }
 
-class ReferenceItem(project: Project, private val referenceName: String, private val keys: ArrayList<ProjectModelNodeKey>)
-    : AbstractTreeNode<String>(project, referenceName), ISolutionModelNodeOwner, IProjectModeNodesOwner {
+class ReferenceItem(
+    project: Project,
+    private val referenceName: String,
+    referenceLocation: String,
+    val keys: ArrayList<ProjectModelNodeKey>
+) : AbstractTreeNode<String>(project, referenceLocation), ISolutionModelNodeOwner, IProjectModeNodesOwner {
 
     override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
     override fun isAlwaysLeaf() = true

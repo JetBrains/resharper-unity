@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -48,7 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
 
         [Pure]
         [ContractAnnotation("functionDeclaration: null => false")]
-        public static bool HasAnalysisComment([CanBeNull] IFunctionDeclaration functionDeclaration, string comment, ReSharperControlConstruct.Kind status)
+        public static bool HasAnalysisComment([CanBeNull] IFunctionDeclaration functionDeclaration, string comment,
+            ReSharperControlConstruct.Kind status)
         {
             if (functionDeclaration == null)
                 return false;
@@ -79,6 +81,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
             }
 
             return false;
+        }
+
+        [CanBeNull]
+        public static IMethodDeclaration GetMethodDeclarationByCaret([NotNull] ICSharpContextActionDataProvider dataProvider)
+        {
+            var result = MethodDeclarationByTreeNode(dataProvider.TokenAfterCaret);
+
+            return result ?? MethodDeclarationByTreeNode(dataProvider.TokenBeforeCaret);
+
+            IMethodDeclaration MethodDeclarationByTreeNode(ITreeNode node)
+            {
+                var identifierAfter = node as ICSharpIdentifier;
+                var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifierAfter);
+
+                return methodDeclaration;
+            }
         }
     }
 }

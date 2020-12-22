@@ -14,6 +14,7 @@ import com.jetbrains.rider.projectView.ProjectModelViewHost
 import com.jetbrains.rider.projectView.ideaInterop.RiderScratchProjectViewPane
 import com.jetbrains.rider.projectView.nodes.*
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
+import com.jetbrains.rider.projectView.views.NestingNode
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
@@ -95,7 +96,7 @@ enum class AncestorNodeType {
 
 open class UnityExplorerNode(project: Project,
                              virtualFile: VirtualFile,
-                             nestedFiles: List<VirtualFile>,
+                             nestedFiles: List<NestingNode<VirtualFile>>,
                              protected val descendentOf: AncestorNodeType)
     : FileSystemNodeBase(project, virtualFile, nestedFiles), IProjectModeNodesOwner {
 
@@ -303,7 +304,7 @@ open class UnityExplorerNode(project: Project,
         }
     }
 
-    override fun createNode(virtualFile: VirtualFile, nestedFiles: List<VirtualFile>): FileSystemNodeBase {
+    override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
         return UnityExplorerNode(project!!, virtualFile, nestedFiles, descendentOf)
     }
 

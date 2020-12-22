@@ -130,12 +130,7 @@ def unityEditorDllFiles = [
 
 tasks.withType(PrepareSandboxTask).configureEach {
     // Default dependsOn includes the standard Java build/jar task
-
-    // "skipDotnet" is easier to type (and remember), but "dotNetUpToDate" is already in use
-    if (skipDotnet.equalsIgnoreCase("false") &&
-        dotNetUpToDate.equalsIgnoreCase("false")) {
-        dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
-    }
+    dependsOn buildReSharperHostPlugin, buildUnityEditorPlugin
 
     // Have dependent tasks use uptodateWhen { project.buildServer.automatedBuild etc. }
     //inputs.files(buildRiderPlugin.outputs)

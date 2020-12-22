@@ -4,9 +4,7 @@ import base.integrationTests.IntegrationTestWithEditorBase
 import base.integrationTests.preferStandaloneNUnitLauncherInTests
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
-import com.jetbrains.rider.test.scriptingApi.RiderUnitTestScriptingFacade
-import com.jetbrains.rider.test.scriptingApi.buildSolutionWithReSharperBuild
-import com.jetbrains.rider.test.scriptingApi.withUtFacade
+import com.jetbrains.rider.test.scriptingApi.*
 import org.testng.annotations.Test
 import java.io.File
 
@@ -38,9 +36,12 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
 
     @Test
     fun checkRunAllTestsFromProject() {
-        buildSolutionWithReSharperBuild()
         withUtFacade(project) {
-            it.waitForDiscovering(5)
+            // workaround the situation, when at first assenblies are not compiled, so discovery returns nothing
+            // later Unity compiles assemblies, but discovery would not start again, till solution reload
+            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
+            waitForDiscoveringWorkaround(file, 5, it)
+
             val session = it.runAllTestsInProject(
                 "Tests",
                 5,
@@ -52,9 +53,10 @@ class UnitTestingTest : IntegrationTestWithEditorBase() {
     }
 
     private fun testWithAllTestsInSolution(discoveringElements: Int, sessionElements: Int = discoveringElements, successfulTests: Int = sessionElements) {
-        buildSolutionWithReSharperBuild()
         withUtFacade(project) {
-            it.waitForDiscovering(discoveringElements)
+            val file = activeSolutionDirectory.resolve("Assets").resolve("Tests").resolve("NewTestScript.cs")
+            waitForDiscoveringWorkaround(file, 5, it)
+
             val session = it.runAllTestsInSolution(
                 sessionElements,
                 RiderUnitTestScriptingFacade.defaultTimeout,

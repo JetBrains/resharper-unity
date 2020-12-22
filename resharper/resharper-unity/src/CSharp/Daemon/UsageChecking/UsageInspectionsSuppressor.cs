@@ -42,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             switch (element)
             {
-                case IClass cls when unityApi.IsUnityType(cls) || unityApi.IsUnityECSType(cls):
+                case IClass cls when unityApi.IsUnityType(cls) || unityApi.IsComponentSystemType(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 
@@ -54,10 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
                 case ITypeElement typeElement when IsImplicitlyUsedInterfaceType(typeElement):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                    return true;
-
-                case IMethod method when IsImplicitlyUsedInterfaceMethod(method):
-                    flags = ImplicitUseKindFlags.Access;
                     return true;
 
                 case IMethod method:
@@ -77,14 +73,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
                     if (IsEventHandler(unityApi, method) ||
                         IsRequiredSignatureMethod(method) ||
-                        IsAnimationEvent(solution, method))
+                        IsAnimationEvent(solution, method) ||
+                        IsImplicitlyUsedInterfaceMethod(method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
                     }
                     break;
 
-                case IField field when unityApi.IsSerialisedField(field) || unityApi.IsInjectedField(field):
+                case IField field when unityApi.IsSerialisedField(field):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
 

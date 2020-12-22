@@ -17,6 +17,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
     {
         public UnityTypeScopeProvider()
         {
+            Creators.Add(TryToCreate<MustBeInUnitySerializableType>);
             Creators.Add(TryToCreate<MustBeInUnityType>);
             Creators.Add(TryToCreate<MustBeInUnityCSharpFile>);
         }
@@ -48,7 +49,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
             var unityApi = context.Solution.GetComponent<UnityApi>();
             if (unityApi.IsUnityType(typeDeclaration?.DeclaredElement))
+            {
                 yield return new MustBeInUnityType();
+                yield return new MustBeInUnitySerializableType();
+            }
+            else if (unityApi.IsSerializableTypeDeclaration(typeDeclaration?.DeclaredElement))
+                yield return new MustBeInUnitySerializableType();
         }
     }
 }

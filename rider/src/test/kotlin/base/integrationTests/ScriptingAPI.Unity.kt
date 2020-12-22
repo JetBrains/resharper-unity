@@ -1,13 +1,13 @@
 package base.integrationTests
 
 import com.intellij.execution.RunManager
-import com.intellij.execution.configurations.ParametersList
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.rd.createNestedDisposable
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.newvfs.impl.VfsRootAccess
 import com.intellij.util.io.exists
+import com.intellij.util.text.VersionComparatorUtil
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerUtil
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint
@@ -20,7 +20,6 @@ import com.jetbrains.rd.util.reactive.valueOrDefault
 import com.jetbrains.rdclient.util.idea.callSynchronously
 import com.jetbrains.rdclient.util.idea.waitAndPump
 import com.jetbrains.rider.debugger.breakpoint.DotNetLineBreakpointProperties
-import com.jetbrains.rider.model.dotCoverModel
 import com.jetbrains.rider.model.unity.*
 import com.jetbrains.rider.model.unity.frontendBackend.FrontendBackendModel
 import com.jetbrains.rider.model.unity.frontendBackend.UnitTestLaunchPreference
@@ -31,7 +30,8 @@ import com.jetbrains.rider.plugins.unity.debugger.breakpoints.convertToPausepoin
 import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
-import com.jetbrains.rider.plugins.unity.util.getUnityWithProjectArgs
+import com.jetbrains.rider.plugins.unity.util.getUnityArgs
+import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
 import com.jetbrains.rider.test.asserts.shouldNotBeNull
@@ -113,7 +113,8 @@ fun allowUnityPathVfsRootAccess(lifetimeDefinition: LifetimeDefinition) {
 }
 
 fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): ProcessHandle {
-    val args = mutableListOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests")
+    val args = getUnityArgs(project).withProjectPath(project)
+    args.addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests"))
     if (batchMode) {
         args.add("-batchMode")
     }
@@ -128,6 +129,17 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
     if (useRiderTestPath) {
         args.add("-riderTestPath")
     }
+
+    val relPath = when {
+        SystemInfo.isWindows -> "net461/rider-dev.app/rider-dev.bat"
+        SystemInfo.isMac -> "net461/rider-dev.app"
+        else -> throw Exception("Not implemented")
+    }
+    val cwd = File(System.getProperty("user.dir"))
+    val riderPath = cwd.parentFile.resolve("unity/build/EditorPluginNet46/bin").listFiles()
+        .filter { a-> (a.name=="Debug"|| a.name=="Release") && a.isDirectory }.single().toPath().resolve(relPath)
+        .toString()
+    args.addAll(arrayOf("-riderPath", riderPath))
 
     if (TeamCityHelper.isUnderTeamCity) {
         val login = System.getenv("unity.login")
@@ -161,7 +173,7 @@ fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEdit
 //            getUnityProcessHandle(project)
             throw NotImplementedError()
         }
-        else -> StartUnityAction.startUnity(project, *args.toTypedArray())?.toHandle()
+        else -> StartUnityAction.startUnity(args)?.toHandle()
     }
     assertNotNull(processHandle, "Unity process wasn't started")
     frameworkLogger.info("Unity process started [pid: ${processHandle.pid()}]")
@@ -210,6 +222,11 @@ fun BaseTestWithSolution.withUnityProcess(
 }
 
 fun installPlugin(project: Project) {
+    val unityVersion: String? = UnityInstallationFinder.getInstance(project).getApplicationVersion(2)
+    if (unityVersion != null && VersionComparatorUtil.compare(unityVersion, "2019.2") >= 0) {
+        frameworkLogger.info("Unity version $unityVersion, no need to install EditorPlugin.")
+        return
+    }
     frameworkLogger.info("Trying to install editor plugin")
     project.solution.frontendBackendModel.installEditorPlugin.fire(Unit)
 

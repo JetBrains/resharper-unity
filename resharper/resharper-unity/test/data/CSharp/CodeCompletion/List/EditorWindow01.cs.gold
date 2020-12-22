@@ -1,6 +1,7 @@
-﻿# 1130 ITEMS #
+﻿# 1131 ITEMS #
 
 + private Awake() { ... }
+private CreateGUI() { ... }
 private OnDestroy() { ... }
 private OnDisable() { ... }
 private OnEnable() { ... }
@@ -1131,9 +1132,10 @@ public override GetExtraPaneTypes() { … }    IEnumerable<Type>
 public override GetHashCode() { … }    int
 public override ToString() { … }    string
 # AUTOMATIC #
-# 1130 ITEMS #
+# 1131 ITEMS #
 
 + private Awake() { ... }
+private CreateGUI() { ... }
 private OnDestroy() { ... }
 private OnDisable() { ... }
 private OnEnable() { ... }

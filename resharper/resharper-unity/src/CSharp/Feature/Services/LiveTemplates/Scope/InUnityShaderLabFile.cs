@@ -7,6 +7,7 @@ using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplates.Scope
 {
+    // TODO: Move this to the ShaderLab folder hierarchy
     public class InUnityShaderLabFile : InAnyLanguageFile, IMainScopePoint
     {
         private static readonly Guid DefaultUID = new Guid("ED25967E-EAEA-47CC-AB3C-C549C5F3F378");

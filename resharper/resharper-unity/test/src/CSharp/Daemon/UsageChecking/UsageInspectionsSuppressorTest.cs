@@ -7,7 +7,9 @@ using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Daemon.UsageChecking
 {
-    [TestUnity]
+    // Require 2020.1 to test suppressing Dictionary<string, string> as a field
+    // TODO: Create separate tests for serialisation logic
+    [TestUnity(UnityVersion.Unity2020_1)]
     public class UsageInspectionsSuppressorTest : UsageCheckBaseTest
     {
         protected override string RelativeTestDataPath => @"CSharp\Daemon\UsageChecking";

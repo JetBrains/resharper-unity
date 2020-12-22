@@ -46,12 +46,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     return true;
                 }
 
-                if (myUnityApi.IsInjectedField(declaredElement))
-                {
-                    AddECSHighlighting(consumer, field, displayText, "This field is injected by Unity", kind);
-                    return true;
-                }
-
                 AddSerializableHighlighting(consumer, field, displayText, "This field is serialized by Unity", kind);
                 return false;
             }
@@ -60,18 +54,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         protected virtual void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            DaemonProcessKind kind)
-        {
-            AddHighlighting(consumer, element, text, tooltip, kind);
-        }
-
-        protected virtual void AddScriptableObjectHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            DaemonProcessKind kind)
-        {
-            AddHighlighting(consumer, element, text, tooltip, kind);
-        }
-
-        protected virtual void AddECSHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
             DaemonProcessKind kind)
         {
             AddHighlighting(consumer, element, text, tooltip, kind);

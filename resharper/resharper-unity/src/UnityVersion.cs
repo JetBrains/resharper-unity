@@ -177,6 +177,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
         [CanBeNull]
         public static Version Parse(string input)
         {
+            if (string.IsNullOrEmpty(input))
+                return null;
+            
             const string pattern = @"(?<major>\d+)\.(?<minor>\d+)\.(?<build>\d+)(?<type>[a-z])(?<revision>\d+)";
             var match = Regex.Match(input, pattern);
             var groups = match.Groups;
@@ -204,6 +207,9 @@ namespace JetBrains.ReSharper.Plugins.Unity
 
         public static string VersionToString([NotNull] Version version)
         {
+            if (version == null)
+                throw new ArgumentNullException("version is null.");
+            
             var type = string.Empty;
             var rev = string.Empty;
             try

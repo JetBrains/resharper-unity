@@ -25,6 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\resharper-yaml.csproj" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props')" />
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props" Condition="Exists('$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props')" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Platform_Sdk.Props"/>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_test_Framework.Props"/>
 </Project>
