@@ -60,8 +60,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 return UnityFileTypeThemedIcons.FileUnityMeta.Id;
             if (location.IsControllerFile())
                 return UnityFileTypeThemedIcons.FileAnimatorController.Id;
-            
-            return UnityFileTypeThemedIcons.FileUnity.Id;
+            return location.IsAnimFile() 
+                ? UnityFileTypeThemedIcons.FileAnimationClip.Id 
+                : UnityFileTypeThemedIcons.FileUnity.Id;
         }
 
         private string GetPresentablePath(FileSystemPath assetFile)

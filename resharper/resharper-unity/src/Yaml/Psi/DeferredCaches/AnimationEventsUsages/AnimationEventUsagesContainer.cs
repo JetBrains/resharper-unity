@@ -45,7 +45,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
-            return new AnimationUsagesDataElement();
+            return new AnimationUsagesDataElement(sourceFile.GetSolution(), myMetaFileGuidCache);
         }
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
@@ -68,8 +68,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
             foreach (var (functionNameAndGuid, events) in animationElement.FunctionNameAndGuidToEvents)
             {
                 if (events is null) continue;
-                // ReSharper disable once AssignNullToNotNullAttribute
-                for (var i = 0; i < events.Count; i++) myUsagesCount.Remove(functionNameAndGuid);
+                var currentCount = myUsagesCount.GetCount(functionNameAndGuid);
+                var eventsCount = events.Count;
+                myUsagesCount.Add(functionNameAndGuid, eventsCount <= currentCount ? -eventsCount : -currentCount);
                 myUsageToSourceFiles.Remove(functionNameAndGuid, currentAssetSourceFile);
             }
 
@@ -104,47 +105,61 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
             myShellLocks.AssertReadAccessAllowed();
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull]
+        [ItemNotNull]
         public IEnumerable<AnimationUsage> GetEventUsagesFor([NotNull] IPsiSourceFile sourceFile,
-                                                                  [NotNull] IMethod declaredElement)
+                                                             [NotNull] IDeclaredElement declaredElement)
         {
             AssertShellLocks();
-            var boxedGuid = FindGuidOf(declaredElement);
+            if (!(declaredElement is IClrDeclaredElement clrDeclaredElement)) 
+                return EmptyList<AnimationUsage>.Enumerable;
+            var boxedGuid = FindGuidOf(clrDeclaredElement);
             if (!boxedGuid.HasValue) return Enumerable.Empty<AnimationUsage>();
             var pointer = myPointers[sourceFile];
             if (pointer is null) return Enumerable.Empty<AnimationUsage>();
             var element = pointer.GetElement(sourceFile, Id);
-            if (!(element is AnimationUsagesDataElement animatorElement))
-                return Enumerable.Empty<AnimationUsage>();
+            if (!(element is AnimationUsagesDataElement animatorElement)) return Enumerable.Empty<AnimationUsage>();
             return GetEventUsagesFor(animatorElement, declaredElement.ShortName, boxedGuid.Value);
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull]
+        [ItemNotNull]
         private static IEnumerable<AnimationUsage> GetEventUsagesFor([NotNull] AnimationUsagesDataElement element,
-                                                                          [NotNull] string functionName,
-                                                                          Guid guid)
+                                                                     [NotNull] string functionName,
+                                                                     Guid guid)
         {
             return element.FunctionNameAndGuidToEvents.GetValuesSafe(Pair.Of(functionName, guid));
         }
 
-        [NotNull, ItemNotNull]
+        [NotNull]
+        [ItemNotNull]
         public IEnumerable<IPsiSourceFile> GetPossibleFilesWithUsage([NotNull] IDeclaredElement element)
         {
             AssertShellLocks();
-            if (!(element is IMethod method)) return EmptyList<IPsiSourceFile>.Enumerable;
-            var guid = FindGuidOf(method);
+            if (!(element is IClrDeclaredElement clrDeclaredElement)) return EmptyList<IPsiSourceFile>.Enumerable;
+            var guid = FindGuidOf(clrDeclaredElement);
             if (guid == null) return EmptyList<IPsiSourceFile>.Enumerable;
-            return myUsageToSourceFiles.GetValues(Pair.Of(method.ShortName, guid.Value)) ?? 
+            return myUsageToSourceFiles.GetValues(Pair.Of(clrDeclaredElement.ShortName, guid.Value)) ??
                    EmptyList<IPsiSourceFile>.Enumerable;
         }
 
-        
         public int GetEventUsagesCountFor([NotNull] IDeclaredElement element)
         {
             AssertShellLocks();
-            if (!(element is IMethod method)) return 0;
-            var guid = FindGuidOf(method);
-            return guid != null ? myUsagesCount.GetCount(Pair.Of(method.ShortName, guid.Value)) : 0;
+            if (!(element is IClrDeclaredElement clrDeclaredElement)) return 0;
+            var boxedGuid = FindGuidOf(clrDeclaredElement);
+            if (boxedGuid == null) return 0;
+            switch (element)
+            {
+                case IMethod method:
+                    return myUsagesCount.GetCount(Pair.Of(method.ShortName, boxedGuid.Value));
+                case IProperty property:
+                    var guid = boxedGuid.Value;
+                    var getterUsagesCount = myUsagesCount.GetCount(Pair.Of(property.Getter?.ShortName, guid));
+                    var setterUsagesCount = myUsagesCount.GetCount(Pair.Of(property.Setter?.ShortName, guid));
+                    return getterUsagesCount + setterUsagesCount;
+            }
+            return 0;
         }
 
         private Guid? FindGuidOf([NotNull] IClrDeclaredElement declaredElement)

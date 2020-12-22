@@ -5515,10 +5515,26 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.4
+    functionName: F12231
+    data: 
+    objectReferenceParameter: {fileID: 11500000, guid: cf49785b134684007a1f6065b6489e38,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.43333334
     functionName: F12231
     data: 
     objectReferenceParameter: {fileID: 11500000, guid: 4159ead71d380408b9265769c4ecee69,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.5
+    functionName: F12231
+    data: 
+    objectReferenceParameter: {fileID: 11500000, guid: cf49785b134684007a1f6065b6489e38,
       type: 3}
     floatParameter: 0
     intParameter: 0
@@ -5535,6 +5551,38 @@ AnimationClip:
     functionName: F12231
     data: 
     objectReferenceParameter: {fileID: 11500000, guid: 4159ead71d380408b9265769c4ecee69,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.26666668
+    functionName: set_T
+    data:
+    objectReferenceParameter: {fileID: 11500000, guid: 8159ead72d384408b9365769c4ecee65,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.3
+    functionName: set_T
+    data:
+    objectReferenceParameter: {fileID: 11500000, guid: 8159ead72d384408b9365769c4ecee65,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.33333334
+    functionName: get_T
+    data:
+    objectReferenceParameter: {fileID: 11500000, guid: 8159ead72d384408b9365769c4ecee65,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.36666667
+    functionName: get_T
+    data:
+    objectReferenceParameter: {fileID: 11500000, guid: 8159ead72d384408b9365769c4ecee65,
       type: 3}
     floatParameter: 0
     intParameter: 0

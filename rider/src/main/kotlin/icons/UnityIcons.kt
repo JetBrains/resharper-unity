@@ -49,6 +49,7 @@ class UnityIcons {
             val Asset = IconLoader.getIcon("/resharper/UnityFileType/FileUnityAsset.svg", UnityIcons::class.java)
             val Prefab = IconLoader.getIcon("/resharper/UnityFileType/FileUnityPrefab.svg", UnityIcons::class.java)
             val Controller = IconLoader.getIcon("/resharper/UnityFileType/FileAnimatorController.svg", UnityIcons::class.java)
+            val Anim = IconLoader.getIcon("/resharper/UnityFileType/FileAnimationClip.svg", UnityIcons::class.java)
 
             // These are front end only file types
             val Uss = IconLoader.getIcon("/Icons/fileTypes/uss.svg", UnityIcons::class.java)

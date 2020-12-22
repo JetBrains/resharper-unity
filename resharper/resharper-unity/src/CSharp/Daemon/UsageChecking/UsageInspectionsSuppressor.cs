@@ -61,8 +61,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     return true;
 
                 case IMethod method:
-                    // flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
-                    // return true;
                     var function = unityApi.GetUnityEventFunction(method, out var match);
                     if (function != null)
                     {
@@ -73,11 +71,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                                 : ImplicitUseKindFlags.Access;
                             return true;
                         }
-                        
+
                         return false;
                     }
-                    
-                    if (IsEventHandler(unityApi, method) || IsRequiredSignatureMethod(method))
+
+                    if (IsEventHandler(unityApi, method) ||
+                        IsRequiredSignatureMethod(method) ||
+                        IsAnimationEvent(solution, method))
                     {
                         flags = ImplicitUseKindFlags.Access;
                         return true;
@@ -88,13 +88,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
 
-                case IProperty property when IsEventHandler(unityApi, property.Setter) || IsImplicitlyUsedInterfaceProperty(property):
+                case IProperty property when IsEventHandler(unityApi, property.Setter) ||
+                                             IsImplicitlyUsedInterfaceProperty(property) ||
+                                             IsAnimationEvent(solution, property):
                     flags = ImplicitUseKindFlags.Assign;
                     return true;
             }
 
             flags = ImplicitUseKindFlags.Default; // Value not used if we return false
             return false;
+        }
+
+        private static bool IsAnimationEvent(ISolution solution, IDeclaredElement property)
+        {
+            return solution.GetComponent<AnimationEventUsagesContainer>().GetEventUsagesCountFor(property) > 0;
         }
 
         private bool IsImplicitlyUsedInterfaceType(ITypeElement typeElement)
@@ -161,10 +168,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             var eventsCount = solution
                 .GetComponent<UnityEventsElementContainer>()
                 .GetAssetUsagesCount(method, out bool estimatedResult);
-            var animationEventsCount = solution
-                .GetComponent<AnimationEventUsagesContainer>()
-                .GetEventUsagesCountFor(method);
-            return eventsCount + animationEventsCount > 0 || estimatedResult;
+            return eventsCount > 0 || estimatedResult;
         }
 
         // If the method is marked with an attribute that has a method that is itself marked with RequiredSignature,

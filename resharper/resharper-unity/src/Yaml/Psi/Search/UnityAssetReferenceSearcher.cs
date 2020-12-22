@@ -53,18 +53,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 
             foreach (var element in myElements)
             {
-                if (element is IMethod method)
+                if (element is IMethod || element is IProperty)
                 {
-                    var animationEventUsages = myAnimationEventUsagesContainer.GetEventUsagesFor(sourceFile, method);
+                    var animationEventUsages = myAnimationEventUsagesContainer.GetEventUsagesFor(sourceFile, element);
                     foreach (var usage in animationEventUsages)
                     {
                         var occurence = new UnityAnimationEventFindResults(sourceFile, element, usage, usage.Location);
                         consumer.Accept(occurence);
                     }
-                }
-                
-                if (element is IMethod || element is IProperty)
-                {
+
                     var usages = myUnityEventsElementContainer.GetAssetUsagesFor(sourceFile, element);
                     foreach (var findResult in usages)
                     {
