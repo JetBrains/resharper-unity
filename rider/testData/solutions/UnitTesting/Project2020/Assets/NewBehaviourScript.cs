@@ -2,6 +2,12 @@
 
 public class NewBehaviourScript : MonoBehaviour
 {
+
+    private void Start()
+    {
+        Debug.Log("Start");
+    }
+
     void Update()
     {
          // check that C# LangLevel is 7.3, fails if it is 7.1
