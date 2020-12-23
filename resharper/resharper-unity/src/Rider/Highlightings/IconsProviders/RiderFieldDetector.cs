@@ -49,18 +49,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
         protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
                                                              string text,
-                                                             string tooltip, DaemonProcessKind kind)
+                                                             string tooltip, IReadOnlyContext context)
         {
             if (!myAssetSerializationMode.IsForceText ||
                 !SettingsStore.BoundSettingsStore.GetValue((UnitySettings key) => key.EnableInspectorPropertiesEditor) ||
                 !SettingsStore.BoundSettingsStore.GetValue((UnitySettings key) => key.IsAssetIndexingEnabled))
             {
-                AddHighlighting(consumer, element, text, tooltip, kind);
+                AddHighlighting(consumer, element, text, tooltip, context);
                 return;
             }
 
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myFieldUsageProvider.ProviderId,
-                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
+                () => { base.AddHighlighting(consumer, element, text, tooltip, context); }, out var useFallback))
             {
                 if (!useFallback)
                 {
@@ -78,10 +78,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
             string tooltip,
-            DaemonProcessKind kind)
+            IReadOnlyContext context)
         {
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myFieldUsageProvider.ProviderId,
-                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
+                () => { base.AddHighlighting(consumer, element, text, tooltip, context); }, out var useFallback))
             {
                 if (!useFallback)
                 {

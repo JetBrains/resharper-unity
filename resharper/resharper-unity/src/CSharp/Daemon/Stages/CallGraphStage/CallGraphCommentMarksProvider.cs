@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.Diagnostics;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -11,21 +11,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
     public abstract class CallGraphCommentMarksProvider : CallGraphRootMarksProviderBase
     {
-        protected CallGraphCommentMarksProvider(string name, ICallGraphPropagator propagator, bool isEnabled = true)
+        private readonly string myNameToFind;
+
+        protected CallGraphCommentMarksProvider(string nameToFind, string name, ICallGraphPropagator propagator, bool isEnabled = true)
             : base(name, propagator, isEnabled)
         {
+            myNameToFind = nameToFind;
         }
 
         public bool HasMarkComment(ITreeNode node, out bool isMarked)
         {
-            return UnityCallGraphUtil.HasAnalysisComment(Name, node, out isMarked);
+            var commentToFind = myNameToFind;
+            
+            return UnityCallGraphUtil.HasAnalysisComment(commentToFind, node, out isMarked);
         }
 
         private LocalList<IDeclaredElement> GetDeclaredElement([NotNull] ITreeNode node, bool isMarked)
         {
             var result = new LocalList<IDeclaredElement>();
 
-            if (HasMarkComment(node, out var unbanned) && unbanned == isMarked)
+            if (HasMarkComment(node, out var marked) && marked == isMarked)
             {
                 var methodDeclaration = node as IMethodDeclaration;
                 var declaredElement = methodDeclaration?.DeclaredElement;

@@ -15,8 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnaly
     [SolutionComponent]
     public class SharedStaticUnmanagedAnalyzer : CommonProblemAnalyzerBase<IInvocationExpression>
     {
-        protected override void Analyze(IInvocationExpression invocationExpression, IDaemonProcess daemonProcess,
-            DaemonProcessKind kind, IHighlightingConsumer consumer, IReadOnlyContext context)
+        protected override void Analyze(IInvocationExpression invocationExpression, IHighlightingConsumer consumer,
+            IReadOnlyContext context)
         {
             var invokedMethod = invocationExpression.Reference.Resolve().DeclaredElement as IMethod;
             

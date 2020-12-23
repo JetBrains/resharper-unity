@@ -11,6 +11,7 @@ using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.Application.UI.Help;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Psi;
@@ -40,7 +41,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public virtual void AddEventFunctionHighlighting(IHighlightingConsumer consumer, IMethod method,
-            UnityEventFunction eventFunction, string text, DaemonProcessKind kind)
+            UnityEventFunction eventFunction, string text, IReadOnlyContext context)
         {
             foreach (var declaration in method.GetDeclarations())
             {
@@ -49,17 +50,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
                     consumer.AddHotHighlighting(PerformanceContextProvider, cSharpDeclaration,
                         SettingsStore.BoundSettingsStore, text,
-                        GetEventFunctionTooltip(eventFunction), kind, GetEventFunctionActions(cSharpDeclaration));
+                        GetEventFunctionTooltip(eventFunction), context, GetEventFunctionActions(cSharpDeclaration));
                 }
             }
         }
 
         public virtual void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer,
             ICSharpDeclaration cSharpDeclaration,
-            string text, string tooltip, DaemonProcessKind processKind)
+            string text, string tooltip, IReadOnlyContext context)
         {
+            // CGTD 
             consumer.AddHotHighlighting(PerformanceContextProvider, cSharpDeclaration,
-                SettingsStore.BoundSettingsStore, text, tooltip, processKind, EnumerableCollection<BulbMenuItem>.Empty, true);
+                SettingsStore.BoundSettingsStore, text, tooltip, context, EnumerableCollection<BulbMenuItem>.Empty, true);
         }
 
         protected IEnumerable<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration)

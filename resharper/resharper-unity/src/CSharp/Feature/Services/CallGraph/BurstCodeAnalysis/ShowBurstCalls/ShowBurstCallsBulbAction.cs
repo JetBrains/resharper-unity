@@ -28,8 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
                 
                 var referenceElement = result.ReferenceElement;
                 var containing = (referenceElement as ICSharpTreeNode)?.GetContainingFunctionLikeDeclarationOrClosure();
+                var declaredElement = containing?.DeclaredElement;
 
-                return burstContextProvider.IsMarkedSync(containing);
+                return burstContextProvider.IsMarkedGlobal(declaredElement);
             };
         }
 

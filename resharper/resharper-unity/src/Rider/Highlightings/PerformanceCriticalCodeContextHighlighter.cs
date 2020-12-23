@@ -7,7 +7,6 @@ using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CaretDependentFeatures;
 using JetBrains.ReSharper.Feature.Services.Contexts;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
@@ -46,14 +45,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings
                 return;
             
             var solution = psiDocumentRangeView.Solution;
-            var contextProvider = solution.GetComponent<PerformanceCriticalContextProvider>();
             var settingsStore = psiDocumentRangeView.GetSettingsStore();
 
             if (settingsStore.GetValue((UnitySettings key) => key.PerformanceHighlightingMode) !=
                 PerformanceHighlightingMode.CurrentMethod)
                 return;
+            
+            var contextProvider = solution.GetComponent<PerformanceCriticalContextProvider>();
+            var swea = solution.GetComponent<SolutionAnalysisService>();
+            var declaredElement = node.DeclaredElement;
 
-            if (contextProvider.IsMarkedSwea(node))
+            if (contextProvider.IsMarkedSweaDependent(declaredElement, swea))
                 consumer.ConsumeHighlighting(new UnityPerformanceContextHighlightInfo(node.GetDocumentRange()));
         }
     }

@@ -7,16 +7,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
     public abstract class CallGraphProblemAnalyzerBase<T> : ICallGraphProblemAnalyzer where T : ITreeNode
     {
-        public void RunInspection(ITreeNode node, IDaemonProcess daemonProcess, DaemonProcessKind kind,
-            IHighlightingConsumer consumer, IReadOnlyContext context)
+        public void RunInspection(ITreeNode node, IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             if (node is T t && IsApplicable(context))
-                Analyze(t, daemonProcess, kind, consumer, context);
+                Analyze(t, consumer, context);
         }
 
         protected abstract bool IsApplicable(IReadOnlyContext context);
 
-        protected abstract void Analyze([NotNull] T t, IDaemonProcess daemonProcess, DaemonProcessKind kind,
+        protected abstract void Analyze([NotNull] T t,
             [NotNull] IHighlightingConsumer consumer, IReadOnlyContext context);
     }
 }

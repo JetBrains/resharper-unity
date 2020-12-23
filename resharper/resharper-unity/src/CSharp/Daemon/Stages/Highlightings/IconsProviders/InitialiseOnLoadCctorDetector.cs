@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         {
         }
 
-        public override bool AddDeclarationHighlighting(IDeclaration node, IHighlightingConsumer consumer, DaemonProcessKind kind)
+        public override bool AddDeclarationHighlighting(IDeclaration node, IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             if (!(node is IConstructorDeclaration element))
                 return false;
@@ -35,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 containingType.HasAttributeInstance(KnownTypes.InitializeOnLoadAttribute, false))
             {
                 AddHighlighting(consumer, element, "Used implicitly",
-                    "Called when Unity first launches the editor, the player, or recompiles scripts", kind);
+                    "Called when Unity first launches the editor, the player, or recompiles scripts", context);
                 return true;
             }
 

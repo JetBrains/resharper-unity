@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 .GetValueProperty(lifetime, (UnitySettings key) => key.PerformanceHighlightingMode);
         }
 
-        protected override void Analyze(IFunctionDeclaration t, IDaemonProcess daemonProcess, DaemonProcessKind kind,
+        protected override void Analyze(IFunctionDeclaration t,
             IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)

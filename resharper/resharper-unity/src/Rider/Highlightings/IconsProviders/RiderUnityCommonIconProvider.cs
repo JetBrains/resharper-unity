@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -56,16 +56,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                                           IMethod method, 
                                                           UnityEventFunction eventFunction,
                                                           string text, 
-                                                          DaemonProcessKind kind)
+                                                          IReadOnlyContext context)
         {
             var boundStore = SettingsStore.BoundSettingsStore;
             var providerId = myCodeInsightProvider.ProviderId;
-            void Fallback() => base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, kind);
+            void Fallback() => base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, context);
             
             if (!RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out var useFallback))
                 return;
 
-            var iconId = method.HasHotIcon(PerformanceContextProvider, boundStore, kind)
+            var iconId = method.HasHotIcon(PerformanceContextProvider, boundStore, context)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
             var iconModel = myIconHost.Transform(iconId);
@@ -87,20 +87,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         }
 
         public override void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer,
-            ICSharpDeclaration cSharpDeclaration, string text, string tooltip, DaemonProcessKind processKind)
+            ICSharpDeclaration cSharpDeclaration, string text, string tooltip, IReadOnlyContext context)
         { 
             var boundStore = SettingsStore.BoundSettingsStore;
             
-            if (!cSharpDeclaration.HasHotIcon(PerformanceContextProvider, boundStore, processKind))
+            if (!cSharpDeclaration.HasHotIcon(PerformanceContextProvider, boundStore, context))
                 return;
 
-            void Fallback() => base.AddFrequentlyCalledMethodHighlighting(consumer, cSharpDeclaration, text, tooltip, processKind);
+            void Fallback() => base.AddFrequentlyCalledMethodHighlighting(consumer, cSharpDeclaration, text, tooltip, context);
             var providerId = myCodeInsightProvider.ProviderId;
             
             if (!RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out _))
                 return;
 
-            var actions = GetActions(cSharpDeclaration, processKind);
+            var actions = GetActions(cSharpDeclaration, context);
             var extraActions = RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost);
             var iconModel = myIconHost.Transform(InsightUnityIcons.InsightHot.Id);
 
@@ -108,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 text, tooltip, text, iconModel, actions, extraActions);
         }
         
-        private IEnumerable<BulbMenuItem> GetActions(ICSharpDeclaration declaration, DaemonProcessKind kind)
+        private IEnumerable<BulbMenuItem> GetActions(ICSharpDeclaration declaration, IReadOnlyContext context)
         {
             if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
                 return GetEventFunctionActions(declaration);
@@ -121,7 +121,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
             foreach (var provider in myMenuItemProviders)
             {
-                var menuItems = provider.GetMenuItems(methodDeclaration, textControl, kind);
+                var menuItems = provider.GetMenuItems(methodDeclaration, textControl, context);
 
                 foreach (var item in menuItems)
                     result.Add(item);

@@ -27,8 +27,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
                 
                 var referenceElement = result.ReferenceElement;
                 var containing = (referenceElement as ICSharpTreeNode)?.GetContainingFunctionLikeDeclarationOrClosure();
+                var declaredElement = containing?.DeclaredElement;
 
-                return performanceCriticalContextProvider.IsMarkedSync(containing);
+                return performanceCriticalContextProvider.IsMarkedGlobal(declaredElement);
             };
         }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
@@ -19,9 +20,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
             myExpensiveContextProvider = expensiveContextProvider;
         }
 
-        protected override bool CheckCallGraph(IMethodDeclaration methodDeclaration, DaemonProcessKind processKind)
+        protected override bool CheckCallGraph(IMethodDeclaration methodDeclaration, IReadOnlyContext context)
         {
-            return myExpensiveContextProvider.IsMarkedStage(methodDeclaration, processKind);
+            var declaredElement = methodDeclaration.DeclaredElement;
+            
+            return myExpensiveContextProvider.IsMarkedStage(declaredElement, context);
         }
         
         protected override IEnumerable<IBulbAction> GetActions(IMethodDeclaration methodDeclaration)

@@ -18,12 +18,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             myContextProvider = contextProvider;
         }
 
-        protected override void Analyze(IInvocationExpression expression, IDaemonProcess daemonProcess,
-            DaemonProcessKind kind, IHighlightingConsumer consumer, IReadOnlyContext context)
+        protected override void Analyze(IInvocationExpression expression, IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             var callee = CallGraphUtil.GetCallee(expression);
             
-            if (myContextProvider.IsMarkedStage(callee, kind))
+            if (myContextProvider.IsMarkedStage(callee, context))
                 CreateHighlighting(expression, consumer);
         }
 

@@ -3,11 +3,9 @@ using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
-using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
-using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi;
@@ -21,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
     public static class UnityCallGraphUtil
     {
         [ContractAnnotation("null => false")]
-        public static bool IsFunctionNode(ITreeNode node)
+        public static bool IsFunctionNode([CanBeNull] ITreeNode node)
         {
             switch (node)
             {
@@ -32,12 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
                     return false;
             }
         }
-
-        public static bool IsSweaCompleted([NotNull] SolutionAnalysisService solutionAnalysisService)
-        {
-            return solutionAnalysisService.Configuration?.Completed?.Value == true;
-        }
-
+        
         public const string PerformanceAnalysisComment = "Unity.PerformanceAnalysis";
 
         public static bool IsQualifierOpenType(IInvocationExpression invocationExpression)

@@ -21,15 +21,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public static bool HasHotIcon(this ICSharpDeclaration element, PerformanceCriticalContextProvider contextProvider,
-            IContextBoundSettingsStore settingsStore, DaemonProcessKind kind)
+            IContextBoundSettingsStore settingsStore, IReadOnlyContext context)
         {
             var declaredElement = element.DeclaredElement;
             
-            return declaredElement.HasHotIcon(contextProvider, settingsStore, kind);
+            return declaredElement.HasHotIcon(contextProvider, settingsStore, context);
         }
 
         public static bool HasHotIcon(this IDeclaredElement element, PerformanceCriticalContextProvider contextProvider,
-            IContextBoundSettingsStore settingsStore, DaemonProcessKind kind)
+            IContextBoundSettingsStore settingsStore, IReadOnlyContext context)
         {
             if (element == null)
                 return false;
@@ -37,17 +37,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             if (!settingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode))
                 return false;
 
-            return contextProvider.IsMarkedStage(element, kind);
+            return contextProvider.IsMarkedStage(element, context);
         }
         
         public static void AddHotHighlighting(this IHighlightingConsumer consumer,
                                               PerformanceCriticalContextProvider contextProvider,
                                               ICSharpDeclaration element,
                                               IContextBoundSettingsStore settings, string text,
-                                              string tooltip, DaemonProcessKind kind, IEnumerable<BulbMenuItem> items,
+                                              string tooltip, IReadOnlyContext context, IEnumerable<BulbMenuItem> items,
                                               bool onlyHot = false)
         {
-            var isIconHot = element.HasHotIcon(contextProvider, settings, kind);
+            var isIconHot = element.HasHotIcon(contextProvider, settings, context);
 
             if (onlyHot && !isIconHot)
                 return;

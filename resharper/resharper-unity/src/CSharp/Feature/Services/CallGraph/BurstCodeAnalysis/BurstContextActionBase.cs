@@ -1,7 +1,9 @@
 using JetBrains.Annotations;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
@@ -10,11 +12,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
     public abstract class BurstContextActionBase : CallGraphContextActionBase
     {
         private readonly BurstContextProvider myBurstContextProvider;
+        private readonly SolutionAnalysisService mySolutionAnalysisService;
 
         protected BurstContextActionBase([NotNull] ICSharpContextActionDataProvider dataProvider)
             : base(dataProvider)
         {
             myBurstContextProvider = dataProvider.Solution.GetComponent<BurstContextProvider>();
+            mySolutionAnalysisService = dataProvider.Solution.GetComponent<SolutionAnalysisService>();
         }
 
         protected sealed override bool IsAvailable(IUserDataHolder holder, IMethodDeclaration methodDeclaration)
@@ -24,7 +28,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
 
         protected sealed override bool ShouldCreate(IMethodDeclaration containingMethod)
         {
-            return myBurstContextProvider.IsMarkedSwea(containingMethod);
+            var declaredElement = containingMethod.DeclaredElement;
+            
+            return myBurstContextProvider.IsMarkedSweaDependent(declaredElement, mySolutionAnalysisService);
         }
     }
 }

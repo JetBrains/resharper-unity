@@ -43,8 +43,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         protected override void Analyze(IMethodDeclaration methodDeclaration,
-            IDaemonProcess daemonProcess,
-            DaemonProcessKind kind,
             IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             var boundStore = mySettingsStore.BoundSettingsStore;
@@ -55,7 +53,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
             var declaredElement = methodDeclaration.DeclaredElement;
             var iconModel = myIconHost.Transform(InsightUnityIcons.InsightUnity.Id);
-            var actions = GetBurstActions(methodDeclaration, kind);
+            var actions = GetBurstActions(methodDeclaration, context);
 
             myCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement,
                 BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
@@ -74,14 +72,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         [NotNull]
         [ItemNotNull]
-        private IEnumerable<BulbMenuItem> GetBurstActions([NotNull] IMethodDeclaration methodDeclaration, DaemonProcessKind processKind)
+        private IEnumerable<BulbMenuItem> GetBurstActions([NotNull] IMethodDeclaration methodDeclaration, IReadOnlyContext context)
         {
             var result = new CompactList<BulbMenuItem>();
             var textControl = myTextControlManager.LastFocusedTextControl.Value;
             
             foreach (var bulbProvider in myBulbProviders)
             {
-                var menuItems = bulbProvider.GetMenuItems(methodDeclaration, textControl, processKind);
+                var menuItems = bulbProvider.GetMenuItems(methodDeclaration, textControl, context);
                 
                 foreach(var item in menuItems)
                     result.Add(item);

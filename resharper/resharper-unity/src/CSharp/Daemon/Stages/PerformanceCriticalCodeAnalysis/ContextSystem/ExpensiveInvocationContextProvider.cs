@@ -1,3 +1,5 @@
+using JetBrains.Application.Settings;
+using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
@@ -5,37 +7,31 @@ using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph;
-using JetBrains.ReSharper.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem
 {
     [SolutionComponent]
-    public sealed class ExpensiveInvocationContextProvider : PerformanceAnalysisContextProviderBase
+    public sealed class ExpensiveInvocationContextProvider : CallGraphContextProviderBase
     {
+        private readonly IProperty<bool> myIsPerformanceAnalysisEnabledProperty;
+
         public ExpensiveInvocationContextProvider(
             Lifetime lifetime,
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             IElementIdProvider elementIdProvider,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            ExpensiveCodeMarksProvider marksProviderBase,
-            SolutionAnalysisService service)
-            : base(lifetime, elementIdProvider, applicationWideContextBoundSettingStore, callGraphSwaExtensionProvider,
-                marksProviderBase, service)
+            ExpensiveCodeMarksProvider marksProviderBase)
+            : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
+            myIsPerformanceAnalysisEnabledProperty =
+                applicationWideContextBoundSettingStore.BoundSettingsStore.GetValueProperty(lifetime,
+                    (UnitySettings s) => s.EnablePerformanceCriticalCodeHighlighting);
         }
 
-        public override CallGraphContextElement Context => CallGraphContextElement.EXPENSIVE_CONTEXT;
+        public override bool IsContextAvailable => myIsPerformanceAnalysisEnabledProperty.Value;
 
-        protected override bool CheckDeclaredElement(IDeclaredElement element, out bool isMarked)
-        {
-            if (element is IMethod method && PerformanceCriticalCodeStageUtil.IsInvokedElementExpensive(method))
-            {
-                isMarked = true;
-                return true;
-            }
-
-            return base.CheckDeclaredElement(element, out isMarked);
-        }
+        public override CallGraphContextTag ContextTag => CallGraphContextTag.EXPENSIVE_CONTEXT;
     }
 }

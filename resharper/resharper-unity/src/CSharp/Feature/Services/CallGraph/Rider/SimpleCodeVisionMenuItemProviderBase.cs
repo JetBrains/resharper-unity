@@ -4,10 +4,10 @@ using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
@@ -23,10 +23,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Ri
             mySolution = solution;
         }
 
-        public IEnumerable<BulbMenuItem> GetMenuItems(IMethodDeclaration methodDeclaration, ITextControl textControl, DaemonProcessKind processKind)
+        public IEnumerable<BulbMenuItem> GetMenuItems(IMethodDeclaration methodDeclaration, ITextControl textControl, IReadOnlyContext context)
         {
             methodDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
-            if (!CheckCallGraph(methodDeclaration, processKind))
+            
+            if (!CheckCallGraph(methodDeclaration, context))
                 return EmptyList<BulbMenuItem>.Enumerable;
             
             var bulbActions = GetActions(methodDeclaration);
@@ -42,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Ri
             return result.ResultingList();
         }
 
-        protected virtual bool CheckCallGraph([NotNull] IMethodDeclaration methodDeclaration, DaemonProcessKind processKind) => true;
+        protected virtual bool CheckCallGraph([NotNull] IMethodDeclaration methodDeclaration, IReadOnlyContext context) => true;
 
         protected abstract IEnumerable<IBulbAction> GetActions([NotNull] IMethodDeclaration methodDeclaration);
     }

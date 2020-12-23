@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class NullComparisonWithUnityObjectProblemAnalyzer : PerformanceProblemAnalyzerBase<IEqualityExpression>
     {
-        protected override void Analyze(IEqualityExpression equalityExpression, IDaemonProcess daemonProcess, DaemonProcessKind kind,
+        protected override void Analyze(IEqualityExpression equalityExpression,
             IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             if (PerformanceCriticalCodeStageUtil.IsNullComparisonWithUnityObject(equalityExpression, out var name))
