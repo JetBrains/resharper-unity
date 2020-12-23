@@ -1,5 +1,9 @@
-... found)
-            [Base Layer  (6 usages found)
+[Search target
+    Behaviour
+Found usages  (6 usages found)
+    Assets  (6 usages found)
+        Controller.controller  (6 usages found)
+            Base Layer  (6 usages found)
                 NestedStateMachine  (4 usages found)
                     DoublyNestedStateMachine  (2 usages found)
                         DoublyNestedState  (1 usage found)
