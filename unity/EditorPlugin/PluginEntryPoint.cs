@@ -804,20 +804,6 @@ namespace JetBrains.Rider.Unity.Editor
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
     }
 
-    /// <summary>
-    /// Called when Unity is about to open an asset. This method is new for 2019.2
-    /// </summary>
-    //[OnOpenAsset] // todo: restore, when we move this code to package, otherwise when OnOpenedAsset is called, there is a LogError in older Unity
-    static bool OnOpenedAsset(int instanceID, int line, int column)
-    {
-      if (!IsRiderDefaultEditor())
-        return false;
-
-      if (UnityUtils.UnityVersion < new Version(2019, 2))
-        return false;
-      return OpenAssetHandler.OnOpenedAsset(instanceID, line, column);
-    }
-
     public static bool IsLoadedFromAssets()
     {
       var currentDir = Directory.GetCurrentDirectory();
