@@ -13,7 +13,7 @@ namespace Editor
         private static bool myChanged;
         private static object myLockObject = new Object();
 
-        private static string myEditorPluginFolder = Path.Combine(Application.dataPath, "Plugins", "Editor", "JetBrains");
+        private static string myEditorPluginFolder = Path.Combine(Application.dataPath, "Plugins/Editor/JetBrains");
         private static string myEditorPlugin = Path.Combine(myEditorPluginFolder, "JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll");
 
         public static void Start()

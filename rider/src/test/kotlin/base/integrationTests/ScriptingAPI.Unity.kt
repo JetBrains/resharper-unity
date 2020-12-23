@@ -31,6 +31,7 @@ import com.jetbrains.rider.plugins.unity.isConnectedToEditor
 import com.jetbrains.rider.plugins.unity.run.DefaultRunConfigurationGenerator
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.plugins.unity.util.getUnityArgs
+import com.jetbrains.rider.plugins.unity.util.withDebugCodeOptimization
 import com.jetbrains.rider.plugins.unity.util.withProjectPath
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.services.popups.nova.headless.NullPrintStream
@@ -113,7 +114,7 @@ fun allowUnityPathVfsRootAccess(lifetimeDefinition: LifetimeDefinition) {
 }
 
 fun startUnity(project: Project, logPath: File, withCoverage: Boolean, resetEditorPrefs: Boolean, useRiderTestPath: Boolean, batchMode: Boolean): ProcessHandle {
-    val args = getUnityArgs(project).withProjectPath(project)
+    val args = getUnityArgs(project).withProjectPath(project).withDebugCodeOptimization()
     args.addAll(arrayOf("-logfile", logPath.toString(), "-silent-crashes", "-riderIntegrationTests"))
     if (batchMode) {
         args.add("-batchMode")
