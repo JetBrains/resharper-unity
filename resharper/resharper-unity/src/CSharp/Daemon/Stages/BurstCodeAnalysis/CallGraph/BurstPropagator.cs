@@ -33,6 +33,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (strict.Contains(vertex))
                 return false;
 
+            if (rootMarks.Contains(vertex))
+                return true;
+
             // method has no managed code
             if (banMarks.Contains(vertex) == false)
                 return base.IsMarkedGlobal(structure, rootMarks, banMarks, vertex);

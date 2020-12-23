@@ -2,6 +2,7 @@ using System;
 using Unity.Burst;
 using Unity.Jobs;
 using UnityEngine;
+using Unity.Jobs.LowLevel.Unsafe;
 
 namespace UnityEngine
 {
