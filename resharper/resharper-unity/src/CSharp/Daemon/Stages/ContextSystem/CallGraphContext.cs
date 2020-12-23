@@ -1,36 +1,46 @@
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Daemon.CallGraph;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Psi.Tree;
+using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
     public interface IReadOnlyContext
     {
-        CallGraphContextElement CurrentContext { get; }
-        bool ContainAny(CallGraphContextElement another);
-        bool IsSuperSetOf(CallGraphContextElement another);
+        DaemonProcessKind Kind { get; }
+        [NotNull]
+        IDaemonProcess DaemonProcess { get; }
+        [CanBeNull]
+        CallGraphDataElement DataElement { get; }
+        CallGraphContextTag CurrentContext { get; }
+        bool ContainAny(CallGraphContextTag another);
+        bool IsSuperSetOf(CallGraphContextTag another);
     }
 
     public sealed class CallGraphContext : IReadOnlyContext
     {
-        private readonly struct BoundContextElement
-        {
-            public readonly CallGraphContextElement Context;
-            public readonly ITreeNode Node;
+        private readonly DaemonProcessKind myProcessKind;
+        [NotNull] private readonly IDaemonProcess myDaemonProcess;
+        [CanBeNull] private readonly CallGraphDataElement myGraphDataElement;
+        [NotNull] private readonly Stack<BoundContextTag> myStack = new Stack<BoundContextTag>();
 
-            public BoundContextElement(CallGraphContextElement context, ITreeNode node)
+        public CallGraphContext(DaemonProcessKind processKind, [NotNull] IDaemonProcess daemonProcess)
+        {
+            myProcessKind = processKind;
+            myDaemonProcess = daemonProcess;
+
+            if (processKind == DaemonProcessKind.VISIBLE_DOCUMENT)
             {
-                Context = context;
-                Node = node;
+                var collectUsageProcess = daemonProcess.GetStageProcess<CollectUsagesStageProcess>().NotNull();
+                myGraphDataElement = collectUsageProcess.SwaExtensionsUsageDataInfo[CallGraphSwaExtensionProvider.Id].As<CallGraphDataElement>();
             }
-        }
-        
-        private readonly Stack<BoundContextElement> myStack = new Stack<BoundContextElement>();
 
-        public CallGraphContext()
-        {
-            myStack.Push(new BoundContextElement(CallGraphContextElement.NONE, null));
+            myStack.Push(new BoundContextTag(CallGraphContextTag.NONE, null));
         }
 
         public void Rollback([NotNull] ITreeNode node)
@@ -41,10 +51,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             if (boundElement.Node == node)
                 myStack.Pop();
         }
-        
-        public void AdvanceContext([NotNull] ITreeNode node, DaemonProcessKind processKind, [NotNull] IEnumerable<ICallGraphContextProvider> providers)
+
+        private CallGraphContextTag GetNodeContext([NotNull] ITreeNode node, [NotNull] ICallGraphContextProvider contextProvider)
         {
-            var newContext = CallGraphContextElement.NONE;
+            var declaredElement = CallGraphContextProviderEx.ExtractDeclaredElementForProvider(node);
+            
+            if (declaredElement == null)
+                return CallGraphContextTag.NONE;
+            
+            switch (myProcessKind)
+            {
+                case DaemonProcessKind.VISIBLE_DOCUMENT:
+                {
+                    if (contextProvider.IsMarkedLocal(declaredElement, myGraphDataElement))
+                        return contextProvider.ContextTag;
+                    
+                    break;
+                }
+                case DaemonProcessKind.GLOBAL_WARNINGS:
+                {
+                    if (contextProvider.IsMarkedGlobal(declaredElement))
+                        return contextProvider.ContextTag;
+                    
+                    break;
+                }
+            }
+
+            return CallGraphContextTag.NONE;
+        }
+        
+        public void AdvanceContext([NotNull] ITreeNode node, [NotNull] IEnumerable<ICallGraphContextProvider> providers)
+        {
+            var newContext = CallGraphContextTag.NONE;
             var context = myStack.Peek().Context;
             var shouldChange = false;
     
@@ -52,27 +90,30 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             {
                 if (provider.IsContextChangingNode(node))
                 {
-                    newContext |= provider.GetNodeContext(node, processKind);
+                    newContext |= GetNodeContext(node, provider);
                     shouldChange = true;
                 }
-                else if (context.HasFlag(provider.Context))
-                    newContext |= provider.Context;
+                else if (context.HasFlag(provider.ContextTag))
+                    newContext |= provider.ContextTag;
             }
     
             if (shouldChange)
-                myStack.Push(new BoundContextElement(newContext, node));
+                myStack.Push(new BoundContextTag(newContext, node));
         }
 
-        public CallGraphContextElement CurrentContext => myStack.Peek().Context;
+        public DaemonProcessKind Kind => myProcessKind;
+        public IDaemonProcess DaemonProcess => myDaemonProcess;
+        public CallGraphDataElement DataElement => myGraphDataElement;
+        public CallGraphContextTag CurrentContext => myStack.Peek().Context;
 
-        public bool ContainAny(CallGraphContextElement another)
+        public bool ContainAny(CallGraphContextTag another)
         {
             var context = CurrentContext;
             
-            return (context & another) != CallGraphContextElement.NONE;
+            return (context & another) != CallGraphContextTag.NONE;
         }
 
-        public bool IsSuperSetOf(CallGraphContextElement another)
+        public bool IsSuperSetOf(CallGraphContextTag another)
         {
             var context = CurrentContext;
             
@@ -82,7 +123,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             // (context & another) ^ another - `context` bits which are present at `another` became 0,
             // if `another` have any bits that are not present in `context` then expression won't be 0
             // it means that `context` is not superset of `another`
-            return ((context & another) ^ another) == CallGraphContextElement.NONE;
+            return ((context & another) ^ another) == CallGraphContextTag.NONE;
+        }
+
+        private readonly struct BoundContextTag
+        {
+            public readonly CallGraphContextTag Context;
+            public readonly ITreeNode Node;
+
+            public BoundContextTag(CallGraphContextTag context, ITreeNode node)
+            {
+                Context = context;
+                Node = node;
+            }
         }
     }
 

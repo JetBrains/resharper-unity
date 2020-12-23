@@ -6,7 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
     // enum only because changing context with strings is VERY expensive
     [Flags]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public enum CallGraphContextElement : byte
+    public enum CallGraphContextTag : byte
     {
         NONE = 0,
         
@@ -15,12 +15,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
         EXPENSIVE_CONTEXT = 1 << 2
     }
     
-    public static class CallGraphContextElementUtil
+    public static class CallGraphContextTagUtil
     {
         public const int CONTEXTS_COUNT = 3;
 
-        public const CallGraphContextElement ALL = CallGraphContextElement.PERFORMANCE_CRITICAL_CONTEXT |
-                                                   CallGraphContextElement.BURST_CONTEXT | 
-                                                   CallGraphContextElement.EXPENSIVE_CONTEXT;
+        public const CallGraphContextTag ALL = CallGraphContextTag.PERFORMANCE_CRITICAL_CONTEXT |
+                                                   CallGraphContextTag.BURST_CONTEXT | 
+                                                   CallGraphContextTag.EXPENSIVE_CONTEXT;
     }
 }

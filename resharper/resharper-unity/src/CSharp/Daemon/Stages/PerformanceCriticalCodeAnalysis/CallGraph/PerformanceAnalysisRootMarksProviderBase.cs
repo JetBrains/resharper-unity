@@ -1,4 +1,4 @@
-using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
 using JetBrains.ReSharper.Psi;
@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public abstract class PerformanceAnalysisRootMarksProviderBase : CallGraphCommentMarksProvider
     {
         protected PerformanceAnalysisRootMarksProviderBase(string name, ICallGraphPropagator propagator, bool isEnabled = true)
-            : base(name, propagator, isEnabled)
+            : base(name, name, propagator, isEnabled)
         {
         }
 

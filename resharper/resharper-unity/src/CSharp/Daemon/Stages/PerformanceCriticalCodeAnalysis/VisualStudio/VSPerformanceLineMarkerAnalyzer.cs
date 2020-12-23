@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
         }
 
-        protected override void Analyze(IFunctionDeclaration t, IDaemonProcess daemonProcess, DaemonProcessKind kind,
+        protected override void Analyze(IFunctionDeclaration t,
             IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)

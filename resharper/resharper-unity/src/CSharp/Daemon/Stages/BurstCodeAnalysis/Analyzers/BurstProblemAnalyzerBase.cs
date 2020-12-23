@@ -8,15 +8,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 {
     public abstract class BurstProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T>, IBurstBannedAnalyzer where T : ITreeNode
     {
-        private const CallGraphContextElement Context = CallGraphContextElement.BURST_CONTEXT;
+        private const CallGraphContextTag Context = CallGraphContextTag.BURST_CONTEXT;
 
         protected sealed override bool IsApplicable(IReadOnlyContext context)
         {
             return context.IsSuperSetOf(Context);
         }
 
-        protected override void Analyze(T t, IDaemonProcess daemonProcess, DaemonProcessKind kind, IHighlightingConsumer consumer,
-            [NotNull] IReadOnlyContext context)
+        protected override void Analyze(T t, IHighlightingConsumer consumer, [NotNull] IReadOnlyContext context)
         {
             CheckAndAnalyze(t, consumer, context);
         }

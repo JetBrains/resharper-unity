@@ -49,11 +49,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
     public class CallGraphProcess : CSharpDaemonStageProcessBase
     {
-        private readonly DaemonProcessKind myProcessKind;
         private readonly ILogger myLogger;
         private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
         private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
-        private readonly CallGraphContext myContext = new CallGraphContext();
+        private readonly CallGraphContext myContext;
         private int myInterruptCounter;
 
         public CallGraphProcess(
@@ -65,7 +64,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers)
             : base(process, file)
         {
-            myProcessKind = processKind;
+            myContext = new CallGraphContext(processKind, process); 
             myLogger = logger;
             myContextProviders = contextProviders;
             myProblemAnalyzers = problemAnalyzers;
@@ -73,6 +72,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
+            // if (myContext.Kind != DaemonProcessKind.VISIBLE_DOCUMENT && myContext.Kind != DaemonProcessKind.GLOBAL_WARNINGS)
+            //     return;
+            
             File.GetPsiServices().Locks.AssertReadAccessAllowed();
             
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
@@ -96,14 +98,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
-            myContext.AdvanceContext(element, myProcessKind, myContextProviders);
+            myContext.AdvanceContext(element, myContextProviders);
 
             try
             {
                 foreach (var problemAnalyzer in myProblemAnalyzers)
                 {
                     CheckForInterrupt(consumer);
-                    problemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer, myContext);
+                    problemAnalyzer.RunInspection(element, consumer, myContext);
                 }
             }
             catch (OperationCanceledException)
@@ -118,8 +120,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
         public override void ProcessAfterInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
-            base.ProcessAfterInterior(element, consumer);
-
             myContext.Rollback(element);
         }
     }

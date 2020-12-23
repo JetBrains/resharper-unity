@@ -14,20 +14,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
         }
 
-        public override bool PropagateIfUnmarked(CallGraphStructure structure, IReadonlyCountingSet<ElementId> rootMarks, IReadonlyCountingSet<ElementId> banMarks, ElementId vertex)
+        public override bool IsMarkedLocal(CallGraphStructure structure, IReadonlyCountingSet<ElementId> rootMarks,
+            IReadonlyCountingSet<ElementId> banMarks, ElementId vertex)
         {
-            if (rootMarks.Contains(vertex))
-                return true;
+            var strict = structure.BanMarks.GetOrEmpty(BurstStrictlyBannedMarkProvider.RootMarkId);
+            return rootMarks.Contains(vertex) && !strict.Contains(vertex);
+        }
 
+        public override bool IsMarkedGlobal(
+            CallGraphStructure structure,
+            IReadonlyCountingSet<ElementId> rootMarks,
+            IReadonlyCountingSet<ElementId> banMarks,
+            ElementId vertex)
+        {
+            var strict = structure.BanMarks.GetOrEmpty(BurstStrictlyBannedMarkProvider.RootMarkId);
+
+            // method has burst discard and resharper.disable
+            if (strict.Contains(vertex))
+                return false;
+
+            // method has no managed code
             if (banMarks.Contains(vertex) == false)
-                return base.PropagateIfUnmarked(structure, rootMarks, banMarks, vertex);
+                return base.IsMarkedGlobal(structure, rootMarks, banMarks, vertex);
 
+            // method has managed code, question - does it have direct burst route?
             foreach (var (parent, _) in structure.InvertedEdges.GetOrEmpty(vertex))
             {
                 if (banMarks.Contains(parent))
                     continue;
 
-                if (base.PropagateIfUnmarked(structure, rootMarks, banMarks, parent))
+                if (base.IsMarkedGlobal(structure, rootMarks, banMarks, parent))
                     return true;
             }
 

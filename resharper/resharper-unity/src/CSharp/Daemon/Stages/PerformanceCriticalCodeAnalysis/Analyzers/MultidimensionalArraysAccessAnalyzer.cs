@@ -3,11 +3,9 @@ using System.Linq;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.UsageChecking;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Pointers;
 using JetBrains.ReSharper.Psi.Search;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -17,8 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class MultidimensionalArraysAccessAnalyzer : PerformanceProblemAnalyzerBase<IElementAccessExpression>
     {
-        protected override void Analyze(IElementAccessExpression element, IDaemonProcess daemonProcess, DaemonProcessKind kind,
-            IHighlightingConsumer consumer, IReadOnlyContext context)
+        protected override void Analyze(IElementAccessExpression element, IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             var sourceFile = element.GetSourceFile();
             if (sourceFile == null)
@@ -45,7 +42,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             if (declaration == null)
                 return;
             
-            MultidimensionalArraysDeclarationProblemAnalyzer.CreateInefficientMultidimensionalArrayAccessWarning(declaredElement, declaration, daemonProcess, kind, consumer, element.GetDocumentRange());
+            MultidimensionalArraysDeclarationProblemAnalyzer.CreateInefficientMultidimensionalArrayAccessWarning(declaredElement, declaration, context.DaemonProcess, context.Kind, consumer, element.GetDocumentRange());
         }
 
 

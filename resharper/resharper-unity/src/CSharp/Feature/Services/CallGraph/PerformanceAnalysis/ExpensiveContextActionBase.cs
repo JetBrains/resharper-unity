@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.
@@ -14,7 +15,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.
         
         protected override bool ShouldCreate(IMethodDeclaration containingMethod)
         {
-            var isExpensiveContext = ExpensiveContextProvider.IsMarkedSwea(containingMethod);
+            var declaredElement = containingMethod.DeclaredElement;
+            var isExpensiveContext = ExpensiveContextProvider.IsMarkedSweaDependent(declaredElement, SolutionAnalysisService);
 
             return isExpensiveContext;
         }

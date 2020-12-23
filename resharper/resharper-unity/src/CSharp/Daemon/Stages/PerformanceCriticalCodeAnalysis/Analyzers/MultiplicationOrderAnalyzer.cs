@@ -27,7 +27,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             KnownTypes.Matrix4x4
         };
 
-        protected override void Analyze(IMultiplicativeExpression expression, IDaemonProcess daemonProcess, DaemonProcessKind kind,
+        protected override void Analyze(IMultiplicativeExpression expression,
             IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             if (IsStartPoint(expression))

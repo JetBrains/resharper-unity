@@ -1,6 +1,7 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
@@ -35,14 +36,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-                                                DaemonProcessKind kind)
+                                                IReadOnlyContext context)
         {
-            var iconId = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind)
+            var iconId = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, context)
                 ? InsightUnityIcons.InsightHot.Id
                 : InsightUnityIcons.InsightUnity.Id;
 
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myFieldUsageProvider.ProviderId,
-                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
+                () => { base.AddHighlighting(consumer, element, text, tooltip, context); }, out var useFallback))
             {
                 if (!useFallback)
                 {

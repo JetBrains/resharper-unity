@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -19,24 +18,26 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstMarksProvider : CallGraphCommentMarksProvider
     {
-        private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
+        private readonly IEnumerable<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
+        private readonly BurstStrictlyBannedMarkProvider myStrictlyBannedMarkProvider;
 
         public const string MarkId = "Unity.BurstContext";
 
         public BurstMarksProvider(Lifetime lifetime, ISolution solution,
             UnityReferencesTracker referencesTracker,
             UnitySolutionTracker tracker,
+            BurstStrictlyBannedMarkProvider strictlyBannedMarkProvider,
             IEnumerable<IBurstBannedAnalyzer> prohibitedContextAnalyzers)
-            : base(MarkId, new BurstPropagator(solution, MarkId))
+            : base(MarkId, MarkId, new BurstPropagator(solution, MarkId))
         {
+            myBurstBannedAnalyzers = prohibitedContextAnalyzers;
+            myStrictlyBannedMarkProvider = strictlyBannedMarkProvider;
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
-            myBurstBannedAnalyzers = prohibitedContextAnalyzers.ToList();
         }
 
-        private static LocalList<IDeclaredElement> GetMarksFromStruct([NotNull] IStruct @struct)
+        private static void AddMarksFromStruct([NotNull] IStruct @struct, ref LocalList<IDeclaredElement> result)
         {
-            var result = new LocalList<IDeclaredElement>();
             var superTypes = @struct.GetAllSuperTypes();
             var interfaces = new LocalList<ITypeElement>();
 
@@ -54,8 +55,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     interfaces.Add(superElement);
             }
 
-            if (interfaces.Count == 0)
-                return result;
+            if (interfaces.Count == 0) return;
 
             var canBeOverridenByInterfaceMethods = new LocalList<IMethod>();
 
@@ -76,8 +76,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                     }
                 }
             }
-
-            return result;
         }
 
         public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
@@ -85,28 +83,23 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         {
             var result = base.GetRootMarksFromNode(currentNode, containingFunction);
 
-            switch (currentNode)
+            if (!(currentNode is IClassLikeDeclaration classLikeDeclaration))
+                return result;
+            
+            var typeElement = classLikeDeclaration.DeclaredElement;
+
+            if (typeElement == null
+                || !typeElement.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self))
+                return result;
+
+            if (typeElement is IStruct @struct)
+                AddMarksFromStruct(@struct, ref result);
+
+            foreach (var method in typeElement.Methods)
             {
-                case IClassLikeDeclaration classLikeDeclaration:
-                {
-                    var typeElement = classLikeDeclaration.DeclaredElement;
-
-                    if (typeElement == null
-                        || !typeElement.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self))
-                        break;
-
-                    if (typeElement is IStruct @struct)
-                        result = GetMarksFromStruct(@struct);
-
-                    foreach (var method in typeElement.Methods)
-                    {
-                        if (method.IsStatic
-                            && method.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self))
-                            result.Add(method);
-                    }
-
-                    break;
-                }
+                if (method.IsStatic
+                    && method.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self))
+                    result.Add(method);
             }
 
             return result;
@@ -115,7 +108,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            var result = base.GetBanMarksFromNode(currentNode, containingFunction);
+            var result = myStrictlyBannedMarkProvider.GetBanMarksFromNode(currentNode, containingFunction);
 
             if (containingFunction == null)
                 return result;
@@ -126,7 +119,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             if (function == null)
                 return result;
 
-            if (BurstCodeAnalysisUtil.IsBurstProhibitedFunction(function) || CheckBurstBannedAnalyzers(functionDeclaration))
+            if (CheckBurstBannedAnalyzers(functionDeclaration))
                 result.Add(function);
 
             return result;
@@ -143,9 +136,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         private sealed class BurstBannedProcessor : UnityCallGraphCodeProcessor
         {
-            private readonly List<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
+            private readonly IEnumerable<IBurstBannedAnalyzer> myBurstBannedAnalyzers;
 
-            public BurstBannedProcessor(List<IBurstBannedAnalyzer> burstBannedAnalyzers, ITreeNode startNode)
+            public BurstBannedProcessor(IEnumerable<IBurstBannedAnalyzer> burstBannedAnalyzers, ITreeNode startNode)
                 : base(startNode)
             {
                 myBurstBannedAnalyzers = burstBannedAnalyzers;
