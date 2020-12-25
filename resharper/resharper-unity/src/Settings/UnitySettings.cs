@@ -60,6 +60,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Settings
 
         [SettingsEntry(true, "Enable analysis for Burst compiler issues")]
         public bool EnableBurstCodeHighlighting;
+        
+        [SettingsEntry(true, "Enables showing Unity icon for Burst compiled code")]
+        public bool EnableIconsForBurstCode;
 
         // UX for performance critical analysis
         [SettingsEntry(PerformanceHighlightingMode.CurrentMethod, "Highlighting mode for performance critical code")]

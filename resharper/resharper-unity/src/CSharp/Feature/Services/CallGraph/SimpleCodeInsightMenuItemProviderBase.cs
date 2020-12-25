@@ -12,13 +12,13 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
-    public abstract class SimpleCodeVisionMenuItemProviderBase : ICallGraphCodeVisionMenuItemProvider
+    public abstract class SimpleCodeInsightMenuItemProviderBase : ICallGraphCodeInsightMenuItemProvider
     {
         private readonly ISolution mySolution;
 
-        protected SimpleCodeVisionMenuItemProviderBase(ISolution solution)
+        protected SimpleCodeInsightMenuItemProviderBase(ISolution solution)
         {
             mySolution = solution;
         }
