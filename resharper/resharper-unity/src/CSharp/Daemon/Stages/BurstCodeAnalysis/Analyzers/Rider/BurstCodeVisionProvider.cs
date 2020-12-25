@@ -20,20 +20,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public sealed class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
-        private readonly UnityCodeInsightProvider myCodeInsightProvider;
+        private readonly BurstCodeInsightProvider myBurstCodeInsightProvider;
         private readonly IconHost myIconHost;
         private readonly IEnumerable<IBurstCodeVisionMenuItemProvider> myBulbProviders;
         private readonly ITextControlManager myTextControlManager;
 
         public BurstCodeVisionProvider(ITextControlManager textControlManager,
                                        IApplicationWideContextBoundSettingStore store,
-                                       UnityCodeInsightProvider codeInsightProvider,
+                                       BurstCodeInsightProvider burstCodeInsightProvider,
                                        IconHost iconHost,
                                        IEnumerable<IBurstCodeVisionMenuItemProvider> bulbProviders)
         {
             myTextControlManager = textControlManager;
             mySettingsStore = store;
-            myCodeInsightProvider = codeInsightProvider;
+            myBurstCodeInsightProvider = burstCodeInsightProvider;
             myIconHost = iconHost;
             myBulbProviders = bulbProviders;
         }
@@ -42,8 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             IHighlightingConsumer consumer, IReadOnlyContext context)
         {
             var boundStore = mySettingsStore.BoundSettingsStore;
-            var providerId = myCodeInsightProvider.ProviderId;
-
+            var providerId = myBurstCodeInsightProvider.ProviderId;
+                // CGTD
             if (!RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, () => { }, out _))
                 return;
 
@@ -51,7 +51,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             var iconModel = myIconHost.Transform(InsightUnityIcons.InsightUnity.Id);
             var actions = GetBurstActions(methodDeclaration, context);
 
-            myCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement,
+            myBurstCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement,
                 BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
                 BurstCodeAnalysisUtil.BURST_TOOLTIP,
                 BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
