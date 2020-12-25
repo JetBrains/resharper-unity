@@ -76,9 +76,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
-            // if (myContext.Kind != DaemonProcessKind.VISIBLE_DOCUMENT && myContext.Kind != DaemonProcessKind.GLOBAL_WARNINGS)
-            //     return;
-
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
                 DaemonProcess.ContextBoundSettingsStore);
 
