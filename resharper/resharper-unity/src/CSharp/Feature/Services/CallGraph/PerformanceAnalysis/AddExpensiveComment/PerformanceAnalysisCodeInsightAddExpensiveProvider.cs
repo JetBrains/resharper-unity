@@ -1,18 +1,15 @@
 using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Rider;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment
 {  
     [SolutionComponent]
-    public class PerformanceAnalysisCodeInsightAddExpensiveProvider : SimpleCodeVisionMenuItemProviderBase, IPerformanceAnalysisCodeInsightMenuItemProvider
+    public class PerformanceAnalysisCodeInsightAddExpensiveProvider : SimpleCodeInsightMenuItemProviderBase, IPerformanceAnalysisCodeInsightMenuItemProvider
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
 

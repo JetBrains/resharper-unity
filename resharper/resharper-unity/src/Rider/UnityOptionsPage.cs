@@ -18,7 +18,6 @@ using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.CSharp.Naming2;
 using JetBrains.ReSharper.Psi.Naming.Settings;
-using JetBrains.Rider.Model.UIAutomation;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider
@@ -141,6 +140,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             AddHeader("Burst code analysis");
 
             AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
+            
+            var option = AddBoolOption((UnitySettings s) => s.EnableIconsForBurstCode,
+                "Show icons for Burst compiled called methods");
+                
+            AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
+                enable => enable);
         }
 
         private void AddNamingSection(Lifetime lifetime, IContextBoundSettingsStore settingsStore)

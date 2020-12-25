@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Rider;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute.Rider
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
     [SolutionComponent]
-    public class AddDiscardCodeVisionProvider : SimpleCodeVisionMenuItemProviderBase, IBurstCodeVisionMenuItemProvider
+    public class AddDiscardCodeInsightProvider : SimpleCodeInsightMenuItemProviderBase, IBurstCodeInsightMenuItemProvider
     {
-        public AddDiscardCodeVisionProvider(ISolution solution)
+        public AddDiscardCodeInsightProvider(ISolution solution)
             : base(solution)
         {
         }
