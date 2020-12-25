@@ -16,10 +16,6 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
-    public interface IBurstCodeVisionMenuItemProvider : ICallGraphCodeVisionMenuItemProvider
-    {
-    }
-    
     [SolutionComponent]
     public sealed class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
     {

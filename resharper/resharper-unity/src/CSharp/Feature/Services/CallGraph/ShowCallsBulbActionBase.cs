@@ -6,6 +6,7 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.CallHierarchy.FindResults;
 using JetBrains.ReSharper.Features.Inspections.CallHierarchy;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi;
 using JetBrains.TextControl;
 using JetBrains.UI.Icons;
@@ -15,11 +16,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
     public abstract class ShowCallsBulbActionBase : IBulbAction
     {
+        private const string myTooltipSuffix = " not ready: Swea should be loaded and completed at least once";
         public void Execute(ISolution solution, ITextControl textControl)
         {
             solution.Locks.AssertReadAccessAllowed();
 
             var text = Text;
+
+            if (!UnityCallGraphUtil.IsCallGraphReady(solution))
+            {
+                BulbActionUtils.ShowTooltip(text + myTooltipSuffix, textControl);
+                return;
+            }
 
             if (!solution.GetPsiServices().Caches.WaitForCaches(text))
                 return;

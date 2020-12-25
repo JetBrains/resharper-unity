@@ -17,7 +17,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         public override bool IsMarkedLocal(CallGraphStructure structure, IReadonlyCountingSet<ElementId> rootMarks,
             IReadonlyCountingSet<ElementId> banMarks, ElementId vertex)
         {
+            if (structure.Vertices.Contains(vertex) == false)
+                return false;
+            
             var strict = structure.BanMarks.GetOrEmpty(BurstStrictlyBannedMarkProvider.RootMarkId);
+            
             return rootMarks.Contains(vertex) && !strict.Contains(vertex);
         }
 

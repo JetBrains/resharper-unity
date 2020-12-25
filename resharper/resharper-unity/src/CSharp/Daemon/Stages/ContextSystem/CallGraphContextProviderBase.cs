@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
     public abstract class CallGraphContextProviderBase : ICallGraphContextProvider
     {
-        private readonly IElementIdProvider myElementIdProvider;
+        protected readonly IElementIdProvider myElementIdProvider;
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
         private readonly CallGraphRootMarksProviderBase myMarksProviderBase;
 
@@ -29,17 +29,36 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
         public abstract bool IsContextAvailable { get; }
         public virtual bool IsContextChangingNode(ITreeNode node) => UnityCallGraphUtil.IsFunctionNode(node);
 
-        public bool IsMarkedGlobal(IDeclaredElement declaredElement)
+        public virtual bool IsMarkedGlobal(IDeclaredElement declaredElement)
         {
             return IsMarkedInternal(declaredElement, shouldPropagate: true);
         }
 
-        public bool IsMarkedLocal(IDeclaredElement declaredElement)
+        public virtual bool IsMarkedLocal(IDeclaredElement declaredElement)
         {
             return IsMarkedInternal(declaredElement, shouldPropagate: false);
         }
 
-        private bool IsMarkedInternal([CanBeNull] IDeclaredElement declaredElement, bool shouldPropagate)
+        public virtual bool IsMarkedLocal(IDeclaredElement declaredElement, CallGraphDataElement dataElement)
+        {
+            if (declaredElement == null || dataElement == null)
+                return false;
+
+            var vertex = myElementIdProvider.GetElementId(declaredElement);
+
+            if (vertex == null)
+                return false;
+
+            if (!dataElement.Vertices.Contains(vertex.Value) || dataElement.BanMarks.GetOrEmpty(MarkId).Contains(vertex.Value))
+                return false;
+                
+            if (dataElement.RootMarks.GetOrEmpty(MarkId).Contains(vertex.Value))
+                return true;
+
+            return IsMarkedInternal(declaredElement, shouldPropagate:false, vertex);
+        }
+
+        protected bool IsMarkedInternal([CanBeNull] IDeclaredElement declaredElement, bool shouldPropagate, ElementId? knownId = null)
         {
             if (IsContextAvailable == false)
                 return false;
@@ -47,7 +66,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             if (declaredElement == null)
                 return false;
 
-            var elementId = myElementIdProvider.GetElementId(declaredElement);
+            var elementId = knownId ?? myElementIdProvider.GetElementId(declaredElement);
 
             if (!elementId.HasValue)
                 return false;

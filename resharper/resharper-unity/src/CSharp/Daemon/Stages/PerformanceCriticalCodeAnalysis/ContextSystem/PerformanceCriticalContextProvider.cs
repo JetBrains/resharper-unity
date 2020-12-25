@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             IApplicationWideContextBoundSettingStore applicationWideContextBoundSettingStore,
             IElementIdProvider elementIdProvider,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
-            ExpensiveCodeMarksProvider marksProviderBase)
+            PerformanceCriticalCodeMarksProvider marksProviderBase)
             : base(elementIdProvider, callGraphSwaExtensionProvider, marksProviderBase)
         {
             myIsPerformanceAnalysisEnabledProperty =

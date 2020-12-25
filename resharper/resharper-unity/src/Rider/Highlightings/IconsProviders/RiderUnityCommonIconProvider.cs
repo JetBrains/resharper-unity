@@ -20,10 +20,6 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 {
-    public interface IPerformanceAnalysisCodeVisionMenuItemProvider : ICallGraphCodeVisionMenuItemProvider
-    {
-    }
-    
     [SolutionComponent]
     public sealed class RiderUnityCommonIconProvider : UnityCommonIconProvider
     {

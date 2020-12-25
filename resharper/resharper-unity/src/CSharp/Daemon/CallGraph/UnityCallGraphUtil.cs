@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
@@ -134,6 +135,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph
             var bulbMenuItem = new BulbMenuItem(proxi, menuText, iconId, anchor);
 
             return bulbMenuItem;
+        }
+
+        public static bool IsCallGraphReady([NotNull] SolutionAnalysisConfiguration configuration)
+        {
+            return configuration.CompletedOnceAfterStart.Value && configuration.Loaded.Value;
+        }
+
+        public static bool IsCallGraphReady([NotNull] ISolution solution)
+        {
+            var configuration = solution.GetComponent<SolutionAnalysisConfiguration>();
+            
+            return IsCallGraphReady(configuration);
         }
     }
 }
