@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class MultidimensionalArraysDeclarationProblemAnalyzer : PerformanceProblemAnalyzerBase<IVariableDeclaration>
     {
         protected override void Analyze(IVariableDeclaration element,
-            IHighlightingConsumer consumer, IReadOnlyContext context)
+            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             CreateInefficientMultidimensionalArrayAccessWarning(element.DeclaredElement, element, context.DaemonProcess, context.Kind, consumer, element.NameIdentifier.GetDocumentRange());
         }

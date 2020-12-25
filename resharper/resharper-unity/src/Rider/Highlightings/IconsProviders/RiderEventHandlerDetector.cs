@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-                                                IReadOnlyContext context)
+                                                IReadOnlyCallGraphContext context)
         {
             var iconId = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, context)
                 ? InsightUnityIcons.InsightHot.Id

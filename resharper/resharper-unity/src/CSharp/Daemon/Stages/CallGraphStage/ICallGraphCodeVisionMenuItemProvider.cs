@@ -11,6 +11,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
     {
         [NotNull]
         [ItemNotNull]
-        IEnumerable<BulbMenuItem> GetMenuItems([NotNull] IMethodDeclaration methodDeclaration, [NotNull] ITextControl textControl, IReadOnlyContext context);
+        IEnumerable<BulbMenuItem> GetMenuItems([NotNull] IMethodDeclaration methodDeclaration, [NotNull] ITextControl textControl, IReadOnlyCallGraphContext context);
     }
 }

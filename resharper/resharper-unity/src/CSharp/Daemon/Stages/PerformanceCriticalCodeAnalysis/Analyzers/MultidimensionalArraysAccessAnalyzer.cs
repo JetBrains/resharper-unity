@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class MultidimensionalArraysAccessAnalyzer : PerformanceProblemAnalyzerBase<IElementAccessExpression>
     {
-        protected override void Analyze(IElementAccessExpression element, IHighlightingConsumer consumer, IReadOnlyContext context)
+        protected override void Analyze(IElementAccessExpression element, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             var sourceFile = element.GetSourceFile();
             if (sourceFile == null)

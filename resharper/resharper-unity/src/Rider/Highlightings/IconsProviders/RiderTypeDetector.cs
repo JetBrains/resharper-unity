@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         }
 
         protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text,
-                                                             string tooltip, IReadOnlyContext context)
+                                                             string tooltip, IReadOnlyCallGraphContext context)
         {
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, declaration, text, tooltip, context); }, out var useFallback))
@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
             string tooltip,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, element, text, tooltip, context); }, out var useFallback))

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -8,9 +9,9 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment.Rider
 {
     [SolutionComponent]
-    public sealed class PerformanceAnalysisCodeVisionAddDisableCommentProvider : SimpleCodeVisionMenuItemProviderBase, IPerformanceAnalysisCodeVisionMenuItemProvider
+    public sealed class PerformanceAnalysisCodeInsightAddDisableCommentProvider : SimpleCodeVisionMenuItemProviderBase, IPerformanceAnalysisCodeInsightMenuItemProvider
     {
-        public PerformanceAnalysisCodeVisionAddDisableCommentProvider(ISolution solution) : base(solution)
+        public PerformanceAnalysisCodeInsightAddDisableCommentProvider(ISolution solution) : base(solution)
         {
         }
         

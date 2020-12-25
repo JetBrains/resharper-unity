@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
         public static bool IsMarkedStage(
             [CanBeNull] this ICallGraphContextProvider contextProvider,
             [CanBeNull] IDeclaredElement declaredElement,
-            [CanBeNull] IReadOnlyContext context)
+            [CanBeNull] IReadOnlyCallGraphContext context)
         {
             if (contextProvider == null || declaredElement == null || context == null)
                 return false;

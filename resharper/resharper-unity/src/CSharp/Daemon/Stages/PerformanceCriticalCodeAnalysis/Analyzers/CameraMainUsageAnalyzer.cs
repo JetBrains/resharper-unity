@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class CameraMainUsageAnalyzer : PerformanceProblemAnalyzerBase<IReferenceExpression>
     {
         protected override void Analyze(IReferenceExpression referenceExpression,
-            IHighlightingConsumer consumer, IReadOnlyContext context)
+            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             if (PerformanceCriticalCodeStageUtil.IsCameraMainUsage(referenceExpression))
             {

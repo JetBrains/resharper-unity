@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public sealed class BurstForeachStatementAnalyzer : BurstProblemAnalyzerBase<IForeachStatement>
     {
         protected override bool CheckAndAnalyze(IForeachStatement foreachStatement, IHighlightingConsumer consumer,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             consumer?.AddHighlighting(new BurstForeachNotSupportedWarning(foreachStatement.ForeachKeyword));
             return true;

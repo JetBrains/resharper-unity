@@ -47,7 +47,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         protected override bool CheckAndAnalyze(IStringLiteralOwner stringLiteralOwner, IHighlightingConsumer consumer,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             bool isString;
 

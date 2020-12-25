@@ -19,7 +19,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             myContextProvider = contextProvider;
         }
 
-        protected override void Analyze(IInvocationExpression expression, IHighlightingConsumer consumer, IReadOnlyContext context)
+        protected override void Analyze(IInvocationExpression expression, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             var callee = CallGraphUtil.GetCallee(expression);
             

@@ -7,7 +7,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public abstract class PerformanceProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T> where T : ITreeNode
     {
         private const CallGraphContextTag Context = CallGraphContextTag.PERFORMANCE_CRITICAL_CONTEXT;
-        protected override bool IsApplicable(IReadOnlyContext context)
+        protected override bool IsApplicable(IReadOnlyCallGraphContext context)
         {
             return context.IsSuperSetOf(Context);
         }

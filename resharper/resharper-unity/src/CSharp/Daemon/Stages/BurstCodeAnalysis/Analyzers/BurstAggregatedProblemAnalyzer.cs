@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             mySubAnalyzers.Sort((analyzer1, analyzer2) => analyzer1.Priority - analyzer2.Priority);
         }
         
-        protected sealed override bool CheckAndAnalyze(T t, IHighlightingConsumer consumer, IReadOnlyContext context)
+        protected sealed override bool CheckAndAnalyze(T t, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             var warningPlaced = false;
             
