@@ -1,8 +1,0 @@
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
-
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
-{
-    public interface IPerformanceAnalysisCodeVisionMenuItemProvider : ICallGraphCodeVisionMenuItemProvider
-    {
-    }
-}

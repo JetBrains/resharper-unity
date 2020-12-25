@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Rider;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -8,10 +9,10 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowPerformanceCriticalCalls.Rider
 {
     [SolutionComponent]
-    public class ShowPerformanceCriticalCallsCodeVisionProvider : SimpleCodeVisionMenuItemProviderBase,
-        IPerformanceAnalysisCodeVisionMenuItemProvider
+    public class ShowPerformanceCriticalCallsCodeInsightProvider : SimpleCodeVisionMenuItemProviderBase,
+        IPerformanceAnalysisCodeInsightMenuItemProvider
     {
-        public ShowPerformanceCriticalCallsCodeVisionProvider(ISolution solution)
+        public ShowPerformanceCriticalCallsCodeInsightProvider(ISolution solution)
             : base(solution)
         {
         }

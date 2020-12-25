@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         protected override void Analyze(IMethodDeclaration methodDeclaration,
-            IHighlightingConsumer consumer, IReadOnlyContext context)
+            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             var boundStore = mySettingsStore.BoundSettingsStore;
             var providerId = myBurstCodeInsightProvider.ProviderId;
@@ -61,14 +61,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
         }
 
         protected override bool CheckAndAnalyze(IMethodDeclaration methodDeclaration, IHighlightingConsumer consumer,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             return false;
         }
 
         [NotNull]
         [ItemNotNull]
-        private IEnumerable<BulbMenuItem> GetBurstActions([NotNull] IMethodDeclaration methodDeclaration, IReadOnlyContext context)
+        private IEnumerable<BulbMenuItem> GetBurstActions([NotNull] IMethodDeclaration methodDeclaration, IReadOnlyCallGraphContext context)
         {
             var result = new CompactList<BulbMenuItem>();
             var textControl = myTextControlManager.LastFocusedTextControl.Value;

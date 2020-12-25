@@ -11,7 +11,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     public class NullComparisonWithUnityObjectProblemAnalyzer : PerformanceProblemAnalyzerBase<IEqualityExpression>
     {
         protected override void Analyze(IEqualityExpression equalityExpression,
-            IHighlightingConsumer consumer, IReadOnlyContext context)
+            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             if (PerformanceCriticalCodeStageUtil.IsNullComparisonWithUnityObject(equalityExpression, out var name))
                 consumer.AddHighlighting(new UnityPerformanceNullComparisonWarning(equalityExpression, name, equalityExpression.Reference.NotNull("eqaulityReference != null")));

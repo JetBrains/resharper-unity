@@ -10,6 +10,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         /// Process declarations and add specific unity highlightings
         /// </summary>
         /// <returns>true if highlighting to declaration was added, otherwise false</returns>
-        bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, IReadOnlyContext context);
+        bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context);
     }
 }

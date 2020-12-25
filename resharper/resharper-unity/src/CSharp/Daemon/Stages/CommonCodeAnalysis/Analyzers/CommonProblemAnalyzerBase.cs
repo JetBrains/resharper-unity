@@ -6,6 +6,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CommonCodeAnaly
 {
     public abstract class CommonProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T> where T : ITreeNode
     {
-        protected sealed override bool IsApplicable(IReadOnlyContext context) => true;
+        protected sealed override bool IsApplicable(IReadOnlyCallGraphContext context) => true;
     }
 }

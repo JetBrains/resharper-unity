@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
-                                                        IReadOnlyContext context)
+                                                        IReadOnlyCallGraphContext context)
         {
             var declaredElement = treeNode.DeclaredElement;
             var method = declaredElement as IMethod;
@@ -48,7 +48,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
-            string tooltip, IReadOnlyContext context)
+            string tooltip, IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
 

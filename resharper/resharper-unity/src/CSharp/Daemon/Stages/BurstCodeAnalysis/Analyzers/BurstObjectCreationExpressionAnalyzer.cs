@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public sealed class BurstObjectCreationExpressionAnalyzer : BurstProblemAnalyzerBase<IObjectCreationExpression>
     {
         protected override bool CheckAndAnalyze(IObjectCreationExpression objectCreationExpression, IHighlightingConsumer consumer,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             if (!IsBurstPermittedType(objectCreationExpression.Type()))
             {

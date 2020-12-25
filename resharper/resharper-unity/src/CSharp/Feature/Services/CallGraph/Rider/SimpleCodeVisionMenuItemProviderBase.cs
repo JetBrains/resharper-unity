@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Ri
             mySolution = solution;
         }
 
-        public IEnumerable<BulbMenuItem> GetMenuItems(IMethodDeclaration methodDeclaration, ITextControl textControl, IReadOnlyContext context)
+        public IEnumerable<BulbMenuItem> GetMenuItems(IMethodDeclaration methodDeclaration, ITextControl textControl, IReadOnlyCallGraphContext context)
         {
             methodDeclaration.GetPsiServices().Locks.AssertReadAccessAllowed();
             
@@ -43,7 +43,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Ri
             return result.ResultingList();
         }
 
-        protected virtual bool CheckCallGraph([NotNull] IMethodDeclaration methodDeclaration, IReadOnlyContext context) => true;
+        protected virtual bool CheckCallGraph([NotNull] IMethodDeclaration methodDeclaration, IReadOnlyCallGraphContext context) => true;
 
         protected abstract IEnumerable<IBulbAction> GetActions([NotNull] IMethodDeclaration methodDeclaration);
     }

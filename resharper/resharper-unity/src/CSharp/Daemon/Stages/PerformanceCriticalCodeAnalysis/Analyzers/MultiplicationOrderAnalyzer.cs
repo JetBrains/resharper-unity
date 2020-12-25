@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         };
 
         protected override void Analyze(IMultiplicativeExpression expression,
-            IHighlightingConsumer consumer, IReadOnlyContext context)
+            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             if (IsStartPoint(expression))
             {

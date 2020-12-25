@@ -27,8 +27,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
-        private readonly ITextControlManager myTextControlManager;
-        private readonly IEnumerable<IPerformanceAnalysisCodeVisionMenuItemProvider> myMenuItemProviders;
 
         public RiderUnityCommonIconProvider(ISolution solution,
                                             IApplicationWideContextBoundSettingStore settingsStore,
@@ -37,22 +35,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                             UnitySolutionTracker solutionTracker,
                                             BackendUnityHost backendUnityHost,
                                             IconHost iconHost, PerformanceCriticalContextProvider contextProvider,
-                                            IEnumerable<IPerformanceAnalysisCodeVisionMenuItemProvider> menuItemProviders)
-            : base(solution, api, settingsStore, contextProvider)
+                                            IEnumerable<IPerformanceAnalysisCodeInsightMenuItemProvider> menuItemProviders)
+            : base(solution, api, settingsStore, contextProvider, menuItemProviders)
         {
-            myTextControlManager = solution.GetComponent<ITextControlManager>();
             myCodeInsightProvider = codeInsightProvider;
             mySolutionTracker = solutionTracker;
             myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
-            myMenuItemProviders = menuItemProviders;
         }
 
         public override void AddEventFunctionHighlighting(IHighlightingConsumer consumer, 
                                                           IMethod method, 
                                                           UnityEventFunction eventFunction,
                                                           string text, 
-                                                          IReadOnlyContext context)
+                                                          IReadOnlyCallGraphContext context)
         {
             var boundStore = SettingsStore.BoundSettingsStore;
             var providerId = myCodeInsightProvider.ProviderId;
@@ -75,7 +71,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 if (!useFallback)
                     consumer.AddImplicitConfigurableHighlighting(cSharpDeclaration);
 
-                var actions = GetEventFunctionActions(cSharpDeclaration);
+                var actions = GetEventFunctionActions(cSharpDeclaration, context);
                 
                 myCodeInsightProvider.AddHighlighting(consumer, cSharpDeclaration, method, text, 
                     eventFunction.Description ?? string.Empty, text, iconModel, actions, extraActions);
@@ -83,7 +79,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         }
 
         public override void AddFrequentlyCalledMethodHighlighting(IHighlightingConsumer consumer,
-            ICSharpDeclaration cSharpDeclaration, string text, string tooltip, IReadOnlyContext context)
+            ICSharpDeclaration cSharpDeclaration, string text, string tooltip, IReadOnlyCallGraphContext context)
         { 
             var boundStore = SettingsStore.BoundSettingsStore;
             
@@ -102,28 +98,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
             myCodeInsightProvider.AddHighlighting(consumer, cSharpDeclaration, cSharpDeclaration.DeclaredElement, 
                 text, tooltip, text, iconModel, actions, extraActions);
-        }
-        
-        private IEnumerable<BulbMenuItem> GetActions(ICSharpDeclaration declaration, IReadOnlyContext context)
-        {
-            if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
-                return GetEventFunctionActions(declaration);
-                
-            if (!(declaration is IMethodDeclaration methodDeclaration))
-                return EmptyList<BulbMenuItem>.Instance;
-                    
-            var textControl = myTextControlManager.LastFocusedTextControl.Value;
-            var result = new CompactList<BulbMenuItem>();
-
-            foreach (var provider in myMenuItemProviders)
-            {
-                var menuItems = provider.GetMenuItems(methodDeclaration, textControl, context);
-
-                foreach (var item in menuItems)
-                    result.Add(item);
-            }
-
-            return result;
         }
     }
 }

@@ -26,10 +26,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public abstract bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
-                                                        IReadOnlyContext context);
+                                                        IReadOnlyCallGraphContext context);
 
         protected virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
-            string tooltip, IReadOnlyContext context)
+            string tooltip, IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
             consumer.AddHotHighlighting(ContextProvider, element, SettingsStore.BoundSettingsStore, text, tooltip, context, GetActions(element));

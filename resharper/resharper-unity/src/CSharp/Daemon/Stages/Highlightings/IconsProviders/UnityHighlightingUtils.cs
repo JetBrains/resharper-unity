@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public static bool HasHotIcon(this ICSharpDeclaration element, PerformanceCriticalContextProvider contextProvider,
-            IContextBoundSettingsStore settingsStore, IReadOnlyContext context)
+            IContextBoundSettingsStore settingsStore, IReadOnlyCallGraphContext context)
         {
             var declaredElement = element.DeclaredElement;
             
@@ -29,7 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public static bool HasHotIcon(this IDeclaredElement element, PerformanceCriticalContextProvider contextProvider,
-            IContextBoundSettingsStore settingsStore, IReadOnlyContext context)
+            IContextBoundSettingsStore settingsStore, IReadOnlyCallGraphContext context)
         {
             if (element == null)
                 return false;
@@ -44,7 +44,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                               PerformanceCriticalContextProvider contextProvider,
                                               ICSharpDeclaration element,
                                               IContextBoundSettingsStore settings, string text,
-                                              string tooltip, IReadOnlyContext context, IEnumerable<BulbMenuItem> items,
+                                              string tooltip, IReadOnlyCallGraphContext context, IEnumerable<BulbMenuItem> items,
                                               bool onlyHot = false)
         {
             var isIconHot = element.HasHotIcon(contextProvider, settings, context);

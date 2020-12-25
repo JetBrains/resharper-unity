@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public sealed class BurstTypeofAnalyzer : BurstProblemAnalyzerBase<ITypeofExpression>
     {
         protected override bool CheckAndAnalyze(ITypeofExpression typeofExpression, IHighlightingConsumer consumer,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             consumer?.AddHighlighting(new BurstTypeofExpressionWarning(typeofExpression));
             return true;

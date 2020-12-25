@@ -26,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             myUnityApi = unityApi;
         }
 
-        public override bool AddDeclarationHighlighting(IDeclaration element, IHighlightingConsumer consumer, IReadOnlyContext context)
+        public override bool AddDeclarationHighlighting(IDeclaration element, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             if (!(element is IFieldDeclaration field))
                 return false;
@@ -55,19 +55,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         protected virtual void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             AddHighlighting(consumer, element, text, tooltip, context);
         }
 
         protected virtual void AddSerializableHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             AddHighlighting(consumer, element, text, tooltip, context);
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
             consumer.AddHighlighting(new UnityGutterMarkInfo(element, tooltip));

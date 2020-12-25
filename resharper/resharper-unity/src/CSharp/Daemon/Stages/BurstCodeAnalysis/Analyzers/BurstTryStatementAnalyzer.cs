@@ -10,7 +10,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public sealed class BurstTryStatementAnalyzer : BurstProblemAnalyzerBase<ITryStatement>
     {
-        protected override bool CheckAndAnalyze(ITryStatement tryStatement, IHighlightingConsumer consumer, IReadOnlyContext context)
+        protected override bool CheckAndAnalyze(ITryStatement tryStatement, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             consumer?.AddHighlighting(new BurstTryNotSupportedWarning(tryStatement.TryKeyword));
             return true;

@@ -10,7 +10,7 @@ using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
-    public interface IReadOnlyContext
+    public interface IReadOnlyCallGraphContext
     {
         DaemonProcessKind Kind { get; }
         [NotNull]
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
         bool IsSuperSetOf(CallGraphContextTag another);
     }
 
-    public sealed class CallGraphContext : IReadOnlyContext
+    public sealed class CallGraphContext : IReadOnlyCallGraphContext
     {
         private readonly DaemonProcessKind myProcessKind;
         [NotNull] private readonly IDaemonProcess myDaemonProcess;

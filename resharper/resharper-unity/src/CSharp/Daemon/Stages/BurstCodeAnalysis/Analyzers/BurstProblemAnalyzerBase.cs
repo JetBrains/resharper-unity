@@ -10,17 +10,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private const CallGraphContextTag Context = CallGraphContextTag.BURST_CONTEXT;
 
-        protected sealed override bool IsApplicable(IReadOnlyContext context)
+        protected sealed override bool IsApplicable(IReadOnlyCallGraphContext context)
         {
             return context.IsSuperSetOf(Context);
         }
 
-        protected override void Analyze(T t, IHighlightingConsumer consumer, [NotNull] IReadOnlyContext context)
+        protected override void Analyze(T t, IHighlightingConsumer consumer, [NotNull] IReadOnlyCallGraphContext context)
         {
             CheckAndAnalyze(t, consumer, context);
         }
 
-        protected abstract bool CheckAndAnalyze([NotNull] T t, [CanBeNull] IHighlightingConsumer consumer, [CanBeNull] IReadOnlyContext context);
+        protected abstract bool CheckAndAnalyze([NotNull] T t, [CanBeNull] IHighlightingConsumer consumer, [CanBeNull] IReadOnlyCallGraphContext context);
         public bool Check(ITreeNode node)
         {
             if (node is T t)

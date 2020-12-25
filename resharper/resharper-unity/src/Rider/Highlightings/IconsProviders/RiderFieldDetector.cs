@@ -49,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
         protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element,
                                                              string text,
-                                                             string tooltip, IReadOnlyContext context)
+                                                             string tooltip, IReadOnlyCallGraphContext context)
         {
             if (!myAssetSerializationMode.IsForceText ||
                 !SettingsStore.BoundSettingsStore.GetValue((UnitySettings key) => key.EnableInspectorPropertiesEditor) ||
@@ -78,7 +78,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
             string tooltip,
-            IReadOnlyContext context)
+            IReadOnlyCallGraphContext context)
         {
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myFieldUsageProvider.ProviderId,
                 () => { base.AddHighlighting(consumer, element, text, tooltip, context); }, out var useFallback))
