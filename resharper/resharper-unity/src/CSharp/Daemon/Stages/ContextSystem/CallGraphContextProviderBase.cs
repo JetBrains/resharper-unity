@@ -41,6 +41,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 
         public virtual bool IsMarkedLocal(IDeclaredElement declaredElement, CallGraphDataElement dataElement)
         {
+            if (IsContextAvailable == false)
+                return false;
+
             if (declaredElement == null || dataElement == null)
                 return false;
 
