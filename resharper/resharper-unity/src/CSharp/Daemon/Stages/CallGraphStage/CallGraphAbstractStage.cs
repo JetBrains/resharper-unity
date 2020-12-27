@@ -72,6 +72,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
+            if (myContext.Kind != DaemonProcessKind.GLOBAL_WARNINGS && myContext.Kind != DaemonProcessKind.VISIBLE_DOCUMENT) 
+                return;
+
             File.GetPsiServices().Locks.AssertReadAccessAllowed();
             
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,

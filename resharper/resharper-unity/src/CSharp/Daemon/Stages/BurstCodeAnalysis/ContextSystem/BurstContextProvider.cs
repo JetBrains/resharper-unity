@@ -33,6 +33,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         public override bool IsMarkedLocal(IDeclaredElement declaredElement, CallGraphDataElement dataElement)
         {
+            if (IsContextAvailable == false)
+                return false;
             // there is problem:
             // due to root-ban check at not-merged state we have 2 data for graph - local data and index
             // they checks marks independently on their data
