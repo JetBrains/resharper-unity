@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
@@ -17,10 +18,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
     public abstract class SimpleCodeInsightMenuItemProviderBase : ICallGraphCodeInsightMenuItemProvider
     {
         private readonly ISolution mySolution;
+        private readonly SolutionAnalysisConfiguration mySolutionAnalysisConfiguration;
 
         protected SimpleCodeInsightMenuItemProviderBase(ISolution solution)
         {
             mySolution = solution;
+            mySolutionAnalysisConfiguration = solution.GetComponent<SolutionAnalysisConfiguration>();
         }
 
         public IEnumerable<BulbMenuItem> GetMenuItems(IMethodDeclaration methodDeclaration, ITextControl textControl, IReadOnlyCallGraphContext context)
@@ -43,7 +46,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
             return result.ResultingList();
         }
 
-        protected virtual bool CheckCallGraph([NotNull] IMethodDeclaration methodDeclaration, IReadOnlyCallGraphContext context) => true;
+        protected virtual bool CheckCallGraph([NotNull] IMethodDeclaration methodDeclaration, IReadOnlyCallGraphContext context)
+        {
+            return UnityCallGraphUtil.IsCallGraphReady(mySolutionAnalysisConfiguration);
+        }
 
         protected abstract IEnumerable<IBulbAction> GetActions([NotNull] IMethodDeclaration methodDeclaration);
     }
