@@ -8,7 +8,7 @@ using JetBrains.ProjectModel.ProjectImplementation;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel.Properties.Flavours;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.ReSharper.TestFramework;
-using JetBrains.TestFramework.Utils;
+using JetBrains.TestFramework.JetNuGet;
 using JetBrains.Util;
 using JetBrains.Util.Dotnet.TargetFrameworkIds;
 using PackageDependency = NuGet.Packaging.Core.PackageDependency;
@@ -93,7 +93,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests
         }
 
         public IEnumerable<string> GetReferences(TargetFrameworkId targetFrameworkId, FileSystemPath testDataPath,
-            NugetPackagesCache nugetPackagesCache)
+            NuGetPackageCache nugetPackagesCache)
         {
             var names = GetPackageNames().ToArray();
             var attribute = new TestPackagesAttribute(names);
