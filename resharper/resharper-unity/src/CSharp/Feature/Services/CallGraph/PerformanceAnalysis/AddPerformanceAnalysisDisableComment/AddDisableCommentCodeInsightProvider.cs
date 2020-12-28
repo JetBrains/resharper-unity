@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Feature.Services.Resources;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment
 {
@@ -12,11 +15,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         {
         }
         
-        protected override IEnumerable<IBulbAction> GetActions(IMethodDeclaration methodDeclaration)
+        protected override IEnumerable<BulbMenuItem> GetActions(IMethodDeclaration methodDeclaration, ITextControl textControl)
         {
-            var action = new AddPerformanceAnalysisDisableCommentBulbAction(methodDeclaration);
+            var bulb = new AddPerformanceAnalysisDisableCommentBulbAction(methodDeclaration);
+            var bulbMenuItem = UnityCallGraphUtil.BulbActionToMenuItem(bulb, textControl, Solution, BulbThemedIcons.ContextAction.Id);
 
-            return new[] {action};
+            return new[] {bulbMenuItem};
         }
     }
 }

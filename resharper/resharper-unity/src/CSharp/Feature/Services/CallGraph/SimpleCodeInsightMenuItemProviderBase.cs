@@ -3,9 +3,6 @@ using JetBrains.Annotations;
 using JetBrains.Application.Threading;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
-using JetBrains.ReSharper.Feature.Services.Resources;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
@@ -16,11 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
     public abstract class SimpleCodeInsightMenuItemProviderBase : ICallGraphCodeInsightMenuItemProvider
     {
-        private readonly ISolution mySolution;
+        protected readonly ISolution Solution;
 
         protected SimpleCodeInsightMenuItemProviderBase(ISolution solution)
         {
-            mySolution = solution;
+            Solution = solution;
         }
 
         public IEnumerable<BulbMenuItem> GetMenuItems(IMethodDeclaration methodDeclaration, ITextControl textControl, IReadOnlyCallGraphContext context)
@@ -30,21 +27,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
             if (!CheckCallGraph(methodDeclaration, context))
                 return EmptyList<BulbMenuItem>.Enumerable;
             
-            var bulbActions = GetActions(methodDeclaration);
-            var result = new LocalList<BulbMenuItem>();
+            var result = GetActions(methodDeclaration, textControl);
             
-            foreach (var bulb in bulbActions)
-            {
-                var item = UnityCallGraphUtil.BulbActionToMenuItem(bulb, textControl, mySolution, BulbThemedIcons.ContextAction.Id);
-                
-                result.Add(item);
-            }
-
-            return result.ResultingList();
+            return result;
         }
 
         protected abstract bool CheckCallGraph([NotNull] IMethodDeclaration methodDeclaration, [NotNull] IReadOnlyCallGraphContext context);
         
-        protected abstract IEnumerable<IBulbAction> GetActions([NotNull] IMethodDeclaration methodDeclaration);
+        protected abstract IEnumerable<BulbMenuItem> GetActions([NotNull] IMethodDeclaration methodDeclaration, [NotNull] ITextControl textControl);
     }
 }
