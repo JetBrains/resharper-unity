@@ -6,7 +6,8 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=ScriptableWizard, ValidateFileName=True
-scopes: InUnityCSharpEditorFolder
+scopes: UnityFileTemplateSectionMarker;InUnityCSharpEditorFolder
+uitag: Unity Class
 parameterOrder: HEADER, (CLASS), (NAMESPACE), MENUITEM, MENUITEMCOMMAND, TITLE, CREATE, OTHER
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()
