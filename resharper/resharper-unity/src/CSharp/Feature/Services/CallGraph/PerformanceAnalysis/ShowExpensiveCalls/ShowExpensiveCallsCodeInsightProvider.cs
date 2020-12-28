@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowExpensiveCalls
 {
@@ -36,11 +37,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
             return myExpensiveContextProvider.IsMarkedStage(declaredElement, context);
         }
 
-        protected override IEnumerable<IBulbAction> GetActions(IMethodDeclaration methodDeclaration)
+        protected override IEnumerable<BulbMenuItem> GetActions(IMethodDeclaration methodDeclaration, ITextControl textControl)
         {
             var actions = ShowExpensiveCallsBulbAction.GetAllCalls(methodDeclaration);
 
-            return actions;
+            return actions.ToMenuItems(textControl, Solution);
         }
     }
 }

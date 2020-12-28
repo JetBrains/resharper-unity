@@ -1,18 +1,22 @@
 using System.Collections.Generic;
+using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Feature.Services.Resources;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment
-{  
+{
     [SolutionComponent]
     public class AddExpensiveCommentCodeInsightProvider : PerformanceCriticalCodeInsightProvider
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
 
-        public AddExpensiveCommentCodeInsightProvider(ExpensiveInvocationContextProvider expensiveContextProvider, ISolution solution) : base(solution)
+        public AddExpensiveCommentCodeInsightProvider(ExpensiveInvocationContextProvider expensiveContextProvider, ISolution solution)
+            : base(solution)
         {
             myExpensiveContextProvider = expensiveContextProvider;
         }
@@ -20,15 +24,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         protected override bool CheckCallGraph(IMethodDeclaration methodDeclaration, IReadOnlyCallGraphContext context)
         {
             var declaredElement = methodDeclaration.DeclaredElement;
-            
-            return !myExpensiveContextProvider.IsMarkedStage(declaredElement, context) 
-                && base.CheckCallGraph(methodDeclaration, context);
+
+            return !myExpensiveContextProvider.IsMarkedStage(declaredElement, context)
+                   && base.CheckCallGraph(methodDeclaration, context);
         }
-        
-        protected override IEnumerable<IBulbAction> GetActions(IMethodDeclaration methodDeclaration)
+
+        protected override IEnumerable<BulbMenuItem> GetActions(IMethodDeclaration methodDeclaration, ITextControl textControl)
         {
-            var action = new AddExpensiveCommentBulbAction(methodDeclaration);
-            return new[] {action};
+            var bulb = new AddExpensiveCommentBulbAction(methodDeclaration);
+            var bulbMenuItem = UnityCallGraphUtil.BulbActionToMenuItem(bulb, textControl, Solution, BulbThemedIcons.ContextAction.Id);
+
+            return new[] {bulbMenuItem};
         }
     }
 }

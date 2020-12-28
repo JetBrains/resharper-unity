@@ -33,7 +33,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
 
         protected override IEnumerable<IntentionAction> GetIntentions(IMethodDeclaration containingMethod)
         {
-            return new AddExpensiveCommentBulbAction(containingMethod).ToQuickFixIntentions();
+            return new AddExpensiveCommentBulbAction(containingMethod).ToContextActionIntentions();
         }
 
         protected override bool IsAvailable(IUserDataHolder cache, IMethodDeclaration containingMethod)
