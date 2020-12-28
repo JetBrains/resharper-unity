@@ -10,8 +10,12 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 
 ## 2020.3.1
+* Released: [2020-12-24](https://blog.jetbrains.com/dotnet/2020/12/24/resharper-rider-2020-3-1/)
+* Build: 2020.3.1.132
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net203-rtm-2020.3.0...net203-rtm-2020.3.1)
 * [Milestone](https://github.com/JetBrains/resharper-unity/milestone/43?closed=1)
+* [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net203-rtm-2020.3.1)
+* [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.3.1.132)
 
 # Changed
 
