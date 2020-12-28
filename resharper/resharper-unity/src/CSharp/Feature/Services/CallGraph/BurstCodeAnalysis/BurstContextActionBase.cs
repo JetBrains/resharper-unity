@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
             mySolutionAnalysisService = dataProvider.Solution.GetComponent<SolutionAnalysisService>();
         }
 
-        protected sealed override bool IsAvailable(IUserDataHolder holder, IMethodDeclaration methodDeclaration)
+        protected override bool IsAvailable(IUserDataHolder holder, IMethodDeclaration methodDeclaration)
         {
             return BurstActionsUtil.IsAvailable(methodDeclaration);
         }

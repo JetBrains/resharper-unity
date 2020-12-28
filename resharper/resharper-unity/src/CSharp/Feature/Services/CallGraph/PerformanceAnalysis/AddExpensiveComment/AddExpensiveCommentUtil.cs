@@ -7,6 +7,5 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
     {
         public const string MESSAGE = "Mark function expensive";
         public const string COMMENT = "// " + ReSharperControlConstruct.RestorePrefix + " " + ExpensiveCodeMarksProvider.MarkId;
-
     }
 }

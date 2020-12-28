@@ -5,7 +5,7 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.InvocationExpression
 {
     [SolutionComponent]
-    public sealed class BurstInvocationExpressionAnalyzer : BurstAggregatedProblemAnalyzer<IInvocationExpression>
+    public sealed class BurstInvocationExpressionAnalyzer : BurstAggregatedProblemAnalyzer<IInvocationExpression>, IBurstBannedAnalyzer
     {
         public BurstInvocationExpressionAnalyzer(
             IEnumerable<IBurstProblemSubAnalyzer<IInvocationExpression>> subAnalyzers)

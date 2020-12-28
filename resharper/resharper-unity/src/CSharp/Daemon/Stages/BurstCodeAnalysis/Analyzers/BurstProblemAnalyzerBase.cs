@@ -6,7 +6,7 @@ using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
-    public abstract class BurstProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T>, IBurstBannedAnalyzer where T : ITreeNode
+    public abstract class BurstProblemAnalyzerBase<T> : CallGraphProblemAnalyzerBase<T> where T : ITreeNode
     {
         private const CallGraphContextTag Context = CallGraphContextTag.BURST_CONTEXT;
 

@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
     [SolutionComponent]
-    public sealed class BurstForeachStatementAnalyzer : BurstProblemAnalyzerBase<IForeachStatement>
+    public sealed class BurstForeachStatementAnalyzer : BurstProblemAnalyzerBase<IForeachStatement>, IBurstBannedAnalyzer
     {
         protected override bool CheckAndAnalyze(IForeachStatement foreachStatement, IHighlightingConsumer consumer,
             IReadOnlyCallGraphContext context)

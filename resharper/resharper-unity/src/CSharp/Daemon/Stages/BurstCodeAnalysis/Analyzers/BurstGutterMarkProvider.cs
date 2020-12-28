@@ -16,7 +16,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private readonly BurstCodeInsights myBurstCodeInsights;
         private readonly IProperty<bool> myBurstEnableIcons;
-
         
         public BurstGutterMarkProvider(
             Lifetime lifetime,
@@ -27,6 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             myBurstCodeInsights = burstCodeInsights;
         }
 
+        public bool IsBurstGutterIconsEnabled => myBurstEnableIcons.Value;
+
         protected override bool CheckAndAnalyze(IMethodDeclaration methodDeclaration, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             return false;
@@ -34,7 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
 
         protected override void Analyze(IMethodDeclaration methodDeclaration, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
-            if (!myBurstEnableIcons.Value)
+            if (!IsBurstGutterIconsEnabled)
                 return;
             
             var items = myBurstCodeInsights.GetBurstActions(methodDeclaration, context);

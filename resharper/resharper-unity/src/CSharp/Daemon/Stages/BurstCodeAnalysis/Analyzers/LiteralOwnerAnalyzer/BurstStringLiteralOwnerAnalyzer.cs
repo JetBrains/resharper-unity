@@ -9,7 +9,7 @@ using JetBrains.ReSharper.Psi.Tree;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.LiteralOwnerAnalyzer
 {
     [SolutionComponent]
-    public sealed class BurstStringLiteralOwnerAnalyzer : BurstProblemAnalyzerBase<IStringLiteralOwner>
+    public sealed class BurstStringLiteralOwnerAnalyzer : BurstProblemAnalyzerBase<IStringLiteralOwner>, IBurstBannedAnalyzer
     {
         private readonly IEnumerable<IBurstStringSubAnalyzer> mySubAnalyzers;
 
