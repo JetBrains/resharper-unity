@@ -12,7 +12,7 @@ using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAna
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers
 {
     [SolutionComponent]
-    public sealed class BurstObjectCreationExpressionAnalyzer : BurstProblemAnalyzerBase<IObjectCreationExpression>
+    public sealed class BurstObjectCreationExpressionAnalyzer : BurstProblemAnalyzerBase<IObjectCreationExpression>, IBurstBannedAnalyzer
     {
         protected override bool CheckAndAnalyze(IObjectCreationExpression objectCreationExpression, IHighlightingConsumer consumer,
             IReadOnlyCallGraphContext context)

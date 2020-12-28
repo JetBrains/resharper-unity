@@ -23,7 +23,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
             SolutionAnalysisService = dataProvider.Solution.GetComponent<SolutionAnalysisService>().NotNull();
         }
 
-        protected sealed override bool IsAvailable(IUserDataHolder cache, IMethodDeclaration containingMethod)
+        protected override bool IsAvailable(IUserDataHolder cache, IMethodDeclaration containingMethod)
         {
             return PerformanceAnalysisUtil.IsAvailable(containingMethod);
         }

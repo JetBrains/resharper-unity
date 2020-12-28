@@ -2,18 +2,17 @@ using System.Collections.Generic;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddExpensiveComment
 {  
     [SolutionComponent]
-    public class PerformanceAnalysisCodeInsightAddExpensiveProvider : SimpleCodeInsightMenuItemProviderBase, IPerformanceAnalysisCodeInsightMenuItemProvider
+    public class AddExpensiveCommentCodeInsightProvider : PerformanceCriticalCodeInsightProvider
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
 
-        public PerformanceAnalysisCodeInsightAddExpensiveProvider(ExpensiveInvocationContextProvider expensiveContextProvider, ISolution solution) : base(solution)
+        public AddExpensiveCommentCodeInsightProvider(ExpensiveInvocationContextProvider expensiveContextProvider, ISolution solution) : base(solution)
         {
             myExpensiveContextProvider = expensiveContextProvider;
         }
@@ -22,7 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         {
             var declaredElement = methodDeclaration.DeclaredElement;
             
-            return myExpensiveContextProvider.IsMarkedStage(declaredElement, context);
+            return !myExpensiveContextProvider.IsMarkedStage(declaredElement, context) 
+                && base.CheckCallGraph(methodDeclaration, context);
         }
         
         protected override IEnumerable<IBulbAction> GetActions(IMethodDeclaration methodDeclaration)
