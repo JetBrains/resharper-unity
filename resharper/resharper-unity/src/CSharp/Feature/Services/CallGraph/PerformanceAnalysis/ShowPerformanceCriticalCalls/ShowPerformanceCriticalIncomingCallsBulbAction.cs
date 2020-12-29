@@ -20,17 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         protected override Func<CallHierarchyFindResult, bool> GetFilter(ISolution solution)
         {
             var performanceCriticalContextProvider = solution.GetComponent<PerformanceCriticalContextProvider>();
-
-            return result =>
-            {
-                solution.Locks.AssertReadAccessAllowed();
-                
-                var referenceElement = result.ReferenceElement;
-                var containing = (referenceElement as ICSharpTreeNode)?.GetContainingFunctionLikeDeclarationOrClosure();
-                var declaredElement = containing?.DeclaredElement;
-
-                return performanceCriticalContextProvider.IsMarkedGlobal(declaredElement);
-            };
+            
+            return CallGraphActionUtil.GetSimpleFilter(solution, performanceCriticalContextProvider, CallsType);
         }
 
         public static IEnumerable<ShowPerformanceCriticalIncomingCallsBulbAction> GetAllCalls(IMethodDeclaration methodDeclaration)

@@ -21,17 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
         protected override Func<CallHierarchyFindResult, bool> GetFilter(ISolution solution)
         {
             var burstContextProvider = solution.GetComponent<BurstContextProvider>();
-
-            return result =>
-            {
-                solution.Locks.AssertReadAccessAllowed();
-                
-                var referenceElement = result.ReferenceElement;
-                var containing = (referenceElement as ICSharpTreeNode)?.GetContainingFunctionLikeDeclarationOrClosure();
-                var declaredElement = containing?.DeclaredElement;
-
-                return burstContextProvider.IsMarkedGlobal(declaredElement);
-            };
+            
+            return CallGraphActionUtil.GetSimpleFilter(solution, burstContextProvider, CallsType);
         }
 
         public static IEnumerable<ShowBurstCallsBulbAction> GetAllCalls(IMethodDeclaration methodDeclaration)
