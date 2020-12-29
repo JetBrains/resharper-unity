@@ -22,13 +22,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
         private readonly ISolution mySolution;
-        private readonly UnityCodeInsightProvider myCodeInsightProvider;
+        private readonly BurstCodeInsightProvider myCodeInsightProvider;
         private readonly IconHost myIconHost;
         private readonly ITextControlManager myTextControlManager;
 
         public BurstCodeVisionProvider(ISolution solution,
             IApplicationWideContextBoundSettingStore store,
-            UnityCodeInsightProvider codeInsightProvider, IconHost iconHost)
+            BurstCodeInsightProvider codeInsightProvider, IconHost iconHost)
         {
             mySolution = solution;
             myTextControlManager = mySolution.GetComponent<ITextControlManager>();
