@@ -30,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                             UnitySolutionTracker solutionTracker,
                                             BackendUnityHost backendUnityHost,
                                             IconHost iconHost, PerformanceCriticalContextProvider contextProvider,
-                                            IEnumerable<IPerformanceAnalysisCodeInsightMenuItemProvider> menuItemProviders)
+                                            IEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders)
             : base(solution, api, settingsStore, contextProvider, menuItemProviders)
         {
             myCodeInsightProvider = codeInsightProvider;

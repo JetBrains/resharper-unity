@@ -6,11 +6,11 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis
 {
-    public abstract class BurstCodeInsightProvider : SimpleCodeInsightMenuItemProviderBase, IBurstCodeInsightMenuItemProvider
+    public abstract class BurstBulbItemsProvider : SimpleCallGraphBulbItemsProviderBase, IBurstBulbItemsProvider
     {
         private readonly BurstContextProvider myBurstContextProvider;
 
-        protected BurstCodeInsightProvider(ISolution solution) : base(solution)
+        protected BurstBulbItemsProvider(ISolution solution) : base(solution)
         {
             myBurstContextProvider = solution.GetComponent<BurstContextProvider>();
         }

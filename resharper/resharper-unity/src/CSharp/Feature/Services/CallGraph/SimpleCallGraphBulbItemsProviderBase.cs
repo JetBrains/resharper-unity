@@ -11,11 +11,11 @@ using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
-    public abstract class SimpleCodeInsightMenuItemProviderBase : ICallGraphCodeInsightMenuItemProvider
+    public abstract class SimpleCallGraphBulbItemsProviderBase : ICallGraphBulbItemsProvider
     {
         protected readonly ISolution Solution;
 
-        protected SimpleCodeInsightMenuItemProviderBase(ISolution solution)
+        protected SimpleCallGraphBulbItemsProviderBase(ISolution solution)
         {
             Solution = solution;
         }

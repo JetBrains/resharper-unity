@@ -13,11 +13,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     public class BurstCodeInsights
     {
         private readonly ITextControlManager myTextControlManager;
-        private readonly IEnumerable<IBurstCodeInsightMenuItemProvider> myBulbProviders;
+        private readonly IEnumerable<IBurstBulbItemsProvider> myBulbProviders;
 
         public BurstCodeInsights(
             ITextControlManager textControlManager, 
-            IEnumerable<IBurstCodeInsightMenuItemProvider> bulbProviders)
+            IEnumerable<IBurstBulbItemsProvider> bulbProviders)
         {
             myTextControlManager = textControlManager;
             myBulbProviders = bulbProviders;

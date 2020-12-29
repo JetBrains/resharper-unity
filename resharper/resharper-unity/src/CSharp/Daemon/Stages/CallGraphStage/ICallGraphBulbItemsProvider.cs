@@ -7,7 +7,7 @@ using JetBrains.TextControl;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
-    public interface ICallGraphCodeInsightMenuItemProvider
+    public interface ICallGraphBulbItemsProvider
     {
         [NotNull]
         [ItemNotNull]

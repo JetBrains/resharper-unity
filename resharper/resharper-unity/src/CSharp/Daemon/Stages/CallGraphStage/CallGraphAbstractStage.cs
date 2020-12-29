@@ -53,7 +53,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
         private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
         private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
         private readonly CallGraphContext myContext;
-        private int myInterruptCounter;
 
         public CallGraphProcess(
             IDaemonProcess process,
@@ -72,9 +71,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
-            if (myContext.Kind != DaemonProcessKind.GLOBAL_WARNINGS && myContext.Kind != DaemonProcessKind.VISIBLE_DOCUMENT) 
-                return;
-
             File.GetPsiServices().Locks.AssertReadAccessAllowed();
             
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
@@ -85,17 +81,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
-        private void CheckForInterrupt(IHighlightingConsumer consumer)
-        {
-            var counter = ++myInterruptCounter;
-            
-            if (counter == 10)
-            {
-                myInterruptCounter = 0;
-                IsProcessingFinished(consumer);
-            }
-        }
-
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
             myContext.AdvanceContext(element, myContextProviders);
@@ -104,7 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             {
                 foreach (var problemAnalyzer in myProblemAnalyzers)
                 {
-                    CheckForInterrupt(consumer);
+                    IsProcessingFinished(consumer);
                     problemAnalyzer.RunInspection(element, consumer, myContext);
                 }
             }

@@ -31,12 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         protected readonly PerformanceCriticalContextProvider PerformanceContextProvider;
         private readonly ISolution mySolution;
         private readonly ITextControlManager myTextControlManager;
-        private readonly IEnumerable<IPerformanceAnalysisCodeInsightMenuItemProvider> myMenuItemProviders;
+        private readonly IEnumerable<IPerformanceAnalysisBulbItemsProvider> myMenuItemProviders;
        
         public UnityCommonIconProvider(ISolution solution, UnityApi unityApi,
                                        IApplicationWideContextBoundSettingStore settingsStore,
                                        PerformanceCriticalContextProvider performanceContextProvider,
-                                       IEnumerable<IPerformanceAnalysisCodeInsightMenuItemProvider> menuItemProviders)
+                                       IEnumerable<IPerformanceAnalysisBulbItemsProvider> menuItemProviders)
         {
             mySolution = solution;
             myTextControlManager = solution.GetComponent<ITextControlManager>();

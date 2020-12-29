@@ -6,11 +6,11 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis
 {
-    public abstract class PerformanceCriticalCodeInsightProvider : SimpleCodeInsightMenuItemProviderBase, IPerformanceAnalysisCodeInsightMenuItemProvider
+    public abstract class PerformanceCriticalBulbItemsProvider : SimpleCallGraphBulbItemsProviderBase, IPerformanceAnalysisBulbItemsProvider
     {
         private readonly PerformanceCriticalContextProvider myPerformanceCriticalContextProvider;
 
-        protected PerformanceCriticalCodeInsightProvider(ISolution solution)
+        protected PerformanceCriticalBulbItemsProvider(ISolution solution)
             : base(solution)
         {
             myPerformanceCriticalContextProvider = solution.GetComponent<PerformanceCriticalContextProvider>();

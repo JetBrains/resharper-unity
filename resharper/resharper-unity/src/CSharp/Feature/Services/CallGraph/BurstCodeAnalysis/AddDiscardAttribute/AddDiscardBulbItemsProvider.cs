@@ -6,18 +6,20 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.TextControl;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
     [SolutionComponent]
-    public sealed class AddDisableCommentCodeInsightProvider : PerformanceCriticalCodeInsightProvider
+    public class AddDiscardBulbItemsProvider : BurstBulbItemsProvider
     {
-        public AddDisableCommentCodeInsightProvider(ISolution solution) : base(solution)
+        public AddDiscardBulbItemsProvider(ISolution solution)
+            : base(solution)
         {
         }
-        
+
+
         protected override IEnumerable<BulbMenuItem> GetActions(IMethodDeclaration methodDeclaration, ITextControl textControl)
         {
-            var bulb = new AddPerformanceAnalysisDisableCommentBulbAction(methodDeclaration);
+            var bulb = new AddDiscardAttributeBulbAction(methodDeclaration);
             var bulbMenuItem = UnityCallGraphUtil.BulbActionToMenuItem(bulb, textControl, Solution, BulbThemedIcons.ContextAction.Id);
 
             return new[] {bulbMenuItem};

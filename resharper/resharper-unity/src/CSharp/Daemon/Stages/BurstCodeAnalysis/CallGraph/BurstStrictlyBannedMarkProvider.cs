@@ -12,10 +12,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     {
         public const string MarkId = "Unity.BustContextStrictMarks";
         public static readonly CallGraphRootMarkId RootMarkId = new CallGraphRootMarkId(MarkId);
-
-
+        
         public BurstStrictlyBannedMarkProvider()
-            : base(BurstMarksProvider.MarkId, MarkId, new SimplePropagator(), false)
+            : base(BurstMarksProvider.MarkId, MarkId, new SimplePropagator(), true)
         {
         }
 

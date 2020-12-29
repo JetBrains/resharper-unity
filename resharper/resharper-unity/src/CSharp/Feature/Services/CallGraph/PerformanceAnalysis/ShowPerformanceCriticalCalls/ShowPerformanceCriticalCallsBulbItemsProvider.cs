@@ -10,11 +10,11 @@ using JetBrains.TextControl;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowPerformanceCriticalCalls
 {
     [SolutionComponent]
-    public class ShowPerformanceCriticalCallsCodeInsightProvider : PerformanceCriticalCodeInsightProvider
+    public class ShowPerformanceCriticalCallsBulbItemsProvider : PerformanceCriticalBulbItemsProvider
     {
         private readonly SolutionAnalysisConfiguration myConfiguration;
 
-        public ShowPerformanceCriticalCallsCodeInsightProvider(SolutionAnalysisConfiguration configuration, ISolution solution) : base(solution)
+        public ShowPerformanceCriticalCallsBulbItemsProvider(SolutionAnalysisConfiguration configuration, ISolution solution) : base(solution)
         {
             myConfiguration = configuration;
         }

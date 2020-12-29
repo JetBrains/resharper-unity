@@ -11,12 +11,12 @@ using JetBrains.TextControl;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowExpensiveCalls
 {
     [SolutionComponent]
-    public class ShowExpensiveCallsCodeInsightProvider : PerformanceCriticalCodeInsightProvider
+    public class ShowExpensiveCallsBulbItemsProvider : PerformanceCriticalBulbItemsProvider
     {
         private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
         private readonly SolutionAnalysisConfiguration myConfiguration;
 
-        public ShowExpensiveCallsCodeInsightProvider(
+        public ShowExpensiveCallsBulbItemsProvider(
             ExpensiveInvocationContextProvider expensiveContextProvider, 
             SolutionAnalysisConfiguration configuration,
             ISolution solution) : base(solution)

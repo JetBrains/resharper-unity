@@ -10,11 +10,11 @@ using JetBrains.TextControl;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.ShowBurstCalls
 {
     [SolutionComponent]
-    public class ShowBurstCallsCodeInsightProvider : BurstCodeInsightProvider
+    public class ShowBurstCallsBulbItemsProvider : BurstBulbItemsProvider
     {
         private readonly SolutionAnalysisConfiguration myConfiguration;
 
-        public ShowBurstCallsCodeInsightProvider(ISolution solution, SolutionAnalysisConfiguration configuration)
+        public ShowBurstCallsBulbItemsProvider(ISolution solution, SolutionAnalysisConfiguration configuration)
             : base(solution)
         {
             myConfiguration = configuration;
