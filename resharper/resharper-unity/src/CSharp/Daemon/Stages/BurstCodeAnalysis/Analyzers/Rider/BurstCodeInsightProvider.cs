@@ -13,13 +13,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public class BurstCodeInsightProvider : AbstractUnityCodeInsightProvider
     {
-        
-        public BurstCodeInsightProvider(FrontendBackendHost frontendBackendHost, UnitySolutionTracker solutionTracker,
+        public BurstCodeInsightProvider(FrontendBackendHost frontendBackendHost,
             BulbMenuComponent bulbMenu, UnitySolutionTracker tracker)
             : base(frontendBackendHost, bulbMenu)
         { 
             RelativeOrderings = tracker.IsUnityProject.HasTrueValue()
-            // CGTD with performance critical
+            
             ? new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingBefore(ReferencesCodeInsightsProvider.Id)}
             : new CodeLensRelativeOrdering[] {new CodeLensRelativeOrderingLast()};
         }
