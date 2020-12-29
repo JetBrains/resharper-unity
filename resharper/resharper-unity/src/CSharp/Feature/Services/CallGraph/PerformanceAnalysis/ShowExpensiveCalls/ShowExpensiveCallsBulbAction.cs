@@ -21,17 +21,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
         protected sealed override Func<CallHierarchyFindResult, bool> GetFilter(ISolution solution)
         {
             var expensiveContextProvider = solution.GetComponent<ExpensiveInvocationContextProvider>();
-
-            return result =>
-            {
-                solution.Locks.AssertReadAccessAllowed();
-                
-                var referenceElement = result.ReferenceElement;
-                var containing = (referenceElement as ICSharpTreeNode)?.GetContainingFunctionLikeDeclarationOrClosure();
-                var declaredElement = containing?.DeclaredElement;
-
-                return expensiveContextProvider.IsMarkedGlobal(declaredElement);
-            };
+            
+            return CallGraphActionUtil.GetSimpleFilter(solution, expensiveContextProvider, CallsType);
         }
 
         public static IEnumerable<ShowExpensiveCallsBulbAction> GetAllCalls(IMethodDeclaration methodDeclaration)
