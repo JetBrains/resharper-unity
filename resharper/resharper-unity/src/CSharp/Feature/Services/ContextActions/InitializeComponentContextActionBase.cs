@@ -7,7 +7,7 @@ using JetBrains.Diagnostics;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
+using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.MoveQuickFixes;
 using JetBrains.ReSharper.Psi;
@@ -32,7 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
         }
     }
-    
+
     [ContextAction(Group = UnityContextActions.GroupID,
         Name = "Initialize property in Start or Awake method",
         Description =
@@ -44,17 +44,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
         {
         }
     }
-    
+
     public abstract class InitializeComponentContextActionBase<T> : IContextAction where T : class, ITypeOwnerDeclaration
     {
         [NotNull] private static readonly SubmenuAnchor ourSubmenuAnchor =
             new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
         [NotNull] private static readonly SubmenuAnchor ourAttributeSubmenuAnchor =
             new SubmenuAnchor(IntentionsAnchors.ContextActionsAnchor, SubmenuBehavior.Executable);
-        
+
         private readonly ICSharpContextActionDataProvider myDataProvider;
 
-        public InitializeComponentContextActionBase(ICSharpContextActionDataProvider dataProvider)
+        protected InitializeComponentContextActionBase(ICSharpContextActionDataProvider dataProvider)
         {
             myDataProvider = dataProvider;
         }
@@ -88,7 +88,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             var method = MonoBehaviourMoveUtil.GetMonoBehaviourMethod(classDeclaration, methodName);
             if (method == null)
                 return false;
-            
+
             foreach (var assignmentExpression in method.Descendants<IAssignmentExpression>())
             {
                 if (assignmentExpression.Dest is IReferenceExpression referenceExpression)
@@ -118,12 +118,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             return false;
         }
-        
+
         public virtual bool IsAvailable(IUserDataHolder cache)
         {
             if (!(myDataProvider.GetSelectedElement<IClassLikeDeclaration>() is IClassDeclaration))
                 return false;
-            
+
             var typeOwner = myDataProvider.GetSelectedElement<T>();
             var type = typeOwner?.Type.GetTypeElement();
             if (type == null || !type.IsUnityComponent(out _))
@@ -131,7 +131,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             return true;
         }
-        
+
         private class InitializeComponentBulbActionBase : BulbActionBase
         {
             private readonly string myName;
@@ -140,7 +140,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             private readonly string myMethodName;
             private readonly CSharpElementFactory myFactory;
 
-            public InitializeComponentBulbActionBase(string name, ITypeElement typeElement, 
+            public InitializeComponentBulbActionBase(string name, ITypeElement typeElement,
                 IClassDeclaration classDeclaration, string methodName)
             {
                 myName = name;
@@ -161,7 +161,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
 
             public override string Text => $"Initialize in '{myMethodName}'";
         }
-        
+
         private class AddRequireComponentBulbActionBase : BulbActionBase
         {
             private readonly IType myType;

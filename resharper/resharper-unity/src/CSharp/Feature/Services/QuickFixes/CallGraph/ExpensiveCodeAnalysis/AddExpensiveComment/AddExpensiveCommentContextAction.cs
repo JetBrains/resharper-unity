@@ -4,14 +4,12 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
+using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.ExpensiveCodeAnalysis.
     ExpensiveCodeActionsUtil;
@@ -32,7 +30,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         [NotNull] private readonly PerformanceCriticalContextProvider myPerformanceContextProvider;
         [NotNull] private readonly ExpensiveInvocationContextProvider myExpensiveContextProvider;
         [NotNull] private readonly ICSharpContextActionDataProvider myDataProvider;
-     
+
         public AddExpensiveCommentContextAction(ICSharpContextActionDataProvider dataProvider)
         {
             myDataProvider = dataProvider;
@@ -60,16 +58,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
             if (!isPerformanceContext)
                 return EmptyList<IntentionAction>.Instance;
-            
+
             var bulbAction = new AddExpensiveCommentBulbAction(methodDeclaration);
-            
+
             return bulbAction.ToContextActionIntentions();
         }
 
         public bool IsAvailable(IUserDataHolder cache)
         {
             var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
-            
+
             if (methodDeclaration == null)
                 return false;
 
