@@ -87,6 +87,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             if (!RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out _))
                 return;
 
+            // code vision
             var actions = GetActions(cSharpDeclaration, context);
             var extraActions = RiderIconProviderUtil.GetExtraActions(mySolutionTracker, myBackendUnityHost);
             var iconModel = myIconHost.Transform(InsightUnityIcons.InsightHot.Id);

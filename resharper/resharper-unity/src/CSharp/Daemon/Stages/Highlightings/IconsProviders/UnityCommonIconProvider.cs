@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Application.Progress;
+using JetBrains.Application.Settings;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.Application.UI.Help;
 using JetBrains.Application.UI.Icons.CommonThemedIcons;
@@ -13,6 +14,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.Bulbs;
+using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
@@ -63,13 +65,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             ICSharpDeclaration cSharpDeclaration,
             string text, string tooltip, IReadOnlyCallGraphContext context)
         {
+            // gutter mark
             var actions = GetActions(cSharpDeclaration, context);
             
             consumer.AddHotHighlighting(PerformanceContextProvider, cSharpDeclaration,
                 SettingsStore.BoundSettingsStore, text, tooltip, context, actions, true);
         }
 
-        protected IList<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
+        protected IReadOnlyList<BulbMenuItem> GetEventFunctionActions(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
         {
             if (!(declaration is IMethodDeclaration methodDeclaration)) 
                 return EmptyList<BulbMenuItem>.Instance;
@@ -81,9 +84,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 return EmptyList<BulbMenuItem>.Instance;
             
             var isCoroutine = IsCoroutine(methodDeclaration, UnityApi);
-            
-            var result = GetBulbMenuItems(declaration, context);
-                    
+            var result = GetBulbMenuItems(declaration, context) as List<BulbMenuItem> ?? new List<BulbMenuItem>();
+
             if (isCoroutine.HasValue)
             {
                 var bulbAction = isCoroutine.Value
@@ -158,7 +160,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             return Equals(type.GetClrName(), PredefinedType.IENUMERATOR_FQN);
         }
         
-        protected IList<BulbMenuItem> GetActions(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
+        protected IReadOnlyList<BulbMenuItem> GetActions(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
         {
             if (declaration.DeclaredElement is IMethod method && UnityApi.IsEventFunction(method))
                 return GetEventFunctionActions(declaration, context);
@@ -166,11 +168,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             return GetBulbMenuItems(declaration, context);
         }
 
-        protected IList<BulbMenuItem> GetBulbMenuItems(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
-        { 
+        protected IReadOnlyList<BulbMenuItem> GetBulbMenuItems(ICSharpDeclaration declaration, IReadOnlyCallGraphContext context)
+        {
             if (!(declaration is IMethodDeclaration methodDeclaration))
                 return EmptyList<BulbMenuItem>.Instance;
+
+            var iconsEnabled = context.DaemonProcess.ContextBoundSettingsStore.GetValue((UnitySettings key) => key.EnableIconsForPerformanceCriticalCode);
                     
+            if (!iconsEnabled)
+                return EmptyList<BulbMenuItem>.Instance;
+            
             var textControl = myTextControlManager.LastFocusedTextControl.Value;
             var result = new List<BulbMenuItem>();
 
