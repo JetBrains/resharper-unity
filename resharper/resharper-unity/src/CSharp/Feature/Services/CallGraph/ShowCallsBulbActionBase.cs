@@ -50,10 +50,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
             switch (callType)
             {
                 case ShowCallsType.INCOMING:
-                    manager.ShowIncomingWithFilter(start, text, filter);
+                    manager.ShowIncoming(start, text, filter);
                     break;
                 case ShowCallsType.OUTGOING:
-                    manager.ShowOutgoingWithFilter(start, text, filter);
+                    manager.ShowOutgoing(start, text, filter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
