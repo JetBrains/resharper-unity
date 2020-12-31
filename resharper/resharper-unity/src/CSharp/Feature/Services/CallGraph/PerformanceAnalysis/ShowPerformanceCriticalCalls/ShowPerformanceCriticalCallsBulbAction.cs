@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Application.Threading;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.CallHierarchy.FindResults;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
@@ -8,9 +7,9 @@ using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.ShowPerformanceCriticalCalls
 {
-    public class ShowPerformanceCriticalIncomingCallsBulbAction : ShowMethodCallsBulbActionBase
+    public class ShowPerformanceCriticalCallsBulbAction : ShowMethodCallsBulbActionBase
     {
-        public ShowPerformanceCriticalIncomingCallsBulbAction(IMethodDeclaration methodDeclaration, ShowCallsType callsType)
+        public ShowPerformanceCriticalCallsBulbAction(IMethodDeclaration methodDeclaration, ShowCallsType callsType)
             : base(methodDeclaration, callsType)
         {
         }
@@ -24,12 +23,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
             return CallGraphActionUtil.GetSimpleFilter(solution, performanceCriticalContextProvider, CallsType);
         }
 
-        public static IEnumerable<ShowPerformanceCriticalIncomingCallsBulbAction> GetAllCalls(IMethodDeclaration methodDeclaration)
+        public static IEnumerable<ShowPerformanceCriticalCallsBulbAction> GetPerformanceCallsActions(IMethodDeclaration methodDeclaration)
         {
-            var incoming = new ShowPerformanceCriticalIncomingCallsBulbAction(methodDeclaration, ShowCallsType.INCOMING);
-            var outgoing = new ShowPerformanceCriticalIncomingCallsBulbAction(methodDeclaration, ShowCallsType.OUTGOING);
+            var incoming = new ShowPerformanceCriticalCallsBulbAction(methodDeclaration, ShowCallsType.INCOMING);
+            // var outgoing = new ShowPerformanceCriticalIncomingCallsBulbAction(methodDeclaration, ShowCallsType.OUTGOING);
 
-            return new[] {incoming, outgoing};
+            return new[] {
+                incoming
+                // , outgoing
+            };
         }
     }
 }

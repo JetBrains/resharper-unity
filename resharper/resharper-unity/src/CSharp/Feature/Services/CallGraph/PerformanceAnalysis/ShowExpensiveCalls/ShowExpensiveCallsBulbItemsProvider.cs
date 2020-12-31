@@ -39,7 +39,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
 
         protected override IEnumerable<BulbMenuItem> GetActions(IMethodDeclaration methodDeclaration, ITextControl textControl)
         {
-            var actions = ShowExpensiveCallsBulbAction.GetAllCalls(methodDeclaration);
+            var actions = ShowExpensiveCallsBulbAction.GetExpensiveCallsActions(methodDeclaration);
 
             return actions.ToMenuItems(textControl, Solution);
         }

@@ -49,6 +49,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             var providerId = myCodeInsightProvider.ProviderId;
             void Fallback() => base.AddEventFunctionHighlighting(consumer, method, eventFunction, text, context);
             
+            // here is order of IsCodeVisionEnabled and hasHotIcon matters
+            // hasHotIcon differs if hot icon or event function icon, it depends on multiple settings
             if (!RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out var useFallback))
                 return;
 
@@ -78,6 +80,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         { 
             var boundStore = SettingsStore.BoundSettingsStore;
             
+            // here is order of IsCodeVisionEnabled and hasHotIcon matters also
+            // hasHotIcon and IsCodeVisionEnabled checks if hot icon should be enabled. if it shouldn't - nothing would be displayed 
             if (!cSharpDeclaration.HasHotIcon(PerformanceContextProvider, boundStore, context))
                 return;
 

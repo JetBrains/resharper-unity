@@ -25,12 +25,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
             return CallGraphActionUtil.GetSimpleFilter(solution, burstContextProvider, CallsType);
         }
 
-        public static IEnumerable<ShowBurstCallsBulbAction> GetAllCalls(IMethodDeclaration methodDeclaration)
+        public static IEnumerable<ShowBurstCallsBulbAction> GetBurstCallsActions(IMethodDeclaration methodDeclaration)
         {
             var incoming = new ShowBurstCallsBulbAction(methodDeclaration, ShowCallsType.INCOMING);
-            var outgoing = new ShowBurstCallsBulbAction(methodDeclaration, ShowCallsType.OUTGOING);
+            // var outgoing = new ShowBurstCallsBulbAction(methodDeclaration, ShowCallsType.OUTGOING);
 
-            return new[] {incoming, outgoing};
+            return new[]
+            {
+                incoming
+                // , outgoing
+            };
         }
     }
 }

@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
 
         protected override IEnumerable<BulbMenuItem> GetActions(IMethodDeclaration methodDeclaration, ITextControl textControl)
         {
-            var actions = ShowBurstCallsBulbAction.GetAllCalls(methodDeclaration);
+            var actions = ShowBurstCallsBulbAction.GetBurstCallsActions(methodDeclaration);
 
             return actions.ToMenuItems(textControl, Solution);
         }

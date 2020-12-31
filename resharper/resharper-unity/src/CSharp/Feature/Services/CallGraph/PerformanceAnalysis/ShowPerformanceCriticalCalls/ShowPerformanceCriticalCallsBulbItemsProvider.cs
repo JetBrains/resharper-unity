@@ -21,7 +21,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
 
         protected override IEnumerable<BulbMenuItem> GetActions(IMethodDeclaration methodDeclaration, ITextControl textControl)
         {
-            var actions = ShowPerformanceCriticalIncomingCallsBulbAction.GetAllCalls(methodDeclaration);
+            var actions = ShowPerformanceCriticalCallsBulbAction.GetPerformanceCallsActions(methodDeclaration);
 
             return actions.ToMenuItems(textControl, Solution);
         }

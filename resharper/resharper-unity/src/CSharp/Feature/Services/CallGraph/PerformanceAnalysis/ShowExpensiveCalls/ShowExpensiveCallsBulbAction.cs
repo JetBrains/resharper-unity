@@ -25,12 +25,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
             return CallGraphActionUtil.GetSimpleFilter(solution, expensiveContextProvider, CallsType);
         }
 
-        public static IEnumerable<ShowExpensiveCallsBulbAction> GetAllCalls(IMethodDeclaration methodDeclaration)
+        public static IEnumerable<ShowExpensiveCallsBulbAction> GetExpensiveCallsActions(IMethodDeclaration methodDeclaration)
         {
-            var incoming = new ShowExpensiveCallsBulbAction(methodDeclaration, ShowCallsType.INCOMING);
+            // var incoming = new ShowExpensiveCallsBulbAction(methodDeclaration, ShowCallsType.INCOMING);
             var outgoing = new ShowExpensiveCallsBulbAction(methodDeclaration, ShowCallsType.OUTGOING);
 
-            return new[] {incoming, outgoing};
+            return new[]
+            {
+                // incoming,
+                outgoing
+            };
         }
     }
 }
