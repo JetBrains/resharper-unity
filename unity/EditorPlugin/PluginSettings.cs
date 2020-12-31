@@ -282,6 +282,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       EditorGUILayout.HelpBox(loggingMsg, MessageType.None);
 
+      // This setting is natively supported in Unity 2018.2+
       if (UnityUtils.UnityVersion < new Version(2018, 2))
       {
         EditorGUI.BeginChangeCheck();
