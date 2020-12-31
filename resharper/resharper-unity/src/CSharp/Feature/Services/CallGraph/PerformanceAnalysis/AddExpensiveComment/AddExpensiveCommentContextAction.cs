@@ -25,8 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
     {
         private readonly IContextBoundSettingsStoreLive mySettingStore;
         
-        public AddExpensiveCommentContextAction([NotNull] ICSharpContextActionDataProvider dataProvider)
-            : base(dataProvider)
+        public AddExpensiveCommentContextAction([NotNull] ICSharpContextActionDataProvider dataProvider) : base(dataProvider)
         {
             mySettingStore = dataProvider.Solution.GetComponent<IApplicationWideContextBoundSettingStore>().BoundSettingsStore;
         }

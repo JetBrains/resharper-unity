@@ -10,8 +10,7 @@ using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.Util;
 
-namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.
-    AddDiscardAttribute
+namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
     [ContextAction(
         Group = UnityContextActions.GroupID,
@@ -37,9 +36,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Bu
 
         protected override bool IsAvailable(IUserDataHolder holder, IMethodDeclaration methodDeclaration)
         {
-            var @base = base.IsAvailable(holder, methodDeclaration);
-
-            return @base && !myBurstGutterMarkProvider.IsBurstGutterIconsEnabled;
+            return !myBurstGutterMarkProvider.IsGutterMarkEnabled 
+                   && base.IsAvailable(holder, methodDeclaration);
         }
     }
 }

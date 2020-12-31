@@ -4,7 +4,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
 {
     public class ShowExpensiveCallsUtil
     {
-        public const string OUTGOING_CALLS_MESSAGE = "Why this method expensive?";
+        public const string OUTGOING_CALLS_MESSAGE = "Show outgoing Expensive calls";
         public const string INCOMING_CALLS_MESSAGE = "Show incoming Expensive calls";
         public const string CONTEXT_ACTION_DESCRIPTION = "Show Expensive calls actions";
 

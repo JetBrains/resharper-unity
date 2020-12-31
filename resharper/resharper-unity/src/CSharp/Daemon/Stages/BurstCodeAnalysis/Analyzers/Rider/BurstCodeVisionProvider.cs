@@ -1,3 +1,5 @@
+using System;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Platform.Icons;
@@ -6,21 +8,24 @@ using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
     [SolutionComponent]
-    public sealed class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
+    public sealed class BurstCodeVisionProvider : BurstGutterMarkProvider
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
         private readonly BurstCodeInsightProvider myBurstCodeInsightProvider;
         private readonly IconHost myIconHost;
         private readonly BurstCodeInsights myCodeInsights;
 
-        public BurstCodeVisionProvider(IApplicationWideContextBoundSettingStore store,
-                                       BurstCodeInsightProvider burstCodeInsightProvider,
-                                       IconHost iconHost,
-                                       BurstCodeInsights codeInsights)
+        public BurstCodeVisionProvider(
+            Lifetime lifetime,
+            IApplicationWideContextBoundSettingStore store,
+            BurstCodeInsightProvider burstCodeInsightProvider,
+            IconHost iconHost,
+            BurstCodeInsights codeInsights) : base(lifetime, store, codeInsights)
         {
             mySettingsStore = store;
             myBurstCodeInsightProvider = burstCodeInsightProvider;
@@ -28,13 +33,38 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             myCodeInsights = codeInsights;
         }
 
+        public override bool IsGutterMarkEnabled
+        {
+            get
+            {
+                var result = false;
+                var boundStore = mySettingsStore.BoundSettingsStore;
+                var providerId = myBurstCodeInsightProvider.ProviderId;
+                
+                RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, () => result = base.IsGutterMarkEnabled, out _);
+                
+                return result;
+            }
+        }
+
+        private bool ShouldAddCodeVision(
+            IMethodDeclaration methodDeclaration,
+            IHighlightingConsumer consumer,
+            IReadOnlyCallGraphContext context)
+        {
+            var isBurstIconsEnabled = base.IsGutterMarkEnabled;
+            var boundStore = mySettingsStore.BoundSettingsStore;
+            var providerId = myBurstCodeInsightProvider.ProviderId;
+            void Fallback() => base.Analyze(methodDeclaration, consumer, context);
+            
+            return isBurstIconsEnabled 
+                   && RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out _);
+        }
+
         protected override void Analyze(IMethodDeclaration methodDeclaration,
             IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
-            var boundStore = mySettingsStore.BoundSettingsStore;
-            var providerId = myBurstCodeInsightProvider.ProviderId;
-            
-            if (!RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, () => { }, out _))
+            if (!ShouldAddCodeVision(methodDeclaration, consumer, context))
                 return;
 
             var declaredElement = methodDeclaration.DeclaredElement;
@@ -48,12 +78,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
                 iconModel,
                 actions,
                 extraActions: null);
-        }
-
-        protected override bool CheckAndAnalyze(IMethodDeclaration methodDeclaration, IHighlightingConsumer consumer,
-            IReadOnlyCallGraphContext context)
-        {
-            return false;
         }
     }
 }

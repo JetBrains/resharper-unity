@@ -16,7 +16,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 {
     public abstract class ShowCallsBulbActionBase : IBulbAction
     {
-        private const string myTooltipSuffix = " not ready: Swea should be loaded and completed at least once";
+        private const string TooltipSuffix = " not ready: Swea should be loaded and completed at least once";
         public void Execute(ISolution solution, ITextControl textControl)
         {
             solution.Locks.AssertReadAccessAllowed();
@@ -25,7 +25,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
 
             if (!UnityCallGraphUtil.IsCallGraphReady(solution))
             {
-                BulbActionUtils.ShowTooltip(text + myTooltipSuffix, textControl);
+                BulbActionUtils.ShowTooltip(text + TooltipSuffix, textControl);
                 return;
             }
 
@@ -50,9 +50,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
             switch (callType)
             {
                 case ShowCallsType.INCOMING:
+                    text += "from " + start.Element.ShortName;
                     manager.ShowIncoming(start, text, filter);
                     break;
                 case ShowCallsType.OUTGOING:
+                    text += "to " + start.Element.ShortName;
                     manager.ShowOutgoing(start, text, filter);
                     break;
                 default:
