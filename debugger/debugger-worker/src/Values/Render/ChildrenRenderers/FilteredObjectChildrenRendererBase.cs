@@ -4,7 +4,6 @@ using System.Threading;
 using JetBrains.Annotations;
 using JetBrains.Util;
 using MetadataLite.API;
-using Mono.Debugging.Backend.Values;
 using Mono.Debugging.Backend.Values.Render.ChildrenRenderers;
 using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
@@ -16,68 +15,87 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
     public abstract class FilteredObjectChildrenRendererBase<TValue> : ChildrenRendererBase<TValue, IObjectValueRole<TValue>>
         where TValue : class
     {
-        protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole, IMetadataTypeLite instanceType, IPresentationOptions options,
+        protected override IEnumerable<IValueEntity> GetChildren(IObjectValueRole<TValue> valueRole,
+                                                                 IMetadataTypeLite instanceType,
+                                                                 IPresentationOptions options,
                                                                  IUserDataHolder dataHolder, CancellationToken token)
         {
+            var references = EnumerateChildren(valueRole, options, token);
+            references = FilterChildren(references);
+            references = SortChildren(references);
+            return RenderChildren(valueRole, references, options, token);
+        }
+
+        protected IEnumerable<IValueReference<TValue>> EnumerateChildren(IObjectValueRole<TValue> valueRole,
+                                                                         IPresentationOptions options,
+                                                                         CancellationToken token)
+        {
+            // This is essentially the same as ChildrenRenderingUtil.EnumerateMembersFlat and EnumerateMembersWithBaseNode
+            // but allows us to split enumerating, sorting, and rendering into separate steps so we can also insert
+            // filtering.
             return options.FlattenHierarchy
-                ? EnumerateMembersFlat(valueRole, options, token, ValueServices)
-                : EnumerateMembersWithBaseNode(valueRole, options, token, ValueServices);
+                ? ChildrenRenderingUtil.CollectMembersByOverridingRules(valueRole, token)
+                : GetPropertiesAndFields(valueRole);
         }
 
-        protected abstract bool IsAllowedReference(IValueReference<TValue> reference);
-
-        private IEnumerable<IValueEntity> EnumerateMembersFlat(IObjectValueRole<TValue> valueRole,
-                                                               IPresentationOptions options,
-                                                               CancellationToken token,
-                                                               IValueServicesFacade<TValue> valueServices)
+        private IEnumerable<IValueReference<TValue>> FilterChildren(IEnumerable<IValueReference<TValue>> references)
         {
-            var sortedReferences = ChildrenRenderingUtil.CollectMembersByOverridingRules(valueRole, token)
-                .Where(IsAllowedReference)
-                .OrderBy(IdentityFunc<IValueReference<TValue>>.Instance, ByNameReferenceComparer<TValue>.Instance);
-
-            foreach (var memberValue in ChildrenRenderingUtil.RenderReferencesWithVisibilityGroups(sortedReferences, options, token, valueServices))
-                yield return memberValue;
-
-            foreach (var staticMember in ChildrenRenderingUtil.EnumerateStaticMembersIfNeeded(valueRole, options, token, valueServices))
-                yield return staticMember;
+            return references.Where(ShouldInclude);
         }
 
-        private IEnumerable<IValueEntity> EnumerateMembersWithBaseNode(IObjectValueRole<TValue> valueRole,
-                                                                       IPresentationOptions options,
-                                                                       CancellationToken token,
-                                                                       IValueServicesFacade<TValue> valueServices)
+        protected virtual bool ShouldInclude(IValueReference<TValue> reference) => true;
+
+        protected IEnumerable<IValueReference<TValue>> SortChildren(IEnumerable<IValueReference<TValue>> references)
         {
-            var baseRole = FindNextBaseRoleWithVisibleMembers(valueRole);
-            if (baseRole != null)
+            return references.OrderBy(IdentityFunc<IValueReference<TValue>>.Instance,
+                ByNameReferenceComparer<TValue>.Instance);
+        }
+
+        protected IEnumerable<IValueEntity> RenderChildren(IObjectValueRole<TValue> valueRole,
+                                                           IEnumerable<IValueReference<TValue>> references,
+                                                           IPresentationOptions options, CancellationToken token)
+        {
+            if (!options.FlattenHierarchy)
             {
-                yield return new ConcreteObjectRoleReference<TValue>(baseRole, "base", false, ValueOriginKind.Base, ValueFlags.None).ToValue(valueServices);
+                // Add when rendering to avoid sorting issues
+                var baseRole = FindNextBaseRoleWithVisibleMembers(valueRole);
+                if (baseRole != null)
+                {
+                    yield return new ConcreteObjectRoleReference<TValue>(baseRole, "base", false, ValueOriginKind.Base,
+                        ValueFlags.None).ToValue(ValueServices);
+                }
             }
 
-            var propertiesAndFields = GetPropertiesAndFields(valueRole)
-                .Where(IsAllowedReference)
-                .OrderBy(IdentityFunc<IValueReference<TValue>>.Instance, ByNameReferenceComparer<TValue>.Instance);
+            foreach (var memberValue in ChildrenRenderingUtil.RenderReferencesWithVisibilityGroups(references, options,
+                token, ValueServices))
+            {
+                yield return memberValue;
+            }
 
-            foreach (var member in ChildrenRenderingUtil.RenderReferencesWithVisibilityGroups(propertiesAndFields, options, token, valueServices))
-                yield return member;
-
-            foreach (var staticMember in ChildrenRenderingUtil.EnumerateStaticMembersIfNeeded(valueRole, options, token, valueServices))
+            foreach (var staticMember in ChildrenRenderingUtil.EnumerateStaticMembersIfNeeded(valueRole, options,
+                token, ValueServices))
+            {
                 yield return staticMember;
+            }
         }
 
         [CanBeNull]
         private static IObjectValueRole<TValue> FindNextBaseRoleWithVisibleMembers(IObjectValueRole<TValue> role)
         {
             var baseRole = role.Base;
-            if (baseRole == null || !baseRole.Type.IsVisibleType())
-                return null;
-            var baseRoleType = baseRole.Type;
-            if (baseRoleType.GetProperties().Any(ChildrenRenderingUtil.IsVisibleGetterProperty) ||
-                baseRoleType.GetFields().Any(ChildrenRenderingUtil.IsVisibleField))
+            while (baseRole != null && baseRole.Type.IsVisibleType())
             {
-                return baseRole;
+                var baseRoleType = baseRole.Type;
+                if (baseRoleType.GetProperties().Any(ChildrenRenderingUtil.IsVisibleGetterProperty) ||
+                    baseRoleType.GetFields().Any(ChildrenRenderingUtil.IsVisibleField))
+                {
+                    return baseRole;
+                }
+
+                baseRole = baseRole.Base;
             }
 
-            return FindNextBaseRoleWithVisibleMembers(baseRole);
+            return null;
         }
 
         private static IReadOnlyList<IValueReference<TValue>> GetPropertiesAndFields(IObjectValueRole<TValue> role)
