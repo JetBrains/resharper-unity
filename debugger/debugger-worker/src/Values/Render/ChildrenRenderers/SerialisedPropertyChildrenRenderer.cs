@@ -439,9 +439,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
                     var name = copiedSerializedPropertyRole.GetInstancePropertyReference("name")
                         ?.AsStringSafe(options)?.GetString() ?? $"prop{count}";
-                    yield return new NamedReferenceDecorator<TValue>(copiedSerializedPropertyRole.ValueReference,
-                        name, ValueOriginKind.Other, ValueFlags.None | ValueFlags.IsReadOnly, null,
-                        myValueServices.RoleFactory).ToValue(myValueServices);
+                    yield return new CalculatedValueReferenceDecorator<TValue>(
+                            copiedSerializedPropertyRole.ValueReference, myValueServices.RoleFactory, name)
+                        .ToValue(myValueServices);
 
                     // MoveNext(false). cursor is now viewing either the next child or a sibling of the original
                     // property, or is at the end of the stream (nextResult is false). If this evaluation fails,

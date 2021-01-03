@@ -147,10 +147,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     var componentName = GetComponentName(componentReference, objectNamesType,
                         getInspectorTitleMethod, frame, options, myValueServices, out var isNameFromValue);
 
-                    yield return new NamedReferenceDecorator<TValue>(componentReference, componentName,
-                            ValueOriginKind.Property, ValueFlags.None | ValueFlags.IsReadOnly,
-                            componentType.MetadataType, myValueServices.RoleFactory, isNameFromValue)
-                        .ToValue(myValueServices);
+                    yield return new CalculatedValueReferenceDecorator<TValue>(componentReference,
+                        myValueServices.RoleFactory, componentName, !isNameFromValue).ToValue(myValueServices);
                 }
             }
 
@@ -158,7 +156,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                             [CanBeNull] IReifiedType<TValue> objectNamesType,
                                             [CanBeNull] IMetadataMethodLite getInspectorTitleMethod,
                                             IStackFrame frame,
-                                            IValueFetchOptions options, IValueServicesFacade<TValue> services,
+                                            IValueFetchOptions options,
+                                            IValueServicesFacade<TValue> services,
                                             out bool isNameFromValue)
             {
                 if (objectNamesType != null && getInspectorTitleMethod != null)
@@ -265,14 +264,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     frame, myValueServices.RoleFactory).AsObjectSafe(options);
                 var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
                     ?.AsObjectSafe(options);
-                var name = gameObject?.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
+                if (gameObject == null)
+                    return new ErrorValue("Game Object", "Unable to retrieve child game object");
+
+                var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
                     ?.GetString() ?? "Game Object";
 
-                return new NamedReferenceDecorator<TValue>(gameObject.ValueReference, name,
-                        ValueOriginKind.Property,
-                        ValueFlags.None | ValueFlags.IsReadOnly,
-                        myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory, true)
-                    .ToValue(myValueServices);
+                return new CalculatedValueReferenceDecorator<TValue>(gameObject.ValueReference,
+                    myValueServices.RoleFactory, name, false).ToValue(myValueServices);
             }
         }
     }

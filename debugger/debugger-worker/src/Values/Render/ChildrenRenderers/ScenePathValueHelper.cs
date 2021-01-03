@@ -79,13 +79,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     ValueFlags.None | ValueFlags.IsReadOnly | ValueFlags.IsDefaultTypePresentation, frame,
                     valueServices.RoleFactory);
 
-                // Wrap the simple reference - the default StringValuePresenter will display simple reference as a
-                // string property, with syntax colouring, quotes and type name. Our TextValuePresenter will catch any
-                // IStringValueRole with a NamedReferenceDecorator and use the flags we've set
-                return new NamedReferenceDecorator<TValue>(simpleReference, simpleReference.DefaultName,
-                        simpleReference.OriginKind, simpleReference.DefaultFlags, simpleReference.DeclaredType,
-                        valueServices.RoleFactory)
-                    .ToValue(valueServices);
+                // Wrap the simple reference - the default StringValuePresenter will display the simple reference as a
+                // string property, with syntax colouring, quotes and type name. Our TextValuePresenter will handle the
+                // TextValueReference and use the flags we've set
+                return new TextValueReference<TValue>(simpleReference, valueServices.RoleFactory).ToValue(valueServices);
             }
             catch (Exception e)
             {

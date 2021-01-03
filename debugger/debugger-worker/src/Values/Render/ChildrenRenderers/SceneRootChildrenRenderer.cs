@@ -135,10 +135,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     isNameFromValue = false;
                 }
 
-                return new NamedReferenceDecorator<TValue>(elementRole.ValueReference, name,
-                        ValueOriginKind.Property, ValueFlags.None | ValueFlags.IsReadOnly,
-                        elementRole.ReifiedType.MetadataType, myValueServices.RoleFactory, isNameFromValue)
-                    .ToValue(myValueServices);
+                return new CalculatedValueReferenceDecorator<TValue>(elementRole.ValueReference,
+                    myValueServices.RoleFactory, name, !isNameFromValue).ToValue(myValueServices);
             }
         }
     }
