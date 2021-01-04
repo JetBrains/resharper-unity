@@ -397,7 +397,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                       MethodSelector getMethodElementSelector,
                                       IValueServicesFacade<TValue> valueServices,
                                       ILogger logger)
-                : base($"[0..{arraySize}]")
+                : base($"[0..{arraySize - 1}]")
             {
                 mySerializedPropertyRole = serializedPropertyRole;
                 myArraySize = arraySize;
