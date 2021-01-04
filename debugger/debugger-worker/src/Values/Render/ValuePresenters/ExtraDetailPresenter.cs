@@ -44,7 +44,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
             if (presentation.ResultKind == ValueResultKind.Success)
             {
                 var presentationBuilder = PresentationBuilder.New(presentation.Value.ToArray())
-                    .Add(ValuePresentationPart.Space).Comment("(" + extraDetail.ExtraDetail + ")");
+                    .Add(ValuePresentationPart.Space)
+                    .SpecialSymbol("(").Default(extraDetail.ExtraDetail).SpecialSymbol(")");
                 return SimplePresentation.CreateSuccess(presentationBuilder.Result(), presentation.Flags,
                     presentation.Type, presentation.PrimitiveValue);
             }

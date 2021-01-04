@@ -147,8 +147,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     var componentName = GetComponentName(componentReference, objectNamesType,
                         getInspectorTitleMethod, frame, options, myValueServices, out var isNameFromValue);
 
+                    // Tell the value presenter to hide the name field, if we're using it for the key. Also hide the
+                    // default type presentation - we know it's a Component, it's under a group called "Components"
                     yield return new CalculatedValueReferenceDecorator<TValue>(componentReference,
-                        myValueServices.RoleFactory, componentName, !isNameFromValue).ToValue(myValueServices);
+                        myValueServices.RoleFactory, componentName, !isNameFromValue, false).ToValue(myValueServices);
                 }
             }
 
@@ -270,8 +272,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
                     ?.GetString() ?? "Game Object";
 
+                // Tell the value presenter to not show the name field, we're already showing it as the key. Also don't
+                // show the type - a GameObject's child can only be a GameObject
                 return new CalculatedValueReferenceDecorator<TValue>(gameObject.ValueReference,
-                    myValueServices.RoleFactory, name, false).ToValue(myValueServices);
+                    myValueServices.RoleFactory, name, false, false).ToValue(myValueServices);
             }
         }
     }

@@ -24,8 +24,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
     {
         private readonly IUnityOptions myUnityOptions;
         private readonly ILogger myLogger;
-        private readonly OneToSetMap<PropertyKind, string> myPerTypeFieldNames;
-        private readonly ISet<PropertyKind> myHandledPropertyTypes;
+        private readonly OneToSetMap<SerializedPropertyKind, string> myPerTypeFieldNames;
+        private readonly ISet<SerializedPropertyKind> myHandledPropertyTypes;
         private readonly ISet<string> myKnownFieldNames;
 
         public SerializedPropertyChildrenRenderer(IUnityOptions unityOptions, ILogger logger)
@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             myLogger = logger;
             myPerTypeFieldNames = GetPerTypeFieldNames();
             myHandledPropertyTypes = myPerTypeFieldNames.Keys.ToSet();
-            myHandledPropertyTypes.Add(PropertyKind.Generic);   // Special handling
+            myHandledPropertyTypes.Add(SerializedPropertyKind.Generic);   // Special handling
             myKnownFieldNames = myPerTypeFieldNames.Values.ToSet();
         }
 
@@ -57,8 +57,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
         {
             var enumValueObject = valueRole.GetInstancePropertyReference("propertyType")
                 ?.AsObjectSafe(options)?.GetEnumValue(options);
-            var propertyType = (PropertyKind) Enum.ToObject(typeof(PropertyKind),
-                enumValueObject ?? PropertyKind.Invalid);
+            var propertyType = (SerializedPropertyKind) Enum.ToObject(typeof(SerializedPropertyKind),
+                enumValueObject ?? SerializedPropertyKind.Invalid);
 
             // Fall back to showing everything if we don't have any special handling for the property type. This should
             // protect us if Unity introduces a new serialised property type.
@@ -76,7 +76,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
             // Generic means a custom serializable struct, an array or a fixed buffer (public unsafe fixed int buf[10])
             // Strings are also arrays, and have properties for each character. We'll show them too.
-            if (propertyType == PropertyKind.Generic || propertyType == PropertyKind.String)
+            if (propertyType == SerializedPropertyKind.Generic || propertyType == SerializedPropertyKind.String)
             {
                 if (!Util.TryEvaluatePrimitiveProperty(valueRole, "isArray", options, out isArray) || !isArray)
                     Util.TryEvaluatePrimitiveProperty(valueRole, "isFixedBuffer", options, out isFixedBuffer);
@@ -111,7 +111,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 // to add an "Array" node that is shown instead of "Children" - but that would still look like a child
                 // node, and would only include the "Size" node over the existing array/fixed buffer element group.
                 // For now, just ignore these special properties and leave it to the array/fixed buffer element group.
-                if (!isArray && !isFixedBuffer && propertyType != PropertyKind.String)
+                if (!isArray && !isFixedBuffer && propertyType != SerializedPropertyKind.String)
                     yield return new ChildrenGroup(valueRole, ValueServices, myLogger);
             }
 
@@ -157,9 +157,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     return false;
 
                 // Show the array or fixed buffer fields if applicable
-                if (isArray && myPerTypeFieldNames[PropertyKind.ArrayModifier].Contains(r.DefaultName))
+                if (isArray && myPerTypeFieldNames[SerializedPropertyKind.ArrayModifier].Contains(r.DefaultName))
                     return true;
-                if (isFixedBuffer && myPerTypeFieldNames[PropertyKind.FixedBufferModifier].Contains(r.DefaultName))
+                if (isFixedBuffer && myPerTypeFieldNames[SerializedPropertyKind.FixedBufferModifier].Contains(r.DefaultName))
                     return true;
 
                 // Exclude property specific fields for other property types
@@ -174,18 +174,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
         private IEnumerable<IValueReference<TValue>> DecorateChildren(IObjectValueRole<TValue> serializedProperty,
                                                                       IEnumerable<IValueReference<TValue>> references,
-                                                                      PropertyKind propertyType,
+                                                                      SerializedPropertyKind propertyType,
                                                                       IPresentationOptions options)
         {
             switch (propertyType)
             {
-                case PropertyKind.Enum:
+                case SerializedPropertyKind.Enum:
                     return DecorateEnumValue(serializedProperty, references, options);
 
                 // I was expecting string arrays to have elements with propertyType == SpecializedPropertyType.Character
                 // but they instead seem to be Integer with a type == "char"
-                case PropertyKind.Character:
-                case PropertyKind.Integer when serializedProperty.GetInstancePropertyReference("type")?.AsStringSafe(options)?.GetString() == "char":
+                case SerializedPropertyKind.Character:
+                case SerializedPropertyKind.Integer when serializedProperty.GetInstancePropertyReference("type")?.AsStringSafe(options)?.GetString() == "char":
                     return DecorateCharacterValue(references, options);
                 default:
                     return references;
@@ -194,30 +194,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
         private IEnumerable<IValueReference<TValue>> DecorateEnumValue(IObjectValueRole<TValue> serializedProperty,
                                                                        IEnumerable<IValueReference<TValue>> references,
-                                                                       IValueFetchOptions options)
+                                                                       IPresentationOptions options)
         {
             foreach (var reference in references)
             {
                 if (reference.DefaultName == "enumValueIndex")
                 {
-                    var primitiveValueRole = reference.AsPrimitiveSafe(options);
-                    if (primitiveValueRole == null)
-                        myLogger.Trace("Unable to retrieve enumValueIndex");
-                    else
+                    var extraDetail =
+                        SerializedPropertyHelper.GetEnumValueIndexAsEnumName(serializedProperty, reference, options);
+                    if (extraDetail != null)
                     {
-                        if (primitiveValueRole.GetPrimitive() is int enumValueIndex
-                            && serializedProperty.GetInstancePropertyReference("enumNames")?.GetPrimaryRole(options) is
-                                IArrayValueRole<TValue> enumNamesArray)
-                        {
-                            var enumNameRole = enumNamesArray.GetElementReference(enumValueIndex).AsStringSafe(options);
-                            var enumName = enumNameRole?.GetString();
-                            if (!string.IsNullOrEmpty(enumName))
-                            {
-                                yield return new ExtraDetailValueReferenceDecorator<TValue>(reference,
-                                    ValueServices.RoleFactory, enumName);
-                                continue;
-                            }
-                        }
+                        yield return new ExtraDetailValueReferenceDecorator<TValue>(reference,
+                            ValueServices.RoleFactory, extraDetail);
+                        continue;
                     }
                 }
 
@@ -225,23 +214,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             }
         }
 
-        private IEnumerable<IValueReference<TValue>> DecorateCharacterValue(
-            IEnumerable<IValueReference<TValue>> references, IValueFetchOptions options)
+        private IEnumerable<IValueReference<TValue>> DecorateCharacterValue(IEnumerable<IValueReference<TValue>> references,
+                                                                            IValueFetchOptions options)
         {
             foreach (var reference in references)
             {
                 if (reference.DefaultName == "intValue" || reference.DefaultName == "longValue")
                 {
-                    var primitiveValue = reference.AsPrimitiveSafe(options)?.GetPrimitive();
-                    if (primitiveValue != null)
+                    var extraDetail = SerializedPropertyHelper.GetIntValueAsPrintableChar(reference, options);
+                    if (extraDetail != null)
                     {
-                        var value = primitiveValue as long? ?? primitiveValue as int?;
-                        if (value < char.MaxValue)
-                        {
-                            yield return new ExtraDetailValueReferenceDecorator<TValue>(reference,
-                                ValueServices.RoleFactory, $"'{ToPrintable((char) value)}'");
-                            continue;
-                        }
+                        yield return new ExtraDetailValueReferenceDecorator<TValue>(reference,
+                            ValueServices.RoleFactory, extraDetail);
+                        continue;
                     }
                 }
 
@@ -249,81 +234,55 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
             }
         }
 
-        private static string ToPrintable(char value)
+        private static OneToSetMap<SerializedPropertyKind, string> GetPerTypeFieldNames()
         {
-            switch (value)
-            {
-                case '\'': return @"\'";
-                case '\"': return @"\""";
-                case '\\': return @"\\";
-                case '\0': return @"\0";
-                case '\a': return @"\a";
-                case '\b': return @"\b";
-                case '\f': return @"\f";
-                case '\n': return @"\n";
-                case '\r': return @"\r";
-                case '\t': return @"\t";
-                case '\v': return @"\v";
-            }
-
-            if (char.IsControl(value))
-            {
-                // Format as hex, the integer value is most likely being displayed as decimal
-                return $"\\u{(ushort) value:x4}";
-            }
-
-            return value.ToString();
-        }
-
-        private static OneToSetMap<PropertyKind, string> GetPerTypeFieldNames()
-        {
-            return new OneToSetMap<PropertyKind, string>
+            return new OneToSetMap<SerializedPropertyKind, string>
             {
                 // Simple values
-                {PropertyKind.Integer, "intValue"},
-                {PropertyKind.Integer, "longValue"},
-                {PropertyKind.Boolean, "boolValue"},
-                {PropertyKind.Float, "floatValue"},
-                {PropertyKind.Float, "doubleValue"},
-                {PropertyKind.String, "stringValue"},
-                {PropertyKind.Color, "colorValue"},
-                {PropertyKind.LayerMask, "intValue"},
-                {PropertyKind.Vector2, "vector2Value"},
-                {PropertyKind.Vector3, "vector3Value"},
-                {PropertyKind.Vector4, "vector4Value"},
-                {PropertyKind.Rect, "rectValue"},
-                {PropertyKind.Character, "intValue"},
-                {PropertyKind.AnimationCurve, "animationCurveValue"},
-                {PropertyKind.Bounds, "boundsValue"},
-                {PropertyKind.Gradient, "gradientValue"},
-                {PropertyKind.Quaternion, "quaternionValue"},
-                {PropertyKind.Vector2Int, "vector2IntValue"},
-                {PropertyKind.Vector3Int, "vector3IntValue"},
-                {PropertyKind.RectInt, "rectIntValue"},
-                {PropertyKind.BoundsInt, "boundsIntValue"},
+                {SerializedPropertyKind.Integer, "intValue"},
+                {SerializedPropertyKind.Integer, "longValue"},
+                {SerializedPropertyKind.Boolean, "boolValue"},
+                {SerializedPropertyKind.Float, "floatValue"},
+                {SerializedPropertyKind.Float, "doubleValue"},
+                {SerializedPropertyKind.String, "stringValue"},
+                {SerializedPropertyKind.Color, "colorValue"},
+                {SerializedPropertyKind.LayerMask, "intValue"},
+                {SerializedPropertyKind.Vector2, "vector2Value"},
+                {SerializedPropertyKind.Vector3, "vector3Value"},
+                {SerializedPropertyKind.Vector4, "vector4Value"},
+                {SerializedPropertyKind.Rect, "rectValue"},
+                {SerializedPropertyKind.Character, "intValue"},
+                {SerializedPropertyKind.AnimationCurve, "animationCurveValue"},
+                {SerializedPropertyKind.Bounds, "boundsValue"},
+                {SerializedPropertyKind.Gradient, "gradientValue"}, // Note this is an internal property
+                {SerializedPropertyKind.Quaternion, "quaternionValue"},
+                {SerializedPropertyKind.Vector2Int, "vector2IntValue"},
+                {SerializedPropertyKind.Vector3Int, "vector3IntValue"},
+                {SerializedPropertyKind.RectInt, "rectIntValue"},
+                {SerializedPropertyKind.BoundsInt, "boundsIntValue"},
 
                 // Complex values: Object references
-                {PropertyKind.ObjectReference, "objectReferenceValue"},
-                {PropertyKind.ObjectReference, "objectReferenceInstanceIDValue"},
+                {SerializedPropertyKind.ObjectReference, "objectReferenceValue"},
+                {SerializedPropertyKind.ObjectReference, "objectReferenceInstanceIDValue"},
 
                 // Complex values: Enum
-                {PropertyKind.Enum, "enumValueIndex"},
-                {PropertyKind.Enum, "enumDisplayNames"},
-                {PropertyKind.Enum, "enumLocalizedDisplayNames"},
-                {PropertyKind.Enum, "enumNames"},
+                {SerializedPropertyKind.Enum, "enumValueIndex"},
+                {SerializedPropertyKind.Enum, "enumDisplayNames"},
+                {SerializedPropertyKind.Enum, "enumLocalizedDisplayNames"},
+                {SerializedPropertyKind.Enum, "enumNames"},
 
                 // Complex values: Exposed references
                 // TODO: This is resolved via the "exposedName" serialised property. Should we show this?
                 // TODO: This can be resolved via a "defaultValue" serialised property. Should we show this?
-                {PropertyKind.ExposedReference, "exposedReferenceValue"},
-                {PropertyKind.ExposedReference, "objectReferenceValue"},
+                {SerializedPropertyKind.ExposedReference, "exposedReferenceValue"},
+                {SerializedPropertyKind.ExposedReference, "objectReferenceValue"},
 
                 // Complex values: Managed references
                 // Related to SerializeReference
                 // TODO: Figure out a test case
-                {PropertyKind.ManagedReference, "managedReferenceValue"},
-                {PropertyKind.ManagedReference, "managedReferenceFullTypename"},
-                {PropertyKind.ManagedReference, "managedReferenceFieldTypename"},
+                {SerializedPropertyKind.ManagedReference, "managedReferenceValue"},
+                {SerializedPropertyKind.ManagedReference, "managedReferenceFullTypename"},
+                {SerializedPropertyKind.ManagedReference, "managedReferenceFieldTypename"},
 
                 // Arrays (variable length) and fixed buffer lists are implemented with several serialized properties.
                 // The first is the property you see in your C# object. The next is a sibling (not child, annoyingly)
@@ -334,54 +293,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 // GetFixedBufferElementAtIndex). Array size is a property on the original SerializedProperty.
                 // With iteration based on children and not siblings, we miss out on showing these implementation
                 // elements for arrays and fixed buffers (and strings, which are surprisingly serialised as arrays)
-                {PropertyKind.ArraySize, "intValue"},
-                {PropertyKind.FixedBufferSize, "intValue"},
+                {SerializedPropertyKind.ArraySize, "intValue"},
+                {SerializedPropertyKind.FixedBufferSize, "intValue"},
 
                 // Not strictly SerializedPropertyTypes, but it simplifies the code
-                {PropertyKind.ArrayModifier, "isArray"},
-                {PropertyKind.ArrayModifier, "arraySize"},
-                {PropertyKind.ArrayModifier, "arrayElementType"},
-                {PropertyKind.FixedBufferModifier, "isFixedBuffer"},
-                {PropertyKind.FixedBufferModifier, "fixedBufferSize"},
+                {SerializedPropertyKind.ArrayModifier, "isArray"},
+                {SerializedPropertyKind.ArrayModifier, "arraySize"},
+                {SerializedPropertyKind.ArrayModifier, "arrayElementType"},
+                {SerializedPropertyKind.FixedBufferModifier, "isFixedBuffer"},
+                {SerializedPropertyKind.FixedBufferModifier, "fixedBufferSize"},
             };
         }
 
-        // This MUST be kept in sync with UnityEditor.SerializedPropertyType
-        internal enum PropertyKind
-        {
-            // Not used in SerializedPropertyType, but useful for code
-            Invalid = -999,
-            ArrayModifier = -99,
-            FixedBufferModifier = -98,
-
-            // Maps to UnityEditor.SerializedPropertyType
-            Generic = -1, // Arrays, custom serializable structs, etc.
-            Integer = 0,
-            Boolean = 1,
-            Float = 2,
-            String = 3,
-            Color = 4,
-            ObjectReference = 5,
-            LayerMask = 6,
-            Enum = 7,
-            Vector2 = 8,
-            Vector3 = 9,
-            Vector4 = 10,
-            Rect = 11,
-            ArraySize = 12, // Used when iterating through the properties that make up an array. Comes before the data
-            Character = 13,
-            AnimationCurve = 14,
-            Bounds = 15,
-            Gradient = 16,
-            Quaternion = 17,
-            ExposedReference = 18,
-            FixedBufferSize = 19,   // Like ArraySize
-            Vector2Int = 20,
-            Vector3Int = 21,
-            RectInt = 22,
-            BoundsInt = 23,
-            ManagedReference = 24
-        }
 
         // Used for both variable length arrays and fixed buffer arrays
         private class ArrayElementsGroup : ChunkedValueGroupBase<IObjectValueRole<TValue>>
@@ -449,10 +372,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 var frame = mySerializedPropertyRole.ValueReference.OriginatingFrame;
                 var indexValue = myValueServices.ValueFactory.CreatePrimitive(frame, options, index);
                 var childSerializedPropertyValue = collection.CallInstanceMethod(myGetElementMethod, indexValue);
-                return new SimpleValueReference<TValue>(childSerializedPropertyValue,
-                        mySerializedPropertyRole.ReifiedType.MetadataType, $"[{index}]", ValueOriginKind.ArrayElement,
-                        ValueFlags.None | ValueFlags.IsReadOnly, frame, myValueServices.RoleFactory)
-                    .ToValue(myValueServices);
+                var valueReference = new SimpleValueReference<TValue>(childSerializedPropertyValue,
+                    mySerializedPropertyRole.ReifiedType.MetadataType, $"[{index}]", ValueOriginKind.ArrayElement,
+                    ValueFlags.None | ValueFlags.IsReadOnly, frame, myValueServices.RoleFactory);
+
+                // Tell the value presenter to hide the name, because it's always "data" (DefaultName is the key name)
+                // Also hide the type presentation - they can only ever be SerializedProperty instances
+                return new CalculatedValueReferenceDecorator<TValue>(valueReference, myValueServices.RoleFactory,
+                    valueReference.DefaultName, false, false).ToValue(myValueServices);
             }
         }
 
@@ -543,8 +470,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
                     var name = copiedSerializedPropertyRole.GetInstancePropertyReference("name")
                         ?.AsStringSafe(options)?.GetString() ?? $"prop{count}";
+
+                    // Tell the value presenter to hide the name field, because we're using it for the key name. Also
+                    // hide the default presentation. Of course it's a SerializedProperty, it's a child of a
+                    // SerializedProperty
                     yield return new CalculatedValueReferenceDecorator<TValue>(
-                            copiedSerializedPropertyRole.ValueReference, myValueServices.RoleFactory, name)
+                            copiedSerializedPropertyRole.ValueReference, myValueServices.RoleFactory, name, false,
+                            false)
                         .ToValue(myValueServices);
 
                     // MoveNext(false). cursor is now viewing either the next child or a sibling of the original

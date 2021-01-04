@@ -12,16 +12,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReference
         public CalculatedValueReferenceDecorator([NotNull] IValueReference<TValue> valueReferenceImplementation,
                                                  IValueRoleFactory<TValue> roleFactory,
                                                  string name,
-                                                 bool allowNameInValue = true)
+                                                 bool allowNameInValue = true,
+                                                 bool allowDefaultTypePresentation = true)
             : base(valueReferenceImplementation, roleFactory)
         {
             DefaultName = name;
             AllowNameInValue = allowNameInValue;
+            AllowDefaultTypePresentation = allowDefaultTypePresentation;
         }
 
         // Returns false if the name of this reference is already used in the key. E.g. "My Component = {GameObject} My Component"
         // Avoids the unnecessary repetition and noise
         public bool AllowNameInValue { get; }
+
+        public bool AllowDefaultTypePresentation { get; }
 
         public override string DefaultName { get; }
 

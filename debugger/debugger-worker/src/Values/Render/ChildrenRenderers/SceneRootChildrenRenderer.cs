@@ -135,8 +135,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     isNameFromValue = false;
                 }
 
+                // Tell the value presenter to hide the name field, if we're using it for the key. Also hide the default
+                // type presentation - we know it's a GameObject, it's under a group called "Game Objects"
                 return new CalculatedValueReferenceDecorator<TValue>(elementRole.ValueReference,
-                    myValueServices.RoleFactory, name, !isNameFromValue).ToValue(myValueServices);
+                    myValueServices.RoleFactory, name, !isNameFromValue, false).ToValue(myValueServices);
             }
         }
     }

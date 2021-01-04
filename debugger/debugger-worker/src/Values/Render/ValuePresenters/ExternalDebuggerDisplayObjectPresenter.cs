@@ -114,9 +114,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
                 var displayString =
                     ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj,
                         debuggerDisplayString, evaluationOptions, token);
+
+                var flags = valueReference.DefaultFlags;
+                if (valueReference is CalculatedValueReferenceDecorator<TValue> reference &&
+                    !reference.AllowDefaultTypePresentation)
+                {
+                    flags |= ValueFlags.IsDefaultTypePresentation;
+                }
+
                 return SimplePresentation.CreateSuccess(
                     ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)),
-                    valueReference.DefaultFlags, instanceType, displayString);
+                    flags, instanceType, displayString);
             }
             catch (Exception ex)
             {

@@ -87,8 +87,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 var name = serializedPropertyRole.GetInstancePropertyReference("name")
                     ?.AsStringSafe(options)?.GetString() ?? "Child";
 
+                // Tell the value presenter to hide the name field, as we're using it for the key name. Also hide the
+                // type presentation - of course it's a SerializedProperty
                 yield return new CalculatedValueReferenceDecorator<TValue>(serializedPropertyRole.ValueReference,
-                    myValueServices.RoleFactory, name).ToValue(myValueServices);
+                    myValueServices.RoleFactory, name, false, false).ToValue(myValueServices);
 
                 // Technically, we should now repeatedly call Copy() and Next(false) until Next returns false so that we
                 // show all child properties of the SerializedObject. But empirically, there is only one direct child of
