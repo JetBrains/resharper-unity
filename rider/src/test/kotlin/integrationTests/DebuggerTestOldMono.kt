@@ -13,6 +13,6 @@ class DebuggerTestOldMono : DebuggerTestBase() {
         // make code compatible with old mono
         val newBehaviourScript = "NewBehaviourScript.cs"
         val script  = tempDir.resolve("Assets").resolve(newBehaviourScript)
-        script.writeText(script.readText().replace("b_0001_1110_1000_0100_1000_0000", "0"))
+        script.writeText(script.readText().replace("0b_0001_1110_1000_0100_1000_0000", "0"))
     }
 }
