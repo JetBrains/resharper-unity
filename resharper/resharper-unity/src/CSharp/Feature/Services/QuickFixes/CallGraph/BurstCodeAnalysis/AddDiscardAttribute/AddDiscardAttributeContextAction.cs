@@ -4,13 +4,11 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
+using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis.
@@ -39,8 +37,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public IEnumerable<IntentionAction> CreateBulbItems()
         {
-            var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
-            var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
+            var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
 
             if (methodDeclaration == null)
                 return EmptyList<IntentionAction>.Instance;
@@ -59,8 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
 
         public bool IsAvailable(IUserDataHolder cache)
         {
-            var identifier = myDataProvider.GetSelectedElement<ITreeNode>() as ICSharpIdentifier;
-            var methodDeclaration = MethodDeclarationNavigator.GetByNameIdentifier(identifier);
+            var methodDeclaration = UnityCallGraphUtil.GetMethodDeclarationByCaret(myDataProvider);
 
             return AddDiscardAttributeUtil.IsAvailable(methodDeclaration);
         }

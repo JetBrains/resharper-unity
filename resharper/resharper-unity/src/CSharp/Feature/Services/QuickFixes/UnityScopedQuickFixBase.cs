@@ -1,6 +1,6 @@
-using System;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Feature.Services.Intentions.Scoped.QuickFixes;
+using JetBrains.ReSharper.Feature.Services.QuickFixes;
+using JetBrains.ReSharper.Feature.Services.QuickFixes.Scoped;
 using JetBrains.ReSharper.Intentions.Util;
 using JetBrains.Util;
 

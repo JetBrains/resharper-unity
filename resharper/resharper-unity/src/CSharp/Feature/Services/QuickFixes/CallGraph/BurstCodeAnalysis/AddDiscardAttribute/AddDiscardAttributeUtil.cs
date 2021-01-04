@@ -1,8 +1,6 @@
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
-using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis.AddDiscardAttribute
 {
@@ -15,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.C
         {
             if (methodDeclaration == null)
                 return false;
-            
+
             var declaredElement = methodDeclaration.DeclaredElement;
 
             return declaredElement != null && methodDeclaration.IsValid() &&

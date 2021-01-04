@@ -1,0 +1,7 @@
+{
+    "disableProjectUpdate": true,
+    "dependencies": {
+    "com.unity.ide.rider": "3.0.3",
+    "com.unity.test-framework": "1.1.20"
+  }
+}
