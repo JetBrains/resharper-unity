@@ -570,7 +570,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 if (copyMethod == null)
                 {
                     myLogger.Warn("Cannot find Copy method on SerializedProperty");
-                    return true;
+                    return false;
                 }
 
                 // CallInstanceMethod always returns not null (VoidValue if it fails)

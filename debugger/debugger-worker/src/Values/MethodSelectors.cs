@@ -1,4 +1,3 @@
-using JetBrains.Metadata.Reader.API;
 using MetadataLite.API;
 using MetadataLite.API.Selectors;
 
@@ -18,19 +17,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
                 m.Name == "GetFixedBufferElementAtIndex"
                 && m.Parameters.Length == 1 && m.Parameters[0].Type.Is("System.Int32"));
 
-        public static MethodSelector SerializedProperty_Copy =
+        public static readonly MethodSelector SerializedProperty_Copy =
             new MethodSelector(m => m.Name == "Copy" && m.Parameters.Length == 0);
 
-        public static MethodSelector SerializedProperty_Next =
+        public static readonly MethodSelector SerializedProperty_Next =
             new MethodSelector(m =>
                 m.Name == "Next"
                 && m.Parameters.Length == 1 && m.Parameters[0].Type.Is("System.Boolean"));
 
-        public static MethodSelector SerializedProperty_GetEnumerator =
-            new MethodSelector(m => m.Name == "GetEnumerator" && m.Parameters.Length == 0);
-
-        public static MethodSelector Enumerator_MoveNext =
-            new MethodSelector(m =>
-                m.Name == StandardMemberNames.IEnumeratorMoveNext && m.Parameters.Length == 0);
+        public static readonly MethodSelector SerializedObject_GetIterator =
+            new MethodSelector(m => m.Name == "GetIterator" && m.Parameters.Length == 0);
     }
 }
