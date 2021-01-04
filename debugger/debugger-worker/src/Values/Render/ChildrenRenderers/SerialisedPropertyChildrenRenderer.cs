@@ -89,6 +89,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
 
             var references = EnumerateChildren(valueRole, effectiveOptions, token);
             references = FilterChildren(references, propertySpecificFields, isArray, isFixedBuffer);
+            references = DecorateChildren(valueRole, references, propertyType, options);
             references = SortChildren(references);
             foreach (var valueEntity in RenderChildren(valueRole, references, effectiveOptions, token))
                 yield return valueEntity;
@@ -169,6 +170,109 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                 // seems to be fields marked with [HiddenInInspector]
                 return r.DefaultName != "hasChildren" && r.DefaultName != "hasVisibleChildren";
             });
+        }
+
+        private IEnumerable<IValueReference<TValue>> DecorateChildren(IObjectValueRole<TValue> serializedProperty,
+                                                                      IEnumerable<IValueReference<TValue>> references,
+                                                                      PropertyKind propertyType,
+                                                                      IPresentationOptions options)
+        {
+            switch (propertyType)
+            {
+                case PropertyKind.Enum:
+                    return DecorateEnumValue(serializedProperty, references, options);
+
+                // I was expecting string arrays to have elements with propertyType == SpecializedPropertyType.Character
+                // but they instead seem to be Integer with a type == "char"
+                case PropertyKind.Character:
+                case PropertyKind.Integer when serializedProperty.GetInstancePropertyReference("type")?.AsStringSafe(options)?.GetString() == "char":
+                    return DecorateCharacterValue(references, options);
+                default:
+                    return references;
+            }
+        }
+
+        private IEnumerable<IValueReference<TValue>> DecorateEnumValue(IObjectValueRole<TValue> serializedProperty,
+                                                                       IEnumerable<IValueReference<TValue>> references,
+                                                                       IValueFetchOptions options)
+        {
+            foreach (var reference in references)
+            {
+                if (reference.DefaultName == "enumValueIndex")
+                {
+                    var primitiveValueRole = reference.AsPrimitiveSafe(options);
+                    if (primitiveValueRole == null)
+                        myLogger.Trace("Unable to retrieve enumValueIndex");
+                    else
+                    {
+                        if (primitiveValueRole.GetPrimitive() is int enumValueIndex
+                            && serializedProperty.GetInstancePropertyReference("enumNames")?.GetPrimaryRole(options) is
+                                IArrayValueRole<TValue> enumNamesArray)
+                        {
+                            var enumNameRole = enumNamesArray.GetElementReference(enumValueIndex).AsStringSafe(options);
+                            var enumName = enumNameRole?.GetString();
+                            if (!string.IsNullOrEmpty(enumName))
+                            {
+                                yield return new ExtraDetailValueReferenceDecorator<TValue>(reference,
+                                    ValueServices.RoleFactory, enumName);
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                yield return reference;
+            }
+        }
+
+        private IEnumerable<IValueReference<TValue>> DecorateCharacterValue(
+            IEnumerable<IValueReference<TValue>> references, IValueFetchOptions options)
+        {
+            foreach (var reference in references)
+            {
+                if (reference.DefaultName == "intValue" || reference.DefaultName == "longValue")
+                {
+                    var primitiveValue = reference.AsPrimitiveSafe(options)?.GetPrimitive();
+                    if (primitiveValue != null)
+                    {
+                        var value = primitiveValue as long? ?? primitiveValue as int?;
+                        if (value < char.MaxValue)
+                        {
+                            yield return new ExtraDetailValueReferenceDecorator<TValue>(reference,
+                                ValueServices.RoleFactory, $"'{ToPrintable((char) value)}'");
+                            continue;
+                        }
+                    }
+                }
+
+                yield return reference;
+            }
+        }
+
+        private static string ToPrintable(char value)
+        {
+            switch (value)
+            {
+                case '\'': return @"\'";
+                case '\"': return @"\""";
+                case '\\': return @"\\";
+                case '\0': return @"\0";
+                case '\a': return @"\a";
+                case '\b': return @"\b";
+                case '\f': return @"\f";
+                case '\n': return @"\n";
+                case '\r': return @"\r";
+                case '\t': return @"\t";
+                case '\v': return @"\v";
+            }
+
+            if (char.IsControl(value))
+            {
+                // Format as hex, the integer value is most likely being displayed as decimal
+                return $"\\u{(ushort) value:x4}";
+            }
+
+            return value.ToString();
         }
 
         private static OneToSetMap<PropertyKind, string> GetPerTypeFieldNames()

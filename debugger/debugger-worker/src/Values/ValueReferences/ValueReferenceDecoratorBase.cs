@@ -20,6 +20,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReference
             myRoleFactory = roleFactory;
         }
 
+        public IValueReference<TValue> UnderlyingValueReference => myValueReferenceImplementation;
+
         public virtual IDebuggerHierarchyObject Parent => myValueReferenceImplementation.Parent;
 
         public virtual IValueRole GetPrimaryRole(IValueFetchOptions options)
