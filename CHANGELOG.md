@@ -11,6 +11,12 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 ## 2021.1.0
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211)
 
+### Added
+
+- Rider: Add improved debugger type views for `SerializedObject` and `SerializedProperty` ([#1991](https://github.com/JetBrains/resharper-unity/pull/1991))
+
+
+
 ## 2020.3.1
 * Released: [2020-12-24](https://blog.jetbrains.com/dotnet/2020/12/24/resharper-rider-2020-3-1/)
 * Build: 2020.3.1.132
