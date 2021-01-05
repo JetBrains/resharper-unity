@@ -7,7 +7,7 @@ namespace DefaultNamespace
     {
         public void SomeMethod()
         {
-            int size = Physics.|OverlapBox|(0)(Vector3.zero, new Vector3(1, 1, 1), Quaternion.identity, 0, QueryTriggerInteraction.Collide).Length, b = size;
+            int size = Physics.|OverlapBox|(0)(Vector3.zero, new Vector3(1, 1, 1), Quaternion.identity, 0, QueryTriggerInteraction.Collide).Length, |b|(1) = size;
             Console.WriteLine(size + b);
         }
     }
@@ -15,3 +15,9 @@ namespace DefaultNamespace
 ------------------------------------------------
 0: Use non-allocating method 'OverlapBoxNonAlloc'
 NO QUICKFIXES
+1: Inline temporary variable
+QUICKFIXES:
+Inline temporary variable
+--Inline temporary variable in file
+--Inline temporary variable in project
+--Inline temporary variable in solution

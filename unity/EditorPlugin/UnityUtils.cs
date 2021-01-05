@@ -11,7 +11,7 @@ namespace JetBrains.Rider.Unity.Editor
   public static class UnityUtils
   {
     private static readonly ILog ourLogger = Log.GetLog("UnityUtils");
-    internal static readonly string UnityApplicationVersion = Application.unityVersion;
+    internal static string UnityApplicationVersion => Application.unityVersion;
 
     /// <summary>
     /// Force Unity To Write Project File
@@ -41,6 +41,21 @@ namespace JetBrains.Rider.Unity.Editor
     public static bool UseRiderTestPath =>
         Environment.GetCommandLineArgs().Contains("-riderTestPath");
 
+    public static string UnityEditorLogPath
+    {
+        get
+        {
+            var args = Environment.GetCommandLineArgs();
+            var commandlineParser = new CommandLineParser(args);
+            if (commandlineParser.Options.ContainsKey("-logfile"))
+            {
+                return commandlineParser.Options["-logfile"];
+            }
+
+            return string.Empty;
+        }
+    }
+
     private static int ourScriptingRuntimeCached = -1;
 
     internal static int ScriptingRuntime
@@ -66,6 +81,11 @@ namespace JetBrains.Rider.Unity.Editor
         return ourScriptingRuntimeCached;
       }
     }
+
+    internal static ScriptCompilationDuringPlay SafeScriptCompilationDuringPlay =>
+        UnityVersion >= new Version(2018, 2)
+            ? EditorPrefsWrapper.ScriptCompilationDuringPlay
+            : PluginSettings.AssemblyReloadSettings;
 
     internal static ScriptCompilationDuringPlay ToScriptCompilationDuringPlay(int value)
     {

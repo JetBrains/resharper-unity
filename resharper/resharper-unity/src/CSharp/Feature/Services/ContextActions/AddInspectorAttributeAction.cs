@@ -8,7 +8,7 @@ using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Bulbs;
 using JetBrains.ReSharper.Feature.Services.ContextActions;
-using JetBrains.ReSharper.Feature.Services.CSharp.Analyses.Bulbs;
+using JetBrains.ReSharper.Feature.Services.CSharp.ContextActions;
 using JetBrains.ReSharper.Feature.Services.Intentions;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -56,7 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (!unityApi.IsSerialisedField(selectedFieldDeclaration?.DeclaredElement) || multipleFieldDeclaration == null)
                 return EmptyList<IntentionAction>.Enumerable;
 
-            var existingAttribute = AttributeUtil.GetAttribute(selectedFieldDeclaration, AttributeTypeName);
+            var existingAttribute = selectedFieldDeclaration.GetAttribute(AttributeTypeName);
 
             var actionToApplyToEntireDeclaration = GetActionToApplyToEntireFieldDeclaration(multipleFieldDeclaration,
                     selectedFieldDeclaration, myDataProvider.PsiModule, myDataProvider.ElementFactory,
@@ -97,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.ContextActio
             if (fieldDeclaration == null || !unityApi.IsSerialisedField(fieldDeclaration.DeclaredElement))
                 return false;
 
-            var existingAttribute = AttributeUtil.GetAttribute(fieldDeclaration, AttributeTypeName);
+            var existingAttribute = fieldDeclaration.GetAttribute(AttributeTypeName);
             if (existingAttribute != null && !IsRemoveActionAvailable)
                 return false;
 

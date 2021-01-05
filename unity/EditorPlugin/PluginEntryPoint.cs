@@ -292,6 +292,10 @@ namespace JetBrains.Rider.Unity.Editor
 
     private static void SetupAssemblyReloadEvents()
     {
+      // Unity supports recompile/reload settings natively for Unity 2018.2+
+      if (UnityUtils.UnityVersion >= new Version(2018, 2))
+        return;
+
       // playmodeStateChanged was marked obsolete in 2017.1. Still working in 2018.3
 #pragma warning disable 618
       EditorApplication.playmodeStateChanged += () =>
@@ -369,10 +373,7 @@ namespace JetBrains.Rider.Unity.Editor
               paths[0], paths[1],
               Process.GetCurrentProcess().Id));
 
-          var scriptCompilationDuringPlay = UnityUtils.UnityVersion >= new Version(2018, 2)
-              ? EditorPrefsWrapper.ScriptCompilationDuringPlay
-              : PluginSettings.AssemblyReloadSettings;
-          model.UnityApplicationSettings.ScriptCompilationDuringPlay.Set(scriptCompilationDuringPlay);
+          model.UnityApplicationSettings.ScriptCompilationDuringPlay.Set(UnityUtils.SafeScriptCompilationDuringPlay);
 
           model.UnityProjectSettings.ScriptingRuntime.SetValue(UnityUtils.ScriptingRuntime);
 
@@ -746,7 +747,11 @@ namespace JetBrains.Rider.Unity.Editor
       return new[] {editorLogpath, playerLogPath};
     }
 
-    internal static readonly string LogPath = Path.Combine(Path.Combine(Path.GetTempPath(), "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
+    private static readonly string ourBaseLogPath = !UnityUtils.IsInRiderTests
+        ? Path.GetTempPath()
+        : new FileInfo(UnityUtils.UnityEditorLogPath).Directory.FullName;
+
+    internal static readonly string LogPath = Path.Combine(Path.Combine(ourBaseLogPath, "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
     internal static OnOpenAssetHandler OpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this
@@ -798,20 +803,6 @@ namespace JetBrains.Rider.Unity.Editor
       // if (UnityUtils.UnityVersion >= new Version(2019, 2)
       //   return false;
       return OpenAssetHandler.OnOpenedAsset(instanceID, line, 0);
-    }
-
-    /// <summary>
-    /// Called when Unity is about to open an asset. This method is new for 2019.2
-    /// </summary>
-    //[OnOpenAsset] // todo: restore, when we move this code to package, otherwise when OnOpenedAsset is called, there is a LogError in older Unity
-    static bool OnOpenedAsset(int instanceID, int line, int column)
-    {
-      if (!IsRiderDefaultEditor())
-        return false;
-
-      if (UnityUtils.UnityVersion < new Version(2019, 2))
-        return false;
-      return OpenAssetHandler.OnOpenedAsset(instanceID, line, column);
     }
 
     public static bool IsLoadedFromAssets()

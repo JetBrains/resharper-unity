@@ -126,7 +126,7 @@ namespace Burst.ContextActionsTests
         [BurstCompile]
         public struct ContextActionsTest3 : IJob
         {
-            public void Exe{on}cute()
+            public void {on}Execute()
             {
                 var obj = new object();
                 F3();
@@ -140,7 +140,7 @@ namespace Burst.ContextActionsTests
         [BurstCompile]
         public struct ContextActionsTest4 : IJob
         {
-            public void Exe{on}cute()
+            public void Execute{on}()
             {
                 F4();
             }
