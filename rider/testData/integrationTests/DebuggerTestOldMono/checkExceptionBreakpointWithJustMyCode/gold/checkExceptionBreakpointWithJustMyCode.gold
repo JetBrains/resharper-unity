@@ -1,4 +1,4 @@
---> NewBehaviourScript.cs:9(212,238) // Debug.Log(binaryNotation);
+--> NewBehaviourScript.cs:8(166,202) // int binaryNotation = 0; // 2 million
 NewBehaviourScript.Update() in , Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity): null
     +this.gameObject = Main Camera (active: true, layer: 0): null
