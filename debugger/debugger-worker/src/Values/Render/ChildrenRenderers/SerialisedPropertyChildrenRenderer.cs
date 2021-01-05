@@ -82,8 +82,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     Util.TryEvaluatePrimitiveProperty(valueRole, "isFixedBuffer", options, out isFixedBuffer);
             }
 
-            // TODO: Add a DecorateChildren step so we can render character and enum values as something other than an integer
-
             // We filter all non-public members, so make sure we don't show the group
             var effectiveOptions = options.WithOverridden(o => o.GroupPrivateMembers = false);
 

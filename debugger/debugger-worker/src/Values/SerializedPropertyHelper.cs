@@ -2,7 +2,7 @@ using Mono.Debugging.Backend.Values.ValueReferences;
 using Mono.Debugging.Backend.Values.ValueRoles;
 using Mono.Debugging.Client.Values.Render;
 
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
 {
     public static class SerializedPropertyHelper
     {

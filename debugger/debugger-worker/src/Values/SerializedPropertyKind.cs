@@ -1,4 +1,4 @@
-namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers
+namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values
 {
     public enum SerializedPropertyKind
     {

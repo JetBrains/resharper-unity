@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using JetBrains.Annotations;
-using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ChildrenRenderers;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.ValueReferences;
 using JetBrains.Util;
 using MetadataLite.API;
