@@ -1,7 +1,7 @@
---> NewBehaviourScript.cs:8(166,202) // int binaryNotation = 0; // 2 million
+--> NewBehaviourScript.cs:7(109,140) // new System.ArgumentException();
 NewBehaviourScript.Update() in , Assembly-CSharp.dll
     +Active scene = SampleScene (Assets/Scenes/SampleScene.unity): null
     +this.gameObject = Main Camera (active: true, layer: 0): null
+    +$exception = System.ArgumentException: Value does not fall within the expected range.
     +this = enabled: true, gameObject: Main Camera: NewBehaviourScript
-    binaryNotation = 0: int
 
