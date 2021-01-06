@@ -34,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
         private Version myVersionFromEditorInstanceJson;
         private static readonly ILogger ourLogger = Logger.GetLogger<UnityVersion>();
 
-        public readonly ViewableProperty<Version> ActualVersionForSolution = new ViewableProperty<Version>();
+        public readonly ViewableProperty<Version> ActualVersionForSolution = new ViewableProperty<Version>(new Version(0,0));
 
         public UnityVersion(UnityProjectFileCacheProvider unityProjectFileCache,
             ISolution solution, IFileSystemTracker fileSystemTracker, Lifetime lifetime,
@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 _ =>
                 {
                     myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
-                    ActualVersionForSolution.SetValue(GetActualVersionForSolution());
+                    InvalidateActualVersionForSolution();
                 });
             myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
 
@@ -72,12 +72,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 {
                     myVersionFromEditorInstanceJson =
                         TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
-                    ActualVersionForSolution.SetValue(GetActualVersionForSolution());
+                    InvalidateActualVersionForSolution();
                 });
             myVersionFromEditorInstanceJson =
                 TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
 
-            ActualVersionForSolution.SetValue(GetActualVersionForSolution());
+            InvalidateActualVersionForSolution();
         }
 
         [NotNull]
@@ -87,11 +87,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
             if (project == null)
                 return new Version(0, 0);
             var version = myUnityProjectFileCache.GetUnityVersion(project);
-            return version ?? GetActualVersionForSolution();
+            return version ?? ActualVersionForSolution.Value;
         }
 
         [NotNull]
-        public Version GetActualVersionForSolution()
+        private Version GetActualVersionForSolution()
         {
             if (myVersionFromEditorInstanceJson != null)
                 return myVersionFromEditorInstanceJson;
@@ -294,6 +294,11 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 }
             });
             return version;
+        }
+
+        public void InvalidateActualVersionForSolution()
+        {
+            ActualVersionForSolution.SetValue(GetActualVersionForSolution());
         }
     }
 }
