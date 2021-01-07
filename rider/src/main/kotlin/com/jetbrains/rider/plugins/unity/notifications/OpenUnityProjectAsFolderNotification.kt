@@ -44,22 +44,24 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
             val title = "Unity features unavailable"
             var content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and Rider is set as the External Editor."
             if (solutionDescription is RdExistingSolution) { // proper solution
-                projectComponentLifetime.startOnUiAsync {
-                    delay(1000) // `unityEditorConnected` is not instantly ready
+                it.startOnUiAsync {
+                    // Sometimes occasionally External Script Editor is set to "Open by file extension"
+                    // We check that Library/EditorInstance.json is present, but protocol connection was not initialized within 1 second.
+                    delay(1000)
                     if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)) {
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage()) {
                             content = "Make sure Rider is set as the External Editor in Unity preferences."
                         }
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
                         Notifications.Bus.notify(notification, project)
-                        project.solution.frontendBackendModel.unityEditorConnected.whenTrue(projectComponentLifetime) { notification.expire() }
+                        project.solution.frontendBackendModel.unityEditorConnected.whenTrue(it) { notification.expire() }
                     }
                 }.noAwait()
             }
             else if (solutionDescription is RdVirtualSolution) { // opened as folder
                 val adviceText = " Please <a href=\"close\">close</a> and reopen through the Unity editor, or by opening a .sln file."
                 val contentWoSolution =
-                    // todo: hasPackage might be unreliable, if PackageManager is still in progress
+                    // todo: hasPackage is unreliable, when PackageManager is still in progress, revisit this after PackageManager is moved to backend
                     if (UnityInstallationFinder.getInstance(project).requiresRiderPackage() && !PackageManager.getInstance(project).hasPackage("com.unity.ide.rider")){
                         content
                     }
