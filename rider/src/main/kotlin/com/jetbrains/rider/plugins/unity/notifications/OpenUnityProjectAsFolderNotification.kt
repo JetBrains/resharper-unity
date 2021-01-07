@@ -26,7 +26,9 @@ import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
 import com.jetbrains.rider.util.noAwait
 import com.jetbrains.rider.util.startOnUiAsync
+import com.jetbrains.rider.util.waitFor
 import kotlinx.coroutines.delay
+import java.time.Duration
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
@@ -45,7 +47,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
             var content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and Rider is set as the External Editor."
             if (solutionDescription is RdExistingSolution) { // proper solution
                 it.startOnUiAsync {
-                    // Sometimes occasionally External Script Editor is set to "Open by file extension"
+                    // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
                     // We check that Library/EditorInstance.json is present, but protocol connection was not initialized within 1 second.
                     delay(1000)
                     if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)) {
