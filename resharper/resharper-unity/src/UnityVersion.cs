@@ -61,7 +61,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 _ =>
                 {
                     myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
-                    InvalidateActualVersionForSolution();
+                    UpdateActualVersionForSolution();
                 });
             myVersionFromProjectVersionTxt = TryGetVersionFromProjectVersion(projectVersionTxtPath);
 
@@ -72,12 +72,12 @@ namespace JetBrains.ReSharper.Plugins.Unity
                 {
                     myVersionFromEditorInstanceJson =
                         TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
-                    InvalidateActualVersionForSolution();
+                    UpdateActualVersionForSolution();
                 });
             myVersionFromEditorInstanceJson =
                 TryGetApplicationPathFromEditorInstanceJson(editorInstanceJsonPath);
 
-            InvalidateActualVersionForSolution();
+            UpdateActualVersionForSolution();
         }
 
         [NotNull]
@@ -296,7 +296,7 @@ namespace JetBrains.ReSharper.Plugins.Unity
             return version;
         }
 
-        public void InvalidateActualVersionForSolution()
+        public void UpdateActualVersionForSolution()
         {
             ActualVersionForSolution.SetValue(GetActualVersionForSolution());
         }

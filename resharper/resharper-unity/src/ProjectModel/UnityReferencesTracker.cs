@@ -98,7 +98,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             scheduler.EnqueueTask(new SolutionLoadTask("Preparing Unity project", SolutionLoadTaskKinds.PreparePsiModules,
                 OnSolutionPreparePsiModules));
             
-            HasUnityReference.WhenTrue(lifetime, lt => unityVersion.InvalidateActualVersionForSolution());
+            HasUnityReference.WhenTrue(lifetime, lt => unityVersion.UpdateActualVersionForSolution());
         }
 
         private void OnSolutionPreparePsiModules()
