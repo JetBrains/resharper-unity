@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.notifications
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFile
@@ -24,11 +25,8 @@ import com.jetbrains.rider.projectDir
 import com.jetbrains.rider.projectView.SolutionManager
 import com.jetbrains.rider.projectView.solution
 import com.jetbrains.rider.projectView.solutionDescription
-import com.jetbrains.rider.util.noAwait
-import com.jetbrains.rider.util.startOnUiAsync
-import com.jetbrains.rider.util.waitFor
+import com.jetbrains.rider.util.*
 import kotlinx.coroutines.delay
-import java.time.Duration
 import javax.swing.event.HyperlinkEvent
 
 class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribedProjectComponent(project) {
@@ -46,17 +44,18 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
             val title = "Unity features unavailable"
             var content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and Rider is set as the External Editor."
             if (solutionDescription is RdExistingSolution) { // proper solution
-                it.startOnUiAsync {
+                it.startLongBackgroundAsync {
                     // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
                     // We check that Library/EditorInstance.json is present, but protocol connection was not initialized within 1 second.
                     delay(1000)
                     if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)) {
-                        if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage()) {
+                        if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
                             content = "Make sure Rider is set as the External Editor in Unity preferences."
-                        }
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
-                        Notifications.Bus.notify(notification, project)
-                        project.solution.frontendBackendModel.unityEditorConnected.whenTrue(it) { notification.expire() }
+                        this.startChildOnUiAsync {
+                            Notifications.Bus.notify(notification, project)
+                            project.solution.frontendBackendModel.unityEditorConnected.whenTrue(it) { notification.expire() }
+                        }.noAwait()
                     }
                 }.noAwait()
             }
