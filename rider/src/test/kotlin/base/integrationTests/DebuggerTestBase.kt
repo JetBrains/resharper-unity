@@ -16,7 +16,7 @@ import org.testng.annotations.Test
 import java.io.File
 
 @TestEnvironment(platform = [PlatformType.WINDOWS, PlatformType.MAC_OS])
-class DebuggerTest : IntegrationTestWithEditorBase() {
+abstract class DebuggerTestBase : IntegrationTestWithEditorBase() {
     override fun getSolutionDirectoryName() = "SimpleUnityProjectWithoutPlugin"
 
     override fun preprocessTempDirectory(tempDir: File) {
