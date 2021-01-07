@@ -10,10 +10,18 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ## 2021.1.0
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/42?closed=1)
 
 ### Added
 
 - Rider: Add improved debugger type views for `SerializedObject` and `SerializedProperty` ([#1991](https://github.com/JetBrains/resharper-unity/pull/1991))
+
+### Fixed
+
+- Rider: Fix unable to attach debugger to editor, when launching the editor ([RIDER-52498](https://youtrack.jetbrains.com/issue/RIDER-52498), [#1920](https://github.com/JetBrains/resharper-unity/pull/1920))
+- Rider: Fix exception notifying backend of file changes to `ProtocolInstance.json` ([DEXP-559833](https://youtrack.jetbrains.com/issue/DEXP-559833), [#1942](https://github.com/JetBrains/resharper-unity/pull/1942))
+- Rider: Fix exception with multiple assemblies with the same name ([RIDER-54876](https://youtrack.jetbrains.com/issue/RIDER-54876), [#1953](https://github.com/JetBrains/resharper-unity/pull/1953))
+- Rider: Fix mouse focus issue when opening Rider full screen on macOS ([RIDER-55501](https://youtrack.jetbrains.com/issue/RIDER-55501), [#1980](https://github.com/JetBrains/resharper-unity/pull/1980))
 
 
 
@@ -25,11 +33,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net203-rtm-2020.3.1)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.3.1.132)
 
-# Changed
+### Changed
 
 - Disable performance and Burst context with comment ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
 
-# Fixed
+### Fixed
 
 - Fix performance context and Burst actions not showing if caret was on first character of method declaration ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
 - Rider: Fix showing incorrect Code Vision link for expensive code ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
