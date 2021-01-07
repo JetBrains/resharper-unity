@@ -9,6 +9,23 @@ This plugin has functionality that is common to both ReSharper and Rider. It als
 Since 2018.1, the version numbers and release cycle match Rider's versions and release dates. The plugin is always bundled with Rider, but is released for ReSharper separately. Sometimes the ReSharper version isn't released. This is usually because the changes are not applicable to ReSharper, but also by mistake.
 
 
+## 2020.3.3
+* [Commits](https://github.com/JetBrains/resharper-unity/compare/net203-rtm-2020.3.1-rtm-2020.3.2...net203)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/43?closed=1)
+
+### Fixed
+
+- Rider: Allow disabling Burst context Code Vision ([#1985](https://github.com/JetBrains/resharper-unity/pull/1985))
+
+
+
+## 2020.3.2
+* Released: [2020-12-30](https://blog.jetbrains.com/dotnet/2020/12/30/rider-resharper-2020-3-2-release/)
+* Build: 2020.3.1.136
+* [No code changes](https://github.com/JetBrains/resharper-unity/compare/net203-rtm-2020.3.1...net203-rtm-2020.3.1-rtm-2020.3.2)
+
+
+
 ## 2020.3.1
 * Released: [2020-12-24](https://blog.jetbrains.com/dotnet/2020/12/24/resharper-rider-2020-3-1/)
 * Build: 2020.3.1.132
@@ -17,11 +34,11 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 * [GitHub release](https://github.com/JetBrains/resharper-unity/releases/tag/net203-rtm-2020.3.1)
 * [ReSharper release](https://resharper-plugins.jetbrains.com/packages/JetBrains.Unity/2020.3.1.132)
 
-# Changed
+### Changed
 
 - Disable performance and Burst context with comment ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
 
-# Fixed
+### Fixed
 
 - Fix performance context and Burst actions not showing if caret was on first character of method declaration ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
 - Rider: Fix showing incorrect Code Vision link for expensive code ([#1948](https://github.com/JetBrains/resharper-unity/pull/1948))
