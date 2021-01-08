@@ -52,10 +52,10 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
                             content = "Make sure Rider is set as the External Editor in Unity preferences."
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
-                        this.startChildOnUiAsync {
+                        startChildOnUi {
                             Notifications.Bus.notify(notification, project)
                             project.solution.frontendBackendModel.unityEditorConnected.whenTrue(it) { notification.expire() }
-                        }.noAwait()
+                        }
                     }
                 }.noAwait()
             }
