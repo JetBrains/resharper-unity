@@ -50,11 +50,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
             switch (callType)
             {
                 case ShowCallsType.INCOMING:
-                    text += "from " + start.Element.ShortName;
+                    text += " from " + start.Element.ShortName;
                     manager.ShowIncoming(start, text, filter);
                     break;
                 case ShowCallsType.OUTGOING:
-                    text += "to " + start.Element.ShortName;
+                    text += " to " + start.Element.ShortName;
                     manager.ShowOutgoing(start, text, filter);
                     break;
                 default:

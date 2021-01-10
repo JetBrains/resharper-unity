@@ -51,6 +51,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph
                         var identifier = referenceElement as ICSharpIdentifier;
                         var referenceExpression = ReferenceExpressionNavigator.GetByNameIdentifier(identifier);
                         var declaredElement = referenceExpression?.Reference.Resolve().DeclaredElement;
+                        
+                        if (declaredElement == null)
+                        {
+                            var referenceName = referenceElement as IReferenceName;
+                            var objectCreationExpression = ObjectCreationExpressionNavigator.GetByTypeName(referenceName);
+                            
+                            declaredElement = objectCreationExpression?.Reference?.Resolve().DeclaredElement;
+                        }
 
                         return provider.IsMarkedGlobal(declaredElement);
                     };
