@@ -28,7 +28,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
-                                                        DaemonProcessKind kind)
+                                                        IReadOnlyCallGraphContext context)
         {
             var declaredElement = treeNode.DeclaredElement;
             var method = declaredElement as IMethod;
@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
 
             if (method != null && UnityEventsElementContainer.GetAssetUsagesCount(method, out _) > 0)
             {
-                AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
+                AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", context);
                 return true;
             }
 
@@ -48,11 +48,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
-            string tooltip, DaemonProcessKind kind)
+            string tooltip, IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
 
-            var isIconHot = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind);
+            var isIconHot = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, context);
 
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(GetActions(element), element, tooltip)

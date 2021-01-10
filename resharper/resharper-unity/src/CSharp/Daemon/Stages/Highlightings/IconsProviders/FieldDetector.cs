@@ -3,6 +3,7 @@ using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -25,7 +26,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
             myUnityApi = unityApi;
         }
 
-        public override bool AddDeclarationHighlighting(IDeclaration element, IHighlightingConsumer consumer, DaemonProcessKind kind)
+        public override bool AddDeclarationHighlighting(IDeclaration element, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             if (!(element is IFieldDeclaration field))
                 return false;
@@ -42,11 +43,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                 var containingType = declaredElement.GetContainingType();
                 if (containingType.DerivesFromMonoBehaviour() || containingType.DerivesFromScriptableObject())
                 {
-                    AddMonoBehaviourHighlighting(consumer, field, displayText, baseTooltip, kind);
+                    AddMonoBehaviourHighlighting(consumer, field, displayText, baseTooltip, context);
                     return true;
                 }
 
-                AddSerializableHighlighting(consumer, field, displayText, "This field is serialized by Unity", kind);
+                AddSerializableHighlighting(consumer, field, displayText, "This field is serialized by Unity", context);
                 return false;
             }
 
@@ -54,19 +55,19 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         protected virtual void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            DaemonProcessKind kind)
+            IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, element, text, tooltip, kind);
+            AddHighlighting(consumer, element, text, tooltip, context);
         }
 
         protected virtual void AddSerializableHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            DaemonProcessKind kind)
+            IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, element, text, tooltip, kind);
+            AddHighlighting(consumer, element, text, tooltip, context);
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
-            DaemonProcessKind kind)
+            IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
             consumer.AddHighlighting(new UnityGutterMarkInfo(element, tooltip));
