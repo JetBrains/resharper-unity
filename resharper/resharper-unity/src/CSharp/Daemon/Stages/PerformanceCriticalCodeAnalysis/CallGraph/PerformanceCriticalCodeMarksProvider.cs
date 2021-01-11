@@ -2,9 +2,7 @@ using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
-using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Psi.Resolve;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -16,7 +14,7 @@ using JetBrains.Util;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.CallGraph
 {
     [SolutionComponent]
-    public class PerformanceCriticalCodeMarksProvider : CallGraphRootMarksProviderBase
+    public class PerformanceCriticalCodeMarksProvider : PerformanceAnalysisRootMarksProviderBase
     {
         public const string MarkId = "Unity.PerformanceCriticalContext";
         
@@ -26,24 +24,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         {
             Enabled.Value = tracker.IsUnityProject.HasTrueValue();
             referencesTracker.HasUnityReference.Advise(lifetime, b => Enabled.Value = Enabled.Value | b);
-        }
-
-        public override LocalList<IDeclaredElement> GetBanMarksFromNode(ITreeNode currentNode,
-            IDeclaredElement containingFunction)
-        {
-            var result = new LocalList<IDeclaredElement>();
-
-            // it means we are in functional type member like methodDeclaration
-            if (containingFunction == null)
-                return result;
-
-            var functionDeclaration = currentNode as IFunctionDeclaration;
-            var element = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration, UnityCallGraphUtil.PerformanceExpensiveComment, ReSharperControlConstruct.Kind.Disable);
-            
-            if(element)
-                result.Add(functionDeclaration.DeclaredElement);
-
-            return result;
         }
 
         private IDeclaredElement ExtractCoroutineOrInvokeRepeating(ITreeNode currentNode)
@@ -112,7 +92,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
         public override LocalList<IDeclaredElement> GetRootMarksFromNode(ITreeNode currentNode,
             IDeclaredElement containingFunction)
         {
-            var result = new LocalList<IDeclaredElement>();
+            var result = base.GetRootMarksFromNode(currentNode, containingFunction);
             var coroutineOrInvoke = ExtractCoroutineOrInvokeRepeating(currentNode);
 
             if (coroutineOrInvoke != null)
@@ -121,12 +101,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
             // it means we are in functional type member like methodDeclaration
             if (containingFunction == null)
                 return result;
-
-            var functionDeclaration = currentNode as IFunctionDeclaration;
-            var hasComment = UnityCallGraphUtil.HasAnalysisComment(functionDeclaration, MarkId, ReSharperControlConstruct.Kind.Restore);
-
-            if (hasComment)
-                result.Add(functionDeclaration.DeclaredElement);
             
             var declaration = currentNode as ITypeMemberDeclaration;
             var typeMember = declaration?.DeclaredElement;

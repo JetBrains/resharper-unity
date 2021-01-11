@@ -1,7 +1,7 @@
 using JetBrains.Application.Settings;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment;
 using JetBrains.ReSharper.Psi;
 using NUnit.Framework;
 
@@ -22,7 +22,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.QuickFixes
     }
 
     [TestUnity]
-    public class PerformanceAnalysisDisableQuickFixTests: CSharpQuickFixAfterSwaTestBase<PerformanceAnalysisDisableByCommentQuickFix>
+    public class PerformanceAnalysisDisableQuickFixTests: CSharpQuickFixAfterSwaTestBase<AddPerformanceAnalysisDisableCommentQuickFix>
     {
         protected override string RelativeTestDataPath => @"CSharp\Intentions\QuickFixes\PerformanceAnalysisDisable\";
         

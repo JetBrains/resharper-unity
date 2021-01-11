@@ -33,86 +33,86 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public override bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
-                                                        DaemonProcessKind kind)
+                                                        IReadOnlyCallGraphContext context)
         {
             var declaredElement = treeNode.DeclaredElement;
             var method = declaredElement as IMethod;
             if (method is IAccessor) 
-                return TryAddAnimationEventHighlightingForAccessorMethod(treeNode, consumer, kind, method);
+                return TryAddAnimationEventHighlightingForAccessorMethod(treeNode, consumer, context, method);
 
             if (declaredElement is IProperty property)
             {
-                TryAddAnimationEventHighlightingForPropertyGetter(treeNode, consumer, kind, property);
+                TryAddAnimationEventHighlightingForPropertyGetter(treeNode, consumer, context, property);
                 method = property.Setter;
             }
             
-            return method != null && TryAddMethodHighlighting(treeNode, consumer, kind, method);
+            return method != null && TryAddMethodHighlighting(treeNode, consumer, context, method);
         }
 
         private bool TryAddAnimationEventHighlightingForAccessorMethod(ITreeNode treeNode,
                                                                        IHighlightingConsumer consumer,
-                                                                       DaemonProcessKind kind,
+                                                                       IReadOnlyCallGraphContext context,
                                                                        IDeclaredElement method)
         {
             var isAnimationEvent = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method) > 0;
-            if (isAnimationEvent) AddAnimationEventHighlighting(treeNode, consumer, kind);
+            if (isAnimationEvent) AddAnimationEventHighlighting(treeNode, consumer, context);
             return isAnimationEvent;
         }
 
         private void TryAddAnimationEventHighlightingForPropertyGetter(ITreeNode treeNode,
                                                                        IHighlightingConsumer consumer,
-                                                                       DaemonProcessKind kind,
+                                                                       IReadOnlyCallGraphContext context,
                                                                        IProperty property)
         {
             var getter = property.Getter;
             if (getter != null && myAnimationEventUsagesContainer.GetEventUsagesCountFor(getter) > 0)
             {
-                AddAnimationEventHighlighting(treeNode, consumer, kind);
+                AddAnimationEventHighlighting(treeNode, consumer, context);
             }
         }
 
-        private bool TryAddMethodHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, DaemonProcessKind kind,
+        private bool TryAddMethodHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer, IReadOnlyCallGraphContext context,
                                               IMethod method)
         {
             var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out _);
             var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method);
             if (eventHandlersCount + animationEventsCount <= 0) return false;
             if (eventHandlersCount != 0 && animationEventsCount == 0)
-                AddEventHandlerHighlighting(treeNode, consumer, kind);
+                AddEventHandlerHighlighting(treeNode, consumer, context);
             if (eventHandlersCount == 0 && animationEventsCount != 0)
-                AddAnimationEventHighlighting(treeNode, consumer, kind);
-            AddAnimationEventAndEventHandlerHighlighting(treeNode, consumer, kind);
+                AddAnimationEventHighlighting(treeNode, consumer, context);
+            AddAnimationEventAndEventHandlerHighlighting(treeNode, consumer, context);
             return true;
         }
 
         private void AddEventHandlerHighlighting([NotNull] ITreeNode treeNode,
                                                  [NotNull] IHighlightingConsumer consumer,
-                                                 DaemonProcessKind kind)
+                                                 IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", kind);
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Event handler", "Unity event handler", context);
         }
 
         private void AddAnimationEventHighlighting([NotNull] ITreeNode treeNode,
                                                    [NotNull] IHighlightingConsumer consumer,
-                                                   DaemonProcessKind kind)
+                                                   IReadOnlyCallGraphContext context)
         {
-            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event", "Unity animation event", kind);
+            AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event", "Unity animation event", context);
         }
         
         private void AddAnimationEventAndEventHandlerHighlighting([NotNull] ITreeNode treeNode,
                                                                   [NotNull] IHighlightingConsumer consumer,
-                                                                  DaemonProcessKind kind)
+                                                                  IReadOnlyCallGraphContext context)
         {
             AddHighlighting(consumer, treeNode as ICSharpDeclaration, "Animation event and event handler",
-                "Unity animation event and Unity animation event", kind);
+                "Unity animation event and Unity animation event", context);
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
-            string tooltip, DaemonProcessKind kind)
+            string tooltip, IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
 
-            var isIconHot = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, kind);
+            var isIconHot = element.HasHotIcon(ContextProvider, SettingsStore.BoundSettingsStore, context);
 
             var highlighting = isIconHot
                 ? new UnityHotGutterMarkInfo(GetActions(element), element, tooltip)

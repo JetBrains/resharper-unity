@@ -1,10 +1,10 @@
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.PerformanceAnalysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.PerformanceAnalysis.AddPerformanceAnalysisDisableComment;
 using NUnit.Framework;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActions
 {
     [TestUnity]
-    public class PerformanceAnalysisDisableAvailabilityTests : ContextActionAvailabilityAfterSwaTestBase<PerformanceAnalysisDisableByCommentContextAction>
+    public class PerformanceAnalysisDisableAvailabilityTests : ContextActionAvailabilityAfterSwaTestBase<AddPerformanceAnalysisDisableCommentContextAction>
     { 
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => @"PerformanceDisableByComment\Availability";
@@ -13,7 +13,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Tests.CSharp.Intentions.ContextActio
     }
 
     [TestUnity]
-    public class PerformanceAnalysisDisableContextActionTests : ContextActionExecuteAfterSwaTestBase<PerformanceAnalysisDisableByCommentContextAction>
+    public class PerformanceAnalysisDisableContextActionTests : ContextActionExecuteAfterSwaTestBase<AddPerformanceAnalysisDisableCommentContextAction>
     {
         protected override string RelativeTestDataPath => @"CSharp\" + base.RelativeTestDataPath;
         protected override string ExtraPath => "PerformanceDisableByComment";

@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Unity.Burst;
 using System;
+using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 using static Unity.Burst.SharedStatic<Burst.SharedStaticTests.SharedStaticUnmanagedUsing>;
