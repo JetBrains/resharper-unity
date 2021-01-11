@@ -105,13 +105,15 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
     }
 
     override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
-        val referenceNames = hashMapOf<String, ReferenceItem>()
+        val referenceNames = hashMapOf<String, ReferenceItemNode>()
         val visitor = object : ProjectModelNodeVisitor() {
             override fun visitReference(node: ProjectModelNode): Result {
                 if (node.isAssemblyReference()) {
-                    val item = referenceNames.getOrCreate(node.location.toString(),
-                        { ReferenceItem(project!!, node.name, node.location.toString(), arrayListOf()) })
-                    item.keys.add(node.key)
+                    if (node.getVirtualFile() != null) {
+                        val item = referenceNames.getOrCreate(node.location.toString(),
+                            { ReferenceItemNode(project!!, node.name, node.getVirtualFile()!!, arrayListOf()) })
+                        item.keys.add(node.key)
+                    }
                 }
                 return Result.Stop
             }
@@ -126,14 +128,13 @@ class ReferenceRoot(project: Project) : AbstractTreeNode<Any>(project, key) {
     }
 }
 
-class ReferenceItem(
+class ReferenceItemNode(
     project: Project,
     private val referenceName: String,
-    referenceLocation: String,
+    virtualFile: VirtualFile,
     val keys: ArrayList<ProjectModelNodeKey>
-) : AbstractTreeNode<String>(project, referenceLocation), ISolutionModelNodeOwner, IProjectModeNodesOwner {
+) : UnityExplorerNode(project, virtualFile, listOf(), AncestorNodeType.Assets), ISolutionModelNodeOwner, IProjectModeNodesOwner {
 
-    override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
     override fun isAlwaysLeaf() = true
 
     override fun update(presentation: PresentationData) {

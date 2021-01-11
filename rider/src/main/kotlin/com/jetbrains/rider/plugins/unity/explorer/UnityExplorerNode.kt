@@ -17,6 +17,7 @@ import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.NestingNode
 import com.jetbrains.rider.projectView.views.SolutionViewRootNodeBase
 import com.jetbrains.rider.projectView.views.actions.ConfigureScratchesAction
+import com.jetbrains.rider.projectView.views.assemblyExplorer.AssemblyExplorerHost
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
@@ -133,6 +134,15 @@ open class UnityExplorerNode(project: Project,
             }
             presentation.tooltip = tooltip + "This folder is not imported into the asset database"
         }
+    }
+
+    override fun processDoubleClick(): Boolean {
+        if (virtualFile.exists() && virtualFile.extension == "dll"){
+            AssemblyExplorerHost.getInstance(myProject).add(listOf(virtualFile))
+            return true;
+        }
+
+        return super.processDoubleClick()
     }
 
     override fun getName(): String {
