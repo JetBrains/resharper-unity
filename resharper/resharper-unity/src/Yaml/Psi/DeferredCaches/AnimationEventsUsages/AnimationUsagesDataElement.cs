@@ -1,13 +1,9 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using JetBrains.Application.PersistentMap;
-using JetBrains.Collections;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
-using JetBrains.ReSharper.Psi;
 using JetBrains.Serialization;
-using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages
 {
@@ -19,23 +15,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         [UsedImplicitly] public static UnsafeWriter.WriteDelegate<object> WriteDelegate =
             (writer, element) => Write(writer, element as AnimationUsagesDataElement);
 
-        [NotNull] public readonly OneToListMap<Pair<string, Guid>, AnimationUsage> FunctionNameAndGuidToEvents;
-
-        [CanBeNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
-
-        [CanBeNull] private readonly ISolution mySolution;
+        [NotNull, ItemNotNull] public readonly List<AnimationUsage> Events;
 
         public AnimationUsagesDataElement([NotNull] ISolution solution, [NotNull] MetaFileGuidCache metaFileGuidCache)
         {
-            FunctionNameAndGuidToEvents = new OneToListMap<Pair<string, Guid>, AnimationUsage>();
-            mySolution = solution;
-            myMetaFileGuidCache = metaFileGuidCache;
+            Events = new List<AnimationUsage>();
         }
 
-        public AnimationUsagesDataElement(
-            [NotNull] OneToListMap<Pair<string, Guid>, AnimationUsage> functionNameAndGuidToEvents)
+        public AnimationUsagesDataElement([NotNull] List<AnimationUsage> events)
         {
-            FunctionNameAndGuidToEvents = functionNameAndGuidToEvents;
+            Events = events;
         }
 
         public string ContainerId => nameof(AnimationEventUsagesContainer);
@@ -46,36 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
             foreach (var usage in usages)
             {
                 if (usage is null) continue;
-                FunctionNameAndGuidToEvents.Add(Pair.Of(usage.FunctionName, usage.Guid), usage);
-                AddParentTypesFunctionNameAndGuidToUsageEntries(usage);
-            }
-        }
-
-        private void AddParentTypesFunctionNameAndGuidToUsageEntries([NotNull] AnimationUsage usage)
-        {
-            if (myMetaFileGuidCache is null) return;
-            var typeElement = AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, usage.Guid);
-            if (!(typeElement is IClass @class)) return;
-            foreach (var guid in GetParentNonUnityTypesGuidsFor(@class, myMetaFileGuidCache))
-                FunctionNameAndGuidToEvents.Add(Pair.Of(usage.FunctionName, guid), usage);
-        }
-
-        [NotNull]
-        private static IEnumerable<Guid> GetParentNonUnityTypesGuidsFor([NotNull] IClass script,
-                                                                        [NotNull] MetaFileGuidCache metaFileGuidCache)
-        {
-            while (true)
-            {
-                using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
-                {
-                    script = script.GetBaseClassType()?.GetTypeElement() as IClass;
-                }
-
-                if (script is null || script.IsBuiltInUnityClass()) yield break;
-                var currentBoxedGuid = AssetUtils.GetGuidFor(metaFileGuidCache, script);
-                if (!currentBoxedGuid.HasValue) yield break;
-                var currentGuid = currentBoxedGuid.Value;
-                yield return currentGuid;
+                Events.Add(usage);
             }
         }
 
@@ -86,60 +46,20 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         }
 
         [NotNull]
-        private static OneToListMap<Pair<string, Guid>, AnimationUsage> ReadGuidToEventsMap(
-            [NotNull] UnsafeReader reader)
+        private static List<AnimationUsage> ReadGuidToEventsMap([NotNull] UnsafeReader reader)
         {
-            var anchorToUsagesCount = reader.ReadInt32();
-            var anchorToUsages = new OneToListMap<Pair<string, Guid>, AnimationUsage>(anchorToUsagesCount);
-            for (var i = 0; i < anchorToUsagesCount; i++) ReadAnchorToUsagesEntry(reader, anchorToUsages);
-            return anchorToUsages;
-        }
-
-        private static void ReadAnchorToUsagesEntry([NotNull] UnsafeReader reader,
-                                                    [NotNull] IOneToManyMap<Pair<string, Guid>, AnimationUsage,
-                                                        IList<AnimationUsage>> anchorToUsages)
-        {
-            var functionName = reader.ReadString();
-            var guid = reader.ReadGuid();
-            var usagesCount = reader.ReadInt32();
-            for (var i = 0; i < usagesCount; i++)
-            {
-                var animationEventUsage = AnimationUsage.ReadFrom(reader);
-                anchorToUsages.Add(Pair.Of(functionName, guid), animationEventUsage);
-            }
+            var eventUsagesCount = reader.ReadInt32();
+            var eventUsages = new List<AnimationUsage>(eventUsagesCount);
+            for (var i = 0; i < eventUsagesCount; i++) eventUsages.Add(AnimationUsage.ReadFrom(reader));
+            return eventUsages;
         }
 
         private static void Write([CanBeNull] UnsafeWriter writer, [CanBeNull] AnimationUsagesDataElement element)
         {
             if (writer is null || element is null) return;
-            WriteGuidToEventsMap(writer, element.FunctionNameAndGuidToEvents);
-        }
-
-        private static void WriteGuidToEventsMap([NotNull] UnsafeWriter writer,
-                                                 [NotNull]
-                                                 OneToListMap<Pair<string, Guid>, AnimationUsage> guidToEvents)
-        {
-            writer.Write(guidToEvents.Count);
-            foreach (var (guid, events) in guidToEvents)
-            {
-                if (events is null) continue;
-                WriteGuidToEventsEntry(writer, guid, events);
-            }
-        }
-
-        private static void WriteGuidToEventsEntry([NotNull] UnsafeWriter writer,
-                                                   Pair<string, Guid> functionNameAndGuid,
-                                                   [NotNull] IList<AnimationUsage> events)
-        {
-            var (functionName, guid) = functionNameAndGuid;
-            writer.Write(functionName);
-            writer.Write(guid);
-            writer.Write(events.Count);
-            foreach (var @event in events)
-            {
-                if (@event is null) return;
-                @event.WriteTo(writer);
-            }
+            var eventUsages = element.Events;
+            writer.Write(eventUsages.Count);
+            foreach (var eventUsage in eventUsages) eventUsage.WriteTo(writer);
         }
     }
 }

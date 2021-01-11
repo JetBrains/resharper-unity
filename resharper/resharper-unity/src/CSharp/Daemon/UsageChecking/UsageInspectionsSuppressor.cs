@@ -98,7 +98,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
         private static bool IsAnimationEvent(ISolution solution, IDeclaredElement property)
         {
-            return solution.GetComponent<AnimationEventUsagesContainer>().GetEventUsagesCountFor(property) > 0;
+            return solution
+                .GetComponent<AnimationEventUsagesContainer>()
+                .GetEventUsagesCountFor(property, out var isEstimatedResult) > 0 || isEstimatedResult;
         }
 
         private bool IsImplicitlyUsedInterfaceType(ITypeElement typeElement)

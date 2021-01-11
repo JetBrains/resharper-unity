@@ -54,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                                                        IReadOnlyCallGraphContext context,
                                                                        IDeclaredElement method)
         {
-            var isAnimationEvent = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method) > 0;
+            var isAnimationEvent = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out _) > 0;
             if (isAnimationEvent) AddAnimationEventHighlighting(treeNode, consumer, context);
             return isAnimationEvent;
         }
@@ -65,7 +65,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                                                        IProperty property)
         {
             var getter = property.Getter;
-            if (getter != null && myAnimationEventUsagesContainer.GetEventUsagesCountFor(getter) > 0)
+            if (getter != null && myAnimationEventUsagesContainer.GetEventUsagesCountFor(getter, out _) > 0)
             {
                 AddAnimationEventHighlighting(treeNode, consumer, context);
             }
@@ -75,7 +75,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
                                               IMethod method)
         {
             var eventHandlersCount = UnityEventsElementContainer.GetAssetUsagesCount(method, out _);
-            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method);
+            var animationEventsCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(method, out _);
             if (eventHandlersCount + animationEventsCount <= 0) return false;
             if (eventHandlersCount != 0 && animationEventsCount == 0)
                 AddEventHandlerHighlighting(treeNode, consumer, context);

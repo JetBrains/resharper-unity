@@ -103,11 +103,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                            [NotNull] IconModel iconModel)
         {
             var declaredElement = element.DeclaredElement;
-            var eventsCount = UnityEventsElementContainer.GetAssetUsagesCount(declaredElement, out var estimate);
-            var animationEventUsagesCount = myAnimationEventUsagesContainer.GetEventUsagesCountFor(declaredElement);
+            var eventsCount = UnityEventsElementContainer.GetAssetUsagesCount(declaredElement, out var unityEventsEstimatedResult);
+            var animationEventUsagesCount = myAnimationEventUsagesContainer
+                .GetEventUsagesCountFor(declaredElement, out var animationEventsEstimatedResult);
             myUsagesCodeVisionProvider.AddHighlighting(consumer, element, declaredElement, 
-                animationEventUsagesCount + eventsCount, 
-                "Click to view usages in assets", "Assets usages", estimate, iconModel);
+                animationEventUsagesCount + eventsCount, "Click to view usages in assets", "Assets usages",
+                unityEventsEstimatedResult || animationEventsEstimatedResult, iconModel);
         }
     }
 }

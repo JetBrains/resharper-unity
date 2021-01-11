@@ -19,24 +19,28 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
     public class AnimationEventUsagesContainer : IUnityAssetDataElementContainer
     {
         [NotNull] private readonly MetaFileGuidCache myMetaFileGuidCache;
+        
+        [NotNull] private readonly ISolution mySolution;
 
         [NotNull] private readonly Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer> myPointers =
             new Dictionary<IPsiSourceFile, IUnityAssetDataElementPointer>();
 
         [NotNull] private readonly IShellLocks myShellLocks;
 
-        [NotNull] private readonly CountingSet<Pair<string, Guid>> myUsagesCount =
-            new CountingSet<Pair<string, Guid>>();
+        [NotNull] private readonly OneToCompactCountingSet<string, Guid> myNameToGuids =
+            new OneToCompactCountingSet<string, Guid>();
 
         [NotNull] private readonly OneToCompactCountingSet<Pair<string, Guid>, IPsiSourceFile> myUsageToSourceFiles =
             new OneToCompactCountingSet<Pair<string, Guid>, IPsiSourceFile>();
 
         public AnimationEventUsagesContainer([NotNull] IPersistentIndexManager manager,
                                              [NotNull] IShellLocks shellLocks,
-                                             [NotNull] MetaFileGuidCache metaFileGuidCache)
+                                             [NotNull] MetaFileGuidCache metaFileGuidCache,
+                                             [NotNull] ISolution solution)
         {
             myShellLocks = shellLocks;
             myMetaFileGuidCache = metaFileGuidCache;
+            mySolution = solution;
         }
 
         public int Order => 0;
@@ -45,7 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
 
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
-            return new AnimationUsagesDataElement(sourceFile.GetSolution(), myMetaFileGuidCache);
+            return new AnimationUsagesDataElement(mySolution, myMetaFileGuidCache);
         }
 
         public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
@@ -65,13 +69,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
                          IUnityAssetDataElement element)
         {
             if (!(element is AnimationUsagesDataElement animationElement)) return;
-            foreach (var (functionNameAndGuid, events) in animationElement.FunctionNameAndGuidToEvents)
+            foreach (var @event in animationElement.Events)
             {
-                if (events is null) continue;
-                var currentCount = myUsagesCount.GetCount(functionNameAndGuid);
-                var eventsCount = events.Count;
-                myUsagesCount.Add(functionNameAndGuid, eventsCount <= currentCount ? -eventsCount : -currentCount);
-                myUsageToSourceFiles.Remove(functionNameAndGuid, currentAssetSourceFile);
+                var functionName = @event.FunctionName;
+                var guid = @event.Guid;
+                var currentCount = myNameToGuids.GetCount(functionName, guid);
+                if (currentCount != 0) myNameToGuids.Remove(functionName, guid);
+                myUsageToSourceFiles.Remove(Pair.Of(functionName, guid), currentAssetSourceFile);
             }
 
             myPointers.Remove(currentAssetSourceFile);
@@ -84,19 +88,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         {
             myPointers[currentAssetSourceFile] = unityAssetDataElementPointer;
             if (!(unityAssetDataElement is AnimationUsagesDataElement animationElement)) return;
-            foreach (var (functionNameAndGuid, events) in animationElement.FunctionNameAndGuidToEvents)
+            foreach (var @event in animationElement.Events)
             {
-                if (events is null) continue;
-                // ReSharper disable once AssignNullToNotNullAttribute
-                myUsagesCount.Add(functionNameAndGuid, events.Count);
-                myUsageToSourceFiles.Add(functionNameAndGuid, currentAssetSourceFile);
+                myNameToGuids.Add(@event.FunctionName, @event.Guid);
+                myUsageToSourceFiles.Add(Pair.Of(@event.FunctionName, @event.Guid), currentAssetSourceFile);
             }
         }
 
         public void Invalidate()
         {
             myUsageToSourceFiles.Clear();
-            myUsagesCount.Clear();
+            myNameToGuids.Clear();
             myPointers.Clear();
         }
 
@@ -119,16 +121,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
             if (pointer is null) return Enumerable.Empty<AnimationUsage>();
             var element = pointer.GetElement(sourceFile, Id);
             if (!(element is AnimationUsagesDataElement animatorElement)) return Enumerable.Empty<AnimationUsage>();
-            return GetEventUsagesFor(animatorElement, declaredElement.ShortName, boxedGuid.Value);
-        }
-
-        [NotNull]
-        [ItemNotNull]
-        private static IEnumerable<AnimationUsage> GetEventUsagesFor([NotNull] AnimationUsagesDataElement element,
-                                                                     [NotNull] string functionName,
-                                                                     Guid guid)
-        {
-            return element.FunctionNameAndGuidToEvents.GetValuesSafe(Pair.Of(functionName, guid));
+            var name = declaredElement.ShortName;
+            var containingType = clrDeclaredElement.GetContainingType();
+            var solution = mySolution;
+            return animatorElement.Events
+                .Where(usage => name.Equals(usage.FunctionName))
+                .Select(usage => new
+                {
+                    usage, typeElement = AssetUtils.GetTypeElementFromScriptAssetGuid(solution, usage.Guid)
+                })
+                .Where(t => t.typeElement != null && t.typeElement.IsDescendantOf(containingType))
+                .Select(t => t.usage);
         }
 
         [NotNull]
@@ -137,29 +140,73 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEve
         {
             AssertShellLocks();
             if (!(element is IClrDeclaredElement clrDeclaredElement)) return EmptyList<IPsiSourceFile>.Enumerable;
-            var guid = FindGuidOf(clrDeclaredElement);
-            if (guid == null) return EmptyList<IPsiSourceFile>.Enumerable;
-            return myUsageToSourceFiles.GetValues(Pair.Of(clrDeclaredElement.ShortName, guid.Value)) ??
-                   EmptyList<IPsiSourceFile>.Enumerable;
+            var elementGuid = FindGuidOf(clrDeclaredElement);
+            if (!elementGuid.HasValue) return EmptyList<IPsiSourceFile>.Enumerable;
+            // TODO: Fix. Search for subtypes
+            var name = element.ShortName;
+            var found = myNameToGuids.TryGetValue(name, out var guidsAndCounts);
+            if (!found) return EmptyList<IPsiSourceFile>.Enumerable;
+            var elementType = clrDeclaredElement.GetContainingType();
+            var descendentTypesGuids = guidsAndCounts
+                .Select(guidAndCount => guidAndCount.Key)
+                .Where(g => AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, g)?.IsDescendantOf(elementType) ??
+                            false);
+            var files = new List<IPsiSourceFile>();
+            files.AddRange(myUsageToSourceFiles.GetValues(Pair.Of(name, elementGuid.Value)));
+            foreach (var descendentTypesGuid in descendentTypesGuids)
+            {
+                files.AddRange(myUsageToSourceFiles.GetValues(Pair.Of(name, descendentTypesGuid)));
+            }
+
+            return files;
         }
 
-        public int GetEventUsagesCountFor([NotNull] IDeclaredElement element)
+        public int GetEventUsagesCountFor([NotNull] IDeclaredElement element, out bool estimated)
         {
             AssertShellLocks();
+            estimated = false;
             if (!(element is IClrDeclaredElement clrDeclaredElement)) return 0;
-            var boxedGuid = FindGuidOf(clrDeclaredElement);
-            if (boxedGuid == null) return 0;
+
+            var type = clrDeclaredElement.GetContainingType();
             switch (element)
             {
                 case IMethod method:
-                    return myUsagesCount.GetCount(Pair.Of(method.ShortName, boxedGuid.Value));
+                    return GetEventUsagesCountFor(method, type, ref estimated);
                 case IProperty property:
-                    var guid = boxedGuid.Value;
-                    var getterUsagesCount = myUsagesCount.GetCount(Pair.Of(property.Getter?.ShortName, guid));
-                    var setterUsagesCount = myUsagesCount.GetCount(Pair.Of(property.Setter?.ShortName, guid));
-                    return getterUsagesCount + setterUsagesCount;
+                    return GetEventPropertyUsagesCountFor(property, type, ref estimated);
             }
+            
             return 0;
+        }
+
+        private int GetEventPropertyUsagesCountFor([NotNull] IProperty property,
+                                                   [CanBeNull] ITypeElement containingType,
+                                                   ref bool estimated)
+        {
+            var count = 0;
+            var getter = property.Getter;
+            if (getter != null) count += GetEventUsagesCountFor(getter, containingType, ref estimated);
+            var setter = property.Setter;
+            if (setter != null) count += GetEventUsagesCountFor(setter, containingType, ref estimated);
+            return count;
+        }
+
+        private int GetEventUsagesCountFor([NotNull] IDeclaredElement element,
+                                           [CanBeNull] ITypeElement containingType, ref bool estimated)
+        {
+            var found = myNameToGuids.TryGetValue(element.ShortName, out var guids);
+            if (!found) return 0;
+            var count = 0;
+            const int maxProcessCount = 5;
+            foreach (var (guid, guidCount) in guids.Take(maxProcessCount))
+            {
+                var typeElement = AssetUtils.GetTypeElementFromScriptAssetGuid(mySolution, guid);
+                if (typeElement == null || !typeElement.IsDescendantOf(containingType)) continue;
+                count += guidCount;
+            }
+
+            if (guids.Count > maxProcessCount) estimated = true;
+            return count;
         }
 
         private Guid? FindGuidOf([NotNull] IClrDeclaredElement declaredElement)
