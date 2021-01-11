@@ -10,6 +10,13 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ## 2021.1.0
 * [Commits](https://github.com/JetBrains/resharper-unity/compare/net203...net211)
+* [Milestone](https://github.com/JetBrains/resharper-unity/milestone/42?closed=1)
+
+### Fixed
+
+- Rider: Fix files in `Packages` folder showing the non-project dialog when being modified ([#1997](https://github.com/JetBrains/resharper-unity/pull/1997))
+
+
 
 ## 2020.3.1
 * Released: [2020-12-24](https://blog.jetbrains.com/dotnet/2020/12/24/resharper-rider-2020-3-1/)
