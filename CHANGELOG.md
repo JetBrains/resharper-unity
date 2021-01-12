@@ -14,12 +14,16 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
-- Rider: Add improved debugger type views for `SerializedObject` and `SerializedProperty` ([#1991](https://github.com/JetBrains/resharper-unity/pull/1991))
+- Rider: Add custom debugger type views for `SerializedObject` and `SerializedProperty` ([#1991](https://github.com/JetBrains/resharper-unity/pull/1991))
+
+### Changed
+
+- Rider: Unity file templates are grouped into "Unity Class" and "Unity Shader" ([#1983](https://github.com/JetBrains/resharper-unity/pull/1983))
 
 ### Fixed
 
-- Rider: Fix unable to attach debugger to editor, when launching the editor ([RIDER-52498](https://youtrack.jetbrains.com/issue/RIDER-52498), [#1920](https://github.com/JetBrains/resharper-unity/pull/1920))
-- Rider: Fix exception notifying backend of file changes to `ProtocolInstance.json` ([DEXP-559833](https://youtrack.jetbrains.com/issue/DEXP-559833), [#1942](https://github.com/JetBrains/resharper-unity/pull/1942))
+- Rider: Fix issue launching Unity when debugging and editor isn't running ([RIDER-52498](https://youtrack.jetbrains.com/issue/RIDER-52498), [#1920](https://github.com/JetBrains/resharper-unity/pull/1920))
+- Rider: Fix exception in protocol file watcher ([DEXP-559833](https://youtrack.jetbrains.com/issue/DEXP-559833), [#1942](https://github.com/JetBrains/resharper-unity/pull/1942))
 - Rider: Fix exception with multiple assemblies with the same name ([RIDER-54876](https://youtrack.jetbrains.com/issue/RIDER-54876), [#1953](https://github.com/JetBrains/resharper-unity/pull/1953))
 - Rider: Fix mouse focus issue when opening Rider full screen on macOS ([RIDER-55501](https://youtrack.jetbrains.com/issue/RIDER-55501), [#1980](https://github.com/JetBrains/resharper-unity/pull/1980))
 - Rider: Fix files in `Packages` folder showing the non-project dialog when being modified ([#1997](https://github.com/JetBrains/resharper-unity/pull/1997))

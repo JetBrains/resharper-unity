@@ -13,10 +13,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
     {
         static UnityProjectScopeCategoryUIProvider()
         {
-            // These get added to a static dictionary, so they can be referenced by name from templates
-            // We're using Unity_CSharp instead of just CSharp, because that's set up to use the C#
-            // template scope icon instead of the C# file icon - see RIDER-9903
-            TemplateImage.Register("UnityCSharp", PsiCSharpThemedIcons.Csharp.Id);
+            // UnityCSharp requires its own icon rather than the generic C# icon because it's used as the group icon
+            // for the UITag "Unity Class" menu item
+            TemplateImage.Register("UnityCSharp", UnityFileTypeThemedIcons.FileUnity.Id);
             TemplateImage.Register("UnityShaderLab", ShaderFileTypeThemedIcons.FileShader.Id);
             TemplateImage.Register("UnityAsmDef", PsiJavaScriptThemedIcons.Json.Id);
         }
@@ -35,6 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.LiveTemplate
 
         public override IEnumerable<ITemplateScopePoint> BuildAllPoints()
         {
+            // TODO: Remove this once RIDER-10132 is fixed
+            // Exposing this simply allows custom templates to be included in the same group (and "Unity Class" UITag)
+            // as the default templates.
+            yield return new UnityFileTemplateSectionMarker();
+
             yield return new InUnityCSharpProject();
             yield return new InUnityCSharpAssetsFolder();
 
