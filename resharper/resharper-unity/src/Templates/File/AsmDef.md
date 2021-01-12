@@ -5,7 +5,7 @@ type: File
 reformat: True
 categories: unity
 customProperties: Extension=asmdef, FileName=Assembly, ValidateFileName=True
-scopes: InUnityCSharpProject;MustBeInProjectWithUnityVersion(version=2017.3)
+scopes: UnityFileTemplateSectionMarker;InUnityCSharpProject;MustBeInProjectWithUnityVersion(version=2017.3)
 parameterOrder: (NAME)
 NAME-expression: getAlphaNumericFileNameWithoutExtension()
 ---

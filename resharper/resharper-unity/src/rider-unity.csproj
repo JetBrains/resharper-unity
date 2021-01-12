@@ -152,7 +152,7 @@
   </ItemGroup>
   <!-- ********** -->
   <ItemGroup Label="References">
-    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.6.0" />
+    <PackageReference Include="CitizenMatt.ReSharper.LiveTemplateCompiler" Version="2.8.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -172,8 +172,8 @@
     <EmbeddedResource Remove="**\ReSharper\**" />
     <None Remove="**\ReSharper\**" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props"/>
-  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props"/>
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.ReSharperAutomationTools_src_ReSharperHost.Props" />
+  <Import Project="$(DotNetSdkPath)\Build\SubplatformReference.Psi.Features_Cpp_Src_Core.Props" />
   <Target Name="CppHack" AfterTargets="PrepareForRun">
      <Move SourceFiles="$(OutDir)JetBrains.ReSharper.Psi.Cpp.dll" DestinationFiles="$(OutDir)x86\JetBrains.ReSharper.Psi.Cpp.dll" />
   </Target>
