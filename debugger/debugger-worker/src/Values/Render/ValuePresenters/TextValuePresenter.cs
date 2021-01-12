@@ -11,7 +11,7 @@ using Mono.Debugging.Soft;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePresenters
 {
-    // Overrides StringValuePresenter for our "informational" values
+    // Overrides StringValuePresenter for our "informational" values, without normal string highlighting/quote handling
     [DebuggerSessionComponent(typeof(SoftDebuggerType))]
     public class TextValuePresenter<TValue> : ValuePresenterBase<TValue, IStringValueRole<TValue>>
         where TValue : class
@@ -28,13 +28,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
         public override bool IsApplicable(IStringValueRole<TValue> role, IMetadataTypeLite instanceType, IPresentationOptions options,
                                           IUserDataHolder dataHolder)
         {
-            return myUnityOptions.ExtensionsEnabled && role.ValueReference is NamedReferenceDecorator<TValue>;
+            return myUnityOptions.ExtensionsEnabled && role.ValueReference is TextValueReference<TValue>;
         }
 
         public override IValuePresentation PresentValue(IStringValueRole<TValue> valueRole, IMetadataTypeLite instanceType,
                                                         IPresentationOptions options, IUserDataHolder dataHolder, CancellationToken token)
         {
-            // Note that ValueFlags.IsString will add the "View" link to see a string in a popup. We don't need this
+            // Present the value's string as plain text, without any syntax highlighting or quote handling. Don't use
+            // ValueFlags.IsString, as it will add an unnecessary "View" link - our text is always short
             var text = valueRole.GetString();
             return SimplePresentation.CreateSuccess(ValuePresentationPart.Default(text),
                 valueRole.ValueReference.DefaultFlags | ValueFlags.NoChildren, instanceType, text);
