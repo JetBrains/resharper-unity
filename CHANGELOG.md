@@ -14,11 +14,15 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Added
 
+- Add gutter icons to show Burst compiled methods ([#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
+- Add context actions to show call tree for performance critical, expensive and Burst compiled methods ([#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
+- Rider: Add Code Vision actions to show call tree for performance critical, expensive and Burst compiled methods ([#1995](https://github.com/JetBrains/resharper-unity/pull/1995))
 - Rider: Add custom debugger type views for `SerializedObject` and `SerializedProperty` ([#1991](https://github.com/JetBrains/resharper-unity/pull/1991))
 
 ### Changed
 
 - Rider: Unity file templates are grouped into "Unity Class" and "Unity Shader" ([#1983](https://github.com/JetBrains/resharper-unity/pull/1983))
+- Rider: Double click on assembly files in Unity Explorer will add the file to Assembly Explorer ([RIDER-54873](https://youtrack.jetbrains.com/issue/RIDER-54873), [#1996](https://github.com/JetBrains/resharper-unity/pull/1996))
 
 ### Fixed
 
