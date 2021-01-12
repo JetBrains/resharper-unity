@@ -40,15 +40,16 @@ class ContentModelUpdater : ProjectManagerListener {
         // It's common practice to have extra folders in the root project folder, e.g. a backup copy of Library for
         // a different version of Unity, or target, which can be renamed instead of having to do a time consuming
         // reimport. Also, folders containing builds for targets such as iOS.
-        // Exclude all folders apart from Assets, ProjectSettings and Packages
+        // Exclude all folders apart from Assets, ProjectSettings and Packages. Make sure to explicitly include these
+        // three folders. Without the explicit include, Assets + ProjectSettings are indexed, but Packages aren't.
         for (child in project.projectDir.children) {
-            if (child != null && isRootFolder(project, child) && !isInProject(project, child)) {
+            if (child != null && isRootFolder(project, child)) {
                 val file = VfsUtil.virtualToIoFile(child)
 
                 if (shouldInclude(child.name)) {
                     newIncludedFolders.add(file)
                 }
-                else {
+                else if (!isInProject(project, child)){
                     newExcludedFolders.add(file)
                 }
             }
@@ -89,7 +90,6 @@ class ContentModelUpdater : ProjectManagerListener {
             application.invokeLater {
                 contentModel.update()
             }
-
         }
     }
 
@@ -103,8 +103,8 @@ class ContentModelUpdater : ProjectManagerListener {
 
     private fun shouldInclude(name: String): Boolean {
         return name.equals("Assets", true)
-                || name.equals("ProjectSettings", true)
-                || name.equals("Packages", true)
+            || name.equals("Packages", true)
+            || name.equals("ProjectSettings", true)
     }
 
     private inner class Listener(private val project: Project, private val alarm: SingleAlarm) : AsyncFileListener, PackageManagerListener {

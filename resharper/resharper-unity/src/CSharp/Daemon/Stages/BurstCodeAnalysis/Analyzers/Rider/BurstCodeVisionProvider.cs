@@ -1,72 +1,83 @@
-using System.Collections.Generic;
-using JetBrains.Annotations;
-using JetBrains.Application.UI.Controls.BulbMenu.Anchors;
-using JetBrains.Application.UI.Controls.BulbMenu.Items;
+using System;
+using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Feature.Services.Intentions;
-using JetBrains.ReSharper.Feature.Services.Resources;
 using JetBrains.ReSharper.Host.Platform.Icons;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.QuickFixes.CallGraph.BurstCodeAnalysis.AddDiscardAttribute;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
-using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
-using JetBrains.TextControl;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.Analyzers.Rider
 {
     [SolutionComponent]
-    public class BurstCodeVisionProvider : BurstProblemAnalyzerBase<IMethodDeclaration>
+    public sealed class BurstCodeVisionProvider : BurstGutterMarkProvider
     {
         private readonly IApplicationWideContextBoundSettingStore mySettingsStore;
-        private readonly ISolution mySolution;
-        private readonly UnityCodeInsightProvider myCodeInsightProvider;
+        private readonly BurstCodeInsightProvider myBurstCodeInsightProvider;
         private readonly IconHost myIconHost;
-        private readonly ITextControlManager myTextControlManager;
+        private readonly BurstCodeInsights myCodeInsights;
 
-        public BurstCodeVisionProvider(ISolution solution,
+        public BurstCodeVisionProvider(
+            Lifetime lifetime,
             IApplicationWideContextBoundSettingStore store,
-            UnityCodeInsightProvider codeInsightProvider, IconHost iconHost)
+            BurstCodeInsightProvider burstCodeInsightProvider,
+            IconHost iconHost,
+            BurstCodeInsights codeInsights) : base(lifetime, store, codeInsights)
         {
-            mySolution = solution;
-            myTextControlManager = mySolution.GetComponent<ITextControlManager>();
             mySettingsStore = store;
-            myCodeInsightProvider = codeInsightProvider;
+            myBurstCodeInsightProvider = burstCodeInsightProvider;
             myIconHost = iconHost;
+            myCodeInsights = codeInsights;
         }
 
-        protected override bool CheckAndAnalyze(IMethodDeclaration methodDeclaration, IHighlightingConsumer consumer)
+        public override bool IsGutterMarkEnabled
         {
-            if (consumer == null)
-                return false;
+            get
+            {
+                var result = false;
+                var boundStore = mySettingsStore.BoundSettingsStore;
+                var providerId = myBurstCodeInsightProvider.ProviderId;
+                
+                RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, () => result = base.IsGutterMarkEnabled, out _);
+                
+                return result;
+            }
+        }
 
-            if (!RiderIconProviderUtil.IsCodeVisionEnabled(mySettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
-                () => { }, out _)) return false;
+        private bool ShouldAddCodeVision(
+            IMethodDeclaration methodDeclaration,
+            IHighlightingConsumer consumer,
+            IReadOnlyCallGraphContext context)
+        {
+            var isBurstIconsEnabled = base.IsGutterMarkEnabled;
+            var boundStore = mySettingsStore.BoundSettingsStore;
+            var providerId = myBurstCodeInsightProvider.ProviderId;
+            void Fallback() => base.Analyze(methodDeclaration, consumer, context);
+            
+            return isBurstIconsEnabled 
+                   && RiderIconProviderUtil.IsCodeVisionEnabled(boundStore, providerId, Fallback, out _);
+        }
+
+        protected override void Analyze(IMethodDeclaration methodDeclaration,
+            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
+        {
+            if (!ShouldAddCodeVision(methodDeclaration, consumer, context))
+                return;
 
             var declaredElement = methodDeclaration.DeclaredElement;
+            var iconModel = myIconHost.Transform(InsightUnityIcons.InsightUnity.Id);
+            var actions = myCodeInsights.GetBurstActions(methodDeclaration, context);
 
-            myCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement, BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
+            myBurstCodeInsightProvider.AddHighlighting(consumer, methodDeclaration, declaredElement,
+                BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
                 BurstCodeAnalysisUtil.BURST_TOOLTIP,
                 BurstCodeAnalysisUtil.BURST_DISPLAY_NAME,
-                myIconHost.Transform(InsightUnityIcons.InsightUnity.Id),
-                GetBurstActions(methodDeclaration),
-                null);
-
-            return false;
-        }
-
-        private List<BulbMenuItem> GetBurstActions([NotNull] IMethodDeclaration methodDeclaration)
-        {
-            var result = new List<BulbMenuItem>();
-            var textControl = myTextControlManager.LastFocusedTextControl.Value;
-            var bulbAction = new AddDiscardAttributeBulbAction(methodDeclaration);
-            
-            result.Add(new BulbMenuItem(new IntentionAction.MyExecutableProxi(bulbAction, mySolution, textControl),
-                bulbAction.Text, BulbThemedIcons.ContextAction.Id, BulbMenuAnchors.FirstClassContextItems));
-            
-            return result;
+                iconModel,
+                actions,
+                extraActions: null);
         }
     }
 }

@@ -22,6 +22,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 - Rider: Fix exception notifying backend of file changes to `ProtocolInstance.json` ([DEXP-559833](https://youtrack.jetbrains.com/issue/DEXP-559833), [#1942](https://github.com/JetBrains/resharper-unity/pull/1942))
 - Rider: Fix exception with multiple assemblies with the same name ([RIDER-54876](https://youtrack.jetbrains.com/issue/RIDER-54876), [#1953](https://github.com/JetBrains/resharper-unity/pull/1953))
 - Rider: Fix mouse focus issue when opening Rider full screen on macOS ([RIDER-55501](https://youtrack.jetbrains.com/issue/RIDER-55501), [#1980](https://github.com/JetBrains/resharper-unity/pull/1980))
+- Rider: Fix files in `Packages` folder showing the non-project dialog when being modified ([#1997](https://github.com/JetBrains/resharper-unity/pull/1997))
 
 
 

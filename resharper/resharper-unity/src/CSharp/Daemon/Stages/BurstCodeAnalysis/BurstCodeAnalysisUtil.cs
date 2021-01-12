@@ -191,7 +191,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             return false;
         }
 
-        public static bool IsBurstProhibitedNode([NotNull] ITreeNode node)
+        public static bool IsBurstProhibitedNode([CanBeNull] ITreeNode node)
         {
             switch (node)
             {

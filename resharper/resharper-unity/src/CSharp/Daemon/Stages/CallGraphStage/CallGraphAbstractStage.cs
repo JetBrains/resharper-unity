@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Application.Settings;
-using JetBrains.Collections;
+using JetBrains.Application.Threading;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
@@ -17,15 +17,18 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 {
     public abstract class CallGraphAbstractStage : CSharpDaemonStageBase
     {
+        private readonly CallGraphSwaExtensionProvider mySwaExtensionProvider;
         private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
         private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
         private readonly ILogger myLogger;
 
         protected CallGraphAbstractStage(
+            CallGraphSwaExtensionProvider swaExtensionProvider,
             IEnumerable<ICallGraphContextProvider> contextProviders,
             IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers,
             ILogger logger)
         {
+            mySwaExtensionProvider = swaExtensionProvider;
             myContextProviders = contextProviders;
             myProblemAnalyzers = problemAnalyzers;
             myLogger = logger;
@@ -35,7 +38,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
             IContextBoundSettingsStore settings,
             DaemonProcessKind processKind, ICSharpFile file)
         {
-            if (!file.GetProject().IsUnityProject())
+            var sourceFile = file.GetSourceFile();
+
+            if (!file.GetProject().IsUnityProject() || !mySwaExtensionProvider.IsApplicable(sourceFile))
                 return null;
 
             return new CallGraphProcess(process, processKind, file, myLogger, myContextProviders, myProblemAnalyzers);
@@ -44,52 +49,48 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
     public class CallGraphProcess : CSharpDaemonStageProcessBase
     {
-        private readonly DaemonProcessKind myProcessKind;
         private readonly ILogger myLogger;
         private readonly IEnumerable<ICallGraphContextProvider> myContextProviders;
-        private readonly Dictionary<CallGraphContextElement,List<ICallGraphProblemAnalyzer>> myProblemAnalyzersByContext;
-        private readonly CallGraphContext myContext = new CallGraphContext();
+        private readonly IEnumerable<ICallGraphProblemAnalyzer> myProblemAnalyzers;
+        private readonly CallGraphContext myContext;
 
         public CallGraphProcess(
             IDaemonProcess process,
-            DaemonProcessKind processKind, 
-            ICSharpFile file, 
+            DaemonProcessKind processKind,
+            ICSharpFile file,
             ILogger logger,
             IEnumerable<ICallGraphContextProvider> contextProviders,
             IEnumerable<ICallGraphProblemAnalyzer> problemAnalyzers)
             : base(process, file)
         {
-            myProcessKind = processKind;
+            myContext = new CallGraphContext(processKind, process); 
             myLogger = logger;
             myContextProviders = contextProviders;
-
-            myProblemAnalyzersByContext = problemAnalyzers.GroupBy(t => t.Context)
-                .ToDictionary(t => t.Key, t => t.ToList());
+            myProblemAnalyzers = problemAnalyzers;
         }
 
         public override void Execute(Action<DaemonStageResult> committer)
         {
+            File.GetPsiServices().Locks.AssertReadAccessAllowed();
+            
             var highlightingConsumer = new FilteringHighlightingConsumer(DaemonProcess.SourceFile, File,
                 DaemonProcess.ContextBoundSettingsStore);
-            
+
             File.ProcessThisAndDescendants(this, highlightingConsumer);
-            
+
             committer(new DaemonStageResult(highlightingConsumer.Highlightings));
         }
 
         public override void ProcessBeforeInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
-            myContext.AdvanceContext(element, myProcessKind, myContextProviders);
+            myContext.AdvanceContext(element, myContextProviders);
 
             try
             {
-                foreach (var (problemAnalyzerContext, problemAnalyzers) in myProblemAnalyzersByContext)
+                foreach (var problemAnalyzer in myProblemAnalyzers)
                 {
-                    if (!myContext.IsSuperSetOf(problemAnalyzerContext))
-                        continue;
-
-                    foreach (var problemAnalyzer in problemAnalyzers)
-                        problemAnalyzer.RunInspection(element, DaemonProcess, myProcessKind, consumer, myContext);
+                    IsProcessingFinished(consumer);
+                    problemAnalyzer.RunInspection(element, consumer, myContext);
                 }
             }
             catch (OperationCanceledException)
@@ -104,8 +105,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.CallGraphStage
 
         public override void ProcessAfterInterior(ITreeNode element, IHighlightingConsumer consumer)
         {
-            base.ProcessAfterInterior(element, consumer);
-
             myContext.Rollback(element);
         }
     }

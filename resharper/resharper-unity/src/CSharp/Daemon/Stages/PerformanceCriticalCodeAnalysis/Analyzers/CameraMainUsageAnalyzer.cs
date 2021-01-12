@@ -1,6 +1,7 @@
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Errors;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Analyzers
@@ -8,8 +9,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     [SolutionComponent]
     public class CameraMainUsageAnalyzer : PerformanceProblemAnalyzerBase<IReferenceExpression>
     {
-        protected override void Analyze(IReferenceExpression referenceExpression, IDaemonProcess daemonProcess, DaemonProcessKind kind,
-            IHighlightingConsumer consumer)
+        protected override void Analyze(IReferenceExpression referenceExpression,
+            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             if (PerformanceCriticalCodeStageUtil.IsCameraMainUsage(referenceExpression))
             {
