@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using JetBrains.Application.UI.Controls.BulbMenu.Items;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.ContextSystem;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -25,13 +26,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.I
         }
 
         public abstract bool AddDeclarationHighlighting(IDeclaration treeNode, IHighlightingConsumer consumer,
-                                                        DaemonProcessKind kind);
+                                                        IReadOnlyCallGraphContext context);
 
         protected virtual void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
-            string tooltip, DaemonProcessKind kind)
+            string tooltip, IReadOnlyCallGraphContext context)
         {
             consumer.AddImplicitConfigurableHighlighting(element);
-            consumer.AddHotHighlighting(ContextProvider, element, SettingsStore.BoundSettingsStore, text, tooltip, kind, GetActions(element));
+            consumer.AddHotHighlighting(ContextProvider, element, SettingsStore.BoundSettingsStore, text, tooltip, context, GetActions(element));
         }
 
 

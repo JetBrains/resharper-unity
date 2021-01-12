@@ -35,6 +35,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Application.UI.Options.VisualStudio
         {
             AddHeader("C#");
             AddBoolOption(ourEnableBurstHighlightingAccessor, "Enable analysis for Burst compiler issues");
+
+            using (Indent())
+            {
+                var option = AddBoolOption((UnitySettings s) => s.EnableIconsForBurstCode,
+                    "Show icons for Burst compiled called methods");
+                AddBinding(option, BindingStyle.IsEnabledProperty, ourEnableBurstHighlightingAccessor,
+                    enable => enable);
+            }
+            
             AddBoolOption(ourEnablePerformanceHighlightingAccessor,
                 "Enable performance analysis in frequently called code");
 

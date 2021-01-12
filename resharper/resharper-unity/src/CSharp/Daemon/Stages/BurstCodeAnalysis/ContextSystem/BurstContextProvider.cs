@@ -1,18 +1,14 @@
-using System.Collections.Generic;
 using JetBrains.Application.Settings;
 using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
-using JetBrains.Metadata.Reader.API;
 using JetBrains.ProjectModel;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
-using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.CallGraph;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using static JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalysis.BurstCodeAnalysisUtil;
@@ -22,19 +18,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
     [SolutionComponent]
     public sealed class BurstContextProvider : CallGraphContextProviderBase
     {
-        private static readonly HashSet<IClrTypeName> ourJobsSet = new HashSet<IClrTypeName>
-        {
-            KnownTypes.Job,
-            KnownTypes.JobFor,
-            KnownTypes.JobComponentSystem,
-            KnownTypes.JobParallelFor,
-            KnownTypes.JobParticleSystem,
-            KnownTypes.JobParallelForTransform,
-            KnownTypes.JobParticleSystemParallelFor,
-            KnownTypes.JobParticleSystemParallelForBatch,
-            KnownTypes.AnimationJob
-        };
-
         private readonly IProperty<bool> myIsBurstEnabledProperty;
 
         public BurstContextProvider(Lifetime lifetime, IElementIdProvider elementIdProvider, IApplicationWideContextBoundSettingStore store,
@@ -44,96 +27,39 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.BurstCodeAnalys
             myIsBurstEnabledProperty = store.BoundSettingsStore.GetValueProperty(lifetime, (UnitySettings key) => key.EnableBurstCodeHighlighting);
         }
 
-        public override CallGraphContextElement Context => CallGraphContextElement.BURST_CONTEXT;
+        public override CallGraphContextTag ContextTag => CallGraphContextTag.BURST_CONTEXT;
         public override bool IsContextAvailable => myIsBurstEnabledProperty.Value;
         public override bool IsContextChangingNode(ITreeNode node) => IsBurstProhibitedNode(node) || base.IsContextChangingNode(node);
 
-        public override bool HasContext(IDeclaration declaration, DaemonProcessKind processKind)
+        public override bool IsMarkedLocal(IDeclaredElement declaredElement, CallGraphDataElement dataElement)
         {
             if (IsContextAvailable == false)
                 return false;
+            // there is problem:
+            // due to root-ban check at not-merged state we have 2 data for graph - local data and index
+            // they checks marks independently on their data
+            // and the result on not-merged and merged state MAY DIFFER, for e.x. index has strict ban while data not
+            // !!BUT!!!
+            // cuz strictly banned at only at function declaration, it is impossible for index data to differ from local data very hard
+            // only partial functions may result in false positives
+            // in burst there are too little partial root(job) functions, performance-expensive same, they are mono behaviour hard coded
+            // so it is mostly ok 
             
-            if (declaration == null || IsBurstProhibitedNode(declaration))
+            if (declaredElement == null || dataElement == null)
                 return false;
-            
-            var functionDeclaration = declaration as IFunctionDeclaration;
 
-            if (UnityCallGraphUtil.HasAnalysisComment(functionDeclaration,
-                BurstMarksProvider.MarkId, ReSharperControlConstruct.Kind.Restore))
+            var vertex = myElementIdProvider.GetElementId(declaredElement);
+
+            if (vertex == null)
+                return false;
+
+            if (!dataElement.Vertices.Contains(vertex.Value) || dataElement.BanMarks.GetOrEmpty(BurstStrictlyBannedMarkProvider.RootMarkId).Contains(vertex.Value))
+                return false;
+                
+            if (dataElement.RootMarks.GetOrEmpty(MarkId).Contains(vertex.Value))
                 return true;
 
-            return base.HasContext(declaration, processKind);
-        }
-
-        public override bool IsMarked(IDeclaredElement declaredElement, DaemonProcessKind processKind)
-        {
-            if (IsContextAvailable == false)
-                return false;
-            
-            if (IsMarkedFast(declaredElement))
-                return true;
-
-            if (IsBannedFast(declaredElement))
-                return false;
-            
-            return base.IsMarked(declaredElement, processKind);
-        }
-
-        private static bool IsMarkedFast(IDeclaredElement declaredElement)
-        {
-            var method = declaredElement as IMethod;
-
-            if (method == null)
-                return false;
-            
-            // if (getCallee && node is ICSharpExpression icSharpExpression)
-            //     declaredElement = CallGraphUtil.GetCallee(icSharpExpression);
-            var containingTypeElement = method.GetContainingType();
-
-            if (containingTypeElement == null)
-                return false;
-
-            if (!containingTypeElement.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self))
-                return false;
-
-            if (method.IsStatic && method.HasAttributeInstance(KnownTypes.BurstCompileAttribute, AttributesSource.Self))
-                return true;
-
-            if (!(containingTypeElement is IStruct @struct))
-                return false;
-
-            var superTypes = @struct.GetSuperTypes();
-            var methodSignature = method.GetSignature(EmptySubstitution.INSTANCE);
-
-            foreach (var type in superTypes)
-            {
-                var clrName = type.GetClrName();
-
-                if (!ourJobsSet.Contains(clrName))
-                    continue;
-
-                var typeElement = type.GetTypeElement();
-
-                if (typeElement == null)
-                    continue;
-
-                var typeMethods = typeElement.Methods;
-
-                foreach (var typeMethod in typeMethods)
-                {
-                    var typeMethodSignature = typeMethod.GetSignature(EmptySubstitution.INSTANCE);
-
-                    if (methodSignature.Equals(typeMethodSignature))
-                        return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool IsBannedFast(IDeclaredElement declaredElement)
-        {
-            return declaredElement is IFunction function && IsBurstProhibitedFunction(function);
+            return IsMarkedInternal(declaredElement, shouldPropagate:false, vertex);
         }
     }
 }

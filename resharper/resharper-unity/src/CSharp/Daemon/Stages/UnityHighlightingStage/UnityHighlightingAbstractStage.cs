@@ -8,6 +8,7 @@ using JetBrains.ReSharper.Daemon.CSharp.Stages;
 using JetBrains.ReSharper.Feature.Services.CSharp.Daemon;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Analysis;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.IconsProviders;
 using JetBrains.ReSharper.Plugins.Unity.ProjectModel;
 using JetBrains.ReSharper.Psi;
@@ -49,9 +50,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
         private readonly IEnumerable<IUnityDeclarationHighlightingProvider> myDeclarationHighlightingProviders;
         private readonly UnityApi myAPI;
         private readonly UnityCommonIconProvider myCommonIconProvider;
-        private readonly DaemonProcessKind myProcessKind;
         private readonly ISet<IDeclaredElement> myMarkedDeclarations = new HashSet<IDeclaredElement>();
         private readonly JetHashSet<IMethod> myEventFunctions;
+        private readonly CallGraphContext myContext;
 
         public UnityHighlightingProcess(
             [NotNull] IDaemonProcess process, 
@@ -62,10 +63,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
             DaemonProcessKind processKind)
             : base(process, file)
         {
+            myContext = new CallGraphContext(processKind, process);
             myDeclarationHighlightingProviders = declarationHighlightingProviders;
             myAPI = api;
             myCommonIconProvider = commonIconProvider;
-            myProcessKind = processKind;
 
             myEventFunctions = DaemonProcess.CustomData.GetData(UnityEventFunctionAnalyzer.UnityEventFunctionNodeKey)
                 ?.Where(t => t != null && t.IsValid()).ToJetHashSet();
@@ -96,7 +97,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
                         continue;
 
                     myCommonIconProvider.AddEventFunctionHighlighting(highlightingConsumer, method, eventFunction,
-                        "Event function", myProcessKind);
+                        "Event function", myContext);
                     myMarkedDeclarations.Add(method);
                 }
                 else
@@ -105,7 +106,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
                         continue;
 
                     myCommonIconProvider.AddFrequentlyCalledMethodHighlighting(highlightingConsumer, declaration,
-                        "Frequently called", "Frequently called code", myProcessKind);
+                        "Frequently called", "Frequently called code", myContext);
                 }
             }
 
@@ -119,7 +120,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.UnityHighlighti
             
             foreach (var unityDeclarationHighlightingProvider in myDeclarationHighlightingProviders)
             {
-                var result = unityDeclarationHighlightingProvider.AddDeclarationHighlighting(declaration, consumer, myProcessKind);
+                var result = unityDeclarationHighlightingProvider.AddDeclarationHighlighting(declaration, consumer, myContext);
 
                 if (result)
                     myMarkedDeclarations.Add(declaration.DeclaredElement.NotNull("declaration.DeclaredElement != null"));

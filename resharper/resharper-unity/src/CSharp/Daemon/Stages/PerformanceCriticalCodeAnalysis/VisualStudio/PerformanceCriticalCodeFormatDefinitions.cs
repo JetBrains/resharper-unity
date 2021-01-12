@@ -1,7 +1,6 @@
 // NOTE: This file is explicitly excluded by the .csproj for Mac/Linux!
 
 using System.ComponentModel.Composition;
-using JetBrains.Platform.VisualStudio.SinceVs10.TextControl.Markup.FormatDefinitions;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
@@ -13,8 +12,6 @@ using Microsoft.VisualStudio.Utilities;
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.VisualStudio
 {
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
-        Before = VsHighlightPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -34,8 +31,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
-        Before = VsHighlightPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -55,8 +50,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
-        Before = VsHighlightPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -76,8 +69,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
 
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
-        Before = VsHighlightPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -97,8 +88,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
     
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
-        Before = VsHighlightPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]
@@ -118,8 +107,6 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
     }
     
     [ClassificationType(ClassificationTypeNames = Name)]
-    [Order(After = VsAnalysisPriorityClassificationDefinition.Name,
-        Before = VsHighlightPriorityClassificationDefinition.Name)]
     [Export(typeof(EditorFormatDefinition))]
     [Name(Name)]
     [DisplayName(Name)]

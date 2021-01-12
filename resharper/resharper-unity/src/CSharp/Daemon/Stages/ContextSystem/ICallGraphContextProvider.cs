@@ -1,5 +1,9 @@
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Daemon;
+using JetBrains.ReSharper.Daemon.CallGraph;
+using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
@@ -8,47 +12,82 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
     public interface ICallGraphContextProvider
     {
-        CallGraphContextElement Context { get; }
+        CallGraphContextTag ContextTag { get; }
+
+        /// <summary>
+        /// corresponding marks provider id
+        /// </summary>
+        CallGraphRootMarkId MarkId { get; }
+
+        /// <summary>
+        /// Settings based
+        /// </summary>
         bool IsContextAvailable { get; }
-        bool IsContextChangingNode(ITreeNode node);
-        bool HasContext([CanBeNull] IDeclaration declaration, DaemonProcessKind processKind);
-        bool IsCalleeMarked([CanBeNull] ICSharpExpression expression, DaemonProcessKind processKind);
-        bool IsMarked([CanBeNull] IDeclaredElement declaredElement, DaemonProcessKind processKind);
+
+        /// <returns>true if <see cref="ContextTag"/> can be changed by this <paramref name="node"/></returns>
+        bool IsContextChangingNode([CanBeNull] ITreeNode node);
+
+        bool IsMarkedGlobal([CanBeNull] IDeclaredElement declaredElement);
+
+        bool IsMarkedLocal([CanBeNull] IDeclaredElement declaredElement);
+
+        bool IsMarkedLocal([CanBeNull] IDeclaredElement declaredElement, [CanBeNull] CallGraphDataElement dataElement);
     }
-    
+
     public static class CallGraphContextProviderEx
     {
-        public static bool IsNodeMarked(
-            [CanBeNull] this ICallGraphContextProvider provider, 
-            [CanBeNull] ITreeNode treeNode,
-            DaemonProcessKind processKind)
+        public static bool IsMarkedStage(
+            [CanBeNull] this ICallGraphContextProvider contextProvider,
+            [CanBeNull] IDeclaredElement declaredElement,
+            [CanBeNull] IReadOnlyCallGraphContext context)
         {
-            if (provider == null)
+            if (contextProvider == null || declaredElement == null || context == null)
                 return false;
 
-            var mark = false;
-            
-            switch (treeNode)
+            switch (context.Kind)
             {
-                case ICSharpExpression expression:
-                    mark = provider.IsCalleeMarked(expression, processKind);
-                    break;
-                case IDeclaration declaration:
-                    mark = provider.HasContext(declaration, processKind);
-                    break;
+                case DaemonProcessKind.VISIBLE_DOCUMENT:
+                    return contextProvider.IsMarkedLocal(declaredElement, context.DataElement);
+                case DaemonProcessKind.GLOBAL_WARNINGS:
+                    return contextProvider.IsMarkedGlobal(declaredElement);
+                default:
+                    return false;
             }
-
-            return mark;
         }
 
-        public static CallGraphContextElement GetNodeContext(
-            [CanBeNull] this ICallGraphContextProvider provider,
-            [CanBeNull] ITreeNode treeNode,
-            DaemonProcessKind processKind)
+        public static bool IsMarkedSweaDependent(
+            [CanBeNull] this ICallGraphContextProvider contextProvider,
+            [CanBeNull] IDeclaredElement declaredElement,
+            [CanBeNull] SolutionAnalysisConfiguration configuration)
         {
-            return provider.IsNodeMarked(treeNode, processKind)
-                ? provider.Context
-                : CallGraphContextElement.NONE;
+            if (contextProvider == null || declaredElement == null || configuration == null)
+                return false;
+
+            return UnityCallGraphUtil.IsCallGraphReady(configuration)
+                ? contextProvider.IsMarkedGlobal(declaredElement)
+                : contextProvider.IsMarkedLocal(declaredElement);
+        }
+
+        public static bool IsMarkedSweaDependent(
+        [CanBeNull] this ICallGraphContextProvider contextProvider,
+            [CanBeNull] IDeclaredElement declaredElement,
+            [CanBeNull] SolutionAnalysisService swea)
+        {
+            return IsMarkedSweaDependent(contextProvider, declaredElement, swea?.Configuration);
+        }
+
+        [CanBeNull]
+        public static IDeclaredElement ExtractDeclaredElementForProvider([CanBeNull] ITreeNode node)
+        {
+            switch (node)
+            {
+                case IDeclaration declaration:
+                    return declaration.DeclaredElement;
+                case ICSharpExpression expression:
+                    return CallGraphUtil.GetCallee(expression);
+            }
+
+            return null;
         }
     }
 }
