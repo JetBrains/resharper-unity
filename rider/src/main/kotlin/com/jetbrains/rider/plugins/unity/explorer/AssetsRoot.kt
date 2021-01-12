@@ -142,6 +142,10 @@ class ReferenceItemNode(
         presentation.setIcon(UnityIcons.Explorer.Reference)
     }
 
+    override fun navigate(requestFocus: Boolean) {
+        // the same VirtualFile may be added as a file inside Assets folder, so simple click on the reference would jump to that file
+    }
+
     // Allows View In Assembly Explorer and Properties actions to work
     override val node: IProjectModelNode
         get() = ProjectModelViewHost.getInstance(myProject).getItemById(keys.first().id)!!
