@@ -1,4 +1,4 @@
-package com.jetbrains.rider.internal.dump
+package com.jetbrains.rider.plugins.unity.actions.internal
 
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.AnActionEvent
