@@ -12,7 +12,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
         public override int Priority => UnityRendererUtil.ChildrenRendererPriority;
         public override bool IsExclusive => true;
 
-        protected override bool IsAllowedReference(IValueReference<TValue> reference)
+        protected override bool ShouldInclude(IValueReference<TValue> reference)
         {
             if (reference is IMetadataEntityValueReference metadataEntityValueReference &&
                 metadataEntityValueReference.Entity != null)

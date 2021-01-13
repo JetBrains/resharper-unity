@@ -114,9 +114,17 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
                 var displayString =
                     ExpressionEvaluators.EvaluateDisplayString(valueReference.OriginatingFrame, thisObj,
                         debuggerDisplayString, evaluationOptions, token);
+
+                var flags = valueReference.DefaultFlags;
+                if (valueReference is CalculatedValueReferenceDecorator<TValue> reference &&
+                    !reference.AllowDefaultTypePresentation)
+                {
+                    flags |= ValueFlags.IsDefaultTypePresentation;
+                }
+
                 return SimplePresentation.CreateSuccess(
                     ValuePresentationPart.Default(DisplayStringUtil.EscapeString(displayString)),
-                    valueReference.DefaultFlags, instanceType, displayString);
+                    flags, instanceType, displayString);
             }
             catch (Exception ex)
             {
@@ -132,9 +140,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.ValuePr
         private bool TryCacheDebuggerDisplay(IObjectValueRole<TValue> valueRole, IMetadataTypeLite instanceType,
                                              IUserDataHolder userDataHolder)
         {
-            // Special case. Replace with a second dictionary or whatever if we need to handle more types
-            if (valueRole.ValueReference is NamedReferenceDecorator<TValue> reference && reference.IsNameFromValue
-                && instanceType.FullName == "UnityEngine.GameObject")
+            // If the (key) name of the reference is the same as its actual name, don't display the name in the value.
+            // Replace with a second dictionary or whatever if we need to handle more types
+            if (valueRole.ValueReference is CalculatedValueReferenceDecorator<TValue> reference
+                && !reference.AllowNameInValue && instanceType.FullName == "UnityEngine.GameObject")
             {
                 userDataHolder.PutData(ourDebuggerDisplayStringKey, GameObjectDebuggerDisplayStringWithoutName);
                 return true;

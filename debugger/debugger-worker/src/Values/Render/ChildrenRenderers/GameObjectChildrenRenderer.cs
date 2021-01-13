@@ -147,10 +147,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     var componentName = GetComponentName(componentReference, objectNamesType,
                         getInspectorTitleMethod, frame, options, myValueServices, out var isNameFromValue);
 
-                    yield return new NamedReferenceDecorator<TValue>(componentReference, componentName,
-                            ValueOriginKind.Property, ValueFlags.None | ValueFlags.IsReadOnly,
-                            componentType.MetadataType, myValueServices.RoleFactory, isNameFromValue)
-                        .ToValue(myValueServices);
+                    // Tell the value presenter to hide the name field, if we're using it for the key. Also hide the
+                    // default type presentation - we know it's a Component, it's under a group called "Components"
+                    yield return new CalculatedValueReferenceDecorator<TValue>(componentReference,
+                        myValueServices.RoleFactory, componentName, !isNameFromValue, false).ToValue(myValueServices);
                 }
             }
 
@@ -158,7 +158,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                                             [CanBeNull] IReifiedType<TValue> objectNamesType,
                                             [CanBeNull] IMetadataMethodLite getInspectorTitleMethod,
                                             IStackFrame frame,
-                                            IValueFetchOptions options, IValueServicesFacade<TValue> services,
+                                            IValueFetchOptions options,
+                                            IValueServicesFacade<TValue> services,
                                             out bool isNameFromValue)
             {
                 if (objectNamesType != null && getInspectorTitleMethod != null)
@@ -265,14 +266,16 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     frame, myValueServices.RoleFactory).AsObjectSafe(options);
                 var gameObject = childTransform?.GetInstancePropertyReference("gameObject", true)
                     ?.AsObjectSafe(options);
-                var name = gameObject?.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
+                if (gameObject == null)
+                    return new ErrorValue("Game Object", "Unable to retrieve child game object");
+
+                var name = gameObject.GetInstancePropertyReference("name", true)?.AsStringSafe(options)
                     ?.GetString() ?? "Game Object";
 
-                return new NamedReferenceDecorator<TValue>(gameObject.ValueReference, name,
-                        ValueOriginKind.Property,
-                        ValueFlags.None | ValueFlags.IsReadOnly,
-                        myGameObjectRole.ReifiedType.MetadataType, myValueServices.RoleFactory, true)
-                    .ToValue(myValueServices);
+                // Tell the value presenter to not show the name field, we're already showing it as the key. Also don't
+                // show the type - a GameObject's child can only be a GameObject
+                return new CalculatedValueReferenceDecorator<TValue>(gameObject.ValueReference,
+                    myValueServices.RoleFactory, name, false, false).ToValue(myValueServices);
             }
         }
     }

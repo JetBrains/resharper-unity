@@ -6,7 +6,8 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=shader, FileName=NewImageEffectShader, ValidateFileName=True
-scopes: InUnityCSharpProject
+scopes: UnityFileTemplateSectionMarker;InUnityCSharpProject
+uitag: Unity Shader
 parameterOrder: (NAME)
 NAME-expression: getAlphaNumericFileNameWithoutExtension()
 ---
