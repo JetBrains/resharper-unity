@@ -16,6 +16,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Resources.Shell;
 using JetBrains.Rider.Model;
 using JetBrains.UI.Icons;
+using JetBrains.Util;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
 {
@@ -31,7 +32,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
                 ExtraRules = new IRiderUsageGroupingRule[]
                 {
                     new GameObjectUsageGroupingRule(iconHost),
-                    new ComponentUsageGroupingRule(metaFileGuidCache, iconHost)
+                    new ComponentUsageGroupingRule(metaFileGuidCache, iconHost),
+                    new AnimationEventGroupingRule(iconHost),
+                    new AnimatorGroupingRule(iconHost)
                 };
             }
             else
@@ -80,7 +83,52 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         public IDeclaredElement GetDeclaredElement(IOccurrence occurrence) => null;
         public IProjectItem GetProjectItem(IOccurrence occurrence) => null;
     }
+    
+    public class AnimatorGroupingRule : UnityYamlUsageGroupingRuleBase
+    {
+        public AnimatorGroupingRule([NotNull] IconHost iconHost) 
+            : base("Animator", UnityFileTypeThemedIcons.FileAnimatorController.Id, iconHost, 10.0)
+        {
+        }
+    
+        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
+        {
+            if (!(occurrence is UnityAnimatorScriptOccurence animationEventOccurence)) return EmptyModel();
+            var text = animationEventOccurence.GetDisplayText()?.Text.Split('/');
+            return text != null ? CreateModel(text.Join("\\")) : EmptyModel();
+        }
 
+        public override void Navigate(IOccurrence occurrence)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override bool IsNavigateable => false;
+    }
+
+    
+    public class AnimationEventGroupingRule : UnityYamlUsageGroupingRuleBase
+    {
+        public AnimationEventGroupingRule([NotNull] IconHost iconHost) 
+            : base("AnimationEvent", UnityFileTypeThemedIcons.FileAnimationClip.Id, iconHost, 9.0)
+        {
+        }
+        
+        public override RdUsageGroup CreateModel(IOccurrence occurrence, IOccurrenceBrowserDescriptor descriptor)
+        {
+            if (!(occurrence is UnityAnimationEventOccurence animationEventOccurence)) return EmptyModel();
+            var text = animationEventOccurence.GetDisplayText()?.Text;
+            return text != null ? CreateModel(text) : EmptyModel();
+        }
+
+        public override void Navigate(IOccurrence occurrence)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override bool IsNavigateable => false;
+    }
+    
     // The priorities here put us after directory, file, namespace, type and member
     public class GameObjectUsageGroupingRule : UnityYamlUsageGroupingRuleBase
     {
@@ -94,7 +142,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Host.Feature
         {
             using (CompilationContextCookie.GetExplicitUniversalContextIfNotSet())
             {
-                if (occurrence is UnityAssetOccurrence assetOccurrence && !assetOccurrence.SourceFile.GetLocation().IsAsset())
+                if (occurrence is UnityAssetOccurrence assetOccurrence &&
+                      !assetOccurrence.SourceFile.GetLocation().IsAsset() &&
+                      !assetOccurrence.SourceFile.GetLocation().IsAnimFile() &&
+                      !assetOccurrence.SourceFile.GetLocation().IsControllerFile())
                 {
                     using (ReadLockCookie.Create())
                     {

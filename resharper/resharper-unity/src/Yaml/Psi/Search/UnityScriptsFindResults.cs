@@ -1,24 +1,25 @@
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.Elements;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Psi;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
 {
     public class UnityScriptsFindResults : UnityAssetFindResult
     {
-        public AssetScriptUsages AssetScriptUsages { get; }
+        public IScriptUsage ScriptUsage { get; }
 
-        public UnityScriptsFindResults(IPsiSourceFile sourceFile, IDeclaredElement declaredElement, AssetScriptUsages assetScriptUsages, 
-            LocalReference owningElemetLocation)
+        public UnityScriptsFindResults(IPsiSourceFile sourceFile,
+                                       IDeclaredElement declaredElement,
+                                       IScriptUsage scriptUsage, 
+                                       LocalReference owningElemetLocation)
             : base(sourceFile, declaredElement, owningElemetLocation)
         {
-            AssetScriptUsages = assetScriptUsages;
+            ScriptUsage = scriptUsage;
         }
 
         protected bool Equals(UnityScriptsFindResults other)
         {
-            return base.Equals(other) && AssetScriptUsages.Equals(other.AssetScriptUsages);
+            return base.Equals(other) && ScriptUsage.Equals(other.ScriptUsage);
         }
 
         public override bool Equals(object obj)
@@ -33,7 +34,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ AssetScriptUsages.GetHashCode();
+                return (base.GetHashCode() * 397) ^ ScriptUsage.GetHashCode();
             }
         }
     }

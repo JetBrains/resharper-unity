@@ -177,6 +177,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches
                 
                 try
                 {
+                    if (!unityAssetDataElementContainer.IsApplicable(assetSourceFile)) continue;
                     var result = unityAssetDataElementContainer.Build(checker, assetSourceFile, assetDocument);
                     if (result is IHierarchyElement hierarchyElement)
                         assetDocument = assetDocument.WithHiererchyElement(hierarchyElement);

@@ -65,6 +65,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspect
             return new AssetInspectorValuesDataElement();
         }
 
+        public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
+        {
+            return true;
+        }
+
         public object Build(SeldomInterruptChecker seldomInterruptChecker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             var modifications = ProcessPrefabModifications(currentAssetSourceFile, assetDocument);

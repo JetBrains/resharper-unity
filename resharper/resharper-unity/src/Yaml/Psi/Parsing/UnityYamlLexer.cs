@@ -105,8 +105,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Parsing
                                 }
 
                                 var tag = sb.ToString();
-                                if (tag.Equals("!u!1") || tag.Equals("!u!4") || tag.Equals("!u!1001") ||
-                                    tag.Equals("!u!114") || tag.Equals("!u!224"))
+                                if (tag.Equals("!u!1") ||
+                                    tag.Equals("!u!4") ||
+                                    tag.Equals("!u!1001") ||
+                                    tag.Equals("!u!114") ||
+                                    tag.Equals("!u!224") ||
+                                    tag.Equals("!u!1102") ||
+                                    tag.Equals("!u!1107") ||
+                                    tag.Equals("!u!74"))
                                 {
                                     isInteresting = true;
                                 }

@@ -13,6 +13,7 @@ using JetBrains.ReSharper.Host.Features.BackgroundTasks;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimatorUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy.References;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
@@ -34,6 +35,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private readonly ISearchDomain myYamlSearchDomain;
         private readonly IShellLocks myLocks;
         private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
+        [NotNull] private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly RiderBackgroundTaskHost myBackgroundTaskHost;
         private readonly FrontendBackendHost myFrontendBackendHost;
@@ -47,6 +49,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                                                  FrontendBackendHost frontendBackendHost,
                                                  UnityExternalFilesModuleFactory externalFilesModuleFactory,
                                                  IPersistentIndexManager persistentIndexManager,
+                                                 [NotNull] AnimatorScriptUsagesElementContainer animatorContainer,
                                                  [CanBeNull] RiderBackgroundTaskHost backgroundTaskHost = null)
         {
             myLifetime = lifetime;
@@ -57,6 +60,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             myBackgroundTaskHost = backgroundTaskHost;
             myYamlSearchDomain = searchDomainFactory.CreateSearchDomain(externalFilesModuleFactory.PsiModule);
             myFrontendBackendHost = frontendBackendHost;
+            myAnimatorContainer = animatorContainer;
             myPersistentIndexManager = persistentIndexManager;
             mySolutionDirectoryPath = solution.SolutionDirectory;
         }
@@ -64,13 +68,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         public void CreateRequestToUnity([NotNull] IDeclaredElement declaredElement, LocalReference location, bool focusUnity)
         {
             var finder = mySolution.GetPsiServices().AsyncFinder;
-            var consumer = new UnityUsagesFinderConsumer(myAssetHierarchyProcessor, myPersistentIndexManager, mySolutionDirectoryPath);
+            var consumer = new UnityUsagesFinderConsumer(myAssetHierarchyProcessor, myAnimatorContainer, myPersistentIndexManager,
+                mySolutionDirectoryPath, declaredElement);
 
             var sourceFile = myPersistentIndexManager[location.OwningPsiPersistentIndex];
             if (sourceFile == null)
                 return;
 
-            var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, location, sourceFile, false);
+            var selectRequest = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
+                location, sourceFile, declaredElement, false);
 
 
             var lifetimeDef = myLifetime.CreateNested();
@@ -98,15 +104,34 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
             });
         }
 
-        private static AssetFindUsagesResultBase CreateRequest(FileSystemPath solutionDirPath, AssetHierarchyProcessor assetDocumentHierarchy,
-            LocalReference location, IPsiSourceFile sourceFile, bool needExpand = false)
+        private static AssetFindUsagesResultBase CreateRequest(FileSystemPath solutionDirPath,
+                                                               AssetHierarchyProcessor assetDocumentHierarchy,
+                                                               [NotNull]
+                                                               AnimatorScriptUsagesElementContainer animatorContainer,
+                                                               LocalReference location, IPsiSourceFile sourceFile,
+                                                               [NotNull] IDeclaredElement declaredElement,
+                                                               bool needExpand = false)
         {
             if (!GetPathFromAssetFolder(solutionDirPath, sourceFile, out var pathFromAsset, out var fileName, out var extension))
                 return null;
 
-            if (sourceFile.GetLocation().ExtensionWithDot.EndsWith(UnityYamlFileExtensions.AssetFileExtensionWithDot))
+            var path = sourceFile.GetLocation();
+            if (path.IsControllerFile() &&
+                animatorContainer.GetElementsNames(location, declaredElement, out var names, out var isStateMachine) &&
+                names != null)
+            {
+                return new AnimatorFindUsagesResult(names, 
+                    isStateMachine ? AnimatorUsageType.StateMachine : AnimatorUsageType.State, needExpand, 
+                    pathFromAsset, fileName, extension);
+            }
+            if (path.ExtensionWithDot.EndsWith(UnityYamlFileExtensions.AssetFileExtensionWithDot))
             {
                 return new AssetFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
+            }
+            
+            if (path.IsAnimFile())
+            {
+                return new AnimationFindUsagesResult(needExpand, pathFromAsset, fileName, extension);
             }
 
             var consumer = new UnityScenePathGameObjectConsumer();
@@ -138,18 +163,25 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
         private class UnityUsagesFinderConsumer : IFindResultConsumer<UnityAssetFindResult>
         {
             private readonly AssetHierarchyProcessor myAssetHierarchyProcessor;
+            [NotNull] private readonly AnimatorScriptUsagesElementContainer myAnimatorContainer;
             private readonly IPersistentIndexManager myPersistentIndexManager;
             private readonly FileSystemPath mySolutionDirectoryPath;
             private FindExecution myFindExecution = FindExecution.Continue;
+            [NotNull] private readonly IDeclaredElement myDeclaredElement;
 
             public List<AssetFindUsagesResultBase> Result = new List<AssetFindUsagesResultBase>();
 
-            public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor, IPersistentIndexManager persistentIndexManager,
-                FileSystemPath solutionDirectoryPath)
+            public UnityUsagesFinderConsumer(AssetHierarchyProcessor assetHierarchyProcessor,
+                                             [NotNull] AnimatorScriptUsagesElementContainer animatorContainer,
+                                             IPersistentIndexManager persistentIndexManager, 
+                                             FileSystemPath solutionDirectoryPath,
+                                             [NotNull] IDeclaredElement declaredElement)
             {
                 myAssetHierarchyProcessor = assetHierarchyProcessor;
                 myPersistentIndexManager = persistentIndexManager;
                 mySolutionDirectoryPath = solutionDirectoryPath;
+                myAnimatorContainer = animatorContainer;
+                myDeclaredElement = declaredElement;
             }
 
             public UnityAssetFindResult Build(FindResult result)
@@ -163,7 +195,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
                 if (sourceFile == null)
                     return myFindExecution;
 
-                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, data.OwningElemetLocation, sourceFile);
+                var request = CreateRequest(mySolutionDirectoryPath, myAssetHierarchyProcessor, myAnimatorContainer,
+                    data.OwningElemetLocation, sourceFile, myDeclaredElement);
                 if (request != null)
                     Result.Add(request);
 

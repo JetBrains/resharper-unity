@@ -1,0 +1,14 @@
+Search target
+    BehaviourWithProperty.T:int
+Found usages  (3 usages found)
+    <Assembly-CSharp>  (1 usage found)
+        Assets  (1 usage found)
+            BehaviourWithProperty.cs  (1 usage found)
+                BehaviourWithProperty  (1 usage found)
+                    BehaviourWithProperty.T: int
+    Assets  (2 usages found)
+        AttackIn.anim  (2 usages found)
+            AttackIn at 0:10  (1 usage found)
+                T.get:int
+            AttackIn at 0:11  (1 usage found)
+                T.get:int

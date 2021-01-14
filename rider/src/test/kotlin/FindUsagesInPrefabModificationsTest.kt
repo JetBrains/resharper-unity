@@ -1,18 +1,11 @@
 import base.FindUsagesAssetTestBase
-import base.integrationTests.downloadUnityDll
 import com.jetbrains.rider.test.annotations.TestEnvironment
 import com.jetbrains.rider.test.enums.PlatformType
 import com.jetbrains.rider.test.scriptingApi.setGroupingEnabled
-import org.testng.annotations.BeforeSuite
 import org.testng.annotations.Test
 
 @TestEnvironment(platform = [PlatformType.ALL])
 class FindUsagesInPrefabModificationsTest : FindUsagesAssetTestBase() {
-
-    @BeforeSuite(alwaysRun = true)
-    fun getUnityDll() {
-        unityDll = downloadUnityDll()
-    }
 
     override val traceCategories: List<String>
         get() = super.traceCategories + "JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents"

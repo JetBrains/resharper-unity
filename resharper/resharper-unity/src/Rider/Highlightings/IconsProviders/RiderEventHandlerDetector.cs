@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.CodeInsights;
@@ -11,8 +12,10 @@ using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
+using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model;
 
@@ -29,6 +32,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly BackendUnityHost myBackendUnityHost;
         private readonly IconHost myIconHost;
         private readonly AssetSerializationMode myAssetSerializationMode;
+        private readonly AnimationEventUsagesContainer myAnimationEventUsagesContainer;
 
         public RiderEventHandlerDetector(ISolution solution,
                                          IApplicationWideContextBoundSettingStore settingsStore,
@@ -40,8 +44,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                          UnitySolutionTracker solutionTracker,
                                          BackendUnityHost backendUnityHost,
                                          IconHost iconHost, AssetSerializationMode assetSerializationMode,
-                                         PerformanceCriticalContextProvider contextProvider)
-            : base(solution, settingsStore, unityEventsElementContainer, contextProvider)
+                                         PerformanceCriticalContextProvider contextProvider,
+                                         [NotNull] AnimationEventUsagesContainer animationEventUsagesContainer)
+            : base(solution, settingsStore, unityEventsElementContainer, contextProvider, animationEventUsagesContainer)
         {
             myAssetIndexingSupport = assetIndexingSupport;
             myCodeInsightProvider = codeInsightProvider;
@@ -51,6 +56,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myBackendUnityHost = backendUnityHost;
             myIconHost = iconHost;
             myAssetSerializationMode = assetSerializationMode;
+            myAnimationEventUsagesContainer = animationEventUsagesContainer;
         }
 
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text, string tooltip,
@@ -87,11 +93,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
                 else
                 {
-                    var count = UnityEventsElementContainer.GetAssetUsagesCount(element.DeclaredElement, out var estimate);
-                    myUsagesCodeVisionProvider.AddHighlighting(consumer, element, element.DeclaredElement, count,
-                        "Click to view usages in assets", "Assets usages",estimate, iconModel);
+                    AddEventsHighlighting(consumer, element, iconModel);
                 }
             }
+        }
+
+        private void AddEventsHighlighting([NotNull] IHighlightingConsumer consumer,
+                                           [NotNull] IDeclaration element,
+                                           [NotNull] IconModel iconModel)
+        {
+            var declaredElement = element.DeclaredElement;
+            var eventsCount = UnityEventsElementContainer.GetAssetUsagesCount(declaredElement, out var unityEventsEstimatedResult);
+            var animationEventUsagesCount = myAnimationEventUsagesContainer
+                .GetEventUsagesCountFor(declaredElement, out var animationEventsEstimatedResult);
+            myUsagesCodeVisionProvider.AddHighlighting(consumer, element, declaredElement, 
+                animationEventUsagesCount + eventsCount, "Click to view usages in assets", "Assets usages",
+                unityEventsEstimatedResult || animationEventsEstimatedResult, iconModel);
         }
     }
 }

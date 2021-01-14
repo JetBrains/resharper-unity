@@ -477,5 +477,353 @@ namespace JetBrains.ReSharper.Plugins.Unity.Resources.Icons
         }
         #endregion
 
+        #region FileAnimatorController
+        /// <summary>
+        ///	<para>
+        ///		<para>FileAnimatorController Themed Icon generated identifiers:</para>
+        ///		<para>— <see cref="FileAnimatorController"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
+        ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
+        ///		<para>
+        ///			<code>
+        ///                                 
+        ///   JJJJJJJJJJJJJJ                
+        ///   }}          }}                
+        ///   11``````````111117cr"`        
+        ///   uu...............-:;7u;       
+        ///   jj----------jjjjjlc^-+j!      
+        ///   VV::::::::::VV   .Vy:,Ve      
+        ///   ZZZZ222222ZZZZ    ZZ^^ZZ      
+        ///       yy``yy    yyyyyyyyyyyyyy  
+        ///       eE.`jE`   EE``````````EE  
+        ///       *6\`^C666666``````````66  
+        ///        Lb{;-................bb  
+        ///         -+eXAAAAAA----------AA  
+        ///                 ##----------##  
+        ///                 88888888888888  
+        ///                                 
+        ///</code>
+        ///		</para>
+        ///	</para>
+        ///</summary>
+        ///<remarks>
+        ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
+        ///</remarks>
+        ///<example>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:KenadelThemedIconsThemedIcons+FileAnimatorController}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///</example>
+        ///<example>
+        ///	<code>[Item(Name="Sample", Icon=typeof(KenadelThemedIconsThemedIcons.FileAnimatorController))]        // C# Type attribute</code>
+        ///</example>
+        ///<example>
+        ///	<code>IconId iconid = KenadelThemedIconsThemedIcons.FileAnimatorController.Id;        // IconId identifier object</code>
+        ///</example>
+        ///<example>
+        ///	<code>themediconmanager.GetIcon&lt;KenadelThemedIconsThemedIcons.FileAnimatorController&gt;()        // Icon image for rendering</code>
+        ///</example>
+        [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
+        public sealed class FileAnimatorController : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
+        {
+	        
+	        /// <inheritdoc cref="FileAnimatorController">identifier class</inheritdoc>
+	        public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(FileAnimatorController));
+	        
+	        /// <summary>Loads the image for Themed Icon FileAnimatorController theme aspect Color.</summary>
+	        public global::JetBrains.Util.Icons.TiImage Load_Color()
+	        {
+		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg("<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+				        "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><linearGradient id=\'F0\'" +
+				        " x1=\'0.49999999999999994\' y1=\'0\' x2=\'0.49999999999999994\' y2=\'1\'><stop offset=\'0" +
+				        "\' stop-color=\'#907B00\'/><stop offset=\'1\' stop-color=\'#664900\'/></linearGradient>" +
+				        "<path d=\'M9.5,3L8,3L8,1L1,1L1,8L8,8L8,6L9.5,6C9.63255738674565,6,9.7598211635290" +
+				        "557,6.0527143823425087,9.8535533905932731,6.146446609406726C9.94728561765749,6.2" +
+				        "401788364709434,10,6.3674426132543491,10,6.5L10,9L13,9L13,6.5C13,5.5720982927804" +
+				        "412,12.630999323602442,4.6812518552966074,11.974873734152917,4.0251262658470832C" +
+				        "11.318748144703392,3.3690006763975591,10.427901707219558,3,9.5,3ZM9.5,3\' fill=\'u" +
+				        "rl(#F0)\'/><linearGradient id=\'F1\' x1=\'0.49999999999999989\' y1=\'0\' x2=\'0.49999999" +
+				        "999999989\' y2=\'1\'><stop offset=\'0\' stop-color=\'#FDFFF1\'/><stop offset=\'1\' stop-c" +
+				        "olor=\'#E7A200\'/></linearGradient><path d=\'M9.5,4L7,4L7,2L2,2L2,7L7,7L7,5L9.5,5C9" +
+				        ".8976721602369544,5,10.279463490587167,5.1581431470275261,10.560660171779821,5.4" +
+				        "39339828220179C10.841856852972475,5.720536509412832,11,6.1023278397630465,11,6.5" +
+				        "L11,8L12,8L12,6.5C12,5.8372130662717439,11.736428088287457,5.20089418235472,11.2" +
+				        "67766952966369,4.7322330470336311C10.79910581764528,4.2635719117125426,10.162786" +
+				        "933728256,4,9.5,4ZM9.5,4\' fill=\'url(#F1)\'/><linearGradient id=\'F2\' x1=\'0.5\' y1=\'" +
+				        "0.0052499999999999769\' x2=\'0.5\' y2=\'1.0105\'><stop offset=\'0\' stop-color=\'#576A80" +
+				        "\'/><stop offset=\'1\' stop-color=\'#2D3742\'/></linearGradient><path d=\'M8,8L8,10L6." +
+				        "5,10C6.412238202444974,10,6.3260039461644393,9.9768936006697313,6.25,9.933012701" +
+				        "8922187C6.1739960538355607,9.8891318031147062,6.1108681968852929,9.8260039461644" +
+				        "4,6.06698729810778,9.75C6.0231063993302678,9.67399605383556,6,9.5877617975550251" +
+				        ",6,9.5L6,7L3,7L3,9.5C3,10.427901707219558,3.3690006763975595,11.318748144703392," +
+				        "4.0251262658470841,11.974873734152917C4.6812518552966083,12.630999323602442,5.57" +
+				        "20982927804412,13,6.5,13L8,13L8,15L15,15L15,8ZM8,8\' fill=\'url(#F2)\'/><linearGrad" +
+				        "ient id=\'F3\' x1=\'0.5\' y1=\'0.041333333333333222\' x2=\'0.5\' y2=\'1.0168333333333333\'" +
+				        "><stop offset=\'0.0060000000521540642\' stop-color=\'#A2FBFF\'/><stop offset=\'1\' sto" +
+				        "p-color=\'#8BD4FF\'/></linearGradient><path d=\'M9,9L9,11L6.5,11C6.2367146073349229" +
+				        ",11,5.9780118384933179,10.930680802009196,5.75,10.799038105676658C5.521988161506" +
+				        "6821,10.66739540934412,5.3326045906558806,10.478011838493318,5.200961894323342,1" +
+				        "0.25C5.0693191979908034,10.021988161506682,5,9.7632853926650771,5,9.5L5,8L4,8L4," +
+				        "9.5C4,10.162786933728256,4.2635719117125426,10.79910581764528,4.7322330470336311" +
+				        ",11.267766952966369C5.20089418235472,11.736428088287457,5.8372130662717439,12,6." +
+				        "5,12L9,12L9,14L14,14L14,9ZM9,9\' fill=\'url(#F3)\'/></g></svg>");
+	        }
+	        
+	        /// <summary>Loads the image for Themed Icon FileAnimatorController theme aspect Gray.</summary>
+	        public global::JetBrains.Util.Icons.TiImage Load_Gray()
+	        {
+		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg("<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+				        "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M9.5,3L8,3L8,1" +
+				        "L1,1L1,8L8,8L8,6L9.5,6C9.63255738674565,6,9.7598211635290557,6.0527143823425087," +
+				        "9.8535533905932731,6.146446609406726C9.94728561765749,6.2401788364709434,10,6.36" +
+				        "74426132543491,10,6.5L10,9L13,9L13,6.5C13,5.5720982927804412,12.630999323602442," +
+				        "4.6812518552966074,11.974873734152917,4.0251262658470832C11.318748144703392,3.36" +
+				        "90006763975591,10.427901707219558,3,9.5,3ZM9.5,3\' fill=\'#F4F4F4\'/><path d=\'M8,8L" +
+				        "8,10L6.5,10C6.412238202444974,10,6.3260039461644393,9.9768936006697313,6.25,9.93" +
+				        "30127018922187C6.1739960538355607,9.8891318031147062,6.1108681968852929,9.826003" +
+				        "94616444,6.06698729810778,9.75C6.0231063993302678,9.67399605383556,6,9.587761797" +
+				        "5550251,6,9.5L6,7L3,7L3,9.5C3,10.427901707219558,3.3690006763975595,11.318748144" +
+				        "703392,4.0251262658470841,11.974873734152917C4.6812518552966083,12.6309993236024" +
+				        "42,5.5720982927804412,13,6.5,13L8,13L8,15L15,15L15,8ZM8,8\' fill=\'#F4F4F4\'/><path" +
+				        " d=\'M9.5,4L7,4L7,2L2,2L2,7L7,7L7,5L9.5,5C9.8976721602369544,5,10.279463490587167" +
+				        ",5.1581431470275261,10.560660171779821,5.439339828220179C10.841856852972475,5.72" +
+				        "0536509412832,11,6.1023278397630465,11,6.5L11,8L12,8L12,6.5C12,5.837213066271743" +
+				        "9,11.736428088287457,5.20089418235472,11.267766952966369,4.7322330470336311C10.7" +
+				        "9910581764528,4.2635719117125426,10.162786933728256,4,9.5,4ZM9.5,4M9,9L9,11L6.5," +
+				        "11C6.2367146073349229,11,5.9780118384933179,10.930680802009196,5.75,10.799038105" +
+				        "676658C5.5219881615066821,10.66739540934412,5.3326045906558806,10.47801183849331" +
+				        "8,5.200961894323342,10.25C5.0693191979908034,10.021988161506682,5,9.763285392665" +
+				        "0771,5,9.5L5,8L4,8L4,9.5C4,10.162786933728256,4.2635719117125426,10.799105817645" +
+				        "28,4.7322330470336311,11.267766952966369C5.20089418235472,11.736428088287457,5.8" +
+				        "372130662717439,12,6.5,12L9,12L9,14L14,14L14,9ZM9,9\' fill=\'#323232\'/></g></svg>");
+	        }
+	        
+	        /// <summary>Loads the image for Themed Icon FileAnimatorController theme aspect GrayDark.</summary>
+	        public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
+	        {
+		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg("<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+				        "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M8,8L8,10L6.5," +
+				        "10C6.412238202444974,10,6.3260039461644393,9.9768936006697313,6.25,9.93301270189" +
+				        "22187C6.1739960538355607,9.8891318031147062,6.1108681968852929,9.82600394616444," +
+				        "6.06698729810778,9.75C6.0231063993302678,9.67399605383556,6,9.5877617975550251,6" +
+				        ",9.5L6,7L3,7L3,9.5C3,10.427901707219558,3.3690006763975595,11.318748144703392,4." +
+				        "0251262658470841,11.974873734152917C4.6812518552966083,12.630999323602442,5.5720" +
+				        "982927804412,13,6.5,13L8,13L8,15L15,15L15,8ZM8,8\' fill=\'#252525\'/><path d=\'M9.5," +
+				        "3L8,3L8,1L1,1L1,8L8,8L8,6L9.5,6C9.63255738674565,6,9.7598211635290557,6.05271438" +
+				        "23425087,9.8535533905932731,6.146446609406726C9.94728561765749,6.240178836470943" +
+				        "4,10,6.3674426132543491,10,6.5L10,9L13,9L13,6.5C13,5.5720982927804412,12.6309993" +
+				        "23602442,4.6812518552966074,11.974873734152917,4.0251262658470832C11.31874814470" +
+				        "3392,3.3690006763975591,10.427901707219558,3,9.5,3ZM9.5,3\' fill=\'#252525\'/><path" +
+				        " d=\'M9.5,4L7,4L7,2L2,2L2,7L7,7L7,5L9.5,5C9.8976721602369544,5,10.279463490587167" +
+				        ",5.1581431470275261,10.560660171779821,5.439339828220179C10.841856852972475,5.72" +
+				        "0536509412832,11,6.1023278397630465,11,6.5L11,8L12,8L12,6.5C12,5.837213066271743" +
+				        "9,11.736428088287457,5.20089418235472,11.267766952966369,4.7322330470336311C10.7" +
+				        "9910581764528,4.2635719117125426,10.162786933728256,4,9.5,4ZM9.5,4M9,9L9,11L6.5," +
+				        "11C6.2367146073349229,11,5.9780118384933179,10.930680802009196,5.75,10.799038105" +
+				        "676658C5.5219881615066821,10.66739540934412,5.3326045906558806,10.47801183849331" +
+				        "8,5.200961894323342,10.25C5.0693191979908034,10.021988161506682,5,9.763285392665" +
+				        "0771,5,9.5L5,8L4,8L4,9.5C4,10.162786933728256,4.2635719117125426,10.799105817645" +
+				        "28,4.7322330470336311,11.267766952966369C5.20089418235472,11.736428088287457,5.8" +
+				        "372130662717439,12,6.5,12L9,12L9,14L14,14L14,9ZM9,9\' fill=\'#C4C4C4\'/></g></svg>");
+	        }
+	        
+	        /// <summary>Returns the set of theme images for Themed Icon FileAnimatorController.</summary>
+	        public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
+	        {
+		        return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
+				        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Color", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Color)),
+				        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Gray", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Gray)),
+				        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("GrayDark", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_GrayDark))};
+	        }
+        }
+        #endregion
+        
+        #region FileAnimationClip
+        /// <summary>
+        ///	<para>
+        ///		<para>FileAnimationClip Themed Icon generated identifiers:</para>
+        ///		<para>— <see cref="FileAnimationClip"></see> identifier class, for use in attributes, XAML, and generic parameters;</para>
+        ///		<para>— <see cref="Id"></see> identifier object, as a field in the identifier class, for use where an <see cref="JetBrains.UI.Icons.IconId"></see> value is expected.</para>
+        ///		<para>
+        ///			<code>
+        ///                                 
+        ///                                 
+        ///                                 
+        ///                 "rTTL~          
+        ///               `cF;..~{T`        
+        ///   +JJJJJJJJJJz1Y:````-sz-       
+        ///  `{T        ~3z:``````-7f,      
+        ///  ;IIIIIIIIIuu7-````````.)u;     
+        ///  t2:------J2c-...........+2+    
+        /// ,SSSSSSSSyj+-.............!2T`  
+        /// JE="""""uy!----------------;yJ  
+        /// 66666666Ea;----------------;a1  
+        ///         `/sekkkkkkkkkkkkkkSlr`  
+        ///                                 
+        ///                                 
+        ///                                 
+        ///</code>
+        ///		</para>
+        ///	</para>
+        ///</summary>
+        ///<remarks>
+        ///	<para>For details on Themed Icons and their use, see Remarks on the outer class.</para>
+        ///</remarks>
+        ///<example>
+        ///	<code>&lt;Image Source="{icons:ThemedIcon myres:KenadelThemedIconsThemedIcons+FileAnimationClip}" /&gt;        &lt;!-- XAML --&gt;</code>
+        ///</example>
+        ///<example>
+        ///	<code>[Item(Name="Sample", Icon=typeof(KenadelThemedIconsThemedIcons.FileAnimationClip))]        // C# Type attribute</code>
+        ///</example>
+        ///<example>
+        ///	<code>IconId iconid = KenadelThemedIconsThemedIcons.FileAnimationClip.Id;        // IconId identifier object</code>
+        ///</example>
+        ///<example>
+        ///	<code>themediconmanager.GetIcon&lt;KenadelThemedIconsThemedIcons.FileAnimationClip&gt;()        // Icon image for rendering</code>
+        ///</example>
+        [global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsAttribute()]
+        public sealed class FileAnimationClip : global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsClass
+        {
+	        
+	        /// <inheritdoc cref="FileAnimationClip">identifier class</inheritdoc>
+	        public static global::JetBrains.UI.Icons.IconId Id = new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsId(typeof(FileAnimationClip));
+	        
+	        /// <summary>Loads the image for Themed Icon FileAnimationClip theme aspect Color.</summary>
+	        public global::JetBrains.Util.Icons.TiImage Load_Color()
+	        {
+		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg("<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+				        "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><linearGradient id=\'F0\'" +
+				        " x1=\'0.5\' y1=\'0\' x2=\'0.5\' y2=\'1\'><stop offset=\'0\' stop-color=\'#907B00\'/><stop of" +
+				        "fset=\'1\' stop-color=\'#664900\'/></linearGradient><path d=\'M7.5,5L1.18,5L0,10.9L0," +
+				        "12L5,12L5,11.007C5.0027780381122033,10.827690017080212,5.0524284460117705,10.652" +
+				        "189616935214,5.144,10.498L7,7.312ZM7.5,5\' fill=\'url(#F0)\'/><linearGradient id=\'F" +
+				        "1\' x1=\'0.49991082575352236\' y1=\'0\' x2=\'0.49991082575352236\' y2=\'1\'><stop offset=" +
+				        "\'0\' stop-color=\'#FDFFF1\'/><stop offset=\'1\' stop-color=\'#E7A200\'/></linearGradien" +
+				        "t><path d=\'M4,11L1,11L1.2,10L4.28,10L4.269,10.02C4.0951382911827761,10.317478896" +
+				        "64666,4.0023691787660907,10.65544815377808,4,11ZM4,11M6.607,6L2,6L1.8,7L6.025,7Z" +
+				        "M6.607,6M5.443,8L1.6,8L1.4,9L4.862,9ZM5.443,8\' fill=\'url(#F1)\'/><linearGradient " +
+				        "id=\'F2\' x1=\'0.500047956201513\' y1=\'0.012719201454295337\' x2=\'0.500047956201513\' " +
+				        "y2=\'1.0000983617258945\'><stop offset=\'0\' stop-color=\'#5673A0\'/><stop offset=\'1\' " +
+				        "stop-color=\'#415A80\'/></linearGradient><path d=\'M5.992,13C5.5242095989858591,13." +
+				        "001917128602974,5.0704858656246223,12.838327990058254,4.711548232732115,12.53833" +
+				        "580623245C4.3526105998396076,12.238343622406646,4.1110864266682263,11.8208598427" +
+				        "9486,4.0299439179562988,11.360156654241768C3.9488014092443717,10.899453465688676" +
+				        ",4.0331557731144629,10.424573508477243,4.268,10.02L7.776,3.989C8.012439509580131" +
+				        "5,3.5869334585414352,8.3822423513157425,3.2799761687538727,8.8209710301342756,3." +
+				        "1216148987631049C9.2596997089528088,2.9632536287723372,9.7403002910471912,2.9632" +
+				        "536287723368,10.179028969865724,3.1216148987631045C10.617757648684258,3.27997616" +
+				        "87538722,10.987560490419869,3.5869334585414347,11.224,3.9889999999999994L14.733," +
+				        "10.020999999999999C14.966635864480262,10.425666915062326,15.050122923966194,10.9" +
+				        "00088828483861,14.968668336036641,11.360204226425211C14.887213748107088,11.82031" +
+				        "962436656,14.645930396843069,12.237247178551893,14.287570615553173,12.5371126425" +
+				        "04242C13.929210834263278,12.836978106456591,13.476268776654591,13.00095900011608" +
+				        "5,13.009,13.000000000000002ZM5.992,13\' fill=\'url(#F2)\'/><linearGradient id=\'F3\' " +
+				        "x1=\'0.49999999999999978\' y1=\'0.040896788566686881\' x2=\'0.49999999999999978\' y2=\'" +
+				        "1.0168834181175508\'><stop offset=\'0.0060000000521540642\' stop-color=\'#A2FBFF\'/><" +
+				        "stop offset=\'1\' stop-color=\'#8BD4FF\'/></linearGradient><path d=\'M8.641,4.492C8.7" +
+				        "5971195156669,4.2928233804254559,8.9440809597917088,4.1410052069739551,9.1623324" +
+				        "9833977,4.0627101295340644C9.3805840368878322,3.9844150520941732,9.6194159631121" +
+				        "678,3.9844150520941732,9.83766750166023,4.0627101295340644C10.055919040208291,4." +
+				        "1410052069739551,10.24028804843331,4.2928233804254559,10.359,4.492L13.867,10.523" +
+				        "C13.953937615028959,10.672560341754862,13.999743397783176,10.842507385323087,13." +
+				        "999743397783176,11.0155C13.999743397783176,11.188492614676912,13.953937615028959" +
+				        ",11.358439658245137,13.867,11.508C13.778834648141304,11.657492932173424,13.65325" +
+				        "1659921741,11.781489874157149,13.502650289396431,11.867748167868969C13.352048918" +
+				        "871121,11.954006461580789,13.181554309823211,11.999590634679247,13.0080000000000" +
+				        "01,12L5.992,12C5.8184456901767909,11.999590634679247,5.6479510811288813,11.95400" +
+				        "6461580789,5.4973497106035705,11.867748167868969C5.3467483400782605,11.781489874" +
+				        "157149,5.2211653518586978,11.657492932173424,5.133,11.508C5.0460623849710418,11." +
+				        "358439658245137,5.000256602216826,11.188492614676912,5.000256602216826,11.0155C5" +
+				        ".000256602216826,10.842507385323087,5.0460623849710418,10.672560341754862,5.133," +
+				        "10.523ZM8.641,4.492\' fill=\'url(#F3)\'/></g></svg>");
+	        }
+	        
+	        /// <summary>Loads the image for Themed Icon FileAnimationClip theme aspect Gray.</summary>
+	        public global::JetBrains.Util.Icons.TiImage Load_Gray()
+	        {
+		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg("<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+				        "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M7.5,5L1.18,5L" +
+				        "0,10.9L0,12L5,12L5,11.007C5.0027780381122033,10.827690017080212,5.05242844601177" +
+				        "05,10.652189616935214,5.144,10.498L7,7.312ZM7.5,5\' fill=\'#F4F4F4\'/><path d=\'M4,1" +
+				        "1L1,11L1.2,10L4.28,10L4.269,10.02C4.0951382911827761,10.31747889664666,4.0023691" +
+				        "787660907,10.65544815377808,4,11ZM4,11M6.607,6L2,6L1.8,7L6.025,7ZM6.607,6M5.443," +
+				        "8L1.6,8L1.4,9L4.862,9ZM5.443,8\' fill=\'#323232\'/><path d=\'M5.992,13C5.52420959898" +
+				        "58591,13.001917128602974,5.0704858656246223,12.838327990058254,4.711548232732115" +
+				        ",12.53833580623245C4.3526105998396076,12.238343622406646,4.1110864266682263,11.8" +
+				        "2085984279486,4.0299439179562988,11.360156654241768C3.9488014092443717,10.899453" +
+				        "465688676,4.0331557731144629,10.424573508477243,4.268,10.02L7.776,3.989C8.012439" +
+				        "5095801315,3.5869334585414352,8.3822423513157425,3.2799761687538727,8.8209710301" +
+				        "342756,3.1216148987631049C9.2596997089528088,2.9632536287723372,9.74030029104719" +
+				        "12,2.9632536287723368,10.179028969865724,3.1216148987631045C10.617757648684258,3" +
+				        ".2799761687538722,10.987560490419869,3.5869334585414347,11.224,3.988999999999999" +
+				        "4L14.733,10.020999999999999C14.966635864480262,10.425666915062326,15.05012292396" +
+				        "6194,10.900088828483861,14.968668336036641,11.360204226425211C14.887213748107088" +
+				        ",11.82031962436656,14.645930396843069,12.237247178551893,14.287570615553173,12.5" +
+				        "37112642504242C13.929210834263278,12.836978106456591,13.476268776654591,13.00095" +
+				        "9000116085,13.009,13.000000000000002ZM5.992,13\' fill=\'#F4F4F4\'/><path d=\'M8.641," +
+				        "4.492C8.75971195156669,4.2928233804254559,8.9440809597917088,4.1410052069739551," +
+				        "9.16233249833977,4.0627101295340644C9.3805840368878322,3.9844150520941732,9.6194" +
+				        "159631121678,3.9844150520941732,9.83766750166023,4.0627101295340644C10.055919040" +
+				        "208291,4.1410052069739551,10.24028804843331,4.2928233804254559,10.359,4.492L13.8" +
+				        "67,10.523C13.953937615028959,10.672560341754862,13.999743397783176,10.8425073853" +
+				        "23087,13.999743397783176,11.0155C13.999743397783176,11.188492614676912,13.953937" +
+				        "615028959,11.358439658245137,13.867,11.508C13.778834648141304,11.657492932173424" +
+				        ",13.653251659921741,11.781489874157149,13.502650289396431,11.867748167868969C13." +
+				        "352048918871121,11.954006461580789,13.181554309823211,11.999590634679247,13.0080" +
+				        "00000000001,12L5.992,12C5.8184456901767909,11.999590634679247,5.6479510811288813" +
+				        ",11.954006461580789,5.4973497106035705,11.867748167868969C5.3467483400782605,11." +
+				        "781489874157149,5.2211653518586978,11.657492932173424,5.133,11.508C5.04606238497" +
+				        "10418,11.358439658245137,5.000256602216826,11.188492614676912,5.000256602216826," +
+				        "11.0155C5.000256602216826,10.842507385323087,5.0460623849710418,10.6725603417548" +
+				        "62,5.133,10.523ZM8.641,4.492\' fill=\'#323232\'/></g></svg>");
+	        }
+	        
+	        /// <summary>Loads the image for Themed Icon FileAnimationClip theme aspect GrayDark.</summary>
+	        public global::JetBrains.Util.Icons.TiImage Load_GrayDark()
+	        {
+		        return global::JetBrains.Util.Icons.TiImageConverter.FromTiSvg("<svg ti:v=\'1\' width=\'16\' height=\'16\' viewBox=\'0,0,16,16\' xmlns=\'http://www.w3.org" +
+				        "/2000/svg\' xmlns:ti=\'urn:schemas-jetbrains-com:tisvg\'><g><path d=\'M7.5,5L1.18,5L" +
+				        "0,10.9L0,12L5,12L5,11.007C5.0027780381122033,10.827690017080212,5.05242844601177" +
+				        "05,10.652189616935214,5.144,10.498L7,7.312ZM7.5,5\' fill=\'#252525\'/><path d=\'M4,1" +
+				        "1L1,11L1.2,10L4.28,10L4.269,10.02C4.0951382911827761,10.31747889664666,4.0023691" +
+				        "787660907,10.65544815377808,4,11ZM4,11M6.607,6L2,6L1.8,7L6.025,7ZM6.607,6M5.443," +
+				        "8L1.6,8L1.4,9L4.862,9ZM5.443,8\' fill=\'#C4C4C4\'/><path d=\'M5.992,13C5.52420959898" +
+				        "58591,13.001917128602974,5.0704858656246223,12.838327990058254,4.711548232732115" +
+				        ",12.53833580623245C4.3526105998396076,12.238343622406646,4.1110864266682263,11.8" +
+				        "2085984279486,4.0299439179562988,11.360156654241768C3.9488014092443717,10.899453" +
+				        "465688676,4.0331557731144629,10.424573508477243,4.268,10.02L7.776,3.989C8.012439" +
+				        "5095801315,3.5869334585414352,8.3822423513157425,3.2799761687538727,8.8209710301" +
+				        "342756,3.1216148987631049C9.2596997089528088,2.9632536287723372,9.74030029104719" +
+				        "12,2.9632536287723368,10.179028969865724,3.1216148987631045C10.617757648684258,3" +
+				        ".2799761687538722,10.987560490419869,3.5869334585414347,11.224,3.988999999999999" +
+				        "4L14.733,10.020999999999999C14.966635864480262,10.425666915062326,15.05012292396" +
+				        "6194,10.900088828483861,14.968668336036641,11.360204226425211C14.887213748107088" +
+				        ",11.82031962436656,14.645930396843069,12.237247178551893,14.287570615553173,12.5" +
+				        "37112642504242C13.929210834263278,12.836978106456591,13.476268776654591,13.00095" +
+				        "9000116085,13.009,13.000000000000002ZM5.992,13\' fill=\'#252525\'/><path d=\'M8.641," +
+				        "4.492C8.75971195156669,4.2928233804254559,8.9440809597917088,4.1410052069739551," +
+				        "9.16233249833977,4.0627101295340644C9.3805840368878322,3.9844150520941732,9.6194" +
+				        "159631121678,3.9844150520941732,9.83766750166023,4.0627101295340644C10.055919040" +
+				        "208291,4.1410052069739551,10.24028804843331,4.2928233804254559,10.359,4.492L13.8" +
+				        "67,10.523C13.953937615028959,10.672560341754862,13.999743397783176,10.8425073853" +
+				        "23087,13.999743397783176,11.0155C13.999743397783176,11.188492614676912,13.953937" +
+				        "615028959,11.358439658245137,13.867,11.508C13.778834648141304,11.657492932173424" +
+				        ",13.653251659921741,11.781489874157149,13.502650289396431,11.867748167868969C13." +
+				        "352048918871121,11.954006461580789,13.181554309823211,11.999590634679247,13.0080" +
+				        "00000000001,12L5.992,12C5.8184456901767909,11.999590634679247,5.6479510811288813" +
+				        ",11.954006461580789,5.4973497106035705,11.867748167868969C5.3467483400782605,11." +
+				        "781489874157149,5.2211653518586978,11.657492932173424,5.133,11.508C5.04606238497" +
+				        "10418,11.358439658245137,5.000256602216826,11.188492614676912,5.000256602216826," +
+				        "11.0155C5.000256602216826,10.842507385323087,5.0460623849710418,10.6725603417548" +
+				        "62,5.133,10.523ZM8.641,4.492\' fill=\'#C4C4C4\'/></g></svg>");
+	        }
+	        
+	        /// <summary>Returns the set of theme images for Themed Icon FileAnimationClip.</summary>
+	        public override global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] GetThemeImages()
+	        {
+		        return new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage[] {
+				        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Color", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Color)),
+				        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("Gray", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_Gray)),
+				        new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.ThemedIconThemeImage("GrayDark", new global::JetBrains.Application.Icons.CompiledIconsCs.CompiledIconCsIdOwner.LoadImageDelegate(this.Load_GrayDark))};
+	        }
+        }
+        #endregion
     }
 }
