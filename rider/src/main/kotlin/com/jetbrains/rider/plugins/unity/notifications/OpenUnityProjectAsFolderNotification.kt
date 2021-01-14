@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.unity.notifications
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFile
@@ -41,7 +42,8 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
 
             val solutionDescription = project.solutionDescription
             val title = "Advanced Unity integration is unavailable"
-            var content = "Make sure <b>JetBrains Rider Editor package</b> is installed in Unity’s Package Manager and Rider is set as the External Editor."
+            val marketingVersion = ApplicationInfo.getInstance().fullVersion
+            var content = "Make sure `JetBrains Rider Editor` is installed in Unity’s Package Manager and Rider $marketingVersion is set as the External Editor."
             if (solutionDescription is RdExistingSolution) { // proper solution
                 it.startNonUrgentBackgroundAsync {
                     // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
@@ -49,7 +51,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                     delay(1000)
                     if (EditorInstanceJson.getInstance(project).status == EditorInstanceJsonStatus.Valid && !project.solution.frontendBackendModel.unityEditorConnected.valueOrDefault(false)) {
                         if (!UnityInstallationFinder.getInstance(project).requiresRiderPackage())
-                            content = "Make sure Rider is set as the External Editor in Unity preferences."
+                            content = "Make sure Rider $marketingVersion is set as the External Editor in Unity preferences."
                         val notification = Notification(notificationGroupId.displayId, title, content, NotificationType.WARNING)
                         startChildOnUi {
                             Notifications.Bus.notify(notification, project)
