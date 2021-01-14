@@ -3,7 +3,6 @@ package com.jetbrains.rider.plugins.unity.notifications
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFile
@@ -41,10 +40,10 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
                 return@whenTrue
 
             val solutionDescription = project.solutionDescription
-            val title = "Unity features unavailable"
+            val title = "Advanced Unity integration is unavailable"
             var content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and Rider is set as the External Editor."
             if (solutionDescription is RdExistingSolution) { // proper solution
-                it.startLongBackgroundAsync {
+                it.startNonUrgentBackgroundAsync {
                     // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
                     // We check that Library/EditorInstance.json is present, but protocol connection was not initialized within 1 second.
                     delay(1000)
