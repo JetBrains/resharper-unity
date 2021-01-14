@@ -41,7 +41,7 @@ class OpenUnityProjectAsFolderNotification(project: Project) : ProtocolSubscribe
 
             val solutionDescription = project.solutionDescription
             val title = "Advanced Unity integration is unavailable"
-            var content = "Make sure <b>Rider package</b> is installed in Unity’s Package Manager and Rider is set as the External Editor."
+            var content = "Make sure <b>JetBrains Rider Editor package</b> is installed in Unity’s Package Manager and Rider is set as the External Editor."
             if (solutionDescription is RdExistingSolution) { // proper solution
                 it.startNonUrgentBackgroundAsync {
                     // Sometimes in Unity "External Script Editor" is set to "Open by file extension"
