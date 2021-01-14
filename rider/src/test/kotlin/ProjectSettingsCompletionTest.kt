@@ -60,6 +60,15 @@ class ProjectSettingsCompletionTest : BaseTestWithSolution() {
     }
 
     @Test
+    fun testAnimatorState_PrimitiveCompletion() {
+        withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "AnimatorStateCompletionTest.cs") {
+            typeWithLatency("\"")
+            assertLookupContains("\"Alerted\"", checkFocus = false)
+            assertLookupContains("\"AttackLoop\"", checkFocus = false)
+        }
+    }
+
+    @Test
     fun testInput_PrimitiveCompletion() {
         withOpenedEditor(File("Assets").resolve("NewBehaviourScript.cs").path, "InputCompletionTest.cs") {
             typeWithLatency("\"")

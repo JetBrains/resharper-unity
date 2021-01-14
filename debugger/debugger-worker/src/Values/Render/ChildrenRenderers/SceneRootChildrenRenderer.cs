@@ -135,10 +135,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Debugger.Values.Render.Childre
                     isNameFromValue = false;
                 }
 
-                return new NamedReferenceDecorator<TValue>(elementRole.ValueReference, name,
-                        ValueOriginKind.Property, ValueFlags.None | ValueFlags.IsReadOnly,
-                        elementRole.ReifiedType.MetadataType, myValueServices.RoleFactory, isNameFromValue)
-                    .ToValue(myValueServices);
+                // Tell the value presenter to hide the name field, if we're using it for the key. Also hide the default
+                // type presentation - we know it's a GameObject, it's under a group called "Game Objects"
+                return new CalculatedValueReferenceDecorator<TValue>(elementRole.ValueReference,
+                    myValueServices.RoleFactory, name, !isNameFromValue, false).ToValue(myValueServices);
             }
         }
     }

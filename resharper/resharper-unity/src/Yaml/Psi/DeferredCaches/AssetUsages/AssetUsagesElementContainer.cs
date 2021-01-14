@@ -16,7 +16,7 @@ using JetBrains.Util.Collections;
 namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
 {
     [SolutionComponent]
-    public class AssetScriptUsagesElementContainer : IUnityAssetDataElementContainer
+    public class AssetScriptUsagesElementContainer : IScriptUsagesElementContainer
     {
         private readonly IShellLocks myShellLocks;
         private readonly MetaFileGuidCache myMetaFileGuidCache;
@@ -34,6 +34,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
         public IUnityAssetDataElement CreateDataElement(IPsiSourceFile sourceFile)
         {
             return new AssetUsagesDataElement();
+        }
+
+        public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
+        {
+            return !currentAssetSourceFile.GetLocation().IsControllerFile();
         }
 
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
@@ -77,7 +82,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             var dataElement = unityAssetDataElement as AssetUsagesDataElement;
             foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
             {
-                var guid = assetUsagePointer.UsageTarget.ExternalAssetGuid;
+                if (!(assetUsagePointer is AssetScriptUsages assetScriptUsages)) continue;
+                var guid = assetScriptUsages.UsageTarget.ExternalAssetGuid;
                 myUsagesCount.Remove(guid);
                 myUsageToSourceFiles.Remove(guid, currentAssetSourceFile);
             }
@@ -91,13 +97,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             var dataElement = unityAssetDataElement as AssetUsagesDataElement;
             foreach (var assetUsagePointer in dataElement.EnumerateAssetUsages())
             {
-                var guid = assetUsagePointer.UsageTarget.ExternalAssetGuid;
+                if (!(assetUsagePointer is AssetScriptUsages assetScriptUsages)) continue;
+                var guid = assetScriptUsages.UsageTarget.ExternalAssetGuid;
                 myUsagesCount.Add(guid);
                 myUsageToSourceFiles.Add(guid, currentAssetSourceFile);
             }
         }
 
-        public int GetUsagesCount(IClassLikeDeclaration classLikeDeclaration, out bool estimatedResult)
+        public int GetScriptUsagesCount(IClassLikeDeclaration classLikeDeclaration, out bool estimatedResult)
         {
             myShellLocks.AssertReadAccessAllowed();
             
@@ -128,25 +135,22 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages
             myPointers.Clear();
         }
 
-        public IEnumerable<AssetScriptUsages> GetAssetUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
+        public IEnumerable<IScriptUsage> GetScriptUsagesFor(IPsiSourceFile sourceFile, ITypeElement declaredElement)
         {
             myShellLocks.AssertReadAccessAllowed();
-
             var element = myPointers[sourceFile].GetElement(sourceFile, Id) as AssetUsagesDataElement;
-            if (element == null)
-                return Enumerable.Empty<AssetScriptUsages>();
-            
+            if (element == null) return Enumerable.Empty<IScriptUsage>();
             var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
-            if (guid == null)
-                return Enumerable.Empty<AssetScriptUsages>();
-
-            // TODO : should we cache result per guid in AssetUsagesDataElement?
-            return element.EnumerateAssetUsages().Where(t => t.UsageTarget.ExternalAssetGuid == guid);
+            if (guid == null) return Enumerable.Empty<IScriptUsage>();
+            return element
+                .EnumerateAssetUsages()
+                .Where(t => t.UsageTarget.ExternalAssetGuid == guid)
+                .Cast<IScriptUsage>();
         }
 
-        public LocalList<IPsiSourceFile> GetPossibleFilesWithUsage(ITypeElement declaredElement)
+        public LocalList<IPsiSourceFile> GetPossibleFilesWithScriptUsages(IClass scriptClass)
         {
-            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, declaredElement);
+            var guid = AssetUtils.GetGuidFor(myMetaFileGuidCache, scriptClass);
             if (guid == null) 
                 return new LocalList<IPsiSourceFile>();
 

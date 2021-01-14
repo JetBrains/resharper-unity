@@ -3,6 +3,7 @@ using JetBrains.DataFlow;
 using JetBrains.Lifetimes;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
+using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCriticalCodeAnalysis.Highlightings;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Psi.Tree;
@@ -22,8 +23,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.PerformanceCrit
                 .GetValueProperty(lifetime, (UnitySettings key) => key.PerformanceHighlightingMode);
         }
 
-        protected override void Analyze(IFunctionDeclaration t, IDaemonProcess daemonProcess, DaemonProcessKind kind,
-                                        IHighlightingConsumer consumer)
+        protected override void Analyze(IFunctionDeclaration t,
+            IHighlightingConsumer consumer, IReadOnlyCallGraphContext context)
         {
             if (LineMarkerStatus.Value == PerformanceHighlightingMode.Always)
             {

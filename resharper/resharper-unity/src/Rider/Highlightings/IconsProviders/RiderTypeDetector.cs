@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Host.Features.CodeInsights;
@@ -11,7 +13,7 @@ using JetBrains.ReSharper.Plugins.Unity.Resources.Icons;
 using JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Plugins.Unity.Yaml;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Util;
 using JetBrains.Rider.Model;
@@ -24,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         private readonly AssetIndexingSupport myAssetIndexingSupport;
         private readonly UnityUsagesCodeVisionProvider myUsagesCodeVisionProvider;
         private readonly UnityCodeInsightProvider myCodeInsightProvider;
-        private readonly AssetScriptUsagesElementContainer myAssetScriptUsagesElementContainer;
+        [NotNull, ItemNotNull]
+        private readonly IEnumerable<IScriptUsagesElementContainer> myScriptsUsagesElementContainers;
         private readonly DeferredCacheController myDeferredCacheController;
         private readonly UnitySolutionTracker mySolutionTracker;
         private readonly BackendUnityHost myBackendUnityHost;
@@ -37,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                                  AssetIndexingSupport assetIndexingSupport,
                                  UnityUsagesCodeVisionProvider usagesCodeVisionProvider,
                                  UnityCodeInsightProvider codeInsightProvider,
-                                 AssetScriptUsagesElementContainer assetScriptUsagesElementContainer,
+                                 [NotNull, ItemNotNull] IEnumerable<IScriptUsagesElementContainer> scriptsUsagesElementContainers,
                                  DeferredCacheController deferredCacheController, UnitySolutionTracker solutionTracker,
                                  BackendUnityHost backendUnityHost,
                                  IconHost iconHost, AssetSerializationMode assetSerializationMode,
@@ -47,7 +50,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
             myAssetIndexingSupport = assetIndexingSupport;
             myUsagesCodeVisionProvider = usagesCodeVisionProvider;
             myCodeInsightProvider = codeInsightProvider;
-            myAssetScriptUsagesElementContainer = assetScriptUsagesElementContainer;
+            myScriptsUsagesElementContainers = scriptsUsagesElementContainers;
             myDeferredCacheController = deferredCacheController;
             mySolutionTracker = solutionTracker;
             myBackendUnityHost = backendUnityHost;
@@ -56,10 +59,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
         }
 
         protected override void AddMonoBehaviourHighlighting(IHighlightingConsumer consumer, IClassLikeDeclaration declaration, string text,
-                                                             string tooltip, DaemonProcessKind kind)
+                                                             string tooltip, IReadOnlyCallGraphContext context)
         {
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
-                () => { base.AddHighlighting(consumer, declaration, text, tooltip, kind); }, out var useFallback))
+                () => { base.AddHighlighting(consumer, declaration, text, tooltip, context); }, out var useFallback))
             {
                 if (!useFallback)
                 {
@@ -84,19 +87,32 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.Highlightings.IconsProviders
                 }
                 else
                 {
-                    var count = myAssetScriptUsagesElementContainer.GetUsagesCount(declaration, out var estimatedResult);
-                    myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
-                        "Click to view usages in assets", "Assets usages", estimatedResult, iconModel);
+                    AddScriptUsagesHighlighting(consumer, declaration, iconModel);
                 }
             }
         }
 
+        private void AddScriptUsagesHighlighting([NotNull] IHighlightingConsumer consumer,
+                                                 [NotNull] IClassLikeDeclaration declaration,
+                                                 [NotNull] IconModel iconModel)
+        {
+            var count = 0;
+            var estimatedResult = false;
+            foreach (var scriptUsagesContainer in myScriptsUsagesElementContainers)
+            {
+                count += scriptUsagesContainer.GetScriptUsagesCount(declaration, out var result);
+                estimatedResult = estimatedResult || result;
+            }
+            myUsagesCodeVisionProvider.AddHighlighting(consumer, declaration, declaration.DeclaredElement, count,
+                "Click to view usages in assets", "Assets usages", estimatedResult, iconModel);
+        }
+
         protected override void AddHighlighting(IHighlightingConsumer consumer, ICSharpDeclaration element, string text,
             string tooltip,
-            DaemonProcessKind kind)
+            IReadOnlyCallGraphContext context)
         {
             if (RiderIconProviderUtil.IsCodeVisionEnabled(SettingsStore.BoundSettingsStore, myCodeInsightProvider.ProviderId,
-                () => { base.AddHighlighting(consumer, element, text, tooltip, kind); }, out var useFallback))
+                () => { base.AddHighlighting(consumer, element, text, tooltip, context); }, out var useFallback))
             {
                 if (!useFallback)
                 {

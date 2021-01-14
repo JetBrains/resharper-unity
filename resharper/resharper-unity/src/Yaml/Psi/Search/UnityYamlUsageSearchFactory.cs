@@ -6,9 +6,10 @@ using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Plugins.Unity.Feature.Caches;
 using JetBrains.ReSharper.Plugins.Unity.Settings;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches;
+using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AnimationEventsUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetHierarchy;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetInspectorValues;
-using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.AssetUsages;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents;
 using JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Modules;
 using JetBrains.ReSharper.Psi;
@@ -50,11 +51,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
             var hierarchyContainer = solution.GetComponent<AssetDocumentHierarchyElementContainer>();
             var methodsContainer = solution.GetComponent<UnityEventsElementContainer>();
             var metaFileGuidCache = solution.GetComponent<MetaFileGuidCache>();
-            var assetUsagesContainer = solution.GetComponent<AssetScriptUsagesElementContainer>();
+            var scriptsUsagesContainers = solution.GetComponent<IEnumerable<IScriptUsagesElementContainer>>();
+            var animationEventUsagesContainer = solution.GetComponent<AnimationEventUsagesContainer>();
             var assetValuesContainer = solution.GetComponent<AssetInspectorValuesContainer>();
             var controller = solution.GetComponent<DeferredCacheController>();
             
-            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, assetUsagesContainer, methodsContainer, assetValuesContainer, metaFileGuidCache, elements, findCandidates);
+            return new UnityAssetReferenceSearcher(controller, hierarchyContainer, scriptsUsagesContainers,
+                methodsContainer, animationEventUsagesContainer, assetValuesContainer, metaFileGuidCache, elements,
+                findCandidates);
         }
 
         // Used to filter files before searching for references. Files must contain ANY of these search terms. An
@@ -109,7 +113,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Search
                     return unityApi.IsUnityType(c);
                 case IProperty _:
                 case IMethod _:
-                    return solution.GetComponent<UnityEventsElementContainer>().GetAssetUsagesCount(element, out var estimatedResult) > 0 || estimatedResult;
+                    var eventsCount = solution
+                        .GetComponent<UnityEventsElementContainer>()
+                        .GetAssetUsagesCount(element, out var unityEventsEstimatedResult);
+                    var animationEventsCount = solution
+                        .GetComponent<AnimationEventUsagesContainer>()
+                        .GetEventUsagesCountFor(element, out var animationEventsEstimatedResult);
+                    var count = eventsCount + animationEventsCount;
+                    return count > 0 || unityEventsEstimatedResult || animationEventsEstimatedResult;
+
                 case IField field:
                     return unityApi.IsSerialisedField(field);
             }

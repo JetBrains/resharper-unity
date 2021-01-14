@@ -1,21 +1,21 @@
 using JetBrains.Annotations;
+using JetBrains.ReSharper.Daemon.CallGraph;
 using JetBrains.ReSharper.Daemon.CSharp.CallGraph;
 using JetBrains.ReSharper.Daemon.UsageChecking;
-using JetBrains.ReSharper.Feature.Services.Daemon;
 using JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.CallGraph;
 using JetBrains.ReSharper.Psi;
-using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 
 namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
 {
     public abstract class CallGraphContextProviderBase : ICallGraphContextProvider
     {
-        private readonly IElementIdProvider myElementIdProvider;
+        protected readonly IElementIdProvider myElementIdProvider;
         private readonly CallGraphSwaExtensionProvider myCallGraphSwaExtensionProvider;
         private readonly CallGraphRootMarksProviderBase myMarksProviderBase;
 
-        protected CallGraphContextProviderBase(IElementIdProvider elementIdProvider,
+        protected CallGraphContextProviderBase(
+            IElementIdProvider elementIdProvider,
             CallGraphSwaExtensionProvider callGraphSwaExtensionProvider,
             CallGraphRootMarksProviderBase marksProviderBase)
         {
@@ -24,38 +24,62 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.ContextSystem
             myMarksProviderBase = marksProviderBase;
         }
 
-        public abstract CallGraphContextElement Context { get; }
+        public abstract CallGraphContextTag ContextTag { get; }
+        public CallGraphRootMarkId MarkId => myMarksProviderBase.Id;
         public abstract bool IsContextAvailable { get; }
-        
-        public virtual bool HasContext(IDeclaration declaration, DaemonProcessKind processKind)
+        public virtual bool IsContextChangingNode(ITreeNode node) => UnityCallGraphUtil.IsFunctionNode(node);
+
+        public virtual bool IsMarkedGlobal(IDeclaredElement declaredElement)
         {
-            return IsMarked(declaration?.DeclaredElement, processKind);
+            return IsMarkedInternal(declaredElement, shouldPropagate: true);
         }
 
-        public virtual bool IsCalleeMarked(ICSharpExpression expression, DaemonProcessKind processKind)
+        public virtual bool IsMarkedLocal(IDeclaredElement declaredElement)
         {
-            return IsMarked(CallGraphUtil.GetCallee(expression), processKind);
+            return IsMarkedInternal(declaredElement, shouldPropagate: false);
         }
 
-        public virtual bool IsMarked(IDeclaredElement declaredElement, DaemonProcessKind processKind)
+        public virtual bool IsMarkedLocal(IDeclaredElement declaredElement, CallGraphDataElement dataElement)
         {
             if (IsContextAvailable == false)
                 return false;
-            
-            var isGlobalStage = processKind == DaemonProcessKind.GLOBAL_WARNINGS;
 
-            if (!isGlobalStage)
+            if (declaredElement == null || dataElement == null)
                 return false;
 
-            var id = myElementIdProvider.GetElementId(declaredElement);
+            var vertex = myElementIdProvider.GetElementId(declaredElement);
 
-            if (!id.HasValue)
+            if (vertex == null)
                 return false;
 
-            return myCallGraphSwaExtensionProvider.IsMarkedByCallGraphRootMarksProvider(
-                myMarksProviderBase.Id, isGlobalStage: true, id.Value);
+            if (!dataElement.Vertices.Contains(vertex.Value) || dataElement.BanMarks.GetOrEmpty(MarkId).Contains(vertex.Value))
+                return false;
+                
+            if (dataElement.RootMarks.GetOrEmpty(MarkId).Contains(vertex.Value))
+                return true;
+
+            return IsMarkedInternal(declaredElement, shouldPropagate:false, vertex);
         }
 
-        public virtual bool IsContextChangingNode([NotNull] ITreeNode node) => UnityCallGraphUtil.IsFunctionNode(node);
+        protected bool IsMarkedInternal([CanBeNull] IDeclaredElement declaredElement, bool shouldPropagate, ElementId? knownId = null)
+        {
+            if (IsContextAvailable == false)
+                return false;
+
+            if (declaredElement == null)
+                return false;
+
+            var elementId = knownId ?? myElementIdProvider.GetElementId(declaredElement);
+
+            if (!elementId.HasValue)
+                return false;
+
+            var elementIdValue = elementId.Value;
+            var markId = myMarksProviderBase.Id;
+
+            return shouldPropagate
+                ? myCallGraphSwaExtensionProvider.IsMarkedGlobal(markId, elementIdValue)
+                : myCallGraphSwaExtensionProvider.IsMarkedLocal(markId, elementIdValue);
+        }
     }
 }

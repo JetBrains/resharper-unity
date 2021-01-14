@@ -24,6 +24,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider
 
         private void NotifyFrontend(FrontendBackendHost host, UnityVersion unityVersion, Version version)
         {
+            if (version == new Version(0,0))
+                return;
+            
             host.Do(rd =>
             {
                 // if model is there, then ApplicationPath was already set via UnityEditorProtocol, it would be more

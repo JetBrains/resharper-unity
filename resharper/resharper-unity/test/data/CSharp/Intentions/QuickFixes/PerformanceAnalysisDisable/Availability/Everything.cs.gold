@@ -7,20 +7,20 @@ namespace ContextActionsTests
         private void Update()
         {
             ||GetComponent|(0)|(1)<int>();
-            |PlainExpensiveMethod|(2)();
-            |CommentExpensiveMethod|(3)();
-            |TransitiveExpensiveeMethod|(4)();
+            ||PlainExpensiveMethod|(2)|(3)();
+            ||CommentExpensiveMethod|(4)|(5)();
+            |TransitiveExpensiveeMethod|(6)();
         } 
 
         private void TransitiveExpensiveeMethod()
         {
-            |PlainExpensiveMethod|(5)();
-            |CommentExpensiveMethod|(6)();
+            |PlainExpensiveMethod|(7)();
+            |CommentExpensiveMethod|(8)();
         }
 
         private void PlainExpensiveMethod()
         {
-            |GetComponent|(7)<int>();
+            |GetComponent|(9)<int>();
         }
 
         // ReSharper restore Unity.ExpensiveCode
@@ -52,15 +52,23 @@ Introduce field and initialise in 'Start'
 Introduce field and initialise in 'Awake'
 5: Expensive method invocation
 QUICKFIXES:
-Disable performance analysis for method
 Introduce field and initialise in 'Start'
 Introduce field and initialise in 'Awake'
 6: Expensive method invocation
 QUICKFIXES:
-Disable performance analysis for method
 Introduce field and initialise in 'Start'
 Introduce field and initialise in 'Awake'
 7: Expensive method invocation
+QUICKFIXES:
+Disable performance analysis for method
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+8: Expensive method invocation
+QUICKFIXES:
+Disable performance analysis for method
+Introduce field and initialise in 'Start'
+Introduce field and initialise in 'Awake'
+9: Expensive method invocation
 QUICKFIXES:
 Disable performance analysis for method
 Introduce field and initialise in 'Start'

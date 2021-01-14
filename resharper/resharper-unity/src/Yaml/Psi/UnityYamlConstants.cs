@@ -28,7 +28,13 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi
         public static readonly string Components = "m_Component";
         public static readonly string Children = "m_Children";
         public static readonly string ModificationsProperty = "m_Modifications";
-        
+        public const string StateMachineBehavioursProperty = "m_StateMachineBehaviours";
+        public const string ChildStateMachinesProperty = "m_ChildStateMachines";
+        public const string ChildStatesProperty = "m_ChildStates";
+        public const string StateProperty = "m_State";
+        public const string StateMachineProperty = "m_StateMachine";
+        public const string EventsProperty = "m_Events";
+
         // prefab modifications
         public static readonly string PropertyPathProperty = "propertyPath";
         public static readonly string TargetProperty = "target";

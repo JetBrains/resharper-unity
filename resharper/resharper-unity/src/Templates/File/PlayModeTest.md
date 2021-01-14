@@ -6,7 +6,8 @@ reformat: True
 shortenReferences: True
 categories: unity
 customProperties: Extension=cs, FileName=PlayModeTest, ValidateFileName=True
-scopes: InUnityCSharpProject
+scopes: UnityFileTemplateSectionMarker;InUnityCSharpProject
+uitag: Unity Class
 parameterOrder: HEADER, (CLASS), (NAMESPACE)
 HEADER-expression: fileheader()
 CLASS-expression: getAlphaNumericFileNameWithoutExtension()

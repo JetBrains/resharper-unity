@@ -41,6 +41,16 @@ object BackendUnityModel: Root() {
         field("rootIndices", array(int))
     }
 
+    private val AnimatorFindUsagesResult = structdef extends AssetFindUsagesResultBase {
+        field("pathElements", array(string))
+        field("type", enum("AnimatorUsageType") {
+            +"State"
+            +"StateMachine"
+        })
+    }
+
+    private val AnimationFindUsagesResult = structdef extends AssetFindUsagesResultBase {}
+
     private val TestResult = structdef {
         field("testId", string)
         field("projectName", string)

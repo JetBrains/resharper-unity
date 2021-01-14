@@ -81,6 +81,11 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.DeferredCaches.UnityEvents
             return new UnityEventsDataElement();
         }
 
+        public bool IsApplicable(IPsiSourceFile currentAssetSourceFile)
+        {
+            return true;
+        }
+
         public object Build(SeldomInterruptChecker checker, IPsiSourceFile currentAssetSourceFile, AssetDocument assetDocument)
         {
             var modifications = ProcessPrefabModifications(currentAssetSourceFile, assetDocument);

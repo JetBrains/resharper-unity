@@ -246,6 +246,8 @@
               class="com.jetbrains.rider.plugins.unity.ui.unitTesting.SwitchUnitTestLauncherComboBoxAction" />
     </group>
 
+    <action id="DumpUnityExplorerAction" class="com.jetbrains.rider.plugins.unity.actions.internal.DumpUnityExplorerAction" internal="true" />
+
     <action id="InstallEditorPluginAction"
             class="com.jetbrains.rider.plugins.unity.actions.InstallEditorPluginAction"
             text="Install Unity Editor Plugin" />
