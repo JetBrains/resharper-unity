@@ -5,13 +5,12 @@ using JetBrains.Application.UI.PopupLayout;
 using JetBrains.ProjectModel;
 using JetBrains.ReSharper.Daemon.CodeInsights;
 using JetBrains.ReSharper.Feature.Services.Daemon;
-using JetBrains.ReSharper.Host.Features.TextControls;
+using JetBrains.ReSharper.Host.Features.Services;
 using JetBrains.ReSharper.Plugins.Unity.Rider.Protocol;
 using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.CSharp.Tree;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.Rider.Model;
-using JetBrains.TextControl.TextControlsManagement;
 
 namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 {
@@ -30,10 +29,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Rider.CodeInsights
 
         public virtual void OnClick(CodeInsightsHighlighting highlighting, ISolution solution)
         {
-            var windowContextSource = new PopupWindowContextSource(
-                lt => new HostTextControlPopupWindowContext(lt,
-                    highlighting.DeclaredElement.GetSolution().GetComponent<TextControlManager>().LastFocusedTextControl
-                        .Value).MarkAsOriginatedFromDataContext());
+            var windowContextSource = new PopupWindowContextSource(lt => new RiderEditorOffsetPopupWindowContext(highlighting.Range.StartOffset.Offset));
             if (highlighting is UnityCodeInsightsHighlighting unityCodeInsightsHighlighting)
             {
                 if (unityCodeInsightsHighlighting.MenuItems.Count > 0)
