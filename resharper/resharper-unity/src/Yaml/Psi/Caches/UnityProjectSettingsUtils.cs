@@ -15,7 +15,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Yaml.Psi.Caches
         public static string GetUnityPathFor([NotNull] IPsiSourceFile psiSourceFile)
         {
             var solution = psiSourceFile.GetSolution();
-            var solutionPath = solution.SolutionFilePath;
+            var solutionPath = solution.SolutionDirectory;
             var psiPath = psiSourceFile.GetLocation();
             var components = psiPath.MakeRelativeTo(solutionPath).Components.ToArray();
 
