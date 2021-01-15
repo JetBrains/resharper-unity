@@ -150,8 +150,10 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
                     return false;
                 if (rootFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder)))
                     return true;
-                return rootFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.PackagesFolder))
-                       && !change.OldParentFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.PackagesFolder)); // exclude direct children of PackagesFolder
+                if (rootFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.PackagesFolder))
+                       && !change.OldParentFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.PackagesFolder))) // exclude direct children of PackagesFolder
+                    return true;
+                return change.OldParentFolder.IsLinked; // support local package linked by relative path 
             }
 
             private static IProjectFolder GetRootFolder(IProjectItem item)
