@@ -31,6 +31,12 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
             new ClrTypeName("UnityEditor.Build.IOrderedCallback"),
         };
 
+        private readonly JetHashSet<IClrTypeName> myUxmlFactoryBaseClasses = new JetHashSet<IClrTypeName>()
+        {
+            new ClrTypeName("UnityEngine.UIElements.UxmlFactory`1"),
+            new ClrTypeName("UnityEngine.UIElements.UxmlFactory`2"),
+        };
+
         public bool SuppressUsageInspectionsOnElement(IDeclaredElement element, out ImplicitUseKindFlags flags)
         {
             flags = ImplicitUseKindFlags.Default;
@@ -42,7 +48,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             switch (element)
             {
-                case IClass cls when unityApi.IsUnityType(cls) || unityApi.IsComponentSystemType(cls):
+                case IClass cls when unityApi.IsUnityType(cls) || 
+                                     unityApi.IsComponentSystemType(cls) ||
+                                     IsUxmlFactory(cls):
                     flags = ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature;
                     return true;
 
@@ -94,6 +102,14 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.UsageChecking
 
             flags = ImplicitUseKindFlags.Default; // Value not used if we return false
             return false;
+        }
+
+        private bool IsUxmlFactory(IClass cls)
+        {
+            var baseClass = cls.GetBaseClassType();
+            if (baseClass == null)
+                return false;
+            return myUxmlFactoryBaseClasses.Contains(baseClass.GetClrName());
         }
 
         private static bool IsAnimationEvent(ISolution solution, IDeclaredElement property)
