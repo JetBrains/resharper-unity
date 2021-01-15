@@ -143,14 +143,15 @@ namespace JetBrains.ReSharper.Plugins.Unity.ProjectModel
             private static bool IsAssetOrPackage(ProjectItemChange change)
             {
                 var rootFolder = GetRootFolder(change.OldParentFolder);
+                var solution = change.GetSolution();
+                if (solution == null)
+                    return false;
                 if (rootFolder == null)
                     return false;
-                if (string.Compare(rootFolder.Name, ProjectExtensions.AssetsFolder, StringComparison.OrdinalIgnoreCase) == 0)
+                if (rootFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.AssetsFolder)))
                     return true;
-                if (string.Compare(rootFolder.Name, ProjectExtensions.PackagesFolder, StringComparison.OrdinalIgnoreCase) == 0)
-                    return true;
-                var project = change.ProjectItem.GetProject();
-                return project != null && project.HasSubItems(rootFolder.Name);
+                return rootFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.PackagesFolder))
+                       && !change.OldParentFolder.Location.Equals(solution.SolutionDirectory.Combine(ProjectExtensions.PackagesFolder)); // exclude direct children of PackagesFolder
             }
 
             private static IProjectFolder GetRootFolder(IProjectItem item)
