@@ -9,8 +9,8 @@ import com.intellij.psi.css.descriptor.CssElementDescriptor
 import com.intellij.psi.css.descriptor.CssValueOwnerDescriptor
 import com.intellij.psi.css.impl.util.CssDocumentationProvider
 import com.intellij.psi.css.impl.util.CssUtil
+import com.intellij.psi.css.impl.util.MdnDocumentationUtil
 import com.intellij.psi.css.impl.util.table.CssDescriptorsUtil
-import com.intellij.xml.util.documentation.MdnDocumentationUtil
 
 class UssDocumentationProvider : DocumentationProvider {
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
