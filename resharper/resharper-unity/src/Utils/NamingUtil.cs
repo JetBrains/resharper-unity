@@ -40,7 +40,7 @@ namespace JetBrains.ReSharper.Plugins.Unity.Utils
                 UniqueNameContext = node,
                 IsConflictingElement = isConflictingElement
             };
-            var namesSuggestion = namesCollection.Prepare(elementKind, ScopeKind.Common, suggestionOptions);
+            var namesSuggestion = namesCollection.Prepare(elementKind, ScopeKind.TypeAndNamespace, suggestionOptions);
             return namesSuggestion.FirstName();
         }
     }
