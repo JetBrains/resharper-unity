@@ -15,6 +15,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
+- Fix exception and missing namespace suppression when running plugin in `inspectcode` ([#2003](https://github.com/JetBrains/resharper-unity/pull/2003))
 - Rider: Allow disabling Burst context Code Vision ([#1985](https://github.com/JetBrains/resharper-unity/pull/1985))
 
 
