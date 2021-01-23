@@ -6,6 +6,8 @@ Opened
   -ClassLibrary1
    -Dependencies
     -Assemblies
+     -Implicit
+      mscorlib
      System
      System.Core
      System.Xml
