@@ -4,9 +4,9 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Feature.Services.CallGraph.Pe
 {
     public class ShowPerformanceCriticalCallsUtil
     { 
-        public const string OUTGOING_CALLS_MESSAGE = "Show outgoing Performance critical calls";
-        public const string INCOMING_CALLS_MESSAGE = "Show incoming Performance critical calls";
-        public const string CONTEXT_ACTION_DESCRIPTION = "Show Performance critical calls actions";
+        public const string OUTGOING_CALLS_MESSAGE = "Show outgoing Performance Critical calls";
+        public const string INCOMING_CALLS_MESSAGE = "Show incoming Performance Critical calls";
+        public const string CONTEXT_ACTION_DESCRIPTION = "Show Performance Critical calls actions";
 
         public static string GetPerformanceCriticalShowCallsText(ShowCallsType type)
         {
