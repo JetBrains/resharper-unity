@@ -26,6 +26,7 @@ Since 2018.1, the version numbers and release cycle match Rider's versions and r
 
 ### Fixed
 
+- Fix missing entries from ReSharper's Unity specific dictionary ([#1737](https://github.com/JetBrains/resharper-unity/issues/1737), [#1809](https://github.com/JetBrains/resharper-unity/issues/1809), [#2008](https://github.com/JetBrains/resharper-unity/pull/2008))
 - Rider: Fix issue launching Unity when debugging and editor isn't running ([RIDER-52498](https://youtrack.jetbrains.com/issue/RIDER-52498), [#1920](https://github.com/JetBrains/resharper-unity/pull/1920))
 - Rider: Fix exception in protocol file watcher ([DEXP-559833](https://youtrack.jetbrains.com/issue/DEXP-559833), [#1942](https://github.com/JetBrains/resharper-unity/pull/1942))
 - Rider: Fix exception with multiple assemblies with the same name ([RIDER-54876](https://youtrack.jetbrains.com/issue/RIDER-54876), [#1953](https://github.com/JetBrains/resharper-unity/pull/1953))
