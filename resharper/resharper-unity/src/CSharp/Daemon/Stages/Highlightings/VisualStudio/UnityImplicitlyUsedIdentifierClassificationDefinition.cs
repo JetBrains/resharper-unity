@@ -26,7 +26,8 @@ namespace JetBrains.ReSharper.Plugins.Unity.CSharp.Daemon.Stages.Highlightings.V
             IsBold = true;
         }
 
-        [Export, Name(Name), BaseDefinition("formal language")]
+        // DefaultIdentifierClassificationDefinition.Name is internal
+        [Export, Name(Name), BaseDefinition("ReSharper Default Identifier")]
         internal ClassificationTypeDefinition ClassificationTypeDefinition;
     }
 }
