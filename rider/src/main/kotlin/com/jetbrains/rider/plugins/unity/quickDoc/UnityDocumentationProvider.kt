@@ -6,11 +6,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.util.io.exists
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
 
-class UnityDocumentationProvider() : DocumentationProvider {
+class UnityDocumentationProvider : DocumentationProvider {
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String>? {
         val project = p0?.project
@@ -38,6 +39,11 @@ class UnityDocumentationProvider() : DocumentationProvider {
     private fun getVersionSpecificPieceOfUrl(project:Project):String
     {
         val version = UnityInstallationFinder.getInstance(project).getApplicationVersion(2) ?: return ""
+        val parsedVersion = SemVer.parse(version) ?: return ""
+        // Version before 2017.1 has different format of version:
+        // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
+        if (parsedVersion <= SemVer.parse("2017.1")!!)
+            return ""
         return "/$version/Documentation"
     }
 
