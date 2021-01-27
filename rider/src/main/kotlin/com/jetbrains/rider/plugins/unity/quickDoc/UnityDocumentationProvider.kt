@@ -42,7 +42,7 @@ class UnityDocumentationProvider : DocumentationProvider {
         val parsedVersion = SemVer.parse("$version.0") ?: return ""
         // Version before 2017.1 has different format of version:
         // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
-        // lets return make url without version for old Unity, I don't like the UI on website, when older Unity version prefix is specified
+        // lets make url without specific version for old Unity, I don't like the UI on website, when older Unity version prefix is specified
         if (parsedVersion < SemVer.parse("2017.1.0")!!)
             return ""
         return "/$version/Documentation"
