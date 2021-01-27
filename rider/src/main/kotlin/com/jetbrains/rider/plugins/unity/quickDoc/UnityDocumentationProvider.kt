@@ -6,11 +6,12 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiManager
 import com.intellij.util.io.exists
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
+import com.jetbrains.rider.plugins.unity.util.SemVer
 import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.solution
 import java.nio.file.Path
 
-class UnityDocumentationProvider() : DocumentationProvider {
+class UnityDocumentationProvider : DocumentationProvider {
 
     override fun getUrlFor(p0: PsiElement?, p1: PsiElement?): MutableList<String>? {
         val project = p0?.project
@@ -28,13 +29,22 @@ class UnityDocumentationProvider() : DocumentationProvider {
     private fun getUrlForContext(context: String, project: Project): String {
         // We know context will be a fully qualified type or method name, starting
         // with either `UnityEngine.` or `UnityEditor.`
-        // TODO: Use the current version for the fallback online search
-        // E.g. https://docs.unity3d.com/2017.4/Documentation/ScriptReference/30_search.html?q=...
         val keyword = stripPrefix(context)
         val documentationRoot = getLocalDocumentationRoot(project)
         return getFileUri(documentationRoot, "ScriptReference/$keyword.html")
             ?: getFileUri(documentationRoot, "ScriptReference/${keyword.replace('.', '-')}.html")
-            ?: "https://docs.unity3d.com/ScriptReference/30_search.html?q=$keyword"
+            ?: "https://docs.unity3d.com${getVersionSpecificPieceOfUrl(project)}/ScriptReference/30_search.html?q=$keyword"
+    }
+
+    private fun getVersionSpecificPieceOfUrl(project:Project):String
+    {
+        val version = UnityInstallationFinder.getInstance(project).getApplicationVersion(2) ?: return ""
+        val parsedVersion = SemVer.parse("$version.0") ?: return ""
+        // Version before 2017.1 has different format of version:
+        // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
+        if (parsedVersion < SemVer.parse("2017.1.0")!!)
+            return "/${parsedVersion.major}${parsedVersion.minor}0/Documentation"
+        return "/$version/Documentation"
     }
 
     private fun stripPrefix(context: String): String {

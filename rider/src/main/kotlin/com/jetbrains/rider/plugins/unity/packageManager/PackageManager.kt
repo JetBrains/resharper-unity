@@ -19,8 +19,8 @@ import com.intellij.util.concurrency.NonUrgentExecutor
 import com.intellij.util.io.inputStream
 import com.intellij.util.io.isDirectory
 import com.intellij.util.pooledThreadSingleAlarm
+import com.jetbrains.rd.platform.util.idea.getOrCreateUserData
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rdclient.util.idea.getOrCreateUserData
 import com.jetbrains.rider.debugger.util.isExistingFile
 import com.jetbrains.rider.model.unity.frontendBackend.frontendBackendModel
 import com.jetbrains.rider.plugins.unity.util.SemVer
