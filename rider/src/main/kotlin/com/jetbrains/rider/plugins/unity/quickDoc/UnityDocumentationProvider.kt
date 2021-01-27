@@ -42,7 +42,7 @@ class UnityDocumentationProvider : DocumentationProvider {
         val parsedVersion = SemVer.parse(version) ?: return ""
         // Version before 2017.1 has different format of version:
         // https://docs.unity3d.com/560/Documentation/ScriptReference/MonoBehaviour.html
-        if (parsedVersion <= SemVer.parse("2017.1")!!)
+        if (parsedVersion < SemVer.parse("2017.1")!!)
             return ""
         return "/$version/Documentation"
     }
