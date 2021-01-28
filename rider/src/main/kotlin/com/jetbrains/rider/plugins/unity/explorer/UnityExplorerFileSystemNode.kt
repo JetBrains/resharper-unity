@@ -1,6 +1,7 @@
 package com.jetbrains.rider.plugins.unity.explorer
 
 import com.intellij.ide.projectView.PresentationData
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vcs.FileStatus
@@ -12,6 +13,7 @@ import com.jetbrains.rider.plugins.unity.packageManager.PackageData
 import com.jetbrains.rider.projectView.calculateFileSystemIcon
 import com.jetbrains.rider.projectView.views.FileSystemNodeBase
 import com.jetbrains.rider.projectView.views.NestingNode
+import com.jetbrains.rider.projectView.views.SolutionViewPaneBase
 import com.jetbrains.rider.projectView.views.fileSystemExplorer.FileSystemExplorerCustomization
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
@@ -27,6 +29,7 @@ enum class AncestorNodeType {
     Assets,
     UserEditablePackage,
     ReadOnlyPackage,
+    IgnoredFolder,
     FileSystem;  // A folder in Packages that isn't a package. Gets no special treatment
 
     companion object {
@@ -65,6 +68,18 @@ open class UnityExplorerFileSystemNode(project: Project,
             it.updateNode(presentation, file, this)
         }
 
+        // Mark ignored file types. This is mainly so we can highlight that hidden folders are completely ignored. We
+        // have lots of non-indexed files in Assets and Packages, but they still appear in Find in Files when we check
+        // 'non-solution items'. Ignored file types are completely ignored, and don't show up at all. The default `*~`
+        // pattern matches Unity's hidden folder pattern, but can be used for e.g. `Samples~` and `Documentation~`.
+        // Make it clear that the folder is ignored/excluded/not indexed
+        val ignored = FileTypeManager.getInstance().isFileIgnored(virtualFile)
+        if (ignored || descendentOf == AncestorNodeType.IgnoredFolder) {
+            // TODO: Consider wording
+            // We can usually still search for a file that is not indexed. An ignored file is completely excluded
+            presentation.addText(" ${SolutionViewPaneBase.TextSeparator} ignored ${SolutionViewPaneBase.TextSeparator} no index", SimpleTextAttributes.GRAYED_ATTRIBUTES)
+        }
+
         // Add additional info for directories
         val unityExplorer = UnityExplorer.getInstance(myProject)
         if (virtualFile.isDirectory && unityExplorer.showProjectNames) {
@@ -72,13 +87,19 @@ open class UnityExplorerFileSystemNode(project: Project,
         }
 
         // Add tooltip for non-imported folders (anything ending with tilde). Also, show the full name if we're hiding
-        // the tilde suffix
+        // the tilde suffix.
         if (isHiddenFolder(virtualFile)) {
             var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else "<br/>"
             if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
                 tooltip += virtualFile.name + "<br/>"
             }
-            presentation.tooltip = tooltip + "This folder is not imported into the asset database"
+            tooltip += "This folder is not imported into the asset database"
+            presentation.tooltip = tooltip
+        }
+
+        if (ignored) {
+            val tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else "<br/>"
+            presentation.tooltip += "$tooltip<br/>This folder matches an Ignored File and Folders pattern"
         }
     }
 
@@ -91,8 +112,13 @@ open class UnityExplorerFileSystemNode(project: Project,
         return super.getName()
     }
 
+    // Hidden from Unity's asset database
     private fun isHiddenFolder(file: VirtualFile)
         = descendentOf != AncestorNodeType.FileSystem && file.isDirectory && file.name.endsWith("~")
+
+    // Ignored by IDE
+    private fun isIgnoredFolder(file: VirtualFile)
+        = file.isDirectory && FileTypeManager.getInstance().isFileIgnored(virtualFile)
 
     protected fun addProjects(presentation: PresentationData) {
         val projectNames = entities   // One node for each project that this directory is part of
@@ -243,11 +269,20 @@ open class UnityExplorerFileSystemNode(project: Project,
             }
         }
 
+        if (isIgnoredFolder(virtualFile) || (virtualFile.isDirectory && descendentOf == AncestorNodeType.IgnoredFolder)) {
+            return UnityIcons.Explorer.UnloadedFolder
+        }
+
         return virtualFile.calculateFileSystemIcon(myProject)
     }
 
     override fun createNode(virtualFile: VirtualFile, nestedFiles: List<NestingNode<VirtualFile>>): FileSystemNodeBase {
-        return UnityExplorerFileSystemNode(myProject, virtualFile, nestedFiles, descendentOf)
+        val desc = if (isIgnoredFolder(virtualFile) || (!virtualFile.isDirectory && isIgnoredFolder(virtualFile.parent))) {
+            AncestorNodeType.IgnoredFolder
+        } else {
+            descendentOf
+        }
+        return UnityExplorerFileSystemNode(myProject, virtualFile, nestedFiles, desc)
     }
 
     override fun getVirtualFileChildren(): List<VirtualFile> {
@@ -271,13 +306,17 @@ open class UnityExplorerFileSystemNode(project: Project,
         }
 
         /* Files and folders ending with '~' are ignored by the asset importer. Files with '~' are usually backup files,
-           but Unity uses folders that end with '~' as a way of distributing files that are not to be imported. This is
-           usually `Documentation~` inside packages (https://docs.unity3d.com/Manual/cus-layout.html), but it can also
-           be used for distributing code, too. This code will not be treated as assets by Unity, but will still be added
-           to the generated .csproj files to allow for use as e.g. command line tools
+           so should be hidden. Unity uses folders that end with '~' as a way of distributing files that are not to be
+           imported. This is usually `Documentation~` inside packages (https://docs.unity3d.com/Manual/cus-layout.html),
+           but it can also be used for distributing code, too (e.g. `Samples~`). This code will not be treated as assets
+           by Unity, but will still be added to the generated .csproj files to allow for use as e.g. command line tools
         */
         if (isHiddenFolder(file)) {
             return UnityExplorer.getInstance(myProject).showTildeFolders
+        }
+
+        if (!file.isDirectory && file.name.endsWith("~")) {
+            return false
         }
 
         return true
