@@ -30,6 +30,7 @@ enum class AncestorNodeType {
     UserEditablePackage,
     ReadOnlyPackage,
     IgnoredFolder,
+    References,
     FileSystem;  // A folder in Packages that isn't a package. Gets no special treatment
 
     companion object {
