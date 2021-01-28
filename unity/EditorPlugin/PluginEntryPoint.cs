@@ -15,6 +15,7 @@ using JetBrains.Rd.Base;
 using JetBrains.Rd.Impl;
 using JetBrains.Rd.Tasks;
 using JetBrains.Rider.Model.Unity;
+using JetBrains.Rider.Unity.Editor.Logger;
 using JetBrains.Rider.Unity.Editor.NonUnity;
 using JetBrains.Rider.Unity.Editor.Utils;
 using UnityEditor;
@@ -42,7 +43,7 @@ namespace JetBrains.Rider.Unity.Editor
       if (UnityUtils.IsInBatchModeAndNotInRiderTests)
         return;
 
-      PluginSettings.InitLog(); // init log before doing any logging
+      LogInitializer.InitLog(PluginSettings.SelectedLoggingLevel); // init log before doing any logging
       UnityEventLogSender.Start(); // start collecting Unity messages asap
 
       ourPluginSettings = new PluginSettings();
@@ -152,7 +153,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         var executingAssembly = Assembly.GetExecutingAssembly();
         var location = executingAssembly.Location;
-        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogPath}.");
+        Debug.Log($"Rider plugin \"{executingAssembly.GetName().Name}\" initialized{(string.IsNullOrEmpty(location)? "" : " from: " + location )}. LoggingLevel: {PluginSettings.SelectedLoggingLevel}. Change it in Unity Preferences -> Rider. Logs path: {LogInitializer.LogPath}.");
       }
 
       var protocolInstanceJsonPath = Path.GetFullPath("Library/ProtocolInstance.json");
@@ -746,12 +747,7 @@ namespace JetBrains.Rider.Unity.Editor
 
       return new[] {editorLogpath, playerLogPath};
     }
-
-    private static readonly string ourBaseLogPath = !UnityUtils.IsInRiderTests
-        ? Path.GetTempPath()
-        : new FileInfo(UnityUtils.UnityEditorLogPath).Directory.FullName;
-
-    internal static readonly string LogPath = Path.Combine(Path.Combine(ourBaseLogPath, "Unity3dRider"), $"EditorPlugin.{Process.GetCurrentProcess().Id}.log");
+    
     internal static OnOpenAssetHandler OpenAssetHandler;
 
     // Creates and deletes Library/EditorInstance.json containing info about unity instance. Unity 2017.1+ writes this

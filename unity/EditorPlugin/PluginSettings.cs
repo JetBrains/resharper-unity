@@ -6,6 +6,7 @@ using JetBrains.Diagnostics;
 using JetBrains.Diagnostics.Internal;
 using JetBrains.Lifetimes;
 using JetBrains.Rider.Model.Unity;
+using JetBrains.Rider.Unity.Editor.Logger;
 using UnityEditor;
 using UnityEngine;
 
@@ -26,16 +27,8 @@ namespace JetBrains.Rider.Unity.Editor
       set
       {
         EditorPrefs.SetInt("Rider_SelectedLoggingLevel", (int) value);
-        InitLog();
+        LogInitializer.InitLog(value);
       }
-    }
-
-    public static void InitLog()
-    {
-      if (SelectedLoggingLevel > LoggingLevel.OFF)
-        Log.DefaultFactory = Log.CreateFileLogFactory(Lifetime.Eternal, PluginEntryPoint.LogPath, true, SelectedLoggingLevel);
-      else
-        Log.DefaultFactory = new SingletonLogFactory(NullLog.Instance); // use profiler in Unity - this is faster than leaving TextWriterLogFactory with LoggingLevel OFF
     }
 
     public static string[] GetInstalledNetFrameworks()
@@ -269,7 +262,7 @@ namespace JetBrains.Rider.Unity.Editor
       {
         //UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(PluginEntryPoint.LogPath, 0);
         // works much faster than the commented code, when Rider is already started
-        PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(PluginEntryPoint.LogPath, 0, 0);
+        PluginEntryPoint.OpenAssetHandler.OnOpenedAsset(LogInitializer.LogPath, 0, 0);
       }
       GUI.enabled = previous;
       GUILayout.EndHorizontal();

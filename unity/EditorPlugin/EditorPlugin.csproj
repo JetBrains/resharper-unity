@@ -29,7 +29,7 @@
     <None Remove="AfterUnity56\**" />
     <EmbeddedResource Remove="AfterUnity56\**" />
   </ItemGroup>
-  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props"/>
+  <Import Project="$(DotNetSdkPath)\Build\PackageReference.JetBrains.RdFramework.Props" />
   <Import Project="ILRepack.targets" /> 
   <Import Project="Model.targets" />
 </Project>
