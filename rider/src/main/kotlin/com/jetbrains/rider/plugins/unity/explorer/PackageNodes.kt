@@ -5,13 +5,11 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.plugins.unity.packageManager.PackageData
 import com.jetbrains.rider.plugins.unity.packageManager.PackageManager
 import com.jetbrains.rider.plugins.unity.packageManager.PackageSource
-import com.jetbrains.rider.plugins.unity.util.UnityInstallationFinder
 import com.jetbrains.rider.projectView.views.*
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewPane
 import icons.UnityIcons
@@ -53,9 +51,11 @@ class PackagesRootNode(project: Project, private val packageManager: PackageMana
         return super.createNode(virtualFile, nestedFiles)
     }
 
-    // Required for "Locate in Solution Explorer" to work. If we return false, the solution view visitor stops walking.
-    // True is effectively "maybe"
-    override fun contains(file: VirtualFile) = true
+    // Required for "Locate in Solution Explorer". Treat as "can contain". Returning false stops the visitor. If we
+    // return true, which is "maybe", then the child nodes are expanded as the visitor keeps looking
+    override fun contains(file: VirtualFile): Boolean {
+        return children.any { (it as? SolutionViewNode)?.contains(file) == true }
+    }
 
     private fun addPackageNode(children: MutableList<AbstractTreeNode<*>>, thePackage: PackageData) {
         if (thePackage.packageFolder != null) {
@@ -131,37 +131,40 @@ class PackageNode(project: Project, private val packageManager: PackageManager, 
     }
 
     override fun compareTo(other: AbstractTreeNode<*>): Int {
-        // Compare by name, rather than ID
+        // Compare by display name, rather than the default file name
         return String.CASE_INSENSITIVE_ORDER.compare(name, other.name)
     }
 }
 
 class PackageDependenciesRoot(project: Project, private val packageManager: PackageManager, private val packageData: PackageData)
-    : AbstractTreeNode<Any>(project, packageData) {
+    : SolutionViewNode<Any>(project, packageData) {
 
     override fun update(presentation: PresentationData) {
         presentation.presentableText = "Dependencies"
         presentation.setIcon(UnityIcons.Explorer.DependenciesRoot)
     }
 
-    override fun getChildren(): MutableCollection<AbstractTreeNode<*>> {
+    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = mutableListOf<AbstractTreeNode<*>>()
         for ((name, version) in packageData.details.dependencies) {
             children.add(PackageDependencyItemNode(myProject, packageManager, name, version))
         }
         return children
     }
+
+    override fun contains(file: VirtualFile) = false
 }
 
 class PackageDependencyItemNode(project: Project, private val packageManager: PackageManager, private val packageName: String, version: String)
-    : AbstractTreeNode<Any>(project, "$packageName@$version") {
+    : SolutionViewNode<Any>(project, "$packageName@$version") {
 
     init {
         myName = "$packageName@$version"
     }
 
-    override fun getChildren(): MutableCollection<out AbstractTreeNode<Any>> = arrayListOf()
+    override fun calculateChildren(): MutableList<AbstractTreeNode<*>> = mutableListOf()
     override fun isAlwaysLeaf() = true
+    override fun contains(file: VirtualFile) = false
 
     override fun update(presentation: PresentationData) {
         presentation.presentableText = name
@@ -179,27 +182,8 @@ class PackageDependencyItemNode(project: Project, private val packageManager: Pa
     }
 }
 
-abstract class FolderContainerNodeBase(project: Project, key: Any)
-    : SolutionViewNode<Any>(project, key) {
-
-    private val childFolders = mutableSetOf<VirtualFile>()
-
-    protected fun addChildFolder(packageFolder: VirtualFile) {
-        childFolders.add(packageFolder)
-    }
-
-    // Note that this requires the children to have been expanded first. The SolutionViewVisitor will ensure this happens
-    override fun contains(file: VirtualFile): Boolean {
-        if (childFolders.contains(file)) return true
-        for (packageFolder in childFolders) {
-            if (VfsUtil.isAncestor(packageFolder,  file, false)) return true
-        }
-        return false
-    }
-}
-
 class ReadOnlyPackagesRootNode(project: Project, private val packageManager: PackageManager)
-    : FolderContainerNodeBase(project, key) {
+    : SolutionViewNode<Any>(project, key) {
 
     companion object {
         val key = Any()
@@ -215,19 +199,6 @@ class ReadOnlyPackagesRootNode(project: Project, private val packageManager: Pac
 
         if (packageManager.hasBuiltInPackages) {
             children.add(BuiltinPackagesRootNode(myProject, packageManager))
-
-            // Add the builtin packages root folder to the list of folders we know are under this node. This lets us
-            // correctly handle `contains()` for built in packages, which in turn means we can navigate to a built in
-            // package by folder (e.g. by double clicking a dependency node)
-            try {
-                UnityInstallationFinder.getInstance(myProject).getBuiltInPackagesRoot()?.let { path ->
-                    VfsUtil.findFile(path, true)?.let {
-                        addChildFolder(it)
-                    }
-                }
-            } catch (throwable: Throwable) {
-                // Do nothing. It just means navigation to built in packages from dependency nodes won't work
-            }
         }
 
         for (packageData in packageManager.immutablePackages) {
@@ -238,15 +209,20 @@ class ReadOnlyPackagesRootNode(project: Project, private val packageManager: Pac
             }
             else {
                 children.add(PackageNode(myProject, packageManager, packageData.packageFolder, packageData))
-                addChildFolder(packageData.packageFolder)
             }
         }
         return children
     }
+
+    // Treat as "can contain". Returning false stops the visitor. If we return true, which is "maybe", then the child
+    // nodes are expanded as the visitor keeps looking
+    override fun contains(file: VirtualFile): Boolean {
+        return children.any { (it as? SolutionViewNode)?.contains(file) == true }
+    }
 }
 
 class BuiltinPackagesRootNode(project: Project, private val packageManager: PackageManager)
-    : FolderContainerNodeBase(project, key) {
+    : SolutionViewNode<Any>(project, key) {
 
     companion object {
         val key = Any()
@@ -267,10 +243,15 @@ class BuiltinPackagesRootNode(project: Project, private val packageManager: Pack
             }
             else {
                 children.add(BuiltinPackageNode(myProject, packageData))
-                addChildFolder(packageData.packageFolder)
             }
         }
         return children
+    }
+
+    // Required for "Locate in Solution Explorer". Treat as "can contain". Returning false stops the visitor. If we
+    // return true, which is "maybe", then the child nodes are expanded as the visitor keeps looking
+    override fun contains(file: VirtualFile): Boolean {
+        return children.any { (it as? SolutionViewNode)?.contains(file) == true }
     }
 }
 

@@ -89,17 +89,16 @@ open class UnityExplorerFileSystemNode(project: Project,
         // Add tooltip for non-imported folders (anything ending with tilde). Also, show the full name if we're hiding
         // the tilde suffix.
         if (isHiddenFolder(virtualFile)) {
-            var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else "<br/>"
+            var tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
             if (!SolutionExplorerViewPane.getInstance(myProject).myShowAllFiles) {
                 tooltip += virtualFile.name + "<br/>"
             }
-            tooltip += "This folder is not imported into the asset database"
-            presentation.tooltip = tooltip
+            presentation.tooltip = tooltip + "This folder is not imported into the asset database"
         }
 
         if (ignored) {
-            val tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else "<br/>"
-            presentation.tooltip += "$tooltip<br/>This folder matches an Ignored File and Folders pattern"
+            val tooltip = if (presentation.tooltip.isNullOrEmpty()) "" else presentation.tooltip + "<br/>"
+            presentation.tooltip = tooltip + "This folder matches an Ignored File and Folders pattern"
         }
     }
 
@@ -195,8 +194,9 @@ open class UnityExplorerFileSystemNode(project: Project,
     private fun forEachAncestor(root: FileSystemNodeBase?, action: FileSystemNodeBase.() -> Boolean): FileSystemNodeBase? {
         var node: FileSystemNodeBase? = root
         while (node != null) {
-            if (node.action())
+            if (node.action()) {
                 return node
+            }
             node = node.parent as? FileSystemNodeBase
         }
         return null
